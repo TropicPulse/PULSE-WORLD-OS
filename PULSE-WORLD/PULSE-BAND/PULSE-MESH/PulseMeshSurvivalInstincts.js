@@ -18,71 +18,21 @@
 // • Organ-aware: tags itself as the survival organ in the mesh organ field.
 // • Unified-advantage-field compliant (tags only, no side effects).
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshSurvivalInstincts",
-  version: "v15.1-MESH-SURVIVAL-Immortal-PLUS",
-  layer: "mesh",
-  role: "mesh_survival_and_threat_engine",
-  lineage: "PulseMesh-v15",
-
-  evo: {
-    survival: true,                 // This IS the survival organ
-    threatDetection: true,          // Detects mesh-level threats
-    reflexPriority: true,           // Prioritizes reflex impulses
-
-    // Band + mesh awareness
-    binaryAware: true,
-    symbolicAware: true,
-    dualBand: true,
-    presenceAware: true,
-    bandAware: true,
-    meshAware: true,
-
-    // Organ + registry awareness (metadata-only)
-    organAware: true,
-    meshOrgansAware: true,
-    organRegistryAware: true,
-
-    // Determinism + safety
-    deterministic: true,
-    driftProof: true,
-    metadataOnly: true,             // No routing, no compute
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true,
-
-    // Advantage field
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-
-    // Coordination
-    coordinatorFree: true,
-    multiInstanceReady: true,
-    futureEvolutionReady: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshImmuneMembrane",
-      "PulseMeshImmuneSystem",
-      "PulseMeshEcho",
-      "PulseMeshFlow",
-      "PulseMeshAwareness",
-      "PulseMeshSkin",
-      "PulseMeshOrgans"
-    ],
-    never: [
-      "legacyMeshSurvival",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // -----------------------------------------------------------
 // Presence-Band Helper (v15.1)

@@ -35,76 +35,21 @@
 //   • Drift-proof across versions, multi-instance safe.
 //   • Binary surfaces are descriptive, not imperative (no direct hardware calls).
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PULSE_WORLD_BINARY_CORE",
-  version: "v24-IMMORTAL-INTEL++",
-  layer: "world",
-  role: "world_binary_substrate_core",
-  lineage: [
-    "PulseEarnSignalFactoring-v16 → v24",
-    "PulseEarnChunker-v24",
-    "PulseWorldBinaryThroughputScheduler-v24",
-    "PULSE-WORLD-BINARY.js (substrate-prime)"
-  ],
-
-  evo: {
-    worldBinaryCore: true,
-    substratePrime: true,
-    binaryPhysicsLayer: true,
-
-    // Awareness
-    jobLoadAware: true,
-    meshPressureAware: true,
-    presenceAware: true,
-    bandAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    factoringAware: true,
-    chunkerAware: true,
-    schedulerAware: true,
-
-    // Binary / band
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    // IMMORTAL traits
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    selfRepairable: true,
-
-    // Safety traits
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroMutationOfInput: true,
-    zeroRoutingInfluence: true,
-
-    // Performance traits
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-    throughputAware: true,
-    deviceAware: true,
-
-    // INTEL traits
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true,
-
-    // Base-shape / formula traits
-    baseShapeAware: true,
-    baseFormulaKeyAware: true,
-    patternMatchSurface: true
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HASH / GENERIC HELPERS — v24 IMMORTAL

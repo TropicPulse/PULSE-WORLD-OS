@@ -11,62 +11,21 @@
 //    • Adds world-layer metadata, region/host identity, pulseTouch, advantage,
 //      chunkProfile, page, presence, and intellHash when applicable
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-LOGGER_META = {
-  identity: "PulseWorldFirebaseLogger",
-  version: "v20-IMMORTAL",
-  layer: "world_layer",
-  role: "world_log_router",
-  lineage: "v14 → v16 → v17 → v20 IMMORTAL",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    zeroMutation: true,
-    zeroExternalMutation: true,
-
-    dualBand: true,
-    binaryAware: true,
-    presenceAware: true,
-    pulseTouchAware: true,
-    advantageAware: true,
-    chunkAware: true,
-    pageAware: true,
-    trustAware: true,
-    identityAware: true,
-
-    regionAware: true,
-    hostAware: true,
-    schedulerAware: true,
-    runtimeV20Aware: true,
-
-    intellHashAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    worldSnapshotAware: true
-  },
-
-  contract: {
-    input: [
-      "level",
-      "message",
-      "meta",
-      "pulseTouch",
-      "band",
-      "binaryPayload",
-      "originOrgan",
-      "originInstance",
-      "regionId",
-      "hostName"
-    ],
-    output: [
-      "FirebaseAdapterEnvelope",
-      "WorldSnapshot (critical only)"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { handler as FirebaseAdapterHandler } from "./PulseWorldFirebaseAdapter-v20.js";
 

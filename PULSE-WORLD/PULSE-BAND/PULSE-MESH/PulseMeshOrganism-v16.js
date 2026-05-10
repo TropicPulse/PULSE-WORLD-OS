@@ -3,73 +3,21 @@
 // PULSE ORGANISM MESH — OVERMIND-PRIME ORGANISM BRAIN + GLOBAL MESH COORDINATOR
 // “One page. One route. Whole organism. One mesh that knows everything.”
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "OrganismMesh",
-  version: "v16-IMMORTAL",
-  layer: "organism_mesh",
-  role: "overmind_prime_organism_brain",
-  lineage: "OrganismMesh-v2-MESH-COORD → v16-IMMORTAL",
-
-  evo: {
-    meshAware: true,
-    presenceAware: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetworkFetch: true,
-    zeroMutationOfInput: true,
-    safeRouteFree: true,
-
-    meshCoordinator: true,
-    meshStateAware: true,
-    meshEventsAware: true,
-
-    organismArteryAware: true,
-    organismConsciousnessAware: true,
-    organismModeAware: true,
-
-    nodeAdminAware: true,
-    overmindPrimeAware: true,
-    serviceGatewayAware: true,
-    safetyFrameAware: true,
-    earnArteryAware: true,
-    reproductionArteryAware: true
-  },
-
-  contract: {
-    always: [
-      "symbolicMeshEnv",
-      "binaryMeshEnv",
-      "PulseMeshPresenceRelay",
-      "PulsePresence",
-      "PresenceAwareness",
-      "NodeAdmin",
-      "OvermindPrime",
-      "ServiceGateway",
-      "SafetyFrame"
-    ],
-    never: [
-      "legacyMesh",
-      "legacyPresenceRelay",
-      "safeRoute",
-      "fetchViaCNS",
-      "directNetworkFetch",
-      "directFilesystemAccess"
-    ]
-  }
-}
-*/
-
-// NOTE (from v2):
-//   “Organism DOES NOT create meshes.
-//    Organism DOES NOT import mesh constructors.
-//    Organism DOES NOT import environments.
-//    The BARREL passes symbolicMeshEnv + binaryMeshEnv IN.
-//    This file ONLY builds coordination + state on top of what is passed in.”
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { createPulseOrgans } from "./PulseMeshOrgans.js";
 

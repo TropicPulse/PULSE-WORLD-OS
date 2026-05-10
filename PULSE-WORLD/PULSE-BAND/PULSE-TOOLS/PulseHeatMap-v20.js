@@ -16,47 +16,21 @@
 //   - Shifter-aware: visually distinct, static-like overlays for shifter pulses.
 //   - Advantage-aware: exposes advantageView surfaces for higher-level organs.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const PulseHeatMapMeta = Object.freeze({
-  id: "PulseHeatMap-v20-IMMORTAL",
-  version: "20.0.0",
-  layer: "heatmap",
-  role: "universal_heatmap_organ",
-  description:
-    "IMMORTAL universal heatmap organ with dual-band, presence, harmonics, multi-spin, role overlays, diagnostics, and advantage view.",
-  identity: Object.freeze({
-    type: "organ",
-    name: "PulseHeatMap",
-    band: "visual",
-    mind: false,
-    immutable: true
-  }),
-  evo: Object.freeze({
-    heatmapOrgan: true,
-    dualBand: true,
-    presenceAware: true,
-    harmonicAware: true,
-    multiSpinAware: true,
-    roleColorAware: true,
-    environmentAware: true,
-    advantageView: true,
-    windowSafe: true,
-
-    shifterAware: true,
-    pulseTypeAware: true,
-    gradientAware: true,
-    anomalyOverlayAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroRandomness: true
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PulseHeatMapMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------------------------
 // BASIC HELPERS

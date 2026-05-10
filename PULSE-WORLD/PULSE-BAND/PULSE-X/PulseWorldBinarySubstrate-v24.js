@@ -56,124 +56,21 @@
 //   • Drift-proof: all frames carry self-describing frameProfile + signatures.
 //   • No direct hardware calls; deviceProfile is metadata-only.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseWorldBinarySubstrate",
-  version: "v24-IMMORTAL-INTEL++",
-  layer: "world_binary_substrate",
-  role: "binary_substrate_for_runtime_scheduler_world",
-
-  description: `
-    The v24 Binary Substrate is the world-aware, device-aware binary nervous
-    system of PULSE-X. It compresses multi-organism plans, snapshots, deltas,
-    and execution results into deterministic frames that carry presence, page,
-    chunkProfile, identity, trust, advantage, band, throughput, and substrate
-    hints (worldWaveIndex, substrateLaneId, substratePhaseIndex).
-
-    Each frame includes a v24 IMMORTAL-INTEL frameProfile and dual signatures
-    that bind the frame to its band, advantage, throughput, and device-aware
-    substrate context. Runtime and Scheduler treat this organ as a pure
-    contract: no guessing, no IO, no randomness, no in-place mutation.
-  `,
-
-  lineage: [
-    "BinarySubstrate-v1",
-    "BinarySubstrate-v11-Evo",
-    "BinarySubstrate-v14-Immortal",
-    "BinarySubstrate-v17-Immortal",
-    "BinarySubstrate-v20-IMMORTAL-ADVANTAGE",
-    "PulseWorldBinarySubstrate-v24-IMMORTAL-INTEL++"
-  ],
-
-  evo: {
-    binaryOverlay: true,
-    runtimeAware: true,
-    schedulerAware: true,
-    regioningAware: true,
-    finalityAware: true,
-    worldBinaryCoreAware: true,
-    worldThroughputAware: true,
-    worldSubstrateAware: true,
-    deviceProfileAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    pulseTouchAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    bandAware: true,
-    frameProfileAware: true,
-    throughputAware: true,
-    substrateLaneAware: true,
-    substratePhaseAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseRuntime",
-      "PulseScheduler",
-      "PulseWorldRegioning",
-      "PulseContinuance",
-      "PulseOmniHosting",
-      "PulseWorldBinaryCore",
-      "PulseWorldBinaryThroughputScheduler",
-      "PulseWorldBinarySubstrate",
-      "PulseWorldBinaryCache"
-    ],
-    never: [
-      "directInternetAccess",
-      "externalNetworkIO",
-      "unsafeEval",
-      "randomnessSource"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// META
-// ============================================================================
-
-export const BinarySubstrateV24Meta = Object.freeze({
-  organId: "BinarySubstrate-v24-IMMORTAL-INTEL",
-  role: "WORLD_BINARY_SUBSTRATE",
-  version: "v24-IMMORTAL-INTEL++",
-  epoch: "v24-IMMORTAL-INTEL++",
-  layer: "WorldBinarySubstrate",
-  safety: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noAsyncDrift: true,
-    syntheticOnly: true
-  }),
-  evo: Object.freeze({
-    presenceAware: true,
-    advantageAware: true,
-    dualbandSafe: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    meshAware: true,
-    expansionAware: true,
-    pulseTouchAware: true,
-    multiInstanceReady: true,
-    bandAware: true,
-    frameProfileAware: true,
-    throughputAware: true,
-    substrateLaneAware: true,
-    substratePhaseAware: true,
-    deviceProfileAware: true
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const BinarySubstrateV24Meta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // BINARY PAYLOAD TYPES (v24)

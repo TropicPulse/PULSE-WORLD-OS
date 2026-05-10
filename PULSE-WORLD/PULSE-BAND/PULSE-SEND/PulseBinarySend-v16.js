@@ -13,97 +13,21 @@
 //    - v16: proxy-aware (pressure / fallback / boost), organism-aware (safe).
 //    - Fallback-safe: deterministic fallback to proxy.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBinarySend",
-  version: "v16-Immortal-ORGANISM",
-  layer: "frontend",
-  role: "binary_send_engine",
-  lineage: "PulseOS-v12 → v14-Evo-Immortal → v16-Immortal-ORGANISM",
-
-  evo: {
-    binaryCore: true,
-    immortalBand: true,
-    dualBand: true,
-    chunkAligned: true,
-    presenceAware: true,
-    proxyAware: true,
-    organismAware: true,
-    safeRouteFree: true,
-    deterministic: true
-  },
-
-  contract: {
-    always: [
-      "PulseBinaryPulse",
-      "PulseBinaryTech",
-      "PulseSendAdapter",
-      "PulsePresence",
-      "PulseChunks"
-    ],
-    never: [
-      "legacyBinarySend",
-      "legacySend",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyChunker"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-//  v16 IMMORTAL META (symbolic-only, no impact on binary core)
-// ============================================================================
-export const PulseBinarySendMetaV16 = Object.freeze({
-  layer: "BinarySend",
-  role: "PURE_BINARY_SEND_ORGAN",
-  version: "v16-Immortal-ORGANISM",
-  identity: "BinarySend-v16-Immortal",
-
-  evo: Object.freeze({
-    binaryOnly: true,
-    deterministic: true,
-    driftProof: true,
-    dualBandAware: true,
-    proxyAware: true,
-    organismAware: true,
-    pressureAware: true,
-    fallbackAware: true,
-    prewarmAware: true,
-    presenceAware: true,
-    chunkAware: true,
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroMutation: true
-  }),
-
-  guarantees: Object.freeze({
-    noSymbolicLogic: true,
-    noRouting: true,
-    noPatterns: true,
-    noLineage: true,
-    noCompute: true,
-    noRandomness: true,
-    noExternalMutation: true,
-    noDynamicImports: true,
-    noJSONExternal: true,
-    noObjectsExternal: true
-  }),
-
-  contract: Object.freeze({
-    input: ["BinaryArray"],
-    output: ["BinarySendPacket"],
-    consumers: [
-      "PulseRouter",
-      "DualBandOrganism",
-      "PulseServer",
-      "PulseExpansion",
-      "PulseMesh"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  v16-IMMORTAL-INTEL — dual-hash + healing meta (symbolic-only)

@@ -14,125 +14,21 @@
 //   • Deterministic‑field: identical input → identical routing decision.
 //   • Zero user code, zero eval, zero dynamic imports.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseRouter",
-  version: "v24-IMMORTAL-INTEL++-DUALHASH",
-  layer: "router",
-  role: "symbolic_evolution_router",
-  lineage: "PulseRouter-v16-IMMORTAL-DUALHASH-INTEL → v24-IMMORTAL-INTEL++-DUALHASH",
-
-  evo: {
-    symbolicCore: true,
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    deterministic: true,
-    deterministicField: true,
-    dualHashReady: true,
-    routerIntelligenceReady: true,
-    cosmosAware: true,
-    advantageAware: true,
-    evolutionAware: true,
-    multiInstanceReady: true
-  },
-
-  contract: {
-    input: ["PulseEnvelope"],
-    output: [
-      "TargetOrgan",
-      "RoutingDecisionMeta",
-      "RoutingIntelligence",
-      "RoutingHealingState"
-    ]
-  }
-};
-*/
-
-// ============================================================================
-// ROLE META
-// ============================================================================
-export const PulseRole = {
-  type: "Router",
-  subsystem: "PulseRouter",
-  layer: "RoutingSpine",
-  version: "v24-IMMORTAL-INTEL++-DUALHASH",
-  identity: "PulseRouter-v24-IMMORTAL-INTEL++-DUALHASH",
-
-  evo: {
-    driftProof: true,
-    patternAware: true,
-    lineageAware: true,
-    pageAware: true,
-    cosmosAware: true,
-    modeAware: true,
-    identityAware: true,
-    advantageAware: true,
-    deterministicRouting: true,
-    memoryReady: true,
-    futureEvolutionReady: true,
-    dualHashReady: true,
-    routerIntelligenceReady: true,
-    evolutionAware: true
-  },
-
-  loopTheory: {
-    routingCompletion: true,
-    allowLoopfieldPropulsion: true,
-    pulseComputeContinuity: true,
-    errorRouteAround: true
-  },
-
-  pulseContract: "Pulse-v1/v2/v3",
-  meshContract: "PulseMesh-v16",
-  sendContract: "PulseSend-v16"
-};
-
-export const PulseRouterMeta = Object.freeze({
-  layer: "PulseRouter",
-  role: "PULSE_ROUTER_ORGAN",
-  version: "v24-IMMORTAL-INTEL++-DUALHASH",
-  identity: "PulseRouter-v24-IMMORTAL-INTEL++-DUALHASH",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroEval: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: false,
-    healingMetadataAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-
-    worldLensAware: false,
-    multiInstanceReady: true
-  }),
-
-  contract: Object.freeze({
-    input: ["PulseEnvelope"],
-    output: [
-      "TargetOrgan",
-      "RoutingDecisionMeta",
-      "RoutingIntelligence",
-      "RoutingHealingState"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL MEMORY — deterministic, local, safe

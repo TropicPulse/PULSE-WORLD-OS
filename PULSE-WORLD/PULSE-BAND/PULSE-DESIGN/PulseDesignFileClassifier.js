@@ -1,119 +1,26 @@
-/*
-===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseDesign.Anatomist",
-  version: "v17-IMMORTAL",
-  layer: "pulse_design",
-  role: "structural_classifier_and_identity_mapper",
-  lineage: "Anatomist-v7.1 → v10.4 → v12.3 → v14-Immortal → v17-IMMORTAL",
+// ============================================================================
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-DESIGN/fileClassifier-v17-IMMORTAL.js
+// LAYER: THE ANATOMIST (Structural Classifier + Identity Mapper + Evolutionary Morphology)
+// ============================================================================
 
-  evo: {
-    structuralClassifier: true,
-    identityMapper: true,
-    morphologyEngine: true,
-    patternRegistry: true,
-    signatureBased: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    bandAware: true,
-    worldLayerReady: true,
-    translatorReady: true,
-    specsGenomeAware: true,
-    runtimeAware: true,
-    schedulerAware: true,
-    substrateAware: true,
-    translatorRNAAware: true,
-    translatorSkeletalAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true
-  },
-
-  contract: {
-    always: [
-      "PulseDesign.RepoWalker",
-      "PulseDesign.ManifestBuilder",
-      "PulseDesign.ManifestWriter"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "dynamicImport",
-      "eval",
-      "Function"
-    ]
-  }
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseDesign.Anatomist",
-  layer: "pulse_design",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: ["filePath", "content", "options"],
-  produces: [
-    "path",
-    "ext",
-    "type",
-    "usesPulseBand",
-    "usesHealing",
-    "dataSources",
-    "classification",
-    "bands",
-    "signals",
-    "signature",
-    "genomeHints",
-    "translatorHints"
-  ],
-
-  sideEffects: "none",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
-FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-DESIGN/fileClassifier-v17-IMMORTAL.js
-LAYER: THE ANATOMIST (Structural Classifier + Identity Mapper + Evolutionary Morphology)
-===============================================================================
-
-ROLE (v17+):
-  THE ANATOMIST — Evolvable structural classifier for Pulse OS files.
-  • Inspects file path + content and builds a FileSignature.
-  • Uses a pattern registry to determine identity, type, and structural metadata.
-  • Emits genome-aware, translator-aware, runtime-aware hints.
-  • Provides deterministic classification for ManifestBuilder + Architect + Runtime.
-  • Acts as the “morphology lab” of the digital organism.
-
-PURPOSE (v17+):
-  • Make file identity AI‑readable + human‑readable + genome‑aligned.
-  • Detect file type (page, component, layout, api, util, config, hook, store, organ, runtime, scheduler, substrate, translator, specs, world).
-  • Detect PulseBand usage, healing hooks, data sources, and dual‑band roles.
-  • Surface evolutionary structural patterns via a registry (not hardcoded guesses).
-  • Provide prewarm/caching hints for higher‑level organs.
-
-CONTRACT:
-  • PURE FUNCTION — no filesystem access.
-  • READ‑ONLY — no writes.
-  • NO eval(), NO Function(), NO dynamic imports.
-  • NO executing user code.
-  • NO network calls.
-  • Deterministic output only.
-
-SAFETY:
-  • v17+ upgrade is PURE + STRUCTURAL + GENOME‑AWARE.
-  • All behavior is deterministic and organism‑safe.
-===============================================================================
-*/
-
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 import path from "path";
+const Identity = OrganismIdentity(import.meta.url);
+
+// ============================================================================
+//  META BLOCK — v17 IMMORTAL (from genome)
+// ============================================================================
+export const PulseDesignAnatomistMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v17 IMMORTAL
+// ============================================================================
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL TYPES (conceptual, not enforced at runtime)
@@ -160,6 +67,7 @@ import path from "path";
 // ============================================================================
 // v17 PATTERN REGISTRY — Evolvable Structural Patterns
 // ============================================================================
+
 
 const TYPE_PATTERNS = [
   // -----------------------------

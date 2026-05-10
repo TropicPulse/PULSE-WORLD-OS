@@ -19,28 +19,21 @@
 //   • Drift-proof: stable across versions.
 //   • CNS-aware + advantage-aware, but never controlling them.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const PulseSignalFactoringGuideMeta = Object.freeze({
-  id: "PulseSignalFactoringGuide-v20++-ADVANTAGE",
-  version: "20.1.0",
-  role: "signal_factoring_guide",
-  mind: false,
-  description:
-    "IMMORTAL INTEL + ADVANTAGE atlas for Mesh/Earn factoring. CNS-aware, ER-ready, chunk/cache/GPU-hinting.",
-  identity: {
-    type: "organ",
-    name: "PulseSignalFactoringGuide",
-    band: "intel",
-    mind: false,
-    immutable: true
-  },
-  schema: {
-    snapshotType: "signal_factoring_guide",
-    categories: ["RAW_AI"],
-    erReady: true
-  }
-});
-
+// 2 — EXPORT GENOME METADATA
+export const PulseSignalFactoringGuideMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // HASH HELPERS (INTEL‑aligned)
 // ============================================================================

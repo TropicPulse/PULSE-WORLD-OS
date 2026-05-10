@@ -3,35 +3,36 @@
 //  Genius‑Without‑Ego • Adaptive • Harmonic • Deterministic • Drift‑Proof
 //  INTERNAL ENGINE (NOT AN ORGAN, NOT AN ARCHETYPE)
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiToneEngine",
-  version: "v15-Immortal",
-  layer: "ai_core",
-  role: "tone_engine",
-  lineage: "aiToneEngine-v11 → v15-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    toneEngine: true,
-    toneMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiToneRouter", "aiEmotionEngine", "aiExperience"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+// export const OrganismKernelMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
+
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 export const aiToneEngine = {
 

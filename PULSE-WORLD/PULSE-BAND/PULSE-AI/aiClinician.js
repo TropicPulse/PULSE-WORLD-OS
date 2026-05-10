@@ -3,92 +3,36 @@
 //  Diagnostic Interpreter • Triage Specialist • System Health Auditor
 //  PURE OBSERVATION. ZERO MEDICAL ADVICE. ZERO MUTATION.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiClinician",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "clinical_pattern_explainer",
-  lineage: "aiClinician-v11 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    clinicalPatterns: true,
-    educationalOnly: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiDoctor", "aiDoctorArchitect", "aiContext"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-export const ClinicianMeta = Object.freeze({
-  layer: "PulseAIClinicianFrame",
-  role: "CLINICIAN_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiClinician-v12.3-Evo+",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const ClinicianMeta = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    binaryAware: true,
-    symbolicAware: true,
-    diagnosticsAware: true,
-    routingAware: true,
-    contextAware: true,
-    observerOnly: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    identitySafe: true,
-    readOnly: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    packetAware: true,
-    multiInstanceReady: true,
-    clinicianArteryAware: true,
-    epoch: "12.3-Evo+"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  contract: Object.freeze({
-    purpose: [
-      "Interpret AI diagnostics state",
-      "Summarize mismatches, drift, and slowdown causes",
-      "Provide safe, identity-free admin snapshots",
-      "Support debugging and system introspection",
-      "Act as a non-medical fact-checker for AI behavior"
-    ],
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    never: Object.freeze([
-      "diagnose medical conditions",
-      "interpret real scans as medical advice",
-      "modify system architecture",
-      "mutate identity or permissions",
-      "introduce randomness",
-      "override routing or persona logic"
-    ]),
-
-    always: Object.freeze([
-      "stay observer-only",
-      "stay deterministic",
-      "stay identity-safe",
-      "stay schema-aware",
-      "emit deterministic clinician packets"
-    ])
-  })
-});
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS

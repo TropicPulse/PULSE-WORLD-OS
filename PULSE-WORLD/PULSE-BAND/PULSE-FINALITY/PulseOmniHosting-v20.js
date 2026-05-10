@@ -16,103 +16,23 @@
  *   - Adds host trend hints (symbolic “getting hotter/colder”).
  *   - Still: pure compute, no IO, no randomness, no host mutation.
  */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOmniHosting",
-  version: "v20-Immortal-INTELLHOST",
-  layer: "hosting",
-  role: "omni_hosting_engine",
-  lineage: "v12.3-Presence-Evo+ → v16-Immortal-GPU+-CI → v20-Immortal-INTELLHOST",
+// 2 — EXPORT GENOME METADATA
+export const PulseOmniHostingMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
-  evo: {
-    hostingEngine: true,
-    capabilityMatrix: true,
-    placementPlanner: true,
-    failoverPlanner: true,
-    hostEligibility: true,
-    hostTrendModeling: true,
-    hostScoring: true,
-    hostTiering: true,
-
-    gpuAware: true,
-    ciAware: true,
-    binaryDeltaAware: true,
-    continuanceAware: true,
-    worldAware: true,
-    tenantAware: true,
-    systemAgeAware: true,
-
-    intellHashAware: true,
-    packetSignatureAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseContinuance",
-      "PulseSchema",
-      "PulseCoreMemory"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyOmniHosting"
-    ]
-  }
-}
-*/
-
-import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory-v24.js";
-
-// ============================================================================
-// META EXPORT
-// ============================================================================
-export const PulseOmniHostingMeta = Object.freeze({
-  layer: "PulseOmniHosting",
-  role: "OMNIHOSTING_PHYSICS_ORGAN",
-  version: "20-Immortal-INTELLHOST",
-  identity: "PulseOmniHosting-v20-Immortal-INTELLHOST",
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    hostAgnostic: true,
-    multiInstanceReady: true,
-    zeroBackend: true,
-    zeroNetwork: true,
-    reversiblePlacement: true,
-    noRandomness: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    fallbackBandAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-
-    gpuAware: true,
-    ciAware: true,
-    continuanceAware: true,
-    binaryDeltaAware: true,
-    worldAware: true,
-    tenantAware: true,
-    systemAgeAware: true,
-
-    hostScoring: true,
-    hostTiering: true,
-    arteryMetrics: true,
-    arteryHistory: true,
-    intellHash: true,
-
-    epoch: "20-Immortal-INTELLHOST"
-  })
-});
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // ============================================================================
 // CORE MEMORY — IMMORTAL HOT MEMORY ORGAN

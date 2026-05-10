@@ -5,92 +5,36 @@
 //  PURE BINARY. ZERO NETWORK. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiGenome",
-  version: "v16-Immortal++",
-  layer: "ai_core",
-  role: "ai_genome",
-  lineage: "aiGenome-v11 → v11.3-Evo → v14-Immortal → v16-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    genome: true,
-    dnaMapping: true,
-    lineageTracking: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    trustFabricAware: true,
-    juryAware: true,
-    arteryAware: true,
-    packetAware: true,
-    windowAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const GenomeMeta = Identity.OrganMeta;
 
-    hybridMode: true,
-    genomeCache: true,
-    deltaAware: true,
-    fingerprintAccelerated: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    bluetoothReady: true,
-    multiInstanceReady: true,
-    readOnly: true
-  },
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  contract: {
-    always: ["aiEvolution", "aiEvolutionEngine", "aiEvolutionary", "aiTrustFabric", "aiJuryFrame"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+export const surfaceMeta = Identity.surfaceMeta;
 
-export const GenomeMeta = Object.freeze({
-  layer: "BinaryGenetics",
-  role: "BINARY_GENOME",
-  version: "16-Immortal++",
-  identity: "aiBinaryGenome-v16-Immortal++",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    dualband: true,
-    packetAware: true,
-    windowAware: true,
-    arteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    evolutionAware: true,
-    lineageAware: true,
-    ancestryAware: true,
-    memoryAware: true,
-    registryAware: true,
-
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    hybridMode: true,
-    genomeCache: true,
-    deltaAware: true,
-    fingerprintAccelerated: true,
-
-    bluetoothReady: true,
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "16-Immortal++"
-  })
-});
 
 // ============================================================================
 // PACKET EMITTER

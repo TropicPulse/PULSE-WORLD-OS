@@ -24,50 +24,21 @@
 // • Zero imports — CNS injects dependencies.
 // • Drift-proof, deterministic, multi-instance-ready.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshSkin",
-  version: "v14.9-MESH-SKIN",
-  layer: "mesh",
-  role: "mesh_surface_and_boundary_layer",
-  lineage: "PulseMesh-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    skin: true,                     // This IS the mesh skin organ
-    boundaryLayer: true,            // Boundary + surface metadata
-    metadataOnly: true,
-    deterministic: true,
-    driftProof: true,
-    presenceAware: true,
-    meshAware: true,
-    dualBand: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshImmuneMembrane",
-      "PulseMeshAwareness",
-      "PulseMeshAura"
-    ],
-    never: [
-      "legacyMeshSkin",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-// ============================================================================
-// FILE: /organs/skin/PulseMeshSkin-v15-Evo-Immortal.js
-// [pulse:mesh] PULSE_OS_SKIN_LAYER v15-Evo-Immortal  // silver-white
-// Boundary Membrane • Entry–Exit Normalization • Deterministic Skin
-// Zero-Trust Surface • Presence/Band-Aware • Dual-Mode Ready
-// ============================================================================
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 export function createPulseSkin({ log, warn, error }) {
 
   // ==========================================================================

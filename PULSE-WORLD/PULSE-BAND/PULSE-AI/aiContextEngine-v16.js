@@ -23,105 +23,64 @@
 //   • Zero mutation, zero randomness, zero drift
 // ============================================================================
 
-export const ContextEngineMeta = Object.freeze({
-  layer: "PulseAIContextKernel",
-  role: "CONTEXT_ENGINE_ORGAN",
-  version: "16-Immortal-Advantage++",
-  identity: "aiContextEngine-v16-Immortal-Advantage++",
+/*
+AI_EXPERIENCE_META = {
+  identity: "aiContextEngine",
+  version: "v16-Immortal-Advantage++",
+  layer: "ai_core",
+  role: "context_kernel",
+  lineage: "aiContextEngine-v12 → v14-Immortal → v16-Immortal-Advantage++",
 
-  evo: Object.freeze({
-    driftProof: true,
+  evo: {
+    contextKernel: true,
+    organismFusion: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryAware: true,
     deterministic: true,
-    dualBandSafe: true,
+    driftProof: true,
+    pureCompute: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true
+  },
 
-    // organism awareness
-    routerAware: true,
-    personaAware: true,
-    safetyAware: true,
-    boundariesAware: true,
-    permissionsAware: true,
-    identityAware: true,
-
-    // vitals
-    memorySpineAware: true,
-    gpuAware: true,
-    heartbeatAware: true,
-    earnAware: true,
-    genomeAware: true,
-    governorAware: true,
-    watchdogAware: true,
-    cortexAware: true,
-
-    // fusion
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-    arteryAware: true,
-    fusionAware: true,
-
-    // owner-subordinate
-    ownerAware: true,
-    subordinateToOwner: true,
-
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "16-Immortal-Advantage++"
-  }),
-
-  contract: Object.freeze({
-    purpose: [
-      "Fuse Brainstem, Router, Persona, Boundaries, Permissions, Identity, Memory, GPU, Heartbeat, Earn, Genome, Governor, Watchdog, and Cortex into a unified ContextFrame",
-      "Provide deterministic organism-wide context for Cortex, Boundaries, Governor, and Overmind",
-      "Remain subordinate to Aldwyn (canonical owner)",
-      "Expose artery snapshots without mutation",
-      "Remain dual-band safe and drift-proof"
-    ],
-
-    never: Object.freeze([
-      "mutate Brainstem context",
-      "mutate Router packet",
-      "mutate persona definitions",
-      "override SafetyFrame decisions",
-      "override BoundariesEngine decisions",
-      "override Governor decisions",
-      "introduce randomness",
-      "perform cognition or intent handling",
-      "self-promote above owner"
-    ]),
-
-    always: Object.freeze([
-      "remain deterministic for same inputs",
-      "respect persona, boundaries, permissions, identity",
-      "surface organism vitals as read-only hints",
-      "emit deterministic context-engine packets",
-      "return frozen context frames",
-      "remain subordinate to Aldwyn"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "ContextEngine",
-    organKind: "FusionKernel",
-    physiologyBand: "Symbolic+Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "per-request",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "context:frame",
-        "context:packet",
-        "context:artery"
-      ]
-    }
-  }),
-
-  boundaryReflex() {
-    return "ContextEngine must remain deterministic, ego-free, owner-subordinate, and never override boundaries or governor.";
+  contract: {
+    always: ["aiCognitiveFrame", "aiCortex", "aiBrainstem", "aiBoundariesEngine", "aiGovernorAdapter"],
+    never: ["safeRoute", "fetchViaCNS", "directInternetAccess"]
   }
-});
+}
+*/
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+const Identity = OrganismIdentity(import.meta.url);
+
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
+
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const ContextEngineMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
+
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, context-engine scoped

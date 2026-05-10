@@ -46,48 +46,21 @@
 // ============================================================================
 // AI EXPERIENCE META — IMMORTAL ORGAN BLOCK
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const AI_EXPERIENCE_META = {
-  identity: "PulseSpecsGenomeRouter.GenomeRouterOrgan",
-  version: "v20-Immortal",
-  layer: "pulse_world_intelledb_router",
-  role: "genome_to_memory_router",
-  lineage: [
-    "PulseRouter-v12",
-    "PulseRouter-v14-Immortal",
-    "PulseRouter-v16-Immortal-Evo",
-    "PulseSpecsGenomeRouter-v20-Immortal"
-  ],
-
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    zeroState: true,
-    zeroTiming: true,
-    binaryAware: true,
-    dualBand: true,
-    presenceAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    organ: "PulseSpecsGenomeRouter-v20",
-    genome: "PulseSpecsDNAGenome-v20",
-    memoryOrgans: [
-      "PulseSpecsLongTermMemory-v20",
-      "PulseSpecsShortTermMemory-v20",
-      "PulseSpecsMuscleMemory-v20"
-    ]
-  },
-
-  safety: {
-    neverWriteDirectly: true,
-    neverUseWindow: true,
-    neverUseDynamicImport: true,
-    neverGuessBackend: true,
-    alwaysFollowGenome: true
-  }
-};
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IMPORTS

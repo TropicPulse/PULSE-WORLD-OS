@@ -5,95 +5,21 @@
 //  HYBRID‑IMMORTAL IDENTITY (LOCAL + REMOTE + PROXY‑MODE + TRI‑ENV CONTEXT)
 //  PURE VERIFICATION. ZERO DRIFT. A‑B‑A BAND + BINARY/WAVE + PRESENCE/HARMONICS.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSIdentityBBB",
-  version: "v20-Immortal-Hybrid",
-  layer: "identity_gate",
-  role: "blood_brain_barrier_identity",
-  lineage: "PulseOS-v20-Immortal",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    // Core identity laws
-    identityGate: true,
-    trustFilter: true,
-    centralizedIdentityAuthority: true,
-    lineageAuthority: true,
-    modeAuthority: true,
-    bandAuthority: true,
-
-    // IMMORTAL guarantees
-    deterministic: true,
-    driftProof: true,
-    zeroRandomness: true,
-    zeroNondeterminism: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    multiInstanceReady: true,
-
-    // A‑B‑A surfaces
-    abaBandAware: true,
-    binaryFieldEmitter: true,
-    waveFieldEmitter: true,
-
-    // v20 presence/harmonics
-    presenceAware: true,
-    harmonicsAware: true,
-    dualBandAware: true,
-    dualBandCompatible: true,
-    passivePrewarm: true,
-    passiveCache: true,
-    passiveChunk: true,
-    passiveRemember: true,
-
-    // Hybrid‑Immortal identity
-    hybridIdentity: true,
-    localIdentityAware: true,
-    remoteIdentityAware: true,
-
-    // Proxy‑Mode identity (FIRST‑CLASS)
-    proxyModeIdentityAware: true,
-    proxyModeIdentityFirstClass: true,
-    proxyModeConfidenceAware: true,
-
-    // Tri‑environment identity
-    triEnvIdentityAware: true,
-    cortexIdentityAware: true,
-    somaticIdentityAware: true,
-    sensoryIdentityAware: true,
-
-    // Evolutionary awareness
-    patternAware: true,
-    shapeAware: true,
-    evolutionAware: true,
-
-    // Environment
-    worldLensAware: false
-  },
-
-  contract: {
-    input: [
-      "IdentityPayload",
-      "IdentityMode",
-      "DualBandContext",
-      "LineageContext",
-      "ProxyModeIdentityContext",
-      "TriEnvIdentityContext"
-    ],
-    output: [
-      "IdentitySnapshot",
-      "IdentitySignature",
-      "IdentityBandSignature",
-      "IdentityBinaryField",
-      "IdentityWaveField",
-      "IdentityPresenceField",
-      "IdentityDiagnostics",
-      "IdentityHealingState"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================

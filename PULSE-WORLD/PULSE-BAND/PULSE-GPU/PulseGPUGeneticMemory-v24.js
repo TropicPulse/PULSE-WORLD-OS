@@ -28,117 +28,20 @@
 //  • Self-repair-ready: entries include OS metadata
 //  • Deterministic: same inputs → same genetic memory
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUGeneticMemory",
-  version: "v24-Immortal++",
-  layer: "gpu_brain",
-  role: "gpu_genetic_memory",
-  lineage: "PulseGPU-v24-Immortal++",
-
-  evo: {
-    gpuCompute: true,
-    gpuGeneticMemory: true,
-    gpuTemplateStore: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // Awareness
-    binaryAware: true,
-    symbolicAware: true,
-    dualBandAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    presenceAware: true,
-    gameAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    // CI + Earn
-    computerIntelligenceAware: true,
-    earnAware: true,
-    earnCompatibility: "Earn-v24-GPU",
-
-    // Contracts
-    coreMemoryAware: true,
-    coreMemoryContract: "PulseCoreMemory-v24-Immortal++",
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++"
-  },
-
-  contract: {
-    always: [
-      "PulseGPUBrain",
-      "PulseGPUCognitiveLayer",
-      "PulseGPUDriveCenter-v24"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyGeneticMemory"
-    ]
-  }
-}
-*/
-
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const GENETIC_MEMORY_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
-// ============================================================================
-// CONTEXT METADATA — Genetic Memory Identity (v24-Immortal++)
-// ============================================================================
-const GENETIC_MEMORY_CONTEXT = {
-  layer: "PulseGPUGeneticMemory",
-  role: "DNA_ARCHIVE",
-  purpose:
-    "Long-horizon genetic memory for configs, execution signatures, patterns, lineage, correlations, and CI fields",
-  context:
-    "Stores lineage, binary-mode outcomes, dispatch signatures, shape signatures, pattern stats, advantage vectors, and Earn hints",
-  target: "full-gpu+binary+symbolic",
-  version: "24-Immortal++",
-  selfRepairable: true,
-
-  evo: {
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseSend24Ready: true,
-
-    dualModeEvolution: true,
-    binaryAware: true,
-    symbolicAware: true,
-    dualBandAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    presenceAware: true,
-    gameAware: true,
-
-    // v24 IMMORTAL++ contracts
-    coreMemoryAware: true,
-    coreMemoryContract: "PulseCoreMemory-v24-Immortal++",
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    earnCompatibility: "Earn-v24-GPU",
-
-    // Legacy compatibility
-    legacyRoutingContract: "PulseSend-v16",
-    legacyGPUOrganContract: "PulseGPU-v16-Immortal",
-    legacyEarnCompatibility: "Earn-v4-Presence"
-  }
-};
 
 // ============================================================================
 // Utility: stable JSON stringify for hashing

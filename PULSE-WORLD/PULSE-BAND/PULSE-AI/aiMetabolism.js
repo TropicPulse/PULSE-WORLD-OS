@@ -22,87 +22,35 @@
 //      • metabolic regulator
 //      • binary energy artery source
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiMetabolism",
-  version: "v15-Immortal",
-  layer: "ai_core",
-  role: "ai_metabolic_engine",
-  lineage: "aiMetabolism-v11 → v12.3-Presence → v15-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    metabolismEngine: true,
-    energyModel: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiHeartbeat", "aiNervousSystem", "aiReflex", "aiMetabolicHormones"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const MetabolismMeta = Identity.OrganMeta;
 
-// ---------------------------------------------------------
-//  META BLOCK — v15.0-Immortal
-// ---------------------------------------------------------
-export const MetabolismMeta = Object.freeze({
-  layer: "BinaryCore",
-  role: "BINARY_METABOLISM_ENGINE",
-  version: "15.0-Immortal",
-  identity: "aiBinaryMetabolism-v15.0-Immortal",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
-    pipelineAware: true,
-    schedulerAware: true,
-    vitalsAware: true,
-    energyAware: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    dualband: true,
-    packetAware: true,
-    windowAware: true,      // window-safe metabolic snapshots
-    arteryAware: true,      // metabolic artery v3
-    spiralAware: true,      // soft spiral warnings, non-blocking
+export const surfaceMeta = Identity.surfaceMeta;
 
-    multiInstanceReady: true,
-    epoch: "v15.0-Immortal"
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  contract: Object.freeze({
-    purpose:
-      "Measure load, compute metabolic metrics, and emit binary metabolic packets to maintain internal balance and expose metabolic artery v3 to the organism.",
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    never: Object.freeze([
-      "introduce randomness",
-      "mutate external organs",
-      "interpret symbolic state",
-      "override pipeline behavior",
-      "override scheduler behavior",
-      "block the organism"
-    ]),
-
-    always: Object.freeze([
-      "compute load deterministically",
-      "emit binary metabolic packets",
-      "track load history",
-      "maintain metabolic artery metrics v3",
-      "remain pure and minimal",
-      "treat all inputs as read-only"
-    ])
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------
 //  GLOBAL METABOLIC ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)

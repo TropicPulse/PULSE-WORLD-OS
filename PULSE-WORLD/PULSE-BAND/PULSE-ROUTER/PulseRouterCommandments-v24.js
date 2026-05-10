@@ -15,47 +15,21 @@
 //   • Zero eval, zero dynamic imports, zero user code.
 //   • No mutation of caller payloads; only internal store state.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseRouterCommandments",
-  version: "v24-IMMORTAL-INTEL++-DualHash",
-  layer: "routing",
-  role: "router_commandments_spine",
-  lineage: "PulseRouterCommandments-v16 → v24-IMMORTAL-INTEL++-DualHash",
-
-  evo: {
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    cosmosAware: true,
-    patternAware: true,
-    lineageAware: true,
-    pageAware: true,
-    binaryAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true
-  },
-
-  contract: {
-    input: [
-      "RouterCommandmentsSetPayload",
-      "RouterCommandmentsGetPayload"
-    ],
-    output: [
-      "RouterCommandmentsEntry",
-      "RouterCommandmentsSnapshot",
-      "RouterCommandmentsIntel",
-      "RouterCommandmentsHealingState"
-    ]
-  }
-};
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HASH / INTEL HELPERS — v24 IMMORTAL INTEL

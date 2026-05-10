@@ -3,99 +3,35 @@
 //  Dual‑Band Context • ABA Anchor • Drift & Diagnostics Surface
 //  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiContext",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "context_frame_builder",
-  lineage: "aiContext-v9 → v11 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    contextFrame: true,
-    memoryShaping: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiContextEngine", "aiCortex", "aiBrainstem"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-export const COGNITIVE_FRAME_META = Object.freeze({
-  layer: "PulseAICognitiveFrame",
-  role: "COGNITIVE_FRAME_ORGAN",
-  version: "12.3-Presence",
-  identity: "aiCognitiveFrame-v12.3-Presence",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const COGNITIVE_FRAME_META = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    personaAware: true,
-    boundaryAware: true,
-    permissionAware: true,
-    binaryAware: true,
-    symbolicAware: true,
-    routingAware: true,
-    diagnosticsAware: true,
-    abstractionAware: true,
-    driftAware: true,
-    repairAware: true,
-    frustrationAware: true,
-    windowAware: true,
-    intentAware: true,
-    contextAware: true,
-    fusionAware: true,
-    organismAware: true,
-    safetyFrameAware: true,
-    experienceFrameAware: true,
-    overmindAware: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    identitySafe: true,
-    readOnly: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    multiInstanceReady: true,
-    epoch: "12.3-Presence"
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  presence: Object.freeze({
-    organId: "CognitiveFrame",
-    organKind: "Context",
-    physiologyBand: "Symbolic+Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "per-request",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "frame:created",
-        "diagnostic:mismatch",
-        "diagnostic:missingField",
-        "diagnostic:slowdown",
-        "diagnostic:drift",
-        "ABA:setStablePoint",
-        "ABA:resetToStablePoint",
-        "abstraction:updateLevel",
-        "repair:next",
-        "window:explainSafe",
-        "frustration:soothe"
-      ]
-    }
-  })
-});
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, frame-scoped

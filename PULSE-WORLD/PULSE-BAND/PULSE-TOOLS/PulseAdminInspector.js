@@ -20,92 +20,21 @@
 //   - Tier‑aware escalation (Proxy → Mesh → NodeAdmin‑EVO → PresenceCore).
 //   - ZERO randomness. ZERO mutation of inputs. PURE symbolic inspection.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseAdminInspector",
-  version: "v16-Immortal-GPU+-CI-Delta",
-  layer: "scanner",
-  role: "admin_inspector_organ",
-  lineage: "PulseAdminInspector-v11-Evo → v12.3-Evo → v16-Immortal-GPU+-CI-Delta",
-
-  evo: {
-    inspectorOrgan: true,
-    presenceInspector: true,
-    gpuInspector: true,
-    ciInspector: true,
-    deltaInspector: true,
-    harmonicInspector: true,
-    waveInspector: true,
-    loopInspector: true,
-    spinInspector: true,
-    energyInspector: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    dualbandSafe: true,
-    gpuAware: true,
-    ciAware: true,
-    binaryDeltaAware: true,
-    continuanceAware: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseContinuanceCoreMemory",
-      "PulseOmniHostingCoreMemory",
-      "PulseSchemaCoreMemory",
-      "PulseGPUWisdomCortex"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyAdminInspector"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// META
-// ============================================================================
-
-export const PulseAdminInspectorMeta = Object.freeze({
-  layer: "PulseAdminInspector",
-  role: "ADMIN_INSPECTOR_ORGAN",
-  version: "16-Immortal-GPU+-CI-Delta",
-  identity: "PulseAdminInspector-v16-Immortal-GPU+-CI-Delta",
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    quadMode: true,
-    multiMode: true,
-    dualbandSafe: true,
-
-    presenceAware: true,
-    gpuAware: true,
-    ciAware: true,
-    binaryDeltaAware: true,
-    continuanceAware: true,
-
-    arteryAware: true,
-    escalationAware: true,
-    repairHintAware: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    epoch: "16-Immortal-GPU+-CI-Delta"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PulseAdminInspectorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL HELPERS

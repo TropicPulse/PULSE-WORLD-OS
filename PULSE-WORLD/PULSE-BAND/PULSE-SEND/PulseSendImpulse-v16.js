@@ -24,89 +24,21 @@
 //  • Zero timestamps.
 //  • Zero mutation outside instance.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSendImpulse",
-  version: "v16-Immortal-ORGANISM",
-  layer: "frontend",
-  role: "send_impulse",
-  lineage: "PulseSendImpulse-v12.3 → v14.4-Immortal → v16-Immortal-ORGANISM",
-
-  evo: {
-    spark: true,
-    zeroCompute: true,
-    deterministic: true,
-    presenceAware: true,
-    dualBand: true,
-    safeRouteFree: true,
-    immortalIntel: true,
-    dualHashSurfaces: true
-  },
-
-  contract: {
-    always: [
-      "PulseSendSystem",
-      "PulseSendReturn"
-    ],
-    never: [
-      "legacyImpulse",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacySend"
-    ]
-  }
-}
-*/
-
-
-// ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Impulse Organ (v16-Immortal)
-// ============================================================================
-export const PulseRole = {
-  type: "Messenger",
-  subsystem: "PulseSend",
-  layer: "Impulse",
-  version: "16-Immortal-ORGANISM",
-  identity: "PulseSendImpulse-v16-Immortal-ORGANISM",
-
-  evo: {
-    driftProof: true,
-    reflexReady: true,
-    sparkReady: true,
-    patternAware: true,
-    lineageAware: true,
-    modeAware: true,
-    identityAware: true,
-    multiOrganReady: true,
-    deterministicImpulseFlow: true,
-    futureEvolutionReady: true,
-
-    unifiedAdvantageField: true,
-    pulseSend11Ready: true,
-
-    diagnosticsReady: true,
-    signatureReady: true,
-    impulseSurfaceReady: true,
-
-    // Binary-aware impulse surface
-    binaryAwareImpulseReady: true,
-
-    // cacheChunk / prewarm / presence
-    cacheChunkAware: true,
-    prewarmAware: true,
-    multiPresenceAware: true,
-
-    // degradation / dual-band / immortal meta
-    degradationAware: true,
-    dualBandAware: true,
-    immortalMetaAware: true,
-
-    // v16 IMMORTAL
-    dualHashSurfaces: true,
-    impulseIntelligenceReady: true
-  }
-};
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================

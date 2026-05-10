@@ -7,81 +7,21 @@
 //    • Return Intelligence (IMMORTAL-safe, logic-only)
 //    • Ancestry + Advantage echo preserved
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSendReturn",
-  version: "v16-Immortal-ORGANISM",
-  layer: "frontend",
-  role: "send_return",
-  lineage: "PulseOS-v12 → v14.4-Immortal → v16-Immortal-ORGANISM",
-
-  evo: {
-    deterministic: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    dualHashSurfaces: true,
-    returnIntelligence: true
-  },
-
-  contract: {
-    always: [
-      "PulseSendImpulse",
-      "PulseSendSystem"
-    ],
-    never: [
-      "legacyReturn",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseRole = {
-  type: "Messenger",
-  subsystem: "PulseSend",
-  layer: "Return",
-  version: "16-Immortal-ORGANISM",
-  identity: "PulseSendReturn-v16-Immortal-ORGANISM",
-
-  evo: {
-    driftProof: true,
-    returnArcReady: true,
-    patternAware: true,
-    lineageAware: true,
-    modeAware: true,
-    multiOrganReady: true,
-    deterministicImpulseFlow: true,
-    futureEvolutionReady: true,
-
-    unifiedAdvantageField: true,
-    pulseSend11Ready: true,
-
-    diagnosticsReady: true,
-    signatureReady: true,
-    returnSurfaceReady: true,
-
-    // Binary-aware return surface:
-    binaryAwareReturnReady: true,
-    binaryFrontEndReady: true,
-    dualStackReady: true,
-
-    // Movement/packet aware
-    movementPacketAware: true,
-
-    // v16:
-    dualHashSurfaces: true,
-    returnIntelligenceReady: true
-  },
-
-  routingContract: "PulseRouter-v14",
-  meshContract: "PulseMesh-v14",
-  pulseContract: "Pulse-v1/v2/v3",
-  gpuOrganContract: "PulseGPU-v14",
-  earnCompatibility: "PulseEarn-v14"
-};
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================

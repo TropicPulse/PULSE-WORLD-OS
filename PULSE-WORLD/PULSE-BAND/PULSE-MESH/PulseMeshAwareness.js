@@ -29,42 +29,19 @@
 //  • Zero imports — CNS injects everything
 //  • Presence-aware and band-aware only via metadata
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshAwareness",
-  version: "v14.9-MESH-AWARENESS",
-  layer: "mesh",
-  role: "mesh_sensory_awareness",
-  lineage: "PulseMesh-v14",
-
-  evo: {
-    meshAware: true,                // Reads mesh topology + hops
-    presenceAware: true,            // Reads presence field
-    binaryAware: true,              // Binary mesh signals
-    dualBand: true,                 // Symbolic + binary sensing
-    deterministic: true,            // No randomness in awareness
-    driftProof: true,               // Awareness must be stable
-    zeroMutationOfInput: true,      // Never mutate mesh/presence objects
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshPresenceRelay",
-      "PulsePresence",
-      "PulseMeshAura"
-    ],
-    never: [
-      "legacyMeshAwareness",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  FACTORY — ALL DEPENDENCIES INJECTED BY THE CNS BRAIN

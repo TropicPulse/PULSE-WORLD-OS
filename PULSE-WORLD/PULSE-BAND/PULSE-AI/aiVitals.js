@@ -69,97 +69,36 @@
  *     bitLength: <number>
  *   }
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiVitals",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "vitals_monitor",
-  lineage: "aiVitals-v10 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    vitalsMonitor: true,
-    pressureModel: true,
-    loadModel: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiMetabolism", "aiNervousSystem", "aiReflex"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const VitalsMeta = Identity.OrganMeta;
 
-export const VitalsMeta = Object.freeze({
-  type: "Binary",
-  subsystem: "aiBinaryVitals",
-  layer: "BinaryNervousSystem",
-  role: "BINARY_VITALS_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiBinaryVitals-v12.3-Evo+",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: false,
-    relayOnly: false,
-    analysisAware: true,
-    schemaAware: true,
-    lineageAware: true,
-    slowdownAware: true,
-    tourismAware: false,
-    readOnly: true,
-    mutationSafe: true,
-    nonBlocking: true,
-    multiInstanceReady: true,
-    temporalAware: true,
-    arteryAware: true,
-    healthFusionAware: true,
-    epoch: "v12.3-Evo+"
-  }),
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  contract: Object.freeze({
-    purpose:
-      "Evaluate organism health across memory, pipeline, reflex, heartbeat, scheduler, evolution drift, and fused subsystem arteries, producing deterministic binary vitals packets with layered organism health artery v3.",
+export const surfaceMeta = Identity.surfaceMeta;
 
-    never: Object.freeze([
-      "mutate external organs",
-      "generate symbolic state as primary output",
-      "introduce randomness",
-      "override pipeline decisions",
-      "override reflex decisions",
-      "block organism execution",
-      "perform cognition",
-      "perform intent logic"
-    ]),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    always: Object.freeze([
-      "treat all inputs as read-only",
-      "emit binary-only vitals packets",
-      "apply deterministic health rules",
-      "compute artery metrics v3",
-      "log deterministic steps when tracing",
-      "remain non-blocking",
-      "remain drift-proof"
-    ])
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  boundaryReflex() {
-    return "Binary Vitals is read-only, deterministic, and binary-only — it fuses health arteries but never mutates or governs other organs.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 // ============================================================================
 //  ARTERY HELPERS — v3 (PURE, STATELESS)

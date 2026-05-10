@@ -14,85 +14,21 @@
 // No payload data, only relationship metadata.
 // Graph is symbolic‑primary, binary‑aware, prewarm‑aware, chunk‑aware, advantage‑aware.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseWorldSocialGraph",
-  version: "v20.0-WORLD-SOCIAL-GRAPH-IMMORTAL-ADV++",
-  layer: "world_social",
-  role: "social_graph_engine_v20",
-  lineage: "PulseWorld-v15 → PulseWorld-v17 → PulseWorld-v20-IMMORTAL-ADV++",
-
-  evo: {
-    socialGraph: true,
-    presenceAware: true,
-    presenceBandAware: true,
-    meshAware: true,
-    rankingAware: true,
-    mentorshipAware: true,
-    jobAware: true,
-    earnAware: true,
-    earnBandAware: true,
-    identityAware: true,
-    skillAware: true,
-    trustAware: true,
-    partyAware: true,
-    sessionAware: true,
-    coworkAware: true,
-    reputationAware: true,
-    followAware: true,
-    blockAware: true,
-    inviteAware: true,
-    collaborationAware: true,
-
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    advantageAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    worldBandAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    metadataOnly: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true,
-    unifiedAdvantageField: true,
-    coordinatorFree: true,
-    arteryAware: true,
-    arteryV5: true,
-    snapshotAware: true,
-    packetAware: true,
-    windowAware: true
-  },
-
-  contract: {
-    always: [
-      "PresenceAwareness",
-      "PresenceAIView",
-      "PowerUserRanking",
-      "MentorUpgradeRequest",
-      "PresenceJobAssignment",
-      "PulseMeshPresenceRelay",
-      "PulseMeshSkin",
-      "PulseMeshSurvivalInstincts",
-      "PulseWorldSkillRegistry",
-      "PulseWorldTrustSignals",
-      "PulseWorldReputationEngine",
-      "CheckIdentity-v20-IMMORTAL-ADV++"
-    ],
-    never: [
-      "legacySocialGraph",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseWorldSocialGraph({
   PowerUserRanking,

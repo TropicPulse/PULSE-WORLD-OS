@@ -3,110 +3,35 @@
 //  Binary PageScanner Membrane • Drift Intel • Artery Metrics • Beacon Mesh
 //  PURE MEMBRANE. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiPageScannerAdapter",
-  version: "v15-Immortal",
-  layer: "ai_adapter",
-  role: "pagescanner_membrane",
-  lineage: "aiPageScannerAdapter-v12.3-Evo → v15-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    pageScannerMembrane: true,
-    driftIntel: true,
-    arteryMetrics: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiLoggerAdapter", "aiGovernorAdapter", "aiGenome"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const PageScannerAdapterMeta = Identity.OrganMeta;
 
-export const PageScannerAdapterMeta = Object.freeze({
-  type: "Binary",
-  subsystem: "aiPageScannerAdapter",
-  layer: "OrganismMembrane",
-  role: "PAGESCANNER_ADAPTER",
-  version: "15-Immortal",
-  identity: "aiPageScannerAdapter-v15-Immortal",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    membraneAware: true,
-    binaryAware: true,
-    pipelineAware: true,
-    reflexAware: true,
-    packetAware: true,
-    driftIntelAware: true,
-    arteryAware: true,
-    windowAware: true,
-    beaconAware: true,
-    overmindAware: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    loggerAware: true,
-    governorAware: true,
-    organismAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    chunkingAware: true,
-    gpuFriendly: true,
-    bluetoothReady: true,
-    evolutionAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    readOnly: true,
-    multiInstanceReady: true,
-    epoch: "15-Immortal"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide a deterministic, read-only, binary-safe membrane between PageScanner and the organism, enriched with drift-intelligence and routing-artery metadata.",
-
-    never: Object.freeze([
-      "mutate PageScanner events",
-      "rewrite pages",
-      "interpret symbolic meaning",
-      "introduce randomness",
-      "override pipeline decisions",
-      "override reflex decisions",
-      "block the organism",
-      "directly control Overmind or beacon",
-      "decode binary for symbolic routing",
-      "inject symbolic metadata into events"
-    ]),
-
-    always: Object.freeze([
-      "treat all inputs as read-only",
-      "encode PageScanner events deterministically",
-      "emit binary-only packets",
-      "forward packets without interpretation",
-      "emit drift-intelligence metadata",
-      "emit routing-artery metrics",
-      "remain deterministic",
-      "remain drift-proof",
-      "remain non-blocking",
-      "expose window-safe artery snapshots"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "PageScannerAdapter is a read-only membrane — it never mutates events or symbolic state.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, membrane-scoped

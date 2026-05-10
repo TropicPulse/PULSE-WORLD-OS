@@ -3,88 +3,40 @@
 //  Genealogical Archive • Lineage Ledger • Reproduction Historian
 //  PURE BINARY. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+
 /*
-AI_EXPERIENCE_META = {
-  identity: "aiAncestry",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "ai_lineage_tracker",
-  lineage: "aiAncestry-v10 → v12 → v14-Immortal",
-
-  evo: {
-    lineageTracking: true,
-    dnaHistory: true,
-    versionHistory: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "aiBrainstem",
-      "aiBinaryEvolution",
-      "ai-v11-evo"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
+  (You can keep this AI_EXPERIENCE_META block as documentation;
+   runtime identity now comes from the Organism Map.)
 */
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-export const AncestryMeta = Object.freeze({
-  layer: "Ancestry",
-  role: "ANCESTRY_SYSTEM",
-  version: "12.3-Evo+",
-  identity: "aiAncestry-v12.3-Evo+",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryAware: true,
-    memoryAware: true,
-    lineageAware: true,
-    reproductionAware: true,
-    binaryEventAware: true,
-    pipelineAware: true,
-    reflexAware: true,
-    loggerAware: true,
-    ancestryArteryAware: true,
-    multiInstanceReady: true,
-    epoch: "12.3-Evo+"
-  }),
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: Object.freeze({
-    purpose:
-      "Record lineage events, maintain genealogical history, and emit deterministic ancestry packets.",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const AncestryMeta = Identity.OrganMeta;
 
-    never: Object.freeze([
-      "mutate external organs",
-      "interpret symbolic meaning",
-      "introduce randomness",
-      "modify genome",
-      "perform reproduction",
-      "override evolution"
-    ]),
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    always: Object.freeze([
-      "record lineage deterministically",
-      "encode ancestry packets in binary",
-      "store ancestry in memory",
-      "remain pure and minimal",
-      "return frozen lineage structures"
-    ])
-  })
-});
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS

@@ -27,6 +27,21 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const IQMapBridge   = PulseProofBridge.iqmap;
@@ -35,186 +50,6 @@ const CoreMemory    = PulseProofBridge.corememory;     // NEW
 const CoreDaemon    = PulseProofBridge.coredaemon;     // NEW
 const MediaBridge   = PulseProofBridge.coremedia;      // NEW
 
-// ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalSkills = {
-  id: "pulsepal.skills",
-  kind: "ui_organ",
-  version: "v24-IMMORTAL++",
-  role: "Pulse‑Pal ability cortex membrane",
-  surfaces: {
-    band: ["skills", "abilities", "iqmap", "mode", "persona", "presence"],
-    wave: ["exploratory", "structured", "clear", "mode_attuned"],
-    binary: [
-      "skill_category",
-      "skill_count",
-      "mode_influence",
-      "persona_alignment",
-      "avatar_preview"
-    ],
-    presence: ["ability_surface", "tone_alignment", "activity_alignment"],
-    advantage: [
-      "auto_evolving_skills",
-      "mode_preload",
-      "persona_preload",
-      "media_preload"
-    ],
-    speed: "instant_ui"
-  },
-  routes: {
-    home: "pulsepal.home",
-    identity: "pulsepal.identity",
-    world: "pulsepal.world",
-    settings: "pulsepal.settings"
-  },
-  consumers: [
-    "Router",
-    "IQMap",
-    "IQMapBridge",
-    "CorePresence",
-    "CoreMemory",
-    "CoreDaemon"
-  ],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePalSkills = {
-  tone: "curious_structured",
-  pacing: "steady",
-  emotionalBand: "exploration",
-  primaryIntent: "show_abilities",
-  secondaryIntent: "invite_skill_discovery",
-  userFirstImpression: "this_is_what_pulsepal_can_do",
-  visualNotes: {
-    icon: "binary_matrix",
-    motion: "soft_breathe",
-    colorBand: "cyan_blue"
-  }
-};
-
-// ============================================================================
-// ORGAN_META — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_META_PulsePalSkills = {
-  id: "organ.pulsepal.skills",
-  organism: "PulsePal",
-  layer: "ui.skills",
-  tier: "IMMORTAL",
-  evoFlags: {
-    autoEvolvesWithIQMap: true,
-    canAddSkillCategories: true,
-    requiresIQMap: true,
-    modeAware: true,       // NEW
-    personaAware: true,    // NEW
-    presenceAware: true,   // NEW
-    daemonAware: true,     // NEW
-    mediaAware: true       // NEW
-  },
-  lineage: {
-    family: "companion_skills",
-    generation: 2,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalSkills = {
-  inputs: {
-    Router: "navigation interface",
-    Icons: "icon resolution interface",
-    IQMap: "skill map interface",
-    IQMapBridge: "bridge skill organ",
-    CorePresence: "presence organ",
-    CoreMemory: "memory organ",
-    CoreDaemon: "daemon snapshot",
-    Media: "media resolver"
-  },
-  outputs: {
-    uiSurface: "skills_cortex",
-    categories: "IQMap.skillCategories",
-    skillsByCategory: "IQMap.skillsByCategory",
-    mode: "CorePresence.mode",
-    persona: "CoreMemory.persona",
-    continuity: "CoreDaemon.palHistory.continuityScore"
-  },
-  consumers: [
-    "Router",
-    "IQMap",
-    "IQMapBridge",
-    "CorePresence",
-    "CoreMemory",
-    "CoreDaemon"
-  ],
-  guarantees: {
-    deterministicRender: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS — v24 IMMORTAL++
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalSkills = {
-  drift: {
-    allowed: false,
-    notes: "Skill category semantics must remain stable."
-  },
-  pressure: {
-    expectedLoad: "high",
-    notes: "Users frequently explore abilities."
-  },
-  stability: {
-    uiLayout: "stable",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 4,
-    notes: "Header, avatar, categories, mode influence."
-  },
-  chunking: {
-    prewarm: [
-      "icons.binary_matrix",
-      "icons.ai_brain",
-      "icons.neon_ring",
-      "media.pulsepal"
-    ],
-    cacheKey: "pulsepal.skills.ui"
-  },
-  worldLens: {
-    awareOfWorlds: true,
-    notes: "Some skills belong to Pulse‑World."
-  },
-  limbic: {
-    band: "exploration_reward",
-    notes: "User should feel discovery + capability."
-  },
-  triHeart: {
-    cognitive: "skill_category_recognition",
-    emotional: "curiosity",
-    behavioral: "explore_skill_category"
-  },
-  impulseSpeed: {
-    primaryAction: "open_skill_category",
-    latencyTargetMs: 50
-  },
-  healingSurfaces: {
-    enabled: true,
-    notes: "Clear ability surfaces reduce overwhelm."
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

@@ -3,35 +3,36 @@
 //  Structural Mapper • Anatomy Explainer • Safe Scan Interpreter
 //  ZERO DIAGNOSIS • ZERO PROCEDURE • ZERO MEDICAL AUTHORITY
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiSurgeon",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "surgical_pattern_explainer",
-  lineage: "aiSurgeon-v11 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    surgicalPatterns: true,
-    educationalOnly: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiDoctor", "aiClinician", "aiDoctorArchitect"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+// export const OrganismKernelMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
+
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 export const PulseRole = Object.freeze({
   type: "Cognitive",

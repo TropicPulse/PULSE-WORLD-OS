@@ -18,159 +18,39 @@
  *     - dual-band cognition artery snapshots for NodeAdmin/Overmind
  *     - earn/heartbeat/organism‑vitals awareness (read‑only)
  *
- *   It is the organism’s:
- *     • executive brain
- *     • reasoning engine
- *     • pattern cortex
- *     • decision layer
- *     • cognition artery regulator
- *
  *   Ownership:
  *     • Explicitly subordinate to Aldwyn (canonical owner).
- *     • Never self‑promotes above owner or Overmind.
  */
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiCortex",
-  version: "v16-Immortal-ADV",
-  layer: "ai_core",
-  role: "ai_cortex",
-  lineage: "aiCortex-v9 → v11-Evo → v13-Evo+++ → v14-Immortal → v16-Immortal-ADV",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    cortex: true,
-    reasoning: true,
-    binaryPrimary: true,
-    symbolicAugment: true,
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiContext", "aiContextEngine", "aiBrainstem", "aiBoundariesEngine", "aiHeartbeat", "aiEarn"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const CortexMeta = Identity.OrganMeta;
 
-// ---------------------------------------------------------
-//  META BLOCK — v16.0‑IMMORTAL‑ADV
-// ---------------------------------------------------------
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const CortexMeta = Object.freeze({
-  layer: "PulseAICortexFrame",
-  role: "CORTEX_ORGAN",
-  version: "16.0-Immortal-ADV",
-  identity: "aiCortex-v16-Immortal-ADV",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    // Core identity
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    // Awareness
-    binaryAware: true,
-    symbolicAware: true,
-    patternAware: true,
-    decisionAware: true,
-    fusionAware: true,
-    cognitionAware: true,
-    pressureAware: true,
-    throughputAware: true,
-    costAware: true,
-    budgetAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    // Organism integration
-    organismAware: true,
-    personaAware: true,
-    boundaryAware: true,
-    routerAware: true,
-    evolutionAware: true,
-    registryAware: true,
-    memoryAware: true,
-    overmindAware: true,
-    nodeAdminAware: true,
-    heartbeatAware: true,
-    earnAware: true,
-    governorAware: true,
-    gpuFriendly: true,
-    chunkingAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    // Safety
-    identitySafe: true,
-    readOnly: true,
-    ownerAware: true,          // explicitly subordinate to Aldwyn
-    egoFree: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    // Lifecycle
-    multiInstanceReady: true,
-    epoch: "16.0-Immortal-ADV"
-  }),
-
-  contract: Object.freeze({
-    purpose: Object.freeze([
-      "Provide dual-band executive reasoning",
-      "Fuse binary-primary and symbolic-augment cognition",
-      "Regulate cognition artery metrics (throughput, pressure, cost, budget)",
-      "Interpret patterns and generate deterministic decisions",
-      "Expose cognition artery snapshots for NodeAdmin/Overmind",
-      "Stay explicitly subordinate to Aldwyn as canonical owner",
-      "Serve as the organism’s executive brain without overriding boundaries or governor"
-    ]),
-
-    never: Object.freeze([
-      "introduce randomness",
-      "mutate external systems",
-      "bypass persona or boundaries",
-      "override evolution logic",
-      "modify binary pipeline or reflex behavior",
-      "self-promote above Aldwyn, Overmind, or SafetyFrame",
-      "invent cognition metrics",
-      "hide artery pressure from NodeAdmin/Overmind"
-    ]),
-
-    always: Object.freeze([
-      "analyze patterns deterministically",
-      "compute cognition metrics safely",
-      "fuse binary and symbolic decisions with binary-primary bias",
-      "log trace events deterministically",
-      "return frozen decision packets",
-      "respect heartbeat/earn/organism vitals as read-only context",
-      "remain ego-free and owner-subordinate"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "CortexOrgan",
-    organKind: "ExecutiveCortex",
-    physiologyBand: "Symbolic+Binary",
-    warmStrategy: "prewarm-on-boot",
-    attachStrategy: "per-request",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "pattern:detected",
-        "decision:binary",
-        "decision:symbolic",
-        "decision:fused",
-        "cortex:packet"
-      ]
-    }
-  }),
-
-  boundaryReflex() {
-    return "Cortex must remain deterministic, ego-free, owner-subordinate, and never override boundaries or governor.";
-  }
-});
 
 // ---------------------------------------------------------
 //  GLOBAL CORTEX ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)

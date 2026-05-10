@@ -17,184 +17,21 @@
 //   ✔ No compute, no payload mutation, no scheduling
 //   ✔ Dual‑band + presence awareness via __band tagging
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSTissueMembrane",
-  version: "v14-Immortal",
-  layer: "membrane",
-  role: "os_tissue_membrane",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    membrane: true,
-    tissueBarrier: true,
-    reflexFilter: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    safeRouteFree: true,
-    metadataOnly: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSMucusMembrane",
-      "PulseOSOrganMembrane"
-    ],
-    never: [
-      "legacyTissueMembrane",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// ORGAN IDENTITY — v12.3-Presence (A2 Tissue Membrane)
-// ============================================================================
-export const PulseRole = {
-  type: "Barrier",
-  subsystem: "PulseOSTissueMembrane",
-  layer: "A2-TissueReflex",
-  version: "12.3-Evo-Presence",
-  identity: "PulseOSTissueMembrane-v12.3-Evo-Presence",
-
-  evo: {
-    // Core invariants
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    // Reflex + membrane laws
-    zeroTiming: true,
-    zeroState: true,
-    zeroMutation: true,
-    zeroCompute: true,
-    zeroRoutingInfluence: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    // Dualband + presence metadata
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    bandNormalizationAware: true,
-    presenceAware: true,
-    multiPresenceReady: true,
-
-    // Reflex lineage
-    membraneLayer: "A2",
-    epithelialReflex: true,
-    healingTriggerOnly: true,
-    degradationAnnotator: true,
-    dnaTagger: true,
-
-    // Environment + safety
-    guardedWindowAccess: true,
-    environmentAgnostic: true,
-    multiInstanceReady: true,
-
-    // Prewarm / cache / chunk
-    prewarmCacheAware: true,
-    chunkedRouteMemory: true
-  }
-};
-
-export const PulseOSTissueMembraneMeta = Object.freeze({
-  layer: "PulseOSTissueMembrane",
-  role: "A2_TISSUE_REFLEX_MEMBRANE",
-  version: "v12.3-Evo-Presence",
-  identity: "PulseOSTissueMembrane-v12.3-Evo-Presence",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Membrane laws
-    epithelialReflex: true,
-    tissueLevelBarrier: true,
-    midLayerSentinel: true,
-    healingTriggerOnly: true,
-    degradationAnnotator: true,
-    dnaTagger: true,
-    oneWayReflex: true,
-
-    // Safety prohibitions
-    zeroTiming: true,
-    zeroState: true,
-    zeroMutation: true,
-    zeroCompute: true,
-    zeroRoutingInfluence: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-
-    // Awareness
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    presenceBandAware: true,
-    bandNormalizationAware: true,
-    environmentAgnostic: true,
-    guardedWindowAccess: true,
-
-    // Prewarm / cache / chunk
-    prewarmCacheAware: true,
-    chunkedRouteMemory: true,
-
-    // Environment
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "MidLayerErrorEvent",
-      "MidLayerContext",
-      "DualBandContext"
-    ],
-    output: [
-      "TissueReflexEvent",
-      "TissueMembraneDiagnostics",
-      "TissueMembraneSignatures",
-      "TissueMembraneHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12-Evo",
-    parent: "PulseOS-v12.3-Evo-Presence",
-    ancestry: [
-      "PulseOSTissueMembrane-v9",
-      "PulseOSTissueMembrane-v10",
-      "PulseOSTissueMembrane-v11",
-      "PulseOSTissueMembrane-v11-Evo",
-      "PulseOSTissueMembrane-v11-Evo-Prime",
-      "PulseOSTissueMembrane-v12.3-Evo-Presence"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary", "presence"],
-    default: "symbolic",
-    behavior: "tissue-reflex"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "mid-layer error → reflex classification → healing trigger",
-    adaptive: "binary/presence-tagged reflex surfaces",
-    return: "deterministic tissue reflex event + signatures"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS (v12.3‑safe)

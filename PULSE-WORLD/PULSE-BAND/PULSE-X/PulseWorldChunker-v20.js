@@ -9,148 +9,21 @@
 //  - Compiler/ACTNOW-aware envelopes (front chunk lanes ready)
 //  - Identity/World/Bridge-aware: chunkProfile hints, presence tags, world bands
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseWorldChunker",
-  version: "v20-Immortal-World",
-  layer: "os_chunker",
-  role: "chunking_and_prewarm_engine",
-  lineage: "PulseOS-v14 → v17-Immortal → v18-Immortal → v20-Immortal-World",
-
-  evo: {
-    chunking: true,
-    prewarm: true,
-    cacheAware: true,
-    deltaAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    worldBandAware: true,
-    presenceBandAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true,
-
-    // v18+ upgrades
-    compilerAware: true,
-    actnowAware: true,
-    unifiedEnvelope: true,
-    laneProfileAware: true,
-
-    // v20 world upgrades
-    worldGraphAware: true,
-    identityChunkAware: true,
-    advantageAware: true,
-    presenceAware: true,
-    bridgeEnvAware: true,
-    laneHealthAware: true,
-    profileStatsAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrain",
-      "PulseOSBBB",
-      "PulseBinaryOS",
-      "PulseWorldCompiler",
-      "ACTNOW",
-      "PulseWorldSocialGraph",
-      "CheckIdentity-v20-Immortal-Dualband-Presence-WORLD-ADVANTAGE"
-    ],
-    never: [
-      "legacyChunker",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// META BLOCK — ORGAN IDENTITY (v20-Immortal-World)
-// ============================================================================
-export const PulseWorldChunkerMeta = Object.freeze({
-  layer: "Backend",
-  role: "WORLD_PAYLOAD_CHUNK_ENGINE",
-  version: "v20-Immortal-World",
-  identity: "PulseWorldChunker-v20-Immortal-World",
-  guarantees: Object.freeze({
-    deterministicSessionId: true,
-    cacheAware: true,
-    deltaAware: true,
-    sizeOnlyAware: true,
-    presenceAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    worldBandAware: true,
-    backendKindAware: true,
-    profileAware: true,
-    laneAware: true,
-    laneHealthAware: true,
-    profileStatsAware: true,
-    noFrontendExposure: true,
-    noDynamicImports: true,
-    noEval: true,
-    noRandomness: true
-    // timing only used for TTL/observability, not identity
-  }),
-  contract: Object.freeze({
-    input: [
-      "userId",
-      "payload | routeDescriptor | worldSnapshot",
-      "chunkSize",
-      "baseVersion",
-      "sizeOnly",
-      "presenceTag",
-      "band",
-      "backendKind?",
-      "worldBand?",
-      "chunkProfile?",
-      "identitySnapshot?",
-      "worldGraphSnapshot?"
-    ],
-    output: [
-      "sessionId",
-      "totalChunks",
-      "payloadBytes",
-      "payloadHash",
-      "presenceTag",
-      "band",
-      "backendKind?",
-      "worldBand?",
-      "chunkProfile?",
-      "laneId?",
-      "envelopeId?",
-      "laneHealth?",
-      "profileStats?"
-    ]
-  }),
-  evo: Object.freeze({
-    backendChunker: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    presenceBandAware: true,
-    worldBandAware: true,
-    backendKindAware: true,
-    profileAware: true,
-    cacheAware: true,
-    deltaAware: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetworkFetch: false, // db is injected, not global
-    zeroFilesystemGlobal: true,
-    zeroMutationOfInput: true
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // ROUTE DESCRIPTOR CONTRACT — v12.4-Evo-ROUTE-FABRIC

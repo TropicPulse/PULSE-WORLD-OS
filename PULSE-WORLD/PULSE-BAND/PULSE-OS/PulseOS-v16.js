@@ -24,83 +24,22 @@
 //    - Symbolic + Binary coexist as dual-mode cognition.
 //    - All drift eliminated; unified organism identity.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSSymbolicKernel",
-  version: "v16-IMMORTAL-Spine-Symbolic",
-  layer: "os_kernel_symbolic",
-  role: "symbolic_organism_kernel",
-  lineage: "PulseOS-v16-IMMORTAL",
-
-  evo: {
-    symbolicPrimary: true,
-    binaryAware: true,
-    binaryReady: true,
-    dualBand: true,
-
-    presenceAware: true,
-    meshPresenceAware: true,
-    meshAware: true,
-    meshCoordinatorAware: true,
-
-    chunkPrewarmReady: true,
-    evolutionAware: true,
-    governorAligned: true,
-    spinalCordAligned: true,
-
-    deterministic: true,
-    driftProof: true,
-    safeRouteFree: true,
-    zeroNetworkFetch: true,
-    zeroMutationOfInput: true,
-    zeroExternalMutation: true,
-
-    // IMMORTAL upgrades
-    expansionAware: true,
-    worldCoreAware: true,
-    nodeAdminAware: true,
-    unifiedAdvantageField: true,
-    multiInstanceKernel: true,
-    clusterCoherence: true,
-    symbolicMeshEnvAware: true,
-    binaryMeshEnvAware: true,
-    organismMeshAware: true,
-    futureEvolutionReady: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrain",
-      "PulseOSEvolution",
-      "PulseSpinalCord",
-      "PulseOSPresence",
-      "PulseMeshPresenceRelay",
-      "PulseExpansion",
-      "PulseGovernor",
-      "BinaryMeshEnvironment-v15",
-      "OrganismMesh-v16"
-    ],
-    optional: [
-      "PulseBinaryKernel",
-      "PulseBinaryRouter",
-      "PulseChunker",
-      "PulsePrewarm"
-    ],
-    never: [
-      "legacySymbolicKernel",
-      "legacyPresence",
-      "legacyMeshPresence",
-      "legacySpinalCord",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyChunker",
-      "legacyEvolution"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const PULSE_OS_CONTEXT = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  ORGANISM BOOTSTRAP SET — v16 (SYMBOLIC KERNEL SIDE)
 // ============================================================================
@@ -132,7 +71,7 @@ import {
   createPulseExpansion,
   pulseExpansion,
   PulseExpansionMeta
-} from "../PULSE-EXPANSION/PulseExpansion-v16.js";
+} from "../PULSE-EXPANSION/PulseExpansion-v24.js";
 
 const Expansion = pulseExpansion;
 const ExpansionMeta = PulseExpansionMeta;
@@ -151,133 +90,6 @@ export const PulseWorld = Object.freeze({
   }
 });
 
-// ============================================================================
-//  SYMBOLIC OS KERNEL META — v16 IMMORTAL
-// ============================================================================
-export const PulseOSKernelMeta = Object.freeze({
-  layer: "PulseOSKernel",
-  role: "ORGANISM_BOOTLOADER",
-  version: "v16-IMMORTAL-Spine-Symbolic",
-  identity: "PulseOS-v16-Spine-Symbolic",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-
-    symbolicNative: true,
-    dualMode: true,
-    binaryAware: true,
-    binaryReady: true,
-    organismBootloader: true,
-    zeroDriftIdentity: true,
-    unifiedAdvantageField: true,
-    continuanceAware: true,
-    legacyBridgeCapable: true,
-
-    presenceFieldAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    meshCoordinatorAware: true,
-    kernelChunkingReady: true,
-    kernelPrewarmReady: true,
-    multiInstanceKernel: true,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-
-    browserOnly: true,
-    worldLensAware: false,
-
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PulseOSGovernor",
-      "PulseOSBrain",
-      "PulseOSEvolution",
-      "PulseSpinalCord",
-      "OrganRegistry",
-      "PulseOSPresence",
-      "PulseMeshPresenceRelay",
-      "BinaryMeshEnvironment-v15",
-      "OrganismMesh-v16"
-    ],
-    output: [
-      "SymbolicOrganismKernel",
-      "SymbolicBootDiagnostics",
-      "SymbolicBootSignatures",
-      "SymbolicPresenceField",
-      "SymbolicMeshPresenceRelay",
-      "OrganismMeshRoot"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v16-IMMORTAL",
-    parent: "PulseOS-v12.3-SPINE",
-    ancestry: [
-      "PulseOSKernel-v9",
-      "PulseOSKernel-v10",
-      "PulseOSKernel-v11",
-      "PulseOSKernel-v11-Evo",
-      "PulseOSKernel-v12.3-Spine-Symbolic",
-      "PulseOSKernel-v16-IMMORTAL-Spine-Symbolic"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic"],
-    default: "symbolic",
-    behavior: "kernel-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "symbolic organism bootloader (organ wiring + artery activation)",
-    adaptive: "binary-aware dual-mode overlay + presence + mesh + expansion field",
-    return:
-      "online symbolic organism kernel + boot signatures + presence field + mesh relay + organism mesh"
-  })
-});
-
-// ============================================================================
-//  CONTEXT — OS KERNEL IDENTITY (v16 IMMORTAL SYMBOLIC)
-// ============================================================================
-const PULSE_OS_CONTEXT = Object.freeze({
-  layer: "PulseOSKernel",
-  role: "ORGANISM_BOOTLOADER",
-  version: "16-IMMORTAL-Spine-Symbolic",
-  lineage: "pulse-os-v16-immortal-kernel-symbolic",
-  evo: {
-    dualMode: true,
-    symbolicNative: true,
-    binaryAware: true,
-    binaryReady: true,
-    browserOnly: true,
-    driftProof: true,
-    organismLoader: true,
-    legacyBridgeCapable: true,
-    unifiedAdvantageField: true,
-    continuanceAware: true,
-    zeroDriftIdentity: true,
-
-    presenceFieldAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    meshCoordinatorAware: true,
-    kernelChunkingReady: true,
-    kernelPrewarmReady: true,
-    multiInstanceReady: true,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-
-    expansionAware: true,
-    worldCoreAware: true,
-    nodeAdminAware: true
-  }
-});
 
 // ============================================================================
 //  GOVERNED EXECUTION — SYMBOLIC SHELL

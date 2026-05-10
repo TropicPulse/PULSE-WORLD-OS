@@ -4,44 +4,35 @@
 //  PURE FILTER. ZERO MUTATION. ZERO RANDOMNESS. DUALBAND + ARTERY‑AWARE.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiHumilityFilter",
-  version: "v15-Immortal",
-  layer: "ai_tools",
-  role: "humility_filter",
-  lineage: "aiHumilityFilter-v11 → v12.3-Presence → v15-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    humilityFilter: true,
-    egoReduction: true,
-    toneSoftening: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    arteryAware: true,
-    packetAware: true,
-    windowAware: true,
-    microPipeline: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-    multiInstanceReady: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+// export const OrganismKernelMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiGeniusWithoutEgo", "aiEmotionEngine", "aiExperience", "aiToneEngine"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
+
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 export const aiHumilityFilter = {
 

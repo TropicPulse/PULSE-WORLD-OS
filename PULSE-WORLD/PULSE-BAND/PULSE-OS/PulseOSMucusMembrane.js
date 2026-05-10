@@ -31,181 +31,21 @@
 //   • Zero async
 //   • Pure deterministic signal builder
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSMucusMembrane",
-  version: "v14-Immortal",
-  layer: "membrane",
-  role: "os_outer_mucus_membrane",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    membrane: true,
-    outerBarrier: true,
-    reflexFilter: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    safeRouteFree: true,
-    nonExecutable: true,
-    metadataOnly: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSTissueMembrane",
-      "PulseOSOrganMembrane"
-    ],
-    never: [
-      "legacyMucusMembrane",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// ORGAN IDENTITY — v12.3-Evo-BINARY-MAX (A0 Mucus Membrane)
-// ============================================================================
-export const PulseRole = {
-  type: "Barrier",
-  subsystem: "PulseOSMucusMembrane",
-  layer: "A0-MucusBarrier",
-  version: "12.3-Evo-Binary-Max",
-  identity: "PulseOSMucusMembrane-v12.3-Evo-Binary-Max",
-
-  evo: {
-    // Core invariants
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-    multiInstanceReady: true,
-
-    // Barrier laws
-    zeroTiming: true,
-    zeroState: true,
-    zeroMutation: true,
-    zeroNetwork: true,
-    zeroRetry: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    offlineAbsolute: true,
-
-    // Awareness
-    binaryAware: true,
-    symbolicAware: true,
-    dualModeAware: true,
-    executionContextAware: true,
-    pressureAware: true,
-
-    // Membrane lineage
-    membraneLayer: "A0",
-    epithelialBarrier: true,
-    oneWaySignal: true,
-    passiveBarrier: true,
-
-    // Safety + environment
-    environmentAgnostic: true,
-
-    // Dual-band CNS contract
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryNonExecutable: true
-  }
-};
-
-export const PulseOSMucusMembraneMeta = Object.freeze({
-  layer: "PulseOSMucusMembrane",
-  role: "A0_MUCUS_BARRIER_ORGAN",
-  version: "v12.3-Evo-BINARY-MAX",
-  identity: "PulseOSMucusMembrane-v12.3-Evo-BINARY-MAX",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Barrier laws
-    pureBarrierOrgan: true,
-    epithelialBarrier: true,
-    oneWaySignal: true,
-    passiveBarrier: true,
-    offlineAbsolute: true,
-    environmentAgnostic: true,
-    executionContextAgnostic: true,
-
-    // Safety prohibitions
-    zeroTiming: true,
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroState: true,
-    zeroMutation: true,
-    zeroExternalMutation: true,
-    zeroRetry: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroWindowAccess: true,
-
-    // Dual-band awareness
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    binaryNonExecutable: true,
-    symbolicPrimary: true,
-
-    // Environment
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "FrontendSignal",
-      "EnvironmentContext",
-      "DualBandContext"
-    ],
-    output: [
-      "SafeDeterministicSignal",
-      "MucusBarrierDiagnostics",
-      "MucusBarrierSignatures",
-      "MucusBarrierHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12-Evo",
-    parent: "PulseOS-v12.3-Evo",
-    ancestry: [
-      "PulseOSMucusMembrane-v9",
-      "PulseOSMucusMembrane-v10",
-      "PulseOSMucusMembrane-v11",
-      "PulseOSMucusMembrane-v11-Evo",
-      "PulseOSMucusMembrane-v11-Evo-Prime",
-      "PulseOSMucusMembrane-v11.2-Evo-BINARY-MAX"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "pure-barrier"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "environment → safe signal → organism",
-    adaptive: "binary-tagged metadata surfaces",
-    return: "deterministic one-way signal + signatures"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // PURE MUCOSAL SIGNAL BUILDER (Frontend → Organism)

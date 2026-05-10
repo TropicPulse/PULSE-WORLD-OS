@@ -29,233 +29,24 @@
 //  • Binary is NEVER executed, only described (phenotype/surface fields).
 //  • No network, no IO, no async, no AI.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProxyFront",
-  version: "v20-ImmortalPlus-ADVANTAGE-FIRST",
-  layer: "proxy_front",
-  role: "advantage_first_proxy_front",
-  lineage: {
-    root: "PulseProxy-v11",
-    parent: "PulseProxyFront-v16-Immortal-PROXY-FRONT",
-    organismIntegration: "v20-ImmortalPlus",
-    advantageEvolution: "v20-ImmortalPlus-ADVANTAGE-FIRST"
-  },
-
-  evo: {
-    proxyFront: true,
-    binaryFirst: false,
-    advantageFirst: true,
-    symbolicHybrid: true,
-    dualBandAware: true,
-    abaBandAware: true,
-    advantageFieldAware: true,
-    routeWarmthAware: true,
-    chunkCachePrewarmAware: true,
-    coreMemoryIntegrated: true,
-    immortalRouteMemory: true,
-
-    // Organism fusion
-    circulatoryAware: true,
-    telemetryAware: true,
-    adrenalAware: true,
-    triEnvAware: true,
-    proxyContextAware: true,
-    dualBandOverlayAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroTimestampsInDecision: true,
-    zeroMutationOfInput: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    input: [
-      "BinaryBits",
-      "Pattern",
-      "PageId",
-      "SourceId",
-      "PreviousRouteMemory",
-      "DualBandContext",
-      "OrganismAdvantageContext" // optional: circulatory/telemetry/adrenal/triEnv/proxyContext
-    ],
-    output: [
-      "ProxyFrontDecision",
-      "RouteKey",
-      "BinaryField",
-      "BinaryWaveField",
-      "SymbolicWaveField",
-      "BandSignature",
-      "FrontCycleSignature",
-      "BinaryAdvantageField",
-      "SymbolicAdvantageField",
-      "ChosenAdvantageField",
-      "RouteWarmth",
-      "ChunkCacheHints",
-      "DualBandOverlay",
-      "OrganismOverlay",
-      "DnaTag",
-      "ProxyFrontDiagnostics",
-      "ProxyFrontHealingState"
-    ],
-    consumers: [
-      "PulseProxy",
-      "BinaryProxy",
-      "PulseRouter",
-      "PulseMesh",
-      "PulseSDNPrewarm",
-      "PulseWorldCore",
-      "DualBandOrganism"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // v20-ImmortalPlus: CoreMemory integration (unchanged import surface)
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
-
-// ============================================================================
-//  METADATA — v20-ImmortalPlus-ADVANTAGE-FIRST
-// ============================================================================
-export const PulseProxyFrontMeta = Object.freeze({
-  layer: "PulseProxyFront",
-  role: "ADVANTAGE_FIRST_PROXY_FRONT",
-  version: "v20-ImmortalPlus-ADVANTAGE-FIRST",
-  identity: "PulseProxyFront-v20-ImmortalPlus-ADVANTAGE-FIRST",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Proxy‑front laws
-    proxyFront: true,
-    advantageFirst: true,
-    binaryAsDataOnly: true,
-    routePlanner: true,
-    earnedRouteMemory: true,
-    bandSignatureEmitter: true,
-    dnaTagEmitter: true,
-    binaryPhenotypeEmitter: true,
-    binarySurfaceEmitter: true,
-    symbolicWaveEmitter: true,
-
-    // Advantage / A‑B‑A awareness
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    advantageCascadeAware: true,
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    dualBandAware: true,
-    dualMode: true,
-    localAware: true,
-    internetAware: true,
-    abaBandAware: true,
-
-    // Route warmth + chunk/cache/prewarm overlays
-    routeWarmthAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-
-    // CoreMemory / immortal memory
-    coreMemoryIntegrated: true,
-    immortalRouteMemory: true,
-    coreMemoryDeterministicKeys: true,
-
-    // Execution prohibitions
-    zeroRandomness: true,
-    zeroTimestampsInDecision: true,
-    zeroDateNow: true,
-    zeroTimers: true,
-    zeroAsync: true,
-    zeroNetwork: true,
-    zeroIO: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroRouting: true,        // not a router
-    zeroBusinessLogic: true,  // no app logic
-    zeroAI: true,             // no inference
-    zeroWindow: true,
-    zeroDOM: true,
-
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "BinaryBits",
-      "Pattern",
-      "PageId",
-      "SourceId",
-      "PreviousRouteMemory",
-      "DualBandContext",
-      "OrganismAdvantageContext"
-    ],
-    output: [
-      "ProxyFrontDecision",
-      "RouteKey",
-      "BinaryField",
-      "BinaryWaveField",
-      "SymbolicWaveField",
-      "BandSignature",
-      "FrontCycleSignature",
-      "BinaryAdvantageField",
-      "SymbolicAdvantageField",
-      "ChosenAdvantageField",
-      "RouteWarmth",
-      "ChunkCacheHints",
-      "DualBandOverlay",
-      "OrganismOverlay",
-      "DnaTag",
-      "ProxyFrontDiagnostics",
-      "ProxyFrontHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseProxy-v11",
-    parent: "PulseProxyFront-v16-Immortal-PROXY-FRONT",
-    ancestry: [
-      "PulseProxyFront-v7",
-      "PulseProxyFront-v8",
-      "PulseProxyFront-v9",
-      "PulseProxyFront-v10",
-      "PulseProxyFront-v11",
-      "PulseProxyFront-v11-Evo",
-      "PulseProxyFront-v11-Evo-Binary",
-      "PulseProxyFront-v11-Evo-Binary-Max",
-      "PulseProxyFront-v11.2-Evo-BINARY-MAX",
-      "PulseProxyFront-v12.3-Evo-BINARY-MAX-ABA",
-      "PulseProxyFront-v14-Immortal-PROXY-FRONT",
-      "PulseProxyFront-v16-Immortal-PROXY-FRONT"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["binary", "symbolic", "dual"],
-    default: "binary",
-    behavior: "proxy-front-advantage-first"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "binary descriptor + symbolic pattern → dual-band route plan",
-    adaptive:
-      "earned route memory + binary phenotype + symbolic wave + organism overlays " +
-      "+ advantage fusion + routeWarmth + chunk/cache/prewarm hints + CoreMemory + DualBand overlay",
-    return:
-      "deterministic proxy-front surfaces + signatures + immortal route memory " +
-      "+ organism-ready overlays + fused advantage"
-  })
-});
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, pure

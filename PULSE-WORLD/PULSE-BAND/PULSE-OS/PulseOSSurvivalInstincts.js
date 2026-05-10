@@ -24,147 +24,21 @@
 //   • Deterministic: same snapshot → same signature
 //   • Prewarm + chunking are purely structural, offline-absolute
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSSurvivalInstincts",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_survival_instincts",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    survival: true,
-    instinctEngine: true,
-    threatAwareness: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    meshAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSFightFlightResponse",
-      "PulseOSImmuneSystem",
-      "PulseOSNervousSystem"
-    ],
-    never: [
-      "legacySurvivalInstincts",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseOSSurvivalInstinctsMeta = Object.freeze({
-  layer: "PulseOSSurvivalInstincts",
-  role: "STRUCTURAL_MEMORY_ORGAN",
-  version: "v12.3-Evo-Presence-MAX",
-  identity: "PulseOSSurvivalInstincts-v12.3-Evo-Presence-MAX",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Structural memory laws
-    structuralMemoryOrgan: true,
-    organismIdentityAnchor: true,
-    survivalInstincts: true,
-    evolutionSentinel: true,
-    lastSafeConfigurationKeeper: true,
-    structuralSignatureBuilder: true,
-    lineageAware: true,
-    organismGrowthSafe: true,
-
-    // Presence + chunking
-    multiPresenceAware: true,
-    routeDNACacheAware: true,
-    structuralChunkCache: true,
-    prewarmReady: true,
-    offlinePrewarmOnly: true,
-
-    // Execution prohibitions
-    zeroMutationOfImpulses: true,
-    zeroBusinessLogic: true,
-    zeroPayloadCompute: true,
-    zeroTimestamps: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroNetwork: true,
-    zeroRouting: true,
-    zeroEnvironmentAccess: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-
-    // Awareness
-    symbolicAware: true,
-    binaryAware: true,
-    dualModeAware: true,
-
-    // Environment
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "OrganismStructure",
-      "RouteDNA",
-      "EvolutionContext",
-      "DualBandContext",
-      "PresenceContext",
-      "PrewarmChunks"
-    ],
-    output: [
-      "StructuralSignature",
-      "EvolutionDetection",
-      "InstinctsDiagnostics",
-      "InstinctsHealingState",
-      "PrewarmedRouteDNACache",
-      "PresenceStructuralMap"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12-Evo",
-    parent: "PulseOS-v12.3-Evo-Presence",
-    ancestry: [
-      "PulseOSSurvivalInstincts-v9",
-      "PulseOSSurvivalInstincts-v10",
-      "PulseOSSurvivalInstincts-v11",
-      "PulseOSSurvivalInstincts-v11-Evo",
-      "PulseOSSurvivalInstincts-v11-Evo-Prime",
-      "PulseOSSurvivalInstincts-v12-Evo",
-      "PulseOSSurvivalInstincts-v12.3-Evo-Presence-Max"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "structural-memory"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "organism structure → structural signature → evolution detection",
-    adaptive: "binary-tagged structural overlays + prewarmed route-DNA chunks + multi-presence map",
-    return: "deterministic structural memory + signatures + prewarmed caches"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL MEMORY STORE (long-term structural memory + prewarm + presence)

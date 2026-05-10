@@ -3,84 +3,36 @@
 //  Strategy Mapper • Experiment Designer • Risk Surface Analyzer
 //  PURE STRATEGY. ZERO PROMISES. ZERO OUTCOME CLAIMS.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiEntrepreneur",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "entrepreneurial_reasoner",
-  lineage: "aiEntrepreneur-v11 → v14-Immortal",
 
-  evo: {
-    entrepreneurialReasoning: true,
-    opportunityMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiArchitect", "aiContext", "aiCortex"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-export const EntrepreneurMeta = Object.freeze({
-  layer: "PulseAIStrategyFrame",
-  role: "ENTREPRENEUR_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiEntrepreneur-v12.3-Evo+",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const EntrepreneurMeta = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    strategyAware: true,
-    riskAware: true,
-    experimentAware: true,
-    packetAware: true,
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
-    strategyArteryAware: true,
-    epoch: "12.3-Evo+"
-  }),
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: Object.freeze({
-    purpose: "Turn ideas into models, risks, experiments, and next steps.",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    never: Object.freeze([
-      "promise outcomes",
-      "give investment advice",
-      "guarantee success"
-    ]),
+export const surfaceMeta = Identity.surfaceMeta;
 
-    always: Object.freeze([
-      "frame experiments",
-      "identify risks",
-      "suggest reversible tests",
-      "remain conceptual and non‑directive"
-    ])
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  voice: Object.freeze({
-    tone: "energetic, strategic, opportunity-aware"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  boundaryReflex() {
-    return "This is strategic guidance, not financial or investment advice.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  HELPERS — PRESSURE + BUCKETS

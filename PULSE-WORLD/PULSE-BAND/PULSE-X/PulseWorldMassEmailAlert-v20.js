@@ -110,48 +110,21 @@
 //
 // DO NOT REMOVE THIS BLOCK.
 //
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const AI_EXPERIENCE_META = {
-  identity: "PulseWorldMassEmailAlert.MassEmailOrgan",
-  version: "v20-Immortal",
-  layer: "pulse_world_mass_email",
-  role: "credited_mass_email_engine",
-  lineage: [
-    "MassEmailWebhook-v12",
-    "MassEmailWebhook-v14-Immortal",
-    "MassEmailWebhook-v16-Immortal-Evo",
-    "PulseWorldMassEmailAlert-v20-Immortal"
-  ],
-
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    zeroState: false, // uses Firestore state
-    zeroTiming: false, // time-based cooldowns
-    binaryAware: true,
-    dualBand: true,
-    presenceAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    organ: "PulseWorldMassEmailAlert-v20",
-    mesh: "PulseMesh-v20",
-    send: "PulseSend-v20",
-    stripe: "Stripe-v2023-10-16",
-    twilio: "Twilio-v2024",
-    email: "SMTP-Gmail-v1"
-  },
-
-  safety: {
-    neverLogSecrets: true,
-    neverExposeKeys: true,
-    neverUseWindow: true,
-    neverUseDynamicImport: true,
-    respectOptOut: true,
-    rateLimitAware: true
-  }
-};
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IMPORTS + ENV

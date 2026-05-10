@@ -7,83 +7,21 @@
  *  Federal Strategist for capacity, stress, governance, treasury, mesh, routes.
  * ============================================================================
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseExpansion",
-  version: "v24-Immortal++",
-  layer: "presence_expansion",
-  role: "presence_region_governor",
-  lineage: "PulseExpansion-v14 → v16-Immortal-ORGANISM → v24-Immortal++",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    expansionGovernor: true,
-    regionPlanner: true,
-    presenceStrategist: true,
-    governanceStrategist: true,
+// 2 — EXPORT GENOME METADATA
 
-    meshAware: true,
-    beaconAware: true,
-    beaconMeshAware: true,
-    castleAware: true,
-    serverAware: true,
-    userAware: true,
-    pulseNetAware: true,
-    proxyAware: true,
-    meshOrganismAware: true,
-
-    heartbeatAware: true,
-    aiHeartbeatAware: true,
-    earnHeartbeatAware: true,
-
-    presenceFieldAware: true,
-    advantageAware: true,
-    capacitySignalAware: true,
-    stressSignalAware: true,
-    soldierAware: true,
-    treasuryAware: true,
-    treasuryPressureAware: true,
-
-    chunkPrewarmAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroRandomness: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroAI: true,
-    zeroRouting: true,
-    zeroComputeMath: true
-  },
-
-  contract: {
-    always: [
-      "PulseBeaconEngine",
-      "PulseBeaconMesh",
-      "PulseCastle",
-      "PulseRouter",
-      "PulseServer",
-      "PulseUser",
-      "PulseNetBridge",
-      "PulseMesh",
-      "PulseBinaryMesh"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "directPulseNetImport"
-    ]
-  }
-}
-*/
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 

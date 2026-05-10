@@ -19,146 +19,19 @@
 //  • PulseSend‑v24‑ready: impulses routable by compute router.
 //  • Earn‑v24‑GPU‑ready.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUSynapse",
-  version: "v24-Immortal++",
-  layer: "gpu_runtime",
-  role: "gpu_synapse",
-  lineage: "PulseGPU-v24-Immortal++",
-
-  evo: {
-    gpuSynapse: true,
-    gpuSignalJunction: true,
-    gpuFanout: true,
-
-    gpuCompute: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // Awareness
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    // Mesh linkage
-    brainLinked: true,
-    cognitionLinked: true,
-    wisdomLinked: true,
-    geneticMemoryLinked: true,
-    nervousSystemLinked: true,
-    healerLinked: true,
-
-    // Immortal + Earn
-    immortalReady: true,
-    immortalSurface: true,
-    earnAware: true,
-    earnCompatibility: "Earn-v24-GPU",
-
-    // Contracts
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    workgroupLawVersion: 24,
-
-    // CoreMemory
-    coreMemoryAware: true,
-    coreMemoryContract: "PulseCoreMemory-v24-Immortal++"
-  },
-
-  contract: {
-    always: [
-      "PulseGPUNervousSystem",
-      "PulseGPUSpine",
-      "PulseGPUGeneticMemory",
-      "PulseGPUHealer"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyGPUSynapse"
-    ]
-  }
-}
-*/
-
-const PULSE_GPU_EVENT_EMITTER_META_V24 = {
-  layer: "PulseGPUEventEmitter",
-  version: "24.0-Immortal++",
-  target: "full-gpu+binary+spine",
-  description:
-    "Synaptic signal relay for GPU subsystem communication — v24-Immortal++ dual-band, prewarm, cache-aware.",
-
-  selfRepairable: true,
-  unifiedAdvantageField: true,
-  pulseSend24Ready: true,
-  pulseSend16Ready: true,
-
-  evo: {
-    // deterministic nervous system traits (24++ boosted)
-    metabolicBoost: 1.25,
-    neuralReflexBoost: 1.35,
-    stabilityBoost: 1.4,
-
-    multiInstanceReady: true,
-    deterministicNeuron: true,
-    parallelSafe: true,
-    fanOutScaling: 1.3,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-    reflexPropagation: 1.35,
-
-    // v24 spine + dual-band + chunking + prewarm
-    gpuSpineReady: true,
-    dualBandReady: true,
-    chunkingReady: true,
-    prewarmReady: true,
-    cacheAware: true,
-    prewarmAware: true,
-    organismClusterBoost: 1.3,
-    cognitiveComputeLink: true,
-    nervousSystemLinked: true,
-    geneticMemoryLinked: true,
-
-    // awareness flags (metadata only)
-    binaryAware: true,
-    symbolicAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    cognitiveFrameAware: true,
-    computerIntelligenceAware: true,
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    // Contracts (conceptual only)
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    earnCompatibility: "Earn-v24-GPU",
-
-    // Legacy compatibility
-    legacyRoutingContract: "PulseSend-v16",
-    legacyGPUOrganContract: "PulseGPU-v16-Immortal",
-    legacyBinaryGPUOrganContract: "PulseBinaryGPU-v16-Immortal",
-    legacyEarnCompatibility: "Earn-v4-Presence"
-  }
-};
+const PULSE_GPU_EVENT_EMITTER_META_V24 = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // Small helpers (pure, deterministic)
 function safeString(v, fallback = "") {

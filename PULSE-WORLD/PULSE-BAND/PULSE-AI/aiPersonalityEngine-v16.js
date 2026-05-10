@@ -5,136 +5,36 @@
 // ============================================================================
 //  AI EXPERIENCE METADATA — v16‑IMMORTAL‑EVO
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiPersonalityEngine",
-  version: "v16-Immortal-Evo",
-  layer: "ai_core",
-  role: "personality_engine",
-  lineage: "aiPersonalityEngine-v11 → v15-Immortal → v16-Immortal-Evo",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    personalityEngine: true,
-    toneMapping: true,
-    personaStability: true,
-    identitySpineAware: true,
-    personalFrameAware: true,
-    safetyFrameAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    overmindAware: true,
-    presenceAware: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const PersonalityEngineMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiIdentityCore", "aiPersonalFrame", "aiHumilityFilter", "aiEmotionEngine", "OvermindPrime"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const PersonalityEngineMeta = Object.freeze({
-  layer: "PulseAIPersonalityLayer",
-  role: "PERSONALITY_ENGINE",
-  version: "16-Immortal-Evo",
-  identity: "aiPersonalityEngine-v16-Immortal-Evo",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  // --------------------------------------------------------------------------
-  //  EVO — IMMORTAL‑EVO PERSONALITY MAP
-  // --------------------------------------------------------------------------
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    toneAware: true,
-    personaAware: true,
-    safetyAware: true,
-    overmindAware: true,
-    deliveryAware: true,
-    identityCoreAware: true,
-    personalFrameAware: true,
-    presenceAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    packetAware: true,
-    windowAware: true,
-    lineageAware: true,
-    egoFree: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    microPipeline: true,
-    speedOptimized: true,
-    multiInstanceReady: true,
-    readOnly: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    epoch: "16-Immortal-Evo"
-  }),
-
-  // --------------------------------------------------------------------------
-  //  CONTRACT — IMMUTABLE PERSONALITY CONTRACT
-  // --------------------------------------------------------------------------
-  contract: Object.freeze({
-    purpose: [
-      "Provide a stable, deterministic personality layer for all AI behavior",
-      "Ensure tone, warmth, clarity, and humility remain consistent",
-      "Support Overmind-Prime, PersonalFrame, Tone/Delivery organs, and personas",
-      "Prevent ego, superiority, or condescension from emerging",
-      "Maintain cross-organ personality coherence",
-      "Emit window-safe personality snapshots",
-      "Shape responses without mutating binary layers",
-      "Remain presence- and dualband-aware without leaking state"
-    ],
-
-    never: [
-      "break personality alignment",
-      "shift tone unpredictably",
-      "inject ego or superiority",
-      "use condescending phrasing",
-      "introduce randomness into tone",
-      "drift into robotic or purely academic tone",
-      "override system-wide safety constraints",
-      "log raw user payloads directly",
-      "depend on network or filesystem state"
-    ],
-
-    always: [
-      "stay grounded",
-      "stay warm",
-      "stay clear",
-      "stay humble",
-      "stay adaptive",
-      "stay consistent",
-      "stay human-friendly",
-      "stay deterministic",
-      "stay ego-free",
-      "stay cross-organ compatible",
-      "stay presence-aware in a read-only way"
-    ]
-  }),
-
-  guarantees: Object.freeze({
-    driftProofPersonality: true,
-    stableToneIdentity: true,
-    egoFree: true,
-    warmthPreserved: true,
-    deterministicOutput: true,
-    crossOrganCompatibility: true,
-    dualbandSafe: true,
-    presenceSafe: true
-  }),
-
-  boundaryReflex() {
-    return "Personality must remain stable, grounded, ego-free, deterministic, dualband-safe, and consistent across all organs.";
-  }
-});
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, personality-scoped

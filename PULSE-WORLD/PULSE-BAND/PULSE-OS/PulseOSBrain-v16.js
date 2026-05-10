@@ -23,180 +23,21 @@
 //   • Expansion + server are the *internet center*; Brain is read-only consumer
 //     via snapshots, never the origin of network traffic.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSBrain",
-  version: "v16-Immortal",
-  layer: "cns",
-  role: "os_brain",
-  lineage: "PulseOS-v16-Immortal",
-
-  evo: {
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    cortexAware: true,
-    evolutionAware: true,
-    chunkAware: true,
-    prewarmAware: true,
-    presenceAware: true,
-    meshAware: true,
-
-    safeRouteFree: true,
-
-    // v16 IMMORTAL upgrades
-    expansionAware: true,
-    serverRoundtripAware: true,
-    internetCenterExternal: true,
-    worldLensSnapshotOnly: true,
-    advantageSnapshotOnly: true,
-    presenceSnapshotOnly: true,
-    topologySnapshotOnly: true,
-    arteryAware: true,
-    arteryDeterministic: true,
-    arteryDriftProof: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrainCortex",
-      "PulseOSBrainEvolution",
-      "PulseChunker"
-    ],
-    never: [
-      "legacyOSBrain",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseOSBrainMeta = Object.freeze({
-  layer: "PulseOSBrain",
-  role: "CNS_BRAIN_ORGAN",
-  version: "v16-Immortal-DUALBAND-Presence-ADVANTAGE-ARTERY",
-  identity: "PulseOSBrain-v16-Immortal-DUALBAND-Presence-ADVANTAGE-ARTERY",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-
-    // Brain laws
-    cnsIdentityKernel: true,
-    cnsContractKernel: true,
-    cnsArteryKernel: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBandAware: true,
-    nonExecutableBrain: true,
-    notRouter: true,
-    notGPU: true,
-
-    // Import laws
-    importsPulseIQMapOnly: true,
-    importsOrganismMapOnly: true,
-    importsEvolutionOnly: true,
-
-    // Presence / mesh / performance / advantage / pulse-topology awareness
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    kernelChunkingReady: true,
-    kernelPrewarmReady: true,
-    advantageFieldAware: true,
-    unifiedAdvantageField: true,
-    pulseTopologyAware: true,
-
-    // Artery awareness
-    arteryAware: true,
-    arteryDeterministic: true,
-    arteryDriftProof: true,
-    arteryMultiBandAware: true,
-    arteryCostAware: true,
-    arteryPressureAware: true,
-    arteryThroughputAware: true,
-    arteryStabilityAware: true,
-
-    // Multi-instance / cloning
-    multiInstanceReady: true,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-
-    // Safety
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    worldLensAware: true,
-    zeroNetworkInOrgans: true,
-
-    // v16 IMMORTAL internet-center guarantees
-    internetCenterExternal: true,       // Expansion+Server, not Brain
-    networkIntentOnly: true,            // Brain emits intent, never fetches
-    snapshotOnlyInputs: true            // Brain only ingests snapshots
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PulseIQMap",
-      "PulseOrganismMap",
-      "CortexBootConfig"
-    ],
-    output: [
-      "CNSIdentity",
-      "CNSContracts",
-      "CNSDiagnostics",
-      "CNSBootSignatures",
-      "CNSPresenceDescriptors",
-      "CNSChunkingProfiles",
-      "CNSAdvantageField",
-      "CNSWorldLensSnapshot",
-      "CNSPulseTopologyDescriptors",
-      "CNSArterySnapshot"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v16-Immortal",
-    parent: "PulseOS-v15-Immortal",
-    ancestry: [
-      "PulseOSBrain-v9",
-      "PulseOSBrain-v10",
-      "PulseOSBrain-v11",
-      "PulseOSBrain-v11-Evo",
-      "PulseOSBrain-v11-Evo-BINARY-MAX",
-      "PulseOSBrain-v12.3-SPINE-DUALBAND-Presence",
-      "PulseOSBrain-v12.4-SPINE-DUALBAND-Presence",
-      "PulseOSBrain-v13-SPINE-DUALBAND-Presence",
-      "PulseOSBrain-v13-SPINE-DUALBAND-Presence-ADVANTAGE",
-      "PulseOSBrain-v15-Immortal-DUALBAND-Presence-ADVANTAGE",
-      "PulseOSBrain-v16-Immortal-DUALBAND-Presence-ADVANTAGE-ARTERY"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "organism-brain"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "CNS identity + contract + artery kernel (symbolic-primary, dualband-aware)",
-    adaptive:
-      "binary-aware overlays via GPU/Send/Binary organs + presence/mesh/chunk/prewarm/advantage/world-lens/pulse-topology/artery metadata surfaces",
-    return:
-      "online CNS identity + contracts + boot signatures + presence/chunking/advantage/world-lens/pulse-topology/artery descriptors"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  IMPORTS — LAW: BRAIN MAY IMPORT ONLY PULSEIQ + ORGANISM + EVOLUTION

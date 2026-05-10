@@ -13,72 +13,21 @@
 //    - Deterministic, drift-proof, dual-band, cache-aware.
 //    - No direct raw fetch except via routed world engine.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-GENOME_META = {
-  identity: "PulseWorldGenome",
-  version: "v20-IMMORTAL",
-  epoch: "v20-IMMORTAL",
-  layer: "world_layer",
-  role: "world_genome",
-  lineage: "PulseOS-v14 → v16-IMMORTAL → v17-IMMORTAL → v20-IMMORTAL",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    zeroMutation: true,
-    zeroExternalMutation: true,
-
-    worldLayerOrgan: true,
-    founderAligned: true,
-    presenceAware: true,
-    bandAware: true,
-    proxyAware: true,
-    safeInit: true,
-    singleInstance: true,
-    coldStartSafe: true,
-    healthAware: true,
-    namespaceAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    geoAware: true,
-    intellHashAware: true,
-    binaryAware: true,
-    schedulerAware: true,
-    runtimeV20Aware: true
-  },
-
-  placement: {
-    requiredFolder: "PULSE-WORLD",
-    requiredSubsystem: "world_engine",
-    naturalLanguageHook: [
-      "world connection",
-      "world engine",
-      "backend connection",
-      "backend engine",
-      "firebase genome",
-      "world data",
-      "world memory",
-      "world genome",
-      "world helpers"
-    ]
-  },
-
-  notifications: {
-    onMisplacement: "adaptive",
-    adminEmail: [
-      "fordfamilydistribution@gmail.com",
-      "aldwynfox101@gmail.com",
-      "sales@tropicpulse.bz"
-    ],
-    adminSMS: "+15096077261",
-    adminMessenger: [
-      "+15096077261",
-      "aldwynfox101@gmail.com"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  IMPORTS — DATA GENOME + SPECS + TRANSLATORS + SOCIAL GRAPH

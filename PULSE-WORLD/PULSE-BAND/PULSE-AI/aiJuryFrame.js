@@ -3,132 +3,36 @@
 //  World-Lens Registry for aiOvermind / aiJury / Creator
 //  PURE FUNCTIONAL • ZERO STATE • ZERO MUTATION • JURY OF 12 LENSES
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "JuryFrame",
-  version: "v16-Immortal-ORGANISM-Jury",
-  layer: "ai_core",
-  role: "jury_frame",
-  lineage: "JuryFrame-v11 → v14-Immortal → v16-Immortal-ORGANISM-Jury",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    juryFrame: true,
-    personaMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const JuryFrameMeta = Identity.OrganMeta;
 
-    // v16-Immortal-ORGANISM-Jury extensions
-    juryOfTwelve: true,
-    citizenWitnessAware: true,
-    pulseUserFeedAware: true,
-    aiOriginRiskAware: true,
-    dominancePatternAware: true,
-    flowIntegrityAware: true,
-    anomalyAware: true,
-    expansionCheckAware: true,
-    fairnessAware: true,
-    worldIdeaAware: true,
-    prewarmAware: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: [
-      "stay pure and functional",
-      "return deterministic results",
-      "be composable by aiOvermind / aiJury",
-      "respect safety and persona boundaries",
-      "treat AI-origin solutions as open-for-attack, not automatically bad",
-      "surface Creator-level flags when justice / fairness / flow are at risk"
-    ],
-    never: [
-      "store state",
-      "mutate context",
-      "write to memory",
-      "override aiSafetyFrame",
-      "introduce randomness",
-      "hide anomalies",
-      "silence citizen witness"
-    ]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-export const JuryFrameMeta = Object.freeze({
-  type: "Cognitive",
-  subsystem: "aiJuryFrame",
-  layer: "PulseAIJuryFrame",
-  role: "JURY_FRAME_ORGAN",
-  version: "v16-Immortal-ORGANISM-Jury",
-  identity: "aiJuryFrame-v16-Immortal-ORGANISM-Jury",
+export const surfaceMeta = Identity.surfaceMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    safetyAware: true,
-    overmindAware: true,
-    readOnly: true,
-    mutationSafe: true,
-    nonBlocking: true,
-    multiInstanceReady: true,
-    worldLensArteryAware: true,
-    epoch: "v16-Immortal-ORGANISM-Jury",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    juryOfTwelve: true,
-    citizenWitnessAware: true,
-    pulseUserFeedAware: true,
-    aiOriginRiskAware: true,
-    dominancePatternAware: true,
-    flowIntegrityAware: true,
-    anomalyAware: true,
-    expansionCheckAware: true,
-    fairnessAware: true,
-    worldIdeaAware: true,
-    prewarmAware: true
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  contract: Object.freeze({
-    purpose: Object.freeze([
-      "Provide reusable world-lens functions to aiOvermind / aiJury",
-      "Centralize jury logic for consistency and auditing",
-      "Support consensus, variance, ambiguity, and breakthrough detection",
-      "Emit a read-only jury snapshot for Overmind, Sentience, and Creator",
-      "Treat AI-origin proposals as open-for-attack and surface them clearly",
-      "Use PulseUser citizen-witness feed as ground-truth input"
-    ]),
-    never: Object.freeze([
-      "store state",
-      "mutate context",
-      "write to memory",
-      "override aiSafetyFrame",
-      "introduce randomness",
-      "silence anomalies",
-      "hide AI-origin risk"
-    ]),
-    always: Object.freeze([
-      "stay pure and functional",
-      "return deterministic results",
-      "be composable by aiOvermind / aiJury",
-      "respect safety and persona boundaries",
-      "surface justice / fairness / flow issues to Creator"
-    ])
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  boundaryReflex() {
-    return "JuryFrame is pure and stateless — it only evaluates candidates and emits jury health, never mutates context or safety.";
-  }
-});
 
 // ============================================================================
 //  HELPERS — TEXT, BUCKETS, SAFE ACCESS

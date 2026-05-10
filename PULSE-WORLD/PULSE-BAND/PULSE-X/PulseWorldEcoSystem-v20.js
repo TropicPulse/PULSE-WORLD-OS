@@ -112,44 +112,21 @@
 //
 // DO NOT REMOVE THIS BLOCK.
 //
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const AI_EXPERIENCE_META = {
-  identity: "PulseWorldEcoSystem.EnvironmentEngineOrgan",
-  version: "v20-Immortal",
-  layer: "pulse_world_environment_engine",
-  role: "environment_state_brain",
-  lineage: [
-    "EnvironmentEngine-v12",
-    "EnvironmentEngine-v14-Immortal",
-    "EnvironmentEngine-v16-Immortal-Evo",
-    "PulseWorldEcoSystem-v20-Immortal"
-  ],
-
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    zeroState: true,
-    zeroTiming: true,
-    binaryAware: true,
-    dualBand: true,
-    presenceAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    organ: "PulseWorldEcoSystem-v20",
-    mesh: "PulseMesh-v20",
-    send: "PulseSend-v20",
-    environment: "PulseEnvironment-v20"
-  },
-
-  safety: {
-    neverUseWindow: true,
-    neverUseDynamicImport: true,
-    neverCallExternalAPIs: true,
-    neverWriteFirestore: true
-  }
-};
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IMPORTS

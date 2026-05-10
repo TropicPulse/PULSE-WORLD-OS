@@ -29,43 +29,21 @@
 //    • Deterministic bit → pattern/mode/payload mapping
 //    • No randomness, no timestamps
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSendSystem",
-  version: "v16-Immortal-Intel",
-  layer: "frontend",
-  role: "send_system_conductor",
-  lineage: "PulseOS-v12",
-
-  evo: {
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    deterministic: true,
-    unifiedPulseFamily: true,
-    immortalIntel: true
-  },
-
-  contract: {
-    always: [
-      "PulseSendImpulse",
-      "PulseSendReturn",
-      "PulseSendLegacyPulse",
-      "PulseV2EvolutionEngine",
-      "PulseV3UnifiedOrganism"
-    ],
-    never: [
-      "legacySendSystem",
-      "legacySend",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  IMPORTS — Pulse v1 / v2 / v3 creators
@@ -79,52 +57,6 @@ import { PulseRouter } from "../PULSE-ROUTER/PulseRouter-v24.js";
 import { PulseMesh } from "../PULSE-MESH/PulseMesh-v16.js";
 import { createPulseSendImpulse as createPulseSend } from "./PulseSendImpulse-v16.js";
 import { createPulseSendReturn } from "./PulseSendReturn.js";
-
-
-// ============================================================================
-//  PulseRole — System Conductor (v16-Immortal-Intel)
-// ============================================================================
-export const PulseRole = {
-  type: "Messenger",
-  subsystem: "PulseSend",
-  layer: "System",
-  version: "16-Immortal-Intel",
-  identity: "PulseSendSystem-v16-Immortal-Intel",
-
-  evo: {
-    driftProof: true,
-    systemConductorReady: true,
-    patternAware: true,
-    lineageAware: true,
-    modeAware: true,
-    identityAware: true,
-    multiOrganReady: true,
-    deterministicImpulseFlow: true,
-    futureEvolutionReady: true,
-
-    unifiedAdvantageField: true,
-    pulseSend11Ready: true,
-
-    diagnosticsReady: true,
-    signatureReady: true,
-    systemSurfaceReady: true,
-
-    // Binary + dual-stack
-    binaryAwareSystemReady: true,
-    dualStackReady: true,
-    dualBandAware: true,
-
-    // 12.3+ style surfaces
-    cacheChunkAware: true,
-    prewarmAware: true,
-    multiPresenceAware: true,
-
-    // IMMORTAL-INTEL
-    degradationAware: true,
-    immortalMetaAware: true,
-    pulseIntelligenceReady: true
-  }
-};
 
 
 // ============================================================================

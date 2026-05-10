@@ -15,136 +15,35 @@
  *   This organ is NOT symbolic, NOT dualband, NOT cognitive.
  *   It is pure binary physiology — the “bit‑level cortex.”
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiBinaryAgent",
-  version: "v16-Immortal",
-  layer: "ai_binary",
-  role: "binary_reflex_engine",
-  lineage: "aiBinaryAgent-v9 → v11 → v14-Immortal → v16-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    binaryPrimary: true,
-    symbolicAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    computeReflex: true,
-    throughputMeasurement: true,
-    pressureModel: true,
-    costModel: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    computeIntelligenceAware: true,
-    computeGeneticAware: true,
-    triHeartAware: true,
-    deltaAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const BinaryAgentMeta = Identity.OrganMeta;
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: [
-      "aiHeartbeat",
-      "aiBinaryDelta",
-      "aiBinaryEvolution"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-// ---------------------------------------------------------
-//  META BLOCK — v16‑Immortal
-// ---------------------------------------------------------
+export const surfaceMeta = Identity.surfaceMeta;
 
-export const BinaryAgentMeta = Object.freeze({
-  layer: "BinaryCompute",
-  role: "BINARY_COMPUTE_CORTEX",
-  version: "v16-Immortal",
-  identity: "aiBinaryAgent-v16-Immortal",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    computeAware: true,
-    arteryAware: true,
-    metricsAware: true,
-    encodingAware: true,
-    decodingAware: true,
-
-    computeIntelligenceAware: true,
-    computeGeneticAware: true,
-    triHeartAware: true,
-    deltaAware: true,
-
-    multiInstanceReady: true,
-    epoch: "v16-Immortal",
-
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-    dualBandSafe: true,   // safe to live in dualband organism, but stays binary‑only
-    sideEffectFree: true
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide a pure binary compute cortex that encodes/decodes values, executes binary compute arteries, " +
-      "measures compute throughput/pressure/cost/budget, and exposes compute‑intelligence surfaces for delta engines.",
-
-    never: Object.freeze([
-      "interpret symbolic meaning",
-      "perform cognition",
-      "act as a router",
-      "act as a scheduler",
-      "mutate external organs",
-      "introduce randomness",
-      "govern compute",
-      "route compute"
-    ]),
-
-    always: Object.freeze([
-      "operate on binary-only values",
-      "compute artery metrics deterministically",
-      "encode values into binary",
-      "decode binary into requested types",
-      "validate binary inputs",
-      "remain pure and minimal",
-      "expose stable compute-intelligence surfaces for delta engines"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "BinaryComputeCortex",
-    organKind: "Physiology",
-    physiologyBand: "Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "on-demand",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "computeBinary:inputs",
-        "computeBinary:rawResult",
-        "computeAndProject:projected",
-        "addBinary",
-        "andBinary",
-        "orBinary",
-        "bytesToBinary:truncated",
-        "computeIntelligence:surface",
-        "computeIntelligence:delta"
-      ]
-    }
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------
 //  BINARY AGENT PREWARM ENGINE — v16‑Immortal

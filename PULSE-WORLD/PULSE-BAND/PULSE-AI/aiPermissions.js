@@ -3,109 +3,36 @@
 //  Capability Contract • Self‑Regulation • Evolutionary + Trust Control
 //  PURE PERMISSIONS. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS. PULSE‑NET ONLY.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "permissions",
-  version: "v16-Immortal++",
-  layer: "ai_core",
-  role: "permissions_surface",
-  lineage: "permissions-v11 → v14-Immortal → v16-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    permissionsSurface: true,
-    policyMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    capabilityArteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
-    organismUserSegregation: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,          // no raw internet; Pulse / Pulse‑Net only
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const EgoMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiPermissionsEngine", "aiGovernorAdaptor", "aiBoundariesEngine"],
-    never: ["safeRoute", "fetchViaCNS", "directInternetAccess"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const EgoMeta = Object.freeze({
-  type: "Cognitive",
-  subsystem: "aiEgo",
-  layer: "PulseAIEgo",
-  role: "EGO_ORGAN",
-  version: "16-Immortal++",
-  identity: "aiEgo-v16-Immortal++",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    readOnly: true,
-    mutationSafe: true,
-    nonBlocking: true,
-    lineageAware: true,
-    multiInstanceReady: true,
-    capabilityArteryAware: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
-    organismUserSegregation: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    epoch: "16-Immortal++"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  contract: Object.freeze({
-    purpose:
-      "Define immutable capability boundaries for all personas and organs. Enforce universal forbidden actions. Provide deterministic permission resolution for Cortex, Router, Boundaries, DualBand, and Pulse‑Net routed IO.",
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    never: Object.freeze([
-      "mutate permissions",
-      "weaken forbidden actions",
-      "introduce randomness",
-      "override persona contracts",
-      "modify system state",
-      "access secrets or OS",
-      "bypass safety or boundaries",
-      "open direct internet connections",
-      "bypass Pulse / Pulse‑Net routing",
-      "weaken jury / trust / honeypot protections"
-    ]),
-
-    always: Object.freeze([
-      "apply forbidden actions first",
-      "resolve persona permissions deterministically",
-      "apply evolutionary expansion safely",
-      "apply user-facing filtering",
-      "enforce Pulse‑Net as the only external IO surface",
-      "segregate organism state from user identity",
-      "remain read-only and drift-proof"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "Ego permissions are immutable capability law — Pulse‑Net routed, non‑bypassable, and cannot be weakened.";
-  }
-});
 
 // ============================================================================
 // UNIVERSAL FORBIDDEN ACTIONS — Immutable (v16‑IMMORTAL++)

@@ -19,56 +19,21 @@
 // • Binary-aware, dual-mode-ready, presence-aware, dual-band-ready.
 // • Unified-advantage-field aligned, coordinator-free.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshTendons",
-  version: "v15.0-MESH-TENDONS-Immortal",
-  layer: "mesh",
-  role: "mesh_connective_tissue",
-  lineage: "PulseMesh-v15",
-
-  evo: {
-    tendons: true,                  // This IS the connective tissue organ
-    tensionAware: true,             // Reads impulse tension
-    elasticityAware: true,          // Determines impulse elasticity
-
-    metadataOnly: true,             // No routing, no compute
-    deterministic: true,
-    driftProof: true,
-
-    presenceAware: true,
-    meshAware: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true,
-
-    unifiedAdvantageField: true,
-    coordinatorFree: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshFlow",
-      "PulseMeshEnvironmentalField",
-      "PulseMeshAwareness",
-      "PulseMeshSkin",
-      "PulseMeshSurvivalInstincts",
-      "PulseMeshEarnEngine"
-    ],
-    never: [
-      "legacyMeshTendons",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseMeshTendons({ log, warn, error }) {
 

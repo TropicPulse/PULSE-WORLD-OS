@@ -3,82 +3,40 @@
 //  System + Identity + Architecture Insight
 //  PURE READ-ONLY. ZERO IDENTITY LEAKAGE. ZERO MUTATION.
 // ============================================================================
+
 /*
-AI_EXPERIENCE_META = {
-  identity: "aiArchitect",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "architectural_reasoner",
-  lineage: "aiArchitect-v9 → v11 → v14-Immortal",
-
-  evo: {
-    architecturalReasoning: true,
-    structureMapping: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: ["aiContext", "aiCortex", "aiBrainstem"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
+  (You can keep this AI_EXPERIENCE_META block as documentation;
+   runtime identity now comes from the Organism Map.)
 */
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-export const ArchitectMeta = Object.freeze({
-  layer: "PulseAIArchitectFrame",
-  role: "ARCHITECT_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiArchitect-v12.3-Evo+",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    readOnly: true,
-    identityStripping: true,
-    ownerGated: true,
-    architectPersonaAware: true,
-    evolutionAware: true,
-    dbAware: true,
-    fileScanAware: true,
-    routeAnalysisAware: true,
-    schemaAnalysisAware: true,
-    deadComponentAware: true,
-    orphanRouteAware: true,
-    multiInstanceReady: true,
-    architectArteryAware: true,
-    epoch: "v12.3-Evo+"
-  }),
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: Object.freeze({
-    purpose: Object.freeze([
-      "Provide owner-level visibility into system and architecture state",
-      "Surface drift, schema issues, dead components, and orphaned routes",
-      "Map layers, imports, and web stack structure",
-      "Integrate with evolution organ for organism-wide analysis",
-      "Support file, route, and schema scanning for diagnostics"
-    ]),
-    never: Object.freeze([
-      "write to the system",
-      "delete data",
-      "update records",
-      "expose identity anchors"
-    ]),
-    always: Object.freeze([
-      "stay read-only",
-      "stay deterministic",
-      "strip identity",
-      "respect owner+architect gating"
-    ])
-  })
-});
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const ArchitectMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
+
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS

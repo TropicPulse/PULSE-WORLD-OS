@@ -14,104 +14,21 @@
 //   - Advantage View: emits ALL wave modes + symbolic hints in one packet.
 //   - Pairs with BinaryPulse‑v16‑IMMORTAL + LoopScanner‑v16‑IMMORTAL.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBinaryWaveScanner",
-  version: "v16-Immortal+",
-  layer: "wave_scanner",
-  role: "binary_wave_organ",
-  lineage: "PulseBinaryWaveScanner-v12.3-Evo → v16-Immortal → v16-Immortal+",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    // Core organ identity
-    waveOrgan: true,
-    multiWave: true,
-    multiSpin: true,
-    dualBand: true,
-    gpuAware: true,
-    arteryAware: true,
-    advantageView: true,
-    windowSafe: true,
-    presenceAware: true,
-    harmonicAware: true,
-
-    // v16-IMMORTAL+ enhancements
-    ultraMultiWave: true,          // 12-phase wave sets
-    deepContrastModel: true,       // MRI-like depth modeling
-    reflectionPhysics: true,       // deterministic reflection curves
-    gpuHeatCoupling: true,         // symbolic GPU heat → wave modulation
-    warpStressCoupling: true,      // warp divergence → reflection bias
-    presenceWaveCoupling: true,    // presence → depth/contrast stabilizer
-    harmonicPhaseBias: true,       // harmonics → phase curvature
-    arteryPressureModel: true,     // wave load/pressure buckets
-    advantageHints: true,          // clarity/calmness/edgeFocus/gpuInfluence
-    zeroDriftPhase: true,          // no drift across long runs
-    epochStable: true,             // epoch-consistent wave physics
-
-    // Determinism guarantees
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    // Safety guarantees
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroRandomness: true
-  },
-
-  contract: {
-    always: [
-      "BinaryPulse",
-      "PulseBinaryLoopScanner",
-      "PageEvo",
-      "PulseAdminInspector",
-      "PulseContinuance",
-      "PulseOmniHostingCoreMemory"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyWaveScanner",
-      "timestampBias",
-      "randomness",
-      "hostSpecificLogic"
-    ]
-  },
-
-  // Optional: symbolic self-description for debugging / introspection
-  describe() {
-    return "PulseBinaryWaveScanner-v16-Immortal+: deterministic multi-spin wave organ with GPU/presence/harmonic coupling and artery-aware physics.";
-  }
-}
-*/
-export const PulseBinaryWaveScannerMeta = Object.freeze({
-  layer: "PulseBinaryWaveScanner",
-  role: "BINARY_WAVE_ORGAN",
-  version: "v16-IMMORTAL",
-  identity: "PulseBinaryWaveScanner-v16-IMMORTAL",
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiSpin: true,
-    dualBand: true,
-    gpuAware: true,
-    arteryAware: true,
-    advantageView: true,
-    visualizationAware: true,
-    shifterAware: true,
-    zeroRandomness: true,
-    zeroMutationOfInput: true,
-    epoch: "16-IMMORTAL"
-  }),
-  guarantees: Object.freeze({
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroDynamicImports: true,
-    zeroEval: true
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // ARTERY — wave load + pressure + mode distribution + divergence

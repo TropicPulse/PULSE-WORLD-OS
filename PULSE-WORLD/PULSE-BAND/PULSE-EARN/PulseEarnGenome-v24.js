@@ -24,148 +24,23 @@
 //   • Presence/advantage/chunk/computeProfile/pulseIntelligence DO NOT change the schema.
 //   • NO async, NO network, NO randomness, NO filesystem.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnGenome",
-  version: "v24-Immortal-INTEL-PLUS",
-  layer: "earn_genome",
-  role: "earn_genetic_blueprint",
-  lineage: "PulseEarnGenome-v9 → v10 → v11 → v12.3 → v13 → v14 → v16-Immortal-INTEL → v24-Immortal-INTEL-PLUS",
-
-  evo: {
-    earnGenome: true,
-    jobDNA: true,
-    lineageTracking: true,
-    mutationProof: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    waveFieldAware: true,
-    chunkPrewarmAware: true,
-
-    computeProfileAware: true,
-    pulseIntelligenceAware: true,
-    factoringAware: true,
-    deepJobAware: true,
-    multiInstanceHints: true,
-
-    hashIntelligencePrimary: true,
-    legacyHashFallback: true,
-    proofBridgeAware: true,
-    healingMetadataAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnHeart",
-      "PulseEarnMetabolism",
-      "PulseEarnGeneticMemory",
-      "PulseEarnCirculatorySystem",
-      "PulseEarnEndocrineSystem"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
-export const PulseEarnGenomeCoreMeta = Object.freeze({
-  layer: "PulseEarnGenomeCore",
-  role: "EARN_GENOME_CORE",
-  version: "v24-Immortal-INTEL-PLUS",
-  identity: "PulseEarnGenomeCore-v24-Immortal-INTEL-PLUS",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    immutable: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureStaticSchema: true,
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    chunkPrewarmAware: true,
-    computeProfileAware: true,
-    pulseIntelligenceAware: true,
-    factoringAware: true,
-    deepJobAware: true,
-    multiInstanceHints: true,
-    worldLensAware: false,
-    constitutional: true,
-    hashIntelligencePrimary: true,
-    legacyHashFallback: true,
-    proofBridgeAware: true,
-    healingMetadataAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PulseEarnJobSchemaV13 (immutable)",
-      "DualBandContext (metadata-only)",
-      "GlobalHintsPresenceField (metadata-only)"
-    ],
-    output: [
-      "GenomeSignatures",
-      "BinaryFieldSignatures",
-      "WaveFieldSignatures",
-      "PresenceFieldSignatures",
-      "AdvantageFieldSignatures",
-      "ChunkPrewarmPlan",
-      "ComputeProfile",
-      "PulseIntelligence",
-      "ConstitutionalMetadata",
-      "GenomeHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v24-Immortal-INTEL-PLUS",
-    ancestry: [
-      "PulseEarnGenomeCore-v9",
-      "PulseEarnGenomeCore-v10",
-      "PulseEarnGenomeCore-v11",
-      "PulseEarnGenomeCore-v11-Evo",
-      "PulseEarnGenomeCore-v12.3-Presence-Evo+",
-      "PulseEarnGenomeCore-v13.0-Presence-Immortal",
-      "PulseEarnGenomeCore-v16-Immortal-INTEL"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "immutable static schema",
-    adaptive: "signature surfaces (binary + wave + presence/advantage/hints/compute) + proof bridge",
-    return: "deterministic constitutional metadata + healing state"
-  })
-});
 
 // ============================================================================
 // INTERNAL: Deterministic Hash Helpers (v24-Immortal-INTEL-PLUS)

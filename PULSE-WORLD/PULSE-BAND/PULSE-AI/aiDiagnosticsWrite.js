@@ -1,8 +1,9 @@
 // ============================================================================
-//  aiDiagnosticsWrite.js — Pulse OS v12.3‑Presence
+//  PULSE OS v12.3‑Presence — DIAGNOSTICS WRITE ORGAN
 //  Safe Logger • Identity‑Stripped • Deterministic Write Surface
 //  PURE LOGGING. ZERO IDENTITY. ZERO MUTATION.
 // ============================================================================
+
 /*
 AI_EXPERIENCE_META = {
   identity: "aiDiagnosticsWrite",
@@ -30,75 +31,35 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-export const DiagnosticsWriteMeta = Object.freeze({
-  layer: "PulseAIDiagnosticsWriteFrame",
-  role: "DIAGNOSTICS_WRITE_ORGAN",
-  version: "12.3-Presence",
-  identity: "aiDiagnosticsWrite-v12.3-Presence",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    binaryAware: true,
-    symbolicAware: true,
-    writeAware: true,
-    logAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const DiagnosticsWriteMeta = Identity.OrganMeta;
 
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    epoch: "12.3-Presence"
-  }),
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose:
-      "Safely store AI runs into a logging backend without identity anchors.",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: Object.freeze([
-      "store user identifiers",
-      "store device fingerprints",
-      "store session roots",
-      "mutate logs after write",
-      "introduce randomness",
-      "rewrite payloads nondeterministically"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: Object.freeze([
-      "strip identity",
-      "write deterministically",
-      "preserve diagnostics",
-      "preserve trace",
-      "preserve routing snapshot",
-      "emit deterministic write packets"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "DiagnosticsWrite",
-    organKind: "Logging",
-    physiologyBand: "Symbolic",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "per-write",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "write",
-        "write-error"
-      ]
-    }
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, diagnostics-write scoped

@@ -3,95 +3,22 @@
 FILE: /PULSE-WORLD/DeltaEngine-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC DELTA ENGINE
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld.DeltaEngine",
-  version: "v16-Immortal",
-  layer: "pulse_world",
-  role: "organism_delta_engine",
-  lineage: "DeltaEngine-v13-COSMOS-MULTIVERSE → v16-Immortal",
-
-  evo: {
-    deterministic: true,
-    symbolic: true,
-    hostAgnostic: true,
-    regionAware: true,
-    multiverseAware: true,
-    reversible: true,
-    noRandomness: true,
-
-    driftProof: true,
-    pureCompute: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    coreMemoryAware: true,
-    schemaVersioned: true,
-    envelopeAware: false,
-    integrityAware: false,
-    historyAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    input: [
-      "SnapshotRecord(before)",
-      "SnapshotRecord(after)",
-      "CosmosContext { universeId, timelineId, branchId }"
-    ],
-    output: [
-      "DeltaRecord",
-      "DeltaSummary",
-      "DeltaPatch"
-    ]
-  },
-
-  upstream: [
-    "SnapshotPhysics",
-    "LineageEngine-v16"
-  ],
-
-  downstream: [
-    "DeploymentPhysics-v16",
-    "MultiOrganismSupport-v16",
-    "PulseContinuance",
-    "DeltaEngine-CosmosMultiverse-v16"
-  ],
-
-  notes: [
-    "DeltaEngine v16 is multiverse-aware, region-aware, and physics-pure.",
-    "Cosmos context is metadata-only; no behavioral drift.",
-    "Delta patches remain reversible across universes and timelines.",
-    "CoreMemory integration is write-only, deterministic, and multiverse keyed."
-  ]
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseWorld.DeltaEngine",
-  layer: "pulse_world",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "SnapshotRecord(before)",
-    "SnapshotRecord(after)",
-    "CosmosContext"
-  ],
-
-  produces: [
-    "DeltaRecord",
-    "DeltaSummary",
-    "DeltaPatch"
-  ],
-
-  sideEffects: "core_memory_write_only",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 const DELTA_ENGINE_VERSION = "16.0-Immortal";
 const DELTA_SCHEMA_VERSION = "v3";
 

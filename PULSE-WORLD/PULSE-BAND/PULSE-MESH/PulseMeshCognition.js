@@ -28,84 +28,19 @@
 //  • Deterministic: same impulses → same cognition patterns
 //  • Presence-aware and band-aware only via metadata
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshCognition",
-  version: "v14.9-MESH-COGNITION",
-  layer: "mesh",
-  role: "mesh_memory_and_pattern_engine",
-  lineage: "PulseMesh-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    cognition: true,                // This IS the cognition organ
-    metadataOnly: true,             // Never mutates payloads
-    binaryAware: true,              // Binary tags + binary patterns
-    symbolicAware: true,            // Symbolic tags + patterns
-    dualBand: true,                 // Dual-mode cognition
-    deterministic: true,            // No randomness in cognition
-    driftProof: true,               // No drift in memory patterns
-    zeroMutationOfInput: true,      // Never mutate impulses
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshFlow",
-      "PulseMeshAwareness",
-      "PulseMeshCortex"
-    ],
-    never: [
-      "legacyMeshCognition",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshCognition",
-  version: "v14.9-MESH-COGNITION-Immortal",
-  layer: "mesh",
-  role: "mesh_cognition_engine",
-  lineage: "PulseMesh-v14",
-
-  evo: {
-    meshCognition: true,            // This IS the mesh cognition organ
-    presenceAware: true,            // Reads presence band + tags (metadata-only)
-    meshAware: true,                // Reads mesh pressure + factoring flags
-    binaryAware: true,              // Binary artery + binary mesh bias
-    advantageAware: true,           // Advantage cascade fields
-    chunkPrewarmReady: true,        // Chunk/prewarm integration
-    deterministic: true,            // No randomness
-    driftProof: true,               // No drift in cognition fields
-    zeroRandomness: true,
-    zeroAsync: true,
-    zeroMutationOfInput: true,      // Never mutate impulses beyond flags
-    zeroNetworkFetch: true,
-    safeRouteFree: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshFlow",
-      "PulseMeshPresenceRelay",
-      "PulseMeshAura",
-      "PulseHalo"
-    ],
-    never: [
-      "legacyMeshCognition",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // -----------------------------------------------------------
 // Cognition Store (metadata-only)

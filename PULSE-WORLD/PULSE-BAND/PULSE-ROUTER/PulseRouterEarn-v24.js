@@ -14,95 +14,23 @@
 //   • Deterministic‑field: identical input → identical routing decision.
 //   • Zero eval, zero dynamic imports, zero user code.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnRouter",
-  version: "v24-IMMORTAL-INTEL++-DualHash",
-  layer: "earn",
-  role: "earn_routing_spine",
-  lineage: "PulseEarnRouter-v16-IMMORTAL-INTEL-DualHash → v24-IMMORTAL-INTEL++-DualHash",
-
-  evo: {
-    driftProof: true,
-    patternAware: true,
-    lineageAware: true,
-    pageAware: true,
-    deterministicRouting: true,
-    unifiedAdvantageField: true,
-    loopTheoryAware: true,
-
-    binaryAware: true,
-    coreMemoryAware: true,
-    hotPatternAware: true,
-    hotPageAware: true,
-    hotBinarySurfaceAware: true,
-
-    dualHashReady: true,
-    intelReady: true,
-    intelSignatureAware: true,
-    structureAware: true,
-    contextAware: true,
-
-    multiInstanceReady: true,
-    deterministicField: true,
-    selfRepairable: true
-  },
-
-  contract: {
-    input: ["PulseEarnEnvelope"],
-    output: [
-      "EarnRoutingDecision",
-      "EarnRoutingSurface",
-      "EarnRoutingIntel",
-      "EarnRoutingHealingState"
-    ]
-  }
-};
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseEarnRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
-
-// ============================================================================
-// ROLE META
-// ============================================================================
-export const PulseEarnRole = {
-  type: "EarnRouter",
-  subsystem: "PulseEarn",
-  layer: "Routing",
-  version: "24.0-IMMORTAL-INTEL++-DualHash",
-  identity: "PulseEarnRouter-v24-IMMORTAL-INTEL++-DualHash",
-
-  evo: {
-    driftProof: true,
-    patternAware: true,
-    lineageAware: true,
-    pageAware: true,
-    deterministicRouting: true,
-    unifiedAdvantageField: true,
-    loopTheoryAware: true,
-
-    binaryAware: true,
-    coreMemoryAware: true,
-    hotPatternAware: true,
-    hotPageAware: true,
-    hotBinarySurfaceAware: true,
-
-    dualHashReady: true,
-    intelReady: true,
-    intelSignatureAware: true
-  },
-
-  loopTheory: {
-    routingCompletion: true,
-    allowLoopfieldPropulsion: true,
-    pulseComputeContinuity: true,
-    errorRouteAround: true
-  },
-
-  earnContract: "PulseEarn-v24",
-  sendContract: "PulseSend-v24"
-};
 
 // ============================================================================
 // CORE MEMORY + KEYS

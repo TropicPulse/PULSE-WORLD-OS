@@ -20,13 +20,6 @@
 //      • structural isolation (via Anatomy)
 //      • binary immune artery scoring (throughput, pressure, cost, budget)
 //
-//    It is the organism’s:
-//      • immune core
-//      • quarantine engine
-//      • structural firewall
-//      • binary sanitation layer
-//      • internal immune artery source
-//
 //    IMMUNITY MODEL (v15‑IMMORTAL, binary‑first, no wall‑clock dependency):
 //
 //      {
@@ -36,177 +29,44 @@
 //        binary: { throughput, pressure, cost, budget, ...buckets },
 //        bits: <binary>,
 //        bitLength: <number>,
-//        cycle: <number>,          // deterministic local immune cycle
+//        cycle: <number>,
 //        band: "binary",
 //        highway: "binary_first_dualband",
 //        immortalityEpoch: "v15-Immortal"
 //      }
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiImmunity",
-  version: "v15-Immortal",
-  layer: "ai_core",
-  role: "ai_immune_system",
-  lineage: "aiImmunity-v11 → v14-Immortal → v15-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    immuneSystem: true,
-    anomalyDetection: true,
-    toxinFiltering: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    zeroTiming: true,
-    zeroWallClock: true,
-    zeroAsync: true,
-
-    arteryV3: true,
-    binaryFirstHighway: true,
-    immortalityEpoch: true
-  },
-
-  contract: {
-    always: ["aiReflex", "aiNervousSystem", "aiSafetyFrame"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
-//  ORGAN IDENTITY — v15‑IMMORTAL (B2 Binary Immune System)
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
-export const PulseRole = Object.freeze({
-  type: "ImmuneCore",
-  subsystem: "AIBinaryImmunity",
-  layer: "B2-BinaryImmuneSystem",
-  version: "15-Immortal",
-  identity: "AIBinaryImmunity-v15-Immortal",
+export const ImmunityMeta = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    // Core invariants
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-    immortalityEpoch: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    // Immune lineage
-    immuneCore: true,
-    immuneArterySource: true,
-    immuneQuarantineEngine: true,
-    immuneBinarySanitation: true,
-    immuneCommanderAware: true,
-    immuneHealerAware: true,
-    immuneReflexAware: true,
-    immuneMembraneAware: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
 
-    // Execution laws
-    zeroTiming: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroRouting: true,
-    zeroSending: false,          // immune responses allowed
-    zeroMutation: false,         // internal quarantine state allowed
-    zeroCompute: false,          // immune scoring allowed
+export const surfaceMeta = Identity.surfaceMeta;
 
-    // Binary-first
-    binaryOnly: true,
-    binaryAware: true,
-    dualBand: true,
-    binaryFirstHighway: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    // Safety + environment
-    environmentAgnostic: true,
-    multiInstanceReady: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    // Window + future channels
-    windowAware: true,
-    bluetoothReady: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    // v15‑IMMORTAL extras
-    packetAware: true,
-    arteryAware: true,
-    driftAware: true,
-    prewarmAware: true,
-    arteryV3: true
-  })
-});
-
-// ---------------------------------------------------------
-//  META BLOCK — v15‑IMMORTAL + Dualband + Binary‑First Highway
-// ---------------------------------------------------------
-export const ImmunityMeta = Object.freeze({
-  layer: "BinaryDefense",
-  role: "BINARY_IMMUNE_SYSTEM",
-  version: "15-Immortal",
-  identity: "aiBinaryImmunity-v15-Immortal",
-  band: "dualband",
-  highway: "binary_first_dualband",
-  intent: "binary_immune_defense",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
-    dualBand: true,
-    binaryFirst: true,
-
-    immuneCore: true,
-    quarantineEngine: true,
-    pipelineAware: true,
-    registryAware: true,
-    evolutionAware: true,
-    healerStackAware: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    intentFieldAware: true,
-
-    windowAware: true,
-    bluetoothReady: true,
-
-    packetAware: true,
-    arteryAware: true,
-    driftAware: true,
-    prewarmAware: true,
-
-    multiInstanceReady: true,
-    epoch: "v15-Immortal"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide a binary immune layer that sanitizes packets, quarantines organs, and emits immune responses.",
-
-    never: Object.freeze([
-      "decode binary into human formats",
-      "mutate external organ behavior directly",
-      "override governor decisions",
-      "act as a scheduler or router",
-      "introduce non-deterministic behavior",
-      "depend on wall-clock time or timestamps"
-    ]),
-
-    always: Object.freeze([
-      "treat inputs as binary-only",
-      "sanitize malformed or corrupted packets",
-      "emit immune response packets in binary",
-      "respect anatomy topology when isolating organs",
-      "use registry and evolution for signature checks",
-      "keep quarantine state explicit and inspectable",
-      "encode immune responses with binary-first semantics"
-    ])
-  })
-});
 
 // ============================================================================
 //  PREWARM — v15‑IMMORTAL (no time, no randomness)

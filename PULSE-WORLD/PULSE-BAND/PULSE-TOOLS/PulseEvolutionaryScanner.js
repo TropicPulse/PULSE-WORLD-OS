@@ -11,53 +11,21 @@
 //   - Balanced adaptive mode: stable unless meaningful change detected.
 //   - Advantage/artery-aware: can surface “where to look” without IO.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseScannerCortex",
-  version: "v16-Immortal",
-  layer: "scanner_cortex",
-  role: "visual_cortex_organ",
-  lineage: "PulseScannerCortex-v12.3-Evo → v16-Immortal",
-
-  evo: {
-    cortexOrgan: true,
-    dualBand: true,
-    presenceAware: true,
-    harmonicAware: true,
-    arteryAware: true,
-    advantageView: true,
-    windowSafe: true,
-
-    adminInspectorAware: true,
-    pageEvoAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureComputeCore: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroRandomness: true
-  },
-
-  contract: {
-    always: [
-      "BinaryPulse",
-      "BinaryWaveScanner",
-      "PulseBinaryLoopScanner",
-      "PulseAdminInspector",
-      "PageEvo"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyScannerCortex"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { createBinaryPulse } from "../PULSE-TECH/PulseBinaryTech-v20.js";
 import { createBinaryWaveScanner } from "./PulseWaveScanner.js";

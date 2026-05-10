@@ -3,95 +3,22 @@
 FILE: /PULSE-WORLD/RegioningPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — REGIONING PHYSICS
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld.RegioningPhysics",
-  version: "v16-Immortal",
-  layer: "pulse_world",
-  role: "regioning_physics",
-  lineage: "RegioningPhysics-v13-COSMOS-MULTIVERSE → v16-Immortal",
-
-  evo: {
-    deterministic: true,
-    symbolic: true,
-    multiverseAware: true,
-    schemaAware: true,
-    regionGraphReversible: true,
-    noRandomness: true,
-
-    driftProof: true,
-    pureCompute: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    coreMemoryAware: true,
-    historyAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    input: [
-      "RegionDescriptor[]",
-      "RegionAffinityRules",
-      "RegionStabilitySignals",
-      "CosmosContext { universeId, timelineId, branchId }"
-    ],
-    output: [
-      "RegionGraph",
-      "RegionStabilityMap",
-      "RegionAffinityMap"
-    ]
-  },
-
-  upstream: [
-    "PulseSchema",
-    "PulseOmniHosting"
-  ],
-
-  downstream: [
-    "RegionMeshRouting-v16",
-    "PulseContinuance-v16",
-    "EnvironmentPhysics-v16",
-    "DeploymentPhysics-v16"
-  ],
-
-  notes: [
-    "Regioning Physics defines the multiverse world the organism lives in.",
-    "Regions are symbolic sectors, not geographic.",
-    "RegionGraph is deterministic and reversible across universes.",
-    "Stability feeds cosmic turbulence into Continuance Physics.",
-    "Affinities determine gravitational routing preference.",
-    "CoreMemory integration is write-only, multiverse keyed, and drift-proof."
-  ]
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseWorld.RegioningPhysics",
-  layer: "pulse_world",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "RegionDescriptor[]",
-    "RegionAffinityRules",
-    "RegionStabilitySignals",
-    "CosmosContext"
-  ],
-
-  produces: [
-    "RegionGraph",
-    "RegionStabilityMap",
-    "RegionAffinityMap"
-  ],
-
-  sideEffects: "core_memory_write_only",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 const REGIONING_ENGINE_VERSION = "16.0-Immortal";
 const REGIONING_SCHEMA_VERSION = "v3";
 

@@ -7,104 +7,23 @@
 //  • Presence/advantage-aware, artery metrics, prewarm-aware, tri-heart aware
 //  • v24++: per-engine arteries, snapshots, engine state, lane abstraction
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMotionEngine",
-  version: "v24-Immortal++",
-  layer: "pulsenet_engine",
-  role: "unified_motion_engine",
-  lineage: [
-    "PulseMotionEngine-v16-Immortal-Evo+",
-    "ForwardEngine-v16-Immortal-Evo+",
-    "BackwardEngine-v16-Immortal-Evo+"
-  ],
-
-  evo: {
-    motionEngine: true,
-    forwardLane: true,
-    backwardLane: true,
-
-    patternExpansion: true,
-    patternCompression: true,
-    jobAware: true,
-    chunkAware: true,
-    prewarmAware: true,
-    arteryMetricsAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    triHeartAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    // v24++ additions
-    multiLane: true,
-    engineLocalTickSpace: true,
-    perEngineArteries: true,
-    snapshotAware: true,
-    multiInstanceSafe: true,
-    laneAbstraction: true
-  },
-
-  contract: {
-    always: [
-      "PulseNet",
-      "PulseChunker"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "presenceEngine",
-      "meshKernel",
-      "routerCore"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+export const PulseMotionEngineMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { createShifterPulse as ShifterPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v16.js";
-
-export const PulseMotionEngineMeta = Object.freeze({
-  lane: "motion",
-  version: "24-Immortal++",
-  identity: "PulseMotionEngine-v24-Immortal++",
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryFirst: true,
-    chunkAware: true,
-    memoryAware: true,
-    multiInstanceReady: true,
-    dualBandAware: true,
-    symbolicPrimary: true,
-    binaryNonExecutable: true,
-    shifterPulseAware: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    triHeartAware: true,
-    prewarmAware: true,
-    arteryMetricsAware: true,
-
-    // v24++ extras
-    engineLocalTickSpace: true,
-    perEngineArteries: true,
-    snapshotAware: true,
-    multiLane: true,
-    laneAbstraction: true
-  })
-});
 
 // Keys preserved for compatibility
 const FORWARD_JOB_QUEUE_KEY  = "evo:forward:jobs";

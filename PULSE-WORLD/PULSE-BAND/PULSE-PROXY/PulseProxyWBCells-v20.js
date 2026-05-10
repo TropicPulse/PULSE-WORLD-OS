@@ -5,110 +5,21 @@
 //  PURE DETECTION. NO AI. NO BUSINESS MUTATION.
 //  BINARY CORE + SYMBOLIC WRAPPER + PRESENCE / ADVANTAGE / CHUNK‑CACHE OVERLAYS
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProxyHealer",
-  version: "v20-ImmortalPlusPlus-IMMUNE-PRESENCE",
-  layer: "proxy_immune_layer",
-  role: "proxy_immune_patrol",
-
-  lineage: {
-    root: "PulseProxy-v11",
-    parent: "PulseProxyHealer-v12.3-Evo-Presence",
-    organismIntegration: "v20-ImmortalPlusPlus",
-    spinalIntegration: "PulseOSSpinalCord-v20-ImmortalPlusPlus",
-    meshIntegration: "PulseMesh-v20-ImmortalPlus",
-    routerIntegration: "PulseRouter-v20-ImmortalPlus",
-    worldIntegration: "PulseWorld-v21-Immortal"
-  },
-
-  evo: {
-    // Core immune identity
-    deterministicImmuneScan: true,
-    driftProof: true,
-    zeroDriftPressure: true,
-    backendOnly: true,
-    multiInstanceReady: true,
-    immortalReady: true,
-    pureDetection: true,
-    noIQ: true,
-    noRouting: true,
-    noBusinessMutation: true,
-    proxyOnlyHealingLayer: true,
-
-    // Binary core + symbolic wrapper
-    binaryCore: true,
-    symbolicWrapper: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-
-    // Presence + band + A‑B‑A
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    presenceAware: true,
-    presenceFieldAware: true,
-    dualBandAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-
-    // Performance overlays
-    prewarmAware: true,
-    cacheAware: true,
-    chunkAware: true,
-    routeWarmthAware: true,
-
-    // World / lens
-    worldLensAware: true,
-    immunePressureAware: true,
-    immuneMisconfigurationAware: true,
-    immuneVitalsAware: true,
-    failOpenSafe: true,
-
-    // IMMORTAL guarantees (meta)
-    zeroRandomness: false,          // uses Date.now sequencing only (no Math.random)
-    zeroNetworkMutation: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroWindow: true,
-    zeroDOM: true,
-    zeroGPU: true
-  },
-
-  contract: {
-    input: [
-      "HealthSnapshot",
-      "MetricsSnapshot",
-      "UserScoresSnapshot",
-      "DualBandContext",
-      "AdvantageContext"
-    ],
-    output: [
-      "ImmuneScanResult",
-      "ImmuneBandSignature",
-      "ImmuneBinaryField",
-      "ImmuneWaveField",
-      "ImmunePresenceField",
-      "ImmuneAdvantageField",
-      "ImmuneChunkCacheHints",
-      "ImmuneDualBandOverlay",
-      "ImmuneDiagnostics",
-      "ImmuneHealingState"
-    ],
-    consumers: [
-      "PulseProxy",
-      "PulseMesh",
-      "PulseRouter",
-      "PulseWorldCore",
-      "PulseOSSpinalCord",
-      "PulseNetHealerDashboard"
-    ]
-  }
-};
-*/
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // GLOBAL WIRING — backend-only, no hard window/global coupling
@@ -144,63 +55,6 @@ const error =
   console.error;
 
 
-// ============================================================================
-//  ORGAN IDENTITY — v20‑IMMORTAL+++
-// ============================================================================
-export const PulseRole = {
-  type: "Organ",
-  subsystem: "PulseProxy",
-  layer: "ImmuneLayer",
-  version: "20-ImmortalPlusPlus-ImmunePresence",
-  identity: "PulseProxyHealer-v20-ImmortalPlusPlus-ImmunePresence",
-
-  evo: {
-    driftProof: true,
-    deterministicImmuneScan: true,
-    zeroDriftPressure: true,
-
-    backendOnly: true,
-    noIQ: true,
-    noRouting: true,
-    noCompute: true,
-
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    binaryCore: true,
-    symbolicWrapper: true,
-    futureEvolutionReady: true,
-
-    // presence + advantage overlays (meta-only)
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    presenceAware: true,
-    presenceFieldAware: true,
-    dualBandAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-
-    // performance-awareness (meta only)
-    prewarmAware: true,
-    cacheAware: true,
-    chunkAware: true,
-    routeWarmthAware: true
-  }
-};
-
-
-// ============================================================================
-//  ORGAN CONTEXT — v20 IMMORTAL+++
-// ============================================================================
-const WBC_CONTEXT = {
-  layer: PulseRole.layer,
-  role: PulseRole.identity,
-  version: PulseRole.version,
-  lineage: "immune-core",
-  evo: PulseRole.evo
-};
-
 const ImmuneState = {
   lastHealthScanTs: null,
   lastMetricsScanTs: null,
@@ -218,8 +72,6 @@ const ImmuneState = {
   lastChunkCacheHints: null,
   lastDualBandOverlay: null
 };
-
-
 // ============================================================================
 //  IMMUNE CONFIG — thresholds (unchanged semantics)
 // ============================================================================
@@ -240,109 +92,6 @@ export const MIN_INSTANCES = 1;
 export const MAX_INSTANCES = 32;
 
 
-// ============================================================================
-//  META — v20‑IMMORTAL+++ IMMUNE PRESENCE
-// ============================================================================
-export const PulseProxyHealerMeta = Object.freeze({
-  layer: "PulseProxyHealer",
-  role: "IMMUNE_PATROL_ORGAN",
-  version: "v20-ImmortalPlusPlus-IMMUNE-PRESENCE",
-  identity: "PulseProxyHealer-v20-ImmortalPlusPlus-IMMUNE-PRESENCE",
-
-  guarantees: Object.freeze({
-    deterministicImmuneScan: true,
-    driftProof: true,
-    zeroDriftPressure: true,
-    multiInstanceReady: true,
-    backendOnly: true,
-    binaryCore: true,
-    symbolicWrapper: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    immunePressureAware: true,
-    immuneMisconfigurationAware: true,
-    immuneVitalsAware: true,
-    failOpenSafe: true,
-
-    // Execution prohibitions (mutation)
-    zeroIQ: true,
-    zeroRouting: true,
-    zeroCompute: true,
-    zeroRandomness: false,          // uses Date.now sequencing only
-    zeroDateNow: false,
-    zeroTimers: false,
-    zeroAsyncLoops: false,
-    zeroNetworkMutation: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroWindow: true,
-    zeroDOM: true,
-    zeroGPU: true,
-
-    // Awareness
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    presenceAware: true,
-    presenceFieldAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-
-    worldLensAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "HealthSnapshot",
-      "MetricsSnapshot",
-      "UserScoresSnapshot",
-      "DualBandContext",
-      "AdvantageContext"
-    ],
-    output: [
-      "ImmuneScanResult",
-      "ImmuneBandSignature",
-      "ImmuneBinaryField",
-      "ImmuneWaveField",
-      "ImmunePresenceField",
-      "ImmuneAdvantageField",
-      "ImmuneChunkCacheHints",
-      "ImmuneDualBandOverlay",
-      "ImmuneDiagnostics",
-      "ImmuneHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseProxy-v11",
-    parent: "PulseProxy-v20-ImmortalPlusPlus",
-    ancestry: [
-      "PulseProxyHealer-v7",
-      "PulseProxyHealer-v8",
-      "PulseProxyHealer-v9",
-      "PulseProxyHealer-v10",
-      "PulseProxyHealer-v11",
-      "PulseProxyHealer-v11-Evo",
-      "PulseProxyHealer-v11-Evo-Prime",
-      "PulseProxyHealer-v12.3-Evo-Presence"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["binary", "symbolic", "dual"],
-    default: "binary",
-    behavior: "immune-patrol"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "health + metrics + scores → immune scan → immune surfaces",
-    adaptive: "binary-field + wave-field + presence + advantage + chunk/cache/prewarm overlays",
-    return: "deterministic immune surfaces + signatures"
-  })
-});
 
 
 // ============================================================================

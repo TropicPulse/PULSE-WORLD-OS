@@ -26,145 +26,21 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSpecsDNAGenome",
-  version: "v20-IMMORTAL",
-  layer: "genome",
-  role: "os_data_genome",
-  lineage: "v1 → v9.1 → v10.4 → v11-Evo → v12.3 → v14-Immortal → v17-IMMORTAL → v20-IMMORTAL",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    genomeCore: true,
-    immutable: true,
-    schemaOnly: true,
-    deterministic: true,
-    driftProof: true,
-    translationSpec: true,
-    validationRules: true,
-    mappingRules: true,
-    nonExecutable: true,
-    metadataOnlyEvolution: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    pureSpec: true,
-
-    multiBackendAware: true,
-    regionAware: true,
-    tenancyAware: true,
-    indexAware: true,
-    immortalBandAware: true,
-    binarySubstrateAware: true,
-    intellHashAware: true,
-    schedulerAware: true,
-    worldRouterAware: true,
-    worldDataProviderAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseSchema",
-      "PulseContinuance",
-      "PulseOmniHosting",
-      "PulseCoreMemory",
-      "PulseTranslatorRNA",
-      "PulseTranslatorSkeletal"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "runtimeExecution",
-      "ioOperations",
-      "legacyGenome",
-      "binaryExecution"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-//  CONTEXT BLOCK — v20 IMMORTAL
-// ============================================================================
-export const PULSE_FIELDS_CONTEXT = {
-  layer: "PulseSpecs",
-  role: "OS_DATA_GENOME",
-  purpose: "Define canonical PulseField types, rules, and mappings",
-  context: "Deterministic data language for all Pulse subsystems",
-  version: 20.0,
-  target: "os-core-v20-IMMORTAL",
-  selfRepairable: false,
-
-  evolution: {
-    "1.1":  "Base genome: core types + SQL/Firestore mappings.",
-    "1.2":  "Extended numeric semantics (currency/percent) and enum support.",
-    "1.3":  "Explicit null handling + stricter URL/email patterns + frozen spec snapshot.",
-    "10.4": "Identity uplift, organism alignment, v10.4 contract sync.",
-    "11.0": "Binary‑aware genome extension, v11‑Evo alignment, pulse/binary field layer.",
-    "12.3": "Every‑advantage uplift: v12-core alignment, stricter determinism + drift guards.",
-    "14.0": "IMMORTAL uplift: dual‑band + presence/harmonics/shifter surfaces.",
-    "17.0": "WorldDataProvider + multi‑backend hints (Firestore/SQL), region/tenant/index metadata.",
-    "20.0": "WorldRouter + Scheduler + IntellHash + BinarySubstrate hints, Epoch‑20 stability."
-  },
-
-  immortal: {
-    presenceAware: true,
-    harmonicsAware: true,
-    dualBandCompatible: true,
-    epochStable: true,
-    passivePrewarm: true,
-    passiveCache: true,
-    passiveChunk: true,
-    passiveRemember: true,
-    passiveForwarding: true,
-    shifterPulseAware: true,
-    binaryFrontEndReady: true,
-    symbolicBackEndReady: true,
-    intellHashReady: true,
-    binarySubstrateReady: true,
-    schedulerReady: true,
-    worldRouterReady: true
-  },
-
-  backends: {
-    firebase: {
-      dialect: "firestore",
-      supportsSubcollections: true,
-      supportsTimestamps: true,
-      supportsArrayUnion: true,
-      supportsIncrement: true,
-      v20Hints: {
-        binarySubstrateSafe: true,
-        intellHashSafe: true
-      }
-    },
-    sql: {
-      dialect: "generic-sql",
-      supportsJson: true,
-      supportsIndexes: true,
-      supportsCompositeKeys: true,
-      supportsPartitioning: true,
-      v20Hints: {
-        regionPartitionSafe: true,
-        tenantPartitionSafe: true
-      }
-    },
-    worldDataProvider: {
-      dialect: "abstract",
-      routingByDNA: true,
-      regionAware: true,
-      tenantAware: true,
-      schedulerAware: true,
-      v20Hints: {
-        routerSafe: true,
-        binaryAware: true,
-        intellHashAware: true
-      }
-    }
-  }
-};
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const PULSE_FIELDS_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // PulseField Types — the universal data language (GENETIC ALPHABET)

@@ -16,49 +16,19 @@
 //  • PulseSend‑v24‑Ascendant‑ready: immune validation before compute routing.
 //  • Earn‑v24‑GPU‑ready — aware of GPU Earn governor + profiles.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPULymphNodes",
-  version: "v24-Immortal++",
-  layer: "gpu_guardian",
-  role: "gpu_lymph_nodes",
-  lineage: "PulseGPU-v24-Immortal++",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    gpuHealer: true,
-    gpuCleanup: true,
-    gpuAnomalyBuffer: true,
-
-    // Earn / governor awareness
-    gpuEarnHealer: true,
-    gpuEarnCleanup: true,
-    gpuEarnProfileAware: true,
-    earnAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseGPUGuardianCortex",
-      "PulseGPUDriveCenter",
-      "PulseGPUEarnProfile"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyLymphNodes"
-    ]
-  }
-}
-*/
-
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+export const GPU_HEALER_CONTEXT = Identity.pulseLoreContext;
 import { PulseGPUSettingsRestorer } from "./PulseGPUCognitiveLayer-v24.js";
 import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence-v24.js";
 import { PulseGPUPerformanceAdvisor } from "./PulseGPUDriveCenter-v24.js";
@@ -66,73 +36,6 @@ import {
   PulseGPUGuardianCortex as PulseGPUAutoOptimize
 } from "./PulseGPUGuardianCortex-v24.js";
 
-const GPU_HEALER_CONTEXT = {
-  layer: "PulseGPUHealer",
-  role: "LYMPH_NODE_NETWORK",
-  purpose: "Systemic GPU immune filter + drift purifier",
-  context:
-    "Validates advisor results, restore plans, auto-opt decisions, notifications, earn profiles, and advantage snapshots",
-  target: "full-gpu+binary+earn",
-  version: "24-Immortal++",
-  selfRepairable: true,
-
-  // v24+ advantage epoch identity
-  advantageEpochId: "gpu-v24-immortal++",
-  systemAgeBand: "immortal",
-  lineage: "PulseGPU-v24-Immortal++",
-
-  evo: {
-    // metabolic / stability field
-    metabolicBoost: 1.9,
-    neuralReflexBoost: 2.0,
-    stabilityBoost: 2.1,
-
-    // organism / topology
-    multiInstanceReady: true,
-    deterministicNeuron: true,
-    parallelSafe: true,
-    fanOutScaling: 1.7,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-    reflexPropagation: 1.6,
-
-    // dual-mode + cognition
-    dualModeEvolution: true,
-    organismClusterBoost: 1.7,
-    cognitiveComputeLink: true,
-    unifiedAdvantageField: true,
-
-    // awareness fields
-    binaryAware: true,
-    dualModeAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    immuneFieldAware: true,
-    geneticMemoryAware: true,
-    snapshotAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    earnAware: true,
-    gpuEarnProfileAware: true,
-    presenceAware: true,
-    gameAware: true,
-
-    // v24 contracts
-    pulseSend24Ready: true,
-    pulseSend16Ready: true,
-    routingContract: "PulseSend-v24-Ascendant",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    earnCompatibility: "Earn-v24-GPU",
-
-    // legacy (conceptual only)
-    legacyRoutingContract: "PulseSend-v16-Ascendant",
-    legacyGPUOrganContract: "PulseGPU-v16-Ascendant",
-    legacyBinaryGpuOrganContract: "PulseBinaryGPU-v16-Ascendant",
-    legacyEarnCompatibility: "Earn-v4-Presence"
-  }
-};
 
 // ============================================================================
 // HEALING REPORT BUILDER

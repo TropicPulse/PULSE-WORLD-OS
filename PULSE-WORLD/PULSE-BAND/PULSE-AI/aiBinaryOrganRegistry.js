@@ -10,80 +10,36 @@
 // ---------------------------------------------------------
 //  META BLOCK — v16‑Immortal DualBand
 // ---------------------------------------------------------
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-export const OrganRegistryMeta = Object.freeze({
-  layer: "OrganismIdentity",
-  role: "ORGAN_REGISTRY",
-  version: "v16-Immortal-DualBand",
-  identity: "aiOrganRegistry-v16-Immortal-DualBand",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    binaryPrimary: true,
-    dualBand: true,
-    symbolicAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const OrganRegistryMeta = Identity.OrganMeta;
 
-    memoryAware: true,
-    evolutionAware: true,
-    identityAware: true,
-    arteryAware: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-    dualBandSafe: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "v16-Immortal"
-  }),
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose:
-      "Store and retrieve organ identity records in binary memory, with dualband symbolic surfaces.",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: Object.freeze([
-      "auto-discover organs",
-      "interpret metadata",
-      "mutate external organs",
-      "perform routing",
-      "perform scanning",
-      "perform governance",
-      "introduce randomness"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: Object.freeze([
-      "encode all keys and values in binary",
-      "register only when explicitly called",
-      "store id/type/signature/timestamp/band",
-      "remain pure and minimal",
-      "treat organ records as read-only",
-      "maintain registry artery metrics"
-    ])
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  presence: Object.freeze({
-    organId: "OrganRegistry",
-    organKind: "Identity",
-    physiologyBand: "DualBand",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "on-demand",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "registerOrgan",
-        "getOrganRecord",
-        "getOrganRecord:notFound",
-        "listOrgans",
-        "evolveOrgan",
-        "prewarm",
-        "prewarm-error"
-      ]
-    }
-  })
-});
 
 // ---------------------------------------------------------
 //  BINARY‑ONLY ORGAN SET — v16 IMMORTAL

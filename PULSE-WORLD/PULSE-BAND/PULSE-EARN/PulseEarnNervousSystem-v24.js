@@ -5,172 +5,21 @@
 //  Dual-Band + Dual-Hash + Binary + Wave + Presence + Chunk/Prewarm (IMMORTAL)
 //  + NervousComputeProfile + NervousPressureProfile + Tri-Heart Overlays (24++)
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnNervousSystem",
-  version: "v24-Immortal-INTEL-Superior",
-  layer: "earn_nervous",
-  role: "earn_signal_router",
-  lineage: "PulseEarnNervousSystem-v10.4 → v11-Evo → v13-Presence → v16-Immortal → v16-Superior → v24-Immortal-INTEL-Superior",
-
-  evo: {
-    nervousSystem: true,
-    signalRouting: true,
-    sensoryIntake: true,
-    motorOutput: true,
-
-    dualBand: true,
-    dualHash: true,
-    intelHash: true,
-
-    skeletalAware: true,
-    skeletalAdvantageAware: true,
-    skeletalChunkAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // 24++ overlays
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    hotStateAware: true,
-    gpuAware: true,
-    minerAware: true,
-    offlineAware: true,
-    computeTierAware: true,
-    pulseIntelligenceReady: true,
-
-    triHeartAware: true,
-    momHeartAware: true,
-    dadHeartAware: true,
-    babyHeartAware: true,
-    speedAware: true,
-    experienceAware: true,
-    healingMetadataAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnMuscleSystem",
-      "PulseEarnReflexRouter",
-      "PulseEarnSkeletalSystem",
-      "PulseEarnEndocrineSystem",
-      "PulseEarnLymphNodes",
-      "PulseEarnCirculatorySystem"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseEarnNervousSystemMeta = Object.freeze({
-  layer: "PulseEarnNervousSystem",
-  role: "EARN_NERVOUS_ORGAN",
-  version: "v24-Immortal-INTEL-Superior",
-  identity: "PulseEarnNervousSystem-v24-Immortal-INTEL-Superior",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureInterface: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    healingMetadataAware: true,
-
-    dualHashAware: true,
-    intelHashAware: true,
-    skeletalAdvantageAware: true,
-    skeletalChunkAware: true,
-
-    worldLensAware: false,
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroAI: true,
-    zeroUserCode: true,
-    deterministicReputationUpdates: true,
-    deterministicJobIntake: true,
-    deterministicResultForwarding: true,
-
-    // 24++ overlays
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    hotStateAware: true,
-    gpuAware: true,
-    minerAware: true,
-    offlineAware: true,
-    computeTierAware: true,
-    pulseIntelligenceReady: true,
-
-    triHeartAware: true,
-    momHeartAware: true,
-    dadHeartAware: true,
-    babyHeartAware: true,
-    speedAware: true,
-    experienceAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "MarketplaceJob",
-      "DeviceProfile",
-      "DualBandContext",
-      "ReputationSignals",
-      "CirculatoryRouting",
-      "DevicePhenotypePresence",
-      "TriHeartContext"
-    ],
-    output: [
-      "NervousJobIntakeResult",
-      "NervousResultForwardingResult",
-      "NervousDiagnostics",
-      "NervousSignatures",
-      "NervousHealingState",
-      "NervousPresenceField",
-      "NervousAdvantageField",
-      "NervousChunkPrewarmPlan",
-      "NervousComputeProfile",
-      "NervousPressureProfile",
-      "TriHeartLivenessField",
-      "TriHeartAdvantageField",
-      "TriHeartSpeedField",
-      "TriHeartPresenceField"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic sensory intake → deterministic motor output",
-    adaptive: "binary/wave surfaces + dual-band signatures + presence/advantage fields + dual-hash intel surfaces + compute/pressure/tri-heart overlays",
-    return: "deterministic job intake + deterministic result forwarding + prewarm hints + compute/pressure/tri-heart metadata"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------------------------
 // Imports — v16 / v13.1 organs

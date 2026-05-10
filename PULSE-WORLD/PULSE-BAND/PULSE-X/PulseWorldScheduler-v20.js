@@ -27,163 +27,21 @@
  *    - Pure orchestration over symbolic + binary layers.
  * ============================================================
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseScheduler",
-  version: "v20-IMMORTAL-ADVANTAGE",
-  layer: "pulse_x_scheduler",
-  role: "macro_orchestrator",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  description: `
-    PulseScheduler is the macro-orchestrator of PULSE-X. It sequences
-    routing, Overmind, and Runtime ticks into a multi-tick pipeline.
-    It is Touch-aware, dual-band-aware, and advantage-aware, but it
-    never rewrites founder intent or organism law. It only schedules
-    what is already allowed.
-
-    For each macro tick, it:
-      - routes the user request (AIRouter),
-      - asks Overmind for a world-lens decision,
-      - runs a runtime tick (PulseRuntime),
-      - collects meta about presence, mode, page, trust, and advantage.
-
-    For the pipeline, it:
-      - tracks cache behavior (hit/miss),
-      - tracks world-lens transitions,
-      - tracks total ticks and final instance state,
-      - exposes a deterministic summary for any observer organ.
-  `,
-
-  lineage: [
-    "PulseScheduler-v1",
-    "v11-Evo",
-    "v12.3",
-    "v14-Immortal",
-    "v2.4-Presence-TOUCH-Immortal",
-    "v17-IMMORTAL",
-    "v20-IMMORTAL-ADVANTAGE"
-  ],
-
-  evo: {
-    macroScheduler: true,
-    schedulerAware: true,
-    runtimeAware: true,
-    runtimeV17Aware: true,
-    substrateAware: true,
-    dualBand: true,
-
-    deterministicScheduling: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    pulseTouchAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkAware: true,
-    pageAware: true,
-    trustAware: true,
-    identityAware: true,
-    regionAware: true,
-    modeAware: true,
-
-    prewarmAware: true,
-    cacheAware: true,
-    worldLayerAware: true,
-    multiInstanceReady: true
-  },
-
-  contract: {
-    always: [
-      "PulseRuntime",
-      "BinarySubstrate",
-      "AIRouter",
-      "Overmind"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "presenceEngine",
-      "meshKernel",
-      "routerCore",
-      "directInternetAccess",
-      "externalNetworkIO"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-//  META
-// ============================================================================
-
-export const PulseSchedulerMetaV17 = Object.freeze({
-  layer: "PulseXScheduler",
-  role: "SCHEDULER_ORGAN",
-  version: "v20-IMMORTAL-ADVANTAGE",
-  identity: "PulseScheduler-v20-IMMORTAL-ADVANTAGE",
-  epoch: "v20-IMMORTAL-ADVANTAGE",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    hostAgnostic: true,
-    regionAware: true,
-    binaryAware: true,
-    overmindAware: true,
-    routerAware: true,
-    runtimeAware: true,
-    runtimeV17Aware: true,
-    multiTickAware: true,
-    pulseTouchAware: true,
-    prewarmAware: true,
-    cacheAware: true
-  }),
-
-  evo: Object.freeze({
-    presenceAware: true,
-    advantageAware: true,
-    dualbandSafe: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    meshAware: true,
-    expansionAware: true,
-    multiInstanceReady: true,
-    schedulerAware: true,
-    pulseTouchAware: true,
-    pageAware: true,
-    modeAware: true,
-    trustAware: true,
-    identityAware: true,
-    worldLayerAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "InstanceContext[]",
-      "CurrentInstanceStateById",
-      "GlobalContinuancePolicy",
-      "AIRouterRequestShape",
-      "DualBandSnapshotAPI",
-      "PulseTouchSnapshot",
-      "maxTicks",
-      "stopOnWorldLens[]",
-      "prewarmHint",
-      "cacheHint"
-    ],
-    output: [
-      "SchedulerPipelineResult",
-      "SchedulerPipelineMetaSummary"
-    ]
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+export const PulseSchedulerMetaV17 = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS
 // ============================================================================

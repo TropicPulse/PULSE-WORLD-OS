@@ -1,83 +1,25 @@
-/*
-===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseDesign.Archivist",
-  version: "v17-IMMORTAL",
-  layer: "pulse_design",
-  role: "canonical_manifest_archivist",
-  lineage: "Archivist-v10.4 → v12.3 → v14-Immortal → v17-IMMORTAL",
+// ============================================================================
+// FILE: PULSE-WORLD/PULSE-DESIGN/manifestBuilder-v17.js
+// LAYER: THE ARCHIVIST (System Historian + Canonical Recorder + Genome Builder)
+// ============================================================================
 
-  evo: {
-    manifestBuilder: true,
-    genomeArchivist: true,
-    structuralAggregator: true,
-    signatureAware: true,
-    patternAware: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    bandAware: true,
-    worldLayerReady: true,
-    translatorReady: true,
-    runtimeReady: true,
-    substrateReady: true,
-    prewarmAware: true,
-    cacheAware: true,
+// 1 — GENOME IDENTITY (MUST BE FIRST)
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true
-  },
+// 2 — EXPORT GENOME METADATA
+export const PulseDesignArchivistMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
-  contract: {
-    always: [
-      "PulseDesign.RepoWalker",
-      "PulseDesign.Anatomist",
-      "PulseDesign.Scribe"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "dynamicImport",
-      "eval",
-      "Function"
-    ]
-  }
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseDesign.Archivist",
-  layer: "pulse_design",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: ["rootDir", "options"],
-  produces: [
-    "DesignManifest",
-    "fileCount",
-    "manifest"
-  ],
-
-  sideEffects: "none",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
-FILE: PULSE-WORLD/PULSE-DESIGN/manifestBuilder-v17.js
-LAYER: THE ARCHIVIST (System Historian + Canonical Recorder + Genome Builder)
-===============================================================================
-*/
-
+// 3 — ALL OTHER IMPORTS (AFTER IDENTITY)
 import path from "path";
-import { walkRepo } from "./PulseDesignRepoWalker.js";          // THE CARTOGRAPHER (v17)
-import { classifyFile } from "./PulseDesignFileClassifier.js";      // THE ANATOMIST
-// NOTE: Surveyor is NOT imported here — Archivist never writes files.
-
+import { walkRepo } from "./PulseDesignRepoWalker.js";      // THE CARTOGRAPHER
+import { classifyFile } from "./PulseDesignFileClassifier.js"; // THE ANATOMIST
 
 // ============================================================================
 // PUBLIC API — Build Canonical Architecture Manifest (v17 IMMORTAL)
@@ -96,9 +38,7 @@ export async function buildManifest(rootDir, options = {}) {
     enableCache = true
   } = options || {};
 
-  // --------------------------------------------------------------------------
-  // Step 1 — CARTOGRAPHER (v17): deterministic scan + meta
-  // --------------------------------------------------------------------------
+  // Step 1 — CARTOGRAPHER
   const { files: fileSignatures, meta: cartographerMeta } = walkRepo(rootDir, {
     band,
     worldTarget,
@@ -108,9 +48,7 @@ export async function buildManifest(rootDir, options = {}) {
     enableCache
   });
 
-  // --------------------------------------------------------------------------
-  // Step 2 — ARCHIVIST: Build canonical v17 DesignManifest
-  // --------------------------------------------------------------------------
+  // Step 2 — ARCHIVIST
   const manifest = {
     version: "v17-IMMORTAL",
     generatedAt: new Date().toISOString(),
@@ -118,10 +56,8 @@ export async function buildManifest(rootDir, options = {}) {
 
     band,
     worldTarget,
-
     cartographerMeta,
 
-    // Canonical v17 fields
     files: [],
     classifications: [],
     organs: [],
@@ -134,7 +70,6 @@ export async function buildManifest(rootDir, options = {}) {
     lineage: [],
     routing: [],
 
-    // Legacy compatibility fields
     pages: [],
     components: [],
     layouts: [],
@@ -143,9 +78,7 @@ export async function buildManifest(rootDir, options = {}) {
     healingHooks: []
   };
 
-  // --------------------------------------------------------------------------
-  // Step 3 — ANATOMIST: classify each file signature
-  // --------------------------------------------------------------------------
+  // Step 3 — ANATOMIST
   for (const sig of fileSignatures) {
     const relPath = sig.path || sig.filePath || sig.rel || "";
 
@@ -156,13 +89,9 @@ export async function buildManifest(rootDir, options = {}) {
       mtimeMs: sig.mtimeMs
     });
 
-    // Canonical file list
     manifest.files.push(fileInfo);
-
-    // Classification list
     manifest.classifications.push(fileInfo.classification);
 
-    // Organ-level aggregation
     manifest.organs.push({
       path: fileInfo.path,
       type: fileInfo.type,
@@ -171,13 +100,11 @@ export async function buildManifest(rootDir, options = {}) {
       confidence: fileInfo.classification.confidence
     });
 
-    // Pattern aggregation
     manifest.patterns.push({
       file: fileInfo.path,
       pattern: fileInfo.classification.patternId
     });
 
-    // Band + signal aggregation
     manifest.bands.push({
       file: fileInfo.path,
       pulseBand: fileInfo.usesPulseBand,
@@ -191,7 +118,6 @@ export async function buildManifest(rootDir, options = {}) {
       pulseFields: fileInfo.signals.pulseFields
     });
 
-    // Data sources
     if (fileInfo.dataSources.length > 0) {
       manifest.dataSources.push({
         file: fileInfo.path,
@@ -199,20 +125,16 @@ export async function buildManifest(rootDir, options = {}) {
       });
     }
 
-    // Legacy structural categorization
     if (fileInfo.type === "page") manifest.pages.push(fileInfo);
     if (fileInfo.type === "component") manifest.components.push(fileInfo);
     if (fileInfo.type === "layout") manifest.layouts.push(fileInfo);
     if (fileInfo.type === "api") manifest.apis.push(fileInfo);
 
-    // Legacy feature categorization
     if (fileInfo.usesPulseBand) manifest.pulseband.push(fileInfo);
     if (fileInfo.usesHealing) manifest.healingHooks.push(fileInfo);
   }
 
-  // --------------------------------------------------------------------------
-  // Step 4 — Deterministic ordering (v17)
-  // --------------------------------------------------------------------------
+  // Step 4 — Deterministic ordering
   manifest.files.sort((a, b) => a.path.localeCompare(b.path));
   manifest.classifications.sort((a, b) =>
     (a.patternId || "").localeCompare(b.patternId || "")
@@ -223,9 +145,7 @@ export async function buildManifest(rootDir, options = {}) {
   manifest.signals.sort((a, b) => a.file.localeCompare(b.file));
   manifest.dataSources.sort((a, b) => a.file.localeCompare(b.file));
 
-  // --------------------------------------------------------------------------
-  // Step 5 — Return canonical manifest (NO WRITES — Surveyor handles writing)
-  // --------------------------------------------------------------------------
+  // Step 5 — Return canonical manifest
   return {
     success: true,
     fileCount: manifest.files.length,

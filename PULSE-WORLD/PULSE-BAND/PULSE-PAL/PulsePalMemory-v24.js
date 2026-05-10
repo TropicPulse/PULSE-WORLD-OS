@@ -24,6 +24,21 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreMemory     = PulseProofBridge.corememory;
@@ -32,149 +47,6 @@ const CoreDaemon     = PulseProofBridge.coredaemon;
 const CoreSpeech     = PulseProofBridge.corespeech;
 const MemoryManager  = PulseProofBridge.corememorymanager; // optional future hook
 
-// ============================================================================
-// AI_EXPERIENCE_META
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalMemory = {
-  id: "pulsepal.memory",
-  kind: "ui_organ",
-  version: "v24-IMMORTAL",
-  role: "Pulse‑Pal memory cortex membrane",
-  surfaces: {
-    band: ["memory", "recall", "tier", "semantic"],
-    wave: ["calm", "structured", "clear"],
-    binary: ["memory_tier", "memory_items", "timeline", "persona"],
-    presence: ["memory_state", "recall_tone"],
-    advantage: ["explicit_tier_control", "semantic_preload"],
-    speed: "instant_ui"
-  },
-  routes: {
-    home: "pulsepal.home",
-    identity: "pulsepal.identity"
-  },
-  consumers: ["Router", "IQMap", "CoreMemory", "CorePresence", "CoreDaemon"],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePalMemory = {
-  tone: "neutral_clarity",
-  pacing: "steady",
-  emotionalBand: "cognitive_order",
-  primaryIntent: "let_user_control_memory_depth",
-  secondaryIntent: "show_memory_items",
-  userFirstImpression: "this_is_where_memory_lives",
-  visualNotes: {
-    icon: "memory",
-    motion: "soft_breathe",
-    colorBand: "cyan_soft"
-  }
-};
-
-// ============================================================================
-// ORGAN_META
-// ============================================================================
-export const ORGAN_META_PulsePalMemory = {
-  id: "organ.pulsepal.memory",
-  organism: "PulsePal",
-  layer: "ui.memory",
-  tier: "IMMORTAL",
-  evoFlags: {
-    canAddMemoryViews: true,
-    canAddRecallModes: true,
-    requiresCoreMemory: true,
-    semanticAware: true,
-    personaAware: true,
-    presenceAware: true,
-    daemonAware: true
-  },
-  lineage: {
-    family: "companion_memory",
-    generation: 3,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalMemory = {
-  inputs: {
-    Router: "navigation interface",
-    Icons: "icon resolution interface",
-    Media: "media resolver interface",
-    CoreMemory: "bridge memory organ",
-    CorePresence: "bridge presence organ",
-    CoreDaemon: "bridge daemon snapshot",
-    CoreSpeech: "bridge speech organ"
-  },
-  outputs: {
-    uiSurface: "memory_cortex",
-    modes: ["memory_tier", "recall"],
-    memoryItems: "CoreMemory.items",
-    timeline: "CoreMemory.timeline",
-    persona: "CoreMemory.persona",
-    presence: "CorePresence.snapshot"
-  },
-  consumers: ["Router", "IQMap", "CoreMemory", "CorePresence", "CoreDaemon"],
-  guarantees: {
-    deterministicRender: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalMemory = {
-  drift: {
-    allowed: false,
-    notes: "Memory tier semantics must remain stable."
-  },
-  pressure: {
-    expectedLoad: "medium",
-    notes: "Visited when user wants to tune memory depth."
-  },
-  stability: {
-    uiLayout: "stable",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 5,
-    notes: "Header, tier, items, timeline, persona."
-  },
-  chunking: {
-    prewarm: ["icons.memory", "media.pulsepal"],
-    cacheKey: "pulsepal.memory.ui"
-  },
-  worldLens: {
-    awareOfWorlds: true
-  },
-  limbic: {
-    band: "cognitive_order"
-  },
-  triHeart: {
-    cognitive: "memory_tier_selection",
-    emotional: "calm_clarity",
-    behavioral: "adjust_memory_depth"
-  },
-  impulseSpeed: {
-    primaryAction: "set_memory_tier",
-    latencyTargetMs: 50
-  },
-  healingSurfaces: {
-    enabled: true
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

@@ -24,161 +24,21 @@
 //   • MUST NOT depend on real time or clocks.
 //   • All operations are structural, deterministic, and presence/dual-band aware.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSDN-Prewarm",
-  version: "v16-Immortal-SDN-Reflex-Prewarm",
-  layer: "os_sdn",
-  role: "sdn_prewarm_engine",
-  lineage: "PulseOS-v16-Immortal",
-
-  evo: {
-    // Core identity
-    sdnPrewarmEngine: true,
-    spinalReflexIgnition: true,
-    organismSpineAware: true,
-    organismMeshAware: true,
-    routeRootAware: true,
-
-    // Band / mode
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    dualBandAware: true,
-    multiModeAware: true,          // dual / reflex / fallback / binary / symbolic
-
-    // Determinism / safety
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroBackend: true,
-    zeroDOM: true,
-    zeroGPUCalls: true,
-    zeroEval: true,
-    zeroDynamicImports: true,
-    zeroExternalMutation: true,
-    zeroMutationOfInput: true,
-    nonExecutable: true,
-    metadataOnly: true,
-    safeRouteFree: true,
-
-    // Presence / mesh / organism-mesh
-    presenceAware: true,
-    presenceFieldAware: true,
-    multiPresenceAware: true,
-    meshAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    organismMeshArteryAware: true,
-
-    // Advantage / topology / world
-    advantageFieldAware: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    pulseTopologyAware: true,
-    loopTheoryAware: true,
-    continuanceAware: true,
-    worldLensAware: false,         // no network, no world fetch
-
-    // Chunk / cache / prewarm
-    chunkAware: true,
-    cacheAware: true,
-    routePrewarmAware: true,
-    chunkPrewarmSpineAware: true,
-    cachePrewarmSpineAware: true,
-    sdnPrewarmPresenceImmortal: true,
-
-    // Earn / value / GPU / Send / Proxy / Router / Expansion
-    earnAware: true,
-    valuePathwayAware: true,
-    gpuAware: true,
-    sendAware: true,
-    proxyAware: true,
-    routerAware: true,
-    cortexAware: true,
-    expansionAware: true,
-
-    // Diagnostics / pressure / dispatch
-    pressureAware: true,
-    dispatchAware: true,
-    fallbackAware: true,
-    reflexArcAware: true,
-    arteryAware: true,
-    extensionAware: true,
-    systemAware: true,
-
-    // Cloning / multi-instance
-    multiInstanceReady: true,
-    clusterCoherence: true,
-    zeroDriftCloning: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSSpinalCord",
-      "PulseOSBrain",
-      "PulseChunker",
-      "PulsePrewarmCache",
-      "PulseRouter",
-      "PulseMeshPresenceRelay",
-      "PulseOSPresence",
-      "PulseEarn",
-      "PulseGPU",
-      "PulseSendSystem",
-      "PulseProxySpine",
-      "PulseExpansion"
-    ],
-
-    optional: [
-      "PulseBinaryOS",
-      "PulseOrganismMesh",
-      "PulsePageScanner",
-      "PulseDiagnostics",
-      "PulseWorldLens",
-      "PulseAdvantageField"
-    ],
-
-    never: [
-      "legacySDNPrewarm",
-      "legacySpinalPrewarm",
-      "legacyPresencePrewarm",
-      "safeRoute",
-      "fetchViaCNS",
-      "directNetworkFetch",
-      "directFilesystemAccess",
-      "userCodeInjection",
-      "dynamicEval"
-    ]
-  }
-}
-*/
-
-export const SDNPrewarmMeta = Object.freeze({
-  layer: "PulseSDN",
-  role: "SDN_PREWARM_ENGINE",
-  version: "v16-Immortal",
-  identity: "PulseSDN-Prewarm-v16-Immortal",
-  evo: Object.freeze({
-    spinalReflexIgnition: true,
-    dualBandAware: true,
-    extensionAware: true,
-    pressureAware: true,
-    dispatchAware: true,
-    fallbackAware: true,
-    presenceAware: true,
-    meshAware: true,
-    organismMeshAware: true,
-    advantageFieldAware: true,
-    arteryAware: true,
-    earnAware: true,
-    driftProof: true,
-    deterministic: true,
-    readOnly: true
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const SDNPrewarmMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL HELPERS — PURE, DETERMINISTIC, NO TIME, NO RANDOMNESS

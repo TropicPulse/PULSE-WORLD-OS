@@ -12,40 +12,21 @@
 //    • World-layer aware: region, host, pulseTouch, band
 //    • IMMORTAL envelope output
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-IDENTITY_META = {
-  identity: "PulseWorldIdentityTokenEngine",
-  version: "v20-IMMORTAL",
-  layer: "world_layer",
-  role: "identity_token_engine",
-  lineage: "v14 → v16 → v17 → v20 IMMORTAL",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    zeroMutation: true,
-    zeroExternalMutation: true,
-
-    identityAware: true,
-    lineageAware: true,
-    dangerAware: true,
-    presenceAware: true,
-    bandAware: true,
-    schedulerAware: true,
-    runtimeV20Aware: true,
-
-    cacheAware: true,
-    prewarmAware: true,
-    worldSnapshotAware: true
-  },
-
-  contract: {
-    input: ["uid", "incomingToken"],
-    output: ["firebaseToken", "storedToken", "realign", "hardLogout"]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { admin, db } from "./PulseWorldFirebaseGenome-v20.js";
 

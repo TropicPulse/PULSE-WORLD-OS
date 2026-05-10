@@ -45,7 +45,22 @@
 //  • No randomness in math; timestamps only for telemetry, not decision math.
 //  • No execution of binary/GPU surfaces; metrics-only.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+export const PulseProxySpineMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const PROXY_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const PulseProxySpineExperienceMeta = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import express from "express";
 import nodemailer from "nodemailer";
 import { createClient } from "redis";
@@ -59,7 +74,7 @@ import { PulseProofBridge as PulseProxyBridge, updateUserMetrics as recordUserMe
 import {
   proxyFrontRoute,
   PulseProxyFrontMeta
-} from "./PulseProxyFront-v20js";
+} from "./PulseProxyFront-v20.js";
 import {
   updateProxyStateFromEnvelope,
   getProxyContext,
@@ -129,251 +144,6 @@ const CHUNKER_BASE =
   process.env.PULSE_CHUNKER_BASE ||
   "https://us-central1-tropic-pulse.cloudfunctions.net";
 
-// ============================================================================
-//  EXPERIENCE META BLOCK — AI / Agent Experience Surfaces (v20)
-// ============================================================================
-export const PulseProxySpineExperienceMeta = Object.freeze({
-  layer: "BackendProxySpine",
-  role: "EXPERIENCE_SPINE",
-  version: "v20-IMMORTAL-PROXY-SPINE",
-  identity: "PulseProxySpineExperience-v20-IMMORTAL",
-  experience: {
-    surfaces: {
-      proxyContext: true,
-      nervousSnapshot: true,
-      spineBand: true,
-      spineWaveField: true,
-      spineAdvantageField: true,
-      presenceBandState: true,
-      harmonicDrift: true,
-      coherenceScore: true,
-      rateLimitBand: true,
-      redisStatus: true,
-      binaryMetrics: true,
-      gpuMetrics: true
-    },
-    healingHooks: {
-      pnsRepair: true,
-      pnsPurifier: true,
-      osHealer: true,
-      globalHealer: true
-    },
-    narrative: {
-      description:
-        "Backend proxy spine that turns TPProxy traffic, nervous snapshots, band/field metadata, and binary/GPU metrics " +
-        "into a stable, organism-readable experience surface for AI/agents. It does not route or score; " +
-        "it only describes, heals, and reflects.",
-      aiUsageHint:
-        "Use this organ's surfaces to understand network health, proxy pressure, compute pressure, and healing state. " +
-        "Never treat it as a router; treat it as a vitals + experience mirror."
-    }
-  }
-});
-
-// ============================================================================
-//  SPINE IDENTITY — v20-IMMORTAL-PROXY-SPINE (backend proxy spine)
-// ============================================================================
-export const PulseRole = {
-  type: "Organ",
-  subsystem: "PulseProxy",
-  layer: "BackendProxySpine",
-  version: "v20-IMMORTAL-PROXY-SPINE",
-  identity: "PulseProxySpine-v20-IMMORTAL-PROXY-SPINE",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    backendOnly: true,
-    symbolicBackend: true,
-
-    presenceAware: true,
-    harmonicsAware: true,
-    dualBandCompatible: true,
-    epochStable: true,
-    passivePrewarm: true,
-    passiveCache: true,
-    passiveChunk: true,
-    passiveRemember: true,
-    passiveForwarding: true,
-
-    sdnPrewarmAware: true,
-    spinalReflexIgnition: true,
-    proxySpineImmortal: true,
-
-    proxyFrontAware: true,
-    proxyContextAware: true,
-    proxyOrganismAware: true,
-    nervousSystemAware: true,
-
-    pnsRepairAware: true,
-    pnsPurifierAware: true,
-    osHealerAware: true,
-    globalHealerAware: true,
-
-    experienceMetaAware: true,
-
-    dualModeEvolution: false,
-    noIQ: true,
-    noRouting: true,
-    noCompute: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-    reflexPropagation: 1.0,
-    organismClusterBoost: 1.0,
-    cognitiveComputeLink: true,
-    futureEvolutionReady: true
-  }
-};
-
-// ============================================================================
-//  HUMAN‑READABLE CONTEXT MAP — Spine Identity (v20 IMMORTAL PROXY SPINE)
-// ============================================================================
-const PROXY_CONTEXT = {
-  layer: PulseRole.layer,
-  role: PulseRole.identity,
-  purpose:
-    "Ingress TPProxy traffic symbolically, expose vitals, protect user by failing open, feed OS healers, PNS healers, and organism context",
-  context:
-    "Unified TPProxy gateway + vitals pump + proxy context bridge for OS-level healers, PNS healers, admin dashboards, and organism surfaces",
-  version: PulseRole.version,
-  target: "proxy-core",
-  selfRepairable: true,
-  evo: PulseRole.evo,
-  experience: PulseProxySpineExperienceMeta
-};
-
-export const PulseProxySpineMeta = Object.freeze({
-  layer: "PulseProxySpine",
-  role: "BACKEND_PROXY_SPINE_ORGAN",
-  version: "v20-IMMORTAL-PROXY-SPINE",
-  identity: "PulseProxySpine-v20-IMMORTAL-PROXY-SPINE",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    backendOnly: true,
-    symbolicBackend: true,
-    dualModeEvolution: false,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-    reflexPropagation: true,
-    organismClusterBoost: true,
-    cognitiveComputeLink: true,
-    failOpenSafe: true,
-
-    presenceAware: true,
-    harmonicsAware: true,
-    dualBandCompatible: true,
-    epochStable: true,
-    passivePrewarm: true,
-    passiveCache: true,
-    passiveChunk: true,
-    passiveRemember: true,
-    passiveForwarding: true,
-    sdnPrewarmAware: true,
-
-    proxyFrontAware: true,
-    proxyContextAware: true,
-    proxyOrganismAware: true,
-    nervousSystemAware: true,
-
-    pnsRepairAware: true,
-    pnsPurifierAware: true,
-    osHealerAware: true,
-    globalHealerAware: true,
-
-    experienceMetaAware: true,
-
-    zeroIQ: true,
-    zeroRouting: true,
-    zeroMarketplace: true,
-    zeroScoring: true,
-    zeroBusinessLogic: true,
-    zeroOSKernelLogic: true,
-    zeroGPULogic: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroAsyncLoops: true,
-    zeroNetworkMutation: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroWindow: true,
-    zeroDOM: true,
-    zeroGPU: true,
-
-    symbolicAware: true,
-    binaryAware: true,
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: false,
-
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "TPProxyRequest",
-      "VitalsSnapshot",
-      "HealerContext",
-      "BackendContext",
-      "PresenceBandState",
-      "HarmonicSnapshot",
-      "ProxyFrontEnvelope",
-      "ProxyContextState",
-      "NervousSystemSnapshot"
-    ],
-    output: [
-      "SpineIngressResult",
-      "SpineBandSignature",
-      "SpineWaveField",
-      "SpineAdvantageField",
-      "SpineProxyContextSnapshot",
-      "SpineDiagnostics",
-      "SpineHealingState",
-      "SpineExperienceMeta"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseProxy-v11",
-    parent: "PulseProxy-v20-IMMORTAL",
-    ancestry: [
-      "PulseProxySpine-v7",
-      "PulseProxySpine-v8",
-      "PulseProxySpine-v9",
-      "PulseProxySpine-v10",
-      "PulseProxySpine-v11",
-      "PulseProxySpine-v11.1",
-      "PulseProxySpine-v11-Evo",
-      "PulseProxySpine-v11.2-Evo-BINARY-MAX",
-      "PulseProxySpine-v12.3-Evo",
-      "PulseProxySpine-v14.0-Presence-Immortal-BACKEND",
-      "PulseProxySpine-v16-Immortal-PROXY-SPINE",
-      "PulseProxySpine-v20-IMMORTAL-PROXY-SPINE"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic"],
-    default: "symbolic",
-    behavior: "backend-proxy-spine"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "TPProxy ingress → vitals pump → OS/PNS-healer + proxy-context feed",
-    adaptive:
-      "wave-field overlays (no binary execution) + SDN prewarm bridge + proxy context + nervous system mirrors + experience surfaces + binary/GPU metrics",
-    return: "deterministic spine surfaces + signatures + proxy context snapshot + experience meta"
-  })
-});
 
 const PULSE_VERSION = PulseProxySpineMeta.version;
 

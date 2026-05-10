@@ -31,109 +31,21 @@
 //   - Callers that ignore presence/harmonicBias get pure v11 behavior.
 //   - v16 adds: artery snapshots, window buckets, advantage view, dual-band prewarm.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBinaryLoopScanner",
-  version: "v16-Immortal",
-  layer: "loop_scanner",
-  role: "binary_loop_organ",
-  lineage: "PulseBinaryLoopScanner-v12.3-Evo → v16-Immortal",
-
-  evo: {
-    loopOrgan: true,
-    multiMode: true,
-    dualBand: true,
-    presenceAware: true,
-    harmonicAware: true,
-    arteryAware: true,
-    advantageView: true,
-    windowSafe: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroRandomness: true
-  },
-
-  contract: {
-    always: [
-      "BinaryPulse",
-      "BinaryWaveScanner",
-      "PageEvo",
-      "PulseAdminInspector"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyLoopScanner"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// META — v16-IMMORTAL
-// ============================================================================
-
-export const BinaryLoopScannerMeta = Object.freeze({
-  layer: "PulseBinaryLoopScanner",
-  role: "BINARY_LOOP_ORGAN",
-  version: "16-Immortal",
-  identity: "PulseBinaryLoopScanner-v16-Immortal",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    loopOrgan: true,
-    multiMode: true,
-    dualBand: true,
-    presenceAware: true,
-    harmonicAware: true,
-    arteryAware: true,
-    advantageView: true,
-    windowSafe: true,
-
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroRandomness: true,
-
-    epoch: "16-Immortal"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Convert pure binary pulses into deterministic loop indices and multi-mode sweep paths with dual-band overlays.",
-
-    never: Object.freeze([
-      "introduce randomness",
-      "mutate input bits",
-      "depend on timestamps",
-      "perform IO or networking",
-      "infer identity from bits",
-      "apply policy logic"
-    ]),
-
-    always: Object.freeze([
-      "validate binary input",
-      "remain pure and deterministic",
-      "emit loop indices only",
-      "expose artery load/pressure metrics",
-      "support dual-band presence/harmonics bias",
-      "provide advantage view for multi-mode scans"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "BinaryLoopScanner must remain pure: no randomness, no IO, no identity inference, ever.";
-  }
-});
+// 2 — EXPORT GENOME METADATA
+export const BinaryLoopScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // PACKET EMITTER — deterministic, loop-scoped

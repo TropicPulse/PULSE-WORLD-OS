@@ -103,6 +103,22 @@
 //
 // DO NOT REMOVE.
 //
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+
 import { onRequest, onCall } from "firebase-functions/v2/https";
 import corsHandler from "./PulseWorldTransport-v20.js";
 import redeemSomePulsePoints from "./PulseWorldPointRedemption-v20.js";
@@ -137,51 +153,6 @@ const RATE_LIMIT_WINDOW_MS = process.env.RATE_LIMIT_WINDOW_MS;
 const MAX_REQUESTS_PER_WINDOW = process.env.MAX_REQUESTS_PER_WINDOW;
 const PIN_TTL_MS = process.env.PIN_TTL_MS;
 
-export const AI_EXPERIENCE_META = {
-  identity: "PulseWorldVault.VaultOrgan",
-  version: "v20-Immortal",
-  layer: "pulse_world_vault",
-  role: "memory_core_utility",
-  lineage: [
-    "Vault-v12",
-    "Vault-v14-Immortal",
-    "Vault-v16-Immortal-Evo",
-    "PulseWorldVault-v20-Immortal"
-  ],
-
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    zeroState: false, // interacts with Firestore
-    zeroTiming: true,
-    binaryAware: true,
-    dualBand: true,
-    presenceAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    organ: "PulseWorldVault-v20",
-    mesh: "PulseMesh-v20",
-    send: "PulseSend-v20",
-    loyalty: "TPLoyalty-v20",
-    wallet: "TPWallet-v20",
-    history: "VaultHistory-v20"
-  },
-
-  safety: {
-    neverLogSecrets: true,
-    neverExposeTokens: true,
-    neverUseWindow: true,
-    neverUseDynamicImport: true,
-    sanitizeAllText: true
-  }
-};
-
-
-// ============================================================================
-// VAULT PATCH: TWILIGHT
-// ============================================================================
 
 
 export const VAULT_PATCH_TWILIGHT = {
@@ -193,8 +164,6 @@ export const VAULT_PATCH_TWILIGHT = {
   description: "The first protective veil cast by the Vault Spirit during a 4 AM development session.",
   note: "Named 'Twilight' because it was created in the quiet hours before dawn."
 };
-
-
 
 // ============================================================================
 // PIXEL SENDER

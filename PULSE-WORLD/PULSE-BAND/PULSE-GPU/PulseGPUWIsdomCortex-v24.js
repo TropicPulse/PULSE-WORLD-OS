@@ -5,82 +5,18 @@
 //  COGNITIVE-FRAME AWARE • COMPUTER-INTELLIGENCE AWARE • EARN-v24-GPU AWARE
 //  GENETIC-MEMORY-LINKED • NERVOUS-SYSTEM-LINKED • WARM-PATH-AWARE • HEALER-AWARE
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const AI_EXPERIENCE_META_PulseGPUWisdomCortex = {
-  identity: "PulseGPUWisdomCortex",
-  version: "v24-Immortal++-MAX",
-  layer: "gpu_wisdom",
-  role: "gpu_wisdom_cortex",
-  lineage: "PulseGPU-v24-Immortal++",
-
-  evo: {
-    gpuCognition: true,
-    gpuHeuristics: true,
-    gpuMetaReasoning: true,
-    gpuPatternReading: true,
-    gpuPressureReading: true,
-    gpuWarmPathReading: true,
-
-    gpuCompute: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // Awareness
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    // Mesh linkage
-    brainLinked: true,
-    cognitionLinked: true,
-    spineLinked: true,
-    geneticMemoryLinked: true,
-    nervousSystemLinked: true,
-    healerLinked: true,
-    lymphNodeLinked: true,
-    warmPathCacheLinked: true,
-
-    // Immortal + Earn v24
-    immortalReady: true,
-    immortalSurface: true,
-    earnAware: true,
-    earnCompatibility: "Earn-v24-GPU",
-
-    // Contracts
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    workgroupLawVersion: 24
-  },
-
-  contract: {
-    always: [
-      "PulseGPUBrain",
-      "PulseGPUCognitiveIntelligence",
-      "PulseGPUGeneticMemory",
-      "PulseGPUSessionTracer",
-      "PulseGPUHealer",
-      "PulseGPUWarmPathCache"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyWisdomCortex"
-    ]
-  }
-};
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { INSIGHT_THRESHOLDS } from "./PulseGPUCommandments-v24.js";
 import {

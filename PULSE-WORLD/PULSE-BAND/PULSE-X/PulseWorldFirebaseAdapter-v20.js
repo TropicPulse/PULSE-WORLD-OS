@@ -8,52 +8,18 @@
 //   - Pure backend organ: no UI, no random, no network beyond Firestore
 //   - One canonical entrypoint: logToFirebase(envelope)
 // ============================================================================
-
-/*
-ADAPTER_META = {
-  identity: "PulseWorldFirebaseAdapter",
-  version: "v20-IMMORTAL",
-  layer: "world_layer",
-  role: "world_log_ingest",
-  lineage: "v14 → v16 → v17 → v20 IMMORTAL",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    zeroMutation: true,
-    zeroExternalMutation: true,
-    dualBand: true,
-    presenceAware: true,
-    advantageAware: true,
-    regionAware: true,
-    hostAware: true,
-    schedulerAware: true,
-    runtimeV20Aware: true,
-    binaryAware: true,
-    intellHashAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    worldSnapshotAware: true
-  },
-
-  contract: {
-    input: [
-      "level",
-      "message",
-      "meta",
-      "band",
-      "pulseTouch",
-      "binaryPayload",
-      "originOrgan",
-      "originInstance",
-      "regionId",
-      "hostName"
-    ],
-    output: ["FirestoreLogDocument"]
-  }
-}
-*/
-/* global log, warn, error */
+import { OrganismIdentity, buildPulseOrganismMap as buildOrganismMap} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+import { BridgeLog as log,BridgeWarn as warn,BridgeError as error} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+// 2 — EXPORT GENOME METADATA
+export const PulseWorldFirebaseAdapterMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 import {
@@ -61,35 +27,6 @@ import {
   db,
   systemCollection
 } from "./PulseWorldFirebaseGenome-v20.js";
-
-// ---------------------------------------------------------------------------
-// META
-// ---------------------------------------------------------------------------
-export const PulseWorldFirebaseAdapterMeta = Object.freeze({
-  identity: "PulseWorldFirebaseAdapter",
-  version: "v20-IMMORTAL-LOGGER",
-  layer: "world_layer",
-  role: "WORLD_LOGGING_ADAPTER",
-  lineage: "PulseWorldFirebaseAdapter-v1 → v17 → v20-IMMORTAL-LOGGER",
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    zeroMutation: true,
-    zeroExternalMutation: true,
-    worldLayerOrgan: true,
-    founderAligned: true,
-    presenceAware: true,
-    bandAware: true,
-    proxyAware: true,
-    safeInit: true,
-    singleInstance: true,
-    coldStartSafe: true,
-    healthAware: true,
-    namespaceAware: true,
-    intellHashAware: true,
-    worldContextAware: true
-  })
-});
 
 // ---------------------------------------------------------------------------
 // INTERNAL: IntellHash (dual hash, bounded, deterministic)

@@ -3,149 +3,21 @@
 //  Earn → Pulse → Send Conductor (v24++ IMMORTAL-INTEL)
 //  Deterministic, Governed Single-Pass, DualBand + DualHash + Presence/Advantage/Chunk
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnSendSystem",
-  version: "v24-IMMORTAL-INTEL",
-  layer: "earn_send",
-  role: "earn_send_conductor",
-  lineage: "PulseEarnSendSystem-v9 → v10 → v11 → v11-Evo → v11.2-Evo → v12.3-Presence → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL → v24-IMMORTAL-INTEL",
-
-  evo: {
-    sendConductor: true,
-    governedSinglePass: true,
-    continuanceAware: true,
-    factoringAware: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureComputeMeta: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    dualHash: true,
-    hashIntellectField: true,
-    presenceAdvantageChunkUnified: true
-  },
-
-  contract: {
-    always: [
-      "PulseSendSystem",
-      "PulseEarn-v24",
-      "PulseEarnContinuancePulse-v24"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "userCode",
-      "dynamicEval"
-    ]
-  }
-};
-*/
-
-export const PulseEarnSendSystemMeta = Object.freeze({
-  layer: "PulseEarnSendSystem",
-  role: "EARN_SEND_CONDUCTOR",
-  version: "v24-IMMORTAL-INTEL",
-  identity: "PulseEarnSendSystem-v24-IMMORTAL-INTEL",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-
-    governedSinglePass: true,
-    governedNoLoops: true,
-    governedNoAsync: true,
-    governedNoNetwork: true,
-    governedNoCompute: true,
-    governedNoGPU: true,
-    governedNoMiner: true,
-    governedNoTimestamps: true,
-    governedNoMutationOutsideInstance: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-
-    presenceAware: true,
-    advantageFieldAware: true,
-    chunkPrewarmAware: true,
-    factoringAware: true,
-    continuanceAware: true,
-
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    worldLensAware: false,
-
-    multiInstanceReady: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "EarnOrganismOrLegacyImpulse",
-      "PulseSendSystem",
-      "ContinuancePulse",
-      "DualBandContext",
-      "DevicePhenotypePresence",
-      "MeshSignals",
-      "ServerAdvantageHints",
-      "GlobalHints"
-    ],
-    output: [
-      "SendConductorResult",
-      "SendConductorDiagnostics",
-      "SendConductorSignatures",
-      "SendConductorHealingState",
-      "SendConductorPresenceField",
-      "SendConductorAdvantageField",
-      "SendConductorChunkPrewarmPlan"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v24-IMMORTAL-INTEL",
-    parent: "PulseEarn-v24-IMMORTAL-INTEL",
-    ancestry: [
-      "PulseEarnSendSystem-v9",
-      "PulseEarnSendSystem-v10",
-      "PulseEarnSendSystem-v11",
-      "PulseEarnSendSystem-v11-Evo",
-      "PulseEarnSendSystem-v11.2-Evo",
-      "PulseEarnSendSystem-v12.3-Presence",
-      "PulseEarnSendSystem-v13.0-Presence-Immortal",
-      "PulseEarnSendSystem-v16-IMMORTAL-INTEL"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only",
-    priority: "binary-first"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic Earn → Pulse → Send conductor",
-    adaptive: "binary/wave surfaces + dual-band signatures + presence/advantage/factoring fields + dualhash",
-    return: "deterministic send result + healing metadata + prewarm hints + INTEL meta"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // Legacy bridge imports (v24 Earn core)
 import { createEarn, evolveEarn } from "./PulseEarn-v24.js";

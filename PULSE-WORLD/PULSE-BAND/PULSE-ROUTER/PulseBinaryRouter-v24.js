@@ -19,95 +19,21 @@
 //  Unified Router Organ Import Surface (Binary + Evolutionary + Mesh + Earn)
 //  PURE IMPORT LAYER — NO LOGIC, NO STATE, NO EXECUTION
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBinaryRouter",
-  version: "v24-Immortal-Cosmos-INTEL-Evo+++",
-  layer: "pulse_router",
-  role: "binary_router_multiverse",
-  lineage: "PulseBinaryRouter-v16-Immortal-DualHash-INTEL → v24-Immortal-Cosmos-INTEL-Evo+++",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    binaryCore: true,
-    immortalBand: true,
-    dualBand: true,
-    chunkAligned: true,
-    presenceAware: true,
-    safeRouteFree: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    dualHashReady: true,
-    routerIntelligenceReady: true,
-    multiverseAware: true,
-    cosmosAware: true,
-    timelineAware: true,
-    branchAware: true,
-
-    advantageAware: true,
-    integrityAware: true,
-    envelopeAware: true,
-    samplingAware: true,
-    dedupAware: true,
-
-    sessionAware: true,
-    bandAware: true,
-    routeShapeAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseBinaryPulse",
-      "PulseBinaryTech-v24-Immortal-Cosmos-INTEL-Evo+++",
-      "PulsePresence",
-      "PulseChunks",
-      "PulseRouterCommandments"
-    ],
-    never: [
-      "legacyBinaryRouter",
-      "legacyRouter",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyChunker"
-    ]
-  }
-}
-*/
-
-export const PulseBinaryRouterRole = {
-  type: "Organ",
-  subsystem: "BinaryRouter",
-  layer: "PulseRouter",
-  version: "24.0-Immortal-Cosmos-INTEL-Evo+++",
-  identity: "PulseBinaryRouter-v24-Immortal-Cosmos-INTEL-Evo+++",
-  schemaVersion: "v3",
-  evo: {
-    binaryCore: true,
-    immortalBand: true,
-    dualBand: true,
-    chunkAligned: true,
-    presenceAware: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    dualHashReady: true,
-    routerIntelligenceReady: true,
-    multiverseAware: true,
-    cosmosAware: true,
-    timelineAware: true,
-    branchAware: true,
-    advantageAware: true,
-    integrityAware: true,
-    envelopeAware: true,
-    samplingAware: true,
-    dedupAware: true,
-    sessionAware: true,
-    bandAware: true,
-    routeShapeAware: true
-  }
-};
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseBinaryRouterRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // --- EVOLUTIONARY ROUTER ORGANS --------------------------------------------
 import * as PulseRouterEvolutionaryDesign     from "./PulseRouterEvolutionaryDesign-v24.js";
 import * as PulseRouterEvolutionaryInstincts  from "./PulseRouterEvolutionaryInstincts-v24.js";

@@ -3,104 +3,18 @@
 //  32-LANE GPU CHUNKER — BINARY + SYMBOLIC + GPU-ORGANISM GRADE
 //  GPU Chunk Organ for PulseGPU v24+ (steps, traces, pressure, warm-path, CI)
 // ============================================================================
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUChunker",
-  version: "v24.0-IMMORTAL++",
-  layer: "gpu_runtime",
-  role: "gpu_chunk_engine",
-  lineage: "PulseAIChunker-v20 → PulseGPUChunker-v24-IMMORTAL++",
-
-  evo: {
-    // Core chunking
-    gpuChunker: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    lane32: true,
-    prewarmAware: true,
-    cacheAware: true,
-    profileAware: true,
-    gpuPresenceAware: true,
-    gpuTraceAware: true,
-    gpuPressureAware: true,
-    gpuWarmPathAware: true,
-    gpuDispatchAware: true,
-    gpuCIAware: true,
-    gpuGeneticAware: true,
-    advantageAware: true,
-
-    // Determinism + purity
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // Organism alignment
-    organismAware: true,
-    pulseGPUAware: true,
-    pulseGPUChunkerAligned: true,
-    pulseGPUWarmPathAligned: true,
-    pulseGPUWisdomAligned: true,
-    bridgeAligned: true
-  },
-
-  boundaries: [
-    "No semantic understanding.",
-    "No AI reasoning or inference.",
-    "No mutation of upstream data.",
-    "No compression beyond structural chunking.",
-    "No encryption or obfuscation."
-  ]
-};
-*/
-
-// ============================================================================
-//  META — v24 IMMORTAL GPU CHUNKER
-// ============================================================================
-
-export const PulseGPUChunkerMeta = Object.freeze({
-  id: "PulseGPUChunker-v24.0-IMMORTAL++",
-  version: "24.0.0",
-  role: "GPU_CHUNKER",
-  layer: "gpu_runtime",
-  description:
-    "IMMORTAL 32-lane dualband GPU chunker for steps, traces, pressure, warm-path, dispatch, CI, genetic patterns.",
-  identity: {
-    type: "organ",
-    name: "PulseGPUChunker",
-    band: "gpu_runtime",
-    immutable: true
-  },
-  lanes: 32,
-  evo: Object.freeze({
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    gpuTraceAware: true,
-    gpuPressureAware: true,
-    gpuWarmPathAware: true,
-    gpuDispatchAware: true,
-    gpuCIAware: true,
-    gpuGeneticAware: true,
-    profileAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-    chunkAware: true,
-    identityAware: true,
-    topologyAware: true,
-    advantageAware: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  })
-});
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+export const PulseGPUChunkerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  INTERNAL HELPERS

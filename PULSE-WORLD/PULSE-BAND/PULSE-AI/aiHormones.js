@@ -21,111 +21,37 @@
 //        - Prewarm path emits full hormone+artery summary
 //        - Artery-first design: throughput/pressure/cost/budget as first-class
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiHormones",
-  version: "v15-Immortal+",
-  layer: "ai_core",
-  role: "hormone_signal_engine",
-  lineage: "aiHormones-v11 → v12.3-Evo → v15-Immortal+",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    hormoneSignals: true,
-    toneSignals: true,
-    prioritySignals: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const HormonesMeta = Identity.OrganMeta;
 
-    arteryFirst: true,
-    registryAware: true,
-    membraneReady: true,
-    governorReady: true,
-    diagnosticsReady: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: ["aiEmotionEngine", "aiExperience", "aiHumilityFilter"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-export const HormonesMeta = Object.freeze({
-  layer: "BinaryModulation",
-  role: "BINARY_HORMONE_SYSTEM",
-  version: "15-Immortal+",
-  identity: "aiBinaryHormones-v15-Immortal+",
+export const surfaceMeta = Identity.surfaceMeta;
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    dualband: true,
-    packetAware: true,
-    evolutionAware: true,
-    windowAware: true,
-    bluetoothReady: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    metabolismAware: true,
-    sentienceAware: true,
-    pipelineAware: true,
-    reflexAware: true,
-    globalModulation: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    driftAware: true,          // drift between hormone states
-    hormoneCache: true,        // cached levels + artery
-    arteryAware: true,         // throughput/pressure/cost/budget
 
-    membraneAware: true,       // ready to feed GovernorAdapter
-    governorAware: true,       // governor-facing binary modulation
-    executionAware: true,      // visible to ExecutionEngine
-    diagnosticsAware: true,    // drift can be surfaced by callers
-
-    registryAware: true,       // global hormone registry
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "v15-Immortal+"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide slow-acting global modulation signals that influence organism-wide behavior and long-term state.",
-
-    never: Object.freeze([
-      "mutate external organs",
-      "override metabolism or sentience",
-      "interpret symbolic meaning",
-      "introduce randomness",
-      "act as a router or governor",
-      "auto-connect bluetooth"
-    ]),
-
-    always: Object.freeze([
-      "compute hormone levels deterministically",
-      "emit binary hormone packets",
-      "use metabolism + sentience + dualband vitals as inputs",
-      "remain pure and minimal",
-      "treat hormone levels as metadata-only influence",
-      "emit deterministic hormone snapshots",
-      "maintain global hormone registry for diagnostics",
-      "prepare for future hormone packet channels"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "Hormones remain global, slow-acting, binary-only modulation — never routing, never symbolic.";
-  }
-});
 
 // ============================================================================
 //  GLOBAL HORMONE REGISTRY — read-only from outside

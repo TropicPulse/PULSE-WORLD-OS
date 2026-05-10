@@ -15,117 +15,21 @@
 //  • Pure deterministic transport chain.
 //  • Zero mutation outside instance.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSend",
-  version: "v16-Immortal-ORGANISM",
-  layer: "frontend",
-  role: "send_router",
-  lineage: "PulseOS-v12 → PulseSend-v12.3-Evo → PulseSend-v14.4-IMMORTAL-INTEL → PulseSend-v16-Immortal-ORGANISM",
-
-  evo: {
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    unifiedPulseFamily: true,
-    deterministic: true,
-    driftProof: true,
-    immortalOrganism: true,
-    factoringAware: true,
-    advantageAware: true,
-    cacheChunkAware: true,
-    prewarmAware: true,
-    multiPresenceAware: true,
-    meshAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseSendAdapter",
-      "PulseSendEngine",
-      "PulsePresence",
-      "PulseChunks"
-    ],
-    never: [
-      "legacyPulseSend",
-      "legacySendRouter",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-//  v16 IMMORTAL META (symbolic-only, no impact on core logic)
-// ============================================================================
-export const PulseSendMetaV16 = Object.freeze({
-  layer: "PulseSend",
-  role: "SYMBOLIC_SEND_ORGAN",
-  version: "v16-Immortal-ORGANISM",
-  identity: "PulseSend-v16-Immortal-ORGANISM",
-
-  evo: Object.freeze({
-    dualBandAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    factoringAware: true,
-    cacheChunkAware: true,
-    prewarmAware: true,
-    multiPresenceAware: true,
-    meshAware: true,
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroExternalIO: true,
-    zeroMutationOfInput: true
-  }),
-
-  guarantees: Object.freeze({
-    noRandomness: true,
-    noTimestamps: true,
-    noExternalIO: true,
-    noDynamicImports: true,
-    noEval: true,
-    noUserCode: true,
-    noMutationOutsideInstance: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "jobId",
-      "pattern",
-      "payload",
-      "priority",
-      "returnTo",
-      "mode"
-    ],
-    output: [
-      "PulseRole",
-      "movement",
-      "result",
-      "mode",
-      "pulseType",
-      "pulseIntelligence",
-      "pulseIntelligenceDualHash",
-      "sendDualHashPrimary",
-      "sendDualHashSecondary",
-      "fallbackSurface",
-      "routeSurface",
-      "pathwaySurface",
-      "movementSurface",
-      "returnSurface",
-      "cacheChunkSurface",
-      "prewarmSurface",
-      "presenceSurface",
-      "techSurface",
-      "diagnostics"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // --- Evolution Engines ------------------------------------------------------
 import {createPulseV2 as PulseV2EvolutionEngine }  from "./PulseV2EvolutionEngine-v16.js";
@@ -148,51 +52,6 @@ import {createPulseSendReturn as PulseSendReturn }         from "./PulseSendRetu
 
 // --- System Layer (Final Conductor) ----------------------------------------
 import {createPulseSendSystem as PulseSendSystem }         from "./PulseSendSystem.js";
-
-// ============================================================================
-// ⭐ PulseRole — identifies this as the PulseSend Organ Wrapper (v16)
-// ============================================================================
-export const PulseRole = {
-  type: "Messenger",
-  subsystem: "PulseSend",
-  layer: "TransportSystem",
-  version: "16-Immortal-ORGANISM",
-  identity: "PulseSend-v16-Immortal-ORGANISM",
-
-  evo: {
-    driftProof: true,
-    unifiedOrganReady: true,
-    multiOrganReady: true,
-    shapeShiftAware: true,
-    reflexChainReady: true,
-    patternAware: true,
-    lineageAware: true,
-    memoryAware: true,
-    modeAware: true,
-    deterministicImpulseFlow: true,
-    futureEvolutionReady: true,
-
-    unifiedAdvantageField: true,
-    pulseSend11Ready: true,
-
-    fallbackAware: true,
-    movementAware: true,
-    returnArcAware: true,
-    pathwayAware: true,
-    routerAware: true,
-    meshAware: true,
-
-    cacheChunkAware: true,
-    prewarmAware: true,
-    multiPresenceAware: true
-  },
-
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
-  pulseContract: "Pulse-v1/v2/v3",
-  gpuOrganContract: "PulseGPU-v11",
-  earnCompatibility: "PulseEarn-v11"
-};
 
 
 // ============================================================================

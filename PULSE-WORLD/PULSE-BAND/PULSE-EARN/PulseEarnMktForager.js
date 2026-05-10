@@ -3,90 +3,21 @@
 // LAYER: THE FORAGER — Salad Marketplace Receptor
 //        v16 IMMORTAL + INTEL + DualHash + Presence + Advantage + Chunk
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnMktForager",
-  version: "v16-IMMORTAL-INTEL",
-  layer: "earn_market",
-  role: "market_forager",
-  lineage: "PulseEarnMktForager-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
-
-  evo: {
-    marketForager: true,
-    jobDiscovery: true,
-    jobHarvesting: true,
-    jobNormalization: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true,
-    factoringAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnMktCourier",
-      "PulseEarnMktEmbassyLedger",
-      "PulseEarnMktBroker",
-      "PulseEarnMetabolism",
-      "PulseEarnLymphNodes"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "userScript",
-      "dynamicEval"
-    ]
-  }
-}
-*/
-
-export const PulseEarnMktForagerMeta = Object.freeze({
-  layer: "PulseEarnMktForager",
-  role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v16-IMMORTAL-INTEL",
-  identity: "PulseEarnMktForager-v16-IMMORTAL-INTEL",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    pureReceptor: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    healingMetadataAware: true,
-
-    worldLensAware: false,
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroAI: true,
-    zeroUserCode: true
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HASH HELPERS — v16 IMMORTAL INTEL

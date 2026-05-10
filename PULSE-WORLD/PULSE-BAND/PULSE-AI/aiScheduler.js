@@ -22,147 +22,36 @@
  *     - window-safe scheduler snapshot
  *     - lineage-aware drift protection (IMMORTAL‑EVO)
  */
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiScheduler",
-  version: "v16-Immortal-Evo",
-  layer: "ai_core",
-  role: "ai_scheduler",
-  lineage: "aiScheduler-v10 → v12.3-Evo+ → v15-Immortal → v16-Immortal-Evo",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    schedulingEngine: true,
-    stageTiming: true,
-    temporalArteryV5: true,
-    chunkAware: true,
-    prewarmAware: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const SchedulerMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiEngine", "aiCortex", "aiNervousSystem"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const AI_EXPERIENCE_META = Object.freeze({
-  identity: "aiScheduler",
-  version: "v16-Immortal-Evo",
-  layer: "ai_core",
-  role: "ai_scheduler",
-  lineage: "aiScheduler-v10 → v12.3-Evo+ → v15-Immortal → v16-Immortal-Evo",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    schedulingEngine: true,
-    stageTiming: true,
-    temporalArteryV5: true,
-    chunkAware: true,
-    prewarmAware: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  contract: Object.freeze({
-    always: ["aiEngine", "aiCortex", "aiNervousSystem"],
-    never: ["safeRoute", "fetchViaCNS"]
-  })
-});
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-export const EXPORT_META = Object.freeze({
-  organ: "BinaryScheduler",
-  layer: "binary_scheduler",
-  stability: "IMMORTAL-EVO",
-  deterministic: true,
-  exposes: [
-    "scheduleTask",
-    "cancelTask",
-    "prewarmTask",
-    "prewarmAllTasks",
-    "getTaskSnapshot",
-    "getTemporalArtery",
-    "getSchedulerSnapshot",
-    "start",
-    "stop"
-  ],
-  sideEffects: "binary-only",
-  network: "none"
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-export const SchedulerMeta = Object.freeze({
-  layer: "BinaryNervousSystem",
-  role: "BINARY_SCHEDULER_ORGAN",
-  version: "16-Immortal-Evo",
-  identity: "aiBinaryScheduler-v16-Immortal-Evo",
-
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: false,
-    temporalAware: true,
-    arteryAware: true,
-    reflexAware: true,
-    pipelineAware: true,
-    chunkAware: true,
-    prewarmAware: true,
-    lineageAware: true,
-    spiralAware: true,
-    readOnly: true,
-    multiInstanceReady: true,
-    epoch: "16-Immortal-Evo"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide deterministic binary scheduling of tasks, pulses, jobs, and reflex triggers with temporal artery metrics v5 and window-safe snapshots.",
-
-    never: Object.freeze([
-      "introduce randomness",
-      "mutate external organs",
-      "override pipeline decisions",
-      "override reflex decisions",
-      "block the organism",
-      "generate symbolic state",
-      "perform cognition",
-      "emit non-binary payloads",
-      "leak task payloads in artery snapshots"
-    ]),
-
-    always: Object.freeze([
-      "treat all inputs as read-only",
-      "emit binary-only outputs",
-      "compute temporal artery metrics v5",
-      "maintain deterministic tick timing",
-      "remain drift-proof",
-      "remain non-blocking",
-      "emit window-safe scheduler snapshots"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "BinaryScheduler is a deterministic temporal organ — it never mutates external organs or performs cognition.";
-  }
-});
 
 // ============================================================================
 //  ARTERY HELPERS — v5 (PURE, STATELESS, IMMORTAL‑EVO)

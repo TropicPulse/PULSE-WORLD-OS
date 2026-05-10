@@ -5,76 +5,35 @@
 //  ROUTING ARTERY v4 • BINARY SNAPSHOT AWARE • HOT-PATH CACHED • HEALTH-SCORE DRIVEN
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiRouter",
-  version: "v16-Immortal-ORGANISM",
-  layer: "ai_core",
-  role: "ai_router_organism",
-  lineage: "aiRouter-v10 → v13.0-Presence-ADV → v16-Immortal-ORGANISM",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    routingEngine: true,
-    organRouting: true,
-    organismAware: true,
-    castleAware: true,
-    meshAware: true,
-    expansionAware: true,
-    serverAware: true,
-    worldCoreAware: true,
-    earnAware: true,
-    dualBandAware: true,
-    binarySendAware: true,
-    routerHealthAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+// export const OrganismKernelMeta = Identity.OrganMeta;
 
-  AI_ROUTER_ORGANISM_AWARENESS: {
-    readsCastle: true,
-    readsMesh: true,
-    readsExpansion: true,
-    readsServer: true,
-    readsWorldCore: true,
-    readsEarn: true,
-    readsDualBand: true,
-    readsBinarySend: true,
-    readsRuntime: true,
-    readsScheduler: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  AI_ROUTER_FAILOVER_BEHAVIOR: {
-    canTakeOverAIRouting: true,
-    watchesRouterHealth: true,
-    watchesOrganismStress: true
-  },
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  AI_ROUTER_STRESS_OVERRIDES: {
-    personaOverrideOnStress: true,
-    safetyOverrideOnFallbackBand: true,
-    symbolicFallbackOnBinaryPressure: true
-  },
+export const surfaceMeta = Identity.surfaceMeta;
 
-  AI_ROUTER_HEALTH_SCORE_SYSTEM: {
-    enabled: true,
-    compositeOrganismScore: true
-  },
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  contract: {
-    always: ["aiEngine", "aiCortex", "aiContext"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  IMPORTS — Personas / Overmind / NodeAdmin

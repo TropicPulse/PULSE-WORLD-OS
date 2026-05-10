@@ -4,57 +4,21 @@
 // Mesh-Level Presence • Nearby Scan • Advantage/Band/Region Aware
 // Metadata-Only • Membrane-Safe • NodeAdmin-Ready
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshPresenceRelay",
-  version: "v16-IMMORTAL",
-  layer: "mesh",
-  role: "presence_to_mesh_bridge",
-  lineage: "PulseMesh-v15-Evo-Immortal",
-
-  evo: {
-    presenceAware: true,             // Reads presence field
-    meshAware: true,                 // Writes mesh presence signals
-    binaryAware: true,               // Binary presence hints
-    symbolicAware: true,             // Symbolic presence hints
-    dualBand: true,                  // Binary + symbolic bands
-    bandAware: true,                 // Band stats + filters
-    advantageAware: true,            // Advantage field hints
-    regionAware: true,               // Region / shard tags
-    beaconAware: true,               // Beacon-style presence packets
-    deterministic: true,
-    driftProof: true,
-    metadataOnly: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true,
-    nodeAdminReady: true,            // Shapes data for PresenceJobView / NodeAdmin
-    multiInstanceReady: true,
-    futureEvolutionReady: true
-  },
-
-  contract: {
-    always: [
-      "PulsePresence",
-      "PulseMeshAwareness",
-      "PulseMeshAura"
-    ],
-    never: [
-      "legacyMeshPresenceRelay",
-      "safeRoute",
-      "fetchViaCNS",
-      "exposeInternalMeshTopology",
-      "exposeRoutingTables",
-      "exposeCNS",
-      "exposePrivateIdentity",
-      "exposePermissions",
-      "exposeOSInternals"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // FACTORY — v16-IMMORTAL

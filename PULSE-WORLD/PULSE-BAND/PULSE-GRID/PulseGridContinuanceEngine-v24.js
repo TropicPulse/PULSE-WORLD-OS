@@ -3,129 +3,20 @@
 //  Continuance v3 • Fluctuations v3 • Outages v3 • Presence • Advantage • Proxy
 //  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS. ZERO I/O.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "powerContinuanceEngine",
-  version: "v24-Immortal-ORGANISM",
-  layer: "pulsegrid_compute",
-  role: "continuance_compute_engine",
-  lineage: "PowerPrime-v12.3 → PowerPrime-v14 → PowerContinuanceEngine-v24-Immortal-ORGANISM",
-
-  evo: {
-    continuanceEngine: true,
-    outageDetection: true,
-    fluctuationDetection: true,
-    stabilityComputation: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    binarySafe: true,
-    symbolicSafe: true,
-    dualBandAware: true,
-
-    presenceAware: true,
-    bandPresenceAware: true,
-    routerPresenceAware: true,
-    advantageAware: true,
-    fallbackBandAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true,
-
-    meshAware: true,
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true
-  },
-
-  contract: {
-    always: [
-      "powerRiskEngine",
-      "aiPowerPrime",
-      "PulseWorldCore",
-      "PulseUser"
-    ],
-    never: [
-      "legacyContinuanceEngine",
-      "safeRoute",
-      "fetchViaCNS",
-      "aiInference",
-      "meshRouting",
-      "networkIO"
-    ]
-  }
-}
-*/
-
-export const PowerContinuanceEngineMeta = Object.freeze({
-  layer: "PulseAIPowerPrime",
-  role: "POWER_CONTINUANCE_ENGINE",
-  version: "v24-Immortal-ORGANISM",
-  identity: "powerContinuanceEngine-v24-Immortal-ORGANISM",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    continuanceAware: true,
-    fluctuationAware: true,
-    outageAware: true,
-    metabolicAware: true,
-    pipelineAware: true,
-    nervousAware: true,
-    presenceAware: true,
-    bandPresenceAware: true,
-    routerPresenceAware: true,
-    advantageAware: true,
-    fallbackBandAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true,
-    meshAware: true,
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true,
-    epoch: "v24-Immortal-ORGANISM"
-  }),
-
-  guarantees: Object.freeze({
-    pureCompute: true,
-    zeroMutation: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroDateNow: true,
-    zeroIO: true,
-    zeroNetwork: true,
-    zeroSideEffects: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PowerHistorySnapshot",
-      "FusedArteriesSnapshot",
-      "OrganismSnapshot",
-      "PresenceContext",
-      "AdvantageContext",
-      "MeshContext",
-      "ProxyContext"
-    ],
-    output: [
-      "ContinuanceMetricsV3",
-      "FluctuationWindowsV3",
-      "OutageWindowsV3",
-      "ContinuancePresencePlanV3"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PowerContinuanceEngineMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  INTERNAL HELPERS

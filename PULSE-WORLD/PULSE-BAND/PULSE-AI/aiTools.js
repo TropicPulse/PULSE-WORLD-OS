@@ -47,98 +47,35 @@
 //   • ZERO identity leakage.
 //   • PURE deterministic analysis.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiTools",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "tools_surface",
-  lineage: "aiTools-v10 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    toolsSurface: true,
-    utilityMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiAssistant", "aiService", "aiContext"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+// export const OrganismKernelMeta = Identity.OrganMeta;
 
-export const AI_INSTRUMENTS_META = Object.freeze({
-  type: "Cognitive",
-  subsystem: "aiInstruments",
-  layer: "PulseAIInstruments",
-  role: "INSTRUMENTS_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiInstruments-v12.3-Evo+",
-  target: "full-mesh",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    dualbandSafe: true,
-    binaryAware: true,
-    symbolicAware: true,
-    schemaAware: true,
-    lineageAware: true,
-    patternAware: true,
-    advantageAware: true,
-    evolutionAware: true,
-    observerOnly: true,
-    readOnly: true,
-    mutationSafe: true,
-    architectAware: true,
-    multiInstanceReady: true,
-    arteryAware: true,
-    epoch: "v12.3-Evo+"
-  }),
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide PURE deterministic analysis for schemas, drift, slowdown, routes, logs, errors, and evolutionary patterns.",
-    never: Object.freeze([
-      "mutate data",
-      "modify external systems",
-      "introduce randomness",
-      "override router decisions",
-      "override cortex decisions",
-      "perform cognition",
-      "perform intent handling",
-      "leak identity anchors"
-    ]),
-    always: Object.freeze([
-      "analyze schemas",
-      "detect drift",
-      "detect slowdown",
-      "analyze routes",
-      "analyze logs",
-      "analyze errors",
-      "detect evolutionary patterns",
-      "translate binary/symbolic → PulseFields",
-      "remain read‑only",
-      "remain deterministic",
-      "report diagnostics only"
-    ])
-  }),
+export const surfaceMeta = Identity.surfaceMeta;
 
-  boundaryReflex() {
-    return "INSTRUMENTS is read‑only, deterministic, and analysis‑only — never mutating, never random, never overriding CNS decisions.";
-  }
-});
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // SECTION 1 — IMPORTS

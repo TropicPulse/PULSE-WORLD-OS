@@ -18,101 +18,36 @@
 //    • prewarm-aware (field prewarm packet)
 //    • multi-instance, identity-safe
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiField",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "field_simulation_engine",
-  lineage: "aiField-v11 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    fieldSimulation: true,
-    contextField: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiContext", "aiCortex", "aiEnvironment"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const FieldMeta = Identity.OrganMeta;
 
-export const FieldMeta = Object.freeze({
-  layer: "BinaryField",
-  role: "BINARY_FIELD_LAYER",
-  version: "11.3-Evo",
-  identity: "aiBinaryField-v11.3-Evo",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    dualband: true,            // dual-band aware
-    packetAware: true,         // packet-aware
-    evolutionAware: true,      // evolution-aware
-    windowAware: true,         // safe vitals for UI
-    bluetoothReady: true,      // future integration hook
+export const surfaceMeta = Identity.surfaceMeta;
 
-    sentinelAware: true,
-    metabolismAware: true,
-    hormonesAware: true,
-    consciousnessAware: true,
-    pipelineAware: true,
-    reflexAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    cognitionAware: true,
-    arteryAware: true,
-    fieldAware: true,
-    organismAware: true,
-    vitalsAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
-    epoch: "11.3-Evo"
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide a deterministic binary membrane between the organism and the external world.",
-
-    never: Object.freeze([
-      "interpret symbolic meaning",
-      "mutate external systems",
-      "bypass sentinel safety",
-      "override metabolism or hormones",
-      "introduce randomness",
-      "modify pipeline behavior",
-      "modify reflex behavior",
-      "auto-connect bluetooth",
-      "expose raw device identifiers"
-    ]),
-
-    always: Object.freeze([
-      "validate binary input",
-      "update field state deterministically",
-      "encode field packets in binary",
-      "emit packets without interpretation",
-      "respect metabolic pressure",
-      "compute artery metrics deterministically",
-      "expose binary vitals snapshot",
-      "remain pure and minimal",
-      "prepare for bluetooth field channels (future)"
-    ])
-  })
-});
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, field-scoped

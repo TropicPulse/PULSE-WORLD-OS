@@ -12,86 +12,35 @@
 // ---------------------------------------------------------
 //  META BLOCK — v16‑Immortal DualBand‑Safe Binary Organ
 // ---------------------------------------------------------
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-export const EvolutionMeta = Object.freeze({
-  layer: "BinaryEvolution",
-  role: "BINARY_EVOLUTION_ENGINE",
-  version: "v16-Immortal",
-  identity: "aiBinaryEvolution-v16-Immortal",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    registryAware: true,
-    memoryAware: true,
-    signatureAware: true,
-    mutationDetection: true,
-    structuralAudit: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const EvolutionMeta = Identity.OrganMeta;
 
-    longTermMemoryAware: true,
-    repairAware: true,
-    identityEnforcement: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "v16-Immortal",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-    dualBandSafe: true,
-    sideEffectFree: true
-  }),
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose:
-      "Generate deterministic binary signatures for organs, detect drift, and enforce organism identity.",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: Object.freeze([
-      "mutate organ code",
-      "modify organ state",
-      "interpret symbolic meaning",
-      "introduce randomness",
-      "rewrite signatures nondeterministically",
-      "perform cognition",
-      "perform routing"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: Object.freeze([
-      "encode signatures deterministically",
-      "canonicalize JSON before encoding",
-      "compare signatures without interpretation",
-      "store signatures in binary memory",
-      "detect drift safely",
-      "return frozen results"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "BinaryEvolutionEngine",
-    organKind: "Genetic",
-    physiologyBand: "Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "on-demand",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "generateSignature",
-        "storeSignature",
-        "loadSignature",
-        "detectDrift:firstSignature",
-        "detectDrift:noDrift",
-        "detectDrift:driftDetected",
-        "evolve:noDrift",
-        "evolve:evolved",
-        "prewarm:success",
-        "prewarm:failure"
-      ]
-    }
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------
 //  CANONICAL JSON CANONICALIZER (IMMORTAL v16)

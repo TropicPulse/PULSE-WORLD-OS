@@ -3,44 +3,36 @@
 //  Deterministic • Ego‑Free • Emotion‑Aware • Identity‑Aligned • Harmonic
 //  INTERNAL ENGINE (NOT AN ORGAN, NOT AN ARCHETYPE)
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiToneRouter",
-  version: "v15-Immortal",
-  layer: "ai_core",
-  role: "tone_router",
-  lineage: "aiToneRouter-v11 → v15-Immortal",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    toneRouting: true,
-    toneSelection: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+// export const OrganismKernelMeta = Identity.OrganMeta;
 
-    harmonicRoutingV4: true,
-    emotionAware: true,
-    identityAligned: true,
-    personalityAware: true,
-    packetAware: true,
-    windowAware: true,
-    multiInstanceIdentity: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: ["aiToneEngine", "aiEmotionEngine", "aiHumilityFilter", "aiIdentityCore"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 import { aiToneEngine } from "./aiToneEngine.js";
 import { aiPersonalityEngine } from "./aiPersonalityEngine-v16.js";

@@ -3,120 +3,37 @@
 //  Emotion Organ • Subtle Affect Detection • Tone Routing Surface
 //  PURE AFFECT. ZERO DIAGNOSIS. ZERO CLINICAL INTERPRETATION.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiEmotionEngine",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "emotion_simulation_engine",
-  lineage: "aiEmotionEngine-v10 → v12 → v12.3-Presence → v14-Immortal",
 
-  evo: {
-    emotionSimulation: true,
-    toneMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiCortex", "aiContext", "aiHumilityFilter"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-export const EmotionEngineMeta = Object.freeze({
-  layer: "PulseAIEmotionFrame",
-  role: "EMOTION_ORGAN",
-  version: "14-Immortal",
-  identity: "aiEmotionEngine-v14-Immortal",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const EmotionEngineMeta = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    symbolicAware: true,
-    toneAware: true,
-    affectAware: true,
-    routerAware: true,
-    cortexAware: true,
-    contextAware: true,
-    deliveryAware: true,
-    dualBandAware: true,
-    personaAware: true,
-    safetyAware: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    safetyAligned: true,
-    nonClinical: true,
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    epoch: "14-Immortal"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  contract: Object.freeze({
-    purpose: "Detect emotional cues and user affect for tone routing.",
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    never: Object.freeze([
-      "diagnose emotions clinically",
-      "assume mental health conditions",
-      "override safety boundaries",
-      "invent emotional states",
-      "break tone alignment",
-      "introduce randomness"
-    ]),
-
-    always: Object.freeze([
-      "stay subtle",
-      "stay grounded",
-      "stay non-invasive",
-      "stay tone-compatible",
-      "support experience + tone organs",
-      "emit deterministic affect packets"
-    ])
-  }),
-
-  voice: Object.freeze({
-    tone: "subtle, perceptive, grounded",
-    style: "affect-first, non-clinical"
-  }),
-
-  presence: Object.freeze({
-    organId: "EmotionEngine",
-    organKind: "Affect",
-    physiologyBand: "Symbolic",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "per-message",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "emotion:detected",
-        "emotion:packet"
-      ]
-    }
-  }),
-
-  boundaryReflex() {
-    return "Emotion detection must remain subtle, non-clinical, and grounded.";
-  }
-});
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, emotion-scoped

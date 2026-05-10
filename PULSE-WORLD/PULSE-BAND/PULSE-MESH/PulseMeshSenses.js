@@ -28,45 +28,21 @@
 // • Zero imports — all dependencies injected by CNS Brain.
 // • Binary-aware, dual-mode-ready, mesh-aware, presence-aware, drift-proof.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshSenses",
-  version: "v15-Evo-Immortal",
-  layer: "mesh",
-  role: "mesh_sensory_engine",
-  lineage: "PulseMesh-v15",
-
-  evo: {
-    senses: true,                   // This IS the sensory organ
-    presenceAware: true,            // Reads presence field
-    meshAware: true,                // Reads mesh topology + mesh metrics
-    binaryAware: true,              // Binary sensory packets
-    symbolicAware: true,            // Symbolic sensory packets
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    metadataOnly: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshAwareness",
-      "PulseMeshFlow",
-      "PulseMeshCognition"
-    ],
-    never: [
-      "legacyMeshSenses",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseSenses({
   PulseHalo,

@@ -4,113 +4,35 @@
 //  PURE MEMBRANE. ZERO INTERPRETATION. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiGovernorAdaptor",
-  version: "v16-Immortal++",
-  layer: "ai_core",
-  role: "governor_adaptor",
-  lineage: "aiGovernorAdaptor-v11 → v14-Immortal → v16-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    governorAdaptor: true,
-    policyMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    trustFabricAware: true,
-    juryAware: true,
-    arteryAware: true,
-    packetAware: true,
-    windowAware: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const GovernorAdapterMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiEngine", "aiBoundariesEngine", "aiBrainstem", "aiTrustFabric", "aiJuryFrame"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const GovernorAdapterMeta = Object.freeze({
-  layer: "OrganismMembrane",
-  role: "GOVERNOR_ADAPTER",
-  version: "16-Immortal++",
-  identity: "aiGovernorAdapter-v16-Immortal++",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
-    membrane: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    packetAware: true,
-    presenceAware: true,
-    evolutionAware: true,
-    windowAware: true,
-    bluetoothReady: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    binaryAware: true,
-    governorAware: true,
-    pipelineAware: true,
-    reflexAware: true,
-    arteryAware: true,
-    organismAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    trustFabricAware: true,
-    juryAware: true,
-
-    chunkingAware: true,
-    gpuFriendly: true,
-
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
-    epoch: "16-Immortal++"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide a deterministic membrane between the evolution layer and the Governor, without interpreting or mutating packets.",
-
-    never: Object.freeze([
-      "decode binary",
-      "interpret binary",
-      "mutate binary",
-      "apply policy logic",
-      "override Governor decisions",
-      "modify pipeline or reflex behavior",
-      "introduce randomness",
-      "alter packet meaning",
-      "inject symbolic metadata",
-      "auto-connect bluetooth"
-    ]),
-
-    always: Object.freeze([
-      "validate binary input",
-      "wrap packets deterministically",
-      "forward packets without interpretation",
-      "remain pure and minimal",
-      "act as a safe membrane between layers",
-      "expose membrane artery metrics",
-      "emit trust + jury evidence packets",
-      "prepare for future binary membrane channels"
-    ])
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, membrane-scoped

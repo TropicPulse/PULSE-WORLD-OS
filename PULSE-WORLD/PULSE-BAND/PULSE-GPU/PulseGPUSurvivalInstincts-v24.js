@@ -19,44 +19,19 @@
 //  • Deterministic: same inputs → same evolutionary memory
 //  • Legacy-safe: v10.4/v11/v12.3/v16 callers still behave identically
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUSurvivalInstincts",
-  version: "v24-Immortal-Evo-Core",
-  layer: "gpu_guardian",
-  role: "gpu_survival_instincts",
-  lineage: "PulseGPU-v24",
-
-  evo: {
-    gpuSurvival: true,
-    gpuThreatHeuristics: true,
-    gpuKillSwitchHeuristics: true,
-
-    gpuCompute: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseGPUGuardianCortex",
-      "PulseGPULymphNodes"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacySurvivalInstincts"
-    ]
-  }
-}
-*/
-
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+export const SURVIVAL_CONTEXT = Identity.pulseLoreContext;
 // v24: imports so SurvivalInstincts is wired into the v24 organism
 import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem-v24.js";
 import { PulseGPUHealer } from "./PulseGPULymphNodes-v24.js";
@@ -65,78 +40,6 @@ import { SCORE_CONSTANTS } from "./PulseGPUCommandments-v24.js";
 // optional Earn field integration (conceptual, v24-compatible)
 import { evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v24.js";
 
-// ------------------------------------------------------------
-// ⭐ OS‑v24-Immortal-Evo-Core CONTEXT METADATA — Survival Instincts Identity
-// ------------------------------------------------------------
-const SURVIVAL_CONTEXT = {
-  layer: "PulseGPUSurvivalInstincts",
-  role: "EVOLUTION_CORE",
-  purpose:
-    "Adaptive identity + genetic memory for GPU configs + scoring + dual-mode pressure-aware evolution",
-  context:
-    "Stores best-known configs, metrics, traces, mode/pressure stats, and supports regression detection",
-  target: "full-gpu+binary+presence",
-  version: "24-Immortal-Evo-Core",
-  selfRepairable: true,
-
-  evo: {
-    // Advantage cascade
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-
-    // Dual-band + organism awareness
-    dualBandAware: true,
-    binaryAware: true,
-    symbolicAware: true,
-    dualModeEvolution: true,
-    gpuSpineAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    geneticMemoryAware: true,
-    sessionTracerAware: true,
-    pressureAware: true,
-
-    // Prewarm / best-self hooks (v12.3 base)
-    prewarmReady: true,
-    bestSelfSelectionReady: true,
-    configScoringReady: true,
-
-    // v16: prewarm / chunk / cache / presence / earn extensions
-    prewarmCoverageAware: true,
-    warmPathAware: true,
-    coldPathSafe: true,
-    chunkingReady: true,
-    chunkWarmthAware: true,
-    cacheAware: true,
-    cacheHitAware: true,
-    presenceAware: true,
-    presenceFieldAware: true,
-    advantageSnapshotAware: true,
-    earnFieldAware: true,
-
-    // v24: extended advantage field
-    warmPathHitAware: true,
-    coldPathPenaltyAware: true,
-    prewarmStepAware: true,
-    cacheMissPenaltyAware: true,
-    multiInstanceShapingAware: true,
-
-    // PulseSend / Earn contracts (current + legacy, conceptual only)
-    pulseSend16Ready: true,
-    routingContract: "PulseSend-v16-Immortal",
-    gpuOrganContract: "PulseGPU-v24-Evo",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Evo",
-    earnCompatibility: "Earn-v5-Immortal",
-
-    legacyRoutingContract: "PulseSend-v10.4",
-    legacyGPUOrganContract: "PulseGPU-v10.4",
-    legacyEarnCompatibility: "Earn-v2"
-  }
-};
 
 // ------------------------------------------------------------
 // Utility: stable JSON stringify for hashing

@@ -6,139 +6,21 @@
 //  IMMORTAL: presence/advantage/plan are descriptive-only, no hidden governors.
 //  24++: MuscleComputeProfile + MusclePressureProfile + Tri-Heart overlays
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnMuscleSystem",
-  version: "v24-Immortal-INTEL-Superior",
-  layer: "earn_muscle",
-  role: "earn_execution_muscle",
-  lineage: "PulseEarnMuscleSystem-v11 → v12.3 → v13.0-Presence-Immortal → v16-Immortal → v24-Immortal-INTEL-Superior",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    muscleSystem: true,
-    jobExecution: true,
-    contractionModel: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // 24++ overlays
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    hotStateAware: true,
-    gpuAware: true,
-    minerAware: true,
-    offlineAware: true,
-    computeTierAware: true,
-    pulseIntelligenceReady: true,
-
-    triHeartAware: true,
-    momHeartAware: true,
-    dadHeartAware: true,
-    babyHeartAware: true,
-    speedAware: true,
-    experienceAware: true,
-    healingMetadataAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnNervousSystem",
-      "PulseEarnSkeletalSystem",
-      "PulseEarnLymphNodes"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseEarnMuscleSystemMeta = Object.freeze({
-  layer: "PulseEarnMuscleSystem",
-  role: "EARN_MUSCLE_ORGAN",
-  version: "v24-Immortal-INTEL-Superior",
-  identity: "PulseEarnMuscleSystem-v24-Immortal-INTEL-Superior",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureSupervisor: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    healingMetadataAware: true,
-
-    worldLensAware: false,
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroAI: true,
-    zeroUserCode: true,
-
-    injectedPulseSendSystem: true,
-    injectedLymphNodes: true,
-    injectedNervousSystem: true,
-
-    // 24++ overlays
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    hotStateAware: true,
-    gpuAware: true,
-    minerAware: true,
-    offlineAware: true,
-    computeTierAware: true,
-    pulseIntelligenceReady: true,
-
-    triHeartAware: true,
-    momHeartAware: true,
-    dadHeartAware: true,
-    babyHeartAware: true,
-    speedAware: true,
-    experienceAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "NextMarketplaceJob",
-      "PulseSendSystemExecutor",
-      "LymphNodeSubmitter",
-      "DualBandContext",
-      "DevicePhenotypePresence",
-      "TriHeartContext"
-    ],
-    output: [
-      "ContractionResult",
-      "MuscleDiagnostics",
-      "MuscleSignatures",
-      "MuscleHealingState",
-      "MusclePresenceField",
-      "MuscleAdvantageField",
-      "MuscleChunkPrewarmPlan",
-      "MuscleComputeProfile",
-      "MusclePressureProfile",
-      "TriHeartLivenessField",
-      "TriHeartAdvantageField",
-      "TriHeartSpeedField",
-      "TriHeartPresenceField"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { fetchJobFromMarketplace } from "./PulseEarnNervousSystem-v24.js";
 import { submitMarketplaceResult } from "./PulseEarnLymphNodes-v24.js";

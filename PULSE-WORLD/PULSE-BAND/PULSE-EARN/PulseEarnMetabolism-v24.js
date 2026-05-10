@@ -26,143 +26,21 @@
 //   • NO speed, NO baseline, NO governor, NO performance assumptions.
 //   • NO timestamps, NO randomness, NO nondeterministic behavior.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const PulseEarnMetabolismMeta = Object.freeze({
-  layer: "PulseEarnMetabolism",
-  role: "EARN_METABOLISM_ORGAN",
-  version: "v24-IMMORTAL-INTEL-PLUS",
-  identity: "PulseEarnMetabolism-v24-IMMORTAL-INTEL-PLUS",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureExecutionBridge: true,
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    meshAware: true,
-    castleAware: true,
-    regionAware: true,
-    worldLensAware: false,
-    zeroAI: true,
-    zeroUserCode: true,
-    zeroAsync: true,
-    safeToolSelection: true,
-    safeExecution: true,
-
-    // v24++ IMMORTAL-INTEL-PLUS
-    gpuAware: true,
-    minerAware: true,
-    offlineAware: true,
-    computeTierAware: true,
-    pulseIntelligenceReady: true,
-    intelligentPlanAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PulseEarnJob",
-      "DualBandContext",
-      "MetabolicBlueprint",
-      "SafeToolset",
-      "GlobalHintsPresenceField"
-    ],
-    output: [
-      "MetabolicResult",
-      "MetabolicDiagnostics",
-      "MetabolicSignatures",
-      "MetabolicHealingState",
-      "MetabolicPulseIntelligence",
-      "MetabolicIntelligentPlan"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v24-IMMORTAL-INTEL-PLUS",
-    ancestry: [
-      "PulseEarnMetabolism-v9",
-      "PulseEarnMetabolism-v10",
-      "PulseEarnMetabolism-v11",
-      "PulseEarnMetabolism-v11-Evo",
-      "PulseEarnMetabolism-v12.3-Presence-Evo+",
-      "PulseEarnMetabolism-v13.0-Presence-Immortal",
-      "PulseEarnMetabolism-v16-IMMORTAL-INTEL"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "validate job → deterministic tool selection",
-    adaptive:
-      "binary/wave surfaces + v24 presence/advantage/hints surfaces " +
-      "+ metabolicComputeProfile v24 + pulseIntelligence + intelligent plan",
-    return:
-      "deterministic metabolic output + healing metadata + INTEL surfaces"
-  })
-});
-
-// ============================================================================
-// ROLE CONTEXT — v24 IMMORTAL-INTEL-PLUS
-// ============================================================================
-
-export const PulseRole = Object.freeze({
-  type: "MetabolicEngine",
-  subsystem: "PulseEarnMetabolism",
-  layer: "C1-MetabolicExecution",
-  version: "v24-IMMORTAL-INTEL-PLUS",
-  identity: "PulseEarnMetabolism-v24-IMMORTAL-INTEL-PLUS",
-
-  evo: {
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    metabolismEngine: true,
-    nutrientFlow: true,
-    jobEnergyModel: true,
-
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    waveAware: true,
-    bandNormalizationAware: true,
-
-    zeroAsync: true,
-    zeroTiming: true,
-    zeroRandomness: true,
-    zeroMutation: true,
-    zeroRouting: true,
-    zeroSending: true,
-    zeroCompute: false,
-
-    environmentAgnostic: true,
-    multiInstanceReady: true,
-
-    // v24++ evolution
-    gpuAware: true,
-    minerAware: true,
-    offlineAware: true,
-    computeTierAware: true,
-    pulseIntelligenceReady: true,
-    intelligentPlanReady: true,
-    localAdvantageMemory: true
-  }
-});
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // Healing Metadata — v24 IMMORTAL-INTEL-PLUS
 // ============================================================================

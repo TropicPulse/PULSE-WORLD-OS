@@ -4,111 +4,24 @@
 //  Afferent Nervous System • Deterministic Perception Layer • Pure Recording
 //  GeneticMemory‑v24 + Healer‑v24 + Earn‑v24‑GPU aware
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUNervousSystem",
-  version: "v24-Immortal++",
-  layer: "gpu_runtime",
-  role: "gpu_nervous_system",
-  lineage: "PulseGPU-v24-Immortal++",
-
-  evo: {
-    gpuConduction: true,
-    gpuSignalRouting: true,
-    gpuReflexPath: true,
-
-    gpuCompute: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    geneticMemoryLink: true,
-    healerLink: true,
-    lymphNodeLink: true,
-    earnAware: true,
-    earnCompatibility: "Earn-v24-GPU"
-  },
-
-  contract: {
-    always: [
-      "PulseGPUSpine",
-      "PulseGPUSynapse",
-      "PulseGPUDrive",
-      "PulseGPUGeneticMemory",
-      "PulseGPUHealer"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyGPUNervousSystem"
-    ]
-  }
-}
-*/
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+const TRACER_CONTEXT = Identity.pulseLoreContext;
 import PulseGPU from "./PulseGPU-v24.js";
 import PulseBinaryGPU from "./PulseBinaryGPU-v24.js";
 import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
 import { PulseGPUHealer } from "./PulseGPULymphNodes-v24.js";
 
-// ------------------------------------------------------------
-// ⭐ v24-Immortal++ CONTEXT METADATA — Sensory Archive Identity
-// ------------------------------------------------------------
-const TRACER_CONTEXT = {
-  layer: "PulseGPUSessionTracer",
-  role: "SENSORY_ARCHIVE",
-  purpose: "Afferent nervous system — deterministic perception + recording",
-  context:
-    "Records ordered steps with durations + health signals + GPU mode/dispatch info + v24+ vectors + Earn hints",
-  target: "full-gpu+binary",
-  selfRepairable: true,
-  version: "24-Immortal++",
-
-  // v24+ advantage epoch identity
-  advantageEpochId: "gpu-v24-immortal++",
-  systemAgeBand: "immortal",
-  lineage: "PulseGPU-v24-Immortal++",
-
-  evo: {
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseSend24Ready: true,
-
-    // v24-Immortal++ awareness
-    binaryAware: true,
-    symbolicAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    dualModeEvolution: true,
-    dualBandAware: true,
-    organismLoaderAware: true,
-    geneticMemoryLink: true,
-    healerLink: true,
-    lymphNodeLink: true,
-    prewarmAware: true,
-    cacheAware: true,
-    snapshotAware: true,
-    earnAware: true,
-
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    earnCompatibility: "Earn-v24-GPU",
-
-    // Legacy compatibility (metadata only)
-    legacyRoutingContract: "PulseSend-v16",
-    legacyGPUOrganContract: "PulseGPU-v16-Immortal",
-    legacyEarnCompatibility: "Earn-v4-Presence"
-  }
-};
 
 // ------------------------------------------------------------
 // Utility: clamp helpers

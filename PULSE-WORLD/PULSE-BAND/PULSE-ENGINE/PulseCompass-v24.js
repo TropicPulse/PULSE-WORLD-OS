@@ -8,92 +8,21 @@
 //  • Future lanes can be added without touching EngineBlock
 //  • Evidence-aware, diagnostics-aware, session-aware, dual-band
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseCompass",
-  version: "v24-Immortal-Evo+++",
-  layer: "motion_orchestrator",
-  role: "lane_selector_health_monitor_and_reporter",
-  lineage: "PulseMotionEngine-v16 → PulseCompass-v16-IMMORTAL+ → PulseCompass-v24-Immortal-Evo+++",
-
-  evo: {
-    laneAgnostic: true,
-    unifiedMotion: true,
-    driftProof: true,
-    zeroCompute: true,
-    zeroMutation: true,
-    pureRouting: true,
-    fallbackAware: true,
-    memoryAware: true,
-    reportingAware: true,
-    healthAware: true,
-    prewarmAware: true,
-    analyticsAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    triHeartAware: true,
-
-    // v24++ upgrades
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    pulseBandAware: true,
-    sessionAware: true,
-    timeAxisAware: true,
-    diagnosticsAware: true,
-    evidenceAware: true,
-    adminPanelAware: true,
-    portalAware: true,
-    trustFabricAware: true,
-    organismMapAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseMotionEngine",
-      "ForwardMotion-v24-Immortal-Evo+++",
-      "BackwardMotion-v24-Immortal-Evo+++",
-      "PulseDB-v24",
-      "PulsePresence",
-      "PulseAdvantage",
-      "PulseWorldAdminPanel",
-      "AdminDiagnosticsOrgan"
-    ],
-    never: [
-      "BinaryOrgan",
-      "ShifterPulse",
-      "routerCore",
-      "meshKernel",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-/*
-PAGE_INDEX = {
-  purpose: "Select motion lane at runtime, monitor health, and record engine activity",
-  responsibilities: [
-    "Load last-used lane from MemoryOrgan",
-    "Fallback to forward if unknown or unhealthy",
-    "Expose submit/tick/prewarm routed to active lane",
-    "Record tick metrics into Motion_Engine_Logs",
-    "Record lane switches and prewarm events",
-    "Compute simple health scores per lane",
-    "Auto-fallback to healthy lane when needed",
-    "Allow future lanes to be added without modifying EngineBlock"
-  ],
-  forbidden: [
-    "No pattern expansion/compression",
-    "No engine internals mutation",
-    "No shifter usage",
-    "No artery mutation"
-  ],
-  notes: "This file must remain thin, deterministic, and analytics-focused."
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // GLOBAL HANDLE (membrane-safe)
@@ -108,11 +37,11 @@ const g =
     : {};
 
 // Lane wrappers (v24)
-import * as Forward from "./ForwardMotion-v24-Immortal-Evo+++.js";
-import * as Backward from "./BackwardMotion-v24-Immortal-Evo+++.js";
+import * as Forward from "./ForwardMotion-v24.js";
+import * as Backward from "./BackwardMotion-v24.js";
 
 // DB adapter (v24)
-import { createPulseDB } from "./PulseDB-v24-Immortal-Evo+++.js";
+import { createPulseDB } from "./PulseDB-v24.js";
 
 // Memory keys
 const LAST_LANE_KEY   = "pulse:v24:lastMotionLane";

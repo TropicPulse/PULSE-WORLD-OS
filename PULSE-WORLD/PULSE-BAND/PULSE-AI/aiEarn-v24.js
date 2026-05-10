@@ -22,155 +22,36 @@
 //   • ZERO DIRECT NETWORK / INTERNET ACCESS.
 //   • DETERMINISTIC ANALYSIS ONLY.
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiEarn",
-  version: "v24-Immortal-Organism-TRUST-ADV++",
-  layer: "ai_tools",
-  role: "earn_surface",
-  lineage: "aiEarn-v10 → v12 → v13 → v14-Immortal → v16-Immortal-Organism-TRUST-ADV → v24-Immortal-Organism-TRUST-ADV++",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    earnSurface: true,
-    jobAwareness: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    arteryAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    pulseNetAware: true,
-    chunkerAware: true,
-    anomalyAware: true,
-    laneAware: true,
-    bucketAware: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const EarnMeta = Identity.OrganMeta;
 
-    // v24++ advantages
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: [
-      "aiEngine",
-      "aiContext",
-      "aiCortex",
-      "DualBandKernel",
-      "PulseNetProxySpine",
-      "PulseTrustEvidence",
-      "PulseTrustJuryFrame"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "directInternetAccess",
-      "externalHTTP",
-      "externalDNS",
-      "externalWebsocket"
-    ]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-export const EarnMeta = Object.freeze({
-  layer: "PulseAIEarnFrame",
-  role: "EARN_ORGAN",
-  version: "v24-Immortal-Organism-TRUST-ADV++",
-  identity: "aiEarn-v24-Immortal-Organism-TRUST-ADV++",
+export const surfaceMeta = Identity.surfaceMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    readOnly: true,
-    binaryAware: true,
-    symbolicAware: true,
-    dualband: true,
-    arteryAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    lineageAware: true,
-    evolutionAware: true,
-    packetAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    pulseNetAware: true,
-    anomalyAware: true,
-    laneAware: true,
-    bucketAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    // v24++ organism/kernel semantics
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    multiInstanceReady: true,
-    epoch: "v24-Immortal-Organism-TRUST-ADV++"
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  contract: Object.freeze({
-    purpose: "Provide SAFE, READ-ONLY economic insight for users and owners.",
-
-    never: Object.freeze([
-      "mutate data",
-      "expose identity anchors",
-      "expose UID or tokens",
-      "modify economic state",
-      "perform writes",
-      "introduce randomness",
-      "directInternetAccess",
-      "externalHTTP",
-      "externalDNS",
-      "externalWebsocket",
-      "portalBypass",
-      "bridgeBypass"
-    ]),
-
-    always: Object.freeze([
-      "strip identity fields",
-      "respect user vs owner scope",
-      "use deterministic analysis",
-      "integrate organism snapshot",
-      "integrate dualband artery when available",
-      "integrate evolution metadata",
-      "emit deterministic earn packets",
-      "respect dual-band + presence/advantage surfaces",
-      "respect trust fabric + jury + evidence constraints",
-      "emit lane/bucket metadata for chunkers",
-      "respect sealedOrganismBoundary",
-      "remain daemonCompatible",
-      "remain portalCompatible",
-      "remain bridgeCompatible"
-    ])
-  })
-});
 
 import { getOrganismSnapshot } from "./aiDeps-v16.js";
 

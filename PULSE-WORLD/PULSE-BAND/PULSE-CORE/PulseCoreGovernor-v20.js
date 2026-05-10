@@ -2,251 +2,32 @@
 //  PulseCoreGovernor.js — v20-IMMORTAL-GOVERNOR
 //  ORGANISM‑WIDE CORE MEMORY GOVERNOR
 //  “ONE BRAIN. ONE SPINE. MANY LAYERS. ZERO DRIFT.”
-//  • v20 AI_EXPERIENCE_META (IMMORTAL identity)
-//  • dnaTag + version propagation
-//  • Presence / band / route propagation (via CoreLayers + overlay)
-//  • TTL + healing alignment (delegated to CoreMemory)
-//  • Dual‑band alignment (binary + symbolic via CoreLayers rules)
-//  • Promotion/demotion hints
-//  • Placement logic (route + dataType + dnaTag)
-//  • Drift detection hooks (via overlay + CoreMemory)
-//  • Governor‑aligned with CoreMemory v20 + CoreLayers v20
 // ============================================================================
 
-/*
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-*/
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
+const Identity = OrganismIdentity(import.meta.url);
+
+// ============================================================================
+//  META BLOCK — v20 IMMORTAL (from genome)
+// ============================================================================
+export const PulseCoreGovernorMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v20 IMMORTAL
+// ============================================================================
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+
+// ============================================================================
+//  CORE IMPORTS
+// ============================================================================
 import { CoreMemoryRole, createPulseCoreMemory } from "./PulseCoreMemory-v24.js";
 import { CoreLayersRole, PulseCoreLayersOrgan } from "./PulseCoreLayers-v20.js";
-
-// ============================================================================
-//  AI_EXPERIENCE_META (IMMORTAL++)
-// ============================================================================
-export const AI_EXPERIENCE_META_PulseCoreGovernor = {
-  id: "corememory.governor",
-  identity: "PulseCoreGovernor",
-  version: "v20-IMMORTAL-GOVERNOR",
-  layer: "corememory_governor",
-  role: "corememory_governor",
-  lineage: "PulseCoreMemory-v20-IMMORTAL",
-
-  evo: {
-    governor: true,
-    memoryPolicy: true,
-    memoryPhysicsRules: true,
-    adapterOrchestration: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: false
-  },
-
-  contract: {
-    always: [
-      "PulseCoreBrain",
-      "PulseCoreEvolutions",
-      "PulseBinaryCoreOverlay",
-      "PulseCoreMemory",
-      "PulseCoreLayers",
-      "PulseCoreSettings",
-      "PulseCorePresence"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  },
-
-  surfaces: {
-    band: ["governor", "policy", "placement"],
-    wave: ["deterministic", "healing_aligned"],
-    binary: ["set", "get", "flush", "getRouteSnapshot"],
-    presence: ["governor_presence_touch"],
-    advantage: ["placement_rules", "promotion_hints"],
-    speed: "hot_loop"
-  }
-};
-
-// ============================================================================
-//  AI_EXPERIENCE_CONTEXT
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulseCoreGovernor = {
-  tone: "technical_silent",
-  pacing: "instant",
-  emotionalBand: "none_direct",
-  primaryIntent: "govern_corememory_placement_and_policy",
-  secondaryIntent: "maintain_dualband_alignment",
-  visualNotes: {
-    icon: "governor_node",
-    motion: "none",
-    colorBand: "infra_core"
-  },
-  worldLens: {
-    awareOfWorlds: true,
-    notes: "routeId may encode world; governor remains route-scoped."
-  },
-  presenceLens: {
-    awareOfPresence: true,
-    notes: "future: presence intensity may bias placement/promotion."
-  },
-  settingsLens: {
-    awareOfSettings: true,
-    notes: "future: settings may tune promotion thresholds and layer rules."
-  }
-};
-
-// ============================================================================
-//  CORE ORGAN META
-// ============================================================================
-export const CORE_MEMORY_META_PulseCoreGovernor = {
-  id: "organ.corememory.governor",
-  subsystem: "CoreMemory",
-  layer: "Governor",
-  tier: "IMMORTAL",
-  role: "Memory-Governor",
-  lineage: {
-    family: "corememory_governor",
-    generation: 4,
-    coreVersion: "v20"
-  },
-  evoFlags: {
-    binaryNative: true,
-    dualBand: true,
-    quadLayerAware: true,
-    loopTheoryAware: true,
-    fallbackAware: true,
-    driftAware: true,
-    evolutionAware: true,
-    routeAware: true,
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    overlayAware: true,
-    bandAware: true
-  }
-};
-
-// ============================================================================
-//  CORE ORGAN CONTRACT
-// ============================================================================
-export const CORE_MEMORY_CONTRACT_PulseCoreGovernor = {
-  inputs: {
-    primaryStorage: "StorageLike",
-    secondaryStorage: "StorageLike",
-    dnaTag: "string",
-    version: "string",
-    overlay: "GovernorOverlay | null",
-    log: "function",
-    warn: "function"
-  },
-  outputs: {
-    boot: "function()",
-    healIfNeeded: "function()",
-    set: "function(routeId, key, value, options?)",
-    get: "function(routeId, key, options?)",
-    getRouteSnapshot: "function(routeId)",
-    setRouteSnapshot: "function(routeId, snapshot)",
-    clearRoute: "function(routeId)",
-    clearAll: "function()",
-    flush: "function()",
-    getHotKeys: "function(minHits?)"
-  },
-  consumers: [
-    "PulseCoreMemory",
-    "PulseCoreBrain",
-    "PulseCoreEvolutions",
-    "PulseBinaryCoreOverlay",
-    "PulseCoreSettings",
-    "PulseCorePresence"
-  ],
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noGlobalMutation: true
-  }
-};
-
-// ============================================================================
-//  IMMORTAL OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulseCoreGovernor = {
-  drift: {
-    allowed: false,
-    notes: "Governor placement semantics must not drift."
-  },
-  pressure: {
-    expectedLoad: "high",
-    notes: "Every core memory access flows through the governor."
-  },
-  stability: {
-    algorithm: "stable",
-    layout: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxRoutesHint: 4096,
-    notes: "Delegated to CoreMemory TTL + pruning."
-  },
-  chunking: {
-    prewarm: ["corememory.governor", "corememory.layers", "corememory"],
-    cacheKey: "corememory.governor.v20"
-  },
-  worldLens: {
-    awareOfWorlds: true,
-    notes: "routeId may encode world; governor remains world-agnostic."
-  },
-  limbic: {
-    band: "none_direct",
-    notes: "Indirect emotional impact via stability and reliability."
-  },
-  triHeart: {
-    cognitive: "policy_engine",
-    emotional: "none_direct",
-    behavioral: "govern_memory"
-  },
-  impulseSpeed: {
-    primaryAction: "set/get",
-    latencyTargetNs: 50000
-  },
-  healingSurfaces: {
-    enabled: true,
-    notes: "Governor can trigger CoreMemory healing and flush."
-  }
-};
-
-// ============================================================================
-//  ROLE
-// ============================================================================
-export const CoreGovernorRole = {
-  type: "Organ",
-  subsystem: "Core",
-  layer: "Governor",
-  identity: "PulseCoreGovernor",
-  version: "20.0-IMMORTAL-GOVERNOR",
-
-  evo: CORE_MEMORY_META_PulseCoreGovernor.evoFlags
-};
-
-// ---------------------------------------------------------------------------
-//  v20 IDENTITY BLOCK (MetaBlock)
-// ---------------------------------------------------------------------------
-export const CoreGovernorMetaBlock = {
-  identity: "PulseCoreGovernor",
-  subsystem: "Core",
-  layer: "Governor",
-  role: "Memory-Governor",
-  version: "20.0-IMMORTAL-GOVERNOR",
-  evo: CoreGovernorRole.evo
-};
 
 // deterministic governor epoch
 let GOVERNOR_EPOCH = 0;
@@ -464,8 +245,13 @@ export function createPulseCoreGovernor({
   //  PUBLIC API
   // -------------------------------------------------------------------------
   const PulseCoreGovernor = {
-    CoreGovernorRole,
-    CoreGovernorMetaBlock,
+    // genome-driven identity + surface
+    meta: PulseCoreGovernorMeta,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META,
 
     CoreMemoryRole,
     CoreLayersRole,
@@ -489,18 +275,12 @@ export function createPulseCoreGovernor({
 
     dnaTag,
     version,
-    overlay,
-
-    AI_EXPERIENCE_META_PulseCoreGovernor,
-    AI_EXPERIENCE_CONTEXT_PulseCoreGovernor,
-    CORE_MEMORY_META_PulseCoreGovernor,
-    CORE_MEMORY_CONTRACT_PulseCoreGovernor,
-    IMMORTAL_OVERLAYS_PulseCoreGovernor
+    overlay
   };
 
   safeLog("INIT", {
-    identity: CoreGovernorRole.identity,
-    version: CoreGovernorRole.version,
+    identity: PulseCoreGovernorMeta.identity,
+    version: PulseCoreGovernorMeta.version,
     dnaTag,
     overlayAware: !!overlay
   });

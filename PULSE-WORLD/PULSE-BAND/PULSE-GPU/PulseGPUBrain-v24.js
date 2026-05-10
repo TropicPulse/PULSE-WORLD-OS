@@ -6,7 +6,18 @@
 //  SYMBOLIC + BINARY AWARE • DISPATCH-AWARE • MEMORY-AWARE • PRESENCE-AWARE
 //  PREWARM + CHUNK + CACHE-AWARE • IMMORTAL++ SURFACE • v24 CONTRACTS
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ---------------------------------------------------------------------------
 //  GPU ORGAN IMPORT SURFACE (v24-Immortal++, awareness only — zero coupling)
 //  NOTE: These imports are for identity, contracts, and future intelligent
@@ -41,105 +52,6 @@ import * as PulseGPUCommandments        from "./PulseGPUCommandments-v24.js";
 
 // Optional: GPU chunker identity (no instantiation here, brain stays pure)
 import * as PulseGPUChunker             from "./PulseGPUChunker-v24.js";
-
-// ============================================================================
-//  AI EXPERIENCE META (v24-Immortal++)
-// ============================================================================
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUBrain",
-  version: "v24-Immortal++",
-  layer: "gpu_brain",
-  role: "gpu_precompute_brain",
-  lineage: "PulseGPU-v24-Immortal++",
-
-  evo: {
-    // Core brain traits
-    gpuPrecompute: true,
-    gpuPackageBuilder: true,
-    gpuOptimizer: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // Dual-band / binary / symbolic
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-
-    // Immortal++ surface / v24 upgrades
-    immortalSurface: true,
-    immortalContract: true,
-    prewarmReady: true,
-    chunkCacheReady: true,
-    presencePrewarmReady: true,
-    intelligentComputeReady: true,
-    advantageFieldV24: true,
-
-    // Organ mesh awareness
-    astralMuscleAware: true,
-    astralNervousSystemAware: true,
-    guardianAware: true,
-    lymphAware: true,
-    spineAware: true,
-    cognitiveLayerAware: true,
-    wisdomCortexAware: true,
-    survivalInstinctAware: true,
-    commandmentsAware: true,
-    gpuChunkerAware: true,
-
-    // Presence / identity
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    // Contracts (v24-Immortal++)
-    routingContract: "PulseSend-v24-Immortal++",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    earnCompatibility: "Earn-v24-GPU",
-    workgroupLawVersion: 24,
-    zeroImportShaderPipeline: true
-  },
-
-  contract: {
-    always: [
-      "PulseGPU",
-      "PulseBinaryGPU",
-      "PulseGPUDrive",
-      "PulseGPUDriveCenter",
-      "PulseGPUSpine",
-      "PulseGPUGeneticMemory",
-      "PulseGPUAstralMuscleSystem",
-      "PulseGPUAstralNervousSystem",
-      "PulseGPUGuardianCortex",
-      "PulseGPULymphNodes",
-      "PulseGPUCognitiveLayer",
-      "PulseGPUCognitiveIntelligence",
-      "PulseGPUWisdomCortex",
-      "PulseGPUSurvivalInstincts",
-      "PulseGPUSynapses",
-      "PulseGPUCommandments",
-      "PulseGPUChunker"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyGPUBrain"
-    ]
-  }
-}
-*/
 
 log(
   "gpu",

@@ -3,162 +3,36 @@
 //  Dual‑Band Execution • Persona Routing • Organ Dispatch • Trust‑Aware
 //  PURE EXECUTION. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiEngine",
-  version: "v24-Immortal++",
-  layer: "ai_core",
-  role: "ai_execution_engine",
-  lineage: "aiEngine-v9 → v11 → v12.3-Presence → v14-Immortal → v16-Immortal++ → v24-Immortal++",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    executionEngine: true,
-    organRouting: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    contextAware: true,
-    arteryAware: true,
-    emotionAware: true,
-    deliveryAware: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    trustFabricAware: true,
-    juryAware: true,
-    permissionsEngineAware: true,
-    watchdogAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const ExecutionEngineMeta = Identity.OrganMeta;
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    // v24++ advantages
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true
-  },
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  contract: {
-    always: ["aiBrainstem", "aiCortex", "aiContextEngine", "aiDualBand"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+export const surfaceMeta = Identity.surfaceMeta;
 
-export const ExecutionEngineMeta = Object.freeze({
-  layer: "PulseAIExecutionKernel",
-  role: "EXECUTION_ENGINE",
-  version: "24-Immortal++",
-  identity: "aiExecutionEngine-v24-Immortal++",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    personaAware: true,
-    boundaryAware: true,
-    permissionAware: true,
-    routingAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-    contextAware: true,
-    arteryAware: true,
-    emotionAware: true,
-    deliveryAware: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    packetAware: true,
-    windowAware: true,
-    evolutionAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-
-    trustFabricAware: true,
-    juryAware: true,
-    permissionsEngineAware: true,
-    watchdogAware: true,
-
-    // v24++ organism/kernel semantics
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true,
-
-    multiInstanceReady: true,
-    epoch: "24-Immortal++"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Execute AI operations through persona routing, boundaries, dual-band context, trust fabric, and artery-aware vitals.",
-    never: Object.freeze([
-      "mutate context",
-      "mutate organs",
-      "bypass boundaries",
-      "bypass permissions",
-      "introduce randomness",
-      "alter persona logic",
-      "override dual-band safety",
-      "ignore artery pressure",
-      "ignore trust fabric risk",
-      "portalBypass",
-      "bridgeBypass"
-    ]),
-    always: Object.freeze([
-      "build deterministic cognitive frame",
-      "attach brainstem organs",
-      "resolve persona safely",
-      "enforce boundaries",
-      "enforce permissions",
-      "respect dual-band artery vitals",
-      "respect trust fabric + jury signals",
-      "route execution through correct mode",
-      "emit context + execution packets deterministically",
-      "return unified response packet",
-      "respect sealedOrganismBoundary",
-      "remain daemonCompatible",
-      "remain portalCompatible",
-      "remain bridgeCompatible"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "ExecutionEngine",
-    organKind: "Kernel",
-    physiologyBand: "DualBand",
-    warmStrategy: "prewarm-on-boot",
-    attachStrategy: "per-request",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "start",
-        "permission-denied",
-        "mode-selected",
-        "context-frame",
-        "complete",
-        "error"
-      ]
-    }
-  })
-});
 
 import { createCognitiveFrame as createAIContext } from "./aiContext.js";
 import { createBrainstem } from "./aiBrainstem-v24.js";

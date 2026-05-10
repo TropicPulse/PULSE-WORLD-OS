@@ -44,126 +44,21 @@
 // VERSION TAG:
 //   version: 12.3-Presence-Evo-MAX
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "RouteDownAlter",
-  version: "v14-Immortal",
-  layer: "router",
-  role: "router_downstream_alter",
-  lineage: "PulseRouter-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    routerAlter: true,
-    downstreamAware: true,
-    reflexAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseRouter",
-      "PulseBinaryRouter",
-      "PulseOSSpinalCord"
-    ],
-    never: [
-      "legacyRouteDownAlter",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseOSRouteDownAlertMeta = Object.freeze({
-  layer: "PulseOSRouteDownAlert",
-  role: "IMMUNE_ALERT_NODE",
-  version: "v12.3-Presence-Evo-MAX",
-  identity: "PulseOSRouteDownAlert-v12.3-Presence-Evo-MAX",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    immuneAlertNode: true,
-    routeFailureSentinel: true,
-    immuneEventReceiver: true,
-    immuneMetadataEmitter: true,
-    driftAware: true,
-    organismAware: true,
-    routerAware: true,
-    gpuAware: true,
-    proxyAware: true,
-    presenceAware: true,
-    dualBandAware: true,
-
-    zeroTiming: true,
-    zeroRandomness: true,
-    zeroNetworkCalls: true,
-    zeroBackendMutation: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroEnvironmentAccess: true,
-
-    symbolicAware: true,
-    binaryAware: true,
-
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "RouteFailureEvent",
-      "FrontendPayload",
-      "DualBandContext",
-      "PresenceContext"
-    ],
-    output: [
-      "ImmuneAlert",
-      "RouteDownDiagnostics",
-      "RouteDownSignatures",
-      "RouteDownHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12-Evo",
-    parent: "PulseOS-v12.3-Presence",
-    ancestry: [
-      "RouteDownAlert-v9",
-      "RouteDownAlert-v10",
-      "RouteDownAlert-v11",
-      "RouteDownAlert-v11-Evo",
-      "RouteDownAlert-v11-Evo-Prime",
-      "RouteDownAlert-v11.2-Evo-BINARY-MAX"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary", "dual"],
-    default: "symbolic",
-    behavior: "immune-alert"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "route failure → immune alert → safe JSON response",
-    adaptive: "binary + presence tagged immune surfaces",
-    return: "deterministic immune alert metadata + signatures"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IMMUNE ALERT HANDLER — v12.3 Presence

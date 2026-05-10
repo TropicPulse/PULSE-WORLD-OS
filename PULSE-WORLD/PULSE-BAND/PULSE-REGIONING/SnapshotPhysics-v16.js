@@ -3,53 +3,22 @@
 FILE: /PULSE-WORLD/SnapshotPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC SNAPSHOT PHYSICS
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld.SnapshotPhysics",
-  version: "v16-Immortal",
-  layer: "pulse_world",
-  role: "organism_snapshot_physics",
-  lineage: "SnapshotPhysics-v13-COSMOS-MULTIVERSE → v16-Immortal",
-
-  evo: {
-    deterministic: true,
-    symbolic: true,
-    reversible: true,
-    multiverseAware: true,
-    regionAware: true,
-    hostAware: true,
-    deltaFriendly: true,
-    noRandomness: true,
-
-    driftProof: true,
-    pureCompute: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    coreMemoryAware: true,
-    schemaVersioned: true,
-    historyAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    input: [
-      "InstanceId",
-      "CurrentInstanceState",
-      "ConfigDescriptor",
-      "CosmosContext",
-      "LogicalClockToken"
-    ],
-    output: [
-      "SnapshotRecord",
-      "SnapshotHeader",
-      "SnapshotStateView"
-    ]
-  }
-}
-===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 const SNAPSHOT_ENGINE_VERSION = "16.0-Immortal";
 const SNAPSHOT_SCHEMA_VERSION = "v3";
 

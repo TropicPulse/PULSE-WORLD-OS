@@ -28,6 +28,21 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreSpeech   = PulseProofBridge.corespeech;
@@ -35,183 +50,6 @@ const CorePresence = PulseProofBridge.corepresence;
 const CoreMemory   = PulseProofBridge.corememory;
 const CoreDaemon   = PulseProofBridge.coredaemon;
 
-// ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalSpeech = {
-  id: "pulsepal.speech",
-  kind: "ui_organ",
-  version: "v24-IMMORTAL++",
-  role: "Pulse‑Pal conversational cortex membrane",
-  surfaces: {
-    band: ["speech", "chat", "conversation", "media", "mode", "persona"],
-    wave: ["responsive", "attentive", "warm", "mode_attuned"],
-    binary: [
-      "message_stream",
-      "typing_indicator",
-      "avatar_switch",
-      "mode_overlay",
-      "persona_overlay"
-    ],
-    presence: ["chat_aura", "response_tone", "activity_alignment"],
-    advantage: [
-      "instant_feedback",
-      "impulse_hooks",
-      "media_preload",
-      "mode_preload",
-      "persona_preload"
-    ],
-    speed: "instant_ui"
-  },
-  routes: {
-    home: "pulsepal.home",
-    identity: "pulsepal.identity",
-    presence: "pulsepal.presence",
-    settings: "pulsepal.settings"
-  },
-  consumers: [
-    "Router",
-    "IQMap",
-    "CoreSpeech",
-    "CorePresence",
-    "CoreMemory",
-    "CoreDaemon"
-  ],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePalSpeech = {
-  tone: "warm_attentive",
-  pacing: "adaptive",
-  emotionalBand: "connection",
-  primaryIntent: "enable_conversation",
-  secondaryIntent: "show_presence_feedback",
-  userFirstImpression: "pulsepal_is_here_and_listening",
-  visualNotes: {
-    icon: "ai_brain",
-    motion: "soft_breathe",
-    colorBand: "cyan_gold"
-  }
-};
-
-// ============================================================================
-// ORGAN_META — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_META_PulsePalSpeech = {
-  id: "organ.pulsepal.speech",
-  organism: "PulsePal",
-  layer: "ui.speech",
-  tier: "IMMORTAL",
-  evoFlags: {
-    canAddMessageTypes: true,
-    canAddPresenceAnimations: true,
-    requiresCoreSpeech: true,
-    mediaAware: true,
-    personaAware: true,
-    modeAware: true,       // NEW
-    daemonAware: true      // NEW
-  },
-  lineage: {
-    family: "companion_speech",
-    generation: 3,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalSpeech = {
-  inputs: {
-    Router: "navigation interface",
-    Icons: "icon resolution interface",
-    Media: "media resolver interface",
-    CoreSpeech: "bridge speech organ",
-    CorePresence: "bridge presence organ",
-    CoreMemory: "bridge memory organ",
-    CoreDaemon: "bridge daemon snapshot"
-  },
-  outputs: {
-    uiSurface: "speech_cortex",
-    messages: "CoreSpeech.messages",
-    typing: "CoreSpeech.typing",
-    presence: "CorePresence.snapshot",
-    persona: "CoreMemory.persona",
-    mode: "CorePresence.mode",
-    continuity: "CoreDaemon.palHistory.continuityScore"
-  },
-  consumers: [
-    "Router",
-    "IQMap",
-    "CoreSpeech",
-    "CorePresence",
-    "CoreMemory",
-    "CoreDaemon"
-  ],
-  guarantees: {
-    deterministicRender: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS — v24 IMMORTAL++
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalSpeech = {
-  drift: {
-    allowed: false,
-    notes: "Conversational semantics must remain stable."
-  },
-  pressure: {
-    expectedLoad: "very_high",
-    notes: "Chat cortex is the most frequently used organ."
-  },
-  stability: {
-    uiLayout: "stable",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 6,
-    notes: "Header, stream, input, presence aura, mode overlay, avatar."
-  },
-  chunking: {
-    prewarm: [
-      "icons.ai_brain",
-      "icons.pulse",
-      "icons.user",
-      "media.pulsepal"
-    ],
-    cacheKey: "pulsepal.speech.ui"
-  },
-  worldLens: {
-    awareOfWorlds: true
-  },
-  limbic: {
-    band: "connection_safety"
-  },
-  triHeart: {
-    cognitive: "message_processing",
-    emotional: "attuned_response",
-    behavioral: "send_message"
-  },
-  impulseSpeed: {
-    primaryAction: "send_message",
-    latencyTargetMs: 50
-  },
-  healingSurfaces: {
-    enabled: true
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

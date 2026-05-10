@@ -24,96 +24,25 @@
 //    • It does NOT compare or validate; it only records AI's view.
 //    • TrustEvidence / Truth engines are the checkers, not WorldCore.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseWorldCore",
-  version: "v20-IMMORTAL-BEACON",
-  layer: "world",
-  role: "world_perspective_ai_mirror",
-  lineage: "v16++ → v18-Immortal → v20-Immortal-Beacon",
+// 2 — EXPORT GENOME METADATA
+export const PulseWorldCoreMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+const PulseWorldCoreContract = Identity.OrganMeta.contract;
 
-  evo: {
-    aiMirrorCore: true,
-    aiShadowState: true,
-    aiNarrative: true,
-    aiSubsystemViews: true,
-
-    beaconAware: true,
-    regionBeaconAware: true,
-    hostBeaconAware: true,
-    intellHashAware: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    continuanceAware: true,
-    omniHostingAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "snapshotWorld",
-      "buildAdvantageContext",
-      "buildWorldTruthVectors",
-      "recordWorldEvent",
-      "buildWorldBeacons"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "routingDecisions",
-      "authDecisions",
-      "schedulerLogic"
-    ]
-  }
-}
-*/
 
 import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
-
-// ============================================================================
-//  META
-// ============================================================================
-export const PulseWorldCoreMeta = Object.freeze({
-  id: "PulseWorldCore-v20-IMMORTAL-BEACON",
-  version: "20.0.0",
-  role: "world_perspective_ai_mirror",
-  mind: false,
-  description:
-    "IMMORTAL non-mind AI-mirror world perspective organ holding the world as AI presents and manipulates it, with beacon surfaces.",
-  identity: {
-    type: "organ",
-    name: "PulseWorldCore",
-    band: "world",
-    mind: false,
-    immutable: true,
-    epoch: "20-IMMORTAL-BEACON"
-  }
-});
-
-// ============================================================================
-//  CONTRACT — WHAT WORLDCORE EXPOSES TO THE ORGANISM
-// ============================================================================
-export const PulseWorldCoreContract = Object.freeze({
-  snapshot: "snapshotWorld",                  // AI-mirror snapshot
-  advantage: "buildAdvantageContext",         // AI-structured world fields
-  truth: "buildWorldTruthVectors",            // AI's "truth" vectors (not RAW)
-  event: "recordWorldEvent",                  // AI-reported world events
-  beacons: "buildWorldBeacons",               // AI-mirror beacon surfaces
-  aiNormalized: true,
-  aiMirror: true,
-  rawBypass: false,
-  mind: false,
-  immutable: true
-});
 
 // ============================================================================
 //  CORE MEMORY (symbolic, optional)

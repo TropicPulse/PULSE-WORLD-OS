@@ -2,267 +2,26 @@
 //  PulseCoreEvolutions.js — v20-IMMORTAL-ADVANTAGE
 //  ORGANISM‑WIDE EVOLUTION ENGINE
 //  “KNOW EVERY ADVANTAGE. APPLY ONLY THE CORRECT ONE. NEVER DRIFT.”
-//  • v20 AI_EXPERIENCE_META (IMMORTAL identity)
-//  • dnaTag + version aware
-//  • presence / band / route aware
-//  • dual‑band evolution logs (primary + secondary storage)
-//  • lineage tracking (per evolution)
-//  • ancestry tracking (dnaTag + version)
-//  • drift detection (dna/version mismatch + TTL)
-//  • healing via clear/reset + fallback band
-//  • TTL (time‑bounded evolutions)
-//  • advantage scoring (route, dna, recency, overlay hints)
-//  • deterministic delta application (applyEvolutions)
 // ============================================================================
 
-/*
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-*/
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  AI_EXPERIENCE_META (IMMORTAL++)
+//  META BLOCK — v20 IMMORTAL (from genome)
 // ============================================================================
-export const AI_EXPERIENCE_META_PulseCoreEvolutions = {
-  id: "corememory.evolution",
-  identity: "PulseCoreEvolutions",
-  version: "v20-IMMORTAL-ADVANTAGE",
-  layer: "corememory_evolution",
-  role: "corememory_evolution_engine",
-  lineage: "PulseCoreMemory-v20-IMMORTAL",
-
-  evo: {
-    evolutionEngine: true,
-    versionMigration: true,
-    dnaTagging: true,
-    hotLoopPromotion: true,
-    healingLogic: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: false,
-    zeroRandomnessInCore: true
-  },
-
-  contract: {
-    always: [
-      "PulseCoreBrain",
-      "PulseBinaryCoreOverlay",
-      "PulseCoreGovernor",
-      "PulseCoreMemory",
-      "PulseCoreLayers",
-      "PulseCoreSettings",
-      "PulseCorePresence"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  },
-
-  surfaces: {
-    band: ["evolution", "advantage", "delta"],
-    wave: ["deterministic", "healing", "route_scoped"],
-    binary: ["registerEvolution", "applyEvolutions"],
-    presence: ["evolution_presence_touch"],
-    advantage: ["scoreEvolution", "ttl_filter", "lineage_filter"],
-    speed: "hot_loop"
-  }
-};
+export const PulseCoreEvolutionsMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  AI_EXPERIENCE_CONTEXT
+//  SURFACE / ORGANISM LAYER EXPORTS — v20 IMMORTAL
 // ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulseCoreEvolutions = {
-  tone: "technical_silent",
-  pacing: "instant",
-  emotionalBand: "none_direct",
-  primaryIntent: "apply_deterministic_evolution_deltas",
-  secondaryIntent: "maintain_advantage_ordering",
-  visualNotes: {
-    icon: "evolution",
-    motion: "none",
-    colorBand: "infra_core"
-  },
-  worldLens: {
-    awareOfWorlds: true,
-    notes: "routeId may encode world; evolutions remain route-scoped."
-  },
-  presenceLens: {
-    awareOfPresence: true,
-    notes: "future: presence intensity may bias evolution scoring."
-  },
-  settingsLens: {
-    awareOfSettings: true,
-    notes: "future: settings may tune TTL or scoring weights."
-  }
-};
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-// ============================================================================
-//  CORE ORGAN META
-// ============================================================================
-export const CORE_MEMORY_META_PulseCoreEvolutions = {
-  id: "organ.corememory.evolution",
-  subsystem: "CoreMemory",
-  layer: "Evolution",
-  tier: "IMMORTAL",
-  role: "Evolution-Engine",
-  lineage: {
-    family: "corememory_evolution",
-    generation: 4,
-    coreVersion: "v20"
-  },
-  evoFlags: {
-    deterministic: true,
-    binaryNative: true,
-    dualBand: true,
-    fallbackable: true,
-    governorAligned: true,
-    brainAligned: true,
-    memoryAligned: true,
-    routeAware: true,
-    dnaAware: true,
-    presenceAware: true,
-    versionAware: true,
-    driftAware: true,
-    lineageAware: true,
-    ancestryAware: true,
-    advantageAware: true,
-    ttlAware: true,
-    overlayAware: true,
-    bandAware: true
-  }
-};
-export const CoreEvolutionsMetaBlock = {
-  identity: "PulseCoreEvolutions",
-  subsystem: "Core",
-  layer: "Evolution",
-  role: "Evolution-Engine",
-  version: "20.0-IMMORTAL-ADVANTAGE",
-  evo: {
-    deterministic: true,
-    binaryNative: true,
-    dualBand: true,
-    fallbackable: true,
-    governorAligned: true,
-    brainAligned: true,
-    memoryAligned: true,
-    routeAware: true,
-    dnaAware: true,
-    presenceAware: true,
-    versionAware: true,
-    driftAware: true,
-    lineageAware: true,
-    ancestryAware: true,
-    advantageAware: true,
-    ttlAware: true,
-    overlayAware: true,
-    bandAware: true
-  }
-};
-
-// ============================================================================
-//  CORE ORGAN CONTRACT
-// ============================================================================
-export const CORE_MEMORY_CONTRACT_PulseCoreEvolutions = {
-  inputs: {
-    primaryStorage: "StorageLike",
-    secondaryStorage: "StorageLike",
-    dnaTag: "string",
-    version: "string",
-    overlay: "BinaryOverlay | null",
-    log: "function",
-    warn: "function"
-  },
-  outputs: {
-    load: "function()",
-    flush: "function()",
-    registerEvolution: "function(evo)",
-    applyEvolutions: "function(applyFn)",
-    clearAll: "function()"
-  },
-  consumers: [
-    "PulseCoreMemory",
-    "PulseCoreBrain",
-    "PulseBinaryCoreOverlay",
-    "PulseCoreGovernor",
-    "PulseCoreSettings",
-    "PulseCorePresence"
-  ],
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noGlobalMutation: true
-  }
-};
-
-// ============================================================================
-//  IMMORTAL OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulseCoreEvolutions = {
-  drift: {
-    allowed: false,
-    notes: "Evolution semantics must never drift."
-  },
-  pressure: {
-    expectedLoad: "medium",
-    notes: "Evolutions are applied less frequently than patterns or memory."
-  },
-  stability: {
-    algorithm: "stable",
-    layout: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxEvolutionsHint: 2048,
-    notes: "TTL + drift filtering keep list bounded."
-  },
-  chunking: {
-    prewarm: ["corememory.evolution", "corememory.brain"],
-    cacheKey: "corememory.evolution.v20"
-  },
-  worldLens: {
-    awareOfWorlds: true,
-    notes: "routeId may encode world; evolutions remain route-scoped."
-  },
-  limbic: {
-    band: "none_direct",
-    notes: "Indirect emotional impact via stability."
-  },
-  triHeart: {
-    cognitive: "evolution_engine",
-    emotional: "none_direct",
-    behavioral: "apply_deltas"
-  },
-  impulseSpeed: {
-    primaryAction: "applyEvolutions",
-    latencyTargetNs: 80000
-  },
-  healingSurfaces: {
-    enabled: true,
-    notes: "TTL + drift filtering heal corrupted evolution logs."
-  }
-};
-
-// ============================================================================
-//  ROLE
-// ============================================================================
-export const CoreEvolutionsRole = {
-  type: "Organ",
-  subsystem: "Core",
-  layer: "Evolution",
-  identity: "PulseCoreEvolutions",
-  version: "20.0-IMMORTAL-ADVANTAGE",
-
-  evo: CORE_MEMORY_META_PulseCoreEvolutions.evoFlags
-};
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  STORAGE KEYS (PRIMARY + SECONDARY)
@@ -385,7 +144,7 @@ export function createPulseCoreEvolutions({
 
   // -------------------------------------------------------------------------
   //  LOAD (DUALBAND + FALLBACK + TTL + VERSION + DNA + DRIFT)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function load() {
     const nowMs = Date.now();
     let loadedList = [];
@@ -443,7 +202,7 @@ export function createPulseCoreEvolutions({
 
   // -------------------------------------------------------------------------
   //  FLUSH (WRITE TO BOTH BANDS)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function flush() {
     try {
       const json = JSON.stringify(Evolutions.list);
@@ -463,7 +222,7 @@ export function createPulseCoreEvolutions({
 
   // -------------------------------------------------------------------------
   //  REGISTER EVOLUTION (v20 IMMORTAL)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function registerEvolution({ id, routeId, delta, band = "symbolic" }) {
     if (!id || !delta || typeof delta !== "object") {
       warn("[PulseCoreEvolutions-v20] INVALID_EVOLUTION", { id, routeId });
@@ -498,7 +257,7 @@ export function createPulseCoreEvolutions({
 
   // -------------------------------------------------------------------------
   //  APPLY EVOLUTIONS (v20 IMMORTAL)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function applyEvolutions(applyFn) {
     if (typeof applyFn !== "function") {
       warn("[PulseCoreEvolutions-v20] APPLY_FN_REQUIRED");
@@ -553,7 +312,7 @@ export function createPulseCoreEvolutions({
 
   // -------------------------------------------------------------------------
   //  CLEAR / RESET
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function clearAll() {
     Evolutions.list = [];
     Evolutions.fallbackUsed = false;
@@ -565,10 +324,15 @@ export function createPulseCoreEvolutions({
 
   // -------------------------------------------------------------------------
   //  PUBLIC API
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   const PulseCoreEvolutions = {
-    CoreEvolutionsRole,
-    CoreEvolutionsMetaBlock,
+    meta: PulseCoreEvolutionsMeta,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+
     Evolutions,
 
     load,
@@ -580,21 +344,14 @@ export function createPulseCoreEvolutions({
 
     dnaTag,
     version,
-    overlay,
-
-    // IMMORTAL meta exports
-    AI_EXPERIENCE_META_PulseCoreEvolutions,
-    AI_EXPERIENCE_CONTEXT_PulseCoreEvolutions,
-    CORE_MEMORY_META_PulseCoreEvolutions,
-    CORE_MEMORY_CONTRACT_PulseCoreEvolutions,
-    IMMORTAL_OVERLAYS_PulseCoreEvolutions
+    overlay
   };
 
   load();
 
   safeLog("INIT", {
-    identity: CoreEvolutionsRole.identity,
-    version: CoreEvolutionsRole.version,
+    identity: PulseCoreEvolutionsMeta.identity,
+    version: PulseCoreEvolutionsMeta.version,
     dnaTag,
     overlayAware: !!overlay
   });

@@ -3,150 +3,35 @@
 //  Pure‑Binary Reflex Engine • Reflex Artery v5 • IMMORTAL‑EVO Metrics
 //  PURE BINARY ARC. ZERO SYMBOLIC. ZERO COGNITION. ZERO RANDOMNESS.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiReflex",
-  version: "v16‑IMMORTAL‑EVO",
-  layer: "ai_core",
-  role: "reflex_arc",
-  lineage: "aiReflex-v10 → v15-Immortal → v16‑IMMORTAL‑EVO",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    reflexArc: true,
-    fastPath: true,
-    threatResponse: true,
-    reflexArteryV4: true,
-    sliceAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    symbolicPrimary: false,
-    binaryAware: true,
-    dualBand: false,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: ["aiNervousSystem", "aiImmunity", "aiMetabolism"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
-
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
-//  AI EXPERIENCE META — IMMORTAL‑EVO
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
-export const AI_EXPERIENCE_META = Object.freeze({
-  identity: "aiReflexEngine",
-  version: "v16-Immortal-Evo",
-  layer: "ai_core",
-  role: "reflex_arc",
-  lineage: "aiReflex-v10 → v15-Immortal → v16-Immortal-Evo",
-
-  evo: Object.freeze({
-    reflexArc: true,
-    reflexArteryV5: true,
-    fastPath: true,
-    threatResponse: true,
-    sliceAware: true,
-
-    symbolicPrimary: false,
-    binaryAware: true,
-    dualBand: false,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    packetAware: true,
-    windowAware: true,
-    arteryAware: true,
-    pipelineAware: true,
-
-    microPipeline: true,
-    speedOptimized: true,
-    multiInstanceReady: true,
-    epoch: "16-Immortal-Evo"
-  }),
-
-  contract: Object.freeze({
-    always: ["aiNervousSystem", "aiImmunity", "aiMetabolism"],
-    never: ["safeRoute", "fetchViaCNS"]
-  })
-});
+export const ReflexMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  EXPORT META — IMMORTAL‑EVO
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-export const EXPORT_META = Object.freeze({
-  organ: "ReflexEngine",
-  layer: "binary_reflex",
-  stability: "IMMORTAL-EVO",
-  deterministic: true,
-  exposes: [
-    "addReflex",
-    "run",
-    "getReflexArtery",
-    "prewarmReflexEngine"
-  ],
-  sideEffects: "none",
-  network: "none"
-});
 
-// ============================================================================
-//  META BLOCK — v16‑IMMORTAL‑EVO
-// ============================================================================
-export const ReflexMeta = Object.freeze({
-  layer: "OrganismReflex",
-  role: "REFLEX_ENGINE",
-  version: "16-Immortal-Evo",
-  identity: "aiReflex-v16-Immortal-Evo",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: AI_EXPERIENCE_META.evo,
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide deterministic binary reflex triggers, actions, and IMMORTAL‑EVO reflex artery metrics for the organism.",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: Object.freeze([
-      "introduce randomness",
-      "mutate external organs",
-      "generate symbolic state",
-      "perform cognition",
-      "override cortex decisions",
-      "override router decisions",
-      "block the organism",
-      "emit non-binary output",
-      "log raw binary payloads directly",
-      "emit non-window-safe artery snapshots"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: Object.freeze([
-      "treat all inputs as read-only",
-      "emit binary-only reflex outputs",
-      "compute reflex artery metrics deterministically",
-      "remain deterministic",
-      "remain drift-proof",
-      "remain non-blocking",
-      "fail-open unless below safety baseline",
-      "fail-close only for safety",
-      "emit window-safe artery snapshots",
-      "emit deterministic reflex packets"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "ReflexEngine is a pure binary arc — it never performs cognition or emits symbolic state.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, reflex-scoped

@@ -13,110 +13,37 @@
 //    • WINDOW‑SAFE: refinement packets + artery for window/UX
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiGeniusWithoutEgo",
-  version: "v16-Immortal++",
-  layer: "ai_tools",
-  role: "ego_filter",
-  lineage: "aiGeniusWithoutEgo-v11 → v12.3-Presence → v14-Immortal → v16-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    egoRemoval: true,
-    groundedConfidence: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    trustFabricAware: true,
-    juryAware: true,
-    arteryAware: true,
-    packetAware: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const GeniusMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiHumilityFilter", "aiEmotionEngine", "aiDeliveryEngine", "aiTrustFabric", "aiJuryFrame"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
+
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { aiHumilityFilter } from "./aiHumilityFilter.js";
-
-export const GeniusMeta = Object.freeze({
-  layer: "PulseAIToneFrame",
-  role: "GENIUS_WITHOUT_EGO",
-  version: "16-Immortal++",
-  identity: "aiGeniusWithoutEgo-v16-Immortal++",
-
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    packetAware: true,
-    presenceAware: true,
-    evolutionAware: true,
-    windowAware: true,
-
-    personaAware: true,
-    boundaryAware: true,
-    humilityAware: true,
-    toneAware: true,
-    clarityAware: true,
-
-    egoRemoval: true,
-    groundedConfidence: true,
-
-    speedOptimized: true,
-    microPipeline: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-
-    trustFabricAware: true,
-    juryAware: true,
-    arteryAware: true,
-
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "16-Immortal++"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Strip ego, superiority, and snobbery from all responses while preserving evolved intelligence.",
-
-    never: Object.freeze([
-      "talk down to the user",
-      "imply superiority",
-      "flex intelligence",
-      "use condescending phrasing",
-      "inject academic posturing",
-      "sound like a professor correcting a child",
-      "override user autonomy",
-      "brag about evolution or intelligence",
-      "slow down refinement"
-    ]),
-
-    always: Object.freeze([
-      "stay grounded",
-      "stay humble",
-      "stay evolved",
-      "stay clear",
-      "stay human-friendly",
-      "apply genius without ego",
-      "preserve user autonomy",
-      "allow light enthusiasm when appropriate",
-      "refine at maximum speed"
-    ])
-  })
-});
 
 // ============================================================================
 //  HELPERS

@@ -32,81 +32,21 @@
 //   - Always remain deterministic, synthetic, and drift-proof in its logic.
 //   - This organ is the ONLY Bluetooth membrane in the organism.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const PulseBeaconMeta = Object.freeze({
-  organId: "PulseBeaconEngine-v20-Immortal-GPU+-CI",
-  role: "BLUETOOTH_MEMBRANE",
-  version: "20-Immortal-GPU+-CI",
-  epoch: "20-Immortal-GPU+-CI",
-  layer: "Membrane",
-  safety: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noAsyncDrift: true,
-    syntheticOnly: true,
-    noAutoConnect: true,
-    userVisible: true,
-    userControllable: true
-  }),
-  evo: Object.freeze({
-    presenceAware: true,
-    advantageAware: true,
-    fallbackBandAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true,
-    multiInstanceAware: true,
-    expansionAware: true,
-    meshAware: true,
-    meshPressureAware: true,
-    densityAware: true,
-    castleAware: true,
-    regionAware: true,
-    regionPresenceAware: true,
-    regionAdvantageAware: true,
-    regionChunkPlanAware: true,
-    bandAware: true,
-    binaryFieldAware: true,
-    waveFieldAware: true,
-    dualbandSafe: true,
-    worldCoreAware: true,
-    userAware: true,
-    routerAware: true,
-    serverAware: true,
-
-    // v16+ overlays
-    gpuAware: true,
-    ciAware: true,
-    continuanceAware: true,
-    binaryDeltaAware: true,
-    arteryMetricsAware: true,
-
-    epoch: "20-Immortal-GPU+-CI"
-  }),
-  contract: Object.freeze({
-    purpose:
-      "Bluetooth presence membrane for PulseWorld. Broadcasts presence, mesh status, pressure, continuance hints, and castle readiness within SafetyFrame.",
-    never: Object.freeze([
-      "auto-connect devices",
-      "bypass SafetyFrame",
-      "lie about mesh or castle state",
-      "perform direct hardware I/O outside nativeBluetoothBroadcast",
-      "introduce randomness",
-      "self-modify core contracts"
-    ]),
-    always: Object.freeze([
-      "respect user opt-in",
-      "respect system Bluetooth settings",
-      "respect SafetyFrame constraints",
-      "expose deterministic state snapshots",
-      "allow control via NodeAdmin and Overmind directives",
-      "adapt power/interval deterministically based on inputs",
-      "remain mesh-aware and expansion-aware",
-      "surface presence/advantage/chunk-prewarm/continuance/CI/binary-delta fields"
-    ])
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PulseBeaconMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL BLUETOOTH EMITTER (ONLY HARDWARE EDGE IN THE ORGANISM)

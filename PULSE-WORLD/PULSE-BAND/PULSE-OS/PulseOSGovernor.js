@@ -11,172 +11,21 @@
 //  - Presence-aware (metadata only)
 //  - Chunk/prewarm-aware (metadata only)
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSGovernor",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_governor",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    governor: true,
-    rateLimiter: true,
-    loadBalancer: true,
-    reflexPriority: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrain",
-      "PulseOSNervousSystem",
-      "PulseChunker"
-    ],
-    never: [
-      "legacyGovernor",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const GOVERNOR_CONTEXT_V12 = {
-  organ: "PulseOSGovernor",
-  layer: "C-Layer",
-  role: "Global Loop & Re-entry Governor",
-  version: "12.3-SPINE",
-  generation: "v12",
-  organism: "PulseOS",
-  evo: {
-    dualMode: true,
-    symbolicAware: true,
-    binaryAware: true,
-    driftProof: true,
-    deterministicNeuron: true,
-    unifiedAdvantageField: true,
-    multiInstanceReady: true,
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroRouting: true,
-    zeroMarketplace: true,
-    zeroTiming: true,
-
-    // Presence / mesh / chunking (metadata-only)
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    cortexChunkingAware: true,
-    cortexPrewarmAware: true
-  }
-};
-
-export const PulseOSGovernorMeta = Object.freeze({
-  layer: "PulseOSGovernor",
-  role: "GLOBAL_LOOP_GOVERNOR_ORGAN",
-  version: "v12.3-SPINE-DUALBAND-Presence",
-  identity: "PulseOSGovernor-v12.3-SPINE-DUALBAND-Presence",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Governor laws
-    globalLoopGuard: true,
-    reentryFirewall: true,
-    multiInstanceSlicer: true,
-    deterministicNeuron: true,
-    deterministicPulseLaw: true,
-    unifiedAdvantageField: true,
-
-    // Execution prohibitions
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroRouting: true,
-    zeroMarketplace: true,
-    zeroTiming: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-
-    // Reflex integration (optional hooks)
-    reflexHookAllowed: true,
-    reflexRouterHookAllowed: true,
-
-    // Dual-band awareness
-    dualBandAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-    binaryNonExecutable: true,
-
-    // Presence / mesh / chunking (metadata-only)
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    cortexChunkingAware: true,
-    cortexPrewarmAware: true,
-
-    // Environment
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "OrganPulse",
-      "OrganContext",
-      "DualBandContext"
-    ],
-    output: [
-      "GovernedPulse",
-      "GovernorDiagnostics",
-      "GovernorSignatures",
-      "GovernorHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12.3-SPINE",
-    parent: "PulseOS-v12.0-SPINE",
-    ancestry: [
-      "PulseOSGovernor-v9",
-      "PulseOSGovernor-v10",
-      "PulseOSGovernor-v11",
-      "PulseOSGovernor-v11-Evo",
-      "PulseOSGovernor-v11.2-Evo-BINARY-MAX"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "governor-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "global loop guard → re-entry firewall → multi-instance slicing",
-    adaptive: "binary-tagged metadata surfaces + presence/chunking metadata",
-    return: "deterministic governed pulse + signatures"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const GOVERNOR_CONTEXT_V12 = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 const activeOrgans     = new Set();
 const activeModules    = new Set();

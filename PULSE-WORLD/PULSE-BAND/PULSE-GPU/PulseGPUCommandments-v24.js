@@ -18,66 +18,18 @@
 //  • CognitiveFrame-aware + ComputerIntelligence-aware (metadata only).
 //  • WarmPath-aware, NervousSystem-aware, Synapse-aware, GeneticMemory-aware.
 // ============================================================================
-
-export const PULSE_GPU_CONFIG_META = {
-  layer: "PulseGPUConfig",
-  version: "24.0-Immortal++",
-  target: "full-gpu+binary+spine",
-  selfRepairable: true,
-  doctrine: "These constants form the immutable commandments of PULSE-GPU (v24-Immortal++).",
-  description: "Central configuration + policy constants for PULSE-GPU v24-Immortal++.",
-
-  evo: {
-    metabolicBoost: 1.35,
-    neuralReflexBoost: 1.4,
-    stabilityBoost: 1.6,
-
-    multiInstanceReady: true,
-    deterministicNeuron: true,
-    parallelSafe: true,
-    fanOutScaling: 1.25,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-    reflexPropagation: 1.25,
-
-    dualModeEvolution: true,
-    organismClusterBoost: 1.25,
-    cognitiveComputeLink: true,
-    unifiedAdvantageField: true,
-
-    // v24 Immortal++ Presence
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    // GPU awareness
-    binaryAware: true,
-    symbolicAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-
-    // Nervous system + synapse + warm path + healer + lymph
-    nervousSystemAware: true,
-    synapseAware: true,
-    warmPathAware: true,
-    healerAware: true,
-    lymphNodeAware: true,
-    geneticMemoryAware: true,
-
-    // Cognitive / CI awareness (metadata only)
-    cognitiveFrameAware: true,
-    computerIntelligenceAware: true,
-
-    // PulseSend / Earn contracts (conceptual only)
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    earnCompatibility: "Earn-v24-GPU",
-    workgroupLawVersion: 24
-  }
-};
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+export const PULSE_GPU_CONFIG_META = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // COMMANDMENT I — PERFORMANCE TRUTH (v24-Immortal++)

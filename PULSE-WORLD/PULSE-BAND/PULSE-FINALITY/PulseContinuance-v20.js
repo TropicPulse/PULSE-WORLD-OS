@@ -34,146 +34,24 @@
 //    - Always output explicit, reversible plans.
 //    - Attach presence/fallback/chunk/cache/prewarm/world hints as pure metadata.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseContinuanceGPUPlus",
-  version: "v20-Immortal-INTEL-WORLD",
-  layer: "continuance_gpu_world",
-  role: "gpu_world_continuance_engine",
-  lineage: "v12.3-Presence-Evo+ → v14 → v16-Immortal-GPU+ → v20-Immortal-INTEL-WORLD",
+// 2 — EXPORT GENOME METADATA
+export const PulseContinuanceMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
-  evo: {
-    continuanceEngine: true,
-    outageDetection: true,
-    replicationPlanning: true,
-    survivalModeling: true,
-
-    gpuAccelerated: true,
-    gpuInstabilityPrediction: true,
-    gpuTrendForecasting: true,
-    gpuRiskSmoothing: true,
-    gpuContinuanceScoring: true,
-    gpuMetaReasoning: true,
-    gpuHeuristics: true,
-
-    worldAware: true,
-    regionAware: true,
-    tenantAware: true,
-    omniHostingAware: true,
-    schemaAware: true,
-
-    dualHashAware: true,
-    intellHashAware: true,
-    arteryMetricsAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseGPUBrain",
-      "PulseCoreMemory",
-      "PulseSchema",
-      "PulseOmniHosting"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyContinuance",
-      "runtimeScheduler",
-      "router"
-    ]
-  }
-}
-*/
-
-import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory-v24.js";
-import { PulseGPUBrain } from "../../PULSE-GPU/PulseGPUBrain-v24.js";
-
-// ============================================================================
-//  META — v20-IMMORTAL-INTEL-WORLD
-// ============================================================================
-
-export const PulseContinuanceMeta = Object.freeze({
-  layer: "ContinuanceGPUWorld",
-  role: "GPU_WORLD_CONTINUANCE_ENGINE",
-  version: "20-Immortal-INTEL-WORLD",
-  identity: "PulseContinuanceGPUPlus-v20-Immortal-INTEL-WORLD",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-
-    continuanceEngine: true,
-    outageDetection: true,
-    replicationPlanning: true,
-    survivalModeling: true,
-
-    gpuAccelerated: true,
-    gpuInstabilityPrediction: true,
-    gpuTrendForecasting: true,
-    gpuRiskSmoothing: true,
-    gpuContinuanceScoring: true,
-    gpuMetaReasoning: true,
-    gpuHeuristics: true,
-
-    presenceAware: true,
-    fallbackBandAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-
-    worldAware: true,
-    regionAware: true,
-    tenantAware: true,
-    omniHostingAware: true,
-    schemaAware: true,
-
-    dualHashAware: true,
-    intellHashAware: true,
-    arteryMetricsAware: true,
-
-    pureCompute: true,
-    zeroRandomness: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    epoch: "20-Immortal-INTEL-WORLD"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Compute GPU-accelerated, world-aware continuance risk, preemptive moves, and replication plans " +
-      "while remaining deterministic, IO-free, and physics-pure.",
-
-    never: Object.freeze([
-      "mutate physical topology directly",
-      "perform network IO",
-      "perform filesystem IO",
-      "introduce randomness",
-      "derive user identity",
-      "apply routing policy",
-      "act as a scheduler",
-      "act as a router"
-    ]),
-
-    always: Object.freeze([
-      "remain pure symbolic compute",
-      "remain deterministic across identical inputs",
-      "expose explicit, reversible plans",
-      "attach presence/fallback/chunk/cache/prewarm/world hints as metadata",
-      "remain GPU-accelerated when available",
-      "fallback to CPU deterministically when GPU is unavailable"
-    ])
-  })
-});
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
+import { PulseGPUBrain } from "../PULSE-GPU/PulseGPUBrain-v24.js";
 
 // ============================================================================
 //  CORE MEMORY — IMMORTAL HOT MEMORY ORGAN

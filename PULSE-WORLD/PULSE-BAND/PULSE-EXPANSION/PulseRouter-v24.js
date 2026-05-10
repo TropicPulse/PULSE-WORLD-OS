@@ -12,77 +12,20 @@
  *    - Suggests better routes and corridor protection (never auto-applies).
  *    - Pure symbolic planner: no network, no filesystem, no AI execution.
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseRouter",
-  version: "v24-Immortal-ORGANISM",
-  layer: "presence_router",
-  role: "presence_route_planner",
-  lineage: "PulseRouter-v13-Presence-Evo+ → v16-Immortal-ORGANISM → v24-Immortal-ORGANISM",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    routePlanner: true,
-    meshAware: true,
-    regionAware: true,
-    densityAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-
-    userAware: true,
-    worldCoreAware: true,
-    osBrainAware: true,
-    meshWorldAware: true,
-    beaconAware: true,
-    expansionAware: true,
-    earnAware: true,
-    schedulerAware: true,
-    runtimeAware: true,
-    overmindAware: true,
-
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true,
-
-    federalAware: true,
-    nodeAdminAware: true,
-    corridorProtectionAware: true,
-    everyAdvantageAware: true,
-    bluetoothAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseServer",
-      "PulseCastle",
-      "PulseMesh",
-      "PulseBinaryMesh",
-      "PulseExpansion",
-      "PulseBeaconEngine",
-      "PulseUser",
-      "PulseWorldCore",
-      "PulseRuntime",
-      "PulseScheduler",
-      "PulseOvermind"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
+export const PulseRouterMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS (backend-safe, organism-aware)
 // ============================================================================
@@ -142,57 +85,6 @@ import {
   getProxyMode,
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
-
-// ============================================================================
-//  META — Router Identity v24
-// ============================================================================
-export const PulseRouterMeta = Object.freeze({
-  organId: "PulseRouter-v24-Immortal-ORGANISM",
-  role: "TRAFFIC_BRAIN",
-  version: "v24-Immortal-ORGANISM",
-  epoch: "v24-Immortal-ORGANISM",
-  layer: "Routing",
-  safety: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noAsyncDrift: true,
-    syntheticOnly: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroDynamicImports: true,
-    zeroEval: true
-  }),
-  evo: Object.freeze({
-    presenceAware: true,
-    advantageAware: true,
-    fallbackBandAware: true,
-    meshPressureAware: true,
-    routeAware: true,
-    reproductionAware: true,
-    expansionAware: true,
-    dualbandSafe: true,
-    userAware: true,
-    worldCoreAware: true,
-    osBrainAware: true,
-    meshWorldAware: true,
-    beaconAware: true,
-    runtimeAware: true,
-    schedulerAware: true,
-    overmindAware: true,
-    earnAware: true,
-
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true,
-
-    federalAware: true,
-    nodeAdminAware: true,
-    corridorProtectionAware: true,
-    everyAdvantageAware: true,
-    bluetoothAware: true
-  })
-});
 
 // ============================================================================
 //  A-B-A SURFACES — SYMBOLIC BAND SIGNATURES

@@ -4,160 +4,23 @@
 // “THE EVOLUTION ENGINE — ORGANISM-WIDE CNS GROWTH + DRIFT INTELLIGENCE”
 // CoreMemory-integrated • Immortal Drift/Lineage • Cache/Prewarm-aware
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSBrainEvolution",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_evolution_engine",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    evolutionEngine: true,
-    lineageAware: true,
-    driftScanner: true,
-    structuralDriftAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    intentAware: true,
-    organismMapAware: true,
-    iqMapAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrain",
-      "PulseOSBrainCortex",
-      "PulseChunker"
-    ],
-    never: [
-      "legacyBrainEvolution",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
-
-// ============================================================================
-// ROLE + IDENTITY (v14-Immortal)
-// ============================================================================
-export const PulseRole = {
-  type: "Evolution",
-  subsystem: "OS",
-  layer: "CNS",
-  version: "14-Immortal",
-  identity: "PulseOSEvolution-v14-Immortal-COREMEMORY",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    loopTheoryAware: true,
-    continuanceAware: true,
-
-    routingContract: "PulseRouter-v14",
-    osOrganContract: "PulseOS-v14-Immortal",
-    earnCompatibility: "PulseEarn-v14",
-    gpuCompatibility: "PulseGPU-v14",
-    sendCompatibility: "PulseSendSystem-v14",
-
-    dualMode: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    binaryNonExecutable: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    futureEvolutionReady: true,
-
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    cortexChunkingAware: true,
-    cortexPrewarmAware: true,
-
-    // v14-Immortal
-    coreMemoryIntegrated: true,
-    immortalDriftLineage: true,
-    immortalOrganismHealth: true,
-    cacheChunkAware: true,
-    prewarmAware: true
-  }
-};
-
-export const PulseOSEvolutionMeta = Object.freeze({
-  layer: "PulseOSEvolution",
-  role: "CNS_EVOLUTION_ORGAN",
-  version: "v14-Immortal-COREMEMORY",
-  identity: "PulseOSEvolution-v14-Immortal-COREMEMORY",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    cnsEvolutionEngine: true,
-    organismEvolutionEngine: true,
-    organEvolutionEngine: true,
-    lineageTracker: true,
-    driftScanner: true,
-    structuralDriftAware: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBandAware: true,
-    binaryNonExecutable: true,
-    futureEvolutionReady: true,
-
-    attachesIntentToBrain: true,
-    attachesOrganismMapToBrain: true,
-    attachesIQMapToBrain: true,
-    attachesEvolutionToBrain: true,
-    bootsCortex: true,
-
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    cortexChunkingAware: true,
-    cortexPrewarmAware: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroDateNow: true,
-    zeroUserCode: true,
-    worldLensAware: true,
-
-    loopTheoryAware: true,
-    continuanceAware: true,
-
-    // v14-Immortal
-    coreMemoryIntegrated: true,
-    immortalDriftLineage: true,
-    immortalOrganismHealth: true,
-    cacheChunkAware: true,
-    prewarmAware: true
-  })
-});
 
 // Cortex is ONLY imported here — NOT in Brain
 import { createPulseOSCortex } from "./PulseOSBrainCortex.js";

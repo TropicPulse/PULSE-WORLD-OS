@@ -5,67 +5,21 @@
 //  • Lane-specific intent: expansion, prediction, forward motion
 //  • Evidence-aware, diagnostics-aware, multi-band, session-aware
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "ForwardMotion",
-  version: "v24-Immortal-Evo+++",
-  layer: "motion_page",
-  role: "forward_motion_interface",
-  lineage: "PulseMotionEngine-v16 → ForwardMotion-v16 → ForwardMotion-v24-Immortal-Evo+++",
-
-  evo: {
-    forwardLane: true,
-    directionalWrapper: true,
-    zeroCompute: true,
-    zeroMutation: true,
-    driftProof: true,
-    pureInterface: true,
-
-    motionAware: true,
-    arteryAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    triHeartAware: true,
-
-    // v24++ upgrades
-    dualBand: true,
-    symbolicAware: true,
-    binaryAware: true,
-    pulseBandAware: true,
-    sessionAware: true,
-    timeAxisAware: true,
-    diagnosticsAware: true,
-    evidenceAware: true,
-    adminPanelAware: true,
-    portalAware: true,
-    overmindAware: true,
-    routerAware: true,
-    organismMapAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseMotionEngine",
-      "PulsePower",
-      "PulseChunker",
-      "PulsePresence",
-      "PulseAdvantage",
-      "PulseWorldAdminPanel",
-      "AdminDiagnosticsOrgan"
-    ],
-    never: [
-      "BinaryOrgan",
-      "ShifterPulse",
-      "routerCore",
-      "meshKernel",
-      "presenceEngine",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // GLOBAL HANDLE (membrane-safe, environment-agnostic)

@@ -2,109 +2,36 @@
 //  aiConductor.js — Pulse OS v12.3‑Presence Organ
 //  Deterministic Wiring • Dualband‑Safe • Packet‑Aware • Drift‑Proof
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiConductor",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "ai_flow_conductor",
-  lineage: "aiConductor-v10 → v12 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    flowConductor: true,
-    organOrchestration: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiBrainstem", "aiCortex", "aiContextEngine"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-export const ConductorMeta = Object.freeze({
-  layer: "OrganismOrchestration",
-  role: "CONDUCTOR_ORGAN",
-  version: "12.3-Presence",
-  identity: "aiConductor-v12.3-Presence",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const ConductorMeta = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualBandSafe: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    binaryAware: true,
-    nonBinaryAware: true,
-    wiringOnly: true,
-    noCompute: true,
-    noMutation: true,
-    noInterpretation: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "12.3-Presence"
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide deterministic, drift-proof wiring between binary-first and dualband organs.",
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    never: Object.freeze([
-      "compute",
-      "mutate data",
-      "interpret packets",
-      "override organ behavior",
-      "introduce randomness",
-      "create recursion",
-      "entangle organs"
-    ]),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    always: Object.freeze([
-      "wire organs deterministically",
-      "respect binary-first boundaries",
-      "respect dualband organ semantics",
-      "initialize organism safely",
-      "emit deterministic conductor packets",
-      "remain pure and minimal",
-      "return frozen state"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "Conductor",
-    organKind: "Wiring",
-    physiologyBand: "Symbolic+Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "on-demand",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "register",
-        "wirePipeline",
-        "wirePageScanner",
-        "wireEvolution",
-        "initialize",
-        "activation",
-        "prewarm",
-        "prewarm-error"
-      ]
-    }
-  })
-});
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, conductor-scoped

@@ -13,107 +13,19 @@
 //  Expected sibling organ (not imported here, just referenced):
 //    - PulseGPUChunker-v24 (GPU-specialized clone of PulseAIChunker v20)
 // ============================================================================
-
-export const AI_EXPERIENCE_META_PulseGPUChunkPlanner = {
-  id: "pulsegpu.chunk_planner",
-  kind: "planner_organ",
-  version: "v24-IMMORTAL++",
-  role: "gpu_chunk_planner",
-  surfaces: {
-    band: ["gpu", "chunks", "layout", "lane32"],
-    wave: ["throughput", "latency", "balanced"],
-    binary: ["gpu_capable", "gpu_fallback"],
-    presence: ["gpu_chunk_plan", "gpu_chunker_profile"],
-    advantage: [
-      "chunk_strategy",
-      "priority_bands",
-      "hydration_tier",
-      "lane_hint",
-      "chunker_profile_hint"
-    ],
-    speed: "instant_compute",
-    chunker: {
-      id: "PulseGPUChunker-v24",
-      contract: "PulseGPUChunker-v24-IMMORTAL",
-      lanes: [8, 16, 32],
-      profiles: [
-        "backend-default",
-        "backend-plan",
-        "backend-state",
-        "backend-logs",
-        "world-state",
-        "world-evidence",
-        "world-timeline"
-      ]
-    }
-  },
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-export const ORGAN_META_PulseGPUChunkPlanner = {
-  id: "organ.pulsegpu.chunk_planner",
-  organism: "PulseOS",
-  layer: "advantage.gpu",
-  tier: "IMMORTAL",
-  evoFlags: {
-    deterministic: true,
-    driftProof: true,
-    zeroPII: true,
-    zeroTracking: true,
-    gpuAware: true,
-    pageHintAware: true,
-    chunkProfileAware: true,
-    modeAware: true,
-    presenceAware: true,
-    trustAware: true,
-    riskAware: true,
-
-    // v24++ extras
-    gpuChunkerAware: true,
-    gpuChunkerProfileAware: true,
-    laneAware: true,
-    lane32Preferred: true,
-    prewarmAware: true,
-    cacheAware: true
-  }
-};
-
-export const ORGAN_CONTRACT_PulseGPUChunkPlanner = {
-  inputs: {
-    page: "string",
-    chunkProfile: "string", // gpu | rich | minimal | default
-    mode: "fast | safe | slow | background",
-    presence: "active | idle | background | inactive",
-    gpuCapable: "boolean",
-    trust: "trusted | neutral | suspicious | hostile | unknown",
-    risk: "low | medium | high | critical | unknown",
-    gateMode: "fast | safe | slow",
-
-    // GPU chunker hints (symbolic, consumed by PulseGPUChunker‑v24)
-    chunkerId: "string (optional, default: PulseGPUChunker-v24)",
-    chunkerProfile: "string (optional, maps to PulseGPUChunker profiles)",
-    lanes: "number (optional, preferred lane count, e.g. 32)",
-    defaultChunkSize: "number (optional, bytes, e.g. 4096)",
-    maxChunkSize: "number (optional, bytes, e.g. 65536)"
-  },
-  outputs: {
-    strategy: "string",
-    chunks:
-      "Array<{ id, priority, band, hydrate, gpuHint, chunkProfile, chunkerId, chunkerProfile, laneHint, lanes, defaultChunkSize, maxChunkSize }>",
-    reason: "string",
-    chunker: "{ id, profile, lanes, laneHint, defaultChunkSize, maxChunkSize }"
-  },
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+export const PulseGPUChunkerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+const PulseGPUChunkContract = Identity.OrganMeta.contract;
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++ (GPU Chunker-aware)

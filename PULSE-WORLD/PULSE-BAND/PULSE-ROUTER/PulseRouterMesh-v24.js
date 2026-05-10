@@ -4,57 +4,21 @@
 //  IntelDualHash + TriHash • Deterministic Mesh Path Selection
 //  Pattern/Lineage/Page/Binary/Presence/Cache/Cosmos-Aware • Drift-Proof
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseRouterMesh",
-  version: "v24-IMMORTAL-INTEL-TriHash",
-  layer: "frontend",
-  role: "router_mesh_engine",
-  lineage: "PulseOS-v24-IMMORTAL",
-
-  evo: {
-    meshCore: true,
-    deterministic: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    presenceAware: true,
-    cacheChunkAware: true,
-    cosmosAware: true,
-    advantageFieldAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    multiRoute: true,
-    multiPresenceAware: true,
-    dualHashReady: true,
-    triHashReady: true,
-    intelReady: true,
-    driftProof: true,
-    snapshotReady: true
-  },
-
-  contract: {
-    always: [
-      "PulseRouter",
-      "PulseBinaryRouter",
-      "PulseRouterEvolutionaryDesign",
-      "PulseRouterEvolutionaryInstincts",
-      "PulseRouterEvolutionaryThought",
-      "PulseRouterCommandments",
-      "PulseRouterEarn"
-    ],
-    never: [
-      "legacyRouterMesh",
-      "legacyRouter",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseMeshRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // IMPORT SURFACE — Router Mesh Unit (v24++)
 // ============================================================================
@@ -69,49 +33,6 @@ import { PulseEarnRouter }                    from "./PulseRouterEarn-v24.js";
 
 import { createPulseCoreMemory }              from "../PULSE-CORE/PulseCoreMemory-v24.js";
 import { createPulseMeshPresenceRelay as PulseMeshPresenceRelay } from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
-
-
-// ============================================================================
-//  ROLE
-// ============================================================================
-export const PulseMeshRole = {
-  type: "MeshRouter",
-  subsystem: "PulseMesh",
-  layer: "Routing",
-  version: "24.0-IMMORTAL-INTEL-TriHash",
-  identity: "PulseMeshRouter-v24-IMMORTAL-INTEL-TriHash",
-
-  evo: {
-    driftProof: true,
-    patternAware: true,
-    lineageAware: true,
-    pageAware: true,
-    deterministicRouting: true,
-    unifiedAdvantageField: true,
-    loopTheoryAware: true,
-
-    binaryAware: true,
-    cacheChunkAware: true,
-    prewarmAware: true,
-    multiPresenceAware: true,
-    cosmosAware: true,
-
-    dualHashReady: true,
-    triHashReady: true,
-    intelReady: true
-  },
-
-  loopTheory: {
-    routingCompletion: true,
-    allowLoopfieldPropulsion: true,
-    pulseComputeContinuity: true,
-    errorRouteAround: true
-  },
-
-  meshContract: "PulseMesh-v24",
-  sendContract: "PulseSend-v24"
-};
-
 
 // ============================================================================
 //  CORE MEMORY (mesh-level intel / prewarm)

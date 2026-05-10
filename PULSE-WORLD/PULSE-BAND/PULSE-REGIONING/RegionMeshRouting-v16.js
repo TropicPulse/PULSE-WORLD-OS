@@ -3,91 +3,22 @@
 FILE: /PULSE-WORLD/RegionMeshRouting-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — REGION MESH ROUTING PHYSICS
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld.RegionMeshRouting",
-  version: "v16-Immortal",
-  layer: "pulse_world",
-  role: "region_mesh_routing",
-  lineage: "RegionMeshRouting-v13-COSMOS-MULTIVERSE → v16-Immortal",
-
-  evo: {
-    deterministic: true,
-    symbolic: true,
-    multiverseAware: true,
-    regionGraphReversible: true,
-    noRandomness: true,
-
-    driftProof: true,
-    pureCompute: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    coreMemoryAware: true,
-    schemaVersioned: true,
-    advantageAware: true,
-    historyAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    input: [
-      "RegionGraph",
-      "RegionStabilityMap",
-      "RegionAffinityMap",
-      "CosmosContext",
-      "SourceRegionId",
-      "TargetRegionId"
-    ],
-    output: [
-      "RegionRoute",
-      "RankedRegionCandidate[]",
-      "RegionRouteEnvelope"
-    ]
-  },
-
-  upstream: [
-    "RegioningPhysics-v16",
-    "PulseSchema",
-    "PulseOmniHosting"
-  ],
-
-  downstream: [
-    "PulseContinuance-v16",
-    "DeploymentPhysics-v16",
-    "MultiOrganismSupport-v16"
-  ]
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseWorld.RegionMeshRouting",
-  layer: "pulse_world",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "RegionGraph",
-    "RegionStabilityMap",
-    "RegionAffinityMap",
-    "CosmosContext",
-    "SourceRegionId",
-    "TargetRegionId"
-  ],
-
-  produces: [
-    "RegionRoute",
-    "RankedRegionCandidate[]",
-    "RegionRouteEnvelope"
-  ],
-
-  sideEffects: "none",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 const REGION_MESH_ENGINE_VERSION = "16.0-Immortal";
 const REGION_MESH_SCHEMA_VERSION = "v3";
 

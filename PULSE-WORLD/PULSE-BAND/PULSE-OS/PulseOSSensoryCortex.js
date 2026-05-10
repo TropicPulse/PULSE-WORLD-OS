@@ -35,152 +35,21 @@
 //   • No timestamps generated here (may pass through existing hop timestamps)
 //   • No cache writes, no prewarm execution — hints only
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSSensoryCortex",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_sensory_cortex",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    sensoryCortex: true,
-    sensoryIntegration: true,
-    sensoryAwareness: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    meshAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSNervousSystem",
-      "PulseOSBrain",
-      "PulseChunker"
-    ],
-    never: [
-      "legacySensoryCortex",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseOSSensoryCortexMeta = Object.freeze({
-  layer: "PulseOSSensoryCortex",
-  role: "SENSORY_CORTEX_ORGAN",
-  version: "v12.3-Presence-CHUNK",
-  identity: "PulseOSSensoryCortex-v12.3-Presence-CHUNK",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    multiPresenceReady: true,
-
-    // Sensory cortex laws
-    sensoryCortexOrgan: true,
-    pureDiagnostics: true,
-    perceptionOnly: true,
-    executionContextVisualizer: true,
-    dualBandNerveMap: true,
-    forwardReturnMapping: true,
-    driftSentinel: true,
-    versionDriftDetector: true,
-    pressureSnapshotAware: true,
-    executionContextAware: true,
-
-    // Chunk/cache/presence laws
-    chunkAware: true,
-    prewarmAware: true,
-    cacheSurfaceBuilder: true,
-    presenceAware: true,
-    multiPresenceOverlay: true,
-    gpuPressureAware: true,
-
-    // Safety prohibitions
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroTimers: true,
-    zeroAsync: true,
-    zeroMutation: true,
-    zeroExternalMutation: true,
-    zeroCompute: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-
-    // Awareness
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-
-    // Environment
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "Impulse",
-      "ImpulsePath",
-      "DualBandContext",
-      "ExecutionContext",
-      "PressureSnapshot",
-      "ChunkContext",
-      "CacheContext",
-      "PresenceContext"
-    ],
-    output: [
-      "NerveMapForward",
-      "NerveMapReturn",
-      "NerveMapDiagnostics",
-      "NerveMapSignatures",
-      "NerveChunkPlan",
-      "NervePrewarmPlan",
-      "SensoryHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12-Presence",
-    parent: "PulseOS-v12.3-Presence",
-    ancestry: [
-      "PulseOSSensoryCortex-v9",
-      "PulseOSSensoryCortex-v10",
-      "PulseOSSensoryCortex-v11",
-      "PulseOSSensoryCortex-v11-Evo",
-      "PulseOSSensoryCortex-v11-Evo-Prime",
-      "PulseOSSensoryCortex-v12-Presence"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "sensory-diagnostics"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "impulse.path → nerve scoring → forward/return maps",
-    adaptive: "binary-tagged pathways + executionContext + chunk/presence overlays",
-    return: "UI-ready nerve chains + signatures + chunk/prewarm hints"
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // NERVE SCORING PACK (logic preserved, v12.3 identity)

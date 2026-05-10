@@ -42,67 +42,21 @@
  *    - Must never perform network or filesystem operations.
  *    - Must never depend on real time or randomness.
  */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMesh",
-  version: "v24-Immortal++",
-  layer: "connectivity",
-  role: "symbolic_mesh_organism",
-  lineage: "PulseMesh-v1 → v11-Evo → v15-Immortal → v16-Immortal → v24-Immortal++",
+// 2 — EXPORT GENOME METADATA
 
-  evo: {
-    symbolicMeshKernel: true,
-    organismMap: true,
-    dualBandAware: true,
-    binaryAware: true,
-    symbolicPrimary: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    personaAware: true,
-    identityTierAware: true,
-    bluetoothAware: true,
-    devicePresenceAware: true,
-
-    meshPressureAware: true,
-    densityAware: true,
-    costAware: true,
-    bridgeAware: true,
-    multiInstanceAware: true,
-    expansionAware: true,
-    routerAware: true,
-    userAware: true,
-    worldMeshAware: true,
-    osBrainAware: true,
-    serverAware: true,
-    castleAware: true,
-    runtimeAware: true,
-    overmindAware: true,
-    pulseTouchAware: true,
-    pulseNetAware: true,
-    schedulerAware: true,
-
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true,
-
-    chunkPrewarmAware: true,
-    cacheAware: true,
-    prewarmAware: true
-  }
-}
-*/
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IMPORTS — v24 ORGANISM CONTEXT

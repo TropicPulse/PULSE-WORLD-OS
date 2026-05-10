@@ -25,92 +25,21 @@
 //   - Surface shape is kept v11-compatible: { layers, energyTint, flags }.
 //   - All extra fields are per-layer or via snapshotSurface().
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBinaryFramework-PageEvo",
-  version: "v16-Immortal-GPU+-CI-Delta",
-  layer: "ui_surface",
-  role: "page_evo_surface_membrane",
-  lineage: "PageEvo-v11 → PageEvo-v12.3-Evo → PageEvo-v16-Immortal-GPU+-CI-Delta",
-
-  evo: {
-    pageEvoOrgan: true,
-    surfaceMembrane: true,
-    visualCortex: true,
-
-    loopTheory: true,
-    waveTheory: true,
-    adminFlagsAware: true,
-    nodeEnergyAware: true,
-    presenceAware: true,
-    gpuAware: true,
-    ciAware: true,
-    binaryDeltaAware: true,
-    continuanceAware: true,
-    omniHostingAware: true,
-    schemaAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    dualbandSafe: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseAdminInspector",
-      "PulseContinuanceCoreMemory",
-      "PulseOmniHostingCoreMemory",
-      "PulseSchemaCoreMemory",
-      "PulseGPUWisdomCortex"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyPageEvo"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// META
-// ============================================================================
-
-export const PulsePageEvoMeta = Object.freeze({
-  layer: "PulseBinaryFramework-PageEvo",
-  role: "PAGE_EVO_SURFACE_ORGAN",
-  version: "16-Immortal-GPU+-CI-Delta",
-  identity: "PageEvo-v16-Immortal-GPU+-CI-Delta",
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    dualbandSafe: true,
-
-    loopTheory: true,
-    waveTheory: true,
-    adminFlagsAware: true,
-    nodeEnergyAware: true,
-    presenceAware: true,
-    gpuAware: true,
-    ciAware: true,
-    binaryDeltaAware: true,
-    continuanceAware: true,
-    omniHostingAware: true,
-    schemaAware: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    epoch: "16-Immortal-GPU+-CI-Delta"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PulsePageEvoMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // ARTERY — SURFACE LOAD + PRESSURE (WINDOW-SAFE)

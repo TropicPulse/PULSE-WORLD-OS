@@ -49,92 +49,21 @@
  *      - Always deterministic.
  *      - Pure membrane surface (symbolic composition only).
  */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBeaconMesh",
-  version: "v20-Immortal-NET",
-  layer: "beacon_mesh",
-  role: "local_membrane_simulator",
-  lineage: "PulseBeaconMesh-v1 → v11-Evo → v14-Immortal → v16-Immortal-ORGANISM → v20-Immortal-NET",
-
-  evo: {
-    localMembrane: true,
-    organismAware: true,
-    dualBandAware: true,
-    meshAware: true,
-    proxyAware: true,
-    continuanceAware: true,
-    omniHostingAware: true,
-    multiRadioAware: true,
-    lteAssistAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroTimers: true,
-    zeroAsync: true,
-
-    presenceFieldAware: true,
-    bandAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    multiInstanceReady: true,
-    regionAware: true,
-    castleAware: true,
-    expansionAware: true,
-    routerAware: true,
-    meshPressureAware: true,
-    presenceTierAware: true,
-    advantageBandAware: true,
-    chunkPlanAware: true,
-    pulseTouchAware: true,
-    pulseNetAware: true,
-    runtimeAware: true,
-    schedulerAware: true,
-    overmindAware: true,
-    meshOrganismAware: true,
-    worldCoreAware: true,
-    continuanceRiskAware: true,
-    arteryAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseBeaconEngine",
-      "PulseExpansion",
-      "PulseCastle",
-      "PulseServer",
-      "PulseRouter",
-      "PulseUser",
-      "PulseTouch",
-      "PulseNet",
-      "PulseMesh",
-      "PulseBinaryMesh",
-      "PulseRuntime",
-      "PulseScheduler",
-      "PulseOvermind",
-      "PulseWorldCore",
-      "PulseContinuance",
-      "PulseOmniHosting",
-      "PulseProxy"
-    ],
-    never: [
-      "routerCore",
-      "safeRoute",
-      "fetchViaCNS",
-      "meshKernelExec",
-      "presenceEngineExec"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+export const PulseBeaconMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IMPORTS — ORGANISM CONTEXT + BEACON ENGINE
@@ -202,12 +131,12 @@ import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 // Continuance (GPU continuance physics)
 import {
   getLastContinuanceState
-} from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseContinuance-v20.js";
+} from "../PULSE-FINALITY/PulseContinuance-v20.js";
 
 // OmniHosting (hosting physics / artery metrics)
 import {
   getLastOmniHostingState
-} from "../PULSE-FINALITY/PULSE-OMNIHOSTING/PulseOmniHosting-v20.js";
+} from "../PULSE-FINALITY/PulseOmniHosting-v20.js";
 
 // Proxy context (IMMORTAL dual-band envelope)
 import {
@@ -219,60 +148,6 @@ import {
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
-// ============================================================================
-// META
-// ============================================================================
-
-export const PulseBeaconMeshMeta = Object.freeze({
-  layer: "BeaconMesh",
-  role: "LOCAL_MEMBRANE_SIMULATOR",
-  version: "v20-Immortal-NET",
-  identity: "PulseBeaconMesh-v20-Immortal-NET",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroAsync: true,
-    zeroNetwork: true,
-    zeroEval: true,
-    zeroDynamicImports: true,
-    zeroMutation: true,
-    zeroExternalMutation: true,
-
-    meshAware: true,
-    presenceFieldAware: true,
-    bandAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    multiInstanceReady: true,
-    regionAware: true,
-    castleAware: true,
-    expansionAware: true,
-    routerAware: true,
-    meshPressureAware: true,
-    presenceTierAware: true,
-    advantageBandAware: true,
-    chunkPlanAware: true,
-    pulseTouchAware: true,
-    pulseNetAware: true,
-    runtimeAware: true,
-    schedulerAware: true,
-    overmindAware: true,
-    meshOrganismAware: true,
-    proxyAware: true,
-    worldCoreAware: true,
-    continuanceRiskAware: true,
-    arteryAware: true,
-    multiRadioAware: true,
-    lteAssistAware: true
-  })
-});
-
-// ============================================================================
-// INTERNAL HELPERS (symbolic only)
-// ============================================================================
 
 function stableHash(str) {
   let h = 0;

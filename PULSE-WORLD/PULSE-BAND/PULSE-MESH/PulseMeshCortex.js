@@ -29,42 +29,20 @@
 // • Fail-open: missing context → safe defaults
 // • Metadata-only shaping (no routing side-effects by itself)
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshCortex",
-  version: "v14.9-MESH-CORTEX-Immortal",
-  layer: "mesh",
-  role: "mesh_symbolic_interpretation",
-  lineage: "PulseMesh-v14",
+// 2 — EXPORT GENOME METADATA
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
-  evo: {
-    cortex: true,                   // This IS the mesh cortex
-    symbolicAware: true,            // Symbolic interpretation
-    binaryAware: true,              // Binary hints + binary routing
-    dualBand: true,                 // Symbolic + binary cortex
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshCognition",
-      "PulseMeshAwareness",
-      "PulseMeshFlow"
-    ],
-    never: [
-      "legacyMeshCortex",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
 // ============================================================================
 // FILE: PulseMeshCortex-v15-Evo-Immortal.js
 // [pulse:mesh] COMMUNITY_CORTEX_LAYER v15-Evo-Immortal  // blue

@@ -27,184 +27,22 @@
 //    - When THIS file runs, the *binary creature* comes online.
 //    - This is the reflex ignition — the organism’s heartbeat.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBinaryOS",
-  version: "v16-IMMORTAL-SPINE",
-  layer: "os_binary",
-  role: "binary_os_kernel",
-  lineage: "PulseOS-v16-IMMORTAL",
-
-  evo: {
-    binaryPrimary: true,
-    symbolicAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    nonExecutableBinary: true,
-    metadataOnly: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    presenceAware: true,
-    meshAware: true,
-    expansionAware: true,
-    worldCoreAware: true,
-    nodeAdminAware: true,
-    meshCoordinatorAware: true,
-
-    safeRouteFree: true,
-
-    // IMMORTAL timing
-    safeSystemClock: true,
-    fullClockAccess: true,
-    clusterCoherence: true,
-    multiInstanceKernel: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrain",
-      "PulseOSBrainCortex",
-      "PulseChunker",
-      "BinaryMeshEnvironment-v15",
-      "PulseMeshPresenceRelay-v16",
-      "OrganismMesh-v2-MESH-COORD",
-      "PulseExpansion-v16"
-    ],
-    never: [
-      "legacyBinaryOS",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseBinaryOSMeta = Object.freeze({
-  layer: "PulseBinaryOSKernel",
-  role: "BINARY_ORGANISM_BOOTLOADER",
-  version: "v16-IMMORTAL-SPINE",
-  identity: "PulseBinaryOS-v16-IMMORTAL-Spine",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-
-    // Binary kernel contract
-    binaryNative: true,
-    dualModeOrganism: true,
-    reflexEngineCore: true,
-    organismBootloader: true,
-    zeroDriftIdentity: true,
-    mutationFreeCore: true,
-
-    // Hard binary rules
-    noDateNow: true,
-    noConsole: true,
-    noWindow: true,
-    noRandomness: true,
-    noMetaMutation: true,
-    noSymbolicLogging: true,
-    noBrowserDependencies: true,
-
-    // Awareness
-    memoryCoreAware: true,
-    binaryOverlayAware: true,
-    spinalCordAware: true,
-    symbolicCortexAware: true,
-
-    // Presence + Mesh awareness
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    meshBinaryEnvAware: true,
-    meshSymbolicEnvAware: true,
-    meshCoordinatorAware: true,
-
-    // Expansion / world / NodeAdmin
-    expansionAware: true,
-    worldCoreAware: true,
-    nodeAdminAware: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-
-    // Chunking / prewarm / multi-instance
-    kernelChunkingReady: true,
-    kernelPrewarmReady: true,
-    multiInstanceKernel: true,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-
-    // Timing (IMMORTAL)
-    safeSystemClock: true,
-    fullClockAccess: true,
-
-    // Safety
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PulseOSGovernor",
-      "PulseOSBrain",
-      "PulseOSEvolution",
-      "PulseSpinalCord",
-      "PulseOSPresence",
-      "BinaryMeshEnvironment-v15",
-      "PulseExpansion-v16"
-    ],
-    output: [
-      "BinaryOrganismKernel",
-      "BinaryBootDiagnostics",
-      "BinaryBootSignatures",
-      "BinaryPresenceField",
-      "BinaryMeshEnvironment",
-      "BinaryMeshPresenceRelay",
-      "OrganismMeshRoot",
-      "WorldExpansion"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v16-IMMORTAL",
-    parent: "PulseOS-v14-Immortal",
-    ancestry: [
-      "PulseBinaryOS-v9",
-      "PulseBinaryOS-v10",
-      "PulseBinaryOS-v11",
-      "PulseBinaryOS-v11-Evo",
-      "PulseBinaryOS-v11-Evo-MAX",
-      "PulseBinaryOS-v12.3-Spine-Binary",
-      "PulseBinaryOS-v16-IMMORTAL-Spine"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["binary"],
-    default: "binary",
-    behavior: "kernel-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "binary-native organism bootloader (reflex ignition)",
-    adaptive: "symbolic-aware dual-mode overlay + presence + mesh + expansion field",
-    return:
-      "online binary organism kernel + boot signatures + presence field + mesh env + expansion hooks"
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const PULSE_BINARY_OS_CONTEXT = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  ORGANISM BOOTSTRAP SET — v16 (SYMBOLIC KERNEL SIDE)
 // ============================================================================
@@ -250,59 +88,6 @@ export const PulseWorld = Object.freeze({
   }
 });
 
-// ============================================================================
-//  CONTEXT — BINARY OS KERNEL IDENTITY (v16-IMMORTAL-SPINE)
-// ============================================================================
-const PULSE_BINARY_OS_CONTEXT = Object.freeze({
-  layer: "PulseBinaryOSKernel",
-  role: "BINARY_ORGANISM_BOOTLOADER",
-  version: "16-IMMORTAL-SPINE",
-  lineage: "pulse-os-v16-immortal-kernel-binary",
-  evo: {
-    binaryNative: true,
-    symbolicAware: true,
-    dualMode: true,
-    driftProof: true,
-    organismLoader: true,
-    zeroDriftIdentity: true,
-    reflexEngine: true,
-    mutationFree: true,
-    deterministic: true,
-    memoryCoreAware: true,
-    binaryOverlayAware: true,
-    spinalCordAware: true,
-
-    // Presence + Mesh
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    meshBinaryEnvAware: true,
-    meshSymbolicEnvAware: true,
-    meshCoordinatorAware: true,
-
-    // Chunking / prewarm / multi-instance
-    kernelChunkingReady: true,
-    kernelPrewarmReady: true,
-    multiInstanceReady: true,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-
-    // Advantage field
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-
-    // Expansion / world / NodeAdmin
-    expansionAware: true,
-    worldCoreAware: true,
-    nodeAdminAware: true,
-
-    // Timing
-    safeSystemClock: true,
-    fullClockAccess: true
-  }
-});
 
 // ============================================================================
 //  PURE BINARY KERNEL BOOT — NO WINDOW, NO CONSOLE, NO TIMESTAMPS

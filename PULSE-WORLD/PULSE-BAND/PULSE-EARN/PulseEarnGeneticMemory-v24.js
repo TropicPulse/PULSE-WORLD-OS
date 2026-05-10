@@ -25,175 +25,21 @@
 //   • All intelligence surfaces are metadata-only for higher organs.
 //   • Core memory integration via PulseProofBridge (no external IO).
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnGeneticMemory",
-  version: "v24-Immortal-INTEL-NEURAL",
-  layer: "earn_genetic",
-  role: "earn_genetic_memory",
-  lineage: "PulseEarnGeneticMemory-v11 → v12.3 → v13 → v14 → v16-Immortal-INTEL → v24-Immortal-INTEL-NEURAL",
-
-  evo: {
-    geneticMemory: true,
-    jobLineage: true,
-    jobEvolution: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true```js
-// ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnGeneticMemory-v24-Immortal-INTEL-NeuroGenetic.js
-// LAYER: THE GENETIC MEMORY (v24-Immortal-INTEL • Neural‑Genetic Hybrid)
-// (Keeper of Packets + Guardian of Determinism + DNA Repair + Compute Intelligence)
-// ============================================================================
-//
-// ROLE (v24-Immortal-INTEL • Neural‑Genetic Hybrid):
-//   THE GENETIC MEMORY — Pulse‑Earn’s deterministic packet genome for v24++.
-//   • Stores packet data in a safe, in‑memory gene archive (core memory).
-//   • Generates deterministic packet values (genetic identity).
-//   • Maintains packet‑level healing metadata (genetic health).
-//   • Emits v24‑Presence‑IMMORTAL genetic signatures + binary/wave fields.
-//   • Emits v24 chunk/prewarm/computeProfile + pulseIntelligence surfaces.
-//   • Dual-band, binary-aware, wave-aware, presence/advantage/chunk-aware.
-//   • Deep-job aware via metadata (multi-instance hints only, no routing).
-//   • NEURAL‑GENETIC HYBRID: reads organism context (continuance/risk/endocrine/
-//     circulatory) as metadata-only — behavior remains deterministic and pure.
-//   • Core memory integration via PulseProofBridge (no external IO, deterministic).
-//
-// CONTRACT (v24-Immortal-INTEL):
-//   • PURE PACKET ENGINE — no AI layers, no translation, no memory model.
-//   • NO eval(), NO Function(), NO dynamic imports.
-//   • NO network calls, NO filesystem, NO timestamps.
-//   • Deterministic hashing + safe in‑memory storage only.
-//   • Presence/advantage/chunk/computeProfile/pulseIntelligence/organismContext
-//     DO NOT affect behavior (only metadata surfaces).
-//   • All intelligence surfaces are metadata-only for higher organs.
-// ============================================================================
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnGeneticMemory",
-  version: "v24-Immortal-INTEL-NeuroGenetic",
-  layer: "earn_genetic",
-  role: "earn_genetic_memory",
-  lineage: "PulseEarnGeneticMemory-v11 → v12.3 → v13 → v14 → v16-Immortal-INTEL → v24-Immortal-INTEL-NeuroGenetic",
-
-  evo: {
-    geneticMemory: true,
-    jobLineage: true,
-    jobEvolution: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    healingMetadataAware: true,
-    waveFieldAware: true,
-
-    computeProfileAware: true,
-    pulseIntelligenceAware: true,
-    factoringAware: true,
-    deepJobAware: true,
-    multiInstanceHints: true,
-
-    // v24 NEURAL‑GENETIC HYBRID SURFACES
-    continuanceAware: true,
-    riskAware: true,
-    endocrineAware: true,
-    circulatoryAware: true,
-    organismContextAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarn",
-      "PulseEarnEndocrineSystem",
-      "PulseEarnContinuancePulse",
-      "PulseEarnCirculatorySystem",
-      "PulseEarnEndocrineSystem-v24",
-      "PulsePowerContinuanceEngine-v24",
-      "PulsePowerRiskEngine-v24"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
-
-export const PulseEarnGeneticMemoryMeta = Object.freeze({
-  layer: "PulseEarnGeneticMemory",
-  role: "EARN_GENETIC_MEMORY_ORGAN",
-  version: "v24-Immortal-INTEL-NeuroGenetic",
-  identity: "PulseEarnGeneticMemory-v24-Immortal-INTEL-NeuroGenetic",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    purePacketEngine: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    healingMetadataAware: true,
-
-    computeProfileAware: true,
-    pulseIntelligenceAware: true,
-    factoringAware: true,
-    deepJobAware: true,
-    multiInstanceHints: true,
-
-    genomeSafe: true,
-    worldLensAware: false,
-
-    // NEURAL‑GENETIC HYBRID (metadata-only)
-    continuanceAware: true,
-    riskAware: true,
-    endocrineAware: true,
-    circulatoryAware: true,
-    organismContextAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "fileId",
-      "packetIndex",
-      "PacketData",
-      "DualBandContext",
-      "GlobalHintsPresenceField",
-      "OrganismContextSnapshot" // { continuance, risk, endocrine, circulatory }
-    ],
-    output: [
-      "GeneExistsFlag",
-      "GeneWriteResult",
-      "GeneSynthesisResult",
-      "GeneticSignatures",
-      "GeneticHealingState"
-    ]
-  })
-});
 
 // ============================================================================
 // Healing Metadata — Genetic Health Log (v24-Immortal-INTEL-NeuroGenetic)

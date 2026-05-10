@@ -15,59 +15,21 @@
 //   • May carry advantage hints, but never computes or fetches advantage itself.
 //   • All advantage/world-lens/topology are snapshots from Brain/Expansion, not here.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSPresence",
-  version: "v16-Immortal",
-  layer: "presence",
-  role: "os_presence_field",
-  lineage: "PulseOS-v16-Immortal",
-
-  evo: {
-    presenceField: true,
-    presenceAwareness: true,
-    presenceRelay: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    meshAware: true,
-    bluetoothPresenceAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true,
-    zeroExternalMutation: true,
-
-    // v16 IMMORTAL upgrades
-    internetCenterExternal: true,
-    snapshotOnlyInputs: true,
-    advantageHintAware: true,
-    meshPresenceHintAware: true,
-    multiInstanceReady: true,
-    clusterCoherence: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshPresenceRelay",
-      "PulsePresenceAwareness",
-      "PulsePresenceAIView"
-    ],
-    never: [
-      "legacyOSPresence",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseOSPresence({
   SystemClock,       // uptime + organism age (safe)

@@ -5,147 +5,49 @@
 //  PURE BRIDGE. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiDualband",
-  version: "v24-Immortal-ORGANISM++",
-  layer: "ai_core",
-  role: "dualband_bridge_organism",
-  lineage: "aiDualband-v11 → v13.0-Evo+++ → v14-Immortal → v16-Immortal-ORGANISM → v24-Immortal-ORGANISM++",
+// ============================================================================
+//  IDENTITY (from Organism Map)
+// ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryPrimary: true,
-    bandSwitching: true,
-    hydrationAware: true,
-    dehydrationAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    chunkAware: true,
-    cacheAware: true,
-    arteryAware: true,
-    prewarmAware: true,
+// Optional: meta export for this dualband organism
+export const DualBandMeta = Identity.OrganMeta;
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const DUAL_BAND_CONTEXT = Identity.pulseLoreContext;
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-
-    // v24++ advantages
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true
-  },
-
-  contract: {
-    always: ["aiEngine", "aiCortex", "aiContextEngine", "PulseProxyContext"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
-
-export const DualBandMeta = Object.freeze({
-  layer: "PulseAIDualBandKernel",
-  role: "DUAL_BAND_BRIDGE_ORGAN",
-  version: "v24-Immortal-ORGANISM++",
-  identity: "aiDualBandBridge-v24-Immortal-ORGANISM++",
-
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    bridgeAware: true,
-    organismAware: true,
-    metabolicAware: true,
-    reflexAware: true,
-    pipelineAware: true,
-    contextAware: true,
-    clinicalAware: true,
-    structuralAware: true,
-    scanfileAware: true,
-    diagnosticsAware: true,
-    scribeAware: true,
-    deliveryAware: true,
-    depsAware: true,
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
-    dualBandArteryAware: true,
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    arteryAware: true,
-    prewarmAware: true,
-
-    // v24++ organism/kernel semantics
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true,
-
-    epoch: "v24-Immortal-ORGANISM++"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Bind the symbolic Pulse OS to the dualband organism, providing a unified dual-band surface for all AI services and exposing dual-band artery metrics for NodeAdmin/Overmind.",
-
-    never: Object.freeze([
-      "mutate external inputs",
-      "introduce randomness",
-      "bypass binary safety",
-      "bypass symbolic safety",
-      "modify persona logic",
-      "modify router logic",
-      "modify cortex logic",
-      "treat the organism as a tool instead of an organism",
-      "portalBypass",
-      "bridgeBypass"
-    ]),
-
-    always: Object.freeze([
-      "encode symbolic → binary deterministically",
-      "decode binary → symbolic deterministically",
-      "sync symbolic vitals to organism state (logically)",
-      "sync organism state to symbolic cortex (logically)",
-      "expose unified dual-band surface",
-      "expose dual-band artery metrics deterministically",
-      "preserve organism identity",
-      "preserve drift-proof architecture",
-      "respect sealedOrganismBoundary",
-      "remain daemonCompatible",
-      "remain portalCompatible",
-      "remain bridgeCompatible"
-    ])
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IMPORTS (dependency-ordered, ESM)
 // ============================================================================
+
+// Binary organism organs (needed by AIDualbandOrganismBootloader)
+import { AIBinaryAgent } from "./aiBinaryAgent.js";
+import { AIMemory } from "./aiMemory-v16.js";
+import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy.js";
+import { AIBinaryGenome } from "./aiGenome.js";
+import { AIBinaryVitals } from "./aiVitals.js";
+import { AIBinaryMetabolism } from "./aiMetabolism.js";
+import { AIBinaryHormones } from "./aiHormones.js";
+import { AIBinarySentience } from "./aiSentience.js";
+import { AIBinaryConsciousness } from "./aiConsciousness.js";
+import { AIBinaryImmunity } from "./aiImmunity.js";
+import { AIBinaryPipeline } from "./aiPipeline.js";
+import { AIBinaryReflex } from "./aiReflex.js";
+import { AIBinaryScheduler } from "./aiScheduler.js";
+import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry.js";
+import { AIBinaryEvolution } from "./aiBinaryEvolution.js";
+
+// Existing symbolic / tools imports
 import depsSurface, {
   DepsMeta,
   getDb,
@@ -219,34 +121,70 @@ import {
 import { createPulseAIChunker } from "./PulseAIChunker-v20.js";
 
 // ============================================================================
-//  DUAL-BAND CONTEXT
+//  Dualband Organism Bootloader
 // ============================================================================
-const DUAL_BAND_CONTEXT = Object.freeze({
-  layer: "DualBandOrganism",
-  role: "DUAL_BAND_BRIDGE",
-  version: "v24-Immortal-ORGANISM++",
-  lineage: "pulse-dual-band-v24-Immortal-ORGANISM++",
-  evo: Object.freeze({
-    dualBand: true,
-    binaryFirst: true,
-    deterministic: true,
-    organism: true,
-    proxyAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    arteryAware: true,
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true
-  })
-});
+export async function AIDualbandOrganismBootloader() {
+  // Create chunker
+  const chunker = createPulseAIChunker();
+
+  // Instantiate binary organs
+  const agent = AIBinaryAgent();
+  const memory = AIMemory();
+  const anatomy = AIBinaryAnatomy();
+  const genome = AIBinaryGenome();
+  const vitals = AIBinaryVitals();
+  const metabolism = AIBinaryMetabolism();
+  const hormones = AIBinaryHormones();
+  const sentience = AIBinarySentience();
+  const consciousness = AIBinaryConsciousness();
+  const immunity = AIBinaryImmunity();
+  const pipeline = AIBinaryPipeline();
+  const reflex = AIBinaryReflex();
+  const scheduler = AIBinaryScheduler();
+  const registry = AIBinaryOrganRegistry();
+  const evolution = AIBinaryEvolution();
+
+  // Wire organism anatomy
+  registry.register("agent", agent);
+  registry.register("memory", memory);
+  registry.register("anatomy", anatomy);
+  registry.register("genome", genome);
+  registry.register("vitals", vitals);
+  registry.register("metabolism", metabolism);
+  registry.register("hormones", hormones);
+  registry.register("sentience", sentience);
+  registry.register("consciousness", consciousness);
+  registry.register("immunity", immunity);
+  registry.register("pipeline", pipeline);
+  registry.register("reflex", reflex);
+  registry.register("scheduler", scheduler);
+  registry.register("evolution", evolution);
+
+  // Compute organism artery
+  const artery = anatomy.computeArtery({
+    agent,
+    memory,
+    genome,
+    vitals,
+    metabolism,
+    hormones,
+    sentience,
+    consciousness,
+    immunity,
+    pipeline,
+    reflex,
+    scheduler,
+    evolution
+  });
+
+  // Expose stable organism surface
+  return Object.freeze({
+    artery,
+    registry,
+    chunker,
+    bootVersion: "v24.0-IMMORTAL"
+  });
+}
 
 // ============================================================================
 //  DUALBAND CHUNKER (32-LANE, NON-MIND)

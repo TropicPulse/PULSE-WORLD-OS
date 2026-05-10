@@ -27,6 +27,22 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreMemory   = PulseProofBridge.corememory;
@@ -36,137 +52,6 @@ const CorePresence = PulseProofBridge.corepresence;
 // Media is usually provided to UI organs, but we allow a bridge hook too:
 const CoreMedia = PulseProofBridge.coremedia || null;
 
-// ============================================================================
-// AI_EXPERIENCE_META
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalModeEngine = {
-  id: "pulsepal.mode.engine",
-  kind: "core_engine",
-  version: "v24-IMMORTAL",
-  role: "Pulse‑Pal archetype / mode router",
-  surfaces: {
-    band: ["mode", "archetype", "avatar"],
-    wave: ["adaptive", "expressive", "contextual"],
-    binary: ["active_mode", "mode_weights", "avatar_resolution"],
-    presence: ["mode_state", "perspective_band"],
-    advantage: ["instant_mode_flip", "avatar_preload"],
-    speed: "instant_compute"
-  },
-  routes: {
-    home: "pulsepal.home",
-    memory: "pulsepal.memory",
-    speech: "pulsepal.speech",
-    identity: "pulsepal.identity"
-  },
-  consumers: [
-    "PulsePalMemory",
-    "PulsePalSpeech",
-    "CorePresence",
-    "CoreMemory",
-    "Dashboards"
-  ],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "cache_last_snapshot_only",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// ORGAN_META
-// ============================================================================
-export const ORGAN_META_PulsePalModeEngine = {
-  id: "organ.pulsepal.mode.engine",
-  organism: "PulsePal",
-  layer: "core.mode",
-  tier: "IMMORTAL",
-  evoFlags: {
-    modeAware: true,
-    avatarAware: true,
-    presenceAware: true,
-    speechAware: true,
-    memoryAware: true
-  },
-  lineage: {
-    family: "companion_mode",
-    generation: 1,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalModeEngine = {
-  inputs: {
-    CoreSpeech: "bridge speech organ (for context words)",
-    CoreMemory: "bridge memory organ (for long-term mode hints)",
-    CorePresence: "bridge presence organ (for explicit mode overrides)",
-    Media: "media resolver (PulsePal images, optional)",
-    FileNames: "PulsePal image filenames (Advisor, Architect, Grid, etc.)"
-  },
-  outputs: {
-    modeSnapshot: {
-      activeMode: "string (e.g., 'advisor', 'grid', 'earn')",
-      weights: "map of mode → weight (0..1)",
-      avatar: "resolved avatar URL for activeMode",
-      allAvatars: "map of mode → avatar URL"
-    }
-  },
-  consumers: [
-    "PulsePalMemory",
-    "PulsePalSpeech",
-    "CorePresence",
-    "Dashboards"
-  ],
-  guarantees: {
-    deterministicCompute: true,
-    noNetwork: true,
-    noUI: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalModeEngine = {
-  drift: {
-    allowed: false,
-    notes: "Mode names and semantics must remain stable."
-  },
-  pressure: {
-    expectedLoad: "medium",
-    notes: "Computed on demand or per UI render."
-  },
-  stability: {
-    uiLayout: "none",
-    semantics: "stable",
-    notes: "Only additive evolution allowed (new modes)."
-  },
-  load: {
-    maxComponents: 1,
-    notes: "Single mode snapshot object."
-  },
-  worldLens: {
-    awareOfWorlds: true
-  },
-  limbic: {
-    band: "perspective_shift"
-  },
-  triHeart: {
-    cognitive: "mode_selection",
-    emotional: "tone_alignment",
-    behavioral: "avatar_flip"
-  },
-  impulseSpeed: {
-    primaryAction: "compute_mode",
-    latencyTargetMs: 5
-  },
-  healingSurfaces: {
-    enabled: true
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

@@ -4,115 +4,36 @@
 //  PURE BINARY OBSERVER. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiWatchdog",
-  version: "v16-Immortal++",
-  layer: "ai_core",
-  role: "watchdog_engine",
-  lineage: "aiWatchdog-v11 → v14-Immortal → v16-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    watchdogEngine: true,
-    anomalyDetection: true,
-    driftDetection: true,
-    binaryPrimary: true,
-    symbolicSecondary: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    arteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    dominanceAware: true,
-    honeypotAware: true,
-    pulseNetAware: true,
-    packetAware: true,
-    windowAware: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const WatchdogMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiImmunity", "aiReflex", "aiVitals", "aiBinaryHeartbeat"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const WatchdogMeta = Object.freeze({
-  type: "Binary",
-  subsystem: "aiBinaryWatchdog",
-  layer: "BinaryNervousSystem",
-  role: "BINARY_WATCHDOG_ORGAN",
-  version: "16-Immortal++",
-  identity: "aiBinaryWatchdog-v16-Immortal++",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    relayOnly: false,
-    analysisAware: true,
-    schemaAware: false,
-    lineageAware: true,
-    slowdownAware: true,
-    tourismAware: false,
-    readOnly: true,
-    mutationSafe: true,
-    nonBlocking: true,
-    multiInstanceReady: true,
-    arteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
-    packetAware: true,
-    windowAware: true,
-    epoch: "v16-Immortal++"
-  }),
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose:
-      "Enforce organism liveness by monitoring heartbeat, pipeline, reflex, and scheduler activity, detecting stalls, freezes, drift, silence, and timing anomalies, and emitting binary anomaly packets.",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: Object.freeze([
-      "mutate external organs",
-      "generate symbolic state",
-      "introduce randomness",
-      "override pipeline decisions",
-      "override reflex decisions",
-      "block organism execution",
-      "perform cognition",
-      "perform intent logic",
-      "touch network",
-      "touch filesystem"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: Object.freeze([
-      "observe binary activity",
-      "emit binary-only anomaly packets or chunk handles",
-      "apply deterministic timing rules",
-      "attach observers safely",
-      "log deterministic steps when tracing",
-      "treat all signals as read-only",
-      "respect trust fabric + jury signals"
-    ])
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  boundaryReflex() {
-    return "Binary Watchdog is a liveness sentinel — it observes, detects, and alerts, but never mutates or governs other organs.";
-  }
-});
 
 // ============================================================================
 // PRESSURE HELPERS (for artery fusion)

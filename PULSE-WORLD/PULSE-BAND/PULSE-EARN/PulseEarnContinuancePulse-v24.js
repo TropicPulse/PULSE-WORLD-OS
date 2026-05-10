@@ -9,177 +9,21 @@
 //  with factoring, chunk/cache/prewarm, band/binary/gpu/miner/air-aware hints,
 //  and continuance/risk-aware surfaces (metadata-only).
 // ============================================================================
+// 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnContinuancePulse",
-  version: "v24-Immortal-INTEL",
-  layer: "earn_continuance",
-  role: "earn_continuance_pulse",
-  lineage: "PulseEarnContinuancePulse-v11 → v12.3 → v13 → v14.4 → v16.0-Immortal-INTEL → v24-Immortal-INTEL",
-
-  evo: {
-    continuancePulse: true,
-    fallbackAware: true,
-    survivalHeuristics: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroTimers: true,
-    zeroDateNow: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    hintsAware: true,
-    waveFieldAware: true,
-    bandAware: true,
-    factoringAware: true,
-    gpuAwareReady: true,
-    minerAwareReady: true,
-    airAwareReady: true,
-
-    // Intelligence surface (logic-only, no heavy compute)
-    pulseIntelligenceReady: true,
-    solvednessAware: true,
-    computeTierAware: true,
-    readinessAware: true,
-
-    // v24 extensions
-    continuanceAware: true,
-    riskAware: true,
-    capabilityModelAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarn",
-      "PulseEarnGeneticMemory",
-      "PulseEarnEndocrineSystem"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// ⭐ PulseRole — identifies this as the Earn Continuance Pulse Organ (v24)
-// ============================================================================
-export const PulseRole = {
-  type: "PulseEarnContinuance",
-  subsystem: "Earn",
-  layer: "Organ",
-  version: "24-Immortal-INTEL",
-  identity: "PulseEarnContinuancePulse-v24-Immortal-INTEL",
-
-  evo: {
-    continuancePulse: true,
-    fallbackAware: true,
-    survivalHeuristics: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroTimers: true,
-    zeroDateNow: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    hintsAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    bandAware: true,
-    factoringAware: true,
-    gpuAwareReady: true,
-    minerAwareReady: true,
-    airAwareReady: true,
-
-    // Intelligence surface (logic-only, no heavy compute)
-    pulseIntelligenceReady: true,
-    solvednessAware: true,
-    computeTierAware: true,
-    readinessAware: true,
-
-    // v24 extensions
-    continuanceAware: true,
-    riskAware: true,
-    capabilityModelAware: true
-  },
-
-  routingContract: "PulseRouter-v24-Immortal-INTEL",
-  meshContract: "PulseMesh-v24-Immortal-INTEL",
-  sendContract: "PulseSend-v24-Immortal-INTEL",
-  gpuOrganContract: "PulseGPU-v24-Immortal-INTEL",
-  earnCompatibility: "PulseEarn-v24-Immortal-INTEL"
-};
-
-export const PulseEarnContinuancePulseMeta = Object.freeze({
-  layer: "PulseEarnContinuancePulse",
-  role: "EARN_CONTINUANCE_ORGAN",
-  version: "v24-Immortal-INTEL",
-  identity: "PulseEarnContinuancePulse-v24-Immortal-INTEL",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureBuilder: true,
-    safeFallback: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    factoringAware: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    hintsAware: true,
-
-    loopTheorySafe: true,
-    worldLensAware: false,
-
-    continuanceAware: true,
-    riskAware: true,
-    capabilityModelAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "EarnImpulse",
-      "DualBandContext",
-      "LegacyLineage",
-      "PatternShape",
-      "GlobalHintsPresenceField",
-      "ContinuanceSnapshot",   // optional, metadata-only
-      "RiskSnapshot",          // optional, metadata-only
-      "CapabilityModel"        // optional, metadata-only
-    ],
-    output: [
-      "LegacyEarnV1",
-      "PulseCompatibleEarnEnvelope",
-      "ContinuanceDiagnostics"
-    ]
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+export const PulseEarnContinuancePulseMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // Deterministic cycle counter (replaces timestamps)
 // ============================================================================

@@ -19,135 +19,21 @@
 //   • Presence/advantage/hints are metadata-only.
 //   • Dual‑hash INTEL signatures (INTEL + classic fallback).
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnMktAuctioneer",
-  version: "v16-IMMORTAL-INTEL",
-  layer: "earn_market",
-  role: "earn_market_auctioneer",
-  lineage: "PulseEarnMktAuctioneer-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
-
-  evo: {
-    marketAuctioneer: true,
-    jobScoring: true,
-    jobRanking: true,
-    jobValuation: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnMktAmbassador",
-      "PulseEarnCustomReceptorMkt",
-      "PulseEarnCirculatorySystem",
-      "PulseEarnMetabolism",
-      "PulseEarnLymphNodes"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "userScript",
-      "dynamicEval"
-    ]
-  }
-}
-*/
-
-export const PulseEarnMktAuctioneerMeta = Object.freeze({
-  layer: "PulseEarnMktAuctioneer",
-  role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v16-IMMORTAL-INTEL",
-  identity: "PulseEarnMktAuctioneer-v16-IMMORTAL-INTEL",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureReceptor: true,
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    meshAware: true,
-    castleAware: true,
-    regionAware: true,
-    worldLensAware: false,
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroAI: true,
-    zeroUserCode: true,
-    volatilityDeterministic: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "VastAIDNA",
-      "DualBandContext",
-      "ReceptorNormalizationRules",
-      "GlobalHintsPresenceField"
-    ],
-    output: [
-      "ReceptorPingResult",
-      "ReceptorJobList",
-      "ReceptorSubmissionResult",
-      "ReceptorNormalizationResult",
-      "ReceptorSignatures",
-      "AuctioneerHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v16-IMMORTAL-INTEL",
-    ancestry: [
-      "PulseEarnMktAuctioneer-v9",
-      "PulseEarnMktAuctioneer-v10",
-      "PulseEarnMktAuctioneer-v11",
-      "PulseEarnMktAuctioneer-v11-Evo",
-      "PulseEarnMktAuctioneer-v12.3-Presence-Evo+",
-      "PulseEarnMktAuctioneer-v13.0-Presence-Immortal"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic Vast.ai receptor phenotype",
-    adaptive: "binary/wave surfaces + volatility + presence/advantage/hints",
-    return: "deterministic ping/fetchJobs/normalizeJob/submitResult"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HASH HELPERS — v16‑IMMORTAL‑INTEL (dual‑hash)

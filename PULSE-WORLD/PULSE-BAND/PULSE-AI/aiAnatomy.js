@@ -3,84 +3,40 @@
 //  Structural Map • Connectivity Skeleton • Organism Blueprint
 //  PURE STRUCTURE. ZERO ROUTING. ZERO COMPUTE.
 // ============================================================================
+
 /*
-AI_EXPERIENCE_META = {
-  identity: "aiAnatomy",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "ai_organ_topology",
-  lineage: "aiAnatomy-v9 → v11 → v14-Immortal",
-
-  evo: {
-    organTopology: true,
-    organMap: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "aiBrainstem",
-      "aiBinaryOrganRegistry",
-      "aiBoundariesEngine"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
+  (You can keep this AI_EXPERIENCE_META block as documentation if you like;
+   runtime identity now comes from the Organism Map.)
 */
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-export const AnatomyMeta = Object.freeze({
-  layer: "Anatomy",
-  role: "STRUCTURAL_MAP",
-  version: "12.3-Evo+",
-  identity: "aiAnatomy-v12.3-Evo+",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    structuralAware: true,
-    topologyAware: true,
-    memoryAware: true,
-    coreMemoryAware: true,   // works with PulseCoreMemory-backed organs
-    binaryEncoding: true,    // emits binary packets, not binary-first compute
-    anatomyArteryAware: true,
-    multiInstanceReady: true,
-    epoch: "12.3-Evo+"
-  }),
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: Object.freeze({
-    purpose:
-      "Provide a deterministic structural map of the organism, defining topology and connections.",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const AnatomyMeta = Identity.OrganMeta;
 
-    never: Object.freeze([
-      "mutate organ behavior",
-      "interpret binary meaning",
-      "introduce randomness",
-      "modify organ state",
-      "perform routing",
-      "perform computation"
-    ]),
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    always: Object.freeze([
-      "record topology deterministically",
-      "encode snapshots in binary",
-      "store structural maps in memory",
-      "remain pure and minimal",
-      "return frozen structural packets"
-    ])
-  })
-});
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS

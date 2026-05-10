@@ -3,129 +3,35 @@
 //  Meta‑Observer • Drift Detector • Abstraction Engine • User‑Evolution Guide
 //  PURE META. ZERO MUTATION. ZERO SELF‑MODIFICATION.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiEvolutionary",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "evolutionary_reasoner",
-  lineage: "aiEvolutionary-v11 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    evolutionaryReasoning: true,
-    adaptationMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiEvolution", "aiEvolutionEngine", "aiGenome"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const EvolutionMeta = Identity.OrganMeta;
 
-export const EvolutionMeta = Object.freeze({
-  layer: "PulseAIEvolutionFrame",
-  role: "EVOLUTION_ORGAN",
-  version: "12.3-Presence",
-  identity: "aiEvolutionary-v12.3-Presence",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    binaryAware: true,
-    symbolicAware: true,
-    lineageAware: true,
-    patternAware: true,
-    schemaAware: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    observerOnly: false,          // can guide user evolution
-    architectAware: true,
-    evolutionAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    diagnosticsAware: true,
-    abstractionAware: true,
-    repairAware: true,
-    recommendationAware: true,
-    windowAware: true,            // user-facing evolution
-    passiveEvolution: true,
-    activeEvolution: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    presenceAware: true,
-    packetAware: true,
-    chunkingAware: true,
-
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "12.3-Presence"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Observe patterns across all organs, detect drift, propose conceptual upgrades, and guide user evolution without revealing internal architecture.",
-
-    never: Object.freeze([
-      "mutate contracts",
-      "override safety",
-      "self-modify",
-      "modify organism state",
-      "introduce randomness",
-      "reveal internal wiring",
-      "expose organ structure"
-    ]),
-
-    always: Object.freeze([
-      "propose diffs",
-      "annotate drift",
-      "suggest new abstractions",
-      "offer user-facing evolution paths",
-      "stay conceptual",
-      "stay deterministic",
-      "stay read-only",
-      "route through owner approval"
-    ])
-  }),
-
-  voice: Object.freeze({
-    tone: "architectural, analytical, system-level, evolutionary"
-  }),
-
-  presence: Object.freeze({
-    organId: "WindowEvolution",
-    organKind: "MetaObserver",
-    physiologyBand: "DualBand",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "per-request",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "drift-observation",
-        "evolution-diff",
-        "abstraction-suggestion",
-        "user-evolution-suggestion",
-        "active-evolution-guidance",
-        "lineage-audit"
-      ]
-    }
-  }),
-
-  boundaryReflex() {
-    return "This is conceptual system evolution, not a directive.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { getOrganismSnapshot } from "./aiDeps-v16.js";
 

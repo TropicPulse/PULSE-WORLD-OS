@@ -5,193 +5,21 @@
 //  • Deterministic immune surface only (builders → artifacts)
 //  • Symbolic-primary, binary-aware, dual-band-tagged
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSInflammatoryResponse",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_inflammatory_response",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    inflammation: true,
-    immuneAware: true,
-    anomalyResponse: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    meshAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSImmuneSystem",
-      "PulseOSFightFlightResponse",
-      "PulseOSSurvivalInstincts"
-    ],
-    never: [
-      "legacyInflammatoryResponse",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const HEALER_CONTEXT_V12_3 = {
-  organ: "PulseOSHealer",
-  layer: "C-Layer",
-  role: "Inflammatory Response",
-  version: "12.3-Evo",
-  generation: "v12",
-  organism: "PulseOS",
-  band: "dualband",
-  evo: {
-    dualMode: true,
-    dualBand: true,
-    symbolicAware: true,
-    binaryAware: true,
-    binaryNonExecutable: true,
-
-    driftProof: true,
-    deterministicNeuron: true,
-    deterministicImmuneSurface: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    multiInstanceReady: true,
-
-    irritationToSignatureMapping: true,
-    irritationToHealerLogMapping: true,
-    irritationToFunctionHintMapping: true,
-
-    healerStackAware: true,
-    loopTheoryAware: true,
-    continuanceAware: true,
-    intentFieldAware: true,
-    futureEvolutionReady: true,
-
-    zeroTiming: true,
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroDB: true,
-    zeroState: true,
-    zeroMutation: true,
-    zeroMutationOutsideOrgan: true,
-    zeroCompute: true,
-    zeroMarketplace: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroDateNow: true,
-
-    routingContract: "PulseSend-v12.3",
-    osOrganContract: "PulseOS-v12.3",
-    earnCompatibility: "PulseEarn-v12.3"
-  }
-};
-
-export const PulseOSHealerMeta = Object.freeze({
-  layer: "PulseOSHealer",
-  role: "INFLAMMATORY_RESPONSE_ORGAN",
-  version: "v12.3-Evo-BINARY-MAX",
-  identity: "PulseOSHealer-v12.3-Evo-BINARY-MAX",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Immune laws
-    inflammatoryResponseOrgan: true,
-    pureImmuneTransformer: true,
-    deterministicImmuneSurface: true,
-    deterministicField: true,
-    irritationToSignatureMapping: true,
-    irritationToHealerLogMapping: true,
-    irritationToFunctionHintMapping: true,
-    healerStackAware: true,
-    intentFieldAware: true,
-    loopTheoryAware: true,
-    continuanceAware: true,
-    futureEvolutionReady: true,
-
-    // Execution prohibitions
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroTimers: true,
-    zeroDateNow: true,
-    zeroDB: true,
-    zeroMarketplace: true,
-    zeroExternalMutation: true,
-    zeroMutationOutsideOrgan: true,
-    zeroCompute: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-
-    // Dual-band awareness
-    dualBandAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-    binaryNonExecutable: true,
-
-    // Environment
-    localAware: true,
-    internetAware: true,
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "OSEvent",
-      "SubsystemHealerLog",
-      "DualBandContext"
-    ],
-    output: [
-      "HealerLogEntry",
-      "DriftSignature",
-      "FunctionLogHint",
-      "HealerHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12-Evo",
-    parent: "PulseOS-v12.3-Evo",
-    ancestry: [
-      "PulseOSHealer-v9",
-      "PulseOSHealer-v10",
-      "PulseOSHealer-v11",
-      "PulseOSHealer-v11-Evo",
-      "PulseOSHealer-v11.2-Evo-BINARY-MAX"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "immune-transformer"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "irritation event → immune transformation → drift signature",
-    adaptive: "binary-tagged irritation surfaces + dual-band metadata",
-    return: "deterministic immune artifacts + signatures"
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+export const HEALER_CONTEXT_V12_3 = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — PURE BUILDERS (ZERO TIME, ZERO DB, ZERO SIDE EFFECTS)

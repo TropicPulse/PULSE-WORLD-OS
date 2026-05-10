@@ -4,45 +4,21 @@
 // “THE THYMUS / IMMUNE COMMAND ORGAN”
 // DUAL‑BAND IMMUNE NUCLEUS • PREWARM PLAN • CHUNK/PRESENCE AWARE
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSThymus",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_thymus",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    thymus: true,
-    immuneTraining: true,
-    driftCalibration: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSImmuneSystem",
-      "PulseOSInflammatoryResponse"
-    ],
-    never: [
-      "legacyThymus",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // Collections are now conceptual identifiers only (no direct DB usage here)
 export const FUNCTION_LOGS_COLLECTION = "FUNCTION_LOGS";

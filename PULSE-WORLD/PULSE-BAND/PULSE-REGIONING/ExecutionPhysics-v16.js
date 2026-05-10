@@ -3,97 +3,22 @@
 FILE: /PULSE-WORLD/ExecutionPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC EXECUTION PHYSICS
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld.ExecutionPhysics",
-  version: "v16-Immortal",
-  layer: "pulse_world",
-  role: "symbolic_execution_physics",
-  lineage: "ExecutionPhysics-v13-COSMOS-MULTIVERSE → v16-Immortal",
-
-  evo: {
-    deterministic: true,
-    symbolic: true,
-    multiverseAware: true,
-    regionAware: true,
-    hostAgnostic: true,
-    reversible: true,
-    noRandomness: true,
-
-    driftProof: true,
-    pureCompute: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    unifiedAdvantageField: true,
-    schemaVersioned: true,
-    envelopeAware: true,
-    integrityAware: true,
-    historyAware: true,
-    coreMemoryAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    input: [
-      "DeploymentPlan (multiverse + region aware)",
-      "CurrentInstanceState",
-      "OrganismContext? { organismId }"
-    ],
-    output: [
-      "ExecutionResult",
-      "ExecutionLogEntry[]",
-      "ExecutionEnvelope"
-    ]
-  },
-
-  upstream: [
-    "DeploymentPhysics-v16",
-    "MultiOrganismSupport-v16",
-    "LineageEngine-v16",
-    "SnapshotPhysics"
-  ],
-
-  downstream: [
-    "anything that wants new state or logs",
-    "OrganismPlacementViewer",
-    "ContinuanceDash"
-  ],
-
-  notes: [
-    "ExecutionPhysics v16 is symbolic only; no real infra calls.",
-    "It applies actions to state and emits logs + envelopes.",
-    "Multiverse + region aware, physics-pure, binary-packable.",
-    "CoreMemory integration is write-only and deterministic."
-  ]
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseWorld.ExecutionPhysics",
-  layer: "pulse_world",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "DeploymentPlan",
-    "CurrentInstanceState",
-    "OrganismContext"
-  ],
-
-  produces: [
-    "ExecutionResult",
-    "ExecutionLogEntry[]",
-    "ExecutionEnvelope"
-  ],
-
-  sideEffects: "core_memory_write_only",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 const EXECUTION_ENGINE_VERSION = "16.0-Immortal";
 const EXECUTION_SCHEMA_VERSION = "v3";
 

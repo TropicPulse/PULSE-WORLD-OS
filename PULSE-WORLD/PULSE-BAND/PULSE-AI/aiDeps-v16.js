@@ -1,158 +1,37 @@
 // ============================================================================
-//  aiDeps.js — Pulse OS v16‑IMMORTAL‑ADVANTAGE++
+//  PULSE OS v16‑IMMORTAL‑ADVANTAGE++ — aiDeps
 //  Dependency Injection Organ • Organism Snapshot Kernel • Tri‑Heart Aware
 //  PURE INPUT. ZERO MUTATION. ZERO RANDOMNESS. OWNER‑SUBORDINATE.
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiDeps",
-  version: "v16-Immortal-Advantage++",
-  layer: "ai_core",
-  role: "dependency_surface",
-  lineage: "aiDeps-v10 → v12 → v14 → v15 → v16-Immortal-Advantage++",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    dependencySurface: true,
-    organismSnapshotKernel: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    triHeartAware: true,
-    earnAware: true,
-    genomeAware: true,
-    governorAware: true,
-    heartbeatAware: true,
-    permissionsAware: true,
-    boundariesAware: true,
-    personaAware: true,
-    identityAware: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const DepsMeta = Identity.OrganMeta;
 
-    ownerAware: true,
-    subordinateToOwner: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: [
-      "aiBrainstem",
-      "aiContext",
-      "aiCortex",
-      "aiHeartbeat",
-      "aiEarnEngine",
-      "aiGenome",
-      "aiGovernorAdapter",
-      "aiPermissionsEngine",
-      "aiBoundariesEngine",
-      "aiIdentityCore",
-      "aiMemory"
-    ],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-export const DepsMeta = Object.freeze({
-  layer: "PulseAIDependencyKernel",
-  role: "DEPENDENCY_INJECTION_ORGAN",
-  version: "16-Immortal-Advantage++",
-  identity: "aiDeps-v16-Immortal-Advantage++",
+export const surfaceMeta = Identity.surfaceMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    binaryAware: true,
-    symbolicAware: true,
-    dbAware: true,
-    fsAware: true,
-    routeAware: true,
-    schemaAware: true,
-    snapshotAware: true,
-    logAware: true,
-    organismAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    // v16++ awareness
-    triHeartAware: true,
-    earnAware: true,
-    genomeAware: true,
-    governorAware: true,
-    heartbeatAware: true,
-    permissionsAware: true,
-    boundariesAware: true,
-    personaAware: true,
-    identityAware: true,
-    arteryAware: true,
-    watchdogAware: true,
-
-    identitySafe: true,
-    ownerAware: true,
-    subordinateToOwner: true,
-
-    readOnly: true,
-    environmentAgnostic: true,
-
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-
-    multiInstanceReady: true,
-    epoch: "16-Immortal-Advantage++"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide deterministic, read-only adapters for DB, FS, Routes, Schemas, and organism-wide snapshots with tri-heart, earn, genome, governor, permissions, boundaries, persona, identity, and artery awareness.",
-
-    never: Object.freeze([
-      "mutate host environment",
-      "perform random behavior",
-      "leak external state",
-      "write to DB",
-      "write to FS",
-      "modify schemas",
-      "modify routes",
-      "override owner authority",
-      "self-promote above owner"
-    ]),
-
-    always: Object.freeze([
-      "return frozen adapters",
-      "strip identity anchors",
-      "provide deterministic organism snapshots",
-      "support dual-band cortex",
-      "support evolution organ",
-      "support router + boundaries + persona",
-      "support heartbeat + earn + genome + governor",
-      "emit deterministic deps packets",
-      "remain subordinate to Aldwyn"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "DepsKernel",
-    organKind: "Infrastructure",
-    physiologyBand: "Symbolic+Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "on-demand",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: ["prewarm", "prewarm-error", "deps-snapshot"]
-    }
-  }),
-
-  boundaryReflex() {
-    return "DepsKernel is a read-only, owner-subordinate dependency organ. It observes everything, mutates nothing.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, deps-scoped

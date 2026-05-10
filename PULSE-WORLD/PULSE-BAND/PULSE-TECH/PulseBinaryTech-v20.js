@@ -13,61 +13,21 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBinaryTech",
-  version: "v20-IMMORTAL-MAX-INTEL",
-  layer: "frontend",
-  role: "binary_tech_engine",
-  lineage: "PulseOS-v16 → v17 → v20-IMMORTAL",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    binaryCore: true,
-    immortalBand: true,
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    cnsAligned: true,
-    advantageV3: true,
-    intelligenceV3: true,
-    multiPulseFamily: true,
-    noInlineBuilders: false,
-    snapshotReady: true,
-    triHashReady: true,
-    intellHashReady: true,
-    pulseIntelligenceAware: true,
-    binarySubstrateAware: true,
-    worldRouterAware: true,
-    schedulerAware: true,
-    epoch20Stable: true
-  },
-
-  contract: {
-    always: [
-      "PulseBinaryPulse",
-      "PulseBinaryShifterEvolutionaryPulse-v20-IMMORTAL-INTEL",
-      "PulseBinaryEarn",
-      "PulsePresence",
-      "PulseChunks",
-      "PulseSend",
-      "PulseWindow",
-      "BinarySubstrateFrame-v20",
-      "IntellHash-v20"
-    ],
-    never: [
-      "legacyBinaryTech",
-      "legacyBinaryPulse",
-      "legacyPresence",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyChunker",
-      "legacyFallback"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ---------------------------------------------------------------------------
 // IMPORTS — v20 IMMORTAL / INTEL surfaces
 // ---------------------------------------------------------------------------

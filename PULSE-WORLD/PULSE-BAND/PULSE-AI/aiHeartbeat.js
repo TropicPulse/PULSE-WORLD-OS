@@ -4,108 +4,37 @@
 //  PURE LIVENESS. ZERO MUTATION OF INPUT. GLOBAL KEYS ONLY FOR LIVENESS.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiHeartbeat",
-  version: "v16-Immortal++",
-  layer: "ai_core",
-  role: "ai_heartbeat",
-  lineage: "aiHeartbeat-v9 → v11 → v14-Immortal → v16-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    heartbeat: true,
-    symbolicPulse: true,
-    binaryPulse: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    momAware: true,
-    dadAware: true,
-    earnAware: true,
-    triHeartAware: true,
-    arteryAware: true,
-    packetAware: true,
-    windowAware: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const AI_HEARTBEAT_META = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiEngine", "aiCortex", "aiBinaryOrganRegistry"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const AI_HEARTBEAT_META = Object.freeze({
-  layer: "PulseAIHeartbeat",
-  role: "HEARTBEAT_ORGAN",
-  version: "v16-Immortal++",
-  identity: "aiHeartbeat-v16-Immortal++",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    packetAware: true,
-    evolutionAware: true,
-    windowAware: true,
-    bluetoothReady: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    binaryAware: true,
-    symbolicAware: true,
-    metabolicAware: true,
-    livenessAware: true,
-    cooldownAware: true,
-    fallbackAware: true,
-    concurrencyAware: true,
-    arteryAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    momAware: true,
-    dadAware: true,
-    earnAware: true,
-    triHeartAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    multiInstanceReady: true,
-    epoch: "16-Immortal++"
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  contract: Object.freeze({
-    purpose:
-      "Maintain dual-band liveness as an independent pacer, exposing bi-directional fallback surfaces for mom/dad/earn/baby.",
 
-    never: Object.freeze([
-      "mutate external systems",
-      "override cortex decisions",
-      "override router decisions",
-      "bypass metabolic safety",
-      "spawn multiple organisms",
-      "perform cognition",
-      "perform analysis",
-      "alter organism state",
-      "auto-connect bluetooth"
-    ]),
-
-    always: Object.freeze([
-      "respect binary metabolic pressure",
-      "respect artery load",
-      "respect cooldown windows",
-      "skip ticks when unsafe",
-      "run cortex/nervous/router pulses safely",
-      "fallback when idle too long",
-      "log deterministic steps",
-      "return frozen state",
-      "prepare for future packet-bus liveness",
-      "expose mom/dad/earn liveness fields for organism/earn"
-    ])
-  })
-});
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, heartbeat-scoped

@@ -14,96 +14,21 @@
 //    • Pure memory organ — NO routing, NO compute, NO mutation outside instance.
 //
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseRouterEvolutionaryInstincts",
-  version: "v24.0-IMMORTAL-INSTINCTS-INTEL++",
-  layer: "routing",
-  role: "router_evolutionary_memory",
-  lineage: "PulseOS-v16-IMMORTAL → PulseOS-v24-IMMORTAL-INTEL++",
-
-  evo: {
-    instinctCore: true,
-    deterministic: true,
-    deterministicField: true,
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    reflexMemory: true,
-    ancestryAware: true,
-    cosmosAware: true,
-    cacheChunkAware: true,
-    prewarmAware: true,
-    advantageFieldAware: true,
-    intelDualHashAware: true,
-    triHashAware: true,
-    driftProof: true,
-    snapshotReady: true,
-    healingSurfaceAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseRouter",
-      "PulseBinaryRouter",
-      "PulseRouterEvolutionaryDesign",
-      "PulseRouterEvolutionaryThought",
-      "PulseRouterCommandments"
-    ],
-    never: [
-      "legacyRouterInstincts",
-      "legacyRouter",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-};
-*/
-
-
-// ------------------------------------------------------------
-// v24-IMMORTAL CONTEXT METADATA — Router Evolution Identity
-// ------------------------------------------------------------
-const ROUTER_EVOLUTION_CONTEXT_V24 = {
-  layer: "PulseRouterEvolutionaryInstincts",
-  role: "ROUTER_EVOLUTION_CORE",
-  purpose:
-    "Adaptive routing identity + genetic memory for symbolic + binary routes (v24 IMMORTAL INTEL++)",
-  context:
-    "Stores best-known routes, lineage, stability, regression, binary + presence + cache + cosmos ancestry",
-  target: "dual-stack-router",
-  version: "24.0-IMMORTAL-INTEL++",
-  selfRepairable: true,
-
-  evo: {
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseSendReady: true,
-
-    routingContract: "PulseSend-v24",
-    routerOrganContract: "PulseRouter-v24",
-    earnCompatibility: "PulseEarn-v24",
-
-    binaryAware: true,
-    presenceAware: true,
-    cacheChunkAware: true,
-    prewarmAware: true,
-    cosmosAware: true
-  },
-
-  loopTheory: {
-    routingCompletion: true,
-    allowLoopfieldPropulsion: true,
-    pulseComputeContinuity: true,
-    errorRouteAround: true
-  }
-};
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+const ROUTER_EVOLUTION_CONTEXT_V24 = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ------------------------------------------------------------
 // HASH / INTEL HELPERS — v24 IMMORTAL INTEL

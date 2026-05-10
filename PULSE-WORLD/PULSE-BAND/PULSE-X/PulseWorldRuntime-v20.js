@@ -15,127 +15,21 @@
 //    • No network, no filesystem, no eval, no timers.
 //    • All state flows through CoreMemory; all outputs are replayable.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseRuntime",
-  version: "v20-IMMORTAL-ADVANTAGE",
-  layer: "runtime",
-  role: "organism_undertow_runtime_spine",
-
-  description: `
-    The Pulse Runtime is the undertow of the organism: a deterministic,
-    dual‑band, advantage‑aware execution spine that coordinates multi‑organism
-    plans, binary substrates, and world genomes into a single runtime flow.
-    It does not guess. It does not fetch. It only executes what the organism
-    has already decided it is allowed to be.
-  `,
-
-  lineage: [
-    "PulseRuntime-v1",
-    "v11-Evo",
-    "v13-Presence-Evo+",
-    "v14-Immortal",
-    "v2.4-Presence-TOUCH-Immortal",
-    "v17-IMMORTAL",
-    "v20-IMMORTAL-ADVANTAGE"
-  ],
-
-  evo: {
-    // Runtime awareness
-    runtimeConductor: true,
-    executionCycle: true,
-    dualBand: true,
-    advantageAware: true,
-    presenceAware: true,
-    worldLayerAware: true,
-    genomeAware: true,
-    regioningAware: true,
-
-    // Substrate / chunk / cache
-    substrateAware: true,
-    schedulerAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    meshAware: true,
-    multiInstanceReady: true,
-
-    // Safety / determinism
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetworkFetch: true,
-    zeroFilesystem: true,
-    zeroExternalMutation: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "BinarySubstrate",
-      "PulseScheduler",
-      "PulseSpecs.DNAGenome",
-      "PulseWorldGenome",
-      "CoreMemory",
-      "buildMultiOrganismPlan",
-      "summarizeMultiOrganismPlan",
-      "executeMultiOrganismPlan",
-      "packMultiOrganismPlan",
-      "packExecutionResult"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "directInternetAccess",
-      "externalNetworkIO",
-      "dynamicEval",
-      "runtimeIntentRewrite"
-    ]
-  },
-
-  notes: {
-    undertow: `
-      Think of this runtime as the ocean current under the organism:
-      it moves everything, but it never decides what the coastline is.
-      Founder Intent and Organism Maps define the coastline; Runtime
-      only moves water according to those maps.
-    `
-  }
-}
-*/
-
-// -----------------------------------------------------------------------------
-// META — RUNTIME ORGAN IDENTITY (IMMUTABLE CONTRACT SHAPE)
-// -----------------------------------------------------------------------------
-export const PulseRuntimeV17Meta = Object.freeze({
-  organId: "PulseRuntime-v20-IMMORTAL-ADVANTAGE",
-  role: "RUNTIME_SPINE",
-  version: "v20-IMMORTAL-ADVANTAGE",
-  epoch: "v20-IMMORTAL-ADVANTAGE",
-  layer: "RuntimeCore",
-  safety: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noAsyncDrift: true,
-    syntheticOnly: true
-  }),
-  evo: Object.freeze({
-    presenceAware: true,
-    advantageAware: true,
-    dualbandSafe: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    meshAware: true,
-    expansionAware: true,
-    multiInstanceReady: true,
-    runtimeAware: true,
-    pulseTouchAware: true,
-    worldLayerAware: true,
-    genomeAware: true
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const PulseRuntimeV17Meta = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // -----------------------------------------------------------------------------
 // IMPORTS — WORLD / FINALITY / SPECS / GENOME / MEMORY / BINARY SUBSTRATE
@@ -145,9 +39,9 @@ export const PulseRuntimeV17Meta = Object.freeze({
 import * as PulseWorldRegioning from "../PULSE-EXPANSION/PulseExpansion-v24.js";
 
 // Delta Engine (CoreMemory integrations)
-import * as PulseContinuance from "../PULSE-FINALITY/PULSE-CONTINUANCE/PulseContinuance-v20.js";
-import * as PulseOmniHosting from "../PULSE-FINALITY/PULSE-OMNIHOSTING/PulseOmniHosting-v20.js";
-import * as PulseSchema from "../PULSE-FINALITY/PULSE-SCHEMA/PulseSchema-v20.js";
+import * as PulseContinuance from "../PULSE-FINALITY/PulseContinuance-v20.js";
+import * as PulseOmniHosting from "../PULSE-FINALITY/PulseOmniHosting-v20.js";
+import * as PulseSchema from "../PULSE-FINALITY/PulseSchema-v20.js";
 
 // Specs / Genome (for runtime‑aware schema hooks)
 import { PULSE_FIELDS_SPEC } from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";

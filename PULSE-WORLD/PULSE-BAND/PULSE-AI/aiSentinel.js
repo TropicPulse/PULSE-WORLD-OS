@@ -42,131 +42,36 @@
  *   - Must treat all inputs as untrusted
  *   - Must not block the organism
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiSentinel",
-  version: "v16-Immortal-Evo++",
-  layer: "ai_core",
-  role: "sentinel_guard",
-  lineage: "aiSentinel-v11 → v14-Immortal → v16-Immortal-Evo++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    sentinelGuard: true,
-    threatDetection: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: ["aiImmunity", "aiReflex", "aiSafetyFrame"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
-// ============================================================================
-//  AI EXPERIENCE META — IMMORTAL‑EVO++
-// ============================================================================
-export const AI_EXPERIENCE_META = Object.freeze({
-  identity: "aiSecuritySentinel",
-  version: "v16-Immortal-Evo++",
-  layer: "ai_core",
-  role: "security_sentinel",
-  lineage: "aiSentinel-v11 → v14-Immortal → v16-Immortal-Evo++",
-
-  evo: Object.freeze({
-    sentinelGuard: true,
-    threatDetection: true,
-    hostilePatternRecognition: true,
-    perimeterDefense: true,
-    internalDefense: true,
-    securityArteryV6: true,
-
-    symbolicPrimary: false,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    packetAware: true,
-    windowAware: true,
-    multiInstanceReady: true,
-    speedOptimized: true,
-    epoch: "16-Immortal-Evo++"
-  }),
-
-  contract: Object.freeze({
-    always: ["aiImmunity", "aiReflex", "aiSafetyFrame", "aiScheduler", "aiPipeline"],
-    never: ["safeRoute", "fetchViaCNS"]
-  })
-});
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
-//  EXPORT META — IMMORTAL‑EVO++
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
-export const EXPORT_META = Object.freeze({
-  organ: "SecuritySentinel",
-  layer: "binary_security_sentinel",
-  stability: "IMMORTAL-EVO++",
-  deterministic: true,
-  exposes: [
-    "evaluate",
-    "enforce",
-    "scan",
-    "getSecurityArtery",
-    "createAISecuritySentinel"
-  ],
-  sideEffects: "binary-only",
-  network: "none"
-});
+export const SentinelMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  META BLOCK — v16‑IMMORTAL‑EVO++
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-export const SentinelMeta = Object.freeze({
-  layer: "BinaryImmuneSystem",
-  role: "BINARY_SECURITY_SENTINEL_ORGAN",
-  version: "16-Immortal-Evo++",
-  identity: "aiSecuritySentinel-v16-Immortal-Evo++",
 
-  evo: AI_EXPERIENCE_META.evo,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide deterministic internal + perimeter security, trust/risk scoring, pulse-halt decisions, and security artery metrics v6.",
+export const surfaceMeta = Identity.surfaceMeta;
 
-    never: Object.freeze([
-      "mutate external organs",
-      "generate symbolic state",
-      "introduce randomness",
-      "override SafetyFrame decisions",
-      "perform cognition",
-      "perform intent logic",
-      "block organism execution in a non-deterministic way"
-    ]),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    always: Object.freeze([
-      "treat all inputs as untrusted",
-      "emit binary-only security packets",
-      "apply deterministic security rules",
-      "compute security artery metrics v6",
-      "remain non-blocking at the process level",
-      "allow organism to honor pulse-halt flags deterministically"
-    ])
-  })
-});
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 // ============================================================================
 //  SECURITY ARTERY HELPERS — v6 (IMMORTAL‑EVO++)

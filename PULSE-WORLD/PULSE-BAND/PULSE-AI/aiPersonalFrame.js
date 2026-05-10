@@ -4,111 +4,36 @@
 //  PURE READ-ONLY TO BINARY. GUARDED WRITES TO PERSONAL MEMORY LANES.
 //  DUALBAND • PRESENCE-AWARE • OVERMIND-PRIME-AWARE • DETERMINISTIC
 // =========================================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiPersonalFrame",
-  version: "v16-Immortal-EVO",
-  layer: "ai_core",
-  role: "personal_context_frame",
-  lineage: "aiPersonalFrame-v11 → v15-Immortal → v16-Immortal-EVO",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    personalContext: true,
-    personaMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiIdentityCore", "aiContext", "aiCortex", "aiPermissionsEngine", "aiSafetyFrame"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const PersonalFrameMeta = Identity.OrganMeta;
 
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const PersonalFrameMeta = Object.freeze({
-  layer: "PulseAIPersonalFrame",
-  role: "PERSONAL_FRAME_ORGAN",
-  version: "16-Immortal-Evo",
-  identity: "aiPersonalFrame-v16-Immortal-Evo",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
-    presenceAware: true,
-    safetyAware: true,
-    safetyFrameAware: true,
-    overmindAware: true,
-    overmindPrimeAware: true,
-    personaAware: true,
-    routerAware: true,
-    memoryAware: true,
-    packetAware: true,
-    windowAware: true,
-    lineageAware: true,
-    toneAware: true,
-    abstractionAware: true,
-    verbosityAware: true,
-    governorAware: true,
-    permissionsAware: true,
-    loggerAware: true,
-    genomeAware: true,
-    microPipeline: true,
-    speedOptimized: true,
-    multiInstanceReady: true,
-    readOnly: false,
-    epoch: "16-Immortal-Evo"
-  }),
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose: [
-      "Represent user-level preferences and communication style",
-      "Provide personal context to Overmind-Prime and personas",
-      "Control abstraction, tone, and verbosity deterministically",
-      "Maintain personal memory lanes when allowed",
-      "Shape final output according to user profile",
-      "Integrate with dualband safety and persona routing",
-      "Emit window-safe personal-frame snapshots",
-      "Remain deterministic and drift-proof"
-    ],
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: [
-      "mutate binary organs",
-      "override system-wide safety constraints",
-      "expose raw identity anchors",
-      "write outside personal lanes",
-      "introduce randomness",
-      "simulate personas or identities",
-      "bypass SafetyFrame or PermissionsEngine",
-      "log raw personal payloads directly"
-    ],
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: [
-      "stay deterministic",
-      "respect owner+user gating",
-      "strip identity anchors",
-      "defer to SafetyFrame for safety decisions",
-      "integrate router safetyMode + personaId",
-      "remain read-only relative to binary layers",
-      "emit window-safe artery snapshots",
-      "respect personal memory boundaries"
-    ]
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  boundaryReflex() {
-    return "PersonalFrame must remain deterministic, presence-aware, dualband-safe, and never mutate binary layers.";
-  }
-});
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, personal-frame-scoped

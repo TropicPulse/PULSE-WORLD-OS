@@ -19,112 +19,21 @@
 //    - v24++: snapshot‑aware, artery‑aware, chunk/cache/prewarm aware,
 //      engine‑local tick space, governance‑aware, treasury‑pressure aware.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseCastle",
-  version: "v24-Immortal++",
-  layer: "presence_castle",
-  role: "region_identity_and_security",
-
-  lineage: "PulseCastle-v9 → v12.3-Presence-Evo++ → v14-Immortal → v16-Immortal-ORGANISM → v24-Immortal++",
-
-  evo: {
-    // Region identity + physics
-    regionIdentity: true,
-    regionSecurity: true,
-    regionTier: true,
-    regionPhysics: true,
-
-    // Mesh + presence
-    meshAware: true,
-    presenceFieldAware: true,
-    meshPressureAware: true,
-    advantageAware: true,
-
-    // v24++ arteries + snapshots
-    perCastleArteries: true,
-    arteryMetricsAware: true,
-    snapshotAware: true,
-    engineLocalTickSpace: true,
-
-    // Prewarm + chunk/cache
-    chunkPrewarmAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-
-    // Expansion + NodeAdmin
-    expansionRouteAware: true,
-    nodeAdminLoopAware: true,
-    serverLoopAware: true,
-    routerAware: true,
-
-    // User + world core
-    userAware: true,
-    worldCoreAware: true,
-    serverUserBindingAware: true,
-
-    // Economic layer
-    treasuryAware: true,
-    soldierAware: true,
-    governanceAware: true,
-    treasuryPressureAware: true,
-
-    // Dual-band organism
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    // Determinism + safety
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroRandomness: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroAI: true,
-    zeroRouting: true,
-    zeroComputeMath: true,
-
-    // Organism integrations
-    pulseTouchAware: true,
-    pulseNetAware: true,
-    runtimeAware: true,
-    schedulerAware: true,
-    overmindAware: true,
-    meshOrganismAware: true,
-    beaconMeshAware: true,
-    earnAware: true,
-    proxyAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseExpansion",
-      "PulseRouter",
-      "PulseServer",
-      "PulseUser",
-      "PulseMesh",
-      "PulseBeaconMesh",
-      "PulseTouch",
-      "PulseNet",
-      "PulseRuntime",
-      "PulseScheduler",
-      "PulseOvermind",
-      "PulseProxy",
-      "PulseBinaryMesh",
-      "PulseDualBandOrganism"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+export const PulseCastleMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS (backend-safe, organism-aware)
 // ============================================================================
@@ -152,7 +61,7 @@ import {
 
 // User lanes / WorldCore (v16 IMMORTAL ORGANISM)
 import {
-  PulseWorldCoreMeta,
+  PulseWorldCoreMeta, PulseUserMeta,
   createPulseWorldCore
 } from "./PulseUser-v24.js";
 
@@ -200,114 +109,6 @@ const _castleEvolution = createPulseNodeEvolutionV16({
   nodeType: "castle",
   trace: false
 });
-
-// Lightweight user meta (symbolic only, for snapshots)
-export const PulseUserMeta = Object.freeze({
-  layer: "PulseUser",
-  role: "PRESENCE_USER",
-  version: "v16-Immortal-ORGANISM",
-  identity: "PulseUser-v16-Immortal-ORGANISM"
-});
-
-// ============================================================================
-//  META — Castle Identity
-// ============================================================================
-
-export const PulseCastleMeta = Object.freeze({
-  layer: "PulseCastle",
-  role: "PRESENCE_HOST_ORGAN",
-  version: "v24-Immortal++",
-  identity: "PulseCastle-v24-Immortal++",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-
-    multiCastleReady: true,
-    multiServerReady: true,
-    meshAware: true,
-    regionAware: true,
-    hostAware: true,
-
-    presenceFieldAware: true,
-    treasuryAware: true,
-    soldierAware: true,
-
-    userAware: true,
-    worldCoreAware: true,
-    serverUserBindingAware: true,
-    meshPressureAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    osBrainAware: true,
-
-    routerAware: true,
-    expansionRouteAware: true,
-    nodeAdminLoopAware: true,
-    serverLoopAware: true,
-
-    pulseTouchAware: true,
-    pulseNetAware: true,
-    runtimeAware: true,
-    schedulerAware: true,
-    overmindAware: true,
-    meshOrganismAware: true,
-    beaconMeshAware: true,
-    earnAware: true,
-    proxyAware: true,
-
-    zeroRandomness: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroNetworkFetch: true,
-    zeroAI: true,
-    zeroRouting: true,
-    zeroComputeMath: true,
-
-    // v24++ extras
-    engineLocalTickSpace: true,
-    perCastleArteries: true,
-    snapshotAware: true,
-    governanceAware: true,
-    treasuryPressureAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "CastleRegistrationRequest",
-      "CastlePresenceUpdate",
-      "ServerAttachRequest",
-      "ServerDetachRequest",
-      "CastleMeshQuery",
-      "CastleUserRegistrationRequest",
-      "CastleUserBindingRequest",
-      "CastleExpansionRouteRequest",
-      "CastleNodeAdminLoopRequest"
-    ],
-    output: [
-      "CastleRegistrationResult",
-      "CastlePresenceState",
-      "ServerAttachResult",
-      "ServerDetachResult",
-      "CastleMeshState",
-      "CastleUserRegistrationResult",
-      "CastleUserBindingState",
-      "CastleExpansionRouteState",
-      "CastleNodeAdminLoopState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v24-Immortal++",
-    parent: "PulseExpansion-v24-Immortal++",
-    ancestry: [
-      "PulseCastle-v9",
-      "PulseCastle-v12.3-Presence-Evo++",
-      "PulseCastle-v16-Immortal-ORGANISM"
-    ]
-  })
-});
-
 
 // ============================================================================
 //  TYPES

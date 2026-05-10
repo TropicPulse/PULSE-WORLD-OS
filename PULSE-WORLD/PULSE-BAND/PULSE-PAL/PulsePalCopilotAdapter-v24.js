@@ -33,6 +33,21 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreSpeech   = PulseProofBridge.corespeech;
@@ -40,151 +55,6 @@ const CoreMemory   = PulseProofBridge.corememory;
 const CoreDaemon   = PulseProofBridge.coredaemon;
 const CorePresence = PulseProofBridge.corepresence;
 
-// ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePilotCopilotAdapter = {
-  id: "pulsepilot.copilot.adapter",
-  kind: "adapter",
-  version: "v24-IMMORTAL++",
-  role: "Copilot DOM harvester + AI detector + memory feeder",
-  surfaces: {
-    band: ["ai_detector", "dom_harvester", "memory_ingest", "session_cortex"],
-    wave: ["silent", "precise", "deterministic"],
-    binary: ["detect", "scan", "delta_ingest", "session_track"],
-    presence: ["ai_active", "ai_session"],
-    advantage: ["zero_duplicate_ingest", "semantic_memory_ready", "history_scanner_ready"],
-    speed: "hot_loop"
-  },
-  consumers: [
-    "CoreSpeech",
-    "CoreMemory",
-    "CoreDaemon",
-    "CorePresence",
-    "PulsePalHistoryScanner"
-  ],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none_on_ai",
-    determinism: "strict",
-    mutation: "forbidden_on_target_dom"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePilotCopilotAdapter = {
-  tone: "silent_technical",
-  pacing: "event_driven",
-  emotionalBand: "none",
-  primaryIntent: "ingest_ai_history",
-  secondaryIntent: "prepare_semantic_memory",
-  userFirstImpression: "invisible_background_organ",
-  visualNotes: {
-    icon: "adapter.copilot",
-    motion: "none",
-    colorBand: "cyan_steel"
-  }
-};
-
-// ============================================================================
-// ORGAN META — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_META_PulsePilotCopilotAdapter = {
-  id: "organ.pulsepilot.copilot.adapter",
-  organism: "PulsePilot",
-  layer: "adapter.ai",
-  tier: "IMMORTAL",
-  evoFlags: {
-    aiDetector: true,
-    domHarvester: true,
-    deltaAware: true,
-    duplicateProof: true,
-    semanticMemoryFeeder: true,
-    daemonAware: true,
-    presenceAware: true,
-    sessionAware: true
-  },
-  lineage: {
-    family: "ai_ingestion",
-    generation: 2,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN CONTRACT — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePilotCopilotAdapter = {
-  inputs: {
-    CoreSpeech: "speech ingestion organ",
-    CoreMemory: "semantic memory organ",
-    CoreDaemon: "daemon snapshot",
-    CorePresence: "presence snapshot",
-    db: "optional database interface"
-  },
-  outputs: {
-    aiActive: "copilot",
-    captureMessage: "function",
-    scanDom: "function",
-    start: "function",
-    stop: "function"
-  },
-  consumers: [
-    "CoreSpeech",
-    "CoreMemory",
-    "CoreDaemon",
-    "PulsePalHistoryScanner"
-  ],
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL OVERLAYS — v24 IMMORTAL++
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePilotCopilotAdapter = {
-  drift: {
-    allowed: false,
-    notes: "DOM scanning semantics must remain stable."
-  },
-  pressure: {
-    expectedLoad: "low",
-    notes: "Triggered only on DOM mutations and light polling."
-  },
-  stability: {
-    uiLayout: "stable",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 1,
-    notes: "Single adapter organ."
-  },
-  chunking: {
-    prewarm: ["adapter.copilot"],
-    cacheKey: "pulsepilot.copilot.adapter"
-  },
-  worldLens: {
-    awareOfWorlds: false
-  },
-  limbic: {
-    band: "none"
-  },
-  triHeart: {
-    cognitive: "ai_detection",
-    emotional: "none",
-    behavioral: "ingest_history"
-  },
-  impulseSpeed: {
-    primaryAction: "scan_dom",
-    latencyTargetMs: 5
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

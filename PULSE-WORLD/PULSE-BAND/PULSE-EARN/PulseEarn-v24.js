@@ -22,98 +22,26 @@
 //  • Advantage fields are IMMORTAL, versioned, non-perf-weighted.
 //  • No network, no filesystem, no DOM, no GPU calls from this organ.
 // ============================================================================
+// ============================================================================
+// FILE: PULSE-WORLD/PULSE-DESIGN/translator-v17.js
+// LAYER: THE ARCHITECT (v17 IMMORTAL Orchestrator + Genome Conductor)
+// ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarn",
-  version: "v24-Immortal-Earn-Core-GPU",
-  layer: "earn_core",
-  role: "earn_root_engine",
-  lineage: "PulseEarn-v9 → v10.4 → v11-Evo → v12.3 → v16-Immortal-GPU-INTEL → v24-Immortal-Earn-Core-GPU",
+// 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    // Core Earn identity
-    earnRoot: true,
-    jobPlanner: true,
-    jobFusion: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    // Advantage / field v24
-    unifiedAdvantageField: true,
-    advantageField24: true,
-    advantageSnapshotAware: true,
-    pressureAware: true,
-    modeAware: true,
-    presenceFieldAware: true,
-    earnFieldAware: true,
-
-    // GPU + binary + execution context
-    gpuAware: true,
-    gpuAdvantageAware: true,
-    gpuBinaryFieldAware: true,
-    gpuTierAware: true,
-    gpuLaneAware: true,
-    gpuPrewarmPlanAware: true,
-    executionContextAware: true,
-    multiInstanceAware: true,
-
-    // Chunk / cache / prewarm / warm-path
-    chunkingReady: true,
-    chunkWarmthAware: true,
-    cacheAware: true,
-    cacheHitAware: true,
-    prewarmAware: true,
-    prewarmCoverageAware: true,
-    warmPathAware: true,
-    coldPathSafe: true,
-    hotStateAware: true,
-    factoringAware: true,
-
-    // Presence / mesh / castle / expansion / server
-    presenceAware: true,
-    meshAware: true,
-    castleAware: true,
-    expansionAware: true,
-    serverAware: true,
-    routerAware: true,
-    beaconAware: true,
-
-    // Memory + ancestry
-    ancestryAware: true,
-    memorySurfaceReady: true,
-    loopTheoryAware: true,
-
-    // Continuance + legacy bridge
-    continuanceAware: true,
-    legacyBridgeCapable: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnCell",
-      "PulseEarnCirculatorySystem",
-      "PulseEarnEndocrineSystem",
-      "PulseEarnGeneticMemory",
-      "PulseEarnContinuancePulse"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "presenceEngine",
-      "meshKernel"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseDesignArchitectMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const EarnRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // --- CORE EARN ORGAN --------------------------------------------------------
 // --- BIOLOGICAL EARN ORGANS -----------------------------------------------
@@ -160,120 +88,6 @@ export const CoreMemory = Object.freeze({
 });
 
 // ============================================================================
-//  EarnMeta — static contract + guarantees (v24 Immortal Earn Core)
-// ============================================================================
-export const EarnMeta = Object.freeze({
-  layer: "PulseEarn",
-  role: "EARN_ORGAN",
-  version: "v24.0-Immortal-Earn-Core-GPU",
-  identity: "PulseEarn-v24.0-Immortal-Earn-Core-GPU",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-
-    // Structural awareness
-    bandAware: true,
-    binaryAware: true,
-    evolutionAware: true,
-    lineageAware: true,
-    patternAware: true,
-    shapeAware: true,
-    worldLensAware: true,
-    multiInstanceAware: true,
-    waveFieldAware: true,
-
-    // Presence / mesh / topology
-    presenceAware: true,
-    meshAware: true,
-    castleAware: true,
-    expansionAware: true,
-    serverAware: true,
-    routerAware: true,
-    beaconAware: true,
-
-    // Chunk / cache / prewarm / warm-path
-    chunkAware: true,
-    chunkingReady: true,
-    chunkWarmthAware: true,
-    cacheAware: true,
-    cacheHitAware: true,
-    prewarmAware: true,
-    prewarmCoverageAware: true,
-    hotStateAware: true,
-    warmPathAware: true,
-    coldPathSafe: true,
-    factoringAware: true,
-
-    // GPU + advantage + execution context
-    gpuAware: true,
-    gpuAdvantageAware: true,
-    gpuBinaryFieldAware: true,
-    gpuTierAware: true,
-    gpuLaneAware: true,
-    gpuPrewarmPlanAware: true,
-    advantageFieldAware: true,
-    advantageField24: true,
-    advantageSnapshotAware: true,
-    pressureAware: true,
-    modeAware: true,
-    executionContextAware: true,
-
-    // Earn / presence fields
-    earnFieldAware: true,
-    presenceFieldAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "EarnInputShape",
-      "DualBandContext",
-      "EvolutionSurface",
-      "AdvantageField",
-      "CohortWaveState",
-      "PresenceField",
-      "MeshSignals",
-      "CastleSignals",
-      "ExpansionSignals",
-      "ServerAdvantageHints",
-      "GlobalHints",
-      "GPUHints",
-      "PageHints"
-    ],
-    output: [
-      "EarnOutputShape",
-      "EarnDiagnostics",
-      "EarnSignatures",
-      "EarnPresenceField",
-      "EarnAdvantageField",
-      "EarnPulseIntelligence",
-      "EarnPageIntelligence"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v24.0-Immortal",
-    parent: "PulseProxy-v24.0-Immortal",
-    ancestry: [
-      "PulseOS-v10",
-      "PulseEarn-v10.4",
-      "PulseEarn-v11",
-      "PulseEarn-v11.2-Evo",
-      "PulseEarn-v12.3-Presence-Evo+",
-      "PulseEarn-v16-Immortal-GPU-INTEL"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  })
-});
-
-// ============================================================================
 //  DUAL-BAND CONSTANTS (symbolic + binary)
 // ============================================================================
 const ROUTE_BANDS = {
@@ -286,92 +100,6 @@ function normalizeBand(band) {
   return b === ROUTE_BANDS.BINARY ? ROUTE_BANDS.BINARY : ROUTE_BANDS.SYMBOLIC;
 }
 
-// ============================================================================
-//  EarnRole — identifies this as the Earn v24 IMMORTAL-Earn-Core Organism
-// ============================================================================
-export const EarnRole = {
-  type: "Earn",
-  subsystem: "Earn",
-  layer: "Organ",
-  version: "24.0-Immortal-Earn-Core-GPU",
-  identity: "Earn-v24.0-Immortal-Earn-Core-GPU",
-
-  evo: {
-    // Core evolution awareness
-    driftProof: true,
-    deterministic: true,
-    patternAware: true,
-    lineageAware: true,
-    shapeAware: true,
-    evolutionEngineReady: true,
-
-    // Compute surfaces
-    gpuAwareReady: true,
-    minerAwareReady: true,
-    airAwareReady: true,
-    offlineAwareReady: true,
-    futureEvolutionReady: true,
-
-    // Unified advantage + tier + diagnostics
-    unifiedAdvantageField: true,
-    advantageFieldAware: true,
-    advantageField24: true,
-    tierAware: true,
-    diagnosticsReady: true,
-    signatureReady: true,
-    evolutionSurfaceReady: true,
-
-    // Intelligence
-    pulseIntelligenceReady: true,
-    solvednessAware: true,
-    factoringAware: true,
-    computeTierAware: true,
-    readinessAware: true,
-
-    // Binary / dual-band / wave / cohort
-    bandAware: true,
-    dualBandReady: true,
-    binaryCompressionReady: true,
-    gpuBinaryFieldReady: true,
-    waveFieldAware: true,
-    cohortAware: true,
-    evolutionSurfaceCohortReady: true,
-
-    // Memory + ancestry
-    ancestryAware: true,
-    memorySurfaceReady: true,
-    loopTheoryAware: true,
-
-    // Presence‑IMMORTAL surfaces
-    presenceAware: true,
-    meshAware: true,
-    castleAware: true,
-    expansionAware: true,
-    serverAware: true,
-    routerAware: true,
-    beaconAware: true,
-
-    // Chunking / caching / prewarm / hot state
-    chunkAware: true,
-    chunkingReady: true,
-    cacheAware: true,
-    prewarmAware: true,
-    hotStateAware: true,
-    warmPathAware: true,
-    coldPathSafe: true,
-
-    // Continuance + legacy bridge
-    continuanceAware: true,
-    legacyBridgeCapable: true
-  },
-
-  routingContract: "PulseRouter-v24.0-Immortal-Earn-Core",
-  meshContract: "PulseMesh-v24.0-Immortal-Earn-Core",
-  sendContract: "PulseSend-v24.0-Immortal-Earn-Core",
-  gpuOrganContract: "PulseGPU-v24.0-Immortal",
-  minerContract: "PulseMiner-v24.0-Immortal",
-  pulseCompatibility: "Pulse-v1/v2/v3/v4"
-};
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure (v24-Immortal-GPU-INTEL)
 // ============================================================================

@@ -1,192 +1,26 @@
 // ============================================================================
 //  PulseRouterMemoryAdapter-v20.js — v20‑IMMORTAL‑ROUTER‑MEMORY‑ADAPTER
 //  “ROUTER THINKS ONCE. ROUTES FOREVER. MEMORY NEVER DRIFTS.”
-//  • v20 IMMORTAL MetaBlock
-//  • dnaTag + version aware
-//  • presence‑touch propagation (overlay.touch + deterministic epoch)
-//  • hot‑loop promotion
-//  • dual‑band metadata (route-shape = symbolic, route-lookup = binary)
-//  • lineage + router‑shape metadata
-//  • governor + evolution aligned
-//  • deterministic canonicalization (via BinaryOverlay v20)
 // ============================================================================
 
-/*
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-*/
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  AI_EXPERIENCE_META (IMMORTAL++)
+//  META BLOCK — v20 IMMORTAL (from genome)
 // ============================================================================
-export const AI_EXPERIENCE_META_PulseRouterMemoryAdapter = {
-  id: "corememory.adapter.router",
-  identity: "PulseCoreRouterMemoryAdapter",
-  version: "v20-IMMORTAL-ROUTER-MEMORY",
-  layer: "corememory_adapter",
-  role: "router_memory_adapter",
-  lineage: "PulseCoreMemory-v20-IMMORTAL",
-
-  evo: {
-    adapter: true,
-    routerMemoryBridge: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true
-  },
-
-  contract: {
-    always: [
-      "PulseCoreBrain",
-      "PulseCoreGovernor",
-      "PulseBinaryCoreOverlay",
-      "PulseCoreSettings",
-      "PulseCorePresence"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  },
-
-  surfaces: {
-    band: ["router", "adapter", "route"],
-    wave: ["deterministic", "structural"],
-    binary: ["getRouteShape"],
-    presence: ["router_presence_touch"],
-    advantage: ["route_shape_reuse"],
-    speed: "hot_loop"
-  }
-};
+export const PulseRouterMemoryAdapterMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  AI_EXPERIENCE_CONTEXT
+//  SURFACE / ORGANISM LAYER EXPORTS — v20 IMMORTAL
 // ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulseRouterMemoryAdapter = {
-  tone: "technical_silent",
-  pacing: "instant",
-  emotionalBand: "none_direct",
-  primaryIntent: "canonicalize_route_shapes",
-  secondaryIntent: "stabilize_route_lookups",
-  visualNotes: {
-    icon: "router",
-    motion: "path_pulse",
-    colorBand: "infra_core"
-  },
-  presenceLens: {
-    awareOfPresence: true,
-    notes: "presence may bias which routes stay hot."
-  },
-  settingsLens: {
-    awareOfSettings: true,
-    notes: "settings may tune route TTL and hot‑loop thresholds."
-  }
-};
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-// ============================================================================
-//  CORE ORGAN META
-// ============================================================================
-export const CORE_MEMORY_META_PulseRouterMemoryAdapter = {
-  id: "organ.corememory.adapter.router",
-  subsystem: "CoreMemory",
-  layer: "MemoryAdapter",
-  tier: "IMMORTAL",
-  role: "Router-Memory-Bridge",
-  lineage: {
-    family: "corememory_adapter_router",
-    generation: 3,
-    coreVersion: "v20"
-  },
-  evoFlags: {
-    dnaAware: true,
-    versionAware: true,
-    presenceAware: true,
-    hotLoop: true,
-    dualBandSafe: true,
-    routerAware: true,
-    deterministic: true,
-    driftProof: true
-  }
-};
-
-// ============================================================================
-//  CORE ORGAN CONTRACT
-// ============================================================================
-export const CORE_MEMORY_CONTRACT_PulseRouterMemoryAdapter = {
-  inputs: {
-    overlay: "BinaryOverlay",
-    dnaTag: "string",
-    version: "string",
-    log: "function"
-  },
-  outputs: {
-    registerRouteShape: "function(routeId, shape)",
-    getRouteShape: "function(routeId, shape)",
-    promoteHot: "function(routeId, key)"
-  },
-  consumers: [
-    "PulseCoreBrain",
-    "PulseCoreGovernor",
-    "PulseBinaryCoreOverlay",
-    "PulseCoreSettings",
-    "PulseCorePresence"
-  ],
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noFilesystem: true
-  }
-};
-
-// ============================================================================
-//  IMMORTAL OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulseRouterMemoryAdapter = {
-  drift: {
-    allowed: false,
-    notes: "Route shape identity and lookup semantics must not drift."
-  },
-  pressure: {
-    expectedLoad: "high",
-    notes: "Router adapter sits on the logical routing hot path."
-  },
-  stability: {
-    algorithm: "stable",
-    layout: "stable",
-    notes: "Canonicalization is structural and stable across sessions."
-  },
-  chunking: {
-    prewarm: ["corememory.adapter.router", "corememory.binary.overlay"],
-    cacheKey: "corememory.adapter.router.v20"
-  },
-  triHeart: {
-    cognitive: "router_memory_bridge",
-    emotional: "none_direct",
-    behavioral: "canonicalize_and_route"
-  },
-  impulseSpeed: {
-    primaryAction: "getRouteShape",
-    latencyTargetNs: 40000
-  }
-};
-
-// ============================================================================
-//  v20 IDENTITY BLOCK (MetaBlock)
-// ============================================================================
-export const RouterMemoryAdapterMetaBlock = {
-  identity: "PulseRouterMemoryAdapter",
-  subsystem: "Router",
-  layer: "MemoryAdapter",
-  role: "Router-Memory-Bridge",
-  version: "20.0-IMMORTAL-ROUTER-MEMORY",
-  evo: CORE_MEMORY_META_PulseRouterMemoryAdapter.evoFlags
-};
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // deterministic epoch for Router adapter events
 let ROUTER_EPOCH = 0;
@@ -227,7 +61,7 @@ export function createPulseRouterMemoryAdapter({
       epoch,
       band,
       routeSize,
-      metaBlock: RouterMemoryAdapterMetaBlock
+      metaBlock: PulseRouterMemoryAdapterMeta
     };
 
     try {
@@ -256,7 +90,7 @@ export function createPulseRouterMemoryAdapter({
   }
 
   return {
-    RouterMemoryAdapterMetaBlock,
+    PulseRouterMemoryAdapterMeta,
     dnaTag,
     version,
 
@@ -265,10 +99,11 @@ export function createPulseRouterMemoryAdapter({
 
     promoteHot,
 
-    AI_EXPERIENCE_META_PulseRouterMemoryAdapter,
-    AI_EXPERIENCE_CONTEXT_PulseRouterMemoryAdapter,
-    CORE_MEMORY_META_PulseRouterMemoryAdapter,
-    CORE_MEMORY_CONTRACT_PulseRouterMemoryAdapter,
-    IMMORTAL_OVERLAYS_PulseRouterMemoryAdapter
+    // genome-driven meta exports
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext
   };
 }

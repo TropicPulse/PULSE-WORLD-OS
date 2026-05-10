@@ -24,185 +24,21 @@
 //   • NO speed, NO baseline, NO governor, NO performance assumptions.
 //   • computeHashIntelligence is primary; computeHash is deterministic fallback.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnLymphNodes",
-  version: "v24-Immortal-INTEL",
-  layer: "earn_immune",
-  role: "earn_lymph_nodes",
-  lineage: "PulseEarnLymphNodes-v11 → v12.3 → v13.0-Presence-Immortal → v14-Immortal → v16-Immortal-INTEL → v24-Immortal-INTEL",
-
-  evo: {
-    lymphNodes: true,
-    immuneBuffer: true,
-    anomalyQuarantine: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    meshAware: true,
-    castleAware: true,
-    regionAware: true,
-
-    lymphPresenceProfile: true,
-    lymphComputeProfile: true,
-    lymphIntelSignatures: true,
-    computeHashIntelligence: true,
-
-    // v24-Immortal-INTEL ecosystem awareness
-    gpuAware: true,
-    minerAware: true,
-    offlineAware: true,
-    computeTierAware: true,
-    pulseIntelligenceReady: true,
-
-    zeroAI: true,
-    zeroUserCode: true,
-    zeroAsync: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnImmuneSystem",
-      "PulseEarnHeart",
-      "PulseEarnMetabolism"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseEarnLymphNodesMeta = Object.freeze({
-  layer: "PulseEarnLymphNodes",
-  role: "EARN_LYMPHATIC_HANDSHAKE_ORGAN",
-  version: "v24-Immortal-INTEL",
-  identity: "PulseEarnLymphNodes-v24-Immortal-INTEL",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureResultDispatcher: true,
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    meshAware: true,
-    castleAware: true,
-    regionAware: true,
-    worldLensAware: false,
-    zeroAI: true,
-    zeroUserCode: true,
-    zeroAsync: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "EarnJob",
-      "EarnJobResult",
-      "DualBandContext",
-      "GlobalHintsPresenceField"
-    ],
-    output: [
-      "MarketplaceSubmissionResult",
-      "LymphaticDiagnostics",
-      "LymphaticSignatures",
-      "LymphaticHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v24-Immortal-INTEL",
-    parent: "PulseEarn-v24-Immortal-INTEL",
-    ancestry: [
-      "PulseEarnLymphNodes-v9",
-      "PulseEarnLymphNodes-v10",
-      "PulseEarnLymphNodes-v11",
-      "PulseEarnLymphNodes-v11-Evo",
-      "PulseEarnLymphNodes-v12.3-Presence-Evo+",
-      "PulseEarnLymphNodes-v13.0-Presence-Immortal",
-      "PulseEarnLymphNodes-v16-Immortal-INTEL"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic Earn → Marketplace handshake",
-    adaptive: "binary/wave + presence/advantage/hints surfaces + INTEL signatures",
-    return: "deterministic submission result + lymphatic diagnostics"
-  })
-});
-
-// ============================================================================
-// ROLE CONTEXT — v24 IMMORTAL-INTEL
-// ============================================================================
-
-export const PulseRole = {
-  type: "ImmuneDispatch",
-  subsystem: "PulseEarnLymphNodes",
-  layer: "C2-LymphaticHandshake",
-  version: "24-Immortal-INTEL",
-  identity: "PulseEarnLymphNodes-v24-Immortal-INTEL",
-
-  evo: {
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    immuneDispatch: true,
-    immuneSafeFinalizer: true,
-    immuneRecognition: true,
-    antigenMatching: true,
-    certifiedHandshake: true,
-    deterministicHandshake: true,
-
-    zeroAsync: true,
-    zeroTiming: true,
-    zeroRandomness: true,
-    zeroMutation: true,
-    zeroRouting: true,
-    zeroSending: false,
-    zeroCompute: true,
-
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    waveAware: true,
-    bandNormalizationAware: true,
-
-    earnFinalizer: true,
-    earnMarketplaceBridge: true,
-    immuneMemoryRecorder: true,
-
-    environmentAgnostic: true,
-    multiInstanceReady: true
-  }
-};
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // Imports

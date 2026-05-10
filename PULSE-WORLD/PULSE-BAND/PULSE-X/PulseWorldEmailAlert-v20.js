@@ -33,67 +33,21 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseWorldEmailAlert",
-  version: "v20-IMMORTAL-ADVANTAGE",
-  layer: "alerting",
-  role: "universal_email_alert_organ",
-  lineage: [
-    "PulseEmail-v1",
-    "PulseEmail-v11",
-    "PulseEmail-v14-Immortal",
-    "PulseWorldEmailAlert-v17",
-    "PulseWorldEmailAlert-v20-IMMORTAL-ADVANTAGE"
-  ],
-
-  evo: {
-    alertingCore: true,
-    emailSafe: true,
-    iconAware: true,
-    severityAware: true,
-    worldLayerAware: true,
-    runtimeAware: true,
-    schedulerAware: true,
-    organismAware: true,
-    driftProof: true,
-    deterministic: true,
-    zeroMutationOfInput: true,
-    zeroTemplateMutation: true,
-    zeroNetwork: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSShortTermMemory.sendDynamicEmail",
-      "PulseWorldLogger",
-      "PulseWorldState"
-    ],
-    never: [
-      "templateMutation",
-      "externalFetch",
-      "unsafeEval",
-      "dynamicTemplateRewrite"
-    ]
-  }
-}
-*/
-/**
- * ============================================================================
- *  PulseWorldEmailAlert-v20-IMMORTAL-ADVANTAGE.js
- *  ROOT:  PULSE-WORLD / PULSE-X / PULSE-OS
- *
- *  ROLE:
- *    • Universal, unstoppable email alert organ.
- *    • Routes ALL alerts through PulseOSShortTermMemory.sendDynamicEmail().
- *    • Never mutates templates. Never duplicates backend logic.
- *    • Provides a full alert taxonomy + icon registry.
- *    • Provides severity → color → icon → recommended formatting.
- *    • Provides 50+ future alert types (commented scaffolds).
- *    • IMMORTAL, deterministic, drift-proof, world-layer-aware.
- * ============================================================================
- */
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import nodemailer from "nodemailer";
 import { PulseProofBridgeLogger as logger, BridgeError as logError, BridgeLog as logInfo, BridgeWarn as logWarn } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";

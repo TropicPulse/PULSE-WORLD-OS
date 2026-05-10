@@ -24,105 +24,37 @@
 //      and lower layers — organism‑wide, not per‑organ.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiMemory",
-  version: "v16-Immortal-ADV++",
-  layer: "ai_core",
-  role: "symbolic_memory_engine",
-  lineage: "aiMemory-v9 → v11 → v13 → v15-Immortal-ADV → v16-Immortal-ADV++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    symbolicMemory: true,
-    hydration: true,
-    dehydration: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    trustFabricAware: true,
-    earnAware: true,
-    heartbeatAware: true,
-    governorAware: true,
-    genomeAware: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const MemoryMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiContextEngine", "aiCortex", "aiBrainstem", "aiTrustFabric", "aiPermissionsEngine"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
+
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
-
-// ============================================================================
-//  META BLOCK — v16.0-Immortal-ADV++
-// ============================================================================
-export const MemoryMeta = Object.freeze({
-  layer: "OrganismMemory",
-  role: "MEMORY_LAYER",
-  version: "16.0-Immortal-ADV++",
-  identity: "aiMemory-v16.0-Immortal-ADV++",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
-    binaryAware: true,
-    memoryAware: true,
-    packetAware: true,
-    windowAware: true,
-    shardAware: true,
-    hotKeyAware: true,
-    arteryAware: true,
-    nodeAdminAware: true,
-    overmindAware: true,
-    trustFabricAware: true,
-    earnAware: true,
-    heartbeatAware: true,
-    governorAware: true,
-    genomeAware: true,
-
-    microPipeline: true,
-    speedOptimized: true,
-    prewarmAware: true,
-    cacheAware: true,      // registry-level, not data cache
-    readOnly: false,
-    multiInstanceReady: true,
-    epoch: "16.0-Immortal-ADV++"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide deterministic memory access over PulseCoreMemory with artery v5 metrics (throughput, pressure, cost, budget, hot-key density, shard pressure, read/write bias) and expose those metrics to NodeAdmin/Overmind/Trust/Earn/Heartbeat via reporters.",
-
-    never: Object.freeze([
-      "store non-binary data",
-      "interpret symbolic state",
-      "mutate external organs directly",
-      "introduce randomness",
-      "maintain its own storage backend",
-      "bypass PulseCoreMemory"
-    ]),
-
-    always: Object.freeze([
-      "validate binary inputs",
-      "use PulseCoreMemory as the single source of truth",
-      "compute memory artery metrics deterministically",
-      "remain pure and minimal",
-      "treat all memory segments as read-only data from this organ’s perspective"
-    ])
-  })
-});
-
 // ============================================================================
 //  GLOBAL MEMORY ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
 // ============================================================================

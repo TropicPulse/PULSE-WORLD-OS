@@ -18,100 +18,21 @@
 //  • No mutation outside instance.
 //  • Pure structural math only.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSendAdapter",
-  version: "v16-Immortal-ORGANISM",
-  layer: "frontend",
-  role: "send_adapter_organ",
-  lineage: "PulseSendAdapter-v12.4 → v14-Immortal → v16-Immortal-ORGANISM",
-
-  evo: {
-    binaryAware: true,
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    deterministic: true,
-    adapterOrganism: true,
-    immortalIntel: true,
-    dualHashSurfaces: true,
-    cachePrewarmPresenceSurfaces: true,
-    advantageEcho: true,
-    ancestrySurface: true
-  },
-
-  contract: {
-    always: [
-      "PulseSend",
-      "PulseSendEngine",
-      "PulseBinarySend",
-      "PulsePresence",
-      "PulseChunks"
-    ],
-    never: [
-      "legacySendAdapter",
-      "legacyAdapter",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-
-// ============================================================================
-// ⭐ PulseRole — PulseSend Adapter Organ (v16-Immortal-ORGANISM)
-// ============================================================================
-export const PulseRole = {
-  type: "Messenger",
-  subsystem: "PulseSend",
-  layer: "Adapter",
-  version: "16-Immortal-ORGANISM",
-  identity: "PulseSendAdapter-v16-Immortal-ORGANISM",
-
-  evo: {
-    driftProof: true,
-    shapeShiftReady: true,
-    multiOrganReady: true,
-    patternAware: true,
-    lineageAware: true,
-    modeAware: true,
-    identityAware: true,
-    selfTranslationReady: true,
-    deterministicImpulseFlow: true,
-    futureEvolutionReady: true,
-
-    unifiedAdvantageField: true,
-    pulseSend11Ready: true,
-
-    diagnosticsReady: true,
-    signatureReady: true,
-    adapterSurfaceReady: true,
-
-    // Binary + dual-stack adapter surface
-    binaryAwareAdapterReady: true,
-    binaryFrontEndReady: true,
-    dualStackReady: true,
-
-    // cache / prewarm / presence
-    cacheChunkAware: true,
-    prewarmAware: true,
-    multiPresenceAware: true,
-
-    // v16 IMMORTAL
-    dualHashSurfaces: true,
-    adapterIntelligenceReady: true,
-    ancestrySurfaceReady: true,
-    advantageEchoReady: true
-  },
-
-  routingContract: "PulseRouter-v16",
-  meshContract: "PulseMesh-v16",
-  pulseContract: "Pulse-v1/v2/v3",
-  gpuOrganContract: "PulseGPU-v16",
-  earnCompatibility: "PulseEarn-v16"
-};
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================

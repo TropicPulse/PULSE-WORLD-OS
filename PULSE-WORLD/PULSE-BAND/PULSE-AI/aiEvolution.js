@@ -18,95 +18,35 @@
 //   • ZERO RANDOMNESS.
 //   • DETERMINISTIC ANALYSIS ONLY.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiEvolution",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "symbolic_evolution_engine",
-  lineage: "aiEvolution-v9 → v11 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    symbolicEvolution: true,
-    patternExpansion: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiEvolutionEngine", "aiGenome", "aiBrainstem"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const AI_EVOLUTION_META = Identity.OrganMeta;
 
-export const AI_EVOLUTION_META = Object.freeze({
-  layer: "PulseAIEvolution",
-  role: "EVOLUTION_ORGAN",
-  version: "11.3-Evo",
-  identity: "aiEvolution-v11.3-Evo",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    binaryAware: true,
-    symbolicAware: true,
-    organismAware: true,
-    lineageAware: true,
-    patternAware: true,
-    schemaAware: true,
-    routeAware: true,
-    fileAware: true,
-    pageAware: true,
-    earnAware: true,
-    powerAware: true,
-    environmentAware: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    diagnosticsAware: true,
-    driftAware: true,
-    repairAware: true,
-    packetAware: true,
-    recommendationAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    readOnly: true,
-    architectOnly: true,
-    multiInstanceReady: true,
-    epoch: "11.3-Evo"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  contract: Object.freeze({
-    purpose:
-      "Detect unused imports, dead code, orphaned routes, schema drift, organ drift, page drift, PulseEarn drift, and evolutionary patterns across the organism.",
-    never: Object.freeze([
-      "mutate data",
-      "modify external systems",
-      "override safety",
-      "self-modify",
-      "introduce randomness"
-    ]),
-    always: Object.freeze([
-      "analyze deterministically",
-      "strip identity anchors",
-      "report drift",
-      "classify evolutionary patterns",
-      "propose diffs conceptually",
-      "provide owner-only insight",
-      "integrate dual-band organism snapshot",
-      "emit evolution packets",
-      "return frozen, identity-safe reports"
-    ])
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { Personas } from "./aiPersonality.js";
 import { getOrganismSnapshot } from "./aiDeps-v16.js";

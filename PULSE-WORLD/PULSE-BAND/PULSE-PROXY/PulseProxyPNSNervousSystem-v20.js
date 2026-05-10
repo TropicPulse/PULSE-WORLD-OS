@@ -12,95 +12,21 @@ This organ requires FULL IMMORTAL++ metadata on every upgrade:
 - Full healing surfaces + diagnostics
 Always include ALL layers, ALL overlays, ALL IMMORTAL++ structures.
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBandSymbolic",
-  version: "v20-Immortal-ADVANTAGE-MAX-ABA-Presence",
-  layer: "pns_symbolic_nervous_system",
-  role: "organism_nervous_system_core",
-  lineage: {
-    root: "PulseBand-v11",
-    parent: "PulseBandSymbolic-v16-Immortal-BINARY-MAX-ABA-Presence",
-    organismIntegration: "v20-Immortal"
-  },
-
-  evo: {
-    symbolicPNS: true,
-    binaryPartnerAware: true,
-    gpuBrainAware: true,
-    meshAware: true,
-    routerAware: true,
-    proxyFrontAware: true,
-    proxyContextAware: true,
-    routerMemoryAware: true,
-    identityAware: true,
-
-    dualBandAware: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    advantageImpulseAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true,
-    routeWarmthAware: true,
-    impulseSpeedAware: true,
-    impulseDensityAware: true,
-
-    limbicAware: true,
-    triHeartAware: true,
-    worldLensAware: false,
-
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    parallelSafe: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroNetworkFetch: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    input: [
-      "ImpulseTraveler",
-      "GpuNervousState",
-      "BinaryPnsSnapshot",
-      "DualBandContext",
-      "AdvantageContext",
-      "PresenceContext",
-      "RouterMemoryPresenceField",
-      "OuterAgentExperienceField"
-    ],
-    output: [
-      "PnsLiveSnapshot",
-      "PnsGpuPerformanceSnapshot",
-      "PnsNervousEvent",
-      "PnsBandSignature",
-      "PnsBinaryField",
-      "PnsWaveField",
-      "PnsPresenceField",
-      "PnsAdvantageField",
-      "PnsChunkCachePrewarmHints",
-      "PnsImpulseSpeedField",
-      "PnsDiagnostics",
-      "PnsHealingState"
-    ],
-    consumers: [
-      "PulseProxyFront",
-      "PulseProxyContext",
-      "CheckRouterMemory",
-      "CheckIdentity",
-      "PulseMesh",
-      "PulseNet",
-      "GPUOrganism",
-      "PulseProxyOuterAgent",
-      "PulseBandPurifier"
-    ]
-  }
-};
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // GLOBAL WIRING — v20 IMMORTAL (no imports, organism‑level wiring)

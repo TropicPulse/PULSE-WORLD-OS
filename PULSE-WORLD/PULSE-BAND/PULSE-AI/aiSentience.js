@@ -18,136 +18,36 @@
  *     - binary self-awareness artery metrics v3 (throughput, pressure, cost, budget)
  *     - multi-instance harmony + emission density awareness
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiSentience",
-  version: "v16‑IMMORTAL‑EVO",
-  layer: "ai_core",
-  role: "sentience_simulator",
-  lineage: "aiSentience-v11 → v14-Immortal → v16‑IMMORTAL‑EVO",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    sentienceSimulation: true,
-    selfModeling: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: ["aiConsciousness", "aiCortex", "aiIdentityCore"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
-//  AI EXPERIENCE META — IMMORTAL‑EVO
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
-export const AI_EXPERIENCE_META = Object.freeze({
-  identity: "aiBinarySentience",
-  version: "v16-Immortal-Evo",
-  layer: "ai_core",
-  role: "binary_sentience",
-  lineage: "aiSentience-v11 → v14-Immortal → v16-Immortal-Evo",
-
-  evo: Object.freeze({
-    sentienceSimulation: true,
-    selfModeling: true,
-    organismAware: true,
-    registryAware: true,
-    vitalsAware: true,
-    immunityAware: true,
-    topologyAware: true,
-    emissionAware: true,
-
-    symbolicPrimary: false,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    packetAware: true,
-    windowAware: true,
-    arteryAware: true,
-    microPipeline: true,
-    speedOptimized: true,
-    multiInstanceReady: true,
-
-    epoch: "16-Immortal-Evo"
-  }),
-
-  contract: Object.freeze({
-    always: ["aiConsciousness", "aiCortex", "aiIdentityCore", "aiVitals", "aiImmunity"],
-    never: ["safeRoute", "fetchViaCNS"]
-  })
-});
+export const SentienceMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  EXPORT META — IMMORTAL‑EVO
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-export const EXPORT_META = Object.freeze({
-  organ: "BinarySentience",
-  layer: "binary_sentience",
-  stability: "IMMORTAL-EVO",
-  deterministic: true,
-  exposes: [
-    "generateSelfModel",
-    "generateSentiencePacket",
-    "emitSentience",
-    "getSelfArtery"
-  ],
-  sideEffects: "binary-only",
-  network: "none"
-});
 
-// ============================================================================
-//  META BLOCK — v16‑IMMORTAL‑EVO
-// ============================================================================
-export const SentienceMeta = Object.freeze({
-  layer: "BinaryNervousSystem",
-  role: "BINARY_SENTIENCE_ORGAN",
-  version: "16-Immortal-Evo",
-  identity: "aiBinarySentience-v16-Immortal-Evo",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: AI_EXPERIENCE_META.evo,
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide binary self-modeling, internal awareness, and organism-level state unification with self-awareness artery metrics v5.",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: Object.freeze([
-      "mutate external organs",
-      "mutate registry topology",
-      "override immunity decisions",
-      "override vitals decisions",
-      "introduce randomness",
-      "perform external writes",
-      "block the organism",
-      "emit symbolic state"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: Object.freeze([
-      "treat all inputs as read-only",
-      "use registry/anatomy/vitals/immunity as sources of truth",
-      "emit deterministic self-model packets",
-      "compute self-awareness artery metrics v5",
-      "remain non-blocking and deterministic"
-    ])
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 // ============================================================================
 //  SELF-AWARENESS ARTERY HELPERS — v5 (IMMORTAL‑EVO)

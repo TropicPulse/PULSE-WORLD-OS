@@ -29,111 +29,35 @@
 //      • does NOT override pipeline/reflex engines
 //      • treats all inputs as read-only
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiNervousSystem",
-  version: "v15-Immortal",
-  layer: "ai_core",
-  role: "signal_router",
-  lineage: "aiNervousSystem-v10 → v12.3-Presence → v15-Immortal",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    signalRouting: true,
-    sensoryIntake: true,
-    motorOutput: true,
-    symbolicPrimary: false,
-    binaryPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    routingArteryV3: true,
-    multiInstanceReady: true,
-    registryAware: true,
-    immunityAware: true,
-    anatomyAware: true,
-    metabolismAware: true,
-    schedulerAware: true,
-    reflexAware: true,
-    safetyArteryAware: true,
-    windowAware: true,
-    packetAware: true,
-    bluetoothReady: true
-  },
-
-  contract: {
-    always: ["aiReflex", "aiMetabolism", "aiImmunity"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
-//  META BLOCK — v15.0-Immortal
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
-export const NervousSystemMeta = Object.freeze({
-  layer: "BinaryNervousSystem",
-  role: "BINARY_NERVOUS_SYSTEM",
-  version: "15.0-Immortal",
-  identity: "aiBinaryNervousSystem-v15.0-Immortal",
+export const NervousSystemMeta = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    routingAware: true,
-    immunityAware: true,
-    anatomyAware: true,
-    registryAware: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    dualband: true,
-    packetAware: true,
-    windowAware: true,     // safe routing snapshots
-    bluetoothReady: true,  // placeholder
-    arteryAware: true,     // routing artery v3
-    prewarmAware: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    multiInstanceReady: true,
-    epoch: "v15.0-Immortal"
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide deterministic routing of binary signals between organs using anatomy, immunity, and registry data, with routing artery v3 metrics and window-safe snapshots.",
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    never: Object.freeze([
-      "introduce randomness",
-      "mutate external organs",
-      "perform cognition",
-      "interpret symbolic state",
-      "override pipeline or reflex engines",
-      "bypass immunity quarantine",
-      "bypass anatomy topology"
-    ]),
-
-    always: Object.freeze([
-      "route signals deterministically",
-      "respect immunity quarantine",
-      "respect anatomy topology",
-      "encode routing packets in binary",
-      "maintain routing artery metrics v3",
-      "remain pure and minimal",
-      "treat all inputs as read-only"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "Binary nervous system routes signals deterministically, binary-only, with artery-aware routing and no cognition.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  GLOBAL ROUTING ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)

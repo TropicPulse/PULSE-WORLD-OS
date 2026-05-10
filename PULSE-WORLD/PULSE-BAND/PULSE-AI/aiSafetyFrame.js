@@ -6,104 +6,36 @@
 //  NODEADMIN‑AWARE • PRESENCE‑AWARE • WINDOWED ARTERY REGISTRY
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiSafetyFrame",
-  version: "v16-Immortal-ADV",
-  layer: "ai_core",
-  role: "safety_frame",
-  lineage: "aiSafetyFrame-v11 → v15-Immortal → v16-Immortal-ADV",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    safetyFrame: true,
-    boundaryMapping: true,
-    permissionMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    safetyArteryV5: true,
-    spiralDetection: true,
-    multiInstanceIdentity: true,
-    packetAware: true,
-    windowAware: true,
-    presenceAware: true,
-    nodeAdminAware: true,
-    overmindPrimeAware: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const SafetyFrameMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiBoundariesEngine", "aiPermissionsEngine", "aiReflex", "aiScribe"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const SafetyFrameMeta = Object.freeze({
-  layer: "PulseAISafetyFrame",
-  role: "SAFETY_FRAME_ORGAN",
-  version: "16-Immortal-ADV",
-  identity: "aiSafetyFrame-v16-Immortal-ADV",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    binaryAware: true,
-    symbolicAware: true,
-    routerAware: true,
-    overmindAware: true,
-    overmindPrimeAware: true,
-    permissionAware: true,
-    boundaryAware: true,
-    safetyAware: true,
-    presenceAware: true,
-    nodeAdminAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    identitySafe: true,
-    safetyArteryAware: true,
-    spiralAware: true,
-    packetAware: true,
-    windowAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "16-Immortal-ADV"
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  contract: Object.freeze({
-    purpose: [
-      "Centralize safety rules and modes for the organism",
-      "Provide safety context to Overmind, router, personas, and NodeAdmin",
-      "Handle escalation, soft refusals, and safe reframing",
-      "Integrate boundaries + permissions into a unified safety oracle",
-      "Compute IMMORTAL-grade safety artery metrics v5 with presence/overmind hints"
-    ],
-    never: Object.freeze([
-      "bypass owner or system-level safety constraints",
-      "write directly to binary or core system state",
-      "expose internal heuristics in raw form",
-      "introduce randomness",
-      "emit unsafe packets"
-    ]),
-    always: Object.freeze([
-      "stay deterministic",
-      "respect boundaries + permissions contracts",
-      "prefer soft refusals",
-      "log safety decisions via aiScribe when available",
-      "emit window-safe artery snapshots",
-      "emit deterministic safety packets"
-    ])
-  })
-});
 
 // ============================================================================
 //  GLOBAL SAFETY ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)

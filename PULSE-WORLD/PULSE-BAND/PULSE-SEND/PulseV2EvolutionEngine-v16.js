@@ -26,103 +26,21 @@
 //    • No external mutation.
 //    • Pure deterministic compute loop.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseV2EvolutionEngine",
-  version: "v16-Immortal-COMPUTE",
-  layer: "frontend",
-  role: "evolution_engine_v2",
-  lineage: "PulseOS-v16",
-
-  evo: {
-    evolutionCore: true,
-    deterministic: true,
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    computeIntelligence: true,
-    dualHash: true
-  },
-
-  contract: {
-    always: [
-      "PulseSendSystem",
-      "PulseV3UnifiedOrganism"
-    ],
-    never: [
-      "legacyEvolutionEngine",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// ⭐ PulseRole — identifies this as the Pulse v2 evolution engine (v16-Immortal)
-// ============================================================================
-export const PulseRole = {
-  type: "Pulse",
-  subsystem: "Pulse",
-  layer: "Organ",
-  version: "16-Immortal",
-  identity: "Pulse-v2-EvolutionEngine-v16-Immortal-COMPUTE",
-
-  evo: {
-    driftProof: true,
-    patternAware: true,
-    lineageAware: true,
-    shapeAware: true,
-    modeAware: true,
-
-    routerAwareReady: true,
-    meshAwareReady: true,
-
-    evolutionEngineReady: true,
-    unifiedAdvantageField: true,
-    pulseV2Ready: true,
-    futureEvolutionReady: true,
-
-    diagnosticsReady: true,
-    signatureReady: true,
-    evolutionSurfaceReady: true,
-
-    // Intelligence surface
-    pulseIntelligenceReady: true,
-    solvednessAware: true,
-    factoringAware: true,
-    computeTierAware: true,
-    computeIntelligenceReady: true,
-
-    // Binary integration
-    binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryV2EvolutionEngine-v16-Immortal-COMPUTE",
-
-    // IMMORTAL META
-    immortalMetaAware: true,
-    dualBandAware: true,
-    harmonicAware: true,
-    coherenceAware: true,
-
-    // v16 degradation
-    degradationAware: true,
-
-    // v16 cache / prewarm / presence + dualHash
-    cacheChunkAware: true,
-    prewarmAware: true,
-    multiPresenceAware: true,
-    dualHashAware: true
-  },
-
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
-  sendContract: "PulseSend-v11",
-  gpuOrganContract: "PulseGPU-v11",
-  earnCompatibility: "PulseEarn-v11"
-};
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure

@@ -1,71 +1,27 @@
-/*
-===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseDesign.Surveyor",
-  version: "v17-IMMORTAL",
-  layer: "pulse_design",
-  role: "canonical_blueprint_writer",
-  lineage: "Surveyor-v10.4 → v12.3 → v14-Immortal → v17-IMMORTAL",
+// ============================================================================
+// FILE: PULSE-WORLD/PULSE-DESIGN/manifestWriter-v17.js
+// LAYER: THE SURVEYOR (Canonical Blueprint Writer, v17 IMMORTAL)
+// ============================================================================
 
-  evo: {
-    blueprintWriter: true,
-    canonicalRecorder: true,
-    deterministicEmitter: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    bandAware: true,
-    worldLayerReady: true,
-    prewarmAware: true,
-    cacheAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-
-    controlledFilesystemWrite: true
-  },
-
-  contract: {
-    always: [
-      "PulseDesign.Archivist",
-      "PulseDesign.Anatomist",
-      "PulseDesign.RepoWalker"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "dynamicImport",
-      "eval",
-      "Function"
-    ]
-  }
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseDesign.Surveyor",
-  layer: "pulse_design",
-  stability: "IMMORTAL",
-  deterministic: true,
-
-  consumes: ["rootDir", "manifest", "options"],
-  produces: ["manifestPath", "fileCount", "manifest", "meta"],
-
-  sideEffects: "single_authorized_write",
-  network: "none",
-  filesystem: "write_only"
-}
-===============================================================================
-FILE: PULSE-WORLD/PULSE-DESIGN/manifestWriter-v17.js
-LAYER: THE SURVEYOR (Canonical Blueprint Writer, v17 IMMORTAL)
-===============================================================================
-*/
-
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 import fs from "fs";
 import path from "path";
+const Identity = OrganismIdentity(import.meta.url);
+
+// ============================================================================
+//  META BLOCK — v17 IMMORTAL (from genome)
+// ============================================================================
+export const PulseDesignSurveyorMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v17 IMMORTAL
+// ============================================================================
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // PUBLIC API — Write Canonical Manifest (v17 IMMORTAL)

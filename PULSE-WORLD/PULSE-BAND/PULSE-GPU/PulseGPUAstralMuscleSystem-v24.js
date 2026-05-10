@@ -20,119 +20,24 @@
 //    • GPU chunker-aware: can emit chunked engine evidence.
 //    • Warm-path-aware + session-trace-aware hooks via metadata.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUAstralMuscleSystem",
-  version: "v24-Immortal++",
-  layer: "gpu_muscle",
-  role: "gpu_execution_muscle",
-  lineage: "PulseGPU-v24-Immortal++",
-
-  evo: {
-    gpuCompute: true,
-    tensorMuscle: true,
-    executionMuscle: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    parallelSafe: true,
-    gpuSafe: true,
-
-    prewarmAware: true,
-    chunkCacheAware: true,
-    snapshotAware: true,
-    evidenceReady: true,
-
-    // v24-Immortal++ extras
-    warmPathAware: true,
-    gpuChunkerAware: true,
-    sessionTraceAware: true,
-
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    earnCompatibility: "Earn-v24-GPU"
-  },
-
-  contract: {
-    always: [
-      "PulseGPUDriveCenter",
-      "PulseGPUDrive"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyGPUMuscle"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+export const PULSE_GPU_ENGINE_META = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const GPURole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { PulseGPURuntime } from "./PulseGPUDrive-v24.js";
 import { pulseGPUChunker } from "./PulseGPUChunker-v24.js";
-
-// ============================================================================
-//  ENGINE META — Astral Muscle Identity (v24-Immortal++)
-// ============================================================================
-const PULSE_GPU_ENGINE_META = {
-  layer: "PulseGPUEngine",
-  version: "24.0-Immortal++",
-  target: "full-gpu",
-  description:
-    "WebGPU execution layer — Astral Muscle System (dual-mode, memory-aware, warm-path-aware, GPU-chunker-aware, snapshot-ready).",
-  evo: {
-    // Biological / metaphor
-    metabolicBoost: 1.8,
-    neuralReflexBoost: 1.8,
-    stabilityBoost: 2.0,
-
-    // System / physical
-    multiInstanceReady: true,
-    deterministicNeuron: true,
-    parallelSafe: true,
-    fanOutScaling: 1.3,
-    clusterCoherence: true,
-    zeroDriftCloning: true,
-    reflexPropagation: 1.3,
-    shaderPipelinePurity: true,
-
-    // Fusion / dual-mode / binary
-    dualModeEvolution: true,
-    binaryAware: true,
-    symbolicAware: true,
-    organismClusterBoost: 1.5,
-    cognitiveComputeLink: true,
-    unifiedAdvantageField: true,
-
-    // Presence / identity
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    // Contracts (v24)
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    earnCompatibility: "Earn-v24-GPU",
-
-    // v24 extras
-    prewarmAware: true,
-    chunkCacheAware: true,
-    snapshotAware: true,
-    evidenceReady: true,
-    warmPathAware: true,
-    gpuChunkerAware: true,
-    sessionTraceAware: true
-  }
-};
 
 
 // ============================================================================
@@ -700,7 +605,6 @@ class PulseGPUEngine {
 //  EXPORTS — Astral Muscle System v24-Immortal++
 // ============================================================================
 export {
-  PULSE_GPU_ENGINE_META,
   PulseGPUMemory,
   PulseRenderPassBuilder,
   PulsePipelineBuilder,

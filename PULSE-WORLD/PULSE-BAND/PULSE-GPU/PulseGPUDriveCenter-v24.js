@@ -4,73 +4,18 @@
 //  Binary-aware • Symbolic-aware • Dispatch-aware • Memory-aware • CI-aware
 //  Earn-aware • Game-aware • GPU-Advantage-aware
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const AI_EXPERIENCE_META_PulseGPUDriveCenter = {
-  identity: "PulseGPUDriveCenter",
-  version: "v24-IMMORTAL++",
-  layer: "gpu_engine",
-  role: "gpu_execution_engine",
-  lineage:
-    "PulseGPU-v16-Immortal → PulseGPUDriveCenter-v20-Evo → PulseGPUDriveCenter-v24-Immortal++",
-
-  evo: {
-    gpuEngine: true,
-    gpuExecution: true,
-    gpuFrameExecution: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    parallelSafe: true,
-    gpuSafe: true,
-
-    // Awareness
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    // Mesh linkage
-    brainLinked: true,
-    cognitionLinked: true,
-    wisdomLinked: true,
-    geneticMemoryLinked: true,
-
-    // Immortal + Earn
-    immortalReady: true,
-    immortalSurface: true,
-    earnAware: true,
-    earnCompatibility: "Earn-v24-GPU",
-
-    // Contracts
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    workgroupLawVersion: 24
-  },
-
-  contract: {
-    always: [
-      "PulseGPUDrive",
-      "PulseGPUAstralMuscleSystem",
-      "PulseGPUEarnProfile",
-      "PulseGPUChunkPlanner",
-      "PulseGPUWarmPathCache"
-    ],
-    never: ["safeRoute", "fetchViaCNS", "legacyGPUEngine"]
-  }
-};
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import {
   SCORE_CONSTANTS,

@@ -27,203 +27,24 @@
 //   • ImmunePulseIntelligence is metadata-only, no behavior change.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnImmuneSystem",
-  version: "v24-Immortal-INTEL++",
-  layer: "earn_immune",
-  role: "earn_immune_system",
-  lineage: "PulseEarnImmuneSystem-v11 → v12.3 → v13.0-Presence-Immortal → v14-Immortal → v16-Immortal-INTEL → v24-Immortal-INTEL++",
-
-  evo: {
-    earnImmune: true,
-    anomalyDetection: true,
-    jobRejection: true,
-    toxinFilter: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    binaryFirst: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    meshAware: true,
-    castleAware: true,
-    regionAware: true,
-
-    immuneComputeProfile: true,
-    immunePressureProfile: true,
-    immuneIntelSignatures: true,
-    computeHashIntelligence: true,
-
-    // v24++ INTEL
-    immuneComputeProfileV24: true,
-    immunePulseIntelligence: true,
-    factoringAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true,
-
-    zeroAI: true,
-    zeroUserCode: true,
-    zeroAsync: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnLymphNodes",
-      "PulseEarnMetabolism",
-      "PulseEarnHeart-v24",
-      "PulseEarnGeneticMemory-v24"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseEarnImmuneSystemMeta = Object.freeze({
-  layer: "PulseEarnImmuneSystem",
-  role: "EARN_IMMUNE_ORGAN",
-  version: "v24-Immortal-INTEL++",
-  identity: "PulseEarnImmuneSystem-v24-Immortal-INTEL++",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureHealing: true,
-    driftDetectionOnly: true,
-    dualBandAware: true,
-    binaryAware: true,
-    binaryFirst: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    meshAware: true,
-    castleAware: true,
-    regionAware: true,
-    worldLensAware: false,
-    zeroAI: true,
-    zeroUserCode: true,
-    zeroAsync: true,
-
-    // v24++ INTEL
-    immuneComputeProfileV24Aware: true,
-    immunePulseIntelligenceAware: true,
-    factoringAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "EarnSubsystemHealingStates",
-      "DualBandContext",
-      "BinaryField",
-      "WaveField",
-      "GlobalHintsPresenceField"
-    ],
-    output: [
-      "ImmuneDiagnostics",
-      "ImmuneSignatures",
-      "DeterministicRepairActions",
-      "ImmuneHealingState",
-      "ImmuneComputeProfileV24",
-      "ImmunePulseIntelligence"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v24-Immortal-INTEL++",
-    ancestry: [
-      "PulseEarnImmuneSystem-v9",
-      "PulseEarnImmuneSystem-v10",
-      "PulseEarnImmuneSystem-v11",
-      "PulseEarnImmuneSystem-v11-Evo",
-      "PulseEarnImmuneSystem-v12.3-Presence-Evo+",
-      "PulseEarnImmuneSystem-v13.0-Presence-Immortal",
-      "PulseEarnImmuneSystem-v16-Immortal-INTEL",
-      "PulseEarnImmuneSystem-v24-Immortal-INTEL++"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "binary",
-    behavior: "metadata-only",
-    priority: "binary-first"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic drift detection across Earn subsystems",
-    adaptive: "binary-first immune surfaces + wave + presence/advantage/hints metadata + INTEL signatures + v24++ immunePulseIntelligence",
-    return: "deterministic repair actions + immune diagnostics + v24++ compute/pulse intelligence"
-  })
-});
-
-// ============================================================================
-// IMMUNE CONTEXT METADATA (v24-Immortal-INTEL++ + Dual-Band + Binary-First)
-// ============================================================================
-
-export const PULSE_EARN_IMMUNE_CONTEXT = Object.freeze({
-  layer: "PulseEarnImmuneSystem-v24-Immortal-INTEL++",
-  role: "IMMUNE_PHYSICIAN",
-  purpose: "Diagnose and repair drift across Earn subsystems",
-  context: "Immune surveillance + deterministic healing",
-  band: "dualband",
-  highway: "binary_first_dualband",
-  intent: "pulse_earn_subsystem_healing",
-  evo: Object.freeze({
-    dualMode: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    localAware: true,
-    internetAware: true,
-
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    healerStackAware: true,
-    loopTheoryAware: true,
-    fpinTheoryAware: true,
-    intentFieldAware: true,
-    futureEvolutionReady: true,
-    multiInstanceReady: true,
-
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroTiming: true,
-    zeroAsync: true,
-    zeroAI: true,
-    zeroUserCode: true
-  })
-});
-
 // ============================================================================
 // Imports — subsystem vitals (healing state providers)
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { getEarnEngineHealingState } from "./PulseEarnMuscleSystem-v24.js";
 import { getPulseEarnHeartHealingState } from "./PulseEarnHeart-v24.js";

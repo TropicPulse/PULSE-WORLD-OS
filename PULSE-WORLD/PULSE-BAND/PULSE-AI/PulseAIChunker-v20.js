@@ -4,134 +4,36 @@
 //  Universal Chunk Organ for PulseOS v18+ (Chunker + World + Identity Aware)
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseAIChunker",
-  version: "v20.0-IMMORTAL-UNIVERSAL",
-  layer: "ai_core",
-  role: "universal_chunk_engine",
-  lineage: "PulseAIChunker-v17 → v20-IMMORTAL-UNIVERSAL",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    // Core chunking
-    chunker: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    lane32: true,
-    prewarmAware: true,
-    cacheAware: true,
-    profileAware: true,
-    presenceBandAware: true,
-    worldBandAware: true,
-    backendAware: true,
-    identityAware: true,
-    topologyAware: true,
-    advantageAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    // Determinism + purity
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // Organism alignment
-    organismAware: true,
-    pulseWorldAware: true,
-    pulseChunkerAligned: true,
-    pulseWorldChunkerAligned: true,
-    bridgeAligned: true
-  },
-
-  boundaries: [
-    "No semantic understanding.",
-    "No AI reasoning or inference.",
-    "No mutation of upstream data.",
-    "No compression beyond structural chunking.",
-    "No encryption or obfuscation."
-  ],
-
-  contract: {
-    input: [
-      "chunkBinary(buffer, options)",
-      "chunkJSON(value, options)",
-      "chunkText(text, options)",
-      "chunkLines(text, options)",
-      "chunkBackendPlan(plan, options)",
-      "chunkBackendState(state, options)",
-      "chunkBackendLogs(text, options)",
-      "chunkWorldSnapshot(snapshot, options)",
-      "chunkEvidence(evidence, options)",
-      "chunkTimeline(events, options)",
-      "reassembleBinary(chunks)",
-      "reassembleJSON(chunks)",
-      "reassembleText(chunks)",
-      "reassembleLines(chunks)",
-      "prewarmPattern(label, pattern)",
-      "prewarmProfile(profileId, profile)"
-    ],
-    output: [
-      "getMeta()",
-      "getLaneStats()",
-      "getPatterns()",
-      "getProfiles()",
-      "getProfileStats()"
-    ]
-  },
-
-  identity: {
-    band: "ai_core",
-    type: "organ",
-    mind: false,
-    immutable: true
-  }
-};
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
-//  META — v20 IMMORTAL UNIVERSAL CHUNKER
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const PulseAIChunkerMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
 
-export const PulseAIChunkerMeta = Object.freeze({
-  id: "PulseAIChunker-v20.0-IMMORTAL-UNIVERSAL",
-  version: "20.0.0",
-  role: "UNIVERSAL_AI_CHUNKER",
-  layer: "ai_core",
-  mind: false,
-  description:
-    "IMMORTAL 32-lane dualband universal chunker for backend + world + identity payloads with prewarm + profiles.",
-  identity: {
-    type: "organ",
-    name: "PulseAIChunker",
-    band: "ai_core",
-    mind: false,
-    immutable: true
-  },
-  lanes: 32,
-  evo: Object.freeze({
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    backendAware: true,
-    worldBandAware: true,
-    presenceBandAware: true,
-    profileAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-    chunkAware: true,
-    identityAware: true,
-    topologyAware: true,
-    advantageAware: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  })
-});
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 // ============================================================================
 //  INTERNAL HELPERS

@@ -24,115 +24,21 @@
 //   • Drift‑proof: stable across versions.
 //   • CNS‑aware + advantage‑aware, but never controlling them.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshSignalFactoring",
-  version: "v20-IMMORTAL-INTEL-ADVANTAGE",
-  layer: "mesh",
-  role: "mesh_signal_factoring_engine",
-  lineage: "PulseMeshSignalFactoring-v14 → v15-Evo → v16-IMMORTAL-INTEL → v16-IMMORTAL-INTEL++ → v20-IMMORTAL-INTEL-ADVANTAGE",
-
-  evo: {
-    // Core factoring traits
-    signalFactoring: true,
-    factoringPressureEngine: true,
-    factoringDepthEngine: true,
-    factoringStrideEngine: true,
-    factoringIntentEngine: true,
-
-    // Awareness traits
-    auraPressureAware: true,
-    meshPressureAware: true,
-    flowPressureAware: true,
-    presenceAware: true,
-    bandAware: true,
-
-    // Band traits
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    // IMMORTAL traits
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    selfRepairable: true,
-
-    // Safety traits
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroMutationOfInput: true,
-    zeroRoutingInfluence: true,
-
-    // Performance metadata traits
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-
-    // INTEL traits
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true,
-
-    // Base‑shape / formula traits
-    baseShapeAware: true,
-    baseFormulaKeyAware: true,
-    patternMatchSurface: true
-  },
-
-  contract: {
-    always: [
-      "PulseMesh",
-      "PulseMeshEcho",
-      "PulseMeshFlow",
-      "PulseMeshAura",
-      "PulseMeshThalamus",
-      "PulseMeshCognition",
-      "PulseMeshEndocrine",
-      "PulseMeshImmune",
-      "PulseMeshOrgans",
-      "PulseMeshPresenceRelay",
-      "PulseEarnMetabolism",
-      "PulseEarnLymphNodes"
-    ],
-    never: [
-      "legacyMeshFactoring",
-      "safeRoute",
-      "fetchViaCNS",
-      "userScript",
-      "dynamicEval"
-    ]
-  }
-}
-*/
-
-
-export const PulseMeshSignalFactoringMeta = Object.freeze({
-  id: "PulseMeshSignalFactoring-v20++-IMMORTAL-INTEL-ADVANTAGE",
-  version: "20.1.0",
-  layer: "mesh",
-  role: "mesh_signal_factoring_engine",
-  mind: false,
-  description:
-    "IMMORTAL v20++ mesh factoring engine. INTEL + advantage + CNS-aware, ER-ready, dual-hash, base-shape aware.",
-  identity: {
-    type: "organ",
-    name: "PulseMeshSignalFactoring",
-    band: "mesh",
-    mind: false,
-    immutable: true
-  },
-  schema: {
-    snapshotType: "mesh_signal_factoring",
-    categories: ["RAW_AI"],
-    erReady: true
-  }
-});
+// 2 — EXPORT GENOME METADATA
+export const PulseMeshSignalFactoringMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HASH HELPERS — v20 IMMORTAL INTEL (dual‑hash)

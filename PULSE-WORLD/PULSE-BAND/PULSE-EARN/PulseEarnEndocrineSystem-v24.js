@@ -27,146 +27,21 @@
 //   • Scoring weights are provided as inputs (no internal hardcoded weights).
 //   • Dual-band A‑B‑A: symbolic primary, binary aware, metadata-only.
 // ============================================================================
+// 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnEndocrineSystem",
-  version: "v24-Immortal-INTEL-AGGRESSIVE-PLUS",
-  layer: "earn_endocrine",
-  role: "earn_hormone_and_signal_system",
-  lineage: "PulseEarnEndocrineSystem-v11 → v12.3 → v13 → v14.4 → v16-Immortal-INTEL → v24-Immortal-INTEL-AGGRESSIVE-PLUS",
-
-  evo: {
-    endocrineSystem: true,
-    hormoneSignals: true,
-    jobPrioritySignals: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    chunkPrewarmAware: true,
-    factoringAware: true,
-    computeProfileAware: true,
-    pulseIntelligenceAware: true,
-
-    waveFieldAware: true,
-    meshAware: true,
-    castleAware: true,
-    regionAware: true,
-
-    // v24++ INTEL surfaces
-    gpuAwareReady: true,
-    minerAwareReady: true,
-    airAwareReady: true,
-    performanceRatioAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarn",
-      "PulseEarnCell",
-      "PulseEarnCirculatorySystem",
-      "PulseEarnGeneticMemory",
-      "PulseEarnContinuancePulse"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseEarnEndocrineSystemMeta = Object.freeze({
-  layer: "PulseEarnEndocrineSystem",
-  role: "EARN_ENDOCRINE_ORGAN",
-  version: "v24-Immortal-INTEL-AGGRESSIVE-PLUS",
-  identity: "PulseEarnEndocrineSystem-v24-Immortal-INTEL-AGGRESSIVE-PLUS",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureIntelligenceEngine: true,
-    reputationAware: true,
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    meshAware: true,
-    castleAware: true,
-    regionAware: true,
-    worldLensAware: false,
-
-    chunkPrewarmAware: true,
-    factoringAware: true,
-    computeProfileAware: true,
-    pulseIntelligenceAware: true,
-
-    // v24++ INTEL guarantees
-    gpuAwareReady: true,
-    minerAwareReady: true,
-    airAwareReady: true,
-    performanceRatioAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "MarketplaceId",
-      "EndocrineSignals",
-      "DualBandContext",
-      "GlobalHintsPresenceField",
-      "EndocrineWeightsConfig", // { latency, apiSuccess, jobQuality, profitability, jobSuccess, defaultReputation, emaBaseBlend? }
-      "EndocrineCapabilityModel" // { performanceRatio?, gpuScore?, minerScore?, offlineScore?, airScore? } (metadata-only)
-    ],
-    output: [
-      "ReputationScore",
-      "EndocrineDiagnostics",
-      "EndocrineSignatures"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v11-Evo",
-    parent: "PulseEarn-v24-Immortal-INTEL",
-    ancestry: [
-      "PulseEarnEndocrineSystem-v10",
-      "PulseEarnEndocrineSystem-v11",
-      "PulseEarnEndocrineSystem-v11-Evo",
-      "PulseEarnEndocrineSystem-v12.3-Presence-Evo+-AGGRESSIVE",
-      "PulseEarnEndocrineSystem-v13.0-Presence-Immortal-AGGRESSIVE",
-      "PulseEarnEndocrineSystem-v14.4-Immortal-INTEL-AGGRESSIVE",
-      "PulseEarnEndocrineSystem-v16-Immortal-INTEL-AGGRESSIVE"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic reputation scoring (weights as inputs)",
-    adaptive: "EMA blending + binary/wave + v24 presence/advantage/chunk/computeProfile modulation + capability-aware INTEL surfaces",
-    return: "stable reputation signal for routing/selection"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // Settings — visible, editable (not buried in logic)

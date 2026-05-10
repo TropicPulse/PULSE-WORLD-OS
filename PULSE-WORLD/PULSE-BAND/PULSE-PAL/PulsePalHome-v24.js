@@ -25,190 +25,26 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CorePresence = PulseProofBridge.corepresence;
 const CoreDaemon   = PulseProofBridge.coredaemon;
 const CoreSystem   = PulseProofBridge.coresystem;
-
-// ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalHome = {
-  id: "pulsepal.home",
-  kind: "ui_organ",
-  version: "v24-IMMORTAL++",
-  role: "Pulse‑Pal A0 presence membrane",
-  surfaces: {
-    band: ["home", "presence", "identity", "media", "daemon"],
-    wave: ["calm", "ready", "supportive"],
-    binary: ["router_entry", "companion_entry", "avatar_switch", "daemon_summary"],
-    presence: ["companion_face", "status_overview", "tone_band"],
-    advantage: [
-      "one_tap_chat",
-      "one_tap_skills",
-      "one_tap_settings",
-      "one_tap_tasks",
-      "one_tap_system",
-      "media_preload"
-    ],
-    speed: "instant_ui"
-  },
-  routes: {
-    chat: "pulsepal.chat",
-    skills: "pulsepal.skills",
-    settings: "pulsepal.settings",
-    tasks: "pulsepal.tasks",
-    system: "pulsepal.system"
-  },
-  consumers: [
-    "Router",
-    "IQMap",
-    "CompanionLayer",
-    "CorePresence",
-    "CoreDaemon",
-    "CoreSystem"
-  ],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePalHome = {
-  tone: "warm_technical",
-  pacing: "steady",
-  emotionalBand: "reassuring",
-  primaryIntent: "invite_interaction",
-  secondaryIntent: "show_system_stability",
-  userFirstImpression: "this_is_the_companion_face",
-  visualNotes: {
-    mascot: "idle_but_attentive",
-    glow: "subtle_cyan",
-    motion: "low_breathe"
-  }
-};
-
-// ============================================================================
-// ORGAN_META
-// ============================================================================
-export const ORGAN_META_PulsePalHome = {
-  id: "organ.pulsepal.home",
-  organism: "PulsePal",
-  layer: "ui.presence",
-  tier: "IMMORTAL",
-  a0Surface: true,
-  evoFlags: {
-    canExtendStatusList: true,
-    canAddQuickActions: true,
-    canThemeWithPresence: true,
-    mediaAware: true,
-    presenceAware: true,
-    personaAware: true,
-    daemonAware: true
-  },
-  lineage: {
-    family: "companion_home",
-    generation: 2,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalHome = {
-  inputs: {
-    Router: "navigation interface",
-    Icons: "icon resolution interface",
-    Media: "media resolver interface",
-    CorePresence: "bridge presence organ",
-    CoreDaemon: "bridge daemon snapshot",
-    CoreSystem: "bridge system organ"
-  },
-  outputs: {
-    routes: [
-      "pulsepal.chat",
-      "pulsepal.skills",
-      "pulsepal.settings",
-      "pulsepal.tasks",
-      "pulsepal.system"
-    ],
-    uiSurface: "home_presence_membrane",
-    presence: "CorePresence.snapshot"
-  },
-  consumers: [
-    "Router",
-    "IQMap",
-    "CompanionLayer",
-    "CorePresence",
-    "CoreDaemon",
-    "CoreSystem"
-  ],
-  guarantees: {
-    deterministicRender: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalHome = {
-  drift: {
-    allowed: false,
-    notes: "Home presence must remain stable across versions."
-  },
-  pressure: {
-    expectedLoad: "high_entry_frequency",
-    notes: "Frequently used as entry point; keep render cheap."
-  },
-  stability: {
-    uiLayout: "stable",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 6,
-    notes: "Header, quick actions, presence, status, daemon, avatar."
-  },
-  chunking: {
-    prewarm: [
-      "icons.pulse",
-      "icons.ai_brain",
-      "icons.binary_matrix",
-      "icons.settings",
-      "icons.check",
-      "icons.diagnostics_pulse",
-      "media.pulsepal"
-    ],
-    cacheKey: "pulsepal.home.ui"
-  },
-  worldLens: {
-    awareOfWorlds: true
-  },
-  limbic: {
-    band: "safety_presence"
-  },
-  triHeart: {
-    cognitive: "clear_routes",
-    emotional: "reassuring_presence",
-    behavioral: "invite_click_quick_actions"
-  },
-  impulseSpeed: {
-    primaryAction: "open_chat",
-    latencyTargetMs: 50
-  },
-  healingSurfaces: {
-    enabled: true
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

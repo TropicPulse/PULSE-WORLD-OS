@@ -38,6 +38,21 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreMemory   = PulseProofBridge.corememory;
@@ -47,163 +62,6 @@ const CoreDaemon   = PulseProofBridge.coredaemon;
 const getIdentity  = PulseProofBridge.getBridgeIdentitySnapshot
   ? () => PulseProofBridge.getBridgeIdentitySnapshot()
   : () => null;
-
-// ============================================================================
-// AI_EXPERIENCE_META
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalPersonaEngine = {
-  id: "pulsepal.persona.engine",
-  kind: "core_engine",
-  version: "v24-IMMORTAL++",
-  role: "Pulse‑Pal persona synthesis cortex",
-  surfaces: {
-    band: ["persona", "tone", "continuity", "identity", "behavior"],
-    wave: ["attuned", "stable", "grounded"],
-    binary: ["persona_snapshot", "tone_snapshot", "continuity_snapshot", "identity_snapshot"],
-    presence: ["persona_state", "relational_band"],
-    advantage: ["single_persona_surface", "daemon_bridge", "history_aware"],
-    speed: "instant_compute"
-  },
-  routes: {
-    home: "pulsepal.home",
-    identity: "pulsepal.identity",
-    memory: "pulsepal.memory",
-    speech: "pulsepal.speech"
-  },
-  consumers: [
-    "CoreMemory",
-    "CoreSpeech",
-    "CorePresence",
-    "CoreDaemon",
-    "PulseBandDaemon",
-    "IQMap"
-  ],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "cache_last_snapshot_only",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePalPersonaEngine = {
-  tone: "calm_attuned",
-  pacing: "steady",
-  emotionalBand: "connection_safety",
-  primaryIntent: "synthesize_persona_surface",
-  secondaryIntent: "stabilize_tone_and_continuity",
-  userFirstImpression: "persona_is_consistent_and_explainable",
-  visualNotes: {
-    icon: "persona",
-    motion: "low_breathe",
-    colorBand: "cyan_soft"
-  }
-};
-
-// ============================================================================
-// ORGAN_META
-// ============================================================================
-export const ORGAN_META_PulsePalPersonaEngine = {
-  id: "organ.pulsepal.persona.engine",
-  organism: "PulsePal",
-  layer: "core.persona",
-  tier: "IMMORTAL",
-  evoFlags: {
-    personaAware: true,
-    toneAware: true,
-    continuityAware: true,
-    identityAware: true,
-    daemonAware: true,
-    requiresCoreMemory: true,
-    requiresCoreSpeech: true,
-    requiresCorePresence: true
-  },
-  lineage: {
-    family: "companion_persona",
-    generation: 2,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalPersonaEngine = {
-  inputs: {
-    CoreMemory: "bridge memory organ",
-    CoreSpeech: "bridge speech organ",
-    CorePresence: "bridge presence organ",
-    CoreDaemon: "bridge daemon snapshot (optional)",
-    DaemonSnapshot: "PulseBandDaemon snapshot (optional)",
-    PalSummary: "daemon palSummary (optional)",
-    PalHistory: "daemon palHistory (optional)"
-  },
-  outputs: {
-    personaSnapshot: {
-      persona: "traits + style",
-      tone: "tone snapshot (band + energy + focus)",
-      behavior: "behavior hints",
-      continuity: "continuity snapshot",
-      identity: "identity snapshot"
-    }
-  },
-  consumers: [
-    "PulseBandDaemon",
-    "PulsePalMemory",
-    "PulsePalSpeech",
-    "IQMap",
-    "Dashboards"
-  ],
-  guarantees: {
-    deterministicCompute: true,
-    noNetwork: true,
-    noUI: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalPersonaEngine = {
-  drift: {
-    allowed: false,
-    notes: "Persona semantics must remain stable across versions."
-  },
-  pressure: {
-    expectedLoad: "medium",
-    notes: "Computed on demand or per daemon tick."
-  },
-  stability: {
-    uiLayout: "none",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 1,
-    notes: "Single persona snapshot object."
-  },
-  worldLens: {
-    awareOfWorlds: true
-  },
-  limbic: {
-    band: "connection_safety"
-  },
-  triHeart: {
-    cognitive: "persona_inference",
-    emotional: "tone_alignment",
-    behavioral: "behavior_hinting"
-  },
-  impulseSpeed: {
-    primaryAction: "compute_persona",
-    latencyTargetMs: 10
-  },
-  healingSurfaces: {
-    enabled: true
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

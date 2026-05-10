@@ -31,47 +31,21 @@
 //  • Zero imports for logic — external deps only via callers
 //  • Presence-aware but presence stays in metadata only
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshAura",
-  version: "v14.9-MESH-AURA-Immortal",
-  layer: "mesh",
-  role: "mesh_aura_engine",
-  lineage: "PulseMesh-v14",
-
-  evo: {
-    meshAura: true,                 // This IS the mesh aura organ
-    presenceAware: true,            // Reads presence field
-    meshAware: true,                // Reads mesh topology
-    binaryAware: true,              // Binary artery + binary mesh
-    advantageAware: true,           // Advantage cascade fields
-    chunkPrewarmReady: true,        // Chunk/prewarm integration
-    deterministic: true,            // No randomness
-    driftProof: true,               // No drift in aura fields
-    zeroRandomness: true,           // Aura must be stable
-    zeroAsync: true,                // Aura must be synchronous
-    zeroMutationOfInput: true,      // Never mutate presence/mesh objects
-    zeroNetworkFetch: true,
-    safeRouteFree: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshPresenceRelay",
-      "PulsePresence",
-      "PresenceAwareness",
-      "PresenceAIView"
-    ],
-    never: [
-      "legacyMeshAura",
-      "legacyPresenceAura",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+// export const BinaryGPURole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // -----------------------------------------------------------
 // Aura State (global, metadata-only)

@@ -93,45 +93,23 @@
 //
 // DO NOT REMOVE THIS BLOCK.
 //
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+
 import { onRequest, onCall } from "firebase-functions/v2/https";
-export const AI_EXPERIENCE_META = {
-  identity: "PulseWorldSystemAlert.SystemFailureOrgan",
-  version: "v20-Immortal",
-  layer: "pulse_world_system_alert",
-  role: "system_failure_intake",
-  lineage: [
-    "SystemAlert-v12",
-    "SystemAlert-v14-Immortal",
-    "SystemAlert-v16-Immortal-Evo",
-    "PulseWorldSystemAlert-v20-Immortal"
-  ],
-
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    zeroState: true,
-    zeroTiming: true,
-    binaryAware: true,
-    dualBand: true,
-    presenceAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    organ: "PulseWorldSystemAlert-v20",
-    mesh: "PulseMesh-v20",
-    send: "PulseSend-v20",
-    logging: "PulseProofLogger-v20"
-  },
-
-  safety: {
-    neverLogSecrets: true,
-    neverExposeKeys: true,
-    neverUseWindow: true,
-    neverUseDynamicImport: true,
-    redactSensitiveFields: true
-  }
-};
 
 // ============================================================================
 // IMPORTS

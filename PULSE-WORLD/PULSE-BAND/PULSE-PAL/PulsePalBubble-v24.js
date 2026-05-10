@@ -23,6 +23,22 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CorePresence = PulseProofBridge.corepresence;
@@ -30,150 +46,6 @@ const CoreDaemon   = PulseProofBridge.coredaemon;
 const CoreSpeech   = PulseProofBridge.corespeech;
 const CoreMemory   = PulseProofBridge.corememory;
 
-// ============================================================================
-// AI_EXPERIENCE_META
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalBubble = {
-  id: "pulsepal.bubble",
-  kind: "ui_organ",
-  version: "v24-IMMORTAL",
-  role: "Pulse‑Pal ambient entry bubble",
-  surfaces: {
-    band: ["bubble", "entry", "presence", "media"],
-    wave: ["inviting", "responsive", "clear"],
-    binary: ["avatar_bubble", "message_snippet", "click_through"],
-    presence: ["bubble_aura", "entry_tone"],
-    advantage: ["prewarmed_media", "instant_entry"],
-    speed: "instant_ui"
-  },
-  routes: {
-    home: "pulsepal.home",
-    speech: "pulsepal.speech",
-    identity: "pulsepal.identity"
-  },
-  consumers: ["Router", "CorePresence", "CoreDaemon", "CoreSpeech", "CoreMemory"],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePalBubble = {
-  tone: "warm_attentive",
-  pacing: "instant",
-  emotionalBand: "connection",
-  primaryIntent: "invite_conversation",
-  secondaryIntent: "signal_presence",
-  userFirstImpression: "pulsepal_is_here_in_the_corner",
-  visualNotes: {
-    icon: "chat_bubble_3d",
-    motion: "soft_float",
-    colorBand: "cyan_gold"
-  }
-};
-
-// ============================================================================
-// ORGAN_META
-// ============================================================================
-export const ORGAN_META_PulsePalBubble = {
-  id: "organ.pulsepal.bubble",
-  organism: "PulsePal",
-  layer: "ui.entry",
-  tier: "IMMORTAL",
-  evoFlags: {
-    canAddBubbleModes: true,
-    canAddStatusBadges: true,
-    mediaAware: true,
-    presenceAware: true,
-    daemonAware: true
-  },
-  lineage: {
-    family: "companion_entry",
-    generation: 1,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalBubble = {
-  inputs: {
-    Router: "navigation interface",
-    Icons: "icon resolution interface",
-    Media: "media resolver interface",
-    CorePresence: "bridge presence organ",
-    CoreDaemon: "bridge daemon snapshot",
-    CoreSpeech: "bridge speech organ",
-    CoreMemory: "bridge memory organ"
-  },
-  outputs: {
-    uiSurface: "entry_bubble",
-    presence: "CorePresence.snapshot",
-    daemon: "CoreDaemon.snapshot",
-    lastMessages: "CoreSpeech.messages"
-  },
-  consumers: ["Router", "CorePresence", "CoreDaemon", "CoreSpeech", "CoreMemory"],
-  guarantees: {
-    deterministicRender: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalBubble = {
-  drift: {
-    allowed: false,
-    notes: "Bubble semantics and placement must remain stable."
-  },
-  pressure: {
-    expectedLoad: "very_high",
-    notes: "Bubble is visible almost constantly."
-  },
-  stability: {
-    uiLayout: "stable",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 2,
-    notes: "3D bubble + optional status badge."
-  },
-  chunking: {
-    prewarm: [
-      "icons.chat_bubble_3d",
-      "icons.pulse",
-      "media.pulsepal"
-    ],
-    cacheKey: "pulsepal.bubble.ui"
-  },
-  worldLens: {
-    awareOfWorlds: true
-  },
-  limbic: {
-    band: "connection_safety"
-  },
-  triHeart: {
-    cognitive: "entry_affordance",
-    emotional: "gentle_invitation",
-    behavioral: "open_pulsepal"
-  },
-  impulseSpeed: {
-    primaryAction: "open_speech",
-    latencyTargetMs: 30
-  },
-  healingSurfaces: {
-    enabled: true
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

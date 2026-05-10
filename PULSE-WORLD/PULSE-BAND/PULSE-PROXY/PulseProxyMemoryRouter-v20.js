@@ -19,142 +19,21 @@
 //   • Mode-aware: A→B→A compatible, binary-first nervous system, replay-safe, lineage-safe.
 //   • Internet / world-lens / advantage are metadata-only: no fetch, no network from this organ.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/* 
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-This organ requires FULL IMMORTAL++ / v20++ metadata on every upgrade:
-- AI_EXPERIENCE_META + AI_EXPERIENCE_CONTEXT
-- Full organ metadata + evo flags + lineage
-- Full contract (input/output/consumers)
-- Full experience surfaces (band/wave/binary/presence/advantage/resource/load)
-- Full IMMORTAL++ overlays (drift, pressure, stability, load, replay, lineage)
-- Full chunk/cache/prewarm overlays (router, band, GPU, Earn, cold/warm/hot)
-- Full world‑lens, limbic, tri‑heart, impulse‑speed awareness (metadata-only)
-- Full healing surfaces + diagnostics + escalation hooks
-Always include ALL layers, ALL overlays, ALL IMMORTAL++ / v20++ structures.
-*/
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProxyMemoryRouter",
-  version: "v20-Immortal-WorldLens-Advantage",
-  layer: "backend_healer",
-  role: "router_memory_healer_v20",
-  lineage: "CheckRouterMemory→PulseRouter-v20-Immortal-WorldLens",
-
-  evo: {
-    // Core healer
-    healerCore: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    driftAware: true,
-    lineageAware: true,
-    deterministic: true,
-    safeRouteFree: true,
-    replaySafe: true,
-    immortalReady: true,
-    immortal: true,
-    immortalHealer: true,
-
-    // Presence / band / router
-    presenceAware: true,
-    bandPresenceAware: true,
-    routerPresenceAware: true,
-    devicePresenceAware: true,
-    routePresenceAware: true,
-
-    // Advantage / resource / load / pressure
-    advantageFieldAware: true,
-    unifiedAdvantageField: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true,
-    routeWarmthAware: true,
-    resourcePressureAware: true,
-    cpuPressureAware: true,
-    gpuPressureAware: true,
-    memoryPressureAware: true,
-    loadBandAware: true,
-    earnAware: true,
-
-    // World-lens / limbic / tri-heart / impulse-speed (metadata-only)
-    worldLensAware: true,
-    limbicAware: true,
-    triHeartAware: true,
-    impulseSpeedAware: true,
-    impulseReturnAware: true,
-
-    // Chunk/cache/prewarm overlays
-    chunkCachePrewarmAware: true,
-    routerChunkAware: true,
-    routerCacheAware: true,
-    routerPrewarmAware: true,
-    gpuChunkAware: true,
-    gpuPrewarmAware: true,
-
-    // Safety / prohibitions
-    zeroNetworkFetch: true,
-    zeroSyntheticTimestamps: true,
-    zeroMutationOfInput: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroAsyncLoops: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroFrontendAccess: true,
-    zeroWindowAccess: true,
-    zeroDOMAccess: true,
-    zeroExternalMutation: true,
-
-    // Context awareness
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    memoryContextAware: true,
-    routerContextAware: true,
-    proxyContextAware: true,
-    environmentAware: true,
-    localAware: true,
-    internetAware: true
-  },
-
-  contract: {
-    input: [
-      "RouterMemoryBatch",
-      "ProxyContext",
-      "DualBandContext",
-      "PresenceContext",
-      "AdvantageContext",
-      "ResourceContext",
-      "WorldLensContext",
-      "LimbicContext"
-    ],
-    output: [
-      "HealedRouterMemoryBatch",
-      "NetworkHealerDiagnostics",
-      "NetworkHealerSignatures",
-      "NetworkHealerPresenceField",
-      "NetworkHealerAdvantageField",
-      "NetworkHealerResourceHints",
-      "NetworkHealerLoadField",
-      "NetworkHealerHealingState",
-      "NetworkHealerWorldLensField",
-      "NetworkHealerLimbicField"
-    ],
-    consumers: [
-      "PulseRouter",
-      "PulseBinaryRouter",
-      "PulseRouterCommandments",
-      "CheckIdentity",
-      "CheckBand",
-      "PulseNetDiagnostics",
-      "PulseWorldCore"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS — v20 IMMORTAL WORLD-LENS

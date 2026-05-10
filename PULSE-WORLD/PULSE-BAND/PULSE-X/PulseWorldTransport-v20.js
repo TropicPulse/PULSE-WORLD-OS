@@ -22,84 +22,23 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseWorldTransport",
-  version: "v20-IMMORTAL-THROUGHPUT",
-  layer: "backend_boundary",
-  role: "cors_enforcement_organ",
-  lineage: "PulseCors → PulseWorldTransport-v17 → PulseWorldTransport-v20",
-
-  evo: {
-    boundaryCore: true,
-    deterministic: true,
-    deterministicField: true,
-    dualBand: true,
-    symbolicAware: true,
-    binaryAware: true,
-    safeRouteFree: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroNetworkFetch: true,
-    zeroExternalMutation: true,
-    zeroFilesystem: true,
-
-    // Throughput / proxy traits
-    proxyAware: true,
-    deviceProxyAware: true,
-    browserProxyAware: true,
-    universalCorsMembrane: true,
-    hotPathOptimized: true,
-
-    // Transport traits
-    corsAware: true,
-    preflightAware: true,
-    methodSurfaceAware: true,
-    headerSurfaceAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseProxy",
-      "PulseRouter",
-      "PulseBinaryRouter",
-      "CheckIdentity",
-      "CheckBand"
-    ],
-    never: [
-      "legacyCors",
-      "legacyBoundary",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import fetch from "node-fetch";
-
-// ============================================================================
-// CONSTANT SURFACES — IMMUTABLE CORS CONFIG (v20)
-// ============================================================================
-
-export const PulseWorldTransportMeta = Object.freeze({
-  id: "PulseWorldTransport-v20-IMMORTAL-THROUGHPUT",
-  version: "20.0.0",
-  role: "cors_enforcement_organ",
-  layer: "backend_boundary",
-  description:
-    "IMMORTAL global CORS + transport membrane for all Pulse‑World traffic.",
-  identity: Object.freeze({
-    type: "organ",
-    name: "PulseWorldTransport",
-    band: "boundary",
-    mind: false,
-    immutable: true
-  })
-});
 
 // Universal “allow everything” surfaces — explicit, stable, immutable.
 const ALLOW_ORIGIN = "*";

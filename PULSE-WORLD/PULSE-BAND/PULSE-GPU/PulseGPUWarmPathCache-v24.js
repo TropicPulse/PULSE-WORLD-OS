@@ -3,74 +3,21 @@
 // PULSE OS — v24 IMMORTAL++
 // PULSE‑GPU WARM PATH CACHE — GPU WARM PATH HINT ENGINE (Every Advantage)
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const AI_EXPERIENCE_META_PulseGPUWarmPathCache = {
-  id: "pulsegpu.warm_path_cache",
-  kind: "advantage_helper",
-  version: "v24-IMMORTAL++",
-  role: "gpu_warm_path_hints",
-  surfaces: {
-    band: ["gpu", "cache", "warm_path"],
-    wave: ["latency", "smoothness", "fanout", "stability"],
-    binary: ["warm", "cold"],
-    presence: ["warm_path_state"],
-    advantage: ["warm_paths", "cache_tier", "prewarm_budget", "fanout_profile"],
-    speed: "instant_compute"
-  },
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+export const GPU_HEALER_CONTEXT = Identity.pulseLoreContext;
+const ORGAN_CONTRACT_PulseGPUWarmPathCache = Identity.OrganMeta.contract;
 
-export const ORGAN_META_PulseGPUWarmPathCache = {
-  id: "organ.pulsegpu.warm_path_cache",
-  organism: "PulseOS",
-  layer: "advantage.gpu",
-  tier: "IMMORTAL",
-  evoFlags: {
-    deterministic: true,
-    driftProof: true,
-    zeroPII: true,
-    zeroTracking: true,
-    gpuAware: true,
-    pulseStreamAware: true,
-    fastLaneAware: true,
-    pageHintAware: true,
-    chunkProfileAware: true,
-    trustAware: true,
-    riskAware: true,
-    warmPathAware: true,
-    cacheTierAware: true
-  }
-};
-
-export const ORGAN_CONTRACT_PulseGPUWarmPathCache = {
-  inputs: {
-    page: "string",
-    chunkProfile: "string",
-    gpuCapable: "boolean",
-    trust: "trusted | neutral | suspicious | hostile | unknown",
-    risk: "low | medium | high | critical | unknown",
-    pulseStream: "continuous | burst | single | unknown",
-    fastLane: "enabled | disabled | unknown"
-  },
-  outputs: {
-    enabled: "boolean",
-    reason: "string",
-    warmPaths: "Array<{ id, priority, prewarm, cacheHint, lane, band, throttle }>",
-    cacheTier: "none | light | medium | strong",
-    prewarmBudget: "number",          // 0–100 (relative budget)
-    fanoutProfile: "conservative | balanced | aggressive"
-  },
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++ (Every Advantage)

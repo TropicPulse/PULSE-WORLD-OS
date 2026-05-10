@@ -10,90 +10,21 @@
 //    • Mesh‑pulse aware (hops/distance bounded)
 //    • Read‑only experience meta for Overmind/World
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseTelemetryOrgan",
-  version: "v20-ImmortalPlus-BINARY-MAX-ABA",
-  layer: "telemetry_bloodstream",
-  role: "immortal_telemetry_sensor",
-  lineage: "PulseTelemetry-v20-ImmortalPlus",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    // Core telemetry laws
-    pureTelemetry: true,
-    sensorOnly: true,
-    noDecisionMaking: true,
-    noRouting: true,
-    noGlobalRoutingState: true,
-    noBusinessLogic: true,
-    noExternalMutation: true,
-    noCompute: true,
-
-    // IMMORTAL guarantees
-    deterministic: true,
-    driftProof: true,
-    zeroRandomness: true,
-    zeroNondeterminism: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroTimers: true,
-    zeroAsyncLoops: true,
-    multiInstanceReady: true,
-    noBackend: true,
-    noDOM: true,
-    noWindow: true,
-    noGPU: true,
-
-    // A‑B‑A surfaces
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    meshPulseReady: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-
-    // v20 presence / chunk / cache hints
-    presenceAware: true,
-    cacheChunkAware: true,
-    prewarmAware: true,
-    chunkTelemetryAware: true,
-    meshPresenceAware: true,
-
-    // dual-band / IMMORTAL surfaces
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    epochStable: true,
-
-    // Evolutionary awareness
-    patternAware: true,
-    shapeAware: true,
-    evolutionAware: true,
-
-    // Environment
-    worldLensAware: false
-  },
-
-  contract: {
-    input: [
-      "TelemetrySnapshot",
-      "SubsystemHeartbeat",
-      "MeshPulseContext",
-      "DualBandContext"
-    ],
-    output: [
-      "TelemetryVitalSigns",
-      "TelemetryBandSignature",
-      "TelemetryBinaryField",
-      "TelemetryWaveField",
-      "TelemetryAdvantageField",
-      "TelemetryDiagnostics",
-      "TelemetryHealingState",
-      "TelemetryExperienceMeta"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+export const PulseTelemetryExperienceMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import {
   PulseProofBridgeLogger as logger,
@@ -101,182 +32,6 @@ import {
   PulseRoles,
   PulseLineage
 } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
-
-// ============================================================================
-//  EXPERIENCE META — AI / World / Overmind surfaces
-// ============================================================================
-
-export const PulseTelemetryExperienceMeta = Object.freeze({
-  layer: "PulseTelemetryBloodstream",
-  role: "TELEMETRY_ORGAN_EXPERIENCE",
-  version: "v20-ImmortalPlus-Bloodstream",
-  identity: "PulseTelemetryExperience-v20-ImmortalPlus",
-  experience: {
-    surfaces: {
-      subsystem: true,
-      event: true,
-      hops: true,
-      distance: true,
-      band: true,
-      bandSignature: true,
-      binaryField: true,
-      waveField: true,
-      advantageField: true
-    },
-    narrative: {
-      description:
-        "Telemetry bloodstream that turns raw subsystem events into mesh-aware pulses " +
-        "with band/binary/wave/advantage surfaces. Pure nervous-system organ; no routing, no decisions.",
-      aiUsageHint:
-        "Use these telemetry surfaces to understand subsystem health, mesh distance, and advantage. " +
-        "Never treat this organ as a router, scheduler, or decision-maker."
-    }
-  }
-});
-
-// ============================================================================
-//  ORGAN IDENTITY — v20-ImmortalPlus A‑B‑A
-// ============================================================================
-
-export const PulseRole = {
-  type: "Organ",
-  subsystem: "PulseTelemetry",
-  layer: "Bloodstream",
-  version: "20-ImmortalPlus",
-  identity: "PulseTelemetryOrgan-v20-ImmortalPlus-ABA",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    pulseEfficiencyAware: true,
-    unifiedAdvantageField: true,
-    multiInstanceReady: true,
-    meshPulseReady: true,
-    sensorOnly: true,
-    noDecisionMaking: true,
-    futureEvolutionReady: true,
-
-    // A‑B‑A awareness
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-
-    // presence / cache / chunk advantages
-    cacheChunkAware: true,
-    prewarmAware: true,
-    presenceAware: true,
-    meshPresenceAware: true,
-    chunkTelemetryAware: true,
-
-    // dual-band / IMMORTAL surfaces
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    epochStable: true
-  }
-};
-
-export const PulseTelemetryOrganMeta = Object.freeze({
-  layer: "PulseTelemetryBloodstream",
-  role: "TELEMETRY_ORGAN",
-  version: "v20-ImmortalPlus-BINARY-MAX-ABA",
-  identity: "PulseTelemetryOrgan-v20-ImmortalPlus-BINARY-MAX-ABA",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Telemetry laws
-    pureTelemetry: true,
-    sensorOnly: true,
-    noDecisionMaking: true,
-    noRouting: true,
-    noGlobalRoutingState: true,
-    noBusinessLogic: true,
-    noExternalMutation: true,
-    noDynamicImports: true,
-    noEval: true,
-    noBackend: true,
-    noDOM: true,
-    noWindow: true,
-    noGPU: true,
-
-    // A‑B‑A + band surfaces
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    meshPulseReady: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-
-    // cache/chunk/presence guarantees
-    cacheChunkAware: true,
-    cacheSafe: true,
-    chunkSafe: true,
-    prewarmSafe: true,
-    presenceSafe: true,
-    noCacheMutation: true,
-    noChunkMutation: true,
-
-    // Awareness
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-
-    // Environment
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "TelemetrySnapshot",
-      "SubsystemHeartbeat",
-      "MeshPulseContext",
-      "DualBandContext"
-    ],
-    output: [
-      "TelemetryVitalSigns",
-      "TelemetryBandSignature",
-      "TelemetryBinaryField",
-      "TelemetryWaveField",
-      "TelemetryAdvantageField",
-      "TelemetryDiagnostics",
-      "TelemetryHealingState",
-      "TelemetryExperienceMeta"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseTelemetry-v11",
-    parent: "PulseTelemetry-v20-ImmortalPlus",
-    ancestry: [
-      "PulseTelemetryOrgan-v7",
-      "PulseTelemetryOrgan-v8",
-      "PulseTelemetryOrgan-v9",
-      "PulseTelemetryOrgan-v10",
-      "PulseTelemetryOrgan-v11",
-      "PulseTelemetryOrgan-v11-Evo",
-      "PulseTelemetryOrgan-v11-Evo-ABA",
-      "PulseTelemetryOrgan-v11.2-Evo-BINARY-MAX",
-      "PulseTelemetryOrgan-v12.3-Evo-BINARY-MAX-ABA"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "telemetry-sensor"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "metrics → vital signs → A‑B‑A surfaces",
-    adaptive: "binary-field + wave-field overlays + advantage field",
-    return: "deterministic telemetry surfaces + signatures + advantage + experience meta"
-  })
-});
-
 
 // ============================================================================
 // INTERNAL STATE — Telemetry Bloodstream (bounded, observational only)

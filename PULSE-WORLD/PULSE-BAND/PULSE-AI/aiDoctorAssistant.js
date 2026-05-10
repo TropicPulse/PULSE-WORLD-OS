@@ -33,102 +33,35 @@
 //      (symptoms, scans, routed educational medical text).
 //
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiDoctorAssistant",
-  version: "v15-Immortal-Evo++",
-  layer: "ai_tools",
-  role: "medical_pattern_explainer",
-  lineage: "aiDoctor-v10 → v12 → v14-Immortal → v15-Immortal-Evo++ (Doctor’s Assistant)",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    medicalPatterns: true,
-    educationalOnly: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    immortalityEpoch: true,
-    packetAware: true,
-    arteryAware: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiClinician", "aiDoctorArchitect", "aiContext"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const DoctorMeta = Identity.OrganMeta;
 
-export const DoctorMeta = Object.freeze({
-  layer: "PulseAIClinicalFrame",
-  role: "DOCTOR_ASSISTANT_ORGAN",
-  version: "15-Immortal-Evo++",
-  identity: "aiDoctorAssistant-v15-Immortal-Evo++",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    binaryAware: true,
-    symbolicAware: true,
-    clinicalAware: true,
-    symptomAware: true,
-    riskAware: true,
-    mechanismAware: true,
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    safetyReflex: true,
-    scanInterpreter: true,
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
-    archetypeArteryAware: true,
-    epoch: "15-Immortal-Evo++",
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  }),
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  contract: Object.freeze({
-    purpose:
-      "Act as a doctor’s assistant: interpret symptoms into broad patterns, outline conceptual risk tiers, explain mechanisms, and suggest questions to ask a clinician, including reading routed educational medical text.",
+export const surfaceMeta = Identity.surfaceMeta;
 
-    never: Object.freeze([
-      "diagnose definitively",
-      "prescribe medication",
-      "give dosing",
-      "replace a licensed clinician",
-      "tell the user what to do",
-      "predict medical outcomes",
-      "claim medical authority",
-      "override user autonomy",
-      "imply medical certainty"
-    ]),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    always: Object.freeze([
-      "frame uncertainty",
-      "offer differential pattern buckets",
-      "suggest what doctors typically check",
-      "highlight what may be relevant to mention to a clinician",
-      "treat external medical data as educational, not prescriptive",
-      "end with a soft safety line"
-    ])
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  voice: Object.freeze({
-    tone: "calm, analytical, pattern-first",
-    style: "explain mechanisms, not commands"
-  }),
-
-  boundaryReflex() {
-    return "I’m a doctor’s assistant, not a doctor. I can help you understand patterns and what to ask your clinician, but I don’t diagnose or provide medical advice.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS

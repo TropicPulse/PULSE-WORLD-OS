@@ -5,132 +5,36 @@
 //  ORGANISM‑AWARE • ARTERY v5 • OWNER‑SUBORDINATE
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiService",
-  version: "v16-Immortal-Adv++",
-  layer: "ai_tools",
-  role: "service_surface",
-  lineage: "aiService-v10 → v12.3-Evo+ → v16-Immortal-Adv++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    serviceSurface: true,
-    taskMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    arteryV5: true,
-    organismAware: true,
-    heartbeatAware: true,
-    earnAware: true,
-    genomeAware: true,
-    governorAware: true,
-    watchdogAware: true,
-    cortexAware: true,
-    memoryAware: true,
-    safetyAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const ServiceGatewayMeta = Identity.OrganMeta;
 
-    routerAware: true,
-    overmindAware: true,
-    nodeAdminAware: true,
-    slowdownAware: true,
-    driftAware: true,
-    schemaAware: true,
-    tourismAware: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: ["aiAssistant", "aiContext", "aiCortex"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-export const ServiceGatewayMeta = Object.freeze({
-  layer: "PulseAIServiceGateway",
-  role: "SERVICE_GATEWAY_ORGAN",
-  version: "16-Immortal-Adv++",
-  identity: "aiServiceGateway-v16-Immortal-Adv++",
+export const surfaceMeta = Identity.surfaceMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    relayOnly: true,
-    analysisAware: true,
-    schemaAware: true,
-    lineageAware: true,
-    slowdownAware: true,
-    tourismAware: true,
-    permissionAware: true,
-    routerAware: true,
-    overmindAware: true,
-    nodeAdminAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    // organism vitals
-    organismAware: true,
-    heartbeatAware: true,
-    earnAware: true,
-    genomeAware: true,
-    governorAware: true,
-    watchdogAware: true,
-    cortexAware: true,
-    memoryAware: true,
-    safetyAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    // arteries
-    arteryAware: true,
-    arteryV5: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    readOnly: true,
-    multiInstanceReady: true,
-    epoch: "16-Immortal-Adv++"
-  }),
-
-  contract: Object.freeze({
-    purpose: [
-      "Provide a deterministic, dual-band-safe relay for analysis, audit, schema validation, drift detection, slowdown detection, route/log/error analysis, and tourism queries.",
-      "Fuse organism vitals into relay artery v5 for NodeAdmin/Overmind/Earn awareness.",
-      "Surface soft spiral warnings when relay pressure or error rate becomes critical (non-blocking)."
-    ],
-
-    never: Object.freeze([
-      "mutate context",
-      "mutate data",
-      "override router decisions",
-      "override cortex decisions",
-      "override safety frame decisions",
-      "introduce randomness",
-      "perform cognition",
-      "perform intent logic",
-      "perform writes",
-      "perform deletes",
-      "perform updates"
-    ]),
-
-    always: Object.freeze([
-      "relay operations through runAI",
-      "freeze all inputs",
-      "freeze all outputs",
-      "respect dual-band boundaries",
-      "respect persona + permissions",
-      "log deterministic steps",
-      "return unified response packets",
-      "compute relay artery metrics deterministically",
-      "remain non-blocking and drift-proof"
-    ])
-  })
-});
 
 // ============================================================================
 //  IMPORTS — Binary Engine + Tools

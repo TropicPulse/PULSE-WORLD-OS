@@ -77,192 +77,21 @@
 //  OUTER BLOOD–BRAIN BARRIER — OS SHELL PERIMETER (v12.3-SPINE)
 //  Dualband, Presence-Aware, Chunk/Prewarm-Aware, Deterministic Shell Gate
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSBBB",
-  version: "v14-Immortal",
-  layer: "os_bridge",
-  role: "binary_symbolic_bridge",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    bandAware: true,
-    chunkAware: true,
-    prewarmAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrain",
-      "PulseBinaryOS",
-      "PulseChunker"
-    ],
-    never: [
-      "legacyOSBBB",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseOSOuterBBBMeta = Object.freeze({
-  layer: "PulseOSOuterBBB",
-  role: "OS_OUTER_BBB_ORGAN",
-  version: "v12.3-SPINE",
-  identity: "PulseOSOuterBBB-v12.3-SPINE",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Barrier laws
-    pureShellStateEngine: true,
-    purePermissionEngine: true,
-    environmentalFilter: true,
-    identitySentinel: true,
-    permissionValve: true,
-    cortexPerimeter: true,
-    offlineAutonomy: true,
-
-    // Safety contract
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroFilesystem: true,
-    zeroCompute: true,
-    zeroUI: true,
-    zeroIdentityMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroBinaryExecution: true,
-    zeroMutationOutsideOrgan: true,
-
-    // Dualband + presence + performance awareness
-    dualBandAware: true,
-    symbolicSurface: true,
-    binaryCompressionSurface: true,
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    routeChunkingAware: true,
-    routePrewarmAware: true,
-    cachePolicyAware: true,
-
-    // Continuance + loop
-    loopTheoryAware: true,
-    continuanceAware: true,
-
-    // Environment
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "RouteContext",
-      "ShellEnvironment",
-      "DualBandContext",
-      "PresenceContext",      // presence field + bluetooth presence
-      "MeshPresenceContext"   // mesh presence relay / topology
-    ],
-    output: [
-      "OuterBBBPermissionState",
-      "OuterBBBRouteClassification",
-      "OuterBBBDiagnostics",
-      "OuterBBBSignatures",
-      "OuterBBBCacheHints",        // chunk/prewarm hints for shell
-      "OuterBBBPresenceDirectives" // presence/mesh directives (metadata only)
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12.3-SPINE",
-    parent: "PulseOS-v12.0-SPINE",
-    ancestry: [
-      "PulseOSOuterBBB-v9",
-      "PulseOSOuterBBB-v10",
-      "PulseOSOuterBBB-v11",
-      "PulseOSOuterBBB-v11.2-Evo",
-      "PulseOSOuterBBB-v12.3-SPINE"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic"],
-    default: "symbolic",
-    behavior: "metadata-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "environmental filter → shell permission → identity gate",
-    adaptive:
-      "dualband metadata surfaces (symbolic + binary compression) + presence/mesh hints + chunk/prewarm hints",
-    return:
-      "deterministic shell permission + route classification + cache/presence directives"
-  })
-});
-
-
-// ============================================================================
-//  OUTER BBB ROLE — Dualband, organism-wide contract surface (v12.3-SPINE)
-//  (Metadata only; no imports, no side effects)
-// ============================================================================
-export const PulseRole = {
-  type: "Barrier",
-  subsystem: "OS",
-  layer: "OuterBBB",
-  version: "12.3-SPINE",
-  identity: "PulseOSOuterBBB",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroFilesystem: true,
-    zeroMutationOutsideOrgan: true,
-
-    // Dualband awareness (symbolic + binary metadata)
-    dualBand: true,
-    symbolicSurface: true,
-    binaryCompressionSurface: true,
-
-    // Presence / mesh / performance metadata
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    routeChunkingAware: true,
-    routePrewarmAware: true,
-    cachePolicyAware: true,
-
-    // Loop + continuance
-    loopTheoryAware: true,
-    continuanceAware: true,
-
-    // Organism-wide contracts (v12.3-SPINE)
-    routingContract: "PulseRouter-v12.3",
-    osOrganContract: "PulseOS-v12.3-SPINE",
-    earnCompatibility: "PulseEarn-v12",
-    sendCompatibility: "PulseSendSystem-v12",
-    gpuCompatibility: "PulseGPU-v12.3",
-    bbbCompatibility: "PulseOSOuterBBB-v12.3-SPINE"
-  }
-};
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================

@@ -17,72 +17,21 @@
 //  • Proxy Mode is addon-only: tap-only, no routing, no OS logic here.
 //  • No network, no filesystem, no dynamic imports, no eval.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProxyOrganism",
-  version: "v20-Immortal-ABA-ADVANTAGE-SYMBOLIC",
-  layer: "proxy_organism",
-  role: "symbolic_proxy_organism",
-  lineage: "PulseOS-v20",
-
-  evo: {
-    proxyOrganism: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    patternEngine: true,
-    lineageEngine: true,
-    shapeEngine: true,
-    advantageFieldEngine: true,
-    presenceHarmonicsEngine: true,
-
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    memorySpineAware: true,
-    binaryOverlayAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true,
-
-    // v20+ Proxy Mode awareness (meta-only)
-    proxyModeAware: true,
-    proxyModeAddonOnly: true,
-    proxyModeBinarySafe: true,
-    proxyModeDeterministic: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSSpinalCord",
-      "BinaryProxy",
-      "PulseRouter",
-      "PulseBand",
-      "CheckBand",
-      "CheckIdentity",
-      "CheckRouterMemory"
-    ],
-    never: [
-      "legacyProxyOrganism",
-      "legacyRouterProxy",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const ProxyRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import PulseProxyHeart from "./PulseProxyHeart-v20.js";
 import PulseProxyBloodPressure from "./PulseProxyBloodPressure-v20.js";
 import PulseProxyCirculatorySystem from "./PulseProxyCirculatorySystem-v20.js";
@@ -138,170 +87,6 @@ export const CoreMemory = Object.freeze({
   binaryOverlay: () => PulseBinaryCoreOverlay
 });
 
-// ============================================================================
-//  PROXY ROLE / META — tie all imported organs into a single identity
-// ============================================================================
-const ProxyRole = Object.freeze({
-  layer: "SymbolicProxy",
-  version: "v20-Immortal-ABA-ADVANTAGE-SYMBOLIC",
-  role: "SYMBOLIC_PROXY_BRIDGE",
-  lineage: {
-    spine: "PulseProxySpine-v20",
-    pns: "PulseProxyPNSNervousSystem-v16",
-    synapse: "PulseProxySynapse",
-    limbic: PULSE_LIMBIC_SHADOW_META?.identity || "LimbicShadow",
-    client: "PulseClient",
-    net: "PulseNet"
-  },
-  organs: Object.freeze({
-    heart: PulseProxyHeart,
-    bloodPressure: PulseProxyBloodPressure,
-    circulatorySystem: PulseProxyCirculatorySystem,
-    hypothalamus: PulseProxyHypothalamus,
-    spine: PulseProxySpine,
-    pns: pulseband,
-    synapse: PulseProxySynapse,
-    client: PulseClient,
-    net: PulseNet,
-    outerAgent: PulseProxyOuterAgent,
-    innerAgentFactory: createPulseProxyInnerAgent,
-    impulse: PulseProxyImpulse,
-    bloodstream: PulseProxyBloodstream,
-    adrenalSystem: PulseProxyAdrenalSystem,
-    bbb: PulseProxyBBB,
-    historyRepair: pulseHistoryRepair
-  }),
-  safety: Object.freeze({
-    limbicShadowMeta: PULSE_LIMBIC_SHADOW_META || null
-  })
-});
-
-export const PulseProxyOrganismMeta = Object.freeze({
-  layer: "PulseProxyOrganism",
-  role: "SYMBOLIC_PROXY_ORGANISM",
-  version: "v20-Immortal-ABA-ADVANTAGE-SYMBOLIC",
-  identity: "PulseProxy-v20-Immortal-ABA-ADVANTAGE-SYMBOLIC",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Organism laws
-    symbolicOrganism: true,
-    proxyOrganism: true,
-    patternEngine: true,
-    lineageEngine: true,
-    shapeEngine: true,
-    ancestryAware: true,
-    loopTheoryAware: true,
-    tierAware: true,
-    advantageFieldAware: true,
-    continuanceAware: true,
-    evolutionEngineReady: true,
-
-    // A‑B‑A organism laws
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    dualBandOrganism: true,
-
-    // v16 presence / harmonics / advantage
-    dualBandCompatible: true,
-    presenceAware: true,
-    harmonicsAware: true,
-    epochStable: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-
-    // Passive band abilities (symbolic hints only)
-    passivePrewarm: true,
-    passiveCache: true,
-    passiveChunk: true,
-    passiveRemember: true,
-
-    // Memory spine + overlay
-    memorySpineAware: true,
-    proxyMemoryAware: true,
-    aiMemoryAware: true,
-    binaryOverlayAware: true,
-
-    // Safety prohibitions
-    zeroRandomness: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroNetwork: true,
-    zeroIO: true,
-
-    // Awareness
-    routerAwareReady: true,
-    meshAwareReady: true,
-    sendAwareReady: true,
-    gpuOrganAware: true,
-    minerAware: true,
-
-    // v20+ Proxy Mode awareness (meta-only)
-    proxyModeAware: true,
-    proxyModeAddonOnly: true,
-    proxyModeBinarySafe: true,
-    proxyModeDeterministic: true,
-
-    // Environment
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "ProxyOrganismShape",
-      "ProxyOrganismPattern",
-      "ProxyOrganismLineage",
-      "DualBandContext"
-    ],
-    output: [
-      "ProxyOrganismSnapshot",
-      "ProxyOrganismSignatures",
-      "ProxyOrganismDiagnostics",
-      "ProxyOrganismHealingState"
-    ],
-    // v20+ Proxy Mode addon contract (meta-only)
-    proxyMode: [
-      "ProxyModeStatus",
-      "ProxyModeDiagnostics"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseProxy-v11",
-    parent: "PulseProxy-v16-Immortal",
-    ancestry: [
-      "PulseProxy-v7",
-      "PulseProxy-v8",
-      "PulseProxy-v9",
-      "PulseProxy-v10",
-      "PulseProxy-v11",
-      "PulseProxy-v11-Evo",
-      "PulseProxy-v11.2-Evo-MAX",
-      "PulseProxy-v12.3-Evo-MAX",
-      "PulseProxy-v16-Immortal"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "proxy-organism"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "pattern → lineage → shape → advantage field",
-    adaptive:
-      "binary-field + wave-field + presence/harmonics overlays + memory/advantage envelopes",
-    return: "deterministic organism snapshot + signatures"
-  })
-});
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure

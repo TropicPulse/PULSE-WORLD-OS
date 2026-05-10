@@ -28,65 +28,21 @@
 // • Deterministic-field, unified-advantage-field, drift-proof.
 // • Multi-instance-ready, zero randomness, zero timestamps.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshSpine",
-  version: "v15.0-MESH-SPINE-Immortal",
-  layer: "mesh",
-  role: "mesh_routing_spine",
-  lineage: "PulseMesh-v15",
-
-  evo: {
-    meshSpine: true,                // This IS the mesh routing spine
-    routingSpine: true,             // Pathway engine, no movement
-    metadataOnly: true,             // No payload, no external mutation
-    deterministic: true,
-    driftProof: true,
-    dualBand: true,
-    presenceAware: true,
-    meshAware: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    // Advantage surfaces
-    advantageSurfaces: true,
-    prewarmSurface: true,
-    chunkSurface: true,
-    cacheSurface: true,
-    presenceSurface: true,
-
-    // Lineage + drift + flow
-    lineageAware: true,
-    driftAware: true,
-    flowAware: true,
-    trustAware: true,
-    loadAware: true,
-    factoringAware: true,
-
-    // IMMORTAL flags
-    immortal: true,
-    zeroMutationOfInput: false,     // Mutates only metadata on impulse
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshFlow",
-      "PulseMeshImmuneSystem",
-      "PulseMeshAwareness",
-      "PulseMeshAura"
-    ],
-    never: [
-      "legacyMeshSpine",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-};
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { createCommunityReflex } from "./PulseMeshFlow.js";
 import { applyPulseCortex } from "./PulseMeshCortex.js";
 import { applyPulseMeshTendons } from "./PulseMeshTendons.js";

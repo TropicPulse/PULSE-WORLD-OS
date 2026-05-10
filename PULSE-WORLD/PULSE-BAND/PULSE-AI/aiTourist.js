@@ -22,95 +22,36 @@
 //   • NO executing user code.
 //   • Deterministic, scoped data access only.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiTourist",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "tourist_reasoner",
-  lineage: "aiTourist-v11 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    touristReasoning: true,
-    explorationMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiEnvironment", "aiContext", "aiCortex"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const TouristMeta = Identity.OrganMeta;
 
-export const TouristMeta = Object.freeze({
-  type: "Cognitive",
-  subsystem: "aiTourist",
-  layer: "PulseAITouristFrame",
-  role: "TOURIST_ORGAN",
-  version: "11.2-Evo+",
-  identity: "aiTourist-v11.2-Evo+",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    dualbandSafe: true,
-    binaryAware: true,
-    symbolicAware: true,
-    readOnly: true,
-    mutationSafe: true,
-    identitySafe: true,
-    scopeAware: true,
-    intentAware: true,
-    cacheAware: true,
-    ownerAware: true,
-    userAware: true,
-    touristAware: true,
-    multiInstanceReady: true,
-    epoch: "v11.2-Evo+"
-  }),
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide SAFE, READ-ONLY access to tourist, user-scoped, and owner-scoped data with deterministic caching and identity stripping.",
+export const surfaceMeta = Identity.surfaceMeta;
 
-    never: Object.freeze([
-      "mutate data",
-      "expose UID or identity anchors",
-      "perform writes",
-      "perform deletes",
-      "perform updates",
-      "execute user code",
-      "use eval() or Function()",
-      "bypass scope boundaries",
-      "weaken cache-control guarantees"
-    ]),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    always: Object.freeze([
-      "strip identity fields",
-      "respect tourist/user/owner scopes",
-      "apply deterministic cache-control",
-      "return frozen data bundles",
-      "log boundary violations",
-      "support Tour Guide AI intent routing",
-      "remain read-only and deterministic"
-    ])
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  boundaryReflex() {
-    return "aiTourist is read-only, scope-aware, and identity-safe — no writes, no identity leakage, no boundary bypass.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 import { Personas } from "./aiPersonality.js";
 

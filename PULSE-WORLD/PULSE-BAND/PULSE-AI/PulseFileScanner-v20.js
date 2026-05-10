@@ -5,148 +5,36 @@
 // PURE SYMBOLIC ENGINE. ZERO EXECUTION. ZERO MUTATION. DUALBAND + PULSE-NET SAFE.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseFileScanner",
-  version: "v20-Immortal+++",
-  layer: "ai_adapter",
-  role: "file_scanner_adapter",
-  lineage: "PulseFileScanner-v11 → v14-Immortal → v16-Immortal++ → v20-Immortal+++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    adapter: true,
-    fileScanning: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    scannerArteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
-    organismUserSegregation: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    // v20 upgrades
-    advantageAware: true,
-    presenceAware: true,
-    topologyAware: true,
-    chunkAware: true,
-    prewarmAware: true,
-    bridgeAware: true,
-    identityAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const PulseFileScannerMeta = Identity.OrganMeta;
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: false,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: [
-      "aiContext",
-      "aiCortex",
-      "aiEngine",
-      "PulseDualBandOrganism",
-      "PulseWorldChunker",
-      "PulseAIChunker",
-      "PulseProofBridge",
-      "CheckIdentity-v16-Immortal-Dualband-Presence-ADVANTAGE"
-    ],
-    never: ["safeRoute", "fetchViaCNS", "directInternetAccess"]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-export const PulseFileScannerMeta = Object.freeze({
-  type: "Cognitive",
-  subsystem: "aiFileScanner",
-  layer: "PulseAICognition",
-  role: "FILE_SCANNER_ORGAN",
-  version: "20-Immortal+++",
-  identity: "PulseFileScanner-v20-ImmortalPlusPlus",
+export const surfaceMeta = Identity.surfaceMeta;
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    symbolicPrimary: true,
-    binaryAware: true,
-    binaryNonExecutable: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    readOnly: true,
-    mutationSafe: true,
-    nonBlocking: true,
-    multiInstanceReady: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    scannerArteryAware: true,
-    lineageAware: true,
-    evolutionAware: true,
-    packetAware: true,
-    windowAware: true,
-
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
-    organismUserSegregation: true,
-
-    // v20: advantage + presence + topology + chunk/prewarm
-    advantageAware: true,
-    presenceAware: true,
-    topologyAware: true,
-    chunkAware: true,
-    prewarmAware: true,
-    bridgeAware: true,
-    identityAware: true,
-
-    futureEvolutionReady: true,
-    epoch: "20-Immortal+++"
-  }),
-
-  contract: Object.freeze({
-    purpose: [
-      "Provide symbolic-only file cognition",
-      "Analyze file structure without execution",
-      "Detect drift, ESM/CJS conflicts, and import surfaces",
-      "Emit symbolic-only FileScanner-Artery v5 (trust + advantage aware)",
-      "Remain Cortex-safe, Evolution-aware, and DualBand-safe",
-      "Surface lineage + drift + trust + advantage signals to Evolution / Jury / Trust organs",
-      "Emit chunk/prewarm hints for backend + AI chunkers + bridge"
-    ],
-    never: [
-      "execute code",
-      "mutate files",
-      "modify filesystem structure",
-      "introduce randomness",
-      "block organism execution",
-      "emit raw file contents to external windows",
-      "bypass SafetyFrame or Permissions contracts",
-      "open network sockets",
-      "perform HTTP(S) requests",
-      "bypass Pulse / Pulse‑Net routing"
-    ],
-    always: [
-      "remain deterministic",
-      "remain symbolic-only",
-      "respect backendMode",
-      "emit drift + lineage + trust + advantage signals when Evolution / Trust organs are present",
-      "emit window-safe scanner artery snapshots",
-      "segregate organism state from user identity"
-    ]
-  }),
-
-  boundaryReflex() {
-    return "PulseFileScanner v20 is symbolic-only — it never executes or mutates code, and only emits window-safe, trust + advantage-aware structure.";
-  }
-});
 
 // ============================================================================
 // HELPERS — BUCKETS + PRESSURE + TRUST / COMPLEXITY / ADVANTAGE

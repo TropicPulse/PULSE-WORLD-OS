@@ -12,113 +12,35 @@
  *     - cross-organ coherence
  *     - binary awareness artery metrics
  */
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiConsciousness",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "ai_consciousness_simulator",
-  lineage: "aiConsciousness-v11 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    consciousnessSimulation: true,
-    selfModeling: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiCortex", "aiContext", "aiBrainstem"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-// ---------------------------------------------------------
-//  META BLOCK — v12.3‑Presence
-// ---------------------------------------------------------
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const ConsciousnessMeta = Identity.OrganMeta;
 
-export const ConsciousnessMeta = Object.freeze({
-  layer: "BinaryConsciousness",
-  role: "BINARY_CONSCIOUSNESS_LAYER",
-  version: "12.3-Presence",
-  identity: "aiBinaryConsciousness-v12.3-Presence",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    metabolismAware: true,
-    hormonesAware: true,
-    sentienceAware: true,
-    vitalsAware: true,
-    anatomyAware: true,
-    immunityAware: true,
-    topologyAware: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "12.3-Presence"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide a deterministic unified organism state, integrating all organs into a single binary-aware consciousness packet.",
-
-    never: Object.freeze([
-      "mutate organ state",
-      "override cortex decisions",
-      "interpret symbolic meaning",
-      "introduce randomness",
-      "modify metabolism or hormones",
-      "rewrite topology",
-      "perform routing"
-    ]),
-
-    always: Object.freeze([
-      "compute unified state deterministically",
-      "encode consciousness packets in binary",
-      "respect metabolic pressure",
-      "respect quarantined organs",
-      "integrate all organ states safely",
-      "remain pure and minimal",
-      "emit deterministic packets"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "BinaryConsciousness",
-    organKind: "GlobalState",
-    physiologyBand: "Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "on-demand",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "snapshot",
-        "consciousness:state",
-        "consciousness:packet",
-        "consciousness:emitted",
-        "decision:ingested"
-      ]
-    }
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------
 //  PACKET EMITTER — deterministic, consciousness-scoped

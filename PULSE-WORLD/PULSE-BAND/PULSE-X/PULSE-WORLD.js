@@ -15,73 +15,21 @@
 //  • v17: FastLane intent stream from Pulse‑Touch + temporal prewarm cache
 //  • v21: Root Pulse‑World organism network edge + advantage layer
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld",
-  version: "v21-Immortal-RootOrganism",
-  layer: "world",
-  role: "root_organism",
-  lineage: "v17-FastLane → v20-Immortal → v21-Root",
-
-  evo: {
-    // root organism
-    worldOrganism: true,
-    rootOrganism: true,
-    cnsRoot: true,
-    lineageRoot: true,
-    advantageRoot: true,
-
-    // world systems
-    expansionAware: true,
-    castleAware: true,
-    serverAware: true,
-    userAware: true,
-    brainAware: true,
-    soldierAware: true,
-    meshAware: true,
-
-    // ingress + fastlane
-    ingressAware: true,
-    fastLaneAware: true,
-    temporalCacheAware: true,
-
-    // world intelligence
-    worldUnderstanding: true,
-    worldGenomeAware: true,
-    worldEvolutionAware: true,
-    worldRouterAware: true,
-    worldMemoryAware: true,
-
-    // IMMORTAL guarantees
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: false, // world is the network edge
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    futureEvolutionReady: true
-  },
-
-  contract: {
-    always: [
-      "PulseNet",
-      "PulseWorldUnderstanding",
-      "PulseWorldGenome",
-      "PulseWorldRouter",
-      "PulseWorldMemory",
-      "PulseWorldEvolution"
-    ],
-    never: [
-      "legacyPulseNet",
-      "legacyWorldLayer",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // Global handle
 const g =

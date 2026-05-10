@@ -3,47 +3,6 @@
 FILE: /PULSE-WORLD/PulseWorldImmuneSystem-v20.js
 LAYER: WORLD IMMUNE SYSTEM ORGAN — DRIFT & DAMAGE DETECTOR — v20
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld.ImmuneSystem",
-  version: "v20",
-  layer: "pulse_world",
-  role: "organism_immune_system",
-  lineage: "PulseWorldImmuneSystem-v14 → v16 → v20",
-
-  evo: {
-    immuneOrgan: true,
-    driftDetector: true,
-    repairAdvisor: true,
-
-    loggerAware: true,
-    evolutionMemoryAware: true,
-    uiCompilerAware: true,
-    uiRuntimeAware: true,
-    heartRhythmAware: true,
-
-    deterministicAnalysis: true,
-    nonBlocking: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true
-  },
-
-  contract: {
-    always: [
-      "PulseProofLogger",
-      "PulseLoggerStore",
-      "PulseEvolutionaryMemory",
-      "PulseUICompiler",
-      "PulseUIRuntime"
-    ],
-    never: [
-      "fetch",
-      "WebSocket",
-      "eval",
-      "dynamicImport"
-    ]
-  }
-}
 ===============================================================================
 EXPORT_META = {
   organ: "PulseWorld.ImmuneSystem",
@@ -69,7 +28,21 @@ EXPORT_META = {
 }
 ===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const ImmuneRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // PULSE OS — v20
 // WORLD IMMUNE SYSTEM — DRIFT & DAMAGE DETECTION
@@ -77,27 +50,6 @@ EXPORT_META = {
 
 const IMMUNE_SCHEMA_VERSION = "v2";
 
-// ---------------------------------------------------------------------------
-// ROLE BLOCK
-// ---------------------------------------------------------------------------
-export const ImmuneRole = {
-  type: "Organ",
-  subsystem: "World",
-  layer: "ImmuneSystem",
-  version: "20.0",
-  identity: "PulseWorldImmuneSystem",
-
-  evo: {
-    immuneOrgan: true,
-    driftDetector: true,
-    repairAdvisor: true,
-    loggerAware: true,
-    evolutionMemoryAware: true,
-    uiCompilerAware: true,
-    uiRuntimeAware: true,
-    heartRhythmAware: true
-  }
-};
 
 // ---------------------------------------------------------------------------
 // INTERNAL HELPERS — ANALYSIS ONLY

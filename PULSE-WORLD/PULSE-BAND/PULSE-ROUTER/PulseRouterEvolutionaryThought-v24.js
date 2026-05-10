@@ -18,130 +18,21 @@
 //    • Pure reasoning organ — NO external mutation.
 //
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseRouterEvolutionaryThought",
-  version: "v24.0-IMMORTAL-THOUGHT-INTEL++",
-  layer: "routing",
-  role: "router_reasoning_engine",
-  lineage: "PulseOS-v16-IMMORTAL → PulseOS-v24-IMMORTAL-INTEL++",
-
-  evo: {
-    thoughtCore: true,
-    deterministic: true,
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    noMutation: true,
-    noDrift: true,
-    cosmosAware: true,
-    advantageFieldAware: true,
-    intelDualHashAware: true,
-    triHashAware: true,
-    prewarmAware: true,
-    healingSurfaceAware: true,
-    pageInheritanceAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseRouter",
-      "PulseBinaryRouter",
-      "PulseRouterEvolutionaryDesign",
-      "PulseRouterEvolutionaryInstincts",
-      "PulseRouterCommandments"
-    ],
-    never: [
-      "legacyRouterThought",
-      "legacyRouter",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-};
-*/
-
-
-// ============================================================================
-// ⭐ PulseRole — identifies this as the PulseRouter v24-IMMORTAL DualStack Organ
-// ============================================================================
-export const PulseRole = {
-  type: "Router",
-  subsystem: "PulseRouter",
-  layer: "Brainstem",
-  version: "24.0-IMMORTAL-INTEL++",
-  identity: "PulseRouter-v24-IMMORTAL-DualStack-Thought-INTEL++",
-
-  evo: {
-    driftProof: true,
-    patternAware: true,
-    lineageAware: true,
-    reflexReady: true,
-    memoryReady: true,
-    deterministicImpulseFlow: true,
-    unifiedAdvantageField: true,
-    pulseRouter24Ready: true,
-    degradationAware: true,
-    routeAroundReady: true,
-    routeDNAReady: true,
-    modeTransitionAware: true,
-    healingLadderAware: true,
-    futureEvolutionReady: true,
-    pageInheritanceReady: true,
-
-    binaryAware: true,
-    presenceAware: true,
-    multiPresenceAware: true,
-    cacheChunkAware: true,
-    prewarmAware: true,
-    cosmosAware: true
-  },
-
-  pulseContract: "Pulse-v-unified",
-  sendContract: "PulseSend-v24",
-  meshContract: "PulseMesh-v24",
-  gpuOrganContract: "PulseGPU-v24",
-  earnCompatibility: "PulseEarn-v24"
-};
-
-
-// ============================================================================
-// INTERNAL CONTEXT — deterministic, pure
-// ============================================================================
-const ROUTER_THOUGHT_CONTEXT_V24 = {
-  layer: "PulseRouterEvolutionaryThought",
-  role: "ROUTER_THOUGHT_CORE",
-  version: "24.0-IMMORTAL-INTEL++",
-  purpose:
-    "Deterministic routing brainstem for symbolic + binary + presence + cache + cosmos (v24 INTEL++)",
-  context:
-    "Computes target organ + routing mode from pattern, lineage, page, binary, presence, cache, advantage, cosmos",
-  selfRepairable: true,
-
-  evo: {
-    driftProof: true,
-    noMutation: true,
-    dualBand: true,
-    presenceAware: true,
-    cacheChunkAware: true,
-    prewarmAware: true,
-    cosmosAware: true,
-    unifiedAdvantageField: true,
-    degradationAware: true,
-    routeDNAReady: true,
-    healingSurfaceAware: true,
-    pageInheritanceAware: true
-  },
-
-  loopTheory: {
-    routingCompletion: true,
-    allowLoopfieldPropulsion: true,
-    pulseComputeContinuity: true,
-    errorRouteAround: true
-  }
-};
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+const ROUTER_THOUGHT_CONTEXT_V24 = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 const ROUTER_VERSION = ROUTER_THOUGHT_CONTEXT_V24.version;
 

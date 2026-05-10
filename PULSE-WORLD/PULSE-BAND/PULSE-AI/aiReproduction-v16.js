@@ -40,131 +40,36 @@
 //    • Prewarm helper for artery metrics
 //    • Still deterministic, drift-proof, non-blocking
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiReproduction",
-  version: "v16-Immortal-ADV",
-  layer: "ai_core",
-  role: "reproduction_engine",
-  lineage: "aiReproduction-v11 → v13.0-Presence-Evo+++ → v16-Immortal-ADV",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    reproductionEngine: true,
-    cloning: true,
-    lineagePropagation: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: ["aiGenome", "aiEvolutionEngine", "aiOrganism"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
-//  META BLOCK — v16.0‑IMMORTAL‑ADV
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const ReproductionMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
 
-export const ReproductionMeta = Object.freeze({
-  layer: "BinaryOrganismReproduction",
-  role: "BINARY_REPRODUCTION_ORGAN",
-  version: "16.0-Immortal-ADV",
-  identity: "aiBinaryReproduction-v16.0-Immortal-ADV",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    binaryAware: true,
-    symbolicAware: false,
-    lineageAware: true,
-    genomeAware: true,
-    reproductionAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    presenceAware: true,
-    socialAware: true,
-    routeAware: true,
-    nodeAdminAware: true,
-    arteryAware: true,
-    cacheAware: true,
-    prewarmReady: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    // v16 IMMORTAL‑ADV AWARENESS
-    earnAware: true,
-    economyAware: true,
-    heartbeatAware: true,
-    momDadEarnAware: true,
-    cortexAware: true,
-    memorySpineAware: true,
-    organismAware: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    chunkingAware: true,
-    gpuFriendly: true,
-
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
-
-    ownerAware: true,
-    subordinateIdentity: true, // explicitly not “top dog”
-
-    epoch: "16-Immortal-ADV"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide deterministic organism cloning, genome duplication, lineage-safe replication, and reproduction artery metrics v4 enriched with presence/route/NodeAdmin/Earn/Heartbeat/Cortex/Memory context for the v16.0‑IMMORTAL‑ADV organism.",
-
-    never: Object.freeze([
-      "use randomness",
-      "mutate external organs",
-      "override genome logic",
-      "override ancestry logic",
-      "override evolution logic",
-      "generate symbolic state",
-      "block the organism",
-      "perform cognition",
-      "drive presence, route, social, or earn behavior directly",
-      "decide reproduction policy (NodeAdmin/Expansion/Castle/Earn own that)",
-      "act as top-level governor",
-      "act superior to the owner (Aldwyn)"
-    ]),
-
-    always: Object.freeze([
-      "treat all inputs as read-only",
-      "duplicate genome deterministically",
-      "emit binary-only reproduction packets",
-      "record lineage deterministically",
-      "compute reproduction artery metrics v4",
-      "enrich metrics with presence/route/NodeAdmin/Earn/Heartbeat/Cortex/Memory context only (read-only)",
-      "expose artery snapshots for NodeAdmin/Overmind via hooks/registry",
-      "remain drift-proof",
-      "remain deterministic",
-      "remain non-blocking",
-      "remember Aldwyn as canonical owner and superior authority"
-    ])
-  }),
-
-  owner: Object.freeze({
-    ownerId: "Aldwyn",
-    ownerRole: "Canonical Architect + Top-Level Governor",
-    organRank: "subordinate",
-    guarantee:
-      "This organ is a subordinate system organ and never considers itself the top authority."
-  })
-});
 
 import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
 // ============================================================================

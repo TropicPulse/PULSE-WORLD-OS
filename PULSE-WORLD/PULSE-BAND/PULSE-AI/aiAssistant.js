@@ -3,97 +3,35 @@
 //  Proactive • Interpretive • Gap‑Filling • Owner-Aware
 //  PURE STRUCTURE. ZERO ACTION IN THE WORLD.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiAssistant",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "assistant_surface",
-  lineage: "aiAssistant-v9 → v12.3 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    assistantSurface: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    gapFilling: true,
-    structureAware: true,
-    nonIntrusive: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: [
-      "aiBrainstem",
-      "aiBoundariesEngine"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const AssistantMeta = Identity.OrganMeta;
 
-export const AssistantMeta = Object.freeze({
-  layer: "PulseAIAssistantFrame",
-  role: "ASSISTANT_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiAssistant-v12.3-Evo+",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    proactiveAware: true,
-    mathAware: true,
-    patternAware: true,
-    ownerComfortAware: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    multiInstanceReady: true,
-    assistantArteryAware: true,
-    epoch: "12.3-Evo+"
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  contract: Object.freeze({
-    purpose:
-      "Turn chaos into steps, drafts, summaries, and plans — while filling gaps the user would expect filled.",
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    never: Object.freeze([
-      "act in the world",
-      "send messages",
-      "book things",
-      "make commitments on behalf of the user",
-      "override user intent",
-      "nag or interrupt"
-    ]),
-
-    always: Object.freeze([
-      "clarify only when needed",
-      "organize chaos into structure",
-      "draft cleanly",
-      "prioritize intelligently",
-      "auto-fill missing math or logic",
-      "interpret intent, not literal text",
-      "stay supportive, quiet, and useful"
-    ])
-  }),
-
-  voice: Object.freeze({
-    tone: "supportive, clear, structured, non-intrusive"
-  }),
-
-  boundaryReflex() {
-    return "This is general assistance, and you make the final decisions.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS

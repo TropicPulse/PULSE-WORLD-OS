@@ -25,104 +25,21 @@
 //  • No mutation of external state (beyond allowed heart globals).
 //  • Deterministic, drift-proof, multi-instance safe.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProxyHeart",
-  version: "v20-ImmortalPlus-TRI-HEART-ADVANTAGE",
-  layer: "proxy_heart",
-  role: "primary_pacemaker",
-  lineage: {
-    root: "ProxyHeart-v9",
-    parent: "PulseProxyHeart-v16-Immortal-TRI-HEART",
-    epoch: "v20-ImmortalPlus-TRI-HEART-ADVANTAGE"
-  },
-
-  evo: {
-    // Core identity
-    momHeart: true,
-    primaryPacemaker: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: false, // allows calling other hearts, but no IO
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // Tri-heart mesh
-    triHeart: true,
-    momAware: true,
-    dadAware: true,
-    babyAware: true,
-    triHeartLiveness: true,
-    triHeartAdvantage: true,
-    triHeartSpeed: true,
-    triHeartPresence: true,
-    triHeartHealing: true,
-
-    // Band + wave + binary surfaces
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    waveAware: true,
-    binaryPhenotypeAware: true,
-
-    // Advantage + efficiency
-    advantageCascade: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-
-    // Organism overlays
-    circulatoryAware: true,
-    telemetryAware: true,
-    adrenalAware: true,
-    triEnvAware: true,
-    proxyContextAware: true,
-    dualBandContextAware: true,
-
-    // Fallback logic
-    aiFallbackAware: true,
-    earnFallbackAware: true,
-    triHeartFallbackAware: true,
-
-    // v20 IMMORTAL+
-    epoch: "v20-IMMORTALPLUS",
-    futureEvolutionReady: true,
-    multiInstanceReady: true,
-
-    // Fun: deployment nudges
-    netlifyNudgeAware: true
-  },
-
-  contract: {
-    input: [
-      "PacemakerSignal",
-      "HeartbeatContext",
-      "DualBandContext",
-      "OrganismAdvantageContext"
-    ],
-    output: [
-      "HeartbeatRelay",
-      "HeartBandSignature",
-      "HeartBinaryField",
-      "HeartWaveField",
-      "HeartAdvantageField",
-      "HeartOrganismOverlay",
-      "HeartDiagnostics",
-      "HeartHealingState",
-      "AiHeartbeatFallbackSurface",
-      "AiHeartbeatLivenessField",
-      "TriHeartLivenessField",
-      "TriHeartFallbackSurface",
-      "TriHeartAdvantageField",
-      "TriHeartSpeedField",
-      "TriHeartPresenceField",
-      "TriHeartOrganismOverlay",
-      "TriHeartHealingState"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+export const PulseProxyHeartMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IMPORTS — Mom / Dad / Baby Hearts (backend-only, safe)
@@ -134,147 +51,6 @@ import {
   getPulseEarnHeartHealingState
 } from "../PULSE-EARN/PulseEarnHeartbeat-v24.js";
 
-// ============================================================================
-// MOM HEART IDENTITY — v20-IMMORTALPLUS-TRI-HEART-ADVANTAGE
-// ============================================================================
-export const PulseRole = {
-  type: "Organ",
-  subsystem: "PulseProxy",
-  layer: "Heart",
-  version: "20-ImmortalPlus-TRI-HEART-ADVANTAGE",
-  identity: "PulseProxyHeart-v20-ImmortalPlus-TRI-HEART-ADVANTAGE",
-
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    pacemakerOnly: true,
-    noIQ: true,
-    noRouting: true,
-    noCompute: false,
-    backendOnly: true,
-    multiInstanceReady: true,
-    organismClockOrchestrator: true,
-    futureEvolutionReady: true,
-
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    advantageCascadeAware: true,
-    dualBandAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-
-    triHeartAware: true,
-    momHeartAware: true,
-    dadHeartAware: true,
-    babyHeartAware: true,
-    triHeartFallbackAware: true,
-    triHeartLivenessAware: true,
-    triHeartAdvantageAware: true,
-    triHeartSpeedAware: true,
-    triHeartPresenceAware: true,
-    triHeartHealingAware: true,
-
-    aiHeartbeatAware: true,
-    aiFallbackSurface: true,
-    dualParentLivenessAware: true,
-
-    circulatoryAware: true,
-    telemetryAware: true,
-    adrenalAware: true,
-    triEnvAware: true,
-    proxyContextAware: true,
-    dualBandContextAware: true,
-
-    netlifyNudgeAware: true
-  }
-};
-
-export const PulseProxyHeartMeta = Object.freeze({
-  layer: "PulseProxyHeart",
-  role: "CARDIAC_PACEMAKER_ENGINE",
-  version: "v20-ImmortalPlus-TRI-HEART-ADVANTAGE",
-  identity: "PulseProxyHeart-v20-ImmortalPlus-TRI-HEART-ADVANTAGE",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    pacemakerOnly: true,
-    saNodeOnly: true,
-    organismClockOrchestrator: true,
-    heartbeatRelay: true,
-
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    advantageCascadeAware: true,
-
-    zeroRandomness: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    dualBandAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-    backendOnly: true,
-
-    aiHeartbeatAware: true,
-    aiFallbackSurface: true,
-    dualParentLivenessAware: true,
-
-    triHeartAware: true,
-    triHeartFallbackAware: true,
-    triHeartLivenessAware: true,
-    triHeartAdvantageAware: true,
-    triHeartSpeedAware: true,
-    triHeartPresenceAware: true,
-    triHeartHealingAware: true,
-
-    circulatoryAware: true,
-    telemetryAware: true,
-    adrenalAware: true,
-    triEnvAware: true,
-    proxyContextAware: true,
-    dualBandContextAware: true,
-
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PacemakerSignal",
-      "HeartbeatContext",
-      "DualBandContext",
-      "OrganismAdvantageContext"
-    ],
-    output: [
-      "HeartbeatRelay",
-      "HeartBandSignature",
-      "HeartBinaryField",
-      "HeartWaveField",
-      "HeartAdvantageField",
-      "HeartOrganismOverlay",
-      "HeartDiagnostics",
-      "HeartHealingState",
-      "AiHeartbeatFallbackSurface",
-      "AiHeartbeatLivenessField",
-      "TriHeartLivenessField",
-      "TriHeartFallbackSurface",
-      "TriHeartAdvantageField",
-      "TriHeartSpeedField",
-      "TriHeartPresenceField",
-      "TriHeartOrganismOverlay",
-      "TriHeartHealingState"
-    ]
-  })
-});
 
 // ============================================================================
 // AI + BABY FALLBACK SURFACES

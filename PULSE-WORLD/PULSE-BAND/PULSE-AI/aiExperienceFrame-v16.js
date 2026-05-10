@@ -4,129 +4,37 @@
 //  PURE FUNCTIONAL ON INPUT/OUTPUT. NO BINARY MUTATION.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "Experience",
-  version: "v16-Immortal-TRI-HEART",
-  layer: "ai_tools",
-  role: "experience_surface",
-  lineage: "Experience-v10 → v14-Immortal → v16-Immortal-TRI-HEART",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    experienceSurface: true,
-    toneMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    waveAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    // v16+ organism awareness
-    organismAware: true,
-    triHeartAware: true,
-    momHeartAware: true,
-    dadHeartAware: true,
-    babyHeartAware: true,
-    triHeartAdvantageAware: true,
-    triHeartSpeedAware: true,
-    triHeartPresenceAware: true,
-    triHeartHealingAware: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const ExperienceFrameMeta = Identity.OrganMeta;
 
-  contract: {
-    always: [
-      "aiExperience",
-      "aiEmotionEngine",
-      "aiDeliveryEngine"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const ExperienceFrameMeta = Object.freeze({
-  type: "Cognitive",
-  subsystem: "aiExperienceFrame",
-  layer: "PulseAIExperienceFrame",
-  role: "EXPERIENCE_FRAME_ORGAN",
-  version: "v16-Immortal-TRI-HEART",
-  identity: "aiExperienceFrame-v16-Immortal-TRI-HEART",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    safetyAware: true,
-    personalAware: true,
-    overmindAware: true,
-    readOnly: true,
-    mutationSafe: true,
-    nonBlocking: true,
-    multiInstanceReady: true,
-    uxArteryAware: true,
-    epoch: "v16-IMMORTAL",
+export const surfaceMeta = Identity.surfaceMeta;
 
-    // v16+ organism + tri-heart
-    organismAware: true,
-    triHeartAware: true,
-    momHeartAware: true,
-    dadHeartAware: true,
-    babyHeartAware: true,
-    triHeartAdvantageAware: true,
-    triHeartSpeedAware: true,
-    triHeartPresenceAware: true,
-    triHeartHealingAware: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  contract: Object.freeze({
-    purpose: Object.freeze([
-      "Act as final UX layer after Overmind and SafetyFrame",
-      "Repair misalignment, confusion, and frustration when detectable",
-      "Harmonize tone with user-level preferences (PersonalFrame)",
-      "Expose safe, clear explanations of refusals and constraints",
-      "Stabilize conversational experience across personas and organs",
-      "Emit a layered UX-artery + tri-heart snapshot for organism-level UX health"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    never: Object.freeze([
-      "override core safety decisions",
-      "bypass Overmind or SafetyFrame",
-      "invent permissions or capabilities",
-      "mutate binary organs or system state",
-      "introduce randomness",
-      "perform cognition",
-      "perform intent logic"
-    ]),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    always: Object.freeze([
-      "stay deterministic for same inputs",
-      "respect safety + persona contracts",
-      "defer to SafetyFrame on safety conflicts",
-      "defer to PersonalFrame for tone shaping when available",
-      "prefer clarity and repair over blame or confusion",
-      "emit UX + tri-heart health in a read-only layered artery"
-    ])
-  }),
 
-  boundaryReflex() {
-    return "ExperienceFrame only reshapes UX text and emits UX + tri-heart health — it never changes safety, permissions, or binary state.";
-  }
-});
 
 // ============================================================================
 //  INTERNAL HELPERS — BUCKETS

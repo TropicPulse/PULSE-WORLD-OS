@@ -30,6 +30,21 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreWorld    = PulseProofBridge.coreworld;
@@ -39,184 +54,6 @@ const CoreDaemon   = PulseProofBridge.coredaemon;
 const MediaBridge  = PulseProofBridge.coremedia;
 const CoreSettings = PulseProofBridge.coresettings;
 
-// ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalWorld = {
-  id: "pulsepal.world",
-  kind: "ui_organ",
-  version: "v24-IMMORTAL++",
-  role: "Pulse‑Pal world cortex membrane",
-  surfaces: {
-    band: ["world", "map", "entities", "presence", "media", "daemon"],
-    wave: ["expansive", "structured", "alive"],
-    binary: [
-      "world_layer",
-      "world_entities",
-      "world_state",
-      "world_time",
-      "world_memory",
-      "world_media"
-    ],
-    presence: ["world_tone", "world_mood"],
-    advantage: ["world_preload", "media_preload", "daemon_preload"],
-    speed: "instant_ui"
-  },
-  routes: {
-    home: "pulsepal.home",
-    identity: "pulsepal.identity",
-    skills: "pulsepal.skills",
-    tasks: "pulsepal.tasks"
-  },
-  consumers: [
-    "Router",
-    "CoreWorld",
-    "CorePresence",
-    "CoreMemory",
-    "CoreDaemon",
-    "CoreSettings"
-  ],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePalWorld = {
-  tone: "expansive_calm",
-  pacing: "steady",
-  emotionalBand: "world_awareness",
-  primaryIntent: "show_world_state",
-  secondaryIntent: "invite_world_exploration",
-  userFirstImpression: "this_is_the_pulse_world",
-  visualNotes: {
-    icon: "neon_ring",
-    motion: "soft_breathe",
-    colorBand: "cyan_purple"
-  }
-};
-
-// ============================================================================
-// ORGAN_META — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_META_PulsePalWorld = {
-  id: "organ.pulsepal.world",
-  organism: "PulsePal",
-  layer: "ui.world",
-  tier: "IMMORTAL",
-  evoFlags: {
-    canAddWorldLayers: true,
-    canAddWorldEntities: true,
-    canAddWorldMaps: true,
-    requiresCoreWorld: true,
-    mediaAware: true,
-    presenceAware: true,
-    personaAware: true,
-    daemonAware: true,
-    modeAware: true
-  },
-  lineage: {
-    family: "companion_world",
-    generation: 3,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalWorld = {
-  inputs: {
-    Router: "navigation interface",
-    Icons: "icon resolution interface",
-    Media: "media resolver interface",
-    CoreWorld: "bridge world organ",
-    CorePresence: "bridge presence organ",
-    CoreMemory: "bridge memory organ",
-    CoreDaemon: "bridge daemon snapshot",
-    CoreSettings: "bridge settings organ"
-  },
-  outputs: {
-    uiSurface: "world_cortex",
-    worldState: "CoreWorld.state",
-    worldEntities: "CoreWorld.entities",
-    worldLayers: "CoreWorld.layers",
-    worldTime: "CoreWorld.time",
-    worldMemory: "CoreWorld.memory",
-    presence: "CorePresence.snapshot",
-    persona: "CoreMemory.persona",
-    mode: "CoreSettings.personaMode"
-  },
-  consumers: [
-    "Router",
-    "CoreWorld",
-    "CorePresence",
-    "CoreMemory",
-    "CoreDaemon",
-    "CoreSettings"
-  ],
-  guarantees: {
-    deterministicRender: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS — v24 IMMORTAL++
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalWorld = {
-  drift: {
-    allowed: false,
-    notes: "World semantics must remain stable."
-  },
-  pressure: {
-    expectedLoad: "high",
-    notes: "World is frequently referenced by persona + tasks + skills."
-  },
-  stability: {
-    uiLayout: "stable",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 6,
-    notes: "Header, world state, world layers, world entities, world time, media."
-  },
-  chunking: {
-    prewarm: [
-      "icons.neon_ring",
-      "icons.map",
-      "icons.layers",
-      "icons.entity",
-      "media.pulsepal"
-    ],
-    cacheKey: "pulsepal.world.ui"
-  },
-  worldLens: {
-    awareOfWorlds: true
-  },
-  limbic: {
-    band: "world_awareness"
-  },
-  triHeart: {
-    cognitive: "world_state_reading",
-    emotional: "world_connection",
-    behavioral: "explore_world"
-  },
-  impulseSpeed: {
-    primaryAction: "open_world_layer",
-    latencyTargetMs: 50
-  },
-  healingSurfaces: {
-    enabled: true
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

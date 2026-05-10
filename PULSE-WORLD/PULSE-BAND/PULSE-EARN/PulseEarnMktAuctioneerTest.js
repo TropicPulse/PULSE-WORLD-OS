@@ -2,50 +2,21 @@
 // TEST SCRIPT — Vast.ai Adapter Test (v16‑IMMORTAL‑INTEL A‑B‑A Deterministic)
 // Pulse‑Earn v16‑IMMORTAL‑INTEL
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnMktAuctioneerTest",
-  version: "v16-IMMORTAL-INTEL",
-  layer: "earn_market_test",
-  role: "auctioneer_validation_harness",
-  lineage: "PulseEarnMktAuctioneerTest-v11 → v14-Immortal → v16-IMMORTAL-INTEL",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    testHarness: true,
-    deterministicReplay: true,
-    auctioneerValidation: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnMktAuctioneer",
-      "PulseEarnMktBroker",
-      "PulseEarnMktConsulate"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import {
   PulseEarnMktAuctioneer,
   getPulseEarnMktAuctioneerHealingState

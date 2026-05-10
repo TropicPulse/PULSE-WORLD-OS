@@ -15,50 +15,21 @@
 // • Multi-instance-ready, unified-advantage-field,
 //   binary-aware, dual-mode-ready, presence-aware, mesh-aware.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshOrgans",
-  version: "v15.0-MESH-ORGANS-Evo",
-  layer: "mesh",
-  role: "mesh_organ_registry",
-  lineage: "PulseMesh-v15",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    organRegistry: true,            // Registry of mesh organs
-    metadataOnly: true,             // No compute, no routing
-    binaryAware: true,              // Binary organ metadata
-    symbolicAware: true,            // Symbolic organ metadata
-    deterministic: true,
-    driftProof: true,
-    dualBand: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true,
-    meshAware: true,                // NEW: mesh-level organ tagging
-    presenceAware: true,            // Presence-band aware
-    coordinatorFree: true           // No global coordination here
-  },
-
-  contract: {
-    always: [
-      "PulseMeshFlow",
-      "PulseMeshCognition",
-      "PulseMeshAwareness"
-    ],
-    never: [
-      "legacyMeshOrgans",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-// ============================================================================
-//  PULSE OS v15.0-MESH-ORGANS-Evo-Immortal  // orange
-//  “Functional Organ Map of the Mesh Body”
-//  Capability Signatures • Deterministic Organ Matching • Metadata-Only
-// ============================================================================
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseOrgans() {
 

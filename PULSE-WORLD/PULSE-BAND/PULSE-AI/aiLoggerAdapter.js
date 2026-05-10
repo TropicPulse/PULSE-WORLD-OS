@@ -3,126 +3,35 @@
 //  Binary Logger Membrane • Shadow Forensics • Artery Metrics • Window‑Safe
 //  PURE MEMBRANE. ZERO INTERPRETATION. ZERO RANDOMNESS. DELTA‑AWARE, CI‑AWARE.
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiLoggerAdapter",
-  version: "v16-Immortal",
-  layer: "ai_adapter",
-  role: "logger_adapter",
-  lineage: "aiLoggerAdapter-v10 → v11.3-Evo → v12.3-Presence → v15-Immortal → v16-Immortal",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    adapter: true,
-    logFormatting: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    loggerMembrane: true,
-    shadowForensics: true,
-    arteryMetrics: true,
-    windowSafe: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const LoggerAdapterMeta = Identity.OrganMeta;
 
-    computeIntelligenceAware: true,
-    binaryDeltaAware: true,
-    triHeartAware: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  contract: {
-    always: ["aiDebug", "aiDiagnostics", "aiDiagnosticsWrite"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+export const surfaceMeta = Identity.surfaceMeta;
 
-export const LoggerAdapterMeta = Object.freeze({
-  layer: "OrganismMembrane",
-  role: "LOGGER_ADAPTER",
-  version: "v16-Immortal",
-  identity: "aiLoggerAdapter-v16-Immortal",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
-    membrane: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    loggerAware: true,
-    pipelineAware: true,
-    reflexAware: true,
-    packetAware: true,
-    shadowLoggerAware: true,
-
-    windowAware: true,
-    evolutionAware: true,
-    bluetoothReady: true,
-
-    microPipeline: true,
-    speedOptimized: true,
-
-    organismAware: true,
-    arteryAware: true,
-    identitySafe: true,
-
-    computeIntelligenceAware: true,
-    binaryDeltaAware: true,
-    triHeartAware: true,
-
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "v16-Immortal"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Transport binary packets safely from the organism to ProofLogger and shadow forensics without decoding or interpreting, " +
-      "while exposing window-safe artery metrics and optional compute-intelligence / delta context.",
-
-    never: Object.freeze([
-      "decode binary",
-      "interpret binary",
-      "mutate binary",
-      "format binary",
-      "project binary to human-readable form",
-      "modify pipeline or reflex behavior",
-      "introduce randomness",
-      "recursively log itself",
-      "store or infer user identity from bits",
-      "apply policy logic on bits",
-      "derive cognition from bits",
-      "derive user profile from bits"
-    ]),
-
-    always: Object.freeze([
-      "validate binary input",
-      "wrap binary in structured packets",
-      "forward packets to ProofLogger",
-      "forward packets to shadowLogger (if present)",
-      "remain pure and minimal",
-      "act as a safe membrane",
-      "emit deterministic logger packets",
-      "expose artery metrics for observability",
-      "remain identity-safe and policy-neutral"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "LoggerAdapter must remain a pure membrane: no decoding, no policy, no identity inference, ever.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, logger-scoped

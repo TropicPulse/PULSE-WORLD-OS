@@ -5,81 +5,26 @@
 //          Server-Attachable, Jury-Ready, Bluetooth-Aware, Proxy-Aware)
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseUser",
-  version: "v24-Immortal-ORGANISM-JuryReady",
-  layer: "presence_user",
-  role: "presence_user_core",
-  lineage: "PulseUser-v9 → v12.3-Presence-Evo+ → v15-Immortal → v16-Immortal-ORGANISM → v16-Immortal-ORGANISM-JuryReady → v24-Immortal-ORGANISM-JuryReady",
-
-  evo: {
-    userCore: true,
-    presenceAware: true,
-    bluetoothAware: true,
-    meshAware: true,
-    regionAware: true,
-    advantageBand: true,
-    fallbackBand: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    // v24+: full organism mesh + server + jury
-    runtimeAware: true,
-    schedulerAware: true,
-    overmindAware: true,
-    serverExecAware: true,
-    routerAware: true,
-    castleAware: true,
-    expansionAware: true,
-    meshOrganismAware: true,
-    beaconMeshAware: true,
-    earnAware: true,
-    bandAware: true,
-    binarySendAware: true,
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true,
-
-    // Jury-ready extensions
-    juryAware: true,
-    citizenWitnessAware: true,
-    behaviorPatternAware: true,
-    aiOriginEchoAware: true,
-    socialAnomalyAware: true,
-    timelineFlowAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseBeaconEngine",
-      "PulseBeaconMesh",
-      "PulseExpansion",
-      "PulseCastle",
-      "PulseMesh",
-      "PulseServer",
-      "PulseRouter"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
 // ============================================================================
 // IMPORTS — OS / Mesh / Castle / Server / Router / Expansion / Band
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+export const PulseWorldCoreMeta = Identity.OrganMeta;
+export const PulseUserMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 // Primary OS / Binary OS (OSBrain + runtimes)
 import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v16.js";
@@ -115,106 +60,6 @@ import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 
 // Evolution engine
 import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
-
-// ============================================================================
-// META — PulseUser / PulseWorldCore
-// ============================================================================
-
-export const PulseUserMeta = Object.freeze({
-  organId: "PulseUser-v24-Immortal-ORGANISM-JuryReady",
-  role: "PRESENCE_USER_CORE",
-  version: "v24-Immortal-ORGANISM-JuryReady",
-  layer: "User",
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroDynamicImports: true,
-    zeroEval: true
-  }),
-  evo: Object.freeze({
-    presenceAware: true,
-    bluetoothAware: true,
-    meshAware: true,
-    regionAware: true,
-    advantageBand: true,
-    fallbackBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    runtimeAware: true,
-    schedulerAware: true,
-    overmindAware: true,
-    serverExecAware: true,
-    routerAware: true,
-    castleAware: true,
-    expansionAware: true,
-    meshOrganismAware: true,
-    beaconMeshAware: true,
-    earnAware: true,
-    bandAware: true,
-    binarySendAware: true,
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true,
-    juryAware: true,
-    citizenWitnessAware: true,
-    behaviorPatternAware: true,
-    aiOriginEchoAware: true,
-    socialAnomalyAware: true,
-    timelineFlowAware: true
-  })
-});
-
-export const PulseWorldCoreMeta = Object.freeze({
-  organId: "PulseWorldCore-v24-Immortal-ORGANISM-JuryReady",
-  role: "LOCAL_OS",
-  version: "v24-Immortal-ORGANISM-JuryReady",
-  epoch: "v24-Immortal-ORGANISM",
-  layer: "Experience",
-  safety: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noAsyncDrift: true,
-    syntheticOnly: true
-  }),
-  evo: Object.freeze({
-    presenceAware: true,
-    advantageAware: true,
-    fallbackBandAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    meshPressureAware: true,
-    routeAware: true,
-    castleAware: true,
-    expansionAware: true,
-    dualbandSafe: true,
-    runtimeAware: true,
-    osBrainAware: true,
-    userAttachedToBrain: true,
-    serverAttachedToUser: true,
-    meshOrganismAware: true,
-    beaconMeshAware: true,
-    serverExecAware: true,
-    routerAware: true,
-    earnAware: true,
-    bandAware: true,
-    binarySendAware: true,
-    proxyAware: true,
-
-    // Jury-ready extensions
-    juryAware: true,
-    citizenWitnessAware: true,
-    behaviorPatternAware: true,
-    aiOriginEchoAware: true,
-    socialAnomalyAware: true,
-    timelineFlowAware: true
-  })
-});
 
 // ============================================================================
 // FACTORY: createPulseWorldCore — v24 IMMORTAL ORGANISM JURY-READY

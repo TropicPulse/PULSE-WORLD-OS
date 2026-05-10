@@ -100,49 +100,21 @@
 //  This file preserves that history — the exponential era — as part of the
 //  system’s long‑term memory and architectural lineage.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSLongTermMemory",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_long_term_memory",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    longTermMemory: true,
-    memoryConsolidation: true,
-    recallEngine: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrain",
-      "PulseOSBrainCortex",
-      "PulseChunker"
-    ],
-    never: [
-      "legacyLongTermMemory",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 import nodemailer from "nodemailer";

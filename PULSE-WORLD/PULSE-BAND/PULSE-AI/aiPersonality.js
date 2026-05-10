@@ -3,45 +3,36 @@
 //  Self‑Definition • Role Assignment • Binary‑Aware Identity Drift
 //  PURE IDENTITY. ZERO MUTATION. ZERO RANDOMNESS. PULSE‑NET ONLY.
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "persona",
-  version: "v16-Immortal++",
-  layer: "ai_core",
-  role: "persona_engine",
-  lineage: "persona-v11 → v14-Immortal → v16-Immortal++",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    personaEngine: true,
-    personaMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    identityArteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
-    organismUserSegregation: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+// export const OrganismKernelMeta = Identity.OrganMeta;
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,          // no raw internet; Pulse / Pulse‑Net only
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: ["aiIdentityCore", "aiPersonalityEngine", "aiHumilityFilter"],
-    never: ["safeRoute", "fetchViaCNS", "directInternetAccess"]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 import {
   ArchitectAIPermissions,

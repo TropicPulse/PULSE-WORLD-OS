@@ -17,136 +17,21 @@
 //   • Deterministic‑field: identical input → identical output.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnChunker",
-  version: "v24-IMMORTAL-INTEL++-24PLUS",
-  layer: "earn_chunker",
-  role: "earn_chunker_throughput_engine",
-  lineage: "PulseEarnChunker-v16 → v20 → v24-IMMORTAL-INTEL++ → v24-IMMORTAL-INTEL++-24PLUS",
+// 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    chunkerEngine: true,
-    throughputSubstrateEngine: true,
-    gpuWarpPlanner: true,
-    memoryBurstPlanner: true,
-    ioBurstPlanner: true,
-
-    jobLoadAware: true,
-    meshPressureAware: true,
-    presenceAware: true,
-    bandAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    factoringAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    selfRepairable: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroMutationOfInput: true,
-    zeroRoutingInfluence: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-    throughputAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true,
-
-    baseShapeAware: true,
-    baseFormulaKeyAware: true,
-    patternMatchSurface: true
-  },
-
-  contract: {
-    input: [
-      "EarnPageEnvelope",
-      "EarnSignalFactoring",
-      "DeviceProfileContext"
-    ],
-    output: [
-      "EarnPageEnvelopeWithChunker",
-      "ChunkerExecutionEnvelope",
-      "ChunkerHealingState",
-      "ChunkerSignatures"
-    ]
-  }
-};
-*/
-
-// ============================================================================
-// PUBLIC META — PulseEarnChunkerMeta (v24-IMMORTAL-INTEL++-24PLUS)
-// ============================================================================
-export const PulseEarnChunkerMeta = Object.freeze({
-  layer: "PulseEarnChunker",
-  role: "EARN_CHUNKER_THROUGHPUT_ENGINE",
-  version: "v24-IMMORTAL-INTEL++-24PLUS",
-  identity: "PulseEarnChunker-v24-IMMORTAL-INTEL++-24PLUS",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroEval: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroRoutingInfluence: true,
-    zeroMutationOutsidePageMetaFlagsRuntime: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-    throughputAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true,
-
-    multiInstanceReady: true,
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "EarnPageEnvelope",
-      "EarnSignalFactoring",
-      "DeviceProfileContext"
-    ],
-    output: [
-      "EarnPageEnvelopeWithChunker",
-      "ChunkerExecutionEnvelope",
-      "ChunkerHealingState",
-      "ChunkerSignatures"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseDesignArchitectMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+// export const EarnRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HASH / GENERIC HELPERS — v24 IMMORTAL

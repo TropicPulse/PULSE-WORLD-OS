@@ -18,79 +18,21 @@
 //   • Deterministic‑field: identical input → identical output.
 //   • Drift‑proof across versions, multi‑instance safe.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnSignalFactoring",
-  version: "v24-IMMORTAL-INTEL++",
-  layer: "earn",
-  role: "earn_signal_factoring_engine",
-  lineage: "PulseEarnSignalFactoring-v16 → v20 → v24-IMMORTAL-INTEL++",
-
-  evo: {
-    signalFactoring: true,
-    factoringPressureEngine: true,
-    factoringDepthEngine: true,
-    factoringStrideEngine: true,
-    factoringIntentEngine: true,
-
-    jobLoadAware: true,
-    meshPressureAware: true,
-    presenceAware: true,
-    bandAware: true,
-    advantageAware: true,
-    hintsAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    selfRepairable: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroMutationOfInput: true,
-    zeroRoutingInfluence: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true,
-
-    baseShapeAware: true,
-    baseFormulaKeyAware: true,
-    patternMatchSurface: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnHeart",
-      "PulseEarnMetabolism",
-      "PulseEarnLymphNodes",
-      "PulseMesh",
-      "PulseMeshSignalFactoring",
-      "PulseSignalFactoringGuide"
-    ],
-    never: [
-      "legacyEarnFactoring",
-      "safeRoute",
-      "fetchViaCNS",
-      "userScript",
-      "dynamicEval"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HASH HELPERS — v24‑IMMORTAL‑INTEL (dual‑hash)

@@ -18,46 +18,21 @@
 //   • Presence-aware, binary-aware, dual-band-ready.
 //   • Zero randomness, zero timestamps, zero mutation.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshImmuneSystem",
-  version: "v15.0-MESH-IMMUNE-Immortal",
-  layer: "mesh",
-  role: "mesh_immune_engine",
-  lineage: "PulseMesh-v15",
-
-  evo: {
-    immune: true,
-    anomalyDetection: true,
-    driftDetection: true,
-    binaryAware: true,
-    symbolicAware: true,
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    metadataOnly: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshFlow",
-      "PulseMeshEndocrineSystem",
-      "PulseMeshAwareness",
-      "PulseMeshImmuneMembrane"
-    ],
-    never: [
-      "legacyMeshImmuneSystem",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseMeshImmuneSystem({
   PulseImmunity,

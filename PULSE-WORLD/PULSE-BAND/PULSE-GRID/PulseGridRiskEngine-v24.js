@@ -4,133 +4,20 @@
 //  Presence • Advantage • Fallback Bands • Chunk/Cache/Prewarm Hints
 //  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS. ZERO I/O.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "powerRiskEngine",
-  version: "v24-Immortal-ORGANISM",
-  layer: "pulsegrid_compute",
-  role: "risk_compute_engine",
-  lineage: "PowerPrime-v14 → PowerRiskEngine-v12.3 → PowerRiskEngine-v24-Immortal-ORGANISM",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    riskEngine: true,
-    arteryFusion: true,
-    outageLikelihood: true,
-    driftRisk: true,
-    continuanceAware: true,
-    advantageAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    binarySafe: true,
-    symbolicSafe: true,
-    dualBandAware: true,
-
-    presenceAware: true,
-    bandPresenceAware: true,
-    routerPresenceAware: true,
-    fallbackBandAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true,
-
-    meshAware: true,
-    meshPressureAware: true,
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true
-  },
-
-  contract: {
-    always: [
-      "powerContinuanceEngine",
-      "aiPowerPrime",
-      "PulseWorldCore",
-      "PulseUser"
-    ],
-    never: [
-      "legacyRiskEngine",
-      "safeRoute",
-      "fetchViaCNS",
-      "aiInference",
-      "meshRouting",
-      "networkIO"
-    ]
-  }
-}
-*/
-
-export const PowerRiskEngineMeta = Object.freeze({
-  layer: "PulseAIPowerPrime",
-  role: "POWER_RISK_ENGINE",
-  version: "v24-Immortal-ORGANISM",
-  identity: "powerRiskEngine-v24-Immortal-ORGANISM",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    arteryFusionAware: true,
-    continuanceAware: true,
-    outageAware: true,
-    fluctuationAware: true,
-    hormoneAware: true,
-    personaAware: true,
-    memoryAware: true,
-    evolutionAware: true,
-    presenceAware: true,
-    bandPresenceAware: true,
-    routerPresenceAware: true,
-    advantageAware: true,
-    fallbackBandAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true,
-    meshAware: true,
-    meshPressureAware: true,
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true,
-    epoch: "v24-Immortal-ORGANISM"
-  }),
-
-  guarantees: Object.freeze({
-    pureCompute: true,
-    zeroMutation: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroDateNow: true,
-    zeroIO: true,
-    zeroNetwork: true,
-    zeroSideEffects: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PowerHistorySnapshot",
-      "FusedArteriesSnapshot",
-      "ContinuanceSnapshot",
-      "PresenceContext",
-      "AdvantageContext",
-      "MeshContext",
-      "ProxyContext"
-    ],
-    output: [
-      "PowerRiskVector",
-      "PowerRiskSummary",
-      "PowerBeaconSignals",
-      "PowerRiskPresencePlan"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PowerRiskEngineMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  INTERNAL HELPERS — SAFE NORMALIZATION

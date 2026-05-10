@@ -1,192 +1,26 @@
 // ============================================================================
 //  PulseSendMemoryAdapter-v20.js — v20‑IMMORTAL‑SEND‑MEMORY‑ADAPTER
 //  “SEND ONCE. REFERENCE FOREVER. MEMORY NEVER DRIFTS.”
-//  • v20 IMMORTAL MetaBlock
-//  • dnaTag + version aware
-//  • presence‑touch propagation (overlay.touch + deterministic epoch)
-//  • hot‑loop promotion
-//  • dual‑band metadata (send = binary)
-//  • send‑shape + channel metadata
-//  • governor + evolution aligned
-//  • deterministic canonicalization (via BinaryOverlay v20)
 // ============================================================================
 
-/*
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-*/
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  AI_EXPERIENCE_META (IMMORTAL++)
+//  META BLOCK — v20 IMMORTAL (from genome)
 // ============================================================================
-export const AI_EXPERIENCE_META_PulseSendMemoryAdapter = {
-  id: "corememory.adapter.send",
-  identity: "PulseCoreSendMemoryAdapter",
-  version: "v20-IMMORTAL-SEND-MEMORY",
-  layer: "corememory_adapter",
-  role: "send_memory_adapter",
-  lineage: "PulseCoreMemory-v20-IMMORTAL",
-
-  evo: {
-    adapter: true,
-    sendMemoryBridge: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true
-  },
-
-  contract: {
-    always: [
-      "PulseCoreBrain",
-      "PulseCoreGovernor",
-      "PulseBinaryCoreOverlay",
-      "PulseCoreSettings",
-      "PulseCorePresence"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  },
-
-  surfaces: {
-    band: ["send", "adapter", "edge"],
-    wave: ["deterministic", "outbound"],
-    binary: ["prepareOutbound"],
-    presence: ["send_presence_touch"],
-    advantage: ["send_shape_reuse"],
-    speed: "hot_loop"
-  }
-};
+export const PulseSendMemoryAdapterMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  AI_EXPERIENCE_CONTEXT
+//  SURFACE / ORGANISM LAYER EXPORTS — v20 IMMORTAL
 // ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulseSendMemoryAdapter = {
-  tone: "technical_silent",
-  pacing: "instant",
-  emotionalBand: "none_direct",
-  primaryIntent: "canonicalize_send_payloads",
-  secondaryIntent: "stabilize_outbound_reuse",
-  visualNotes: {
-    icon: "send",
-    motion: "vector_pulse",
-    colorBand: "infra_core"
-  },
-  presenceLens: {
-    awareOfPresence: true,
-    notes: "presence may bias which outbound shapes stay hot."
-  },
-  settingsLens: {
-    awareOfSettings: true,
-    notes: "settings may tune send size thresholds and retention."
-  }
-};
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-// ============================================================================
-//  CORE ORGAN META
-// ============================================================================
-export const CORE_MEMORY_META_PulseSendMemoryAdapter = {
-  id: "organ.corememory.adapter.send",
-  subsystem: "CoreMemory",
-  layer: "MemoryAdapter",
-  tier: "IMMORTAL",
-  role: "Send-Memory-Bridge",
-  lineage: {
-    family: "corememory_adapter_send",
-    generation: 3,
-    coreVersion: "v20"
-  },
-  evoFlags: {
-    dnaAware: true,
-    versionAware: true,
-    presenceAware: true,
-    hotLoop: true,
-    dualBandSafe: true,
-    sendAware: true,
-    deterministic: true,
-    driftProof: true
-  }
-};
-
-// ============================================================================
-//  CORE ORGAN CONTRACT
-// ============================================================================
-export const CORE_MEMORY_CONTRACT_PulseSendMemoryAdapter = {
-  inputs: {
-    overlay: "BinaryOverlay",
-    dnaTag: "string",
-    version: "string",
-    log: "function",
-    defaultChannel: "string" // e.g. "http", "ws", "native"
-  },
-  outputs: {
-    prepareOutbound: "function(routeId, payload, channelOverride?)",
-    promoteHot: "function(routeId, key)"
-  },
-  consumers: [
-    "PulseCoreBrain",
-    "PulseCoreGovernor",
-    "PulseBinaryCoreOverlay",
-    "PulseCoreSettings",
-    "PulseCorePresence"
-  ],
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noFilesystem: true
-  }
-};
-
-// ============================================================================
-//  IMMORTAL OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulseSendMemoryAdapter = {
-  drift: {
-    allowed: false,
-    notes: "Send shape identity and outbound semantics must not drift."
-  },
-  pressure: {
-    expectedLoad: "medium_high",
-    notes: "Send adapter sits on outbound hot path."
-  },
-  stability: {
-    algorithm: "stable",
-    layout: "stable",
-    notes: "Canonicalization is structural and stable across sessions."
-  },
-  chunking: {
-    prewarm: ["corememory.adapter.send", "corememory.binary.overlay"],
-    cacheKey: "corememory.adapter.send.v20"
-  },
-  triHeart: {
-    cognitive: "send_memory_bridge",
-    emotional: "none_direct",
-    behavioral: "prepare_and_reuse"
-  },
-  impulseSpeed: {
-    primaryAction: "prepareOutbound",
-    latencyTargetNs: 40000
-  }
-};
-
-// ============================================================================
-//  v20 IDENTITY BLOCK (MetaBlock)
-// ============================================================================
-export const SendMemoryAdapterMetaBlock = {
-  identity: "PulseSendMemoryAdapter",
-  subsystem: "Send",
-  layer: "MemoryAdapter",
-  role: "Send-Memory-Bridge",
-  version: "20.0-IMMORTAL-SEND-MEMORY",
-  evo: CORE_MEMORY_META_PulseSendMemoryAdapter.evoFlags
-};
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // deterministic epoch for Send adapter events
 let SEND_EPOCH = 0;
@@ -232,7 +66,7 @@ export function createPulseSendMemoryAdapter({
       band,
       sendSize,
       channel,
-      metaBlock: SendMemoryAdapterMetaBlock
+      metaBlock: PulseSendMemoryAdapterMeta
     };
 
     try {
@@ -257,17 +91,18 @@ export function createPulseSendMemoryAdapter({
   }
 
   return {
-    SendMemoryAdapterMetaBlock,
+    PulseSendMemoryAdapterMeta,
     dnaTag,
     version,
 
     prepareOutbound,
     promoteHot,
 
-    AI_EXPERIENCE_META_PulseSendMemoryAdapter,
-    AI_EXPERIENCE_CONTEXT_PulseSendMemoryAdapter,
-    CORE_MEMORY_META_PulseSendMemoryAdapter,
-    CORE_MEMORY_CONTRACT_PulseSendMemoryAdapter,
-    IMMORTAL_OVERLAYS_PulseSendMemoryAdapter
+    // genome-driven meta exports
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext
   };
 }

@@ -4,176 +4,21 @@
 //  Pure deterministic reflex builder (zero routing, zero sending, zero compute)
 //  Binary-first A-B-A + DualHash + Presence/Advantage/Chunk surfaces (metadata-only) + 24++ Reflex Profiles
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnReflex",
-  version: "v24-Immortal-ADV-SUPERIOR",
-  layer: "earn_reflex",
-  role: "earn_reflex_arc",
-  lineage: "PulseEarnReflex-v11 → v12.3 → v13 → v14-Immortal → v16-Immortal-ADV → v24-Immortal-ADV-SUPERIOR",
-
-  evo: {
-    reflexArc: true,
-    threatResponse: true,
-    fastPath: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    dualHash: true,
-    hashIntellectField: true,
-    presenceAdvantageChunkUnified: true,
-
-    // 24++ overlays
-    reflexComputeProfileAware: true,
-    reflexPressureProfileAware: true,
-    reflexTriHeartAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnReflexRouter",
-      "PulseEarnMuscleSystem",
-      "PulseEarnNervousSystem"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// ORGAN IDENTITY — v24.0-Immortal-ADV-SUPERIOR
-// ============================================================================
-export const PulseRole = {
-  type: "Reflex",
-  subsystem: "PulseEarnReflex",
-  layer: "B1-SubHealerReflexArc",
-  version: "24.0-Immortal-ADV-SUPERIOR",
-  identity: "PulseEarnReflex-v24.0-Immortal-ADV-SUPERIOR",
-
-  evo: {
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    reflexArc: true,
-    reflexDeterministic: true,
-    reflexHandoffOnly: true,
-    reflexInstanceLaw: true,
-    reflexABASurface: true,
-    reflexPresenceAware: true,
-    reflexAdvantageAware: true,
-    reflexChunkAware: true,
-
-    dualHash: true,
-    hashIntellectField: true,
-
-    zeroRouting: true,
-    zeroSending: true,
-    zeroCompute: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroMutation: true,
-    zeroTiming: true,
-
-    zeroState: false,
-
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    bandNormalizationAware: true,
-
-    environmentAgnostic: true,
-    multiInstanceReady: true,
-
-    // 24++
-    reflexComputeProfileAware: true,
-    reflexPressureProfileAware: true,
-    reflexTriHeartAware: true
-  }
-};
-
-export const PulseEarnReflexMeta = Object.freeze({
-  layer: "PulseEarnReflex",
-  role: "EARN_REFLEX_ORGAN",
-  version: "v24.0-Immortal-ADV-SUPERIOR",
-  identity: "PulseEarnReflex-v24.0-Immortal-ADV-SUPERIOR",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureReflex: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    healingMetadataAware: true,
-
-    reflexArc: true,
-    reflexDeterministic: true,
-    reflexInstanceLaw: true,
-    reflexHandoffOnly: true,
-
-    dualHashAware: true,
-    hashIntellectAware: true,
-
-    zeroRouting: true,
-    zeroSending: true,
-    zeroCompute: true,
-    zeroAsync: true,
-    zeroUserCode: true,
-    zeroMutation: true,
-
-    worldLensAware: false,
-    multiInstanceReady: true,
-
-    // 24++
-    reflexComputeProfileAware: true,
-    reflexPressureProfileAware: true,
-    reflexTriHeartAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "GovernorEvent",
-      "ReflexSliceContext",
-      "DualBandContext",
-      "DevicePhenotypePresence"
-    ],
-    output: [
-      "EarnReflexOrganism",
-      "ReflexDiagnostics",
-      "ReflexSignatures",
-      "ReflexHealingState",
-      "ReflexPresenceField",
-      "ReflexAdvantageField",
-      "ReflexChunkPrewarmPlan",
-      "ReflexBandBinaryWave",
-      "ReflexDualHashField",
-      "ReflexComputeProfile",
-      "ReflexPressureProfile",
-      "ReflexTriHeartField"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL STATE

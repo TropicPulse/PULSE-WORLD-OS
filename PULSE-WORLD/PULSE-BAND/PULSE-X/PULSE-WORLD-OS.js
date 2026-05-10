@@ -48,119 +48,27 @@
  *  NOW UPGRADED TO v24-IMMORTAL-WORLD-OS-PAL-PROXY-HELPER.
  * =============================================================================
  */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 "use strict";
 const fs   = require("fs");
 const path = require("path");
 const os   = require("os");
 
-/* =============================================================================
- *  0. AI EXPERIENCE META / EXPORT META
- * ============================================================================= */
-const AI_EXPERIENCE_META = {
-  identity: "PulseWorldOS.PulseBand.ContinuanceDaemon",
-  version: "v24-Immortal-World-OS-Pal-Proxy-Helper",
-  layer: "pulse_world_os_daemon",
-  role: "organism_runtime + continuance_monitor + world_os_boot_mapper + helper + proxy_mode_observer + pal_prewarmer",
-  lineage: "PulseBandDaemon-v5 → PulseDaemon-v16-Immortal-Evo → PulseWorldOS-v21 → PulseWorldOS-v22-Helper → PulseWorldOS-v23-Proxy-Helper → PulseWorldOS-v24-Pal-Proxy-Helper",
-  evo: {
-    // core daemon traits
-    driftProof: true,
-    deterministicLoop: true,
-    zeroConfig: true,
-    zeroMetadata: true,
-    filesystemIsOrganism: true,
-    autoOrganDiscovery: true,
-    continuanceAware: true,
-    prewarmAware: true,
-    prechunkAware: true,
-    advantageAware: true,
-
-    // world-os traits
-    worldOSLoader: true,
-    deviceDaemon: true,
-    routeDiscovery: true,
-    bootSequenceAware: true,
-    pulseWorldAware: true,
-    pulseBandAware: true,
-    pulseRouteAware: true,
-    pulseEarnAware: true,
-    pulseGPUAware: true,
-
-    // helper traits
-    cliAware: true,
-    snapshotExportAware: true,
-    humanHelperHints: true,
-    addonHooksAware: true,
-
-    // proxy-mode traits (meta-only, no routing)
-    proxyModeAware: true,
-    proxyOrganismAware: true,
-    binaryProxyAware: true,
-    proxyContinuanceAware: true,
-
-    // pal traits
-    pulsePalAware: true,
-    palPresenceAware: true,
-    palMediaPrewarmAware: true,
-    palContinuanceAware: true,
-
-    // NEW: pal history + persona traits
-    palHistoryAware: true,
-    palPersonaAware: true,
-    palContinuityAware: true,
-
-    // upgrade traits
-    immortalUpgradeAware: true,
-    evoTierAware: true,
-    maxABAAware: true,
-
-    // future evolution
-    futureBootLoaderReady: true,
-    futureDeviceMeshReady: true,
-    futureDashboardReady: true,
-    futureProxyDashboardReady: true,
-    futurePalDashboardReady: true,
-    futurePalHistoryDashboardReady: true,
-    futurePalPersonaDashboardReady: true
-  }
-};
-
-const EXPORT_META = {
-  organ: "PulseDaemon",
-  layer: "pulse_world_os_daemon",
-  stability: "IMMORTAL-WORLD-OS-PAL-PROXY-HELPER",
-  deterministic: true,
-  exposes: [
-    "start",
-    "stop",
-    "getOrgans",
-    "getSnapshot",
-    "getBootMap",
-    "getProxySummary",
-    "getPalSummary",
-    "exportSnapshot",
-    "getConfig",
-
-    // NEW:
-    "getPalHistory",
-    "getPalPersona",
-    "getPalHelperSuggestions"
-  ],
-  sideEffects: "process_interval_only",
-  network: "none (local world-os daemon core)",
-  cli: {
-    flags: [
-      "--root <path>       : override root directory (default: script directory)",
-      "--interval <ms>     : override tick interval in ms (default: 5000)",
-      "--json              : print JSON snapshot each tick (in addition to TUI)",
-      "--once              : run discovery + one tick, then exit",
-      "--quiet             : suppress TUI, only JSON or nothing",
-      "--no-color          : disable ANSI colors",
-      "--snapshot-file <f> : write last snapshot to file on each tick"
-    ]
-  }
-};
 
 /* =============================================================================
  *  1. COLORS + ICONS (with --no-color support)

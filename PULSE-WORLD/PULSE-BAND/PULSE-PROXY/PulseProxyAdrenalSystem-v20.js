@@ -16,313 +16,32 @@
 //    - Max‑dominant fusion: finalStress = max(cortex, somatic, sensory).
 //    - Backend‑only core logic (no timers/Date.now), but accepts external stress.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProxyAdrenalSystem",
-  version: "v20-Immortal-TRIENV-MAXDOM",
-  layer: "adrenal_system",
-  role: "tri_environment_reflex_organ",
-  lineage: "PulseProxy-v20-Immortal",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    // Core adrenal laws
-    adrenalOrgan: true,
-    fightOrFlightReflex: true,
-    stressScaling: true,
-    instanceOrchestrator: true,
-    dynamicBandReflex: true,
-    symbolicToBinaryShift: true,
-
-    // IMMORTAL guarantees
-    deterministic: true,
-    driftProof: true,
-    zeroRandomness: true,
-    zeroNondeterminism: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroTimers: true,
-    zeroDateNow: true,
-    zeroAsyncLoops: true,
-    multiInstanceReady: true,
-    backendOnly: true,
-
-    // A‑B‑A surfaces
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    stressFieldAware: true,
-    abaBandAware: true,
-
-    // v20 presence/harmonics
-    presenceAware: true,
-    harmonicsAware: true,
-    dualBandCompatible: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    passivePrewarm: true,
-    passiveCache: true,
-    passiveChunk: true,
-    passiveRemember: true,
-
-    // Tri‑environment stress (v20)
-    triEnvStressAware: true,
-    cortexStressAware: true,
-    somaticStressAware: true,
-    sensoryStressAware: true,
-    maxDominantFusion: true,
-    rawStressDominance: true,
-
-    // Proxy‑Mode + Pulse‑Pal awareness
-    proxyModeAware: true,
-    proxyModeStressAware: true,
-    proxyModeTapAware: true,
-    pulsePalAware: true,
-    domCaptureStressAware: true,
-
-    // Evolutionary awareness
-    patternAware: true,
-    shapeAware: true,
-    evolutionAware: true,
-
-    // Environment
-    worldLensAware: false
-  },
-
-  contract: {
-    input: [
-      "UserScoresSnapshot",
-      "OrchestratorMode",
-      "TriEnvStressContext",
-      "ProxyModeStressContext",
-      "DualBandContext"
-    ],
-    output: [
-      "AdrenalScalingPlan",
-      "WorkerLaunchPlan",
-      "WorkerShutdownPlan",
-      "AdrenalBandSignature",
-      "AdrenalBinaryField",
-      "AdrenalWaveField",
-      "AdrenalPresenceField",
-      "AdrenalHarmonicsField",
-      "AdrenalDiagnostics",
-      "AdrenalHealingState"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const ADRENAL_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { PulseLineage } from "./PulseProxyBBB-v20.js";
 
 const db = global.db;
 
-// ============================================================================
-//  PULSE ROLE — v20 IMMORTAL A‑B‑A Identity
-// ============================================================================
-export const PulseRole = {
-  type: "Organ",
-  subsystem: "PulseProxy",
-  layer: "AdrenalSystem",
-  version: "v20-Immortal-TRIENV-MAXDOM",
-  identity: "PulseProxyAdrenalSystem-v20-Immortal-TRIENV-MAXDOM",
-
-  evo: {
-    dualMode: true,
-    localAware: true,
-    internetAware: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseSendAware: true,
-    governorReady: true,
-    reflexSafe: true,
-    backendOnly: true,
-    futureEvolutionReady: true,
-
-    // A‑B‑A awareness
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    stressFieldAware: true,
-
-    // Tri‑environment awareness
-    cortexStressAware: true,
-    somaticStressAware: true,
-    sensoryStressAware: true,
-    triEnvFusionAware: true,
-    maxDominantFusion: true,
-
-    // dual-band + presence/harmonics
-    dualBandCompatible: true,
-    presenceAware: true,
-    harmonicsAware: true,
-    epochStable: true,
-
-    // Passive band abilities (symbolic hints only)
-    passivePrewarm: true,
-    passiveCache: true,
-    passiveChunk: true,
-    passiveRemember: true
-  }
-};
-
-// ============================================================================
-//  ORGAN CONTEXT — v20 IMMORTAL
-// ============================================================================
-const ADRENAL_CONTEXT = {
-  layer: PulseRole.layer,
-  role: "ADRENAL_SYSTEM",
-  version: PulseRole.version,
-  lineage: PulseLineage.proxy,
-  evo: PulseRole.evo,
-  mode: "backend-only"
-};
-
-// ============================================================================
-//  ORCHESTRATOR MODES
-// ============================================================================
 export const ORCHESTRATOR_MODES = {
   NORMAL: "normal",
   EARN_STRESS: "earn-stress",
   DRAIN: "drain"
 };
-
-export const PulseProxyAdrenalSystemMeta = Object.freeze({
-  layer: "PulseProxyAdrenalSystem",
-  role: "ADRENAL_SYSTEM_ORGAN",
-  version: "v20-Immortal-TRIENV-MAXDOM",
-  identity: "PulseProxyAdrenalSystem-v20-Immortal-TRIENV-MAXDOM",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Adrenal laws
-    adrenalOrgan: true,
-    fightOrFlightReflex: true,
-    stressScaling: true,
-    instanceOrchestrator: true,
-    dynamicBandReflex: true,
-    symbolicToBinaryShift: true,
-    binaryFieldEmitter: true,
-    waveFieldEmitter: true,
-    bandSignatureEmitter: true,
-    stressFieldAware: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    governorReady: true,
-    reflexSafe: true,
-    backendOnly: true,
-
-    // v20 presence/harmonics
-    dualBandCompatible: true,
-    presenceAware: true,
-    harmonicsAware: true,
-    epochStable: true,
-    passivePrewarm: true,
-    passiveCache: true,
-    passiveChunk: true,
-    passiveRemember: true,
-
-    // Tri‑environment stress
-    triEnvStressAware: true,
-    cortexStressAware: true,
-    somaticStressAware: true,
-    sensoryStressAware: true,
-    maxDominantFusion: true,
-    rawStressDominance: true,
-
-    // Proxy‑Mode + Pulse‑Pal
-    proxyModeAware: true,
-    proxyModeStressAware: true,
-    proxyModeTapAware: true,
-    pulsePalAware: true,
-    domCaptureStressAware: true,
-
-    // Execution prohibitions
-    zeroRandomness: true,
-    zeroNondeterminism: true,
-    zeroExternalMutation: true,
-    zeroSymbolicContaminationInBinary: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroTimers: true,
-    zeroAsyncLoops: true,
-    zeroDateNow: true,
-    zeroNetworkFetch: true,
-    zeroWindow: true,
-    zeroDOM: true,
-
-    // Awareness
-    dualMode: true,
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    localAware: true,
-    internetAware: true,
-
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "UserScoresSnapshot",
-      "OrchestratorMode",
-      "TriEnvStressContext",
-      "ProxyModeStressContext",
-      "DualBandContext"
-    ],
-    output: [
-      "AdrenalScalingPlan",
-      "WorkerLaunchPlan",
-      "WorkerShutdownPlan",
-      "AdrenalBandSignature",
-      "AdrenalBinaryField",
-      "AdrenalWaveField",
-      "AdrenalPresenceField",
-      "AdrenalHarmonicsField",
-      "AdrenalDiagnostics",
-      "AdrenalHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseProxy-v11",
-    parent: "PulseProxy-v20-Immortal",
-    ancestry: [
-      "PulseProxyAdrenalSystem-v9",
-      "PulseProxyAdrenalSystem-v10",
-      "PulseProxyAdrenalSystem-v11",
-      "PulseProxyAdrenalSystem-v11-Evo",
-      "PulseProxyAdrenalSystem-v11-Evo-ABA",
-      "PulseProxyAdrenalSystem-v11.2-Evo-BINARY-MAX",
-      "PulseProxyAdrenalSystem-v12.3-Evo-BINARY-MAX",
-      "PulseProxyAdrenalSystem-v20-Immortal-TRIENV-MAXDOM"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary", "dual"],
-    default: "symbolic",
-    behavior: "adrenal-reflex"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "tri-env stress → band reflex → scaling plan",
-    adaptive: "max-dominant fusion + dynamic symbolic→binary shift + presence/harmonics overlays",
-    return: "deterministic adrenal surfaces + signatures"
-  })
-});
-
-
 // ============================================================================
 //  PHYSIOLOGICAL LIMITS
 // ============================================================================

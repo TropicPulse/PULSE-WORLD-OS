@@ -17,98 +17,21 @@
 // • Binary-aware, dual-mode-ready, presence-band-aware, dual-band-ready.
 // • No pressure gating, no route-mode logic, no factoring logic.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshThalamus",
-  version: "v15.0-MESH-THALAMUS-Immortal",
-  layer: "mesh",
-  role: "mesh_deterministic_relay",
-  lineage: "PulseMesh-v15",
-
-  evo: {
-    thalamus: true,                 // This IS the thalamus organ
-    relayOnly: true,                // Pure relay, no logic
-
-    metadataOnly: true,             // No routing, no pressure, no factoring
-    deterministic: true,
-    driftProof: true,
-
-    binaryAware: true,
-    symbolicAware: true,
-    dualBand: true,
-    presenceAware: true,
-    meshAware: true,
-
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true,
-
-    unifiedAdvantageField: true,
-    coordinatorFree: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshFlow",
-      "PulseMeshAwareness",
-      "PulseMeshCognition",
-      "PulseMeshSenses",
-      "PulseMeshSurvivalInstincts"
-    ],
-    never: [
-      "legacyMeshThalamus",
-      "safeRoute",
-      "fetchViaCNS",
-      "pressureLogic",
-      "routeMode",
-      "factoringLogic"
-    ]
-  }
-}
-*/
-
-const ThalamusMeta = {
-  layer: "PulseMeshThalamus",
-  role: "THALAMUS_RELAY",
-  version: "15.0-MESH-THALAMUS-Immortal",
-  target: "full-mesh",
-  selfRepairable: true,
-  evo: {
-    dualMode: true,
-    binaryAware: true,
-    symbolicAware: true,
-    presenceAware: true,
-    bandAware: true,
-    localAware: true,
-    internetAware: true,
-
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    unifiedAdvantageField: true,
-    deterministicField: true,
-    futureEvolutionReady: true,
-
-    signalFactoringAware: true,
-    meshPressureAware: true,
-    auraPressureAware: true,
-
-    // v15.0+ advantage flags
-    prewarmAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    presenceAwareAdvantage: true,
-    dualBandReady: true,
-
-    zeroCompute: true,
-    zeroMutation: true,
-    zeroRoutingInfluence: true
-  }
-};
+// 2 — EXPORT GENOME METADATA
+export const ThalamusMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================

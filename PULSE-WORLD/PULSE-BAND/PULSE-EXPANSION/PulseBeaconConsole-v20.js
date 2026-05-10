@@ -45,108 +45,21 @@
 //   - Always deterministic.
 //   - Pure symbolic Overmind surface.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBeaconConsole",
-  version: "v20-Immortal-AIWorld-GPU+-CI",
-  layer: "presence_console",
-  role: "presence_debug_console",
-  lineage: "PulsePresence-v14 → PulseBeaconConsole-v14-Immortal → v20-Immortal-AIWorld-GPU+-CI",
-
-  evo: {
-    presenceConsole: true,
-    beaconAware: true,
-    meshAware: true,
-    bluetoothAware: true,
-    regionAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    gpuAware: true,
-    ciAware: true,
-    continuanceAware: true,
-    omniHostingAware: true,
-    schemaAware: true,
-    worldCoreAware: true,
-    binaryDeltaAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true
-  },
-
-  contract: {
-    always: [
-      "PulseBeaconEngine",
-      "PulseBeaconMesh",
-      "PulseExpansion",
-      "PulseContinuance",
-      "PulseOmniHosting",
-      "PulseWorldCore"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseBeaconConsoleMeta = Object.freeze({
-  layer: "OvermindConsole",
-  role: "GLOBAL_EXPANSION_CONSOLE",
-  version: "v20-Immortal-AIWorld-GPU+-CI",
-  identity: "PulseBeaconConsole-v20-Immortal-AIWorld-GPU+-CI",
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroAsync: true,
-    zeroNetwork: true,
-    zeroEval: true,
-    zeroDynamicImports: true,
-    zeroMutationOfEngine: true
-  }),
-  contract: Object.freeze({
-    consumes: [
-      "beacon.getStateSnapshot()",
-      "beacon.getTelemetry()",
-      "beacon.getGlobalHints()",
-      "beacon.setGlobalHints()",
-      "beacon.applyDirective()",
-      "beacon.updatePayloadFromContext()",
-      "beacon.broadcastOnce()",
-      "beacon.buildPresenceField()",
-      "beacon.buildAdvantageField()",
-      "beacon.buildHintsField()",
-      "beacon.buildBandField()",
-      "beacon.buildChunkPrewarmField()",
-      // v20+ optional symbolic overlays
-      "beacon.buildContinuanceOverlayField?()",
-      "beacon.buildCIOverlayField?()",
-      "beacon.buildBinaryDeltaOverlayField?()",
-      "beacon.buildWorldAdvantageField?()",
-      "beacon.buildWorldTruthField?()"
-    ],
-    produces: [
-      "globalHints",
-      "modeChanges",
-      "payloadUpdates",
-      "expansionPulses",
-      "regionScopedHints",
-      "bandAdvantageDirectives",
-      "continuanceAwareDirectives",
-      "ciAwareDirectives",
-      "worldCoreAwareDirectives"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PulseBeaconConsoleMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS (symbolic, deterministic)

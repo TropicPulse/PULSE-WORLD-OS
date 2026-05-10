@@ -1,63 +1,4 @@
-/* ============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseTranslator.RNAIntake",
-  version: "v24-IMMORTAL-Evo+++",
-  layer: "pulse_translator",
-  role: "rna_intake_translator",
-  lineage: "RNAIntake-v11 → v12.4 → v14-Immortal → v17-IMMORTAL → v24-IMMORTAL-Evo+++",
-
-  evo: {
-    rnaIntake: true,
-    genomeDriven: true,
-    firestoreIntake: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    presenceAware: true,
-    harmonicsAware: true,
-    shifterAware: true,
-    regionAware: true,
-    tenantAware: true,
-    partitionAware: true,
-    indexHintAware: true,
-    geoPointAware: true,
-    documentRefAware: true,
-    arrayShapeAware: true,
-    nestedObjectAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    schemaVersioned: true,
-    advantageAware: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroFirestoreExecution: true,
-
-    // v24++ extras
-    modeAgnostic: true,
-    replayFriendly: true,
-    contractStrict: true
-  },
-
-  contract: {
-    always: [
-      "PulseSpecs.DNAGenome",
-      "PulseTranslator.RNAOutput",
-      "PulseTranslator.SkeletalIntake"
-    ],
-    never: [
-      "eval",
-      "Function",
-      "dynamicImport",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
+/*
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
 //  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
@@ -94,6 +35,21 @@ LAYER: THE RNA INTAKE TRANSLATOR (Firestore → Pulse)
 SCHEMA: RNA_INTAKE_SCHEMA_VERSION = "v4"
 ===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 const RNA_INTAKE_SCHEMA_VERSION = "v4";
 

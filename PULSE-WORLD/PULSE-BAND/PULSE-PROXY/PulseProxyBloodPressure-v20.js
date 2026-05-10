@@ -10,190 +10,28 @@
 //    • Chunk/presence hints surfaced as advantage metadata
 //    • Experience meta for AI/agents (read‑only, descriptive)
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseCirculationMonitor",
-  version: "v20-ImmortalPlus-ABA",
-  layer: "circulation_monitor",
-  role: "immortal_sensor",
-  lineage: "PulseBand-v20-ImmortalPlus",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    // Core sensor laws
-    pureSensor: true,
-    sensorOnly: true,
-    noDecisionMaking: true,
-    noRouting: true,
-    noGlobalState: true,
-    noMutation: true,
-    noExternalMutation: true,
-    noBusinessLogic: true,
-    noCompute: true,
-
-    // IMMORTAL guarantees
-    deterministic: true,
-    driftProof: true,
-    zeroRandomness: true,
-    zeroNondeterminism: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroTimers: true,
-    zeroAsyncLoops: true,
-    multiInstanceReady: true,
-
-    // A‑B‑A surfaces
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    stressFieldAware: true,
-    flowFieldAware: true,
-
-    // v20 presence/harmonics
-    presenceAware: true,
-    harmonicsAware: true,
-    dualBandAware: true,
-    dualBandCompatible: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    passivePrewarm: true,
-    passiveCache: true,
-    passiveChunk: true,
-    passiveRemember: true,
-
-    // Experience surfaces
-    chunkingHintsAware: true,
-    presenceHintsAware: true,
-    experienceMetaAware: true,
-
-    // Evolutionary awareness
-    patternAware: true,
-    shapeAware: true,
-    evolutionAware: true,
-
-    // Environment
-    worldLensAware: false
-  },
-
-  contract: {
-    input: [
-      "CirculationLatency",
-      "CirculationFlow",
-      "DualBandContext",
-      "AdvantageContext"
-    ],
-    output: [
-      "CirculationVitalSigns",
-      "CirculationBandSignature",
-      "CirculationBinaryField",
-      "CirculationWaveField",
-      "CirculationAdvantageField",
-      "CirculationDiagnostics",
-      "CirculationHealingState",
-      "CirculationChunkingHints",
-      "CirculationPresenceHints",
-      "CirculationExperienceMeta"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const CIRCULATION_CONTEXT = Identity.pulseLoreContext;
+export const PulseCirculationExperienceMeta = Identity.AI_EXPERIENCE_META;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import {
   PulseProofBridgeLogger as logger,
   PulseProofBridgeTelemetry as emitTelemetry
 } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
-// ============================================================================
-//  EXPERIENCE META — AI / Agent Experience Surfaces (v20-ImmortalPlus)
-// ============================================================================
-
-export const PulseCirculationExperienceMeta = Object.freeze({
-  layer: "PulseCirculationMonitor",
-  role: "CIRCULATION_MONITOR_EXPERIENCE",
-  version: "v20-ImmortalPlus-CIRCULATION",
-  identity: "PulseCirculationExperience-v20-ImmortalPlus",
-  experience: {
-    surfaces: {
-      latencyMs: true,
-      bandwidthKbps: true,
-      pulsebandBars: true,
-      networkHealth: true,
-      band: true,
-      bandSignature: true,
-      binaryField: true,
-      waveField: true,
-      advantageField: true,
-      chunkingHints: true,
-      presenceHints: true
-    },
-    narrative: {
-      description:
-        "Circulation monitor that turns raw latency + bandwidth into stable vital signs, " +
-        "A‑B‑A band surfaces, and advantage hints for chunking/presence. Pure sensor; no routing, no decisions.",
-      aiUsageHint:
-        "Use these surfaces to understand network pressure/flow and tune chunking, presence windows, " +
-        "and advantage-aware behaviors. Never treat this organ as a router or decision-maker."
-    }
-  }
-});
-
-// ============================================================================
-//  ORGAN IDENTITY — v20-ImmortalPlus A‑B‑A
-// ============================================================================
-
-export const PulseRole = {
-  type: "Organ",
-  subsystem: "PulseBand",
-  layer: "CirculationMonitor",
-  version: "v20-ImmortalPlus",
-  identity: "PulseCirculationMonitor-v20-ImmortalPlus-ABA",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    pulseEfficiencyAware: true,
-    unifiedAdvantageField: true,
-    multiInstanceReady: true,
-    sensorOnly: true,
-    noDecisionMaking: true,
-    futureEvolutionReady: true,
-
-    // A‑B‑A awareness
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    stressFieldAware: true,
-    flowFieldAware: true,
-
-    // Presence / chunking / cache-prewarm awareness
-    presenceAware: true,
-    chunkingAware: true,
-    cachePrewarmAware: true,
-
-    // Dual-band / IMMORTAL surfaces
-    symbolicAware: true,
-    binaryAware: true,
-    dualBandAware: true,
-    epochStable: true,
-
-    // Execution prohibitions (IMMORTAL sensor)
-    zeroRouting: true,
-    zeroBusinessLogic: true,
-    zeroMarketplace: true,
-    zeroOSKernelLogic: true,
-    zeroGPULogic: true
-  }
-};
-
-const CIRCULATION_CONTEXT = {
-  layer: PulseRole.layer,
-  role: "CIRCULATION_MONITOR",
-  purpose: "Measure pressure + flow and emit A‑B‑A vital signs (IMMORTAL sensor)",
-  version: PulseRole.version,
-  target: "full-os",
-  evo: PulseRole.evo,
-  experience: PulseCirculationExperienceMeta
-};
 
 const SUBSYSTEM = "circulation";
 

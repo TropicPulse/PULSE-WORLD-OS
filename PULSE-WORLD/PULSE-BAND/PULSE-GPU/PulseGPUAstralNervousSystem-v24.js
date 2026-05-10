@@ -5,48 +5,18 @@
 // Snapshot / Trust-Evidence Boundary • Prewarm/Chunk/Warm-Path-Aware Surface
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUAstralNervousSystem",
-  version: "v24-Immortal++",
-  layer: "gpu_boundary",
-  role: "gpu_astral_nervous_system",
-  lineage: "PulseGPU-v24-Immortal++",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    gpuBoundary: true,
-    gpuIdentitySurface: true,
-    subsystemBoundary: true,
-
-    symbolicAware: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // v24-Immortal++ extensions
-    snapshotSurface: true,
-    trustEvidenceReady: true,
-    prewarmSurfaceAware: true,
-    warmPathBoundary: true,
-    chunkCacheBoundary: true,
-    gpuEvidenceBoundary: true,
-    worldCoreBoundary: true,
-    lymphNodeBoundary: true,
-    geneticMemoryBoundary: true,
-    gpuChunkerBoundary: true,
-
-    pulseSend24Ready: true,
-    earnCompatibility: "Earn-v24-GPU"
-  }
-}
-*/
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // GPU CHUNKER — STRUCTURAL GPU CHUNK ENGINE (v24-Immortal++)
@@ -103,49 +73,6 @@ export * from "./PulseGPUNervousSystem-v24.js";
 // GPU WISDOM CORTEX / INSIGHTS ENGINE (v24-Immortal++)
 // ============================================================================
 export * from "./PulseGPUWIsdomCortex-v24.js";
-
-// ============================================================================
-// META BLOCK — Astral Nervous System Identity (v24-Immortal++)
-// ============================================================================
-export const PulseGPUAstralNervousSystemMetaBlock = {
-  identity: "PulseGPUAstralNervousSystem",
-  subsystem: "PulseGPU",
-  layer: "AstralNervousSystem",
-  role: "Unified-GPU-Astral-Nervous-System",
-  version: "24.0-Immortal++",
-  evo: {
-    gpuBoundary: true,
-    gpuIdentitySurface: true,
-    subsystemBoundary: true,
-
-    symbolicAware: true,
-    binaryAware: true,
-    dualBand: true,
-
-    driftProof: true,
-    unifiedOrganReady: true,
-    multiOrganReady: true,
-    futureEvolutionReady: true,
-
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-
-    snapshotSurface: true,
-    trustEvidenceReady: true,
-    prewarmSurfaceAware: true,
-    warmPathBoundary: true,
-    chunkCacheBoundary: true,
-    gpuEvidenceBoundary: true,
-    worldCoreBoundary: true,
-    lymphNodeBoundary: true,
-    geneticMemoryBoundary: true,
-    gpuChunkerBoundary: true,
-
-    pulseSend24Ready: true,
-    earnCompatibility: "Earn-v24-GPU"
-  }
-};
 
 // ============================================================================
 // ORGAN EXPORT — ⭐ PulseGPUAstralNervousSystem (v24-Immortal++)

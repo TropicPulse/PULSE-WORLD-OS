@@ -1,63 +1,4 @@
 /* ============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseTranslator.SkeletalOutput",
-  version: "v24-IMMORTAL-Evo+++",
-  layer: "pulse_translator",
-  role: "skeletal_output_translator",
-  lineage: "SkeletalOutput-v11 → v12.4 → v14-Immortal → v17-IMMORTAL → v24-IMMORTAL-Evo+++",
-
-  evo: {
-    skeletalOutput: true,
-    genomeDriven: true,
-    sqlOutput: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    presenceAware: true,
-    harmonicsAware: true,
-    shifterAware: true,
-    regionAware: true,
-    tenantAware: true,
-    partitionAware: true,
-    indexAware: true,
-
-    // v24++ upgrades
-    schemaVersioned: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    advantageAware: true,
-    integrityAware: true,
-    nullableEnvelopeAware: true,
-    enumContractAware: true,
-    currencyScaleAware: true,
-    percentModeAware: true,
-    jsonAware: true,
-    bitfieldAware: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroSQLExecution: true
-  },
-
-  contract: {
-    always: [
-      "PulseSpecs.DNAGenome",
-      "PulseTranslator.RNAIntake",
-      "PulseTranslator.RNAOutput",
-      "PulseTranslator.SkeletalIntake"
-    ],
-    never: [
-      "eval",
-      "Function",
-      "dynamicImport",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
 ===============================================================================
 EXPORT_META = {
   organ: "PulseTranslator.SkeletalOutput",
@@ -88,7 +29,21 @@ EXPORT_META = {
 FILE: /pulse-translator/PulseTranslatorSkeletalOutput-v24.js
 ===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import {
   PulseToSQL,
   PulseFieldTypes,

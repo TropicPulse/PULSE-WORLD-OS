@@ -3,72 +3,43 @@
 //  Dual‑Band Diagnostic Recorder • Forensic Historian • Organism Snapshot
 //  PURE FORMATTING + SUMMARIZATION. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiDebug",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "debug_surface",
-  lineage: "aiDebug-v10 → v12 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    debugSurface: true,
-    traceFormatting: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiDiagnostics", "aiDiagnosticsWrite", "aiBrainstem"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-export const SCRIBE_META = Object.freeze({
-  layer: "PulseAIScribe",
-  role: "SCRIBE_ORGAN",
-  version: "11.0-Evo",
-  identity: "aiScribe-v11-Evo",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const SCRIBE_META = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    // Awareness
-    binaryAware: true,
-    symbolicAware: true,
-    organismAware: true,
-    diagnosticsAware: true,
-    routingAware: true,
-    cortexAware: true,
-    pulseAware: true,
-    historian: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    // Safety
-    identitySafe: true,
-    readOnly: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    // Lifecycle
-    multiInstanceReady: true,
-    epoch: "v11-Evo"
-  })
-});
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
+
 
 // ---------------------------------------------------------
 //  SCRIBE PREWARM ENGINE — v11‑EVO
 // ---------------------------------------------------------
 export function prewarmScribe() {
   try {
-    // Warm fake diagnostics
     const warmDiagnostics = {
       mismatches: [{ key: "prewarm", expected: "x", actual: "y" }],
       missingFields: [{ key: "missing" }],
@@ -76,19 +47,16 @@ export function prewarmScribe() {
       driftDetected: true
     };
 
-    // Warm fake binary snapshot
     const warmBinary = {
       metabolic: { load: 0.1, pressure: 0.2 }
     };
 
-    // Warm fake symbolic snapshot
     const warmSymbolic = {
       persona: "ARCHITECT",
       boundaryMode: "safe",
       permissions: { allow: true }
     };
 
-    // Warm fake dualband snapshot
     const warmDualBand = {
       binary: { vitals: { snapshot: () => warmBinary } },
       symbolic: {
@@ -98,7 +66,6 @@ export function prewarmScribe() {
       }
     };
 
-    // Warm fake context
     const warmContext = {
       trace: ["prewarm"],
       diagnostics: warmDiagnostics,
@@ -125,10 +92,7 @@ export function prewarmScribe() {
       }
     };
 
-    // Warm full debug report
     formatDebugReport(warmContext, warmDualBand);
-
-    // Warm pretty string formatter
     formatDebugString(warmContext, warmDualBand);
 
     return true;
@@ -137,7 +101,6 @@ export function prewarmScribe() {
     return false;
   }
 }
-
 // ============================================================================
 // PUBLIC API — Build Debug Report (Object)
 // ============================================================================

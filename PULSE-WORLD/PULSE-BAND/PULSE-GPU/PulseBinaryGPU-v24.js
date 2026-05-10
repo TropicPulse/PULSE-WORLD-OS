@@ -5,75 +5,21 @@
 //  Chunker-Aware • GPU Chunk Planner-Aware
 //  “PLAN ONCE. REUSE FOREVER. NEVER DRIFT.”
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META:
-  organ: PulseBinaryGPU
-  version: 24.0.0-Immortal++
-  tier: IMMORTAL
-  role: gpu_binary_surface
-  mind: false
-
-  description:
-    "IMMORTAL++ binary GPU organ. Deterministic dispatch descriptor with full
-     lineage, shape, pressure, factoring, presence, and chunker awareness.
-     Provides v24-level snapshots, advantage view, and prewarm hooks.
-     No AI reasoning."
-
-  guarantees:
-    - "Never mutates input payloads."
-    - "Never performs AI reasoning."
-    - "Never executes GPU kernels directly."
-    - "Always emits deterministic dispatch descriptors."
-    - "Always preserves lineage and shape signatures."
-    - "Always remains drift-proof and mutation-safe."
-
-  boundaries:
-    - "Cannot alter routing decisions outside its descriptor."
-    - "Cannot infer correctness or intent."
-    - "Cannot generate opinions or narratives."
-    - "Cannot call AI models."
-
-  identity:
-    band: "gpu_binary"
-    type: "organ"
-    mind: false
-    immutable: true
-
-  lineage:
-    parent: "PulseBinaryGPU-v16-Immortal"
-    evolution: "v24 IMMORTAL++ — full advantage + snapshot + prewarm + chunker upgrade"
-
-  integration:
-    receives:
-      - pressureSnapshot (mesh/aura/earn pressure)
-      - factoringSnapshot
-      - gpuCoreView (PulseGPUCore-v24)
-      - chunkCache / prewarm hooks / chunker hints
-    feeds:
-      - PulseWorldCore (worldSnapshot.raw.gpuBinary)
-      - PulseTrustEvidence (RAW/RAW_AI evidence)
-      - Debug / infra tools
-
-  contract:
-    input:
-      - plan(earn, mode, pressureSnapshot, factoringSnapshot, context, dnaTag, version)
-      - evolve(dispatch, context)
-      - describeBinaryPlan(pattern, options, env)
-      - snapshotBinarySurface()
-      - prewarmBinaryChunks(hints)
-      - intelligentComputeHint(dispatch)
-    output:
-      - binaryDispatchDescriptor
-      - evolvedBinaryDispatchDescriptor
-      - binaryPlanSnapshot
-      - binarySurfaceSnapshot
-
-  immortal:
-    drift_protection: true
-    mutation_protection: true
-    deterministic: true
-*/
+// 2 — EXPORT GENOME METADATA
+export const BinaryGPUMetaBlock = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const BinaryGPURole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------------------------
 //  IMPORTS
@@ -127,70 +73,6 @@ export const CoreMemory = Object.freeze({
   earn: () => PulseCoreEarnMemoryAdapter,
   binaryOverlay: () => PulseBinaryCoreOverlay
 });
-
-// ---------------------------------------------------------------------------
-//  CORE ROLE / METABLOCK — UPGRADED TO v24++
-// ---------------------------------------------------------------------------
-
-export const BinaryGPURole = {
-  type: "GPU",
-  subsystem: "PulseGPU",
-  layer: "ComputeOrgan",
-  version: "24.0-Immortal++",
-  identity: "PulseBinaryGPU-v24-Immortal++",
-
-  evo: {
-    driftProof: true,
-    patternAware: true,
-    lineageAware: true,
-    shapeAware: true,
-    modeAware: true,
-    pressureAware: true,
-    deterministicDispatch: true,
-    futureEvolutionReady: true,
-
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    advantageCascadeAware: true,
-    multiInstanceReady: true,
-
-    signalFactoringAware: true,
-    meshPressureAware: true,
-    auraPressureAware: true,
-
-    binaryAware: true,
-    dualModeAware: true,
-
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-
-    // Chunker awareness
-    gpuChunkPlannerAware: true,
-    gpuChunkerAware: true,
-    gpuChunkProfileAware: true,
-    gpuChunkPlanAware: true,
-
-    zeroCompute: true,
-    zeroMutation: true,
-    zeroRoutingInfluence: true
-  },
-
-  pulseContract: "Pulse-v4-Presence",
-  meshContract: "PulseMeshSpine-v24",
-  routerContract: "PulseRouter-v24",
-  sendContract: "PulseSend-v24",
-  earnContract: "Earn-v6-Immortal"
-};
-
-export const BinaryGPUMetaBlock = {
-  identity: "PulseBinaryGPU",
-  subsystem: "PulseGPU",
-  layer: "ComputeOrgan",
-  role: "Binary-GPU-Dispatch",
-  version: "24.0-Immortal++",
-  evo: BinaryGPURole.evo
-};
 
 // ---------------------------------------------------------------------------
 //  INTERNAL HELPERS — deterministic, tiny, pure

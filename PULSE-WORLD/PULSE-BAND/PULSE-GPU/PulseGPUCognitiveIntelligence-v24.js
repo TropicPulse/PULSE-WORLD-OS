@@ -7,7 +7,18 @@
 // SYMBOLIC + BINARY AWARE • DISPATCH-AWARE • MEMORY-AWARE • PRESENCE-AWARE
 // INTELLIGENT-COMPUTE-AWARE • CHUNK-AWARE • EARN-AWARE • IMMORTAL++
 // ============================================================================
-
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+export const PulseGPUChunkerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import * as PulseGPUBrain                from "./PulseGPUBrain-v24.js";
 import * as PulseGPUWisdomCortex        from "./PulseGPUWIsdomCortex-v24.js";
 import * as PulseGPUAstralMuscleSystem  from "./PulseGPUAstralMuscleSystem-v24.js";

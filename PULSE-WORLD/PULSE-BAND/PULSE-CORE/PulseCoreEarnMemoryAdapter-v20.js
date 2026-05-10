@@ -1,196 +1,31 @@
 // ============================================================================
 //  PulseEarnMemoryAdapter.js — v20‑IMMORTAL‑EARN‑MEMORY‑ADAPTER
 //  “EARN FLOWS IN. VALUE ACCUMULATES. NOTHING DRIFTS.”
-//  • v20 IMMORTAL MetaBlock
-//  • dnaTag + version aware
-//  • presence aware (overlay.touch + deterministic epoch)
-//  • hot‑loop promotion
-//  • dual‑band metadata (signal = binary, meta = symbolic)
-//  • lineage + reward‑shape metadata
-//  • governor + evolution aligned
-//  • deterministic canonicalization (via BinaryOverlay v20)
 // ============================================================================
 
-/*
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-*/
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  AI_EXPERIENCE_META (IMMORTAL++)
+//  META BLOCK — v20 IMMORTAL (from genome)
 // ============================================================================
-export const AI_EXPERIENCE_META_PulseEarnMemoryAdapter = {
-  id: "corememory.adapter.earn",
-  identity: "PulseCoreEarnMemoryAdapter",
-  version: "v20-IMMORTAL-EARN-MEMORY",
-  layer: "corememory_adapter",
-  role: "earn_memory_adapter",
-  lineage: "PulseCoreMemory-v20-IMMORTAL",
-
-  evo: {
-    adapter: true,
-    earnMemoryBridge: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true
-  },
-
-  contract: {
-    always: [
-      "PulseCoreBrain",
-      "PulseCoreGovernor",
-      "PulseBinaryCoreOverlay",
-      "PulseCoreSettings",
-      "PulseCorePresence"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  },
-
-  surfaces: {
-    band: ["earn", "adapter", "reward"],
-    wave: ["deterministic", "structural"],
-    binary: ["registerEarnSignal", "registerEarnAttachment"],
-    presence: ["earn_presence_touch"],
-    advantage: ["reward_shape", "reuse"],
-    speed: "hot_loop"
-  }
-};
+export const PulseEarnMemoryAdapterMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  AI_EXPERIENCE_CONTEXT
+//  SURFACE / ORGANISM LAYER EXPORTS — v20 IMMORTAL
 // ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulseEarnMemoryAdapter = {
-  tone: "technical_silent",
-  pacing: "instant",
-  emotionalBand: "none_direct",
-  primaryIntent: "canonicalize_earn_payloads",
-  secondaryIntent: "preserve_reward_shape",
-  visualNotes: {
-    icon: "earn",
-    motion: "none",
-    colorBand: "infra_core"
-  },
-  presenceLens: {
-    awareOfPresence: true,
-    notes: "future: presence may bias earn scoring."
-  },
-  settingsLens: {
-    awareOfSettings: true,
-    notes: "future: settings may tune earn thresholds."
-  }
-};
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-//  CORE ORGAN META
+//  FACTORY — v20 IMMORTAL
 // ============================================================================
-export const CORE_MEMORY_META_PulseEarnMemoryAdapter = {
-  id: "organ.corememory.adapter.earn",
-  subsystem: "CoreMemory",
-  layer: "MemoryAdapter",
-  tier: "IMMORTAL",
-  role: "Earn-Memory-Bridge",
-  lineage: {
-    family: "corememory_adapter_earn",
-    generation: 3,
-    coreVersion: "v20"
-  },
-  evoFlags: {
-    dnaAware: true,
-    versionAware: true,
-    presenceAware: true,
-    hotLoop: true,
-    dualBandSafe: true,
-    lineageAware: true,
-    rewardAware: true,
-    deterministic: true,
-    driftProof: true
-  }
-};
-
-// ============================================================================
-//  CORE ORGAN CONTRACT
-// ============================================================================
-export const CORE_MEMORY_CONTRACT_PulseEarnMemoryAdapter = {
-  inputs: {
-    overlay: "BinaryOverlay",
-    dnaTag: "string",
-    version: "string",
-    log: "function"
-  },
-  outputs: {
-    registerEarnSignal: "function(routeId, earnPayload)",
-    registerEarnMeta: "function(routeId, metaObj)",
-    registerEarnAttachment: "function(routeId, attachment)",
-    registerEarnFormula: "function(routeId, formulaStruct)",
-    promoteHot: "function(routeId, key)"
-  },
-  consumers: [
-    "PulseCoreBrain",
-    "PulseCoreGovernor",
-    "PulseBinaryCoreOverlay",
-    "PulseCoreSettings",
-    "PulseCorePresence"
-  ],
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noFilesystem: true
-  }
-};
-
-// ============================================================================
-//  IMMORTAL OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulseEarnMemoryAdapter = {
-  drift: {
-    allowed: false,
-    notes: "Earn reward semantics must never drift."
-  },
-  pressure: {
-    expectedLoad: "medium_high",
-    notes: "Earn events spike but are bounded."
-  },
-  stability: {
-    algorithm: "stable",
-    layout: "stable",
-    notes: "Reward‑shape metadata is append‑only."
-  },
-  chunking: {
-    prewarm: ["corememory.adapter.earn", "corememory.binary.overlay"],
-    cacheKey: "corememory.adapter.earn.v20"
-  },
-  triHeart: {
-    cognitive: "reward_engine_bridge",
-    emotional: "none_direct",
-    behavioral: "canonicalize_earn_flows"
-  },
-  impulseSpeed: {
-    primaryAction: "registerEarnSignal",
-    latencyTargetNs: 50000
-  }
-};
-
-// ============================================================================
-//  v20 IDENTITY BLOCK (MetaBlock)
-// ============================================================================
-export const EarnMemoryAdapterMetaBlock = {
-  identity: "PulseEarnMemoryAdapter",
-  subsystem: "Earn",
-  layer: "MemoryAdapter",
-  role: "Earn-Memory-Bridge",
-  version: "20.0-IMMORTAL-EARN-MEMORY",
-  evo: CORE_MEMORY_META_PulseEarnMemoryAdapter.evoFlags
-};
+import { createPulseBinaryOverlay } from "./PulseBinaryCoreOverlay-v20.js";
 
 // deterministic epoch for Earn adapter events
 let EARNMEM_EPOCH = 0;
@@ -198,11 +33,6 @@ function nextEarnEpoch() {
   EARNMEM_EPOCH += 1;
   return EARNMEM_EPOCH;
 }
-
-// ============================================================================
-//  FACTORY — v20 IMMORTAL
-// ============================================================================
-import { createPulseBinaryOverlay } from "./PulseBinaryCoreOverlay-v20.js";
 
 export function createPulseEarnMemoryAdapter({
   overlay = createPulseBinaryOverlay(),
@@ -231,7 +61,7 @@ export function createPulseEarnMemoryAdapter({
       epoch,
       rewardSize,
       band,
-      metaBlock: EarnMemoryAdapterMetaBlock
+      metaBlock: PulseEarnMemoryAdapterMeta
     };
 
     try {
@@ -268,7 +98,7 @@ export function createPulseEarnMemoryAdapter({
   }
 
   return {
-    EarnMemoryAdapterMetaBlock,
+    PulseEarnMemoryAdapterMeta,
     dnaTag,
     version,
 
@@ -279,10 +109,11 @@ export function createPulseEarnMemoryAdapter({
 
     promoteHot,
 
-    AI_EXPERIENCE_META_PulseEarnMemoryAdapter,
-    AI_EXPERIENCE_CONTEXT_PulseEarnMemoryAdapter,
-    CORE_MEMORY_META_PulseEarnMemoryAdapter,
-    CORE_MEMORY_CONTRACT_PulseEarnMemoryAdapter,
-    IMMORTAL_OVERLAYS_PulseEarnMemoryAdapter
+    // genome-driven meta exports
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext
   };
 }

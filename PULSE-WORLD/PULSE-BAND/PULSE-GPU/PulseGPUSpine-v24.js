@@ -25,55 +25,19 @@
 //  • Deterministic: same input → same output
 //  • Fail-open: invalid input → safe empty results
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUSpine",
-  version: "v24-Immortal-Spine",
-  layer: "gpu_runtime",
-  role: "gpu_spine",
-  lineage: "PulseGPU-v24++",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    gpuSpine: true,
-    gpuOrchestrator: true,
-    gpuBackbone: true,
-
-    gpuCompute: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // v24++ awareness
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    chunkingAware: true,
-    warmPathAware: true,
-    binaryGpuAware: true,
-    symbolicGpuAware: true,
-    dualBandAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseGPUNervousSystem",
-      "PulseGPUDriveCenter",
-      "PulseGPUDrive",
-      "PulseGPULymphNodes",
-      "PulseGPUGeneticMemory"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyGPUSpine"
-    ]
-  }
-}
-*/
+const PULSE_GPU_ORCHESTRATOR_META_V24 = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { PulseGPUEventEmitter } from "./PulseGPUSynapses-v24.js";
 import { PulseGPUInsightsEngine } from "./PulseGPUWIsdomCortex-v24.js";
@@ -94,66 +58,6 @@ import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache-v24.js";
 import { createPulseGPUImmortal } from "./PulseGPU-v24.js";
 import { createPulseBinaryGPUImmortal } from "./PulseBinaryGPU-v24.js";
 
-// ============================================================================
-//  ORCHESTRATOR META — Brainstem Identity (v24-Immortal-Spine)
-// ============================================================================
-const PULSE_GPU_ORCHESTRATOR_META_V24 = {
-  layer: "PulseGPUOrchestrator",
-  role: "BRAINSTEM",
-  version: "24-Immortal-Spine",
-  target: "full-gpu+binary+presence+chunking",
-  selfRepairable: true,
-
-  evo: {
-    driftProof: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-
-    // Dual-mode awareness
-    binaryAware: true,
-    symbolicAware: true,
-    dualModeAware: true,
-
-    // Dispatch + memory awareness
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-
-    // Spine + organism loader awareness
-    gpuSpineReady: true,
-    organismLoaderReady: true,
-    sessionTracerAware: true,
-    geneticMemoryAware: true,
-    lymphNodeAware: true,
-
-    // Prewarm / chunking / cache awareness (no actual IO here)
-    prewarmReady: true,
-    warmPathAware: true,
-    coldPathSafe: true,
-    chunkingReady: true,
-    dualBandAware: true,
-    cacheAware: true,
-    snapshotAware: true,
-
-    // Earn + job routing awareness
-    earnAware: true,
-    earnJobRouting: true,
-    earnAdvantageAware: true,
-
-    // Routing + organism contracts (v24++)
-    pulseSend24Ready: true,
-    routingContract: "PulseSend-v24-Immortal",
-    gpuOrganContract: "PulseGPU-v24-Immortal",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal",
-    earnCompatibility: "Earn-v6-Immortal",
-
-    // Legacy metadata
-    legacyRoutingContract: "PulseSend-v16-Immortal",
-    legacyGPUOrganContract: "PulseGPU-v16-Immortal-Spine",
-    legacyEarnCompatibility: "Earn-v5-Immortal"
-  }
-};
 
 // ============================================================================
 //  PRESSURE SNAPSHOT BUILDER — Sensory → Reflex Pressure Map

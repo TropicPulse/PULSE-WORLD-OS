@@ -41,40 +41,21 @@
 //      • fetchViaCNS
 //
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PowerUserRanking",
-  version: "v14.9-Presence-RANK",
-  layer: "presence_social",
-  role: "power_user_ranking_engine",
-  lineage: "PulseWorld-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    presenceAware: true,            // Reads presence field
-    meshAware: true,                // Reads mesh proximity
-    rankingEngine: true,            // Computes rankScore
-    deterministic: true,            // Ranking must be stable
-    driftProof: true,               // No rank drift
-    dualBand: true,                 // Binary + symbolic scoring
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true
-  },
-
-  contract: {
-    always: [
-      "PresenceAwareness",
-      "PresenceAIView",
-      "MentorUpgradeRequest"
-    ],
-    never: [
-      "legacyRanking",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 export function createPowerUserRanking({ log, warn, error }) {
 
   // -------------------------------------------------------------------------

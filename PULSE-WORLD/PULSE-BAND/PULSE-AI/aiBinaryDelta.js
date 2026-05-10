@@ -17,95 +17,36 @@
 // ---------------------------------------------------------
 //  META BLOCK — v16‑Immortal DualBand‑Safe Binary Organ
 // ---------------------------------------------------------
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-export const DeltaMeta = Object.freeze({
-  layer: "BinaryDelta",
-  role: "BINARY_DELTA_ENGINE",
-  version: "v16-Immortal-ComputeGenetic",
-  identity: "aiBinaryDelta-v16-Immortal-ComputeGenetic",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    binaryOnly: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    diffAware: true,
-    changeAware: true,
-    temporalAware: true,
-    segmentAware: true,
-    packetAware: true,
-    windowAware: true,
-    deltaCache: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const DeltaMeta = Identity.OrganMeta;
 
-    computeAware: true,
-    computeGeneticAware: true,
-    triHeartAware: true,
-    gpuComputeAware: true,
-    earnComputeAware: true,
-    heartbeatComputeAware: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "v16-Immortal",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-    dualBandSafe: true,
-    sideEffectFree: true
-  }),
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose:
-      "Compute deterministic binary and compute‑genetic deltas without symbolic interpretation or mutation.",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: Object.freeze([
-      "interpret symbolic meaning",
-      "mutate inputs",
-      "apply patches automatically",
-      "perform merges",
-      "introduce randomness",
-      "modify pipeline or reflex behavior",
-      "schedule compute",
-      "route compute",
-      "govern compute"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: Object.freeze([
-      "validate binary inputs",
-      "compute diffs deterministically",
-      "treat compute surfaces as read‑only",
-      "return pure delta structures",
-      "remain pure and minimal",
-      "produce frozen results"
-    ])
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  presence: Object.freeze({
-    organId: "BinaryDeltaEngine",
-    organKind: "Physiology",
-    physiologyBand: "Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "on-demand",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "diff",
-        "diff-fast",
-        "segment-delta",
-        "compress",
-        "apply",
-        "compute-delta",
-        "compute-gpu-delta",
-        "compute-advantage-delta",
-        "compute-speed-delta",
-        "compute-presence-delta",
-        "triheart-compute-delta",
-        "prewarm"
-      ]
-    }
-  })
-});
 
 // ---------------------------------------------------------
 //  PACKET EMITTER — deterministic, delta-scoped

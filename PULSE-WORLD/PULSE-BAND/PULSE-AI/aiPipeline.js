@@ -4,101 +4,36 @@
 //  PURE FLOW ENGINE. ZERO RANDOMNESS. ZERO EXTERNAL MUTATION.
 //  DUALBAND‑AWARE • GPU‑FRIENDLY • OVERMIND‑AWARE
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiPipeline",
-  version: "v16‑IMMORTAL‑EVO",
-  layer: "ai_core",
-  role: "pipeline_engine",
-  lineage: "aiPipeline-v10 → v15-Immortal → v16‑IMMORTAL‑EVO",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    pipelineEngine: true,
-    stageOrchestration: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiEngine", "aiCortex", "aiContextEngine", "aiGovernorAdapter", "aiLoggerAdapter"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const PipelineMeta = Identity.OrganMeta;
 
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const PipelineMeta = Object.freeze({
-  layer: "OrganismFlow",
-  role: "PIPELINE_ORGAN",
-  version: "16-Immortal-Evo",
-  identity: "aiBinaryPipeline-v16-Immortal-Evo",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    binaryAware: true,
-    pipelineAware: true,
-    reflexAware: true,
-    arteryAware: true,
-    packetAware: true,
-    windowAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    governorAware: true,
-    loggerAware: true,
-    gpuFriendly: true,
-    microPipeline: true,
-    speedOptimized: true,
-    genomeAware: true,
-    safetyFrameAware: true,
-    overmindAware: true,
-    presenceAware: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    readOnly: true,
-    multiInstanceReady: true,
-    epoch: "16-Immortal-Evo"
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide deterministic compute flow, layered transformations, observer taps, reflex hooks, and flow artery metrics over binary.",
-
-    never: Object.freeze([
-      "introduce randomness",
-      "mutate external organs",
-      "generate symbolic state",
-      "override cortex decisions",
-      "override router decisions",
-      "block the organism",
-      "perform cognition",
-      "log raw payloads directly from pipeline meta"
-    ]),
-
-    always: Object.freeze([
-      "treat all inputs as read-only",
-      "emit binary-only outputs",
-      "compute flow artery metrics deterministically",
-      "remain deterministic",
-      "remain drift-proof",
-      "remain non-blocking",
-      "emit window-safe flow snapshots",
-      "emit deterministic pipeline packets"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "BinaryPipeline is a pure flow engine — it never mutates external organs or performs cognition.";
-  }
-});
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, pipeline-scoped

@@ -3,96 +3,22 @@
 FILE: /PULSE-WORLD/MultiOrganismSupport-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — MULTI-ORGANISM COORDINATION
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld.MultiOrganismSupport",
-  version: "v16-Immortal",
-  layer: "pulse_world",
-  role: "multi_organism_coordination",
-  lineage: "MultiOrganismSupport-v13-COSMOS-MULTIVERSE → v16-Immortal",
-
-  evo: {
-    deterministic: true,
-    symbolic: true,
-    multiverseAware: true,
-    regionAware: true,
-    hostAgnostic: true,
-    noRandomness: true,
-
-    driftProof: true,
-    pureCompute: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    unifiedAdvantageField: true,
-    coreMemoryAware: true,
-    schemaVersioned: true,
-    envelopeAware: true,
-    integrityAware: true,
-    historyAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    input: [
-      "InstanceContext[]",
-      "GlobalContinuancePolicy",
-      "CosmosContext { universeId, timelineId, branchId }"
-    ],
-    output: [
-      "MultiOrganismPlan",
-      "MultiOrganismSummary",
-      "MultiOrganismPlanEnvelope"
-    ]
-  },
-
-  upstream: [
-    "LineageEngine-v16",
-    "SnapshotPhysics-v16",
-    "DeltaEngine-v16",
-    "DeploymentPhysics-v16",
-    "RegionMeshRouting-v16",
-    "PulseContinuance-v16"
-  ],
-
-  downstream: [
-    "ExecutionPhysics-v16"
-  ],
-
-  notes: [
-    "Never executes deployments; only coordinates symbolic plans.",
-    "Treats each instance as a star in a multiverse mesh.",
-    "CosmosContext determines which universe/timeline/branch the plan belongs to.",
-    "Advantage is computed per-instance and aggregated for the swarm."
-  ]
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseWorld.MultiOrganismSupport",
-  layer: "pulse_world",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "InstanceContext[]",
-    "GlobalContinuancePolicy",
-    "CosmosContext"
-  ],
-
-  produces: [
-    "MultiOrganismPlan",
-    "MultiOrganismSummary",
-    "MultiOrganismPlanEnvelope"
-  ],
-
-  sideEffects: "none",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 const MULTI_ORG_ENGINE_VERSION = "16.0-Immortal";
 const MULTI_ORG_SCHEMA_VERSION = "v3";
 

@@ -5,22 +5,29 @@
 //  “PLUS: TIMELINE + GRAPH + PERSONA + TONE (v24 SEMANTIC OVERLAY)”
 // ============================================================================
 
-/*
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-This organ requires FULL IMMORTAL++ metadata on every upgrade:
-- AI_EXPERIENCE_META + AI_EXPERIENCE_CONTEXT
-- Full organ metadata + evo flags + lineage
-- Full contract (input/output/consumers)
-- Full experience surfaces (band/wave/binary/presence/advantage/speed)
-- Full IMMORTAL++ overlays (drift, pressure, stability, load)
-- Full chunk/cache/prewarm overlays
-- Full world‑lens, limbic, tri‑heart, impulse‑speed awareness
-- Full healing surfaces + diagnostics
-Always include ALL layers, ALL overlays, ALL IMMORTAL++ structures.
-*/
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-// Adapters — forward‑only, no barrels
+const Identity = OrganismIdentity(import.meta.url);
 
+// ============================================================================
+//  META BLOCK — v24 IMMORTAL (from genome)
+// ============================================================================
+export const PulseCoreMemoryMeta = Identity.OrganMeta;
+
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24 IMMORTAL
+// ============================================================================
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+
+// ============================================================================
+//  Adapters — forward‑only, no barrels
+// ============================================================================
+import { createPulseCoreBrain }      from "./PulseCoreFrontalCortex-v20.js";
 import { createPulseGPUOrchestrator }      from "./PulseCoreGpuMemoryAdapter-v20.js";
 import { createPulseAIMemoryAdapter }      from "./PulseCoreAIMemoryAdapter-v20.js";
 import { createPulseEarnMemoryAdapter }    from "./PulseCoreEarnMemoryAdapter-v20.js";
@@ -30,318 +37,11 @@ import { createPulseRouterMemoryAdapter }  from "./PulseCoreRouterMemoryAdapter-
 import { createPulseSendMemoryAdapter }    from "./PulseCoreSendMemoryAdapter-v20.js";
 import { PulseCoreLayersOrgan }            from "./PulseCoreLayers-v20.js";
 import PulseCoreSpeech from "./PulseCoreSpeech-v24.js";
-import { PulseCoreBrain }      from "./PulseCoreBrain-v20.js";
-import { PulseCoreEvolution }      from "./PulseCoreEvolution-v20.js";
 
 const coreSpeech = PulseCoreSpeech.create({
   dnaTag: "core-speech",
   role: PulseCoreSpeech.CoreSpeechRole
 });
-
-// ============================================================================
-//  AI_EXPERIENCE_META (IMMORTAL++)
-// ============================================================================
-export const AI_EXPERIENCE_META_PulseCoreMemory = {
-  id: "corememory.spine",
-  identity: "PulseCoreMemory",
-  version: "v24-IMMORTAL-HYBRID-SPINE",
-  layer: "corememory",
-  role: "corememory_spine + semantic_memory_engine",
-  lineage: "PulseCoreMemory-v1 → v11-Evo → v13-DualBand → v14-Immortal → v15-Immortal → v20-IMMORTAL → v24-IMMORTAL-HYBRID-SPINE",
-
-  evo: {
-    // core daemon traits
-    symbolicPrimary: true,
-    binaryPrimary: true,
-    dualBand: true,
-
-    memorySpine: true,
-    overlayEngine: true,
-    hydrationEngine: true,
-    dehydrationEngine: true,
-    healingEngine: true,
-    dnaAware: true,
-    ttlAware: true,
-    versionAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    // v24 semantic traits
-    semanticTimeline: true,
-    semanticGraph: true,
-    semanticPersona: true,
-    semanticTone: true,
-    semanticRelationship: true,
-    semanticHistoryScannerReady: true,
-
-    // integration traits
-    daemonAware: true,      // via external feeds
-    presenceAware: true,    // via external feeds
-    speechAware: true,      // via external feeds
-    palAware: true          // via external feeds
-  },
-
-  contract: {
-    always: [
-      "PulseCoreLayers",
-      "PulseBinaryCoreOverlay",
-      "PulseCoreBrain",
-      "PulseCoreEvolution",
-      "PulseCoreGovernor",
-
-      "PulseCoreAIMemoryAdapter",
-      "PulseCoreEarnMemoryAdapter",
-      "PulseCoreGPUMemoryAdapter",
-      "PulseCoreProxyMemoryAdapter",
-      "PulseCoreRouterMemoryAdapter",
-      "PulseCoreSendMemoryAdapter",
-      "PulseCoreMeshMemoryAdapter"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  },
-
-  surfaces: {
-    band: ["memory", "spine", "dualband", "semantic"],
-    wave: ["deterministic", "healing", "low_level", "structured"],
-    binary: ["bulkLoad", "bulkFlush", "get", "set", "getRouteSnapshot"],
-    presence: ["prewarm_presence_touch", "semantic_history_presence"],
-    advantage: [
-      "cache_first",
-      "dualband_spine",
-      "adapter_fanout",
-      "semantic_graph",
-      "semantic_persona"
-    ],
-    speed: "hot_loop"
-  }
-};
-
-// ============================================================================
-//  AI_EXPERIENCE_CONTEXT
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulseCoreMemory = {
-  tone: "technical_silent",
-  pacing: "instant",
-  emotionalBand: "none_direct",
-  primaryIntent: "maintain_core_memory_spine",
-  secondaryIntent: "serve_dualband_and_semantic_data_to_all_organs",
-  visualNotes: {
-    icon: "memory",
-    motion: "none",
-    colorBand: "infra_core"
-  },
-  worldLens: {
-    awareOfWorlds: true,
-    notes: "routeId may encode world/realm; spine must not assume single-world."
-  },
-  presenceLens: {
-    awareOfPresence: true,
-    notes: "prewarm + hot-loop behavior may be tuned by presence in future; semantic tone may reflect presence."
-  },
-  settingsLens: {
-    awareOfSettings: true,
-    notes: "TTL, size limits, and flush cadence may be tuned by CoreSettings."
-  },
-  semanticLens: {
-    awareOfHistoryScanner: true,
-    notes: "Semantic graph/timeline/persona/tone are consumed by Pulse‑Pal History Scanner + Persona organs."
-  }
-};
-
-// ============================================================================
-//  CORE ORGAN META
-// ============================================================================
-export const CORE_MEMORY_META_PulseCoreMemory = {
-  id: "organ.corememory.spine",
-  subsystem: "CoreMemory",
-  layer: "MemorySpine",
-  tier: "IMMORTAL",
-  role: "DualBand-Memory-Spine + Semantic-Memory-Engine",
-  lineage: {
-    family: "corememory_spine",
-    generation: 5,
-    coreVersion: "v24"
-  },
-  evoFlags: {
-    binaryNative: true,
-    bulkLoad: true,
-    bulkFlush: true,
-    cacheFirst: true,
-    routeAware: true,
-    dnaAware: true,
-    lowHostChurn: true,
-
-    dualBand: true,
-    fallbackable: true,
-    loopTheory: true,
-    healing: true,
-    ttlAware: true,
-    versionAware: true,
-
-    semanticTimeline: true,
-    semanticGraph: true,
-    semanticPersona: true,
-    semanticTone: true,
-    semanticRelationship: true,
-    historyScannerReady: true
-  }
-};
-
-// ============================================================================
-//  CORE ORGAN CONTRACT
-// ============================================================================
-export const CORE_MEMORY_CONTRACT_PulseCoreMemory = {
-  inputs: {
-    primaryStorage: "StorageLike",
-    secondaryStorage: "StorageLike",
-    log: "function",
-    warn: "function",
-    dnaTag: "string"
-  },
-  outputs: {
-    prewarm: "function()",
-    bulkLoad: "function()",
-    bulkFlush: "function()",
-    get: "function(routeId, key)",
-    set: "function(routeId, key, value)",
-    getRouteSnapshot: "function(routeId)",
-    setRouteSnapshot: "function(routeId, snapshot)",
-    clearRoute: "function(routeId)",
-    clearAll: "function()",
-    getHotKeys: "function(minHits?)",
-    coolDown: "function(routeId, key)",
-    adapters: "CoreMemoryAdapters",
-    layers: "PulseCoreLayersOrgan",
-
-    // v24 semantic exports
-    semantic: "PulseCoreSemanticMemory_v24",
-    engine: "PulseCoreMemoryEngine_v24",
-    timeline: "function()",
-    graph: "function()",
-    persona: "function()",
-    tone: "function()",
-    relationship: "function()",
-    items: "function()",
-    setTier: "function(tier)",
-    fullScan: "function(feeds?)",
-    incremental: "function(feeds?)"
-  },
-  consumers: [
-    "PulseCoreBrain",
-    "PulseCoreEvolution",
-    "PulseCoreGovernor",
-    "PulseBinaryCoreOverlay",
-    "PulseCoreLayers",
-    "PulseCoreSettings",
-    "PulseCorePresence",
-    "PulseCoreWorld",
-    "PulsePalMemory",
-    "PulsePalHistoryScanner",
-    "PulsePalPersona"
-  ],
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noFilesystem: true,
-    noGlobalMutation: true
-  }
-};
-
-// ============================================================================
-//  IMMORTAL OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulseCoreMemory = {
-  drift: {
-    allowed: false,
-    notes: "Core memory semantics must never drift; only additive evolution. Semantic layer is additive."
-  },
-  pressure: {
-    expectedLoad: "very_high",
-    notes: "Every organ may touch CoreMemory on hot paths; semantic reads are cheap and cached."
-  },
-  stability: {
-    algorithm: "stable",
-    layout: "stable",
-    notes: "Spine must remain predictable across versions; semantic graph is stable in shape."
-  },
-  load: {
-    maxRoutesHint: 2048,
-    notes: "TTL + pruning keep route count bounded; semantic graph is bounded by history window."
-  },
-  chunking: {
-    prewarm: [
-      "corememory.spine",
-      "corememory.layers",
-      "corememory.binary.overlay",
-      "corememory.semantic.graph"
-    ],
-    cacheKey: "corememory.spine.v24"
-  },
-  worldLens: {
-    awareOfWorlds: true,
-    notes: "Route IDs may encode world; snapshots remain per-route; semantic graph may aggregate across worlds."
-  },
-  limbic: {
-    band: "none_direct",
-    notes: "Indirect emotional impact via reliability + speed + clarity of history."
-  },
-  triHeart: {
-    cognitive: "memory_spine + semantic_graph",
-    emotional: "none_direct",
-    behavioral: "reuse_and_heal + introspect_history"
-  },
-  impulseSpeed: {
-    primaryAction: "get/set",
-    latencyTargetNs: 50000 // 50µs target
-  },
-  healingSurfaces: {
-    enabled: true,
-    notes: "Bands healing + TTL pruning reduce fragmentation and corruption; semantic layer can ignore corrupted bands."
-  }
-};
-
-// ============================================================================
-//  ROLE
-// ============================================================================
-export const CoreMemoryRole = {
-  type: "Organ",
-  subsystem: "Core",
-  layer: "MemorySpine",
-  version: "24.0-IMMORTAL-HYBRID-SPINE",
-  identity: "PulseCoreMemory",
-
-  evo: {
-    binaryNative: true,
-    bulkLoad: true,
-    bulkFlush: true,
-    cacheFirst: true,
-    routeAware: true,
-    dnaAware: true,
-    lowHostChurn: true,
-
-    dualBand: true,
-    fallbackable: true,
-    loopTheory: true,
-    healing: true,
-    ttlAware: true,
-    versionAware: true,
-
-    semanticTimeline: true,
-    semanticGraph: true,
-    semanticPersona: true,
-    semanticTone: true,
-    semanticRelationship: true
-  }
-};
 
 // ============================================================================
 //  SIMPLE BINARY HELPERS
@@ -386,7 +86,6 @@ const MAX_SERIALIZED_BYTES = 512 * 1024;              // 512 KB per band
 // ============================================================================
 //  v24 SEMANTIC MEMORY LAYER (NEW)
 // ============================================================================
-
 export class PulseCoreSemanticMemory_v24 {
   constructor() {
     this._tier = "balanced";
@@ -455,7 +154,6 @@ export class PulseCoreSemanticMemory_v24 {
 // ============================================================================
 //  v24 MEMORY ENGINE (NEW)
 // ============================================================================
-
 export class PulseCoreMemoryEngine_v24 {
   constructor({ semantic }) {
     this.semantic = semantic;
@@ -597,7 +295,6 @@ export class PulseCoreMemoryEngine_v24 {
 // ============================================================================
 //  FACTORY
 // ============================================================================
-
 export function createPulseCoreMemory({
   primaryStorage   = window.localStorage,
   secondaryStorage = window.sessionStorage,
@@ -618,7 +315,7 @@ export function createPulseCoreMemory({
   const Meta = {
     lastFlushEpoch: 0,
     lastLoadEpoch: 0,
-    version: CoreMemoryRole.version,
+    version: PulseCoreMemoryMeta.version,
     lastBandUsed: "primary",
     fallbackUsed: false,
     dnaTag
@@ -664,7 +361,7 @@ export function createPulseCoreMemory({
 
   function isVersionCompatible(meta) {
     if (!meta || !meta.version) return false;
-    return meta.version === CoreMemoryRole.version;
+    return meta.version === PulseCoreMemoryMeta.version;
   }
 
   function isDnaCompatible(meta) {
@@ -795,7 +492,7 @@ export function createPulseCoreMemory({
     Meta.lastLoadEpoch = Cache.lastLoadEpoch;
     Meta.lastBandUsed  = "primary";
     Meta.fallbackUsed  = false;
-    Meta.version       = CoreMemoryRole.version;
+    Meta.version       = PulseCoreMemoryMeta.version;
     Meta.dnaTag        = dnaTag;
 
     safeLog("BULK_LOAD_EMPTY_OR_RESET");
@@ -921,120 +618,88 @@ export function createPulseCoreMemory({
     delete Cache.hotLoop[id];
   }
 
-  // ============================================================================
-//  PULSE CORE MEMORY — v24 IMMORTAL++
-//  FINAL ORGAN OBJECT + ADAPTERS + SEMANTIC ENGINE + BACKEND API
-// ============================================================================
-
-const PulseCoreMemory = {
-  CoreMemoryRole,
-  Meta,
-  Cache,
-
-  // Core operations
-  prewarm,
-  bulkLoad,
-  bulkFlush,
-
-  get,
-  set,
-  getRouteSnapshot,
-  setRouteSnapshot,
-  clearRoute,
-  clearAll,
-
-  // Loop theory
-  getHotKeys,
-  coolDown,
-
-  // IMMORTAL meta exports
-  AI_EXPERIENCE_META_PulseCoreMemory,
-  AI_EXPERIENCE_CONTEXT_PulseCoreMemory,
-  CORE_MEMORY_META_PulseCoreMemory,
-  CORE_MEMORY_CONTRACT_PulseCoreMemory,
-  IMMORTAL_OVERLAYS_PulseCoreMemory,
-
-  // Layer attachment (PulseCoreLayersOrgan v20 → v24 compatible)
-  layers: PulseCoreLayersOrgan
-};
-
-// ============================================================================
-//  ADAPTERS — v24 IMMORTAL MEMORY ORGAN ADAPTER LAYER
-// ============================================================================
-const adapters = {
-  gpu:    createPulseGPUOrchestrator({ dnaTag, version: "24.0-IMMORTAL-GPU-MEMORY", log }),
-  ai:     createPulseAIMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-AI-MEMORY", log }),
-  earn:   createPulseEarnMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-EARN-MEMORY", log }),
-  mesh:   createPulseMeshMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-MESH-MEMORY", log }),
-  proxy:  createPulseProxyMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-PROXY-MEMORY", log }),
-  router: createPulseRouterMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-ROUTER-MEMORY", log }),
-  send:   createPulseSendMemoryAdapter({ dnaTag, version: "24.0-IMMORTAL-SEND-MEMORY", log })
-};
-
-PulseCoreMemory.adapters = adapters;
-
-// ============================================================================
-//  v24 SEMANTIC ATTACHMENT — HYBRID A
-// ============================================================================
-const semantic = new PulseCoreSemanticMemory_v24();
-const engine   = new PulseCoreMemoryEngine_v24({ semantic });
-
-// Patch get/set to feed semantic layer (non-breaking, additive)
-const originalGet = get;
-const originalSet = set;
-
-PulseCoreMemory.get = function(routeId, key) {
-  const value = originalGet(routeId, key);
-  semantic.addTimeline({
-    type: "access",
-    routeId,
-    key,
-    value,
-    timestamp: Date.now()
+  // ========================================================================
+  //  v24 SEMANTIC + MEMORY ENGINE — BRAIN‑READY
+  // ========================================================================
+  const semanticMemory_v24 = new PulseCoreSemanticMemory_v24();
+  const memoryEngine_v24 = new PulseCoreMemoryEngine_v24({
+    semantic: semanticMemory_v24
   });
-  return value;
-};
 
-PulseCoreMemory.set = function(routeId, key, value) {
-  originalSet(routeId, key, value);
-  semantic.addItem({ routeId, key, value });
-};
+  function fullSemanticScan(feeds = {}) {
+    return memoryEngine_v24.fullScan(feeds);
+  }
 
-// Expose semantic + engine
-PulseCoreMemory.semantic = semantic;
-PulseCoreMemory.engine   = engine;
+  function incrementalSemanticScan(feeds = {}) {
+    return memoryEngine_v24.incremental(feeds);
+  }
 
-// v24 semantic APIs
-PulseCoreMemory.timeline     = () => semantic.timeline();
-PulseCoreMemory.graph        = () => semantic.graph();
-PulseCoreMemory.persona      = () => semantic.persona();
-PulseCoreMemory.tone         = () => semantic.tone();
-PulseCoreMemory.relationship = () => semantic.relationship();
-PulseCoreMemory.items        = () => semantic.items();
-PulseCoreMemory.setTier      = (t) => semantic.setTier(t);
+  function exportSemanticSnapshotBinary() {
+    return memoryEngine_v24.toBinarySnapshot();
+  }
 
-// Engine triggers
-PulseCoreMemory.fullScan    = (feeds) => engine.fullScan(feeds || {});
-PulseCoreMemory.incremental = (feeds) => engine.incremental(feeds || {});
+  function importSemanticSnapshotBinary(bits) {
+    return memoryEngine_v24.fromBinarySnapshot(bits);
+  }
 
-// Init log
-safeLog("INIT", {
-  identity: CoreMemoryRole.identity,
-  version: CoreMemoryRole.version,
-  dualBand: CoreMemoryRole.evo.dualBand,
-  semantic: true,
-  dnaTag
-});
-return PulseCoreMemory;
+  // ========================================================================
+  //  PULSE CORE MEMORY — v24 IMMORTAL++
+  // ========================================================================
+  const PulseCoreMemory = {
+    meta: PulseCoreMemoryMeta,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+
+    Meta,
+    Cache,
+
+    // Core operations
+    prewarm,
+    bulkLoad,
+    bulkFlush,
+
+    get,
+    set,
+    getRouteSnapshot,
+    setRouteSnapshot,
+    clearRoute,
+    clearAll,
+
+    // Loop theory
+    getHotKeys,
+    coolDown,
+
+    // Layer attachment (PulseCoreLayersOrgan v20 → v24 compatible)
+    layers: PulseCoreLayersOrgan,
+
+    // v24 semantic + engine (for brain down the line)
+    semanticMemory_v24,
+    memoryEngine_v24,
+    fullSemanticScan,
+    incrementalSemanticScan,
+    exportSemanticSnapshotBinary,
+    importSemanticSnapshotBinary
+  };
+
+  return PulseCoreMemory;
 }
+
 // ============================================================================
 //  BACKEND API SURFACE — v24 IMMORTAL++
-//  (THIS IS WHAT THE BRIDGE CALLS — NO ROUTEHANDLER REQUIRED)
+//  Now brain‑ready, semantic‑aware, and binary‑snapshot capable.
 // ============================================================================
 export const PulseCoreMemoryAPI = {
-  CoreMemoryRole,
+  meta: PulseCoreMemoryMeta,
+
+  // Create a full v24 memory instance (semantic + engine + storage)
   create: createPulseCoreMemory,
 
+  // --------------------------------------------------------------------------
+  //  BASIC ACCESSORS (v20 compatible, v24 enhanced)
+  // --------------------------------------------------------------------------
   read(key, routeId = "global") {
     const inst = createPulseCoreMemory();
     return inst.get(routeId, key);
@@ -1065,6 +730,46 @@ export const PulseCoreMemoryAPI = {
     const inst = createPulseCoreMemory();
     inst.clearAll();
     return true;
+  },
+
+  // --------------------------------------------------------------------------
+  //  v24 SEMANTIC MEMORY + ENGINE (BRAIN‑READY)
+  // --------------------------------------------------------------------------
+
+  // Full semantic scan (speech + presence + daemon)
+  fullSemanticScan(feeds = {}) {
+    const inst = createPulseCoreMemory();
+    return inst.fullSemanticScan(feeds);
+  },
+
+  // Incremental semantic scan (recent only)
+  incrementalSemanticScan(feeds = {}) {
+    const inst = createPulseCoreMemory();
+    return inst.incrementalSemanticScan(feeds);
+  },
+
+  // Export semantic snapshot as binary (for brain persistence)
+  exportSemanticSnapshotBinary() {
+    const inst = createPulseCoreMemory();
+    return inst.exportSemanticSnapshotBinary();
+  },
+
+  // Import semantic snapshot from binary (brain restore)
+  importSemanticSnapshotBinary(bits) {
+    const inst = createPulseCoreMemory();
+    return inst.importSemanticSnapshotBinary(bits);
+  },
+
+  // --------------------------------------------------------------------------
+  //  DIRECT ACCESS TO v24 SEMANTIC + ENGINE INSTANCES
+  //  (For brain modules that want to attach directly)
+  // --------------------------------------------------------------------------
+  createSemanticMemory() {
+    return new PulseCoreSemanticMemory_v24();
+  },
+
+  createMemoryEngine(semantic) {
+    return new PulseCoreMemoryEngine_v24({ semantic });
   }
 };
 

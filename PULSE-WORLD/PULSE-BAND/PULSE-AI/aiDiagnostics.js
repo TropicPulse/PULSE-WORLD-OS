@@ -1,112 +1,38 @@
 // ============================================================================
-//  aiDiagnostics.js — Pulse OS v12.3‑Presence
+//  PULSE OS v12.3‑Presence — DIAGNOSTICS ORGAN
 //  Diagnostics Organ • Drift Tracker • Mismatch Ledger • Slowdown Sensor
 //  PURE OBSERVATION. ZERO RANDOMNESS. ZERO MUTATION.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiDiagnostics",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "diagnostics_engine",
-  lineage: "aiDiagnostics-v10 → v12 → v14-Immortal",
 
-  evo: {
-    diagnosticsEngine: true,
-    mismatchDetection: true,
-    slowdownDetection: true,
-    driftDetection: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  contract: {
-    always: ["aiDiagnosticsWrite", "aiDebug", "aiBrainstem"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+const Identity = OrganismIdentity(import.meta.url);
 
-export const DiagnosticsMeta = Object.freeze({
-  layer: "PulseAIDiagnosticsFrame",
-  role: "DIAGNOSTICS_ORGAN",
-  version: "12.3-Presence",
-  identity: "aiDiagnostics-v12.3-Presence",
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const DiagnosticsMeta = Identity.OrganMeta;
 
-    binaryAware: true,
-    symbolicAware: true,
-    diagnosticsAware: true,
-    patternAware: true,
-    schemaAware: true,
-    observerOnly: true,
-    architectAware: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    packetAware: true,
-    presenceAware: true,
-    windowAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    epoch: "12.3-Presence"
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  contract: Object.freeze({
-    purpose: Object.freeze([
-      "Provide deterministic diagnostics state for any AI context",
-      "Record mismatches, drift, missing fields, and slowdown causes",
-      "Expose safe, read-only observation surfaces",
-      "Support organism-level introspection without mutation"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    never: Object.freeze([
-      "mutate context identity",
-      "modify system architecture",
-      "write to external systems",
-      "introduce randomness"
-    ]),
-
-    always: Object.freeze([
-      "observe",
-      "record",
-      "annotate",
-      "stay deterministic"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "DiagnosticsOrgan",
-    organKind: "Observer",
-    physiologyBand: "Symbolic+Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "per-context",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "state-created",
-        "context-attached",
-        "api-created"
-      ]
-    }
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, diagnostics-scoped

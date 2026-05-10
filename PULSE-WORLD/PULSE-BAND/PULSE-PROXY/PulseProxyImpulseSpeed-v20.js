@@ -4,109 +4,21 @@
 // “ADVANTAGE‑AWARE SPEED POLICY ENGINE / DRIFT‑ENVELOPE GOVERNOR / BURST SAFETY”
 // Pure Backend Organ • Deterministic • Drift‑Proof • Zero Network • Zero IO
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProxyImpulseSpeed",
-  version: "v20-ImmortalPlusPlus-SpeedGovernor",
-  layer: "speed_governor",
-  role: "impulse_speed_policy_engine",
-
-  lineage: {
-    root: "PulseProxy-v11",
-    parent: "PulseProxyImpulseSpeed-v16.3",
-    organismIntegration: "v20-ImmortalPlusPlus",
-    worldIntegration: "PulseWorld-v21-Immortal",
-    spinalIntegration: "PulseOSSpinalCord-v20-ImmortalPlusPlus"
-  },
-
-  evo: {
-    // Core
-    deterministic: true,
-    driftProof: true,
-    immortalReady: true,
-    backendOnly: true,
-    multiInstanceReady: true,
-
-    // Speed cascades
-    speedAware: true,
-    speedEnvelopeAware: true,
-    speedCascadeAware: true,
-    impulseAware: true,
-    innerAgentAware: true,
-    outerAgentAware: true,
-    proxySpineAware: true,
-    worldSpeedAware: true,
-
-    // Advantage + presence
-    advantageAware: true,
-    advantageCascadeAware: true,
-    unifiedAdvantageField: true,
-    presenceAware: true,
-    bandAware: true,
-    worldLensAware: true,
-
-    // Chunk / cache / prewarm
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    routeWarmthAware: true,
-
-    // Healing + drift
-    healingAware: true,
-    driftEnvelopeAware: true,
-    loadEnvelopeAware: true,
-    pressureAware: true,
-
-    // IMMORTAL guarantees
-    zeroRandomness: true,
-    zeroNetwork: true,
-    zeroIO: true,
-    zeroExternalMutation: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroWindow: true,
-    zeroDOM: true
-  },
-
-  contract: {
-    input: [
-      "ImpulseSpeedField",
-      "InnerAgentSpeedField",
-      "OuterAgentSpeedField",
-      "ProxySpineSpeedField",
-      "WorldSpeedField",
-      "AdvantageField",
-      "PresenceField",
-      "ExperienceField",
-      "HealingState",
-      "DualBandContext"
-    ],
-    output: [
-      "SpeedPolicy",
-      "SpeedEnvelope",
-      "SpeedMultiplier",
-      "SpeedBand",
-      "SpeedPressureField",
-      "SpeedChunkCachePrewarmField",
-      "SpeedDualBandOverlay",
-      "SpeedAdvantageField",
-      "SpeedPresenceField",
-      "SpeedDiagnostics",
-      "SpeedHealingState",
-      "SpeedSnapshot"
-    ],
-    consumers: [
-      "PulseOSImpulseEngine",
-      "PulseProxyInnerAgent",
-      "PulseProxySpine",
-      "PulseProxyOuterAgent",
-      "PulseWorldCore",
-      "PulseNetSpeedGovernor"
-    ]
-  }
-};
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL HELPERS

@@ -23,98 +23,21 @@
 //  • No external mutation.
 //  • Deterministic, stable, non-evolving organism.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSendLegacyPulse",
-  version: "v16-Immortal-ORGANISM",
-  layer: "frontend",
-  role: "legacy_pulse_floor",
-  lineage: "PulseOS-v12 → v14.4-Immortal → v16-Immortal-ORGANISM",
-
-  evo: {
-    immutable: true,
-    noEvolution: true,
-    deterministic: true,
-    safeRouteFree: true,
-    dualHashSurfaces: true
-  },
-
-  contract: {
-    always: [
-      "PulseSendSystem"
-    ],
-    never: [
-      "legacyLegacyPulse",
-      "legacyEvolutionEngine",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// ⭐ PulseRole — Pulse v1 Stable Organism (v16 IMMORTAL ORGANISM)
-// ============================================================================
-export const PulseRole = {
-  type: "Pulse",
-  subsystem: "Pulse",
-  layer: "Organ",
-  version: "16-Immortal-ORGANISM",
-  identity: "Pulse-v1-EvoStable-v16-Immortal-ORGANISM",
-
-  evo: {
-    // v1 is stable, non-evolving, deterministic
-    driftProof: true,
-    patternAware: true,
-    lineageAware: true,
-    shapeAware: true,
-    modeAware: true,
-
-    // v1 participates in routing/mesh/send but does NOT evolve
-    routerAwareReady: true,
-    meshAwareReady: true,
-    sendAwareReady: true,
-
-    // v1 does NOT run evolution compute loops
-    evolutionEngineReady: false,
-    pulseV1Ready: true,
-    pulseV2Ready: false,
-    pulseV3Ready: false,
-
-    // v1 surfaces only metadata (cache, prewarm, presence, immortal)
-    diagnosticsReady: true,
-    signatureReady: true,
-    evolutionSurfaceReady: false,
-
-    // IMMORTAL META
-    immortalMetaAware: true,
-    dualBandAware: true,
-    harmonicAware: true,
-    coherenceAware: true,
-
-    // v1 degradation surfaces (metadata only)
-    degradationAware: true,
-
-    // v1 does NOT support intelligence compute
-    pulseIntelligenceReady: false,
-    solvednessAware: false,
-    factoringAware: false,
-    computeTierAware: false,
-
-    // v16: dual-hash surfaces
-    dualHashSurfaces: true
-  },
-
-  // Contracts for compatibility with the rest of the organism
-  routingContract: "PulseRouter-v11",
-  meshContract: "PulseMesh-v11",
-  sendContract: "PulseSend-v11",
-  gpuOrganContract: "PulseGPU-v11",
-  earnCompatibility: "PulseEarn-v11"
-};
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, pure

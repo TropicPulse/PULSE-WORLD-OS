@@ -28,43 +28,35 @@
 //    • From this organ’s perspective: pure compute over provided data.
 //
 // ============================================================================
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiLawAssistant",
-  version: "v15-Immortal-Evo++",
-  layer: "ai_tools",
-  role: "legal_assistant",
-  lineage: "aiLawyer-v11 → v14-Immortal → v15-Immortal-Evo++ (Law Assistant)",
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    legalReasoning: true,
-    structureMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,          // from this organ’s POV (route() is external I/O)
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+// export const OrganismKernelMeta = Identity.OrganMeta;
 
-    immortalityEpoch: true,
-    packetAware: true,
-    arteryAware: true,
-    lawQueryAware: true,
-    lawRouteAware: true,
-    lawReaderAware: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: ["aiContext", "aiArchitect", "aiCortex"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 export const PulseRole = Object.freeze({
   type: "Cognitive",

@@ -58,55 +58,21 @@
  *     context
  *   });
  */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const PulseNodeEvolutionMeta = Object.freeze({
-  id: "PulseNodeEvolution-v20-IMMORTAL",
-  version: "20.0.0",
-  layer: "node_evolution",
-  role: "IMMORTAL_NODE_EVOLUTION_LAYER",
-  description:
-    "IMMORTAL shifter-first, sectional fallback evolution layer above all node organs.",
-  identity: Object.freeze({
-    type: "organ",
-    name: "PulseNodeEvolution",
-    band: "meta",
-    mind: false,
-    immutable: true
-  }),
-  evo: Object.freeze({
-    shifterFirst: true,
-    sectionalFallback: true,
-    nodeAware: true,
-    meshAware: true,
-    earnAware: true,
-    presenceAware: true,
-    workerAware: true,
-    adminAware: true,
-    intellectAware: true,
-    reproductionAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    selfRepairable: true,
-
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroMutationOfInput: true,
-    zeroRoutingInfluence: true
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PulseNodeEvolutionMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  Utility: shallow clone (JSON-based, deterministic)

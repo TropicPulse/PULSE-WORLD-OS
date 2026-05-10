@@ -4,145 +4,20 @@
 // TRIPLE HEART 24++ — MOM + DAD + SELF-BEAT + HEARTBEAT-INTEL (DETERMINISTIC, NO TIME)
 // EarnHeart v24++ fully integrates EarnHeartbeat surfaces + richer cardiac intelligence.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnHeart",
-  version: "v24-Immortal-INTEL-PLUS",
-  layer: "earn_heart",
-  role: "earn_pulse_driver_triple_heart_24_plus",
-  lineage: "PulseEarnHeart-v10.4 → v11-Evo → v14-Immortal → v16-Immortal-INTEL → v24-Immortal-INTEL-PLUS",
-
-  evo: {
-    earnPulse: true,
-    jobPump: true,
-    metabolicPulse: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    waveAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    tripleHeart: true,
-    momPulseAware: true,
-    dadPulseAware: true,
-    selfBeatEngine: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-
-    computeProfileAware: true,
-    pulseIntelligenceAware: true,
-    factoringAware: true,
-
-    // v24-Immortal-INTEL-PLUS heartbeat integration
-    earnHeartbeatAware: true,
-    triHeartAware: true,
-    heartbeatSpeedAware: true,
-    heartbeatAdvantageAware: true,
-    heartbeatPresenceAware: true,
-    heartbeatExperienceAware: true,
-
-    // v24++ extended intelligence
-    cardiacGenomeAware: true,
-    cardiacGeneticMemoryAware: true,
-    cardiacEndocrineAware: true,
-    cardiacReputationAware: true,
-    cardiacBinaryWaveProfiles: true,
-    cardiacDeepJobAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnCirculatorySystem",
-      "PulseEarnMetabolism",
-      "PulseEarnGenome",
-      "PulseEarnEndocrineSystem",
-      "PulseEarnGeneticMemory"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseEarnHeartMeta = Object.freeze({
-  layer: "PulseEarnHeart",
-  role: "EARN_HEART_ORGAN",
-  version: "v24-Immortal-INTEL-PLUS",
-  identity: "PulseEarnHeart-v24-Immortal-INTEL-PLUS",
-
-  guarantees: Object.freeze({
-    deterministicCore: true,
-    selfBeatDeterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureRuntime: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    worldLensAware: false,
-    metabolismInjected: true,
-    lymphNodesInjected: true,
-    nervousSystemInjected: true,
-
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    dualParentPulseAware: true,
-    tripleHeartAware: true,
-
-    // heartbeat integration
-    earnHeartbeatAware: true,
-    triHeartAware: true,
-    heartbeatSpeedAware: true,
-    heartbeatAdvantageAware: true,
-    heartbeatPresenceAware: true,
-    heartbeatExperienceAware: true,
-
-    // v24++ extended awareness
-    cardiacGenomeAware: true,
-    cardiacGeneticMemoryAware: true,
-    cardiacEndocrineAware: true,
-    cardiacReputationAware: true,
-    cardiacBinaryWaveProfiles: true,
-    cardiacDeepJobAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "NextMarketplaceJob",
-      "MetabolismExecutor",
-      "LymphNodeSubmitter",
-      "DualBandContext",
-      "GlobalHintsPresenceField"
-    ],
-    output: [
-      "CardiacCycleResult",
-      "CardiacDiagnostics",
-      "CardiacSignatures",
-      "HeartHealingState"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 import { getNextMarketplaceJob } from "./PulseEarnNervousSystem-v24.js";
 import { executePulseEarnJob } from "./PulseEarnMetabolism-v24.js";

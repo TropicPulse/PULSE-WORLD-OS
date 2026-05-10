@@ -3,99 +3,22 @@
 FILE: /PULSE-WORLD/DeploymentPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC DEPLOYMENT PHYSICS
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld.DeploymentPhysics",
-  version: "v16-Immortal",
-  layer: "pulse_world",
-  role: "organism_deployment_physics",
-  lineage: "DeploymentPhysics-v13-COSMOS-MULTIVERSE → v16-Immortal",
-
-  evo: {
-    deterministic: true,
-    symbolic: true,
-    multiverseAware: true,
-    regionAware: true,
-    hostAgnostic: true,
-    reversible: true,
-    noRandomness: true,
-
-    driftProof: true,
-    pureCompute: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    coreMemoryAware: true,
-    schemaVersioned: true,
-    envelopeAware: false,
-    integrityAware: false,
-    historyAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    input: [
-      "CurrentInstanceState",
-      "DeltaPatch",
-      "CosmosRoute { universeId, timelineId, branchId, regionRoute }",
-      "RegionRoute? (override)",
-      "ContinuanceDecision"
-    ],
-    output: [
-      "DeploymentAction",
-      "DeploymentPlan",
-      "DeploymentSummary"
-    ]
-  },
-
-  upstream: [
-    "DeltaEngine-v16",
-    "SnapshotPhysics",
-    "RegionMeshRouting-v16",
-    "PulseContinuance",
-    "LineageEngine-v16"
-  ],
-
-  downstream: [
-    "MultiOrganismSupport-v16",
-    "ExecutionPhysics-v16"
-  ],
-
-  notes: [
-    "DeploymentPhysics v16 is multiverse + region aware but physics-pure.",
-    "Movement is universe-first, timeline-second, branch-third, region-fourth, host-fifth.",
-    "All actions remain symbolic and reversible.",
-    "CoreMemory integration is write-only, deterministic, and multiverse keyed."
-  ]
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseWorld.DeploymentPhysics",
-  layer: "pulse_world",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "CurrentInstanceState",
-    "DeltaPatch",
-    "CosmosRoute",
-    "ContinuanceDecision"
-  ],
-
-  produces: [
-    "DeploymentAction",
-    "DeploymentPlan",
-    "DeploymentSummary"
-  ],
-
-  sideEffects: "core_memory_write_only",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 const DEPLOYMENT_ENGINE_VERSION = "16.0-Immortal";
 const DEPLOYMENT_SCHEMA_VERSION = "v3";
 

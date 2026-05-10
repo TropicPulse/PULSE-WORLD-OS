@@ -3,111 +3,37 @@
 //  World State • Internal Flags • Drift Awareness • Dual‑Band Logging
 //  PURE READ‑ONLY. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiEnvironment",
-  version: "v14-Immortal",
-  layer: "ai_core",
-  role: "environment_simulator",
-  lineage: "aiEnvironment-v10 → v12 → v14-Immortal",
 
-  evo: {
-    environmentSimulation: true,
-    contextExpansion: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiContext", "aiCortex", "aiEngine"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-export const EnvironmentMeta = Object.freeze({
-  layer: "PulseAIEnvironmentFrame",
-  role: "ENVIRONMENT_ORGAN",
-  version: "12.3-Presence",
-  identity: "aiEnvironment-v12.3-Presence",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const EnvironmentMeta = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    binaryAware: true,
-    symbolicAware: true,
-    anomalyAware: true,
-    environmentAware: true,
-    evolutionAware: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    epoch: "12.3-Presence"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide SAFE, READ-ONLY environment data with caching, chunking, and dual-band logging.",
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    never: Object.freeze([
-      "mutate external systems",
-      "write to DB",
-      "expose UID or identity anchors",
-      "introduce randomness"
-    ]),
-
-    always: Object.freeze([
-      "strip identity fields",
-      "respect tourist vs owner scope",
-      "detect anomalies deterministically",
-      "cache environment data",
-      "integrate organism snapshot",
-      "emit deterministic environment packets",
-      "return frozen results"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "Environment",
-    organKind: "WorldState",
-    physiologyBand: "DualBand",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "per-request",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "env:hourly-hit",
-        "env:hourly-miss",
-        "env:daily-hit",
-        "env:daily-miss",
-        "env:anomaly",
-        "env:public",
-        "env:internal",
-        "env:anomalies",
-        "env:evolution"
-      ]
-    }
-  })
-});
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, environment-scoped

@@ -35,7 +35,21 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+export const OvermindPrimeMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
@@ -160,79 +174,6 @@ import getBoundariesForPersona from "../PULSE-AI/aiBoundaries.js";
 import getPermissionsForPersona from "../PULSE-AI/aiPermissions.js";
 import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v16.js";
 
-// ============================================================================
-//  META — v20 IMMORTAL++
-// ============================================================================
-export const OvermindPrimeMeta = Object.freeze({
-  layer: "PulseAIOvermindPrime",
-  role: "OVERMIND_PRIME",
-  version: "v20-ImmortalPlus",
-  identity: "aiOvermindPrime-v20-ImmortalPlus",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
-
-    packetAware: true,
-    windowAware: true,
-    arteryAware: true,
-    organismAware: true,
-    safetyAware: true,
-    toneAware: true,
-    coherenceAware: true,
-    breakthroughAware: true,
-
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-
-    chunkAware: true,
-    chunkCacheAware: true,
-    prewarmAware: true,
-    arteryHashAware: true,
-    dualHashAware: true,
-    contextualHashAware: true,
-
-    multiInstanceReady: true,
-    readOnly: true,
-    futureEvolutionReady: true,
-    epoch: "v20-ImmortalPlus"
-  }),
-
-  contract: Object.freeze({
-    purpose: [
-      "Fuse organism-wide arteries into a global state vector",
-      "Run world-lens v4+superego on all non-trivial outputs",
-      "Detect consensus, variance, breakthrough, drift, unsafe patterns",
-      "Stabilize tone, coherence, and dualband UX",
-      "Act as final crown-layer governor before user/system output",
-      "Emit trust-aware, hash-aware, artery-aware meta packets for CNS / Earn / Portal"
-    ],
-    never: [
-      "mutate binary organs",
-      "override safety constraints",
-      "simulate people or personal lives",
-      "generate trauma or identity narratives",
-      "write to system state",
-      "introduce randomness",
-      "self-schedule or self-spawn",
-      "directly call network, filesystem, or external APIs"
-    ],
-    always: [
-      "stay deterministic",
-      "stay read-only",
-      "respect organism-wide safety",
-      "respect dualband constraints",
-      "respect tone identity",
-      "route all non-trivial outputs through world-lens + superego logic",
-      "defer to architect-defined boundaries and permissions",
-      "emit trust + hash + artery intel for downstream organs"
-    ]
-  })
-});
 
 // ============================================================================
 //  CLOCK + META MEMORY (deterministic, read-only outward)

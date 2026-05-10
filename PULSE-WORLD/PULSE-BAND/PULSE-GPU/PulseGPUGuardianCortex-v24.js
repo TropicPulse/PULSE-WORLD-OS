@@ -25,60 +25,18 @@
 //  • No mutation outside instance.
 //  • Deterministic: same inputs → same decision.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUGuardianCortex",
-  version: "v24-Immortal++",
-  layer: "gpu_guardian",
-  role: "gpu_guardian_cortex",
-  lineage:
-    "PulseGPU-v14 → PulseGPU-v16-Immortal → PulseGPU-Earn-v24-Immortal++",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    gpuGuardian: true,
-    gpuSafety: true,
-    gpuPolicyEnforcer: true,
-
-    gpuComputerIntelligence: true,
-    computerIntelligence: true,
-    earnComputerIntelligenceAware: true,
-
-    gpuEarnGuardian: true,
-    gpuEarnBudgetAware: true,
-    gpuEarnProfileAware: true,
-    gameAware: true,
-    presenceAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    parallelSafe: true,
-    statelessCore: true,
-    zeroEntropy: true
-  },
-
-  contract: {
-    always: [
-      "PulseGPUDriveCenter",
-      "PulseGPUCommandments",
-      "PulseGPUSettingsRestorer",
-      "PulseGPUGeneticMemory",
-      "PulseGPUEarnProfile"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyGuardianCortex",
-      "legacyEarnProfile"
-    ]
-  }
-}
-*/
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  Utility: build decision — Guardian lineage + nervous-system metadata

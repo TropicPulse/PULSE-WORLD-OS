@@ -30,99 +30,19 @@
 // ============================================================================
 // AI_EXPERIENCE_META
 // ============================================================================
-export const AI_EXPERIENCE_META_PulseGPUEarnProfile = {
-  id: "pulsegpu.earn_profile",
-  kind: "advantage_cortex",
-  version: "v24-IMMORTAL++",
-  role: "gpu_earn_budget_engine",
-  surfaces: {
-    band: ["gpu", "earn", "budget"],
-    wave: ["throughput", "efficiency", "fairness"],
-    binary: ["game_present", "game_absent"],
-    presence: ["earn_gpu_state"],
-    advantage: [
-      "gpu_budget_tier",
-      "earn_gpu_share",
-      "game_gpu_share",
-      "thermal_guard",
-      "battery_guard",
-      "conflict_policy",
-      "scheduling_policy"
-    ],
-    speed: "instant_compute"
-  },
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-// ============================================================================
-// ORGAN_META
-// ============================================================================
-export const ORGAN_META_PulseGPUEarnProfile = {
-  id: "organ.pulsegpu.earn_profile",
-  organism: "PulseOS",
-  layer: "advantage.gpu",
-  tier: "IMMORTAL",
-  evoFlags: {
-    deterministic: true,
-    driftProof: true,
-    zeroPII: true,
-    zeroTracking: true,
-    gpuAware: true,
-    earnAware: true,
-    gameAware: true,
-    trustAware: true,
-    riskAware: true,
-    thermalAware: true,
-    batteryAware: true,
-    pulseStreamAware: true,
-    fastLaneAware: true
-  },
-  lineage: {
-    family: "pulsegpu_earn",
-    generation: 1,
-    osVersion: "v24",
-    history: [
-      "GPU Earn Profile v24 (IMMORTAL++ Budget Engine)"
-    ]
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
-export const ORGAN_CONTRACT_PulseGPUEarnProfile = {
-  inputs: {
-    skin: "Pulse‑Touch skinState",
-    security: "Pulse‑Touch security decision",
-    earnMode: "boolean",
-    gameMode: "boolean",
-    thermal: "low | medium | high | critical",
-    battery: "high | medium | low | critical"
-  },
-  outputs: {
-    gpuBudgetTier: "none | low | medium | high | max",
-    earnModeGpuShare: "0–100",
-    gameModeGpuShare: "0–100",
-    conflictPolicy: "game_wins | earn_wins | balanced",
-    schedulingPolicy: "fair | game_priority | earn_priority",
-    thermalGuard: "throttle | safe | full",
-    batteryGuard: "throttle | safe | full",
-    trustRiskBias: "positive | neutral | negative"
-  },
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noSideEffects: true,
-    zeroPII: true,
-    zeroTracking: true
-  }
-};
-
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+const ORGAN_CONTRACT_PulseGPUEarnProfile = Identity.OrganMeta.contract;
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++
 // ============================================================================

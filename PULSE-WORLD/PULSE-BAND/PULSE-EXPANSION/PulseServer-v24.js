@@ -14,56 +14,21 @@
 //    - v16+ / v24: Castle-aware, Expansion-aware, can act as Castle-General fallback
 //      when Castle is absent or degraded (server-as-central-castle).
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseServer",
-  version: "v24-Immortal-ORGANISM",
-  layer: "presence_server",
-  role: "presence_region_server",
-  lineage: "PulsePresence-v15-Immortal → v16-Immortal-ORGANISM → v24-Immortal-ORGANISM",
-
-  evo: {
-    regionServer: true,
-    regionState: true,
-    regionPhysics: true,
-    regionIdentity: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    // v16+ / v24: castle + expansion + PulseNet bridge
-    castleAware: true,
-    expansionAware: true,
-    pulseNetBridgeAware: true,
-    soldierAware: true,
-    routeAware: true,
-    nodeAdminAware: true,
-    castleFallbackGeneral: true
-  },
-
-  contract: {
-    always: [
-      "PulseRouter",
-      "PulseCastle",
-      "PulseExpansion",
-      "PulseNetBridge"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+export const PulseServerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS — Organs it feeds and orchestrates
 // ============================================================================
@@ -152,99 +117,6 @@ import {
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
-
-// ============================================================================
-//  META — PulseServer Identity
-// ============================================================================
-export const PulseServerMeta = Object.freeze({
-  layer: "PulseServer",
-  role: "PRESENCE_EXEC_ENGINE",
-  version: "v24-Immortal-ORGANISM",
-  identity: "PulseServer-v24-Immortal-ORGANISM-EXEC",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Exec engine role
-    execEngine: true,
-    presenceExecEngine: true,
-    earnExecAware: true,
-    runtimeExecAware: true,
-    schedulerExecAware: true,
-    adrenalExecAware: true,
-
-    // Advantage hub
-    advantageHub: true,
-    hotStateAware: true,
-    planCacheAware: true,
-    binaryFrameReuseAware: true,
-    multiInstanceBatchAware: true,
-    memoryPrewarmAware: true,
-
-    // Safety / environment
-    zeroRandomness: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroTimersIntroduced: true,
-    zeroAsyncLoopsIntroduced: true,
-    zeroDateNowIntroduced: true,
-    zeroNetworkFetchIntroduced: true,
-
-    // Band / field awareness
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    dualMode: true,
-    dualBandExecAware: true,
-    binarySendAware: true,
-
-    // Delegation
-    usesAdrenalSystem: true,
-    usesSchedulerOrgan: true,
-    usesRuntimeV2: true,
-
-    // Integration
-    worldCoreAware: true,
-    userContextAware: true,
-    meshAware: true,
-    brainAware: true,
-    pulseNetBridgeAware: true,
-    expansionAware: true,
-    castleAware: true,
-
-    // Proxy
-    proxyAware: true,
-    proxyPressureAware: true,
-    proxyFallbackAware: true,
-    proxyBoostAware: true,
-
-    // Castle fallback
-    castleFallbackGeneral: true
-  }),
-
-  contract: Object.freeze({
-    input: ["PulseServerJobRequest"],
-    output: ["PulseServerJobResult"]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v16-Immortal-ORGANISM",
-    parent: "PulseProxy-v16-Immortal-ORGANISM",
-    ancestry: [
-      "PulseServer-v9",
-      "PulseServer-v10",
-      "PulseServer-v11",
-      "PulseServer-v11-Evo",
-      "PulseServer-v12-Evo",
-      "PulseServer-v12.3-Presence-Evo+",
-      "PulseServer-v13-Presence-Evo+",
-      "PulseServer-v15-Immortal-Presence-Evo+",
-      "PulseServer-v16-Immortal-ORGANISM"
-    ]
-  })
-});
 
 // ============================================================================
 //  TYPES

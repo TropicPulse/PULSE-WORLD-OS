@@ -4,178 +4,21 @@
 //  Deterministic Capability Engine + Phenotype Passport + Intel Dual-Hash Surfaces
 //  A‑B‑A Band/Binary/Wave + Presence + Advantage + Compatibility (24++ IMMORTAL)
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnSkeletalSystem",
-  version: "v24-Superior-Immortal",
-  layer: "earn_skeletal",
-  role: "earn_skeletal_capability_engine",
-  lineage: "PulseEarnSkeletalSystem-v9 → v10 → v11 → v11-Evo → v12.3-Presence → v13.0-Presence-Immortal → v13.1-Presence-Immortal-ADV → v16-Immortal-MAX → v24-Superior-Immortal",
-
-  evo: {
-    skeletalSystem: true,
-    capabilityEngine: true,
-    phenotypePassport: true,
-    structuralLimits: true,
-    physiologicalBaselines: true,
-
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    waveFieldAware: true,
-
-    presenceField: true,
-    advantageField: true,
-    compatibilityField: true,
-    chunkCachePrewarmField: true,
-
-    deterministic: true,
-    deterministicPhenotype: true,
-    deterministicStructuralLimits: true,
-    deterministicPhysiologicalBaselines: true,
-    deterministicPresenceField: true,
-    deterministicAdvantageField: true,
-    deterministicCompatibilityField: true,
-
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroAI: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroCrypto: true,
-    zeroHardwareProbing: true,
-    zeroOSInspection: true,
-
-    intelHashAware: true,
-    dualHashAware: true,
-    compatibilitySurfaces: true,
-    healingMetadataAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnNervousSystem",
-      "PulseEarnMuscleSystem",
-      "PulseEarnReflexRouter",
-      "PulseEarnLymphNodes",
-      "PulseEarnEndocrineSystem"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseEarnSkeletalSystemMeta = Object.freeze({
-  layer: "PulseEarnSkeletalSystem",
-  role: "EARN_SKELETAL_ORGAN",
-  version: "v24-Superior-Immortal",
-  identity: "PulseEarnSkeletalSystem-v24-Superior-Immortal",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-
-    // Capability engine laws
-    pureCapabilityEngine: true,
-    deterministicPhenotype: true,
-    deterministicStructuralLimits: true,
-    deterministicPhysiologicalBaselines: true,
-
-    // Safety laws
-    zeroAI: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroCrypto: true,
-    zeroHardwareProbing: true,
-    zeroOSInspection: true,
-
-    // Band + metadata
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-
-    // Presence + advantage
-    presenceAware: true,
-    presenceFieldAware: true,
-    chunkingAware: true,
-    cachePrewarmAware: true,
-    gpuFieldAware: true,
-    advantageFieldAware: true,
-
-    // Compatibility + intel
-    compatibilityFieldAware: true,
-    dualHashIntel: true,
-    compatibilitySurfaces: true,
-
-    // Environment
-    worldLensAware: false,
-    multiInstanceReady: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PhenotypeConfigOverride",
-      "DualBandContext",
-      "PresenceContext"
-    ],
-    output: [
-      "DevicePhenotype",
-      "StructuralDiagnostics",
-      "PhysiologicalDiagnostics",
-      "PresenceDiagnostics",
-      "SkeletalAdvantageField",
-      "SkeletalCompatibilityField",
-      "SkeletalSignatures",
-      "SkeletalHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v24-Superior-Immortal",
-    parent: "PulseEarn-v24-Superior-Immortal",
-    ancestry: [
-      "PulseEarnSkeletalSystem-v9",
-      "PulseEarnSkeletalSystem-v10",
-      "PulseEarnSkeletalSystem-v11",
-      "PulseEarnSkeletalSystem-v11-Evo",
-      "PulseEarnSkeletalSystem-v12.3-Presence",
-      "PulseEarnSkeletalSystem-v13.0-Presence-Immortal",
-      "PulseEarnSkeletalSystem-v13.1-Presence-Immortal-ADV",
-      "PulseEarnSkeletalSystem-v16-Immortal-MAX"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only",
-    priority: "binary-first"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic phenotype → structural limits → physiological baselines",
-    adaptive: "binary/wave/presence surfaces + dual-band signatures + chunkField + advantageField + compatibilityField",
-    return: "deterministic phenotype + structural + physiological + presence + advantage + compatibility signatures"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------------------------
 // Healing Metadata — Structural + Physiological + Presence + Advantage Log

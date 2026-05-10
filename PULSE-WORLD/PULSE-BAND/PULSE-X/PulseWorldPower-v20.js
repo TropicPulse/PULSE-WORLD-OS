@@ -15,7 +15,21 @@
 //   - Deterministic, symbolic, no randomness, no network fetch logic.
 //   - v20: AIConsole-aware, ACTNow-aware, dual-band world prewarm.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulsePowerRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge as PulseCoreMemoryBridge, BridgeError as error, BridgeWarn as warn, BridgeLog as log, PulseProofBridgeLogger as PulseLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 
@@ -33,49 +47,6 @@ const PulseAIConsole =
   (g && g.PulseAIConsoleV20) ||
   (g && g.PulseAIConsole) ||
   null;
-
-// ============================================================================
-// ROLE META — v20 IMMORTAL
-// ============================================================================
-export const PulsePowerRole = Object.freeze({
-  type: "Organ",
-  subsystem: "PulsePortal",
-  layer: "PresentationPower",
-  version: "v20-Immortal",
-  identity: "PulsePower-v20",
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    immortalReady: true,
-    presentationLayer: true,
-    prewarmAware: true,
-    chunkFieldAware: true,
-    routeMemoryAware: true,
-    assetMemoryAware: true,
-    multiPageAware: true,
-    multiInstanceReady: true,
-
-    dualBand: true,
-    symbolicAware: true,
-    binaryAware: false,
-
-    zeroRandomness: true,
-    zeroEval: true,
-    zeroDynamicImports: true,
-
-    // v18
-    bridgeAligned: true,
-    actNowHintAware: true,
-    chunkProfileAware: true,
-    laneHintAware: true,
-
-    // v20 upgrades
-    aiConsoleAware: true,
-    narrativeFieldAware: true,
-    worldPrewarmAware: true,
-    fightFlightHintAware: true
-  })
-});
 
 // ============================================================================
 // CORE MEMORY BRIDGE (frontend-safe wrapper)

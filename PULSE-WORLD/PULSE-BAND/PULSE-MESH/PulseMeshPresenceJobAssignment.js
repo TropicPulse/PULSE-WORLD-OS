@@ -47,44 +47,21 @@
 //      • fetchViaCNS
 //
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PresenceJobAssignment",
-  version: "v14.9-Presence-JOB-Evo",
-  layer: "presence_social",
-  role: "job_assignment_engine",
-  lineage: "PulseWorld-v14",
-
-  evo: {
-    presenceAware: true,            // Reads presence field
-    meshAware: true,                // Uses mesh hops + proximity
-    aiViewAware: true,              // Uses PresenceAIView
-    rankingAware: true,             // Uses PowerUserRanking
-    deterministic: true,            // Job assignment must be stable
-    driftProof: true,               // No drift in job scoring
-    dualBand: true,                 // Symbolic + binary scoring
-    zeroMutationOfInput: true,      // Never mutate presence objects
-    zeroNetworkFetch: true,         // No external fetch
-    safeRouteFree: true             // No safeRoute allowed
-  },
-
-  contract: {
-    always: [
-      "PresenceAwareness",
-      "PresenceAIView",
-      "PowerUserRanking",
-      "PulseMeshPresenceRelay"
-    ],
-    never: [
-      "legacyJobAssignment",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 export function createPresenceJobAssignment({
   PresenceJobView,
   JobCatalog,          // injected: deterministic job definitions

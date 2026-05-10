@@ -28,47 +28,21 @@
 // • No mutation outside metadata.
 // • Deterministic-field, unified-advantage-field, drift-proof.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshFlow",
-  version: "v14.9-MESH-FLOW",
-  layer: "mesh",
-  role: "mesh_conduction_and_flow_engine",
-  lineage: "PulseMesh-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    flow: true,                     // This IS the flow organ
-    conductor: true,                // Impulse conduction
-    sequencing: true,               // Impulse sequencing
-    lifecycle: true,                // Impulse lifecycle
-    binaryAware: true,              // Binary conduction hints
-    symbolicAware: true,            // Symbolic conduction hints
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshAwareness",
-      "PulseMeshCognition",
-      "PulseMeshCortex",
-      "PulseMeshEcho",
-      "PulseMeshEndocrineSystem",
-      "PulseMeshEnvironmentalField"
-    ],
-    never: [
-      "legacyMeshFlow",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 export function createPulseMeshFlow({

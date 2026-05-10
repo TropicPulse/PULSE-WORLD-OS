@@ -19,181 +19,21 @@
 // • Symbolic-primary: Cortex always thinks in symbolic mode
 // • Presence-aware + mesh-aware + chunk/prewarm-aware (metadata-only)
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSBrainCortex",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_cortex",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    cortex: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    presenceAware: true,
-    meshAware: true,
-
-    safeRouteFree: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrain",
-      "PulseOSBrainEvolution",
-      "PulseChunker"
-    ],
-    never: [
-      "legacyOSBrainCortex",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseRole = {
-  type: "Cortex",            // FIXED (was incorrectly "Brain")
-  subsystem: "OS",
-  layer: "Cortex",
-  version: "13-Spine",
-  identity: "PulseOSCortex",
-
-  evo: {
-    deterministicNeuron: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    advantageCascadeAware: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    loopTheoryAware: true,
-    continuanceAware: true,
-
-    // v13 organism-wide contracts
-    routingContract: "PulseRouter-v13",
-    gpuCompatibility: "PulseGPU-v13",
-    sdnCompatibility: "PulseSDN-v13",
-    earnCompatibility: "PulseEarn-v13",
-    sendCompatibility: "PulseSendSystem-v13",
-    osOrganContract: "PulseOS-v13-SPINE",
-
-    // Dual-band CNS
-    dualMode: true,
-    symbolicAware: true,
-    binaryAware: true,
-    symbolicPrimary: true,
-    binaryNonExecutable: true,
-
-    // Presence / mesh / chunking awareness (metadata-only)
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    cortexChunkingAware: true,
-    cortexPrewarmAware: true
-  }
-};
-
-export const PulseOSCortexMeta = Object.freeze({
-  layer: "PulseOSCortex",
-  role: "CORTEX_ORGAN",
-  version: "v13-SPINE-DUALBAND-Presence",
-  identity: "PulseOSCortex-v13-SPINE-DUALBAND-Presence",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    highLevelCognition: true,
-    organSupervisor: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBandAware: true,
-    binaryNonExecutable: true,
-    continuanceAware: true,
-    loopTheoryAware: true,
-
-    readsBrainDirectly: true,
-    readsIntentIQOrganismMap: true,
-    readsEvolutionFromBrain: true,
-    reportsDriftToEvolution: true,
-    reportsLineageToEvolution: true,
-
-    // Presence / mesh / chunking (metadata-only)
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    meshTopologyAware: true,
-    cortexChunkingAware: true,
-    cortexPrewarmAware: true,
-
-    zeroBackend: true,
-    zeroNetwork: true,
-    zeroTiming: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    worldLensAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "PulseOSBrain",
-      "PulseIQMap",
-      "PulseOrganismMap",
-      "EvolutionState",
-      "DualBandContext"
-    ],
-    output: [
-      "CortexState",
-      "CortexDiagnostics",
-      "CortexSignatures",
-      "CortexHealingState",
-      "CortexPresenceDescriptors",
-      "CortexChunkingProfiles"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v13-SPINE",
-    parent: "PulseOS-v12.4-SPINE",
-    ancestry: [
-      "PulseOSCortex-v9",
-      "PulseOSCortex-v10",
-      "PulseOSCortex-v11",
-      "PulseOSCortex-v11-Evo",
-      "PulseOSCortex-v11-Evo-BinaryMax",
-      "PulseOSCortex-v12.3-SPINE-DUALBAND-Presence",
-      "PulseOSCortex-v12.4-SPINE-DUALBAND-Presence",
-      "PulseOSCortex-v13-SPINE-DUALBAND-Presence"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary", "dual"],
-    default: "symbolic",
-    behavior: "cortex-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "symbolic cognition → organ supervision → drift reporting",
-    adaptive:
-      "binary-aware tagging + dual-band metadata + presence/mesh/chunking descriptors",
-    return: "deterministic cortex state + signatures + presence/chunking metadata"
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================

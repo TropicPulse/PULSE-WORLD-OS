@@ -24,124 +24,21 @@
 //   • Unified Earn v24 presence/advantage/chunk/computeProfile/pulseIntelligence schema.
 //   • Dual-band A‑B‑A: symbolic primary, binary aware, metadata-only.
 // ============================================================================
+// 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnCustomReceptorMkt",
-  version: "v24-Immortal-INTEL",
-  layer: "earn_receptor",
-  role: "earn_market_receptor",
-  lineage: "PulseEarnCustomReceptorMkt-v11 → v12.3 → v13 → v14.4 → v16-Immortal-INTEL → v24-Immortal-INTEL",
-
-  evo: {
-    customReceptor: true,
-    marketAware: true,
-    jobTypeDetection: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroTimers: true,
-    zeroDateNow: true,
-
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    hintsAware: true,
-    factoringAware: true,
-    pulseIntelligenceAware: true,
-    computeProfileAware: true,
-
-    // A‑B‑A surfaces
-    binaryFieldAware: true,
-    waveFieldAware: true,
-
-    // v24 extensions
-    continuanceAware: true,
-    riskAware: true,
-    capabilityModelAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarn",
-      "PulseEarnCell",
-      "PulseEarnCirculatorySystem",
-      "PulseEarnContinuancePulse"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseEarnCustomReceptorMeta = Object.freeze({
-  layer: "PulseEarnCustomReceptor",
-  role: "EARN_RECEPTOR_ORGAN",
-  version: "v24-Immortal-INTEL",
-  identity: "PulseEarnCustomReceptor-v24-Immortal-INTEL",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureReceptor: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    hintsAware: true,
-
-    evolutionAware: true,
-    worldLensAware: false,
-
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroAI: true,
-    zeroUserCode: true,
-    deterministicConfigOverride: false,
-    neverMutateJobObjects: true,
-
-    factoringAware: true,
-    pulseIntelligenceAware: true,
-    computeProfileAware: true,
-
-    continuanceAware: true,
-    riskAware: true,
-    capabilityModelAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "DeterministicMarketplaceConfig",
-      "DualBandContext",
-      "GlobalHintsPresenceField",
-      "ContinuanceSnapshot",   // optional, metadata-only
-      "RiskSnapshot",          // optional, metadata-only
-      "CapabilityModel"        // optional, metadata-only
-    ],
-    output: [
-      "ReceptorPingResult",
-      "ReceptorJobList",
-      "ReceptorSubmissionResult",
-      "ReceptorNormalizationResult",
-      "ReceptorSignatures"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // Deterministic Hash Helper

@@ -51,100 +51,20 @@
 //   • Fallback path is delegated to injected fallbackProxy.
 //   • Mesh artery is observational only — never used to mutate routing.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMesh",
-  version: "v16-IMMORTAL",
-  layer: "mesh_symbolic",
-  role: "symbolic_mesh_kernel",
-  lineage: "PulseMesh-v14 → v15-Evo-Immortal → v16-IMMORTAL",
-
-  evo: {
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    meshTopologyAware: true,
-    meshPresenceAware: true,
-    meshAuraAware: true,
-    meshFlowAware: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-    arteryAware: true,
-
-    safeRouteFree: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshFlow",
-      "PulseMeshCognition",
-      "PulseMeshPresenceRelay",
-      "PulseMeshEndocrineSystem",
-      "PulseMeshImmuneSystem",
-      "PulseMeshOrgans",
-      "PulseMeshThalamus"
-    ],
-    never: [
-      "legacyMesh",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseMeshMeta = Object.freeze({
-  layer: "SymbolicNervousSystem",
-  role: "PURE_SYMBOLIC_MESH",
-  version: "v16-IMMORTAL",
-  identity: "PulseMesh-v16-IMMORTAL",
-  guarantees: Object.freeze({
-    pureSymbolicPath: true,          // Only object packets on data path
-    deterministic: true,             // Same input → same output
-    driftProof: true,                // No topology or behavior drift
-    mutationSafe: true,              // Never mutates input packets
-    presenceAware: true,             // Reads band/presenceTag metadata
-    bandAware: true,                 // Symbolic primary, binary-aware
-    bandSignatureAware: true,        // Reads bandSignature metadata
-    chunkAware: true,                // Reads chunkHint metadata
-    prewarmAware: true,              // Reads prewarmHint metadata
-    cacheAware: true,                // Reads cacheHint metadata
-    arteryAware: true,               // Exposes mesh artery metrics
-    noRandomness: true,              // No RNG
-    noTiming: true,                  // No timing-based behavior
-    noEnvAccess: true,               // No env, no process
-    zeroNetwork: true,               // No network access
-    zeroFilesystem: true,            // No FS access
-    metadataOnly: true               // No execution, no side-effectful compute
-  }),
-  contract: Object.freeze({
-    inputDataPath: ["packet"],
-    inputControlPath: [
-      "from",
-      "band",
-      "presenceTag",
-      "bandSignature",
-      "trace",
-      "chunkHint",
-      "prewarmHint",
-      "cacheHint"
-    ],
-    outputDataPath: ["packet"],
-    outputFallback: ["fallbackResult"],
-    arteryPath: ["meshArtery"]
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // IMPORTS — MESH SUBSYSTEMS (SYMBOLIC SIDE)
 // ============================================================================

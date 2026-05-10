@@ -4,156 +4,21 @@
 //  Deterministic, Zero-Async, Zero-Routing, Zero-Sending
 //  Pure Reflex → Earn Handoff with DualBand + DualHash + Presence/Advantage surfaces
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnReflexRouter",
-  version: "v24.2-Immortal-ADV",
-  layer: "earn_reflex",
-  role: "earn_reflex_router",
-  lineage: "PulseEarnReflexRouter-v11 → v12.3 → v13 → v14-Immortal → v16-Immortal-ADV → v24.2-Immortal-ADV",
-
-  evo: {
-    reflexRouter: true,
-    fastRouting: true,
-    bypassLogic: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    dualHash: true,
-    hashIntellectField: true,
-    presenceAdvantageChunkUnified: true,
-    routerHealingAware: true,
-    routerIntelSurfaceAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnReflex",
-      "PulseEarnNervousSystem",
-      "PulseEarnReceptorMkt"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseRole = {
-  type: "Synapse",
-  subsystem: "PulseEarnReflexRouter",
-  layer: "B1-ReflexToEarn",
-  version: "24.2-Immortal-ADV",
-  identity: "PulseEarnReflexRouter-v24.2-Immortal-ADV",
-
-  evo: {
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    reflexSynapse: true,
-    reflexHandoffOnly: true,
-    reflexDeterministic: true,
-    reflexBandAware: true,
-    reflexABASurface: true,
-    reflexPresenceAware: true,
-    reflexAdvantageAware: true,
-    reflexChunkAware: true,
-
-    dualHash: true,
-    hashIntellectField: true,
-
-    zeroTiming: true,
-    zeroState: false,
-    zeroMutation: true,
-    zeroCompute: true,
-    zeroRouting: true,
-    zeroSending: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    bandNormalizationAware: true,
-
-    environmentAgnostic: true,
-    multiInstanceReady: true
-  }
-};
-
-export const PulseEarnReflexRouterMeta = Object.freeze({
-  layer: "PulseEarnReflexRouter",
-  role: "EARN_REFLEX_ROUTER_ORGAN",
-  version: "v24.2-Immortal-ADV",
-  identity: "PulseEarnReflexRouter-v24.2-Immortal-ADV",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureReflexSynapse: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    healingMetadataAware: true,
-
-    dualHashAware: true,
-    hashIntellectAware: true,
-
-    zeroRouting: true,
-    zeroSending: true,
-    zeroCompute: true,
-    zeroAsync: true,
-    zeroUserCode: true,
-    zeroMutation: true,
-    zeroTiming: true,
-
-    worldLensAware: false,
-    multiInstanceReady: true,
-    environmentAgnostic: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "EarnReflexOrganism",
-      "ReflexSliceContext",
-      "DualBandContext",
-      "DevicePhenotypePresence"
-    ],
-    output: [
-      "ReflexRouterHandoff",
-      "ReflexRouterDiagnostics",
-      "ReflexRouterSignatures",
-      "ReflexRouterHealingState",
-      "ReflexRouterPresenceField",
-      "ReflexRouterAdvantageField",
-      "ReflexRouterChunkPrewarmPlan",
-      "ReflexRouterBandBinaryWave",
-      "ReflexRouterDualHashField"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL STATE — v24.2 Immortal-ADV

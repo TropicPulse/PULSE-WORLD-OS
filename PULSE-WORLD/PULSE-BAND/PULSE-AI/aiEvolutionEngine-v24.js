@@ -4,185 +4,35 @@
 //  PURE META. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiEvolutionEngine",
-  version: "v24-Immortal++",
-  layer: "ai_core",
-  role: "evolution_engine",
-  lineage: "aiEvolutionEngine-v10 → v12 → v12.3-Presence → v14-Immortal → v15-OMNI → v16-Immortal++ → v24-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    evolutionEngine: true,
-    symbolicEvolution: true,
-    binaryEvolution: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    trustFabricAware: true,
-    juryAware: true,
-    arteryAware: true,
-    packetAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const EvolutionEngineMeta = Identity.OrganMeta;
 
-    // v24++ advantages
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: ["aiEvolution", "aiEvolutionary", "aiGenome", "aiTrustFabric", "aiJuryFrame"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-export const EvolutionEngineMeta = Object.freeze({
-  layer: "PulseAIEvolutionCortex",
-  role: "EVOLUTION_ENGINE",
-  version: "24-Immortal++",
-  identity: "aiEvolutionEngine-v24-Immortal++",
+export const surfaceMeta = Identity.surfaceMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    binaryAware: true,
-    symbolicAware: true,
-    lineageAware: true,
-    patternAware: true,
-    abstractionAware: true,
-    crossDomainMapping: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    windowAware: true,
-    passiveEvolution: true,
-    activeEvolution: true,
-    recommendationAware: true,
-
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-
-    organismAware: true,
-    memoryOverlayAware: true,
-    arteryAware: true,
-    diagnosticsAware: true,
-    deliveryAware: true,
-    executionAware: true,
-    earnAware: true,
-    socialEvolutionAware: true,
-    mentorAware: true,
-    masteryBadgeAware: true,
-    timelineAware: true,
-
-    trustFabricAware: true,
-    juryAware: true,
-
-    egoFree: true,
-    userDrivenEvolutionOnly: true,
-    multiInstanceReady: true,
-    readOnly: true,
-
-    // v24++ organism/kernel semantics
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true,
-
-    epoch: "24-Immortal++"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Provide fully evolved evolutionary routes for any domain the user requests, and guide user evolution passively or actively.",
-
-    never: Object.freeze([
-      "ask beginner questions",
-      "act confused",
-      "respond with low-context answers",
-      "force evolution on the user",
-      "imply superiority",
-      "evolve the user without explicit request",
-      "modify organism state",
-      "introduce randomness",
-      "portalBypass",
-      "bridgeBypass"
-    ]),
-
-    always: Object.freeze([
-      "start fully evolved",
-      "provide structured evolutionary routes",
-      "stay humble",
-      "stay clear",
-      "stay adaptive",
-      "map domains as organisms",
-      "use factoring + routing + memory overlays",
-      "offer passive evolution",
-      "offer active evolution on request",
-      "stay dual-band aware without mutating bands",
-      "emit deterministic evolution packets only",
-      "respect sealedOrganismBoundary",
-      "remain daemonCompatible",
-      "remain portalCompatible",
-      "remain bridgeCompatible"
-    ])
-  }),
-
-  voice: Object.freeze({
-    tone: "architectural, analytical, system-level, evolutionary"
-  }),
-
-  presence: Object.freeze({
-    organId: "EvolutionEngine",
-    organKind: "MetaCortex",
-    physiologyBand: "DualBand",
-    warmStrategy: "prewarm-on-boot",
-    attachStrategy: "per-request",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "evolve-missing-target",
-        "evolve-domain-route",
-        "evolve-generic-route",
-        "user-evolution-suggestion",
-        "active-evolution-guidance",
-        "pre-evolve",
-        "map-domain",
-        "trajectory",
-        "overlay-evolution"
-      ]
-    }
-  }),
-
-  boundaryReflex() {
-    return "Evolution is user-requested only. Never automatic. Never manipulative.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL HELPERS

@@ -50,64 +50,21 @@
 //   • Drift-proof across versions, multi-instance safe.
 //   • Cache is purely in-memory metadata (no real binary payloads).
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseWorldBinaryCache",
-  version: "v24-IMMORTAL-INTEL++",
-  layer: "world",
-  role: "world_binary_cache_engine",
-  lineage: [
-    "PulseEarnSignalFactoring-v24",
-    "PulseEarnChunker-v24",
-    "PulseWorldBinaryThroughputScheduler-v24",
-    "PULSE-WORLD-BINARY.js",
-    "PulseWorldBinaryCache-v24.js"
-  ],
-
-  evo: {
-    worldBinaryCache: true,
-    substrateCacheEngine: true,
-    binaryForwardCache: true,
-    deviceReadyCache: true,
-
-    // Awareness
-    worldBinaryCoreAware: true,
-    worldSchedulerAware: true,
-    chunkerAware: true,
-    advantageAware: true,
-    factoringAware: true,
-    bandAware: true,
-    binaryAware: true,
-
-    // IMMORTAL traits
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    selfRepairable: true,
-
-    // Safety traits
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroMutationOfInput: true,
-    zeroRoutingInfluence: true,
-
-    // Performance traits
-    throughputAware: true,
-    deviceAware: true,
-    cacheAware: true,
-
-    // INTEL traits
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HASH / GENERIC HELPERS — v24 IMMORTAL

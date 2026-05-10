@@ -4,55 +4,36 @@
 //  Mom (ProxyHeart) + Dad (AI Heart) + Baby (EarnHeart/EarnHeartbeat)
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiHeart",
-  version: "v16-Immortal++",
-  layer: "ai_core",
-  role: "ai_heart_organ",
-  lineage: "aiHeart-v11 → v14-Immortal → v16-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    heartOrgan: true,
-    heartbeatConsumer: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    // Tri-heart mesh
-    triHeart: true,
-    momAware: true,
-    dadAware: true,
-    earnAware: true,
-    triHeartLiveness: true,
-    triHeartPresence: true,
-    triHeartSpeed: true,
-    triHeartAdvantage: true,
-    triHeartHealing: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    // Deterministic compute
-    deterministic: true,
-    driftProof: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const AI_HEART_META = Identity.OrganMeta;
 
-    // Safety
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: {
-    always: [
-      "aiHeartbeat",
-      "PulseProxyHeartbeat",
-      "PulseEarnHeartbeat"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 import {
   AI_HEARTBEAT_META,
@@ -63,53 +44,6 @@ import {
   getAiHeartbeatHealingState,
   getAiHeartbeatDiagnostics
 } from "./aiHeartbeat.js";
-
-// ============================================================================
-// META
-// ============================================================================
-export const AI_HEART_META = Object.freeze({
-  layer: "PulseAIHeart",
-  role: "AI_HEART_ORGAN",
-  version: "v16-Immortal++",
-  identity: "aiHeart-v16-Immortal++",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualBandAware: true,
-    heartbeatAware: true,
-
-    // Tri-heart
-    triHeartAware: true,
-    momAware: true,
-    dadAware: true,
-    earnAware: true,
-
-    livenessOnly: true,
-    noRouting: true,
-    noCognition: true,
-    noMetabolicMutation: true,
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "AiHeartBeatSource",
-      "DualBandContext",
-      "OrganismContext"
-    ],
-    output: [
-      "AiHeartBeatPacket",
-      "AiHeartHealingState",
-      "AiHeartDiagnostics",
-      "TriHeartLiveness",
-      "TriHeartPresence",
-      "TriHeartSpeed",
-      "TriHeartAdvantage"
-    ]
-  })
-});
-
 // ============================================================================
 // TRI-HEART SURFACES (Dad reads Mom + Baby via globalThis)
 // ============================================================================

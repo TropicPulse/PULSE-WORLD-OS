@@ -17,124 +17,35 @@
 //   • No direct internet / HTTP / DNS / WebSocket.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiOrganism",
-  version: "v16-Immortal-Organism++",
-  layer: "ai_core",
-  role: "organism_definition",
-  lineage: "aiOrganism-v11 → v12.3-Presence → v14-Immortal → v16-Immortal-Organism++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    organismDefinition: true,
-    organMap: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    arteryAware: true,
-    trustFabricAware: true,
-    diagnosticsAware: true,
-    depsAware: true,
-    chunkerAware: true,
-    pulseNetAware: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: [
-      "aiAnatomy",
-      "aiBrainstem",
-      "aiContext",
-      "DualBandKernel",
-      "PulseAIChunker",
-      "PulseNetProxySpine"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "directInternetAccess",
-      "externalHTTP",
-      "externalDNS",
-      "externalWebsocket"
-    ]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const OrganismMeta = Identity.OrganMeta;
 
-export const OrganismMeta = Object.freeze({
-  layer: "OrganismRoot",
-  role: "DUALBAND_ORGANISM_BOOTLOADER",
-  version: "v16-Immortal-Organism++",
-  identity: "aiOrganism-v16-Immortal-Organism++",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    assemblyAware: true,
-    registryAware: true,
-    pipelineAware: true,
-    reflexAware: true,
-    memoryAware: true,
-    metabolismAware: true,
-    hormonesAware: true,
-    immunityAware: true,
-    nervousSystemAware: true,
-    conductorAware: true,
-    deltaAware: true,
-    loggerAware: true,
-    governorAware: true,
-    pageScannerAware: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    diagnosticsAware: true,
-    depsAware: true,
-    arteryAware: true,
-    organismSnapshotAware: true,
-    trustFabricAware: true,
-    chunkerAware: true,
-    dualBandBridgeAware: true,
-    pulseNetAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    windowAware: true,
-    packetAware: true,
-    prewarmAware: true,
-    multiInstanceReady: true,
-    epoch: "v16-Immortal-Organism++"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  contract: Object.freeze({
-    purpose:
-      "Assemble all organism organs into a single deterministic dualband organism and expose a stable organismSnapshot + artery.",
-
-    never: Object.freeze([
-      "auto-discover organs",
-      "mutate external config",
-      "perform routing",
-      "perform UI logic",
-      "introduce randomness",
-      "touch internet directly"
-    ]),
-
-    always: Object.freeze([
-      "assemble organs deterministically",
-      "wire organs explicitly",
-      "register organs with conductor and registry",
-      "initialize organism in a pure sequence",
-      "expose organismSnapshot deterministically",
-      "expose organismArtery deterministically",
-      "remain minimal and canonical"
-    ])
-  })
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  IMPORTS — binary organs (v11.3‑EVO lineage)

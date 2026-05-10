@@ -30,102 +30,36 @@
 //    • From this organ’s perspective: pure compute over provided data.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiPowerPrime",
-  version: "v15-Immortal-Evo++",
-  layer: "ai_core",
-  role: "power_model",
-  lineage: "aiPowerPrime-v11 → v14-Immortal → v15-Immortal-Evo++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    powerModel: true,
-    costAwareness: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    immortalityEpoch: true,
-    packetAware: true,
-    arteryAware: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+ export const PowerMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiMetabolism", "aiNervousSystem", "aiReflex"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const PowerMeta = Object.freeze({
-  layer: "PulseAIPowerPrime",
-  role: "POWER_PRIME_ORGAN",
-  version: "15-Immortal-Evo++",
-  identity: "aiPowerPrime-v15-Immortal-Evo++",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    continuanceAware: true,
-    fluctuationAware: true,
-    outageAware: true,
-    evolutionAware: true,
-    arteryFusionAware: true,
-    riskAware: true,
-    beaconAware: true,
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
-    epoch: "15-Immortal-Evo++",
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  }),
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose:
-      "Provide SAFE, READ-ONLY, artery-fused power intelligence: risk, continuance, fluctuations, outages, and drift for tourist and owner scopes, including reading routed BEL and external power information.",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: Object.freeze([
-      "mutate external systems",
-      "write to DB",
-      "modify power settings",
-      "expose UID or identity anchors",
-      "introduce randomness",
-      "override evolution logic",
-      "override router or cortex decisions",
-      "generate non-diagnostic symbolic state",
-      "block the organism",
-      "issue power control commands"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: Object.freeze([
-      "strip identity fields",
-      "respect tourist vs owner scope",
-      "compute metrics deterministically",
-      "detect fluctuations and outages safely",
-      "fuse organism arteries read-only",
-      "log deterministic steps",
-      "return frozen results",
-      "remain drift-proof",
-      "remain non-blocking"
-    ])
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  boundaryReflex() {
-    return "PowerPrime is a read-only crown organ — it fuses arteries and predicts risk without mutating external systems or controlling power.";
-  }
-});
 
 // ---------------------------------------------------------------------------
 //  DEPENDENCIES

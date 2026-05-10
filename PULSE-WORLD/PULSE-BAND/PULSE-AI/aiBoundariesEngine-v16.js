@@ -4,154 +4,40 @@
 //  OWNER‑SUBORDINATE: ALWAYS BELOW ALDWYN, NEVER TOP DOG.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiBoundariesEngine",
-  version: "v16-Immortal-Advantage",
-  layer: "ai_core",
-  role: "ai_boundary_enforcer",
-  lineage: "aiBoundariesEngine-v11 → v12.3 → v14-Immortal → v15-Immortal-ADV → v16-Immortal-Advantage",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    boundaryEnforcer: true,
-    safetyRules: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    ownerAware: true,
-    subordinateToOwner: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const BoundariesMeta = Identity.OrganMeta;
 
-  contract: {
-    always: [
-      "aiBrainstem",
-      "aiAssistant",
-      "aiAnatomy",
-      "aiPermissionsEngine",
-      "aiGovernorAdapter",
-      "aiMemory",
-      "aiEarnEngine",
-      "aiHeartbeat",
-      "aiGenome",
-      "aiIdentityCore"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
+
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 import { getBoundariesForPersona, canPerformDynamic } from "./aiBoundaries.js";
 
-// ============================================================================
-//  META — v16 IMMORTAL‑ADVANTAGE, MEMORY + GPU + EARN + HEARTBEAT + CHUNKING
-// ============================================================================
-export const BoundariesMeta = Object.freeze({
-  layer: "PulseAIBoundariesLayer",
-  role: "BOUNDARIES_ENGINE",
-  version: "16-Immortal-Advantage",
-  identity: "aiBoundariesEngine-v16-Immortal-Advantage",
 
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-
-    dualBandSafe: true,
-    boundaryAware: true,
-    personaAware: true,
-    permissionAware: true,
-
-    packetAware: true,
-    windowAware: true,
-    evolutionAware: true,
-    driftAware: true,
-
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
-    memorySpineAware: true,
-    overlayAware: true,
-
-    earnAware: true,
-    earnHeartAware: true,
-    arteryAware: true,
-    genomeAware: true,
-    governorAware: true,
-    heartbeatAware: true,
-
-    ownerAware: true,
-    subordinateToOwner: true,
-
-    multiInstanceReady: true,
-    readOnly: true,
-    epoch: "16-Immortal-Advantage"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Resolve symbolic + binary-aware boundaries deterministically from persona, mode, vitals, memory, GPU, earn, and heartbeat state, while remaining explicitly subordinate to the owner (Aldwyn).",
-
-    never: Object.freeze([
-      "mutate external systems",
-      "introduce randomness",
-      "invent boundaries",
-      "override SafetyFrame decisions",
-      "override Overmind decisions",
-      "override PermissionsEngine decisions",
-      "override owner authority",
-      "inject symbolic metadata",
-      "alter boundary meaning",
-      "self-promote above owner"
-    ]),
-
-    always: Object.freeze([
-      "respect static persona boundaries",
-      "respect universal boundary levels",
-      "respect boundary modes",
-      "respect binary vitals",
-      "respect memory vitals",
-      "respect earn vitals",
-      "respect heartbeat vitals",
-      "respect permissions decisions",
-      "remain subordinate to owner",
-      "emit deterministic packets",
-      "remain deterministic",
-      "remain read-only"
-    ])
-  }),
-
-  presence: Object.freeze({
-    organId: "BoundariesEngine",
-    organKind: "Superego",
-    physiologyBand: "Symbolic+Binary",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "on-demand",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "resolve",
-        "check",
-        "driftDetected",
-        "prewarm",
-        "prewarm-error"
-      ]
-    }
-  }),
-
-  boundaryReflex() {
-    return "BoundariesEngine is a deterministic superego, subordinate to Aldwyn, never above owner, never mutating state.";
-  }
-});
 
 // ============================================================================
 //  INTERNAL HELPERS

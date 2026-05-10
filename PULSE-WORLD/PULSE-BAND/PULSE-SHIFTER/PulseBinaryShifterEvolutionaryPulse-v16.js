@@ -11,132 +11,21 @@
 //    • INTERNAL SignalFactoringSurface (pressure/signal/depth/stride) IMMORTAL-style
 //    • INTERNAL BaseShapeSurface + baseFormulaKey (INTEL hash) for mining/cheatsheets
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseShifterEvolutionaryPulse",
-  version: "v16-IMMORTAL-INTEL+++",
-  layer: "frontend",
-  role: "symbolic_evolution_engine",
-  lineage: "PulseOS-v12 → v16-IMMORTAL-INTEL+++",
-
-  evo: {
-    symbolicCore: true,
-    dualBand: true,
-    presenceAware: true,
-    chunkAligned: true,
-    safeRouteFree: true,
-    deterministic: true,
-    pulseCompute: true,
-    pulseIntelligence: true,
-    immortalMetaAware: true,
-    binarySurfaceReady: true,
-    dualHashReady: true,
-
-    signalFactoringAware: true,
-    baseShapeAware: true,
-    baseFormulaKeyAware: true,
-    patternMatchSurface: true
-  },
-
-  contract: {
-    always: [
-      "PulsePresence",
-      "PulseChunks",
-      "PulsePresenceNormalizer",
-      "PulseUIFlow"
-    ],
-    never: [
-      "legacyShifter",
-      "legacyEvolutionEngine",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyPresence",
-      "legacyChunker"
-    ]
-  }
-}
-*/
-
-
-// ============================================================================
-// ⭐ PulseRole — Pulse v2 evolution engine (v16-IMMORTAL-INTEL+++)
-// ============================================================================
-export const PulseRole = {
-  type: "Pulse",
-  subsystem: "Pulse",
-  layer: "Organ",
-  version: "16-IMMORTAL-INTEL+++",
-  identity: "PulseShifterEvolutionaryPulse-v16-IMMORTAL-INTEL+++",
-
-  evo: {
-    // Core evolution capabilities
-    driftProof: true,
-    patternAware: true,
-    lineageAware: true,
-    shapeAware: true,
-    modeAware: true,
-
-    // Band / presence surface (dual-band SHIFTER, symbolic-primary)
-    dualBandAware: true,
-    symbolicPrimary: true,
-    binaryFieldAware: true,
-    presenceAware: true,
-    harmonicsAware: true,
-    epochStable: true,
-
-    // Ready to cooperate with routing/mesh organs
-    routerAwareReady: true,
-    meshAwareReady: true,
-
-    // Explicitly an evolution engine
-    evolutionEngineReady: true,
-
-    // Advantage field is unified so a binary front-end can read it
-    unifiedAdvantageField: true,
-    pulseV2Ready: true,
-    futureEvolutionReady: true,
-
-    // Diagnostics + signatures + evolution surface
-    diagnosticsReady: true,
-    signatureReady: true,
-    evolutionSurfaceReady: true,
-
-    // Pulse-level compute / factoring / evolution hints
-    pulseComputeReady: true,
-    pulseFactoringReady: true,
-
-    // Intelligence surface
-    pulseIntelligenceReady: true,
-    solvednessAware: true,
-    computeTierAware: true,
-    factoringAware: true,
-
-    // Binary integration flags:
-    binaryBackEndReady: true,
-    binaryFrontEndContract: "PulseBinaryShifterEvolutionaryPulse-v16-IMMORTAL-INTEL++",
-    binarySurfaceReady: true,
-
-    // Immortal meta
-    immortalMetaAware: true,
-
-    // Dual-hash surface
-    dualHashReady: true,
-
-    // Internal factoring + base formula
-    signalFactoringAware: true,
-    baseShapeAware: true,
-    baseFormulaKeyAware: true
-  },
-
-  routingContract: "PulseRouter-v16",
-  meshContract: "PulseMesh-v16",
-  sendContract: "PulseSend-v16",
-  gpuOrganContract: "PulseGPU-v16",
-  earnCompatibility: "PulseEarn-v16"
-};
-
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================

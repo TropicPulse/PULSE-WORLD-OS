@@ -16,56 +16,21 @@
 //   - AdminInspector‑IMMORTAL-aware: presence, harmonics, wave, loop, energy flags.
 //   - Zero randomness, zero timestamps, zero mutation of inputs.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseBinaryBehaviorScanner",
-  version: "v16-Immortal",
-  layer: "behavior_scanner",
-  role: "binary_behavior_organ",
-  lineage: "PulseBinaryBehaviorScanner-v12.3-Evo → v16-Immortal",
-
-  evo: {
-    behaviorOrgan: true,
-    dualBand: true,
-    presenceAware: true,
-    harmonicAware: true,
-    arteryAware: true,
-    advantageView: true,
-    windowSafe: true,
-
-    nodeAdminAware: true,
-    heatMapAware: true,
-    adminInspectorAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroRandomness: true
-  },
-
-  contract: {
-    always: [
-      "BinaryPulse",
-      "BinaryWaveScanner",
-      "PulseBinaryLoopScanner",
-      "PulseAdminInspector",
-      "NodeAdminEVO",
-      "HeatMapEVO",
-      "PageEvo"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyBehaviorScanner"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseBinaryBehaviorScanner({
   pulse,

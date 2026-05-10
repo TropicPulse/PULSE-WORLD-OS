@@ -21,161 +21,36 @@
 //   • All external IO must be routed via Pulse‑Net / Pulse surfaces.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "createOrgans",
-  version: "v24-Immortal++-Hybrid-Spine",
-  layer: "ai_tools",
-  role: "organ_creation_engine",
-  lineage: "createOrgans-v11 → v13-SPINE → v14-Immortal → v16-Immortal++-Hybrid-Spine → v24-Immortal++-Hybrid-Spine",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    organCreation: true,
-    organMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    arteryAware: true,
-    chunkerAware: true,
-    lanes32Aware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
-    organismUserSegregation: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,          // no raw internet; Pulse‑Net only
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    // v24++ advantages
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const BrainstemMeta = Identity.OrganMeta;
 
-  contract: {
-    always: [
-      "aiOrganism",
-      "aiAnatomy",
-      "aiBrainstem",
-      "PulseAIChunker",
-      "PulseDualBandOrganism",
-      "PulseNetProxySpine",
-      "PulseTrustFabric",
-      "PulseJuryFrame"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "directInternetAccess",
-      "externalHTTP",
-      "externalDNS",
-      "externalWebsocket"
-    ]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const BrainstemMeta = Object.freeze({
-  type: "Cognitive",
-  subsystem: "aiBrainstem",
-  layer: "OrganAssembly",
-  role: "BRAINSTEM_ORGAN",
-  version: "24-IMMORTAL++-HYBRID-SPINE",
-  identity: "aiBrainstem-v24-IMMORTAL++-HYBRID-SPINE",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    readOnly: true,
-    mutationSafe: true,
-    nonBlocking: true,
-    lineageAware: true,
-    multiInstanceReady: true,
-    arteryAware: true,
-    chunkerAware: true,
-    lanes32Aware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
-    organismUserSegregation: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    // v24++ organism/kernel semantics
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    epoch: "v24-IMMORTAL++-HYBRID-SPINE"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  contract: Object.freeze({
-    purpose:
-      "Assemble all CNS engines, symbolic organs, and the dual-band organism into a unified, deterministic, drift-proof Pulse OS organism, with universal chunk fabric and trust fabric bound to Pulse‑Net.",
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    never: Object.freeze([
-      "mutate external organs",
-      "introduce randomness",
-      "override organ contracts",
-      "modify persona boundaries",
-      "modify permissions",
-      "generate arbitrary symbolic state",
-      "block organism execution",
-      "directInternetAccess",
-      "externalHTTP",
-      "externalDNS",
-      "externalWebsocket",
-      "portalBypass",
-      "bridgeBypass"
-    ]),
-
-    always: Object.freeze([
-      "assemble deterministically",
-      "bind identity and persona engines",
-      "bind boundaries and permissions",
-      "bind router and cortex",
-      "bind dual-band organism and artery",
-      "bind universal chunk fabric (32 lanes)",
-      "bind trust fabric + jury + evidence surfaces",
-      "route all external IO via Pulse‑Net / Pulse surfaces",
-      "return a frozen organism map",
-      "remain read-only and drift-proof",
-      "respect sealedOrganismBoundary",
-      "remain daemonCompatible",
-      "remain portalCompatible",
-      "remain bridgeCompatible"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "Brainstem assembly is deterministic, read-only, Pulse‑Net routed, and cannot mutate or override any organ.";
-  }
-});
 
 // ============================================================================
 //  IMPORTS

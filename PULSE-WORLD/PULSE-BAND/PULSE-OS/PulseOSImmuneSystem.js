@@ -9,192 +9,21 @@
 //  ALL dependencies are external workers (DB, time, network).
 //  This organ ONLY builds immune artifacts from mesh + presence drift events.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSImmuneSystem",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_immune_engine",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    immune: true,
-    anomalyDetection: true,
-    driftDetection: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    presenceAware: true,
-    meshAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSNervousSystem",
-      "PulseOSFightFlightResponse",
-      "PulseOSSurvivalInstincts"
-    ],
-    never: [
-      "legacyOSImmuneSystem",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const GLOBAL_HEALER_CONTEXT_V12 = Object.freeze({
-  organ: "GlobalHealer",
-  layer: "C-Layer",
-  role: "Top-Level Immune Coordinator",
-  version: "12.3-Presence-MESH",
-  generation: "v12",
-  organism: "PulseOS",
-  band: "dualband",
-  intent: "global_immune_coordination",
-  evo: Object.freeze({
-    dualMode: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    localAware: true,
-    internetAware: true,
-
-    driftProof: true,
-    deterministicNeuron: true,
-    deterministicImmuneSurface: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    advantageCascadeAware: true,
-    healerStackAware: true,
-    loopTheoryAware: true,
-    fpinTheoryAware: true,
-    intentFieldAware: true,
-    futureEvolutionReady: true,
-    multiInstanceReady: true,
-
-    // Presence / mesh / chunking (metadata-only)
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    meshDriftAware: true,
-    cortexChunkingAware: true,
-    cortexPrewarmAware: true,
-
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroTiming: true,
-    zeroState: true,
-    zeroMutationOutsideOrgan: true,
-
-    routingContract: "PulseSend-v12.3",
-    osOrganContract: "PulseOS-v12.3",
-    earnCompatibility: "PulseEarn-v12.3"
-  })
-});
-
-export const PulseOSGlobalHealerMeta = Object.freeze({
-  layer: "GlobalHealer",
-  role: "IMMUNE_COORDINATOR_ORGAN",
-  version: "v12.3-Presence-MESH",
-  identity: "PulseOS-GlobalHealer-v12.3-Presence-MESH",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Immune system laws
-    topLevelImmuneCoordinator: true,
-    deterministicImmuneSurface: true,
-    deterministicField: true,
-    healerStackAware: true,
-    fpinTheoryAware: true,
-    intentFieldAware: true,
-    loopTheoryAware: true,
-    futureEvolutionReady: true,
-
-    // Execution prohibitions
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroTiming: true,
-    zeroState: true,
-    zeroMutationOutsideOrgan: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroCompute: true,
-
-    // Dual-band awareness
-    dualBandAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-    binaryNonExecutable: true,
-
-    // Presence / mesh / chunking (metadata-only)
-    presenceFieldAware: true,
-    bluetoothPresenceAware: true,
-    meshPresenceRelayAware: true,
-    meshDriftAware: true,
-    cortexChunkingAware: true,
-    cortexPrewarmAware: true,
-
-    // Environment
-    localAware: true,
-    internetAware: true,
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "MeshDriftEvent",
-      "PresenceDriftEvent",
-      "ImmuneContext",
-      "DualBandContext"
-    ],
-    output: [
-      "ImmuneArtifact",
-      "HealerDiagnostics",
-      "HealerSignatures",
-      "HealerHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12.3-SPINE",
-    parent: "PulseOS-v12.0-SPINE",
-    ancestry: [
-      "GlobalHealer-v9",
-      "GlobalHealer-v10",
-      "GlobalHealer-v11",
-      "GlobalHealer-v11-Evo",
-      "PulseOS-GlobalHealer-v11.2-Evo-BINARY-MAX"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "immune-only"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "drift event → immune artifact → organism healing",
-    adaptive: "binary-tagged metadata surfaces + presence/mesh metadata",
-    return: "deterministic immune artifact + signatures"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const GLOBAL_HEALER_CONTEXT_V12 = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================

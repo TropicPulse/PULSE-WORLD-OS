@@ -1,102 +1,22 @@
-/*
-===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseDesign.Cartographer",
-  version: "v17-IMMORTAL",
-  layer: "pulse_design",
-  role: "terrain_explorer_and_directory_mapper",
-  lineage: "Cartographer-v7.1 → v10.4 → v12.3 → v14-Immortal → v17-IMMORTAL",
+// ============================================================================
+// FILE: PULSE-WORLD/PULSE-DESIGN/repoWalker-v17.js
+// LAYER: THE CARTOGRAPHER (Terrain Explorer + Directory Mapper + Evolutionary Topographer)
+// ============================================================================
 
-  evo: {
-    terrainExplorer: true,
-    directoryMapper: true,
-    evolutionaryTopographer: true,
-    signatureEmitter: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+// 1 — GENOME IDENTITY (MUST BE FIRST)
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
+// 2 — EXPORT GENOME METADATA
+export const PulseDesignCartographerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
-    controlledFilesystemRead: true,   // READ-ONLY
-    prewarmAware: true,               // can prewarm anatomist/archivist
-    cacheAware: true,                 // per-cold-start scan cache
-    bandAware: true,                  // can tag signatures with band/meta
-    worldLayerReady: true             // ready for world genomes + translators
-  },
-
-  contract: {
-    always: [
-      "PulseDesign.Anatomist",
-      "PulseDesign.Archivist",
-      "PulseDesign.Surveyor"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "dynamicImport",
-      "eval",
-      "Function"
-    ]
-  }
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseDesign.Cartographer",
-  layer: "pulse_design",
-  stability: "IMMORTAL",
-  deterministic: true,
-
-  consumes: [
-    "rootDir",
-    "options"
-  ],
-  produces: [
-    "FileSignature[]",
-    "CartographerMeta"
-  ],
-
-  sideEffects: "read_only",
-  network: "none",
-  filesystem: "read_only"
-}
-===============================================================================
-FILE: PULSE-WORLD/PULSE-DESIGN/repoWalker-v17.js
-LAYER: THE CARTOGRAPHER (Terrain Explorer + Directory Mapper + Evolutionary Topographer)
-===============================================================================
-
-ROLE (v17):
-  THE CARTOGRAPHER — Deterministic explorer of the Pulse OS filesystem.
-  • Walks the entire directory tree (sorted, deterministic).
-  • Reads file contents safely (read-only).
-  • Emits FileSignatures for THE ANATOMIST.
-  • Acts as the “topographer” of the digital organism.
-  • Emits meta suitable for prewarm/cache-aware pipelines.
-
-PURPOSE (v17):
-  • Provide the Archivist with a complete, signature‑rich file list.
-  • Traverse the repo deterministically and safely.
-  • Skip irrelevant or dangerous directories/files.
-  • Preserve the organism’s terrain map with band/world hints.
-
-CONTRACT:
-  • READ‑ONLY — no writes.
-  • PURE — no eval(), no Function(), no dynamic imports.
-  • NO executing user code.
-  • NO network calls.
-  • Deterministic traversal only.
-
-SAFETY:
-  • v17 uplift is PURE + STRUCTURAL + ADVANTAGE‑AWARE.
-  • All behavior is deterministic and organism‑safe.
-===============================================================================
-*/
-
+// 3 — ALL OTHER IMPORTS (AFTER IDENTITY)
 import fs from "fs";
 import path from "path";
 import { classifyFile } from "./PulseDesignFileClassifier.js"; // THE ANATOMIST
@@ -114,16 +34,6 @@ const cartographerCache = {
 // ============================================================================
 // PUBLIC API — Cartographic Scan (Terrain Mapping, v17)
 // ============================================================================
-//
-// walkRepo(rootDir, options?)
-//   options:
-//     - band: "symbolic" | "binary" | "dual" (default: "dual")
-//     - worldTarget: "firebase" | "sql" | "hybrid" (default: "hybrid")
-//     - enableCache: boolean (default: true)
-//     - maxFileSizeBytes: number | null (default: 512 * 1024)
-//     - includeExtensions: string[] | null (e.g. [".js", ".ts", ".json"])
-//     - excludePatterns: string[] | null (substring match on relative path)
-//
 export function walkRepo(rootDir, options = {}) {
   if (!rootDir) {
     throw new Error("repoWalker-v17: missing rootDir");
@@ -147,9 +57,7 @@ export function walkRepo(rootDir, options = {}) {
     excludePatterns: excludePatterns || null
   });
 
-  // --------------------------------------------------------------------------
   // CACHE CHECK
-  // --------------------------------------------------------------------------
   if (
     enableCache &&
     cartographerCache.lastRoot === absRoot &&
@@ -171,9 +79,7 @@ export function walkRepo(rootDir, options = {}) {
   let skippedBySize = 0;
   let skippedByFilter = 0;
 
-  // --------------------------------------------------------------------------
   // DIRECTORY WALKER — Recursive Terrain Traversal (sorted, deterministic)
-  // --------------------------------------------------------------------------
   function walk(dir) {
     let entries;
     try {
@@ -182,7 +88,6 @@ export function walkRepo(rootDir, options = {}) {
       return;
     }
 
-    // Sort entries for deterministic traversal
     entries.sort((a, b) => a.name.localeCompare(b.name));
 
     for (const entry of entries) {
@@ -239,9 +144,7 @@ export function walkRepo(rootDir, options = {}) {
     cacheHit: false
   };
 
-  // --------------------------------------------------------------------------
   // CACHE UPDATE
-  // --------------------------------------------------------------------------
   cartographerCache.lastRoot = absRoot;
   cartographerCache.lastOptionsKey = optionsKey;
   cartographerCache.lastResults = results;
@@ -256,7 +159,6 @@ export function walkRepo(rootDir, options = {}) {
 // ============================================================================
 // HELPERS
 // ============================================================================
-
 function shouldSkipDir(name) {
   return (
     name === "node_modules" ||

@@ -6,61 +6,21 @@
 //  • Drift-proof, deterministic, zero-compute, zero-mutation
 //  • v24 schema discipline + trust-fabric tagging
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseDB",
-  version: "v24-Immortal-Evo+++",
-  layer: "db_adapter",
-  role: "append_only_database",
-  lineage: "PulseDB-v14 → PulseDB-v16 → PulseDB-v24-Immortal-Evo+++",
-
-  evo: {
-    appendOnly: true,
-    driftProof: true,
-    zeroMutation: true,
-    zeroCompute: true,
-    pureStorage: true,
-    memoryAware: true,
-
-    // v24++ upgrades
-    sessionAware: true,
-    envelopeAware: true,
-    diagnosticsAware: true,
-    evidenceAware: true,
-    dualBand: true,
-    symbolicAware: true,
-    binaryAware: true,
-    trustFabricAware: true,
-    adminPanelAware: true
-  },
-
-  contract: {
-    always: ["MemoryOrgan"],
-    never: ["PulseMotionEngine", "ShifterPulse", "routerCore", "meshKernel"]
-  }
-}
-*/
-
-/*
-PAGE_INDEX = {
-  purpose: "Provide append-only collections for PulseCompass, Reporter, and other v24 organs",
-  responsibilities: [
-    "Create collections",
-    "Append records (never mutate)",
-    "Read collections",
-    "Envelope tagging",
-    "Session tagging",
-    "Trust-fabric tagging"
-  ],
-  forbidden: [
-    "No compute logic",
-    "No pattern logic",
-    "No engine logic",
-    "No mutation of existing entries"
-  ]
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseDB({
   MemoryOrgan,

@@ -17,109 +17,21 @@
 //   • Presence/advantage/chunk are metadata-only.
 //   • Dual‑hash INTEL signatures (INTEL + classic fallback).
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnMktBroker",
-  version: "v16-IMMORTAL-INTEL",
-  layer: "earn_market",
-  role: "market_broker",
-  lineage: "PulseEarnMktBroker-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL",
-
-  evo: {
-    marketBroker: true,
-    jobBroker: true,
-    jobPackaging: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnMktAuctioneer",
-      "PulseEarnMktConsulate",
-      "PulseEarnMktCourier",
-      "PulseEarnMetabolism",
-      "PulseEarnLymphNodes"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "userScript",
-      "dynamicEval"
-    ]
-  }
-}
-*/
-
-export const PulseEarnMktBrokerMeta = Object.freeze({
-  layer: "PulseEarnMktBroker",
-  role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v16-IMMORTAL-INTEL",
-  identity: "PulseEarnMktBroker-v16-IMMORTAL-INTEL",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureReceptor: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    healingMetadataAware: true,
-
-    worldLensAware: false,
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroAI: true,
-    zeroUserCode: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "RunPodTaskDNA",
-      "DualBandContext",
-      "ReceptorNormalizationRules",
-      "DevicePhenotypePresence"
-    ],
-    output: [
-      "ReceptorRegisterResult",
-      "ReceptorJobRequestResult",
-      "ReceptorSubmissionResult",
-      "ReceptorNormalizationResult",
-      "ReceptorSignatures",
-      "RunPodHealingState",
-      "BrokerPresenceField",
-      "BrokerAdvantageField",
-      "BrokerChunkPrewarmPlan"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export const RUNPOD_RECEPTOR_DNA = {
   version: "v16-IMMORTAL-INTEL",

@@ -27,44 +27,20 @@
 // • Drift-proof, multi-instance-ready, factoring-aware, mesh-pressure-aware,
 //   binary-aware, dual-band-ready, presence-aware, advantage-aware.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshEnvironmentalField",
-  version: "v14.9-MESH-ENVIRONMENTAL-Immortal",
-  layer: "mesh",
-  role: "mesh_internal_weather_system",
-  lineage: "PulseMesh-v14",
-
-  evo: {
-    environmentalField: true,
-    metadataOnly: true,
-    deterministic: true,
-    driftProof: true,
-    presenceAware: true,
-    meshAware: true,
-    binaryAware: true,
-    dualBand: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshAwareness",
-      "PulseMeshAura",
-      "PulseMeshFlow"
-    ],
-    never: [
-      "legacyEnvironmentalField",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // FACTORY — ALL DEPENDENCIES INJECTED BY THE CNS BRAIN

@@ -30,6 +30,21 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreTasks    = PulseProofBridge.coretasks;
@@ -38,190 +53,6 @@ const CorePresence = PulseProofBridge.corepresence;
 const CoreSettings = PulseProofBridge.coresettings;
 const CoreDaemon   = PulseProofBridge.coredaemon;
 const MediaBridge  = PulseProofBridge.coremedia;
-
-// ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalTasks = {
-  id: "pulsepal.tasks",
-  kind: "ui_organ",
-  version: "v24-IMMORTAL++",
-  role: "Pulse‑Pal task cortex membrane",
-  surfaces: {
-    band: ["tasks", "routines", "flow", "media", "mode", "persona"],
-    wave: ["organized", "steady", "clear", "mode_attuned"],
-    binary: [
-      "task_list",
-      "task_add",
-      "task_complete",
-      "task_category",
-      "task_energy",
-      "task_suggestion",
-      "task_history"
-    ],
-    presence: ["task_state", "flow_state"],
-    advantage: [
-      "explicit_task_control",
-      "media_preload",
-      "mode_preload",
-      "persona_preload"
-    ],
-    speed: "instant_ui"
-  },
-  routes: {
-    home: "pulsepal.home",
-    system: "pulsepal.system",
-    settings: "pulsepal.settings",
-    presence: "pulsepal.presence"
-  },
-  consumers: [
-    "Router",
-    "CoreTasks",
-    "CoreMemory",
-    "CorePresence",
-    "CoreSettings",
-    "CoreDaemon"
-  ],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT — v24 IMMORTAL++
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePalTasks = {
-  tone: "neutral_productive",
-  pacing: "steady",
-  emotionalBand: "task_flow",
-  primaryIntent: "let_user_manage_tasks",
-  secondaryIntent: "prepare_for_routines",
-  userFirstImpression: "this_is_where_tasks_live",
-  visualNotes: {
-    icon: "check",
-    motion: "soft_breathe",
-    colorBand: "cyan_green"
-  }
-};
-
-// ============================================================================
-// ORGAN_META — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_META_PulsePalTasks = {
-  id: "organ.pulsepal.tasks",
-  organism: "PulsePal",
-  layer: "ui.tasks",
-  tier: "IMMORTAL",
-  evoFlags: {
-    canAddTaskTypes: true,
-    canAddRoutinePanels: true,
-    requiresCoreTasks: true,
-    presenceAware: true,
-    personaAware: true,
-    modeAware: true,
-    mediaAware: true,
-    daemonAware: true
-  },
-  lineage: {
-    family: "companion_tasks",
-    generation: 3,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT — v24 IMMORTAL++
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalTasks = {
-  inputs: {
-    Router: "navigation interface",
-    Icons: "icon resolution interface",
-    Media: "media resolver interface",
-    CoreTasks: "bridge task organ",
-    CoreMemory: "bridge memory organ",
-    CorePresence: "bridge presence organ",
-    CoreSettings: "bridge settings organ",
-    CoreDaemon: "bridge daemon snapshot"
-  },
-  outputs: {
-    uiSurface: "task_cortex",
-    tasks: "CoreTasks.list",
-    presence: "CorePresence.snapshot",
-    persona: "CoreMemory.persona",
-    mode: "CoreSettings.personaMode",
-    avatarMode: "CoreSettings.avatarMode",
-    suggestions: "CoreDaemon.taskSuggestions",
-    history: "CoreTasks.history"
-  },
-  consumers: [
-    "Router",
-    "CoreTasks",
-    "CoreMemory",
-    "CorePresence",
-    "CoreSettings",
-    "CoreDaemon"
-  ],
-  guarantees: {
-    deterministicRender: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS — v24 IMMORTAL++
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalTasks = {
-  drift: {
-    allowed: false,
-    notes: "Task semantics must remain stable."
-  },
-  pressure: {
-    expectedLoad: "medium",
-    notes: "Tasks are used frequently but not constantly."
-  },
-  stability: {
-    uiLayout: "stable",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 8,
-    notes: "Header, task list, add button, presence panel, suggestions, categories, history, media."
-  },
-  chunking: {
-    prewarm: [
-      "icons.check",
-      "icons.plus",
-      "icons.history",
-      "icons.lightning",
-      "icons.layers",
-      "media.pulsepal"
-    ],
-    cacheKey: "pulsepal.tasks.ui"
-  },
-  worldLens: {
-    awareOfWorlds: true
-  },
-  limbic: {
-    band: "task_completion_reward"
-  },
-  triHeart: {
-    cognitive: "task_management",
-    emotional: "light_productivity",
-    behavioral: "add_or_complete_task"
-  },
-  impulseSpeed: {
-    primaryAction: "add_task",
-    latencyTargetMs: 50
-  },
-  healingSurfaces: {
-    enabled: true
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

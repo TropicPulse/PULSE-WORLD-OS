@@ -25,6 +25,21 @@
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreMemory   = PulseProofBridge.corememory;
@@ -32,162 +47,6 @@ const CorePresence = PulseProofBridge.corepresence;
 const CoreDaemon   = PulseProofBridge.coredaemon;
 const CoreSpeech   = PulseProofBridge.corespeech;
 
-// ============================================================================
-// AI_EXPERIENCE_META
-// ============================================================================
-export const AI_EXPERIENCE_META_PulsePalHistoryScanner = {
-  id: "pulsepal.history",
-  kind: "ui_organ",
-  version: "v24-IMMORTAL++",
-  role: "Pulse‑Pal memory + daemon history scanner membrane",
-  surfaces: {
-    band: ["memory", "history", "timeline", "graph", "persona", "daemon"],
-    wave: ["calm", "structured", "clear"],
-    binary: ["timeline_view", "graph_view", "persona_view", "daemon_view"],
-    presence: ["memory_state", "recall_surface"],
-    advantage: [
-      "explicit_memory_visibility",
-      "persona_insight",
-      "daemon_pal_visibility",
-      "message_activity_visibility"
-    ],
-    speed: "instant_ui"
-  },
-  routes: {
-    home: "pulsepal.home",
-    memory: "pulsepal.memory",
-    persona: "pulsepal.persona"
-  },
-  consumers: ["Router", "IQMap", "CoreMemory", "CorePresence", "CoreDaemon", "CoreSpeech"],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-// ============================================================================
-// AI_EXPERIENCE_CONTEXT
-// ============================================================================
-export const AI_EXPERIENCE_CONTEXT_PulsePalHistoryScanner = {
-  tone: "neutral_clarity",
-  pacing: "steady",
-  emotionalBand: "cognitive_order",
-  primaryIntent: "show_memory_graph",
-  secondaryIntent: "show_persona_and_tone",
-  userFirstImpression: "this_is_how_pulsepal_understands_history",
-  visualNotes: {
-    icon: "memory",
-    motion: "soft_breathe",
-    colorBand: "cyan_soft"
-  }
-};
-
-// ============================================================================
-// ORGAN_META
-// ============================================================================
-export const ORGAN_META_PulsePalHistoryScanner = {
-  id: "organ.pulsepal.history",
-  organism: "PulsePal",
-  layer: "ui.memory",
-  tier: "IMMORTAL",
-  evoFlags: {
-    canAddMemoryViews: true,
-    canAddGraphViews: true,
-    canAddPersonaViews: true,
-    canAddDaemonViews: true,
-    requiresCoreMemory: true,
-    mediaAware: true,
-    presenceAware: true,
-    personaAware: true,
-    daemonAware: true,
-    speechAware: true
-  },
-  lineage: {
-    family: "companion_memory_scanner",
-    generation: 2,
-    osVersion: "v24"
-  }
-};
-
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
-export const ORGAN_CONTRACT_PulsePalHistoryScanner = {
-  inputs: {
-    Router: "navigation interface",
-    Icons: "icon resolution interface",
-    Media: "media resolver interface",
-    CoreMemory: "bridge memory organ",
-    CorePresence: "bridge presence organ",
-    CoreDaemon: "bridge daemon snapshot",
-    CoreSpeech: "bridge speech organ"
-  },
-  outputs: {
-    uiSurface: "history_scanner_membrane",
-    memoryGraph: "CoreMemory.graph",
-    memoryTimeline: "CoreMemory.timeline",
-    persona: "CoreMemory.persona",
-    tone: "CoreMemory.tone",
-    daemonPalSummary: "CoreDaemon.palSummary",
-    speechStats: "CoreSpeech.stats"
-  },
-  consumers: ["Router", "IQMap", "CoreMemory", "CorePresence", "CoreDaemon", "CoreSpeech"],
-  guarantees: {
-    deterministicRender: true,
-    noNetwork: true,
-    noSideEffects: true
-  }
-};
-
-// ============================================================================
-// IMMORTAL_OVERLAYS
-// ============================================================================
-export const IMMORTAL_OVERLAYS_PulsePalHistoryScanner = {
-  drift: {
-    allowed: false,
-    notes: "Memory graph + daemon semantics must remain stable."
-  },
-  pressure: {
-    expectedLoad: "medium",
-    notes: "Used during introspection, debugging, or curiosity checks."
-  },
-  stability: {
-    uiLayout: "stable",
-    semantics: "stable",
-    notes: "Only additive evolution allowed."
-  },
-  load: {
-    maxComponents: 7,
-    notes: "Header, avatar, timeline, graph, persona, tone, daemon/activity."
-  },
-  chunking: {
-    prewarm: ["icons.memory", "icons.pulse", "icons.ai_brain", "icons.neon_ring", "media.pulsepal"],
-    cacheKey: "pulsepal.history.ui"
-  },
-  worldLens: {
-    awareOfWorlds: true,
-    notes: "History may include Pulse‑World contexts via Memory Engine."
-  },
-  limbic: {
-    band: "cognitive_order",
-    notes: "User should feel oriented about what is remembered and how."
-  },
-  triHeart: {
-    cognitive: "memory_graph_understanding",
-    emotional: "clarity",
-    behavioral: "review_history"
-  },
-  impulseSpeed: {
-    primaryAction: "open_history",
-    latencyTargetMs: 50
-  },
-  healingSurfaces: {
-    enabled: true,
-    notes: "Seeing history + persona reduces uncertainty about what persists."
-  }
-};
 
 // ============================================================================
 // IMPLEMENTATION — v24 IMMORTAL++

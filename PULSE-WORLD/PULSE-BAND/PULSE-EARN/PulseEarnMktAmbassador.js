@@ -19,116 +19,21 @@
 //   • Dual‑hash INTEL signatures (INTEL + classic fallback).
 // ============================================================================
 //
-// AI_EXPERIENCE_META (v16‑IMMORTAL‑INTEL):
-//
-//   identity: "PulseEarnMktAmbassador"
-//   version: "v16-IMMORTAL-INTEL"
-//   layer: "earn_market"
-//   role: "earn_market_ambassador"
-//   lineage: "PulseEarnMktAmbassador-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL"
-//
-//   evo:
-//     marketAmbassador: true
-//     jobNegotiation: true
-//     jobNormalization: true
-//     dualBand: true
-//     symbolicPrimary: true
-//     binaryAware: true
-//
-//     deterministic: true
-//     driftProof: true
-//     pureCompute: true
-//     zeroMutationOfInput: true
-//     zeroNetwork: true
-//     zeroFilesystem: true
-//
-//   contract.always:
-//     - "PulseEarnMktAuctioneer"
-//     - "PulseEarnCustomReceptorMkt"
-//     - "PulseEarnCirculatorySystem"
-//     - "PulseEarnLymphNodes"
-//     - "PulseEarnMetabolism"
-//
-//   contract.never:
-//     - "safeRoute"
-//     - "fetchViaCNS"
-//     - "userScript"
-//     - "dynamicEval"
-// ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const PulseEarnMktAmbassadorMeta = Object.freeze({
-  layer: "PulseEarnMktAmbassador",
-  role: "EARN_MARKETPLACE_RECEPTOR",
-  version: "v16-IMMORTAL-INTEL",
-  identity: "PulseEarnMktAmbassador-v16-IMMORTAL-INTEL",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureReceptor: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    hintsAware: true,
-    chunkPrewarmAware: true,
-    healingMetadataAware: true,
-
-    meshAware: true,
-    castleAware: true,
-    regionAware: true,
-
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroAI: true,
-    zeroUserCode: true
-  })
-});
-
-// ============================================================================
-// ROLE CONTEXT — v16‑IMMORTAL‑INTEL
-// ============================================================================
-
-export const PulseRole = Object.freeze({
-  type: "MarketAmbassador",
-  subsystem: "PulseEarnMktAmbassador",
-  layer: "C0-MarketReceptor",
-  version: "v16-IMMORTAL-INTEL",
-  identity: "PulseEarnMktAmbassador-v16-IMMORTAL-INTEL",
-
-  evo: {
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    marketAmbassador: true,
-    jobNegotiation: true,
-    jobNormalization: true,
-
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    waveAware: true,
-    bandNormalizationAware: true,
-
-    zeroAsync: true,
-    zeroTiming: true,
-    zeroRandomness: true,
-    zeroMutation: true,
-    zeroRouting: true,
-    zeroSending: true,
-    zeroCompute: false,
-
-    environmentAgnostic: true,
-    multiInstanceReady: true
-  }
-});
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // Deterministic Akash Receptor DNA (INTEL‑aware but static)
 // ============================================================================

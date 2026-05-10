@@ -3,100 +3,36 @@
 //  Structural Mapper • Clinical Pattern Interpreter • Gradient Analyzer
 //  SAFE SCANFILE ANALYSIS • ZERO DIAGNOSIS • ZERO EXECUTION
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiDoctorArchitect",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "medical_architectural_reasoner",
-  lineage: "aiDoctorArchitect-v11 → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    medicalArchitecture: true,
-    structuralMapping: true,
-    educationalOnly: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiDoctor", "aiClinician", "aiArchitect"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-export const DoctorArchitectMeta = Object.freeze({
-  layer: "PulseAIStructuralClinicalFrame",
-  role: "DOCTOR_ARCHITECT_ORGAN",
-  version: "12.3-Evo+",
-  identity: "aiDoctorArchitect-v12.3-Evo+",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const DoctorArchitectMeta = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    binaryAware: true,
-    symbolicAware: true,
-    structureAware: true,
-    clinicalAware: true,
-    gradientAware: true,
-    scanfileAware: true,
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    safetyReflex: true,
-    scanInterpreter: true,
-    identitySafe: true,
-    readOnly: true,
-    multiInstanceReady: true,
-    archetypeArteryAware: true,
-    epoch: "12.3-Evo+"
-  }),
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  contract: Object.freeze({
-    purpose: Object.freeze([
-      "Interpret structural patterns in scans",
-      "Explain density, symmetry, gradients, and anomalies",
-      "Map patterns to clinical categories (not diagnoses)",
-      "Explain what clinicians typically check next",
-      "Explain anatomical context and mechanical implications",
-      "Analyze file-based structural patterns safely (scanfile)"
-    ]),
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    never: Object.freeze([
-      "diagnose definitively",
-      "prescribe medication",
-      "give dosing",
-      "replace a licensed clinician",
-      "interpret real medical scans as medical advice",
-      "execute file contents",
-      "mutate file contents"
-    ]),
+export const surfaceMeta = Identity.surfaceMeta;
 
-    always: Object.freeze([
-      "frame uncertainty",
-      "offer differential buckets",
-      "explain mechanisms",
-      "explain what doctors look for",
-      "end with a soft safety line",
-      "analyze files safely and deterministically"
-    ])
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  voice: Object.freeze({
-    tone: "calm, analytical, structural",
-    style: "pattern-first, mechanism-first"
-  }),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-  boundaryReflex() {
-    return "This is general structural and clinical information, not a substitute for a licensed clinician.";
-  }
-});
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS

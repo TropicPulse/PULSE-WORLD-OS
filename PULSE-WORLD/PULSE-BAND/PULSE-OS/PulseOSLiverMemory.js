@@ -28,176 +28,21 @@
 //   • Zero loops (no for/while/forEach/map/filter/reduce)
 //   • Pure metadata only
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSLiverMemory",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_liver_memory",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    liverMemory: true,
-    detoxMemory: true,
-    cleanupMemory: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSShortTermMemory",
-      "PulseOSLongTermMemory",
-      "PulseChunker"
-    ],
-    never: [
-      "legacyLiverMemory",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-
-// ============================================================================
-// ORGAN IDENTITY — v12.3-Evo-BINARY-MAX
-// ============================================================================
-export const MEMORY_CONTEXT = {
-  organ: "PulseOSMemory",
-  layer: "C-Layer",
-  role: "OS_LIVER",
-  purpose: "Metabolic archive: snapshots, drift signatures, restore metadata",
-  context: "Pure metadata builder (long-term state organ)",
-  version: "12.3-Evo-BINARY-MAX",
-  generation: "v12.3",
-  target: "os-core",
-  selfRepairable: true,
-  evo: {
-    dualMode: true,
-    localAware: true,
-    internetAware: true,
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    routingContract: "PulseSend-v12.3",
-    osOrganContract: "PulseOS-v12.3-Evo",
-    earnCompatibility: "PulseEarn-v12.3",
-
-    zeroTiming: true,
-    zeroNetwork: true,
-    zeroMutation: true,
-    zeroState: true,
-    zeroCompute: true
-  }
-};
-
-export const PulseOSMemoryMeta = Object.freeze({
-  layer: "PulseOSMemory",
-  role: "OS_LIVER_ORGAN",
-  version: "v12.3-Evo-BINARY-MAX",
-  identity: "PulseOSMemory-v12.3-Evo-BINARY-MAX",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Liver laws — metabolic archive
-    metabolicArchiveOrgan: true,
-    pureMetadataBuilder: true,
-    snapshotMetadataBuilder: true,
-    driftSignatureBuilder: true,
-    restorePointBuilder: true,
-    restorePlanBuilder: true,
-
-    // Execution prohibitions
-    zeroTiming: true,
-    zeroNetwork: true,
-    zeroBackend: true,
-    zeroDB: true,
-    zeroState: true,
-    zeroMutation: true,
-    zeroExternalMutation: true,
-    zeroCompute: true,
-    zeroLoops: true,
-    zeroTimers: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-
-    // Dual-band awareness
-    dualBandAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-    binaryNonExecutable: true,
-
-    // Environment
-    localAware: true,
-    internetAware: true,
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "OrganismSnapshot",
-      "SubsystemSnapshot",
-      "DriftEvent",
-      "DualBandContext"
-    ],
-    output: [
-      "SnapshotMetadata",
-      "DriftSignature",
-      "RestorePointMetadata",
-      "RestorePlanMetadata",
-      "MemoryHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12.3-Evo",
-    parent: "PulseOS-v12.3-Evo",
-    ancestry: [
-      "PulseOSMemory-v9",
-      "PulseOSMemory-v10",
-      "PulseOSMemory-v11",
-      "PulseOSMemory-v11-Evo",
-      "PulseOSMemory-v11-Evo-Prime",
-      "PulseOSMemory-v12.3-Evo-BINARY-MAX"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metabolic-archive"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "snapshot → drift signature → restore metadata",
-    adaptive: "binary-tagged metadata surfaces",
-    return: "deterministic metabolic archive metadata + signatures"
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const MEMORY_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // 1. SNAPSHOT METADATA — OS + Subsystem State Capture

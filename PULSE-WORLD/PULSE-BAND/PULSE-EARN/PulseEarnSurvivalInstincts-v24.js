@@ -5,164 +5,21 @@
 //  DualBand + DualHash-INTEL + Presence/Advantage/Chunk/Cache/Prewarm Surfaces
 //  Zero async, zero network, zero filesystem, zero AI, zero user code
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnSurvivalInstincts",
-  version: "v24-IMMORTAL-INTEL-MAX",
-  layer: "earn_survival",
-  role: "earn_survival_organ",
-  lineage: "v9 → v10 → v11 → v11-Evo → v12.3-Presence-Evo+ → v13.0-Presence-Immortal-ADV → v16-IMMORTAL-INTEL → v24-IMMORTAL-INTEL-MAX",
-
-  evo: {
-    survivalOrgan: true,
-    compatibilityEngine: true,
-    profitabilityEngine: true,
-    evolutionaryScaling: true,
-    fairnessDefense: true,
-
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    waveAware: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    presenceAdvantageChunkUnified: true,
-    cachePrewarmAware: true,
-    hintsAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnSkeletalSystem",
-      "PulseEarnMuscleSystem",
-      "PulseEarnReceptorMkt"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-};
-*/
-
-export const PulseEarnSurvivalInstinctsMeta = Object.freeze({
-  layer: "PulseEarnSurvivalInstincts",
-  role: "EARN_SURVIVAL_ORGAN",
-  version: "v24-IMMORTAL-INTEL-MAX",
-  identity: "PulseEarnSurvivalInstincts-v24-IMMORTAL-INTEL-MAX",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-
-    // Scoring engine laws
-    pureScoringEngine: true,
-    deterministicCompatibility: true,
-    deterministicProfitability: true,
-    deterministicEvolutionaryScaling: true,
-    deterministicFairnessDefense: true,
-
-    // Safety laws
-    zeroAI: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroCrypto: true,
-    zeroOSInspection: true,
-    zeroHardwareProbing: true,
-
-    // Mutation rules
-    neverMutateJobObjects: true,
-    internalHealingStateAllowed: true,
-
-    // Band + metadata
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    healingMetadataAware: true,
-
-    // Presence / advantage / hints
-    presenceAware: true,
-    advantageAware: true,
-    cacheAware: true,
-    chunkAware: true,
-    prewarmAware: true,
-    advantageFieldAware: true,
-
-    // INTEL / dualhash
-    intelSignatureAware: true,
-    dualHashAware: true,
-
-    // Environment
-    worldLensAware: false,
-    multiInstanceReady: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "MarketplaceJob",
-      "DevicePhenotype",
-      "DualBandContextPresenceAdvantageHints"
-    ],
-    output: [
-      "SurvivalScore",
-      "SurvivalDecision",
-      "SurvivalDiagnostics",
-      "SurvivalSignatures",
-      "SurvivalHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v24-IMMORTAL-INTEL-MAX",
-    parent: "PulseEarn-v24-IMMORTAL-INTEL-MAX",
-    ancestry: [
-      "PulseEarnSurvivalInstincts-v9",
-      "PulseEarnSurvivalInstincts-v10",
-      "PulseEarnSurvivalInstincts-v11",
-      "PulseEarnSurvivalInstincts-v11-Evo",
-      "PulseEarnSurvivalInstincts-v12.3-Presence-Evo+",
-      "PulseEarnSurvivalInstincts-v13.0-Presence-Immortal-ADV",
-      "PulseEarnSurvivalInstincts-v16-IMMORTAL-INTEL"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "metadata-only",
-    priority: "binary-first"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "deterministic compatibility → evolutionary scaling → fairness defense",
-    adaptive:
-      "binary/wave surfaces + dual-band + presence/advantage‑M + chunk/cache/prewarm signatures + INTEL dualhash",
-    return:
-      "deterministic survival score + decision + signatures + presence/advantage surfaces"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------------------------
 // Healing Metadata — Survival Instinct Activity Log (v24-IMMORTAL-INTEL-MAX)

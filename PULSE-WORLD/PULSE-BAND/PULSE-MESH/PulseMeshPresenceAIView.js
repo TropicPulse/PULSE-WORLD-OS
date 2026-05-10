@@ -50,39 +50,21 @@
 //      • fetchViaCNS
 //
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PresenceAIView",
-  version: "v14.9-Presence-VIEW",
-  layer: "presence",
-  role: "presence_ai_surface",
-  lineage: "PulsePresence-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    presenceAware: true,            // Reads presence field
-    meshAware: true,                // Includes mesh hops + distance
-    aiView: true,                   // Safe AI-facing presence surface
-    deterministic: true,
-    driftProof: true,
-    dualBand: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true
-  },
-
-  contract: {
-    always: [
-      "PresenceAwareness",
-      "PowerUserRanking"
-    ],
-    never: [
-      "legacyPresenceAIView",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPresenceAIView({
   PulseSenses,

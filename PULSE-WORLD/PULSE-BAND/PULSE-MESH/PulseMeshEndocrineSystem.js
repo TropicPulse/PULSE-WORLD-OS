@@ -3,47 +3,19 @@
 // Mesh Endocrine Interpreter • Metadata-Only • Zero-Compute • Zero-Mutation
 // Presence-Aware • Binary-Aware • Drift-Proof • Advantage-Field-Aware
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseMeshEndocrineSystem",
-  version: "v14.9-MESH-ENDOCRINE",
-  layer: "mesh",
-  role: "mesh_hormonal_signal_interpreter",
-  lineage: "PulseMesh-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    endocrine: true,                // This IS the endocrine organ
-    immuneAware: true,              // Reads immune flags
-    healingAware: true,             // Reads healing signals
-    meshAware: true,                // Mesh topology + pressure
-    presenceAware: true,            // Presence field
-    binaryAware: true,              // Binary hormone signals
-    symbolicAware: true,            // Symbolic hormone signals
-    dualBand: true,
-    deterministic: true,
-    driftProof: true,
-    zeroMutationOfInput: true,
-    zeroNetworkFetch: true,
-    safeRouteFree: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    always: [
-      "PulseMeshFlow",
-      "PulseMeshAwareness",
-      "PulseMeshCognition",
-      "PulseMeshImmuneSystem"
-    ],
-    never: [
-      "legacyMeshEndocrine",
-      "legacyMeshClinician",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v15-Evo-Immortal  // gold
 // Mesh Hormone Interpreter • Metadata-Only • Deterministic

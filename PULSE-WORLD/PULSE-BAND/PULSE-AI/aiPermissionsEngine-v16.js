@@ -4,152 +4,38 @@
 //  PURE CONTRACT ORACLE. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiPermissionsEngine",
-  version: "v16-Immortal++",
-  layer: "ai_core",
-  role: "permissions_engine",
-  lineage: "aiPermissionsEngine-v11 → v15-Immortal → v16-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    permissionsEngine: true,
-    policyMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    permissionAware: true,
-    boundaryAware: true,
-    personaAware: true,
-    ownerAware: true,
-    forbiddenAware: true,
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const PermissionsMeta = Identity.OrganMeta;
 
-    lineageAware: true,
-    packetAware: true,
-    windowAware: true,
-    arteryAware: true,
-    capabilityArteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    safetyFrameAware: true,
-    governorAware: true,
-    genomeAware: true,
-    loggerAware: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    microPipeline: true,
-    speedOptimized: true,
-    readOnly: true,
-    multiInstanceReady: true
-  },
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  contract: {
-    always: [
-      "aiGovernorAdapter",
-      "aiBoundariesEngine",
-      "aiBrainstem",
-      "aiSafetyFrame",
-      "aiLoggerAdapter",
-      "aiGenome",
-      "aiIdentityCore",
-      "aiTrustFabric",
-      "aiJuryFrame"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "mutateExternalState",
-      "performCognition",
-      "logSensitivePayloadsDirectly"
-    ]
-  }
-}
-*/
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
 
 import { getPermissionsForPersona, ForbiddenActions } from "./aiPermissions.js";
-
-export const PermissionsMeta = Object.freeze({
-  layer: "PulseAIPermissionsLayer",
-  role: "PERMISSIONS_ENGINE",
-  version: "16-Immortal++",
-  identity: "aiPermissionsEngine-v16-Immortal++",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
-
-    permissionAware: true,
-    boundaryAware: true,
-    personaAware: true,
-    ownerAware: true,
-    forbiddenAware: true,
-
-    lineageAware: true,
-    packetAware: true,
-    windowAware: true,
-    arteryAware: true,
-    capabilityArteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    safetyFrameAware: true,
-    governorAware: true,
-    genomeAware: true,
-    loggerAware: true,
-
-    microPipeline: true,
-    speedOptimized: true,
-    readOnly: true,
-    multiInstanceReady: true,
-
-    epoch: "16-Immortal++"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Resolve permissions deterministically from persona, owner state, lineage, universal forbidden actions, and trust fabric signals.",
-
-    never: Object.freeze([
-      "mutate external systems",
-      "introduce randomness",
-      "invent permissions",
-      "override forbidden actions",
-      "override SafetyFrame decisions",
-      "bypass persona boundaries",
-      "bypass owner authority",
-      "interpret symbolic meaning",
-      "perform cognition",
-      "log sensitive payloads directly",
-      "emit persona or forbidden lists in snapshots"
-    ]),
-
-    always: Object.freeze([
-      "respect universal forbidden actions",
-      "respect persona permissions",
-      "respect owner override",
-      "respect lineage constraints",
-      "respect trust fabric risk signals",
-      "remain deterministic",
-      "remain read-only",
-      "resolve capabilities canonically",
-      "enforce dualband boundaries",
-      "emit window-safe snapshots",
-      "emit deterministic packets"
-    ])
-  }),
-
-  boundaryReflex() {
-    return "PermissionsEngine is a deterministic oracle — it never mutates state or performs cognition.";
-  }
-});
-
 // ============================================================================
 //  INTERNAL HELPERS
 // ============================================================================

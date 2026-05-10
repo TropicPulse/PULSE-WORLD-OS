@@ -15,121 +15,21 @@
 //   • Dual‑hash signatures: classic + intel for core surfaces.
 //   • 24++: receptorComputeProfile + receptorPressureProfile + Tri‑Heart overlays.
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseEarnReceptorMkt",
-  version: "v24-IMMORTAL-INTEL-SUPERIOR",
-  layer: "earn_receptor",
-  role: "earn_market_receptor",
-  lineage: "PulseEarnReceptorMkt-v11 → v12.3 → v13.0-Presence-Immortal → v16-IMMORTAL-INTEL → v24-IMMORTAL-INTEL-SUPERIOR",
-
-  evo: {
-    receptor: true,
-    marketSignalIntake: true,
-    jobTypeDetection: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    cacheAware: true,
-
-    intelSignatureAware: true,
-    dualHashAware: true,
-    structureAware: true,
-    contextAware: true,
-
-    // 24++ overlays
-    computeProfileAware: true,
-    pressureProfileAware: true,
-    triHeartAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseEarnNervousSystem",
-      "PulseEarnReflexRouter",
-      "PulseEarnMktAmbassador"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseEarnReceptorMeta = Object.freeze({
-  layer: "PulseEarnReceptor",
-  role: "EARN_STANDARD_RECEPTOR",
-  version: "v24-IMMORTAL-INTEL-SUPERIOR",
-  identity: "PulseEarnReceptor-v24-IMMORTAL-INTEL-SUPERIOR",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    deterministicField: true,
-    driftProof: true,
-    noRandomness: true,
-    noRealTime: true,
-    noExternalIO: true,
-    pureReceptor: true,
-
-    dualBandAware: true,
-    binaryAware: true,
-    waveFieldAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    hintsAware: true,
-    healingMetadataAware: false,
-
-    worldLensAware: false,
-    zeroNetwork: true,
-    zeroAsync: true,
-    zeroAI: true,
-    zeroUserCode: true,
-    deterministicConfigOverride: true,
-    neverMutateJobObjects: true,
-
-    // 24++ overlays
-    computeProfileAware: true,
-    pressureProfileAware: true,
-    triHeartAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "ReceptorConfigDNA",
-      "DualBandContext",
-      "MarketplaceSignal",
-      "ReceptorNormalizationRules",
-      "GlobalHintsPresenceField"
-    ],
-    output: [
-      "ReceptorPingResult",
-      "ReceptorJobList",
-      "ReceptorSubmissionResult",
-      "ReceptorNormalizationResult",
-      "ReceptorSignatures",
-      "ReceptorHealingState",
-      "ReceptorComputeProfile",
-      "ReceptorPressureProfile",
-      "ReceptorTriHeartField"
-    ]
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // INTERNAL STATE — deterministic, drift-proof

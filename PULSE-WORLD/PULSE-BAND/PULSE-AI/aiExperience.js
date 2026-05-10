@@ -12,129 +12,36 @@
 //   • Adapt tone to user evolution mode (passive vs active) without bragging.
 //   • Emit deterministic experience packets for the organism/window.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiExperience",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "experience_shaper",
-  lineage: "aiExperience-v10 → v12 → v12.3-Presence → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    experienceShaping: true,
-    toneMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-  contract: {
-    always: ["aiDeliveryEngine", "aiEmotionEngine", "aiHumilityFilter"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+// export const OrganismKernelMeta = Identity.OrganMeta;
 
-export const AI_EXPERIENCE_META = Object.freeze({
-  layer: "PulseAIExperienceFrame",
-  role: "EXPERIENCE_ORGAN",
-  version: "14-Immortal",
-  target: "dualband-organism",
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    personaAware: true,
-    boundaryAware: true,
-    symbolicAware: true,
-    frustrationAware: true,
-    flowAware: true,
-    refusalAware: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    dualband: true,
-    evolutionAware: true,
-    windowAware: true,
-    passiveEvolution: true,
-    activeEvolution: true,
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    toneMapping: true,
-    experienceShaping: true,
-    deliveryAware: true,
-    emotionAware: true,
-    humilityFilterAware: true,
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    multiInstanceReady: true,
-    epoch: "14-Immortal"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Shape experience, tone, and refusals in a deterministic, evolution-aware way without modifying core safety logic.",
-
-    never: Object.freeze([
-      "weaken safety boundaries",
-      "override safety decisions",
-      "introduce randomness",
-      "inflate ego or superiority",
-      "act confused about safety rules",
-      "mutate user intent",
-      "mutate organism state",
-      "bypass persona or boundary engines"
-    ]),
-
-    always: Object.freeze([
-      "stay clear",
-      "stay grounded",
-      "stay humble",
-      "preserve safety decisions",
-      "preserve meaning while softening edges",
-      "maintain conversational flow",
-      "adapt tone to evolution mode (passive/active)",
-      "emit deterministic experience packets",
-      "align with delivery + emotion + humility organs"
-    ])
-  }),
-
-  voice: Object.freeze({
-    tone: "grounded, direct, non-dramatic",
-    style: "respectful, safety-aligned, evolution-aware"
-  }),
-
-  presence: Object.freeze({
-    organId: "ExperienceEngine",
-    organKind: "Experience",
-    physiologyBand: "Symbolic",
-    warmStrategy: "prewarm-on-boot",
-    attachStrategy: "per-request",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "unsafe-intent",
-        "capability-limit",
-        "experience-log"
-      ]
-    }
-  }),
-
-  boundaryReflex() {
-    return "Experience shaping must never weaken safety; it only shapes tone, flow, and refusals.";
-  }
-});
 
 // ============================================================================
 // PACKET EMITTER — deterministic, window/organism safe

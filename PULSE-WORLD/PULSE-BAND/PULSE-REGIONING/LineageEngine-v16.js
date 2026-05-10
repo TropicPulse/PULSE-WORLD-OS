@@ -3,89 +3,22 @@
 FILE: /PULSE-WORLD/LineageEngine-v16.js
 LAYER: PULSE-WORLD / PULSE-LINEAGE + CORE MEMORY + MULTIVERSE COSMOS
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseWorld.LineageEngine",
-  version: "v16-Immortal",
-  layer: "pulse_world",
-  role: "multiverse_lineage_membrane",
-  lineage: "LineageEngine-v11-Evo → LineageEngine-CosmosMultiverse-v13 → v16-Immortal",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    multiverseAware: true,
-    regionAware: true,
-    hostAware: true,
-    lineageMembrane: true,
-    coreMemoryAware: true,
-
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    input: [
-      "LineageRootArgs",
-      "LineageEvent",
-      "CosmosContext { universeId, timelineId, branchId }"
-    ],
-    output: [
-      "LineageRecord",
-      "CurrentInstanceState",
-      "LineageSummary",
-      "CompactedLineage",
-      "LineageMemoryState"
-    ]
-  },
-
-  upstream: [],
-  downstream: [
-    "DeltaEngine-v16",
-    "DeploymentPhysics-v16",
-    "ExecutionPhysics-v16",
-    "MultiOrganismSupport-v16"
-  ],
-
-  notes: [
-    "v16 is self-contained: physics + multiverse + CoreMemory in one organ.",
-    "No imports except PulseProofBridge for CoreMemory.",
-    "Physics remains deterministic and symbolic."
-  ]
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseWorld.LineageEngine",
-  layer: "pulse_world",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "LineageRootArgs",
-    "LineageEvent",
-    "CosmosContext"
-  ],
-
-  produces: [
-    "LineageRecord",
-    "CurrentInstanceState",
-    "LineageSummary",
-    "CompactedLineage",
-    "LineageMemoryState"
-  ],
-
-  sideEffects: "core_memory_write_only",
-  network: "none",
-  filesystem: "none"
-}
-===============================================================================
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ---------------------------------------------------------------------------
 // CoreMemory via PulseProofBridge (only import)
 // ---------------------------------------------------------------------------

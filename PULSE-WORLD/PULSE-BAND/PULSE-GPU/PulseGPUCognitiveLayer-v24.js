@@ -22,128 +22,22 @@
 //   • CognitiveFrame-aware: can emit GPU “thought frames” for each plan
 //   • ComputerIntelligence-aware: can emit CI frames for Earn mode
 // ============================================================================
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseGPUCognitiveLayer",
-  version: "v24-Immortal++",
-  layer: "gpu_cognition",
-  role: "gpu_cognitive_layer",
-  lineage: "PulseGPU-v24-Immortal++",
-
-  evo: {
-    gpuCognition: true,
-    gpuAnalysis: true,
-    gpuPreflight: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    brainLinked: true,
-    wisdomLinked: true,
-    geneticMemoryLinked: true,
-
-    immortalReady: true,
-    immortalSurface: true,
-    earnAware: true,
-    earnCompatibility: "Earn-v24-Presence",
-
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    workgroupLawVersion: 24,
-
-    // Chunk / planner / chunker awareness
-    chunkAware: true,
-    chunkProfileAware: true,
-    chunkSessionAware: true,
-    gpuChunkPlannerAware: true,
-    pulseAIChunkerAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseGPUBrain",
-      "PulseGPUDrive",
-      "PulseGPUCognitiveIntelligence"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyGPUCognition"
-    ]
-  }
-}
-*/
-
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+export const PulseGPUChunkerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const RESTORER_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import {
   CognitiveFrame,
   computeComputerIntelligence
 } from "./PulseGPUCognitiveIntelligence-v24.js";
-
-// ============================================================================
-// OS‑v24-Immortal++ CONTEXT METADATA (chunk-aware, v24 contracts)
-// ============================================================================
-const RESTORER_CONTEXT = {
-  layer: "PulseGPUSettingsRestorer",
-  role: "GPU_SETTINGS_RESTORER",
-  purpose: "Deterministic planner for GPU settings restoration (v24-Immortal++, chunk-aware)",
-  context:
-    "Consumes advisor insights + memory entries + GPU + chunk hints to produce restoration plans",
-  target: "full-gpu",
-  version: "24.0-Immortal++",
-  selfRepairable: true,
-
-  evo: {
-    advantageCascadeAware: true,
-    pulseEfficiencyAware: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseSend24Ready: true,
-
-    // Presence Evolution
-    presenceAware: true,
-    dnaAware: true,
-    versionAware: true,
-    instanceAware: true,
-
-    // GPU awareness
-    binaryAware: true,
-    symbolicAware: true,
-    gpuDispatchAware: true,
-    gpuMemoryAware: true,
-    gpuAdvantageAware: true,
-
-    // Chunk / chunker / planner awareness
-    chunkAware: true,
-    chunkProfileAware: true,
-    chunkSessionAware: true,
-    gpuChunkPlannerAware: true,
-    pulseAIChunkerAware: true,
-
-    // Contracts
-    routingContract: "PulseSend-v24",
-    gpuOrganContract: "PulseGPU-v24-Immortal++",
-    binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-    earnCompatibility: "Earn-v24-Presence",
-    workgroupLawVersion: 24
-  }
-};
 
 // ============================================================================
 // CognitiveFrame builder for advice → plan (v24-Immortal++, chunk-aware)

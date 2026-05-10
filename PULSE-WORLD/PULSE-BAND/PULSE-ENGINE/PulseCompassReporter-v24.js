@@ -5,61 +5,21 @@
 //  • Append-only, drift-proof, zero compute, zero mutation
 //  • Session-aware, band-aware, evidence-aware, diagnostics-aware
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseCompassReporter",
-  version: "v24-Immortal-Evo+++",
-  layer: "motion_telemetry",
-  role: "motion_analytics",
-  lineage: "PulseCompass-v16 → PulseCompassReporter-v16 → PulseCompassReporter-v24-Immortal-Evo+++",
-
-  evo: {
-    reportingAware: true,
-    analyticsAware: true,
-    driftProof: true,
-    zeroMutation: true,
-    zeroCompute: true,
-    pureTelemetry: true,
-
-    // v24++ upgrades
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-    pulseBandAware: true,
-    sessionAware: true,
-    diagnosticsAware: true,
-    evidenceAware: true,
-    arteryAware: true,
-    advantageAware: true,
-    presenceAware: true,
-    trustFabricAware: true
-  },
-
-  contract: {
-    always: ["PulseCompass", "PulseDB-v24"],
-    never: ["PulseMotionEngine", "ShifterPulse", "routerCore", "meshKernel"]
-  }
-}
-*/
-
-/*
-PAGE_INDEX = {
-  purpose: "Record and analyze motion engine activity",
-  responsibilities: [
-    "Record ticks",
-    "Record lane switches",
-    "Record artery snapshots",
-    "Record envelopes",
-    "Provide analytics summaries"
-  ],
-  forbidden: [
-    "No compute logic",
-    "No engine logic",
-    "No mutation of engine internals"
-  ]
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseCompassReporter({
   Compass,

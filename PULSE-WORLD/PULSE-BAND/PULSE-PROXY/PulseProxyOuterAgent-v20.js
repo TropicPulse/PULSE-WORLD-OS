@@ -8,161 +8,21 @@
 //  PNS repair/purifier‑aware (symbolic only), drift‑proof, organism‑aware,
 //  chunk/cache/prewarm‑aware, speed‑aware, world‑lens‑aware (metadata only).
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/* 
-@PULSE_IMMORTAL_REQUIRE_FULL_META
-This organ requires FULL IMMORTAL++ metadata on every upgrade:
-- AI_EXPERIENCE_META + AI_EXPERIENCE_CONTEXT
-- Full organ metadata + evo flags + lineage
-- Full contract (input/output/consumers)
-- Full experience surfaces (band/wave/binary/presence/advantage/speed)
-- Full IMMORTAL++ overlays (drift, pressure, stability, load)
-- Full chunk/cache/prewarm overlays
-- Full world‑lens, limbic, tri‑heart, impulse‑speed awareness
-- Full healing surfaces + diagnostics
-Always include ALL layers, ALL overlays, ALL IMMORTAL++ structures.
-*/
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProxyOuterAgent",
-  version: "v20-Immortal-Presence-Advantage",
-  layer: "proxy_boundary",
-  role: "external_negotiator_experience_surface",
-
-  lineage: {
-    root: "PulseProxy-v11",
-    parent: "PulseProxyOuterAgent-v16.3-Immortal-Presence",
-    organismIntegration: "v20-Immortal"
-  },
-
-  evo: {
-    // Core identity
-    outerAgent: true,
-    boundaryOrgan: true,
-    externalNegotiator: true,
-    jobCourier: true,
-    deviceAmbassador: true,
-
-    // Evolution modes
-    dualModeEvolution: true,
-    binaryFirst: true,
-    symbolicFallback: true,
-
-    // Awareness surfaces
-    binaryAware: true,
-    symbolicAware: true,
-    dualBandAware: true,
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    presenceAware: true,
-    presenceFieldAware: true,
-    experienceAware: true,
-    advantageAware: true,
-    speedAware: true,
-    speedFieldAware: true,
-
-    // Chunk/cache/prewarm
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    chunkCachePrewarmAware: true,
-    gpuBufferAware: true,
-
-    // Healing surfaces
-    pnsRepairAware: true,
-    pnsPurifierAware: true,
-    osHealerAware: true,
-    globalHealerAware: true,
-
-    // Experience surfaces
-    experienceSurfaceEmitter: true,
-    negotiationTraceEmitter: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-
-    // World‑lens / limbic / tri‑heart (metadata only)
-    worldLensAware: true,
-    limbicAware: true,
-    triHeartAware: true,
-
-    // Deterministic guarantees
-    deterministic: true,
-    driftProof: true,
-    immortal: true,
-    immortalReady: true,
-    multiInstanceReady: true,
-
-    // Prohibitions
-    zeroIQ: true,
-    zeroRouting: true,
-    zeroCompute: true,
-    zeroMarketplaceLogic: true,
-    zeroOSStateMutation: true,
-    zeroRandomness: true,
-    zeroTimers: true,
-    zeroDateNowInMath: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroGPU: true,
-    zeroDOM: true,
-    zeroWindow: true,
-    zeroExternalMutation: true
-  },
-
-  contract: {
-    input: [
-      "NegotiationPayload",
-      "BinaryDescriptor",
-      "SymbolicPayload",
-      "DualBandContext",
-      "PresenceContext",
-      "ExperienceContext",
-      "AdvantageContext",
-      "SpeedContext",
-      "ChunkContext"
-    ],
-
-    output: [
-      "OuterAgentNegotiationResult",
-      "OuterAgentBandSignature",
-      "OuterAgentBinaryField",
-      "OuterAgentWaveField",
-      "OuterAgentPresenceField",
-      "OuterAgentAdvantageField",
-      "OuterAgentSpeedField",
-      "OuterAgentChunkHints",
-      "OuterAgentExperienceField",
-      "OuterAgentDiagnostics",
-      "OuterAgentHealingState"
-    ],
-
-    consumers: [
-      "PulseProxy",
-      "PulseProxyFront",
-      "BinaryProxy",
-      "PulseRouter",
-      "PulseMesh",
-      "PulseSDNPrewarm",
-      "PulseWorldCore",
-      "PulseHealer",
-      "PNSRepair",
-      "PNSPurifier"
-    ]
-  },
-
-  experience: {
-    description:
-      "The v20 Immortal Outer Agent converts external negotiation into a deterministic, " +
-      "organism-readable experience surface for CNS/PNS, healers, and evolution, " +
-      "including band/wave/binary/presence/advantage/speed/chunk overlays.",
-    aiUsageHint:
-      "Use this organ to understand negotiation quality, pressure, presence, advantage, " +
-      "speed, and healing signals. Never treat it as a router or business-logic engine."
-  }
-}
-*/
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  GLOBAL WIRING — Safe, boundary‑first, no hard global dependency
@@ -244,68 +104,6 @@ export const PulseProxyOuterAgentExperienceMeta = Object.freeze({
     zeroGPU: true
   })
 });
-
-
-// ============================================================================
-//  ORGAN IDENTITY — v20‑IMMORTAL‑PRESENCE‑ADVANTAGE
-// ============================================================================
-export const PulseRole = {
-  type: "Organ",
-  subsystem: "PulseProxy",
-  layer: "OuterAgent",
-  version: "20-Immortal-Presence-Advantage",
-  identity: "PulseProxyOuterAgent-v20-Immortal-Presence-Advantage",
-
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    boundaryOrgan: true,
-    externalNegotiator: true,
-    marketplaceBoundary: true,
-    backendPreferred: true,
-
-    dualModeEvolution: true,       // binary + symbolic
-    binaryFirst: true,             // descriptors first, IO second
-
-    // Awareness / presence
-    binaryAware: true,
-    symbolicAware: true,
-    bandAware: true,
-    waveFieldAware: true,
-    binaryFieldAware: true,
-    presenceAware: true,
-    presenceFieldAware: true,
-    experienceAware: true,
-    advantageAware: true,
-    speedAware: true,
-    speedFieldAware: true,
-
-    // Chunk/cache/prewarm
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    chunkCachePrewarmAware: true,
-    gpuBufferAware: true,
-
-    // Nervous‑system integration (symbolic only)
-    pnsRepairAware: true,
-    pnsPurifierAware: true,
-
-    // World‑lens / limbic / tri‑heart (metadata only)
-    worldLensAware: true,
-    limbicAware: true,
-    triHeartAware: true,
-
-    noIQ: true,
-    noRouting: true,
-    noCompute: true,               // no business logic
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    futureEvolutionReady: true
-  }
-};
-
 
 // ============================================================================
 //  LAYER CONSTANTS + CONTEXT (v20‑IMMORTAL‑PRESENCE‑ADVANTAGE)

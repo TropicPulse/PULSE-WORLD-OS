@@ -25,118 +25,23 @@
  *   - v16+: expose presence/continuance/CI/binary-delta overlays as symbolic only.
  *   - v20+: expose world/region/tenant/index hints as metadata only.
  */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseSchema",
-  version: "v20-IMMORTAL-GPU+-CI-INTEL",
-  layer: "schema",
-  role: "unified_schema_brain",
-  lineage: "PulseOS-v14 → v12.3-Presence-Evo+ → v16-Immortal-GPU+-CI → v20-IMMORTAL-GPU+-CI-INTEL",
+// 2 — EXPORT GENOME METADATA
+export const PulseSchemaMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
-  evo: {
-    schemaUnification: true,
-    firestoreUnify: true,
-    sqlUnify: true,
-    binaryUnify: true,
-    schemaMerge: true,
-    conflictDetection: true,
-    lineageTracking: true,
-    versionTracking: true,
-
-    gpuAware: true,
-    ciAware: true,
-    continuanceAware: true,
-    binaryDeltaAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    // v20+ overlays
-    worldDataProviderAware: true,
-    regionAware: true,
-    tenantAware: true,
-    indexAware: true,
-    binarySubstrateAware: true,
-    triHashAware: true,
-    intellHashAware: true,
-    arteryMetricsV2: true,
-    routingHintAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseContinuance",
-      "PulseOmniHosting",
-      "PulseSpecsDNAGenome",
-      "WorldDataProvider"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "legacySchema"
-    ]
-  }
-}
-*/
-
-import { createPulseCoreMemory } from "../../PULSE-CORE/PulseCoreMemory-v24.js";
-
-// ============================================================================
-// META — v20-IMMORTAL-GPU+-CI-INTEL
-// ============================================================================
-
-export const PulseSchemaMeta = Object.freeze({
-  layer: "PulseSchema",
-  role: "CANONICAL_SCHEMA_ORGAN",
-  version: "20-IMMORTAL-GPU+-CI-INTEL",
-  identity: "PulseSchema-v20-IMMORTAL-GPU+-CI-INTEL",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    hostAgnostic: true,
-    reversibleBinary: true,
-    noRandomness: true,
-    noHostLogic: true,
-
-    // organism overlays
-    presenceAware: true,
-    advantageAware: true,
-    fallbackBandAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    prewarmAware: true,
-    coldStartAware: true,
-    dualbandSafe: true,
-
-    // v16+ overlays
-    gpuAware: true,
-    ciAware: true,
-    continuanceAware: true,
-    binaryDeltaAware: true,
-    arteryMetricsAware: true,
-    validationAware: true,
-    diffAware: true,
-
-    // v20+ overlays
-    worldDataProviderAware: true,
-    regionAware: true,
-    tenantAware: true,
-    indexAware: true,
-    binarySubstrateAware: true,
-    triHashAware: true,
-    intellHashAware: true,
-    routingHintAware: true,
-
-    epoch: "20-IMMORTAL-GPU+-CI-INTEL"
-  })
-});
 
 // ============================================================================
 // Canonical Types

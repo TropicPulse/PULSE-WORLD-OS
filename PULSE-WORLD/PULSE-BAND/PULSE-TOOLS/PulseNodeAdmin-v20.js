@@ -70,76 +70,21 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-export const NodeAdminMeta = Object.freeze({
-  organId: "PulseNodeAdmin-v20-Immortal-Adv+++",
-  role: "NODEADMIN_ORGAN",
-  version: "20-Immortal-Adv+++",
-  epoch: "v20-Immortal-Adv+++",
-  layer: "NetworkBrain",
-
-  safety: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRecursion: true,
-    noAsyncDrift: true,
-    syntheticOnly: true,
-    backendAdvisoryOnly: true
-  }),
-
-  awareness: Object.freeze({
-    presenceAware: true,
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    soldierAware: true,
-    treasuryAware: true,
-    castleAware: true,
-    serverAware: true,
-    expansionAware: true,
-    meshAware: true,
-    routeAware: true,
-    bandAware: true,
-    binaryFieldAware: true,
-    waveFieldAware: true,
-    arteryAware: true,
-    arteryV5: true,
-    overmindAware: true,
-    earnAware: true,
-    reproductionAware: true,
-    evolutionAwareV20: true,
-    heatmapAwareV20: true,
-    shifterAware: true,
-    snapshotAware: true,
-    worldCoreAware: true,
-    beaconAware: true
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Local coordinator for soldiers, servers, and castle load. Executes Expansion plans, manages soldier lifecycle, applies earning pressure, integrates presence/advantage/chunk/mesh/castle/server/worldCore/beacon signals, and exposes deterministic snapshots + artery metrics.",
-
-    never: Object.freeze([
-      "mutate external state",
-      "perform network I/O directly",
-      "bypass Overmind or boundaries",
-      "self-modify core safety rules",
-      "introduce randomness or async drift"
-    ]),
-
-    always: Object.freeze([
-      "remain deterministic",
-      "log decisions to internal memory",
-      "expose state via reports and snapshots",
-      "treat backend AI as advisory only",
-      "treat presence/social/earn/mesh/castle/expansion/router/beacon/worldCore as metadata-only signals",
-      "treat prewarm/cache/chunk plans as hints only, not imperative commands",
-      "treat soldierDelegation and desiredSoldiers as advisory quotas",
-      "treat treasury deltas as symbolic only",
-      "emit artery v5 snapshots for Overmind/NodeAdmin/Earn/Reproduction"
-    ])
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+export const NodeAdminMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  GLOBAL NODEADMIN ARTERY REGISTRY — v20 IMMORTAL‑ADV+++
 // ============================================================================

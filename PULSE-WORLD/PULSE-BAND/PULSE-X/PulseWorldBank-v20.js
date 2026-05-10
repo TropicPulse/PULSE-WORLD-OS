@@ -29,47 +29,24 @@
 // • Never create multiple Stripe instances
 // • Never change API version without explicit approval
 // ============================================================================
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
+// 2 — EXPORT GENOME METADATA
+// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 import { admin, db } from "./PulseWorldGenome-v20.js";
 import Stripe from "stripe";
 
-export const AI_EXPERIENCE_META = {
-  identity: "PulseWorldBank.StripeOrgan",
-  version: "v20-Immortal",
-  layer: "pulse_world_bank",
-  role: "financial_core_adapter",
-  lineage: [
-    "StripeOrgan-v12",
-    "StripeOrgan-v14-Immortal",
-    "StripeOrgan-v16-Immortal-Evo",
-    "StripeOrgan-v20-Immortal"
-  ],
-
-  evo: {
-    driftProof: true,
-    deterministic: true,
-    zeroState: true,
-    zeroTiming: true,
-    binaryAware: true,
-    dualBand: true,
-    presenceAware: true,
-    futureEvolutionReady: true
-  },
-
-  contracts: {
-    organ: "PulseWorldBank-v20",
-    mesh: "PulseMesh-v20",
-    send: "PulseSend-v20",
-    stripe: "Stripe-v2023-10-16"
-  },
-
-  safety: {
-    neverLogSecrets: true,
-    neverExposeKeys: true,
-    neverCreateMultipleInstances: true,
-    neverUseDynamicImport: true
-  }
-};
 
 // ============================================================================
 // STRIPE SINGLETON — IMMORTAL INITIALIZER

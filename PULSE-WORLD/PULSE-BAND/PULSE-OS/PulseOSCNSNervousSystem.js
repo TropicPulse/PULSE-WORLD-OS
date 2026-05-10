@@ -5,168 +5,21 @@
 //  • UPGRADED: CNS-level passive/active PageScanner integration (always-on, no timers)
 //  • UPGRADED: v13+ CNS healers (checkBand / checkIdentity / checkRouterMemory)
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSNervousSystem",
-  version: "v14-Immortal",
-  layer: "cns",
-  role: "os_nervous_system",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    nervousSystem: true,
-    conductor: true,
-    reflexAware: true,
-    sensoryAware: true,
-
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-
-    chunkAware: true,
-    prewarmAware: true,
-    presenceAware: true,
-    meshAware: true,
-
-    safeRouteFree: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSBrain",
-      "PulseOSSensoryCortex",
-      "PulseOSFightFlightResponse"
-    ],
-    never: [
-      "legacyNervousSystem",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-export const PulseRole = {
-  type: "NervousSystem",
-  subsystem: "CNS",
-  layer: "B-Layer",
-  version: "12.3",
-  identity: "PulseOSCNSNervousSystem-v12.3-Evo-BINARY-MAX",
-
-  evo: {
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-
-    // Dual‑band: symbolic (routes, types) + binary (payload bytes) as modes, not mutation
-    dualBand: true,
-    binaryAware: true,
-    symbolicPrimary: true,
-    binaryNonExecutable: true,
-    zeroFilesystem: true,
-
-    // Contracts — v12 organism‑wide
-    routingContract: "PulseRouter-v12.3",
-    proxyCompatibility: "PulseProxySpine-v12.3",
-    sendCompatibility: "PulseSendSystem-v12.3",
-
-    // Continuance / loop‑theory awareness
-    loopTheoryAware: true,
-    continuanceAware: true
-  }
-};
-
-export const PulseOSCNSNervousSystemMeta = Object.freeze({
-  layer: "PulseOSCNSNervousSystem",
-  role: "CNS_COMMUNICATION_ORGAN",
-  version: "v12.3-Evo-BINARY-MAX",
-  identity: "PulseOSCNSNervousSystem-v12.3-Evo-BINARY-MAX",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // CNS communication laws
-    cnsCommunicationOrgan: true,
-    frontendBackendBridge: true,
-    offlineOnlineDualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBandAware: true,
-    binaryNonExecutable: true,
-
-    // Routing laws
-    deterministicRouting: true,
-    proxySpineOnly: true,
-    localFirstRouting: true,
-    guardedGlobalAccess: true,
-    routerHealingAware: true,
-    routeDownAlertAware: true,
-
-    // Safety
-    zeroDynamicImports: true,
-    zeroEval: true,
-    zeroFilesystem: true,
-    zeroUserCode: true,
-    zeroRandomness: true,
-    zeroDateNow: true,
-    worldLensAware: true,
-
-    // Continuance + loop theory
-    loopTheoryAware: true,
-    continuanceAware: true
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "RouteRequest",
-      "DualBandContext",
-      "ProxySpineInjection",
-      "ShortTermMemory"
-    ],
-    output: [
-      "CNSRouteResult",
-      "CNSDiagnostics",
-      "CNSSignatures",
-      "CNSHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12-Evo",
-    parent: "PulseOS-v12.3-Evo",
-    ancestry: [
-      "PulseOSCNSNervousSystem-v9",
-      "PulseOSCNSNervousSystem-v10",
-      "PulseOSCNSNervousSystem-v11",
-      "PulseOSCNSNervousSystem-v11-Evo-BINARY",
-      "PulseOSCNSNervousSystem-v12.0-Evo-BINARY"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "cns-routing"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "symbolic routing → proxy spine → healing + drift reporting",
-    adaptive: "binary-tagged payloads + dual-band metadata",
-    return: "deterministic CNS route result + signatures"
-  })
-});
-
+// 2 — EXPORT GENOME METADATA
+export const PulseOSCNSNervousSystemMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // ORGAN IMPORTS — COMPLETE THE CONNECTION (Membranes → CNS)

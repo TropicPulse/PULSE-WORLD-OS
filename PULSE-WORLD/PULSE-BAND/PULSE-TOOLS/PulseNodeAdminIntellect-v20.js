@@ -64,81 +64,21 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-// ============================================================================
-// META BLOCK — v20-IMMORTAL-ADV-INTELLECT++
-// ============================================================================
-
-export const NodeAdminMeta = Object.freeze({
-  organId: "PulseNodeAdmin-v20-Immortal-Adv-Intellect++",
-  role: "NODEADMIN_ORGAN",
-  version: "20-Immortal-Adv-Intellect++",
-  epoch: "v20-Immortal",
-  layer: "NetworkBrain",
-
-  safety: Object.freeze({
-    deterministic: true,
-    noRandomness: true,
-    noRecursion: true,
-    noAsyncDrift: true,
-    syntheticOnly: true,
-    backendAdvisoryOnly: true,
-    readOnlyToWorld: true
-  }),
-
-  awareness: Object.freeze({
-    presenceAware: true,
-    socialGraphAware: true,
-    earnAware: true,
-    reproductionAware: true,
-
-    meshAware: true,
-    castleAware: true,
-    expansionAware: true,
-    routerAware: true,
-    beaconAware: true,
-    worldCoreAware: true,
-
-    advantageAware: true,
-    chunkPrewarmAware: true,
-    soldierAware: true,
-    treasuryAware: true,
-    bandAware: true,
-    binaryFieldAware: true,
-    waveFieldAware: true,
-    arteryAware: true,
-    overmindAware: true,
-    heatmapAware: true,
-    shifterAware: true
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Local coordinator for soldiers, servers, and castle load. Executes Expansion plans, manages soldier lifecycle, applies earning pressure, integrates presence/advantage/chunk/mesh/castle/server signals, and exposes deterministic snapshots + artery metrics + IQ maps.",
-
-    never: Object.freeze([
-      "mutate external state",
-      "perform network I/O directly",
-      "bypass Overmind or boundaries",
-      "self-modify core safety rules",
-      "introduce randomness or async drift",
-      "drive reproduction or earn policy directly",
-      "override expansion/castle/router/worldCore decisions"
-    ]),
-
-    always: Object.freeze([
-      "remain deterministic for same inputs",
-      "treat all external signals as metadata-only",
-      "treat backend AI as advisory only",
-      "treat prewarm/cache/chunk plans as hints only",
-      "treat soldierDelegation and desiredSoldiers as advisory quotas",
-      "treat treasury deltas as symbolic only",
-      "log decisions to internal memory",
-      "expose state via reports, snapshots, arteries, and IQ maps",
-      "remain non-blocking and drift-proof"
-    ])
-  })
-});
+// 2 — EXPORT GENOME METADATA
+export const NodeAdminMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const WBC_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IQ MAP — v20-IMMORTAL-ADV-INTELLECT++

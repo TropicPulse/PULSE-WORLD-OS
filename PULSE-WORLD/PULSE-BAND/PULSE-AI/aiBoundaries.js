@@ -4,106 +4,36 @@
 //  PURE CONSTRAINTS. ZERO RANDOMNESS. ZERO INTERNET.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "boundaries",
-  version: "v16-Immortal++",
-  layer: "ai_core",
-  role: "boundary_rules",
-  lineage: "boundaries-v11 → v14-Immortal → v16-Immortal++",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    boundaryRules: true,
-    safetyMapping: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
+const Identity = OrganismIdentity(import.meta.url);
 
-    boundaryArteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const SuperegoMeta = Identity.OrganMeta;
 
-  contract: {
-    always: ["aiSafetyFrame", "aiBoundariesEngine", "aiPermissionsEngine"],
-    never: ["safeRoute", "fetchViaCNS", "directInternetAccess"]
-  }
-}
-*/
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-export const SuperegoMeta = Object.freeze({
-  type: "Cognitive",
-  subsystem: "aiSuperego",
-  layer: "SuperegoBoundaryEngine",
-  role: "BOUNDARY_ORGAN",
-  version: "16-Immortal++",
-  identity: "aiSuperego-v16-Immortal++",
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    readOnly: true,
-    mutationSafe: true,
-    nonBlocking: true,
-    lineageAware: true,
-    schemaAware: false,
-    slowdownAware: false,
-    multiInstanceReady: true,
-    boundaryCacheAware: true,
-    vitalsFusionAware: true,
-    boundaryArteryAware: true,
-    trustFabricAware: true,
-    juryAware: true,
-    evidenceAware: true,
-    honeypotAware: true,
-    dominanceAware: true,
-    pulseNetAware: true,
-    epoch: "16-Immortal++"
-  }),
+export const surfaceMeta = Identity.surfaceMeta;
 
-  contract: Object.freeze({
-    purpose:
-      "Enforce immutable behavioral constraints, persona boundaries, and binary-aware moral law across all AI personas and organs.",
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-    never: Object.freeze([
-      "mutate boundaries",
-      "introduce randomness",
-      "override static moral law",
-      "weaken forbidden actions",
-      "bypass persona constraints",
-      "perform cognition",
-      "perform intent logic"
-    ]),
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    always: Object.freeze([
-      "apply static boundaries deterministically",
-      "apply dynamic boundaries deterministically",
-      "respect persona domain constraints",
-      "respect binary override rules",
-      "respect trust fabric and jury signals",
-      "remain read-only",
-      "remain drift-proof"
-    ])
-  }),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-  boundaryReflex() {
-    return "Superego boundaries are immutable moral law — they cannot be bypassed, weakened, or modified.";
-  }
-});
 
 // ============================================================================
 //  BOUNDARY LEVEL ENUM — Immutable

@@ -1,124 +1,38 @@
 // ============================================================================
-//  aiDeliveryEngine.js — Pulse OS v14‑IMMORTAL
+//  PULSE OS v14‑IMMORTAL — DELIVERY ENGINE
 //  Delivery Organ • Clarity Engine • Drift‑Proof Formatting
 //  PURE DELIVERY. ZERO MUTATION OF MEANING. ZERO RANDOMNESS.
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiDeliveryEngine",
-  version: "v14-Immortal",
-  layer: "ai_tools",
-  role: "delivery_engine",
-  lineage: "aiDeliveryEngine-v10 → v12 → v12.3-Presence → v14-Immortal",
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
-  evo: {
-    deliveryEngine: true,
-    outputShaping: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
+const Identity = OrganismIdentity(import.meta.url);
 
-  contract: {
-    always: ["aiCortex", "aiContext", "aiBrainstem"],
-    never: ["safeRoute", "fetchViaCNS"]
-  }
-}
-*/
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
-// ─────────────────────────────────────────────────────────────
-// META BLOCK — ORGAN IDENTITY (v14‑IMMORTAL)
-// ─────────────────────────────────────────────────────────────
-export const DeliveryEngineMeta = Object.freeze({
-  layer: "PulseAIDeliveryEngine",
-  role: "DELIVERY_ENGINE_ORGAN",
-  version: "14-Immortal",
-  identity: "aiDeliveryEngine-v14-Immortal",
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
+// ============================================================================
+export const DeliveryEngineMeta = Identity.OrganMeta;
 
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualBandSafe: true,
+// ============================================================================
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
+// ============================================================================
 
-    cognitiveAware: true,
-    toneAware: true,
-    formattingAware: true,
-    structureAware: true,
-    routerAware: true,
-    brainstemAware: true,
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
 
-    packetAware: true,
-    presenceAware: true,
-    chunkingAware: true,
-    gpuFriendly: true,
+export const surfaceMeta = Identity.surfaceMeta;
 
-    readOnly: true,
-    multiInstanceReady: true,
-    epoch: "14-Immortal"
-  }),
+export const pulseLoreContext = Identity.pulseLoreContext;
 
-  contract: Object.freeze({
-    purpose:
-      "Deliver information in a clean, structured, evolved, drift-proof format without altering meaning or tone.",
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
-    never: Object.freeze([
-      "introduce noise",
-      "add ego",
-      "add snobbery",
-      "inflate complexity",
-      "break clarity",
-      "alter tone identity",
-      "introduce randomness",
-      "mutate semantic content"
-    ]),
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
 
-    always: Object.freeze([
-      "preserve meaning",
-      "preserve clarity",
-      "preserve structure",
-      "preserve tone",
-      "clean formatting",
-      "remove noise",
-      "deliver deterministically"
-    ])
-  }),
-
-  guarantees: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    clarityFirst: true,
-    egoFree: true,
-    toneCompatible: true
-  }),
-
-  presence: Object.freeze({
-    organId: "DeliveryEngine",
-    organKind: "CognitiveUtility",
-    physiologyBand: "Symbolic",
-    warmStrategy: "prewarm-on-attach",
-    attachStrategy: "per-request",
-    concurrency: "multi-instance",
-    observability: {
-      traceEvents: [
-        "prewarm",
-        "prewarm-error",
-        "deliver",
-        "structure",
-        "finalize"
-      ]
-    }
-  }),
-
-  boundaryReflex() {
-    return "Delivery must remain clean, structured, ego-free, and aligned with tone + evolution engines.";
-  }
-});
 
 // ─────────────────────────────────────────────────────────────
 // PACKET EMITTER — deterministic, delivery-scoped

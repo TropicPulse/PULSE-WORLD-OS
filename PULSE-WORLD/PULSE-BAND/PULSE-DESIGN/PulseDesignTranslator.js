@@ -1,119 +1,27 @@
-/*
-===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseDesign.Architect",
-  version: "v17-IMMORTAL",
-  layer: "pulse_design",
-  role: "architectural_orchestrator_and_genome_conductor",
-  lineage: "Architect-v10.4 → v12.3 → v14-Immortal → v17-IMMORTAL",
+// ============================================================================
+// FILE: PULSE-WORLD/PULSE-DESIGN/translator-v17.js
+// LAYER: THE ARCHITECT (v17 IMMORTAL Orchestrator + Genome Conductor)
+// ============================================================================
 
-  evo: {
-    architecturalOrchestrator: true,
-    genomeConductor: true,
-    pipelineCoordinator: true,
-    organismAware: true,
-    signatureAware: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    dualBand: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    zeroMutationOfInput: true,
-    zeroNetwork: true,
-
-    controlledDelegation: true,     // scanning/writing delegated only
-    prewarmAware: true,             // can prewarm downstream organs
-    cacheAware: true,               // can reuse prior scans in-process
-    bandAware: true,                // can tag outputs with band/meta
-    worldLayerReady: true,          // ready to feed world-layer genomes
-    translatorReady: true           // ready to feed Pulse-Translator stack
-  },
-
-  contract: {
-    always: [
-      "PulseDesign.Cartographer",
-      "PulseDesign.Anatomist",
-      "PulseDesign.Archivist",
-      "PulseDesign.Surveyor",
-      "PulseOS.OrganismMap"
-    ],
-    never: [
-      "safeRoute",
-      "fetchViaCNS",
-      "dynamicImport",
-      "eval",
-      "Function"
-    ]
-  }
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseDesign.Architect",
-  layer: "pulse_design",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "rootDir",
-    "options"
-  ],
-  produces: [
-    "manifestPath",
-    "fileCount",
-    "organism",
-    "manifest",
-    "meta"
-  ],
-
-  sideEffects: "delegated_write_only",
-  network: "none",
-  filesystem: "delegated"
-}
-===============================================================================
-FILE: PULSE-WORLD/PULSE-DESIGN/translator-v17.js
-LAYER: THE ARCHITECT (v17 IMMORTAL Orchestrator + Genome Conductor)
-===============================================================================
-
-ROLE (v17):
-  THE ARCHITECT — Master orchestrator of the Pulse‑Design pipeline.
-  • Coordinates THE CARTOGRAPHER (repoWalker).
-  • Coordinates THE ANATOMIST (fileClassifier) via organism map.
-  • Coordinates THE ARCHIVIST (manifestBuilder).
-  • Coordinates THE SURVEYOR (manifestWriter).
-  • Integrates the PulseOrganismMap (genome-level architecture).
-  • Produces the canonical PulseManifest (dual-band, v17-ready).
-
-PURPOSE (v17):
-  • Provide a single deterministic entry point for architecture generation.
-  • Translate raw filesystem → FileSignatures → Classifications → OrganismMap → Manifest.
-  • Guarantee stable, evolvable, drift‑proof architectural output.
-  • Optionally prewarm downstream organs and cache scan results per-process.
-  • Emit manifest + meta suitable for Firebase/SQL translators and world genomes.
-
-CONTRACT:
-  • PURE ORCHESTRATION — no direct filesystem writes.
-  • Delegates scanning + writing to other organs.
-  • NO eval(), NO Function(), NO dynamic imports.
-  • NO executing user code.
-  • NO network calls.
-  • Deterministic output only.
-
-SAFETY:
-  • v17 uplift is PURE + STRUCTURAL + ADVANTAGE‑AWARE.
-  • All behavior is deterministic and organism‑safe.
-===============================================================================
-*/
-
-import path from "path";
-import { walkRepo } from "./PulseDesignRepoWalker.js";              // THE CARTOGRAPHER
-import { writeManifest } from "./PulseDesignManifestWriter.js";     // THE SURVEYOR
+// 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
 import {
+  OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v21.js";               // THE GENOME ENGINE
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
+
+// 2 — EXPORT GENOME METADATA
+export const PulseDesignArchitectMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
+
+// 3 — ALL OTHER IMPORTS (AFTER IDENTITY)
+import path from "path";
+import { walkRepo } from "./PulseDesignRepoWalker.js";
+import { writeManifest } from "./PulseDesignManifestWriter.js";
 
 // Optional: specs + translators awareness (no imports here to avoid coupling)
 // Architect only tags meta so downstream can plug in:

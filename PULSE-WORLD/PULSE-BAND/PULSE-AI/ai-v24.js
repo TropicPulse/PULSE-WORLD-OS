@@ -4,151 +4,40 @@
 // ============================================================================
 
 /*
-AI_EXPERIENCE_META:
-  organ: OrganismKernel
-  version: 24.0.0
-  tier: IMMORTAL
-  layer: ai_core
-  role: ai_evolution_kernel
-
-  description:
-    "Dualband organism kernel and bootloader. Assembles all binary organs,
-     wires anatomy and registry, computes organism artery, and exposes a
-     stable, deterministic organism surface to NodeAdmin and Overmind.
-
-     Does not perform cognition. Does not override organ contracts.
-     Does not mutate organ internals. Pure structural boot and artery."
-
-  evo:
-    evolutionKernel: true
-    dualBand: true
-    symbolicPrimary: true
-    binaryAware: true
-    hotLoopPromotion: true
-    healingLogic: true
-    dnaTagging: true
-
-    chunkAware: true
-    cacheAware: true
-    prewarmAware: true
-    arteryAware: true
-
-    deterministic: true
-    driftProof: true
-    pureCompute: true
-    zeroNetwork: true
-    zeroFilesystem: true
-    zeroMutationOfInput: true
-
-    // v24+ advantages
-    daemonOriented: true
-    sealedOrganism: true
-    portalCompatible: true
-    bridgeCompatible: true
-    multiInstanceSafe: true
-    dualMembraneAware: true
-    worldStateAware: true
-    personaAware: true
-    pulseDensityAware: true
-    gpuLaneAware: true
-    binaryOverlayAware: true
-
-  contract:
-    always:
-      - "aiBinaryAgent"
-      - "aiAnatomy"
-      - "aiBinaryEvolution"
-      - "aiBinaryOrganRegistry"
-      - "aiVitals"
-      - "aiMetabolism"
-      - "aiHormones"
-      - "aiSentience"
-      - "aiConsciousness"
-      - "aiScheduler"
-      - "aiPipeline"
-    never:
-      - "safeRoute"
-      - "fetchViaCNS"
-      - "externalNetworkIO"
-      - "organMutation"
+  (keep your big AI_EXPERIENCE_META comment here if you want it for docs;
+   it no longer drives runtime identity — the genome does)
 */
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+const Identity = OrganismIdentity(import.meta.url);
+
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
-export const OrganismKernelMeta = Object.freeze({
-  layer: "OrganismKernel",
-  role: "DUALBAND_BOOTLOADER",
-  version: "24.0.0-IMMORTAL",
-  identity: "pulse-organism-kernel-v24.0-IMMORTAL",
-
-  evo: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
-    organism: true,
-    bootloader: true,
-    multiInstanceReady: true,
-    multiInstanceSafe: true,
-    organismArteryAware: true,
-    nodeAdminAware: true,
-    overmindAware: true,
-    registryAware: true,
-    prewarmAware: true,
-    chunkAware: true,
-    cacheAware: true,
-    arteryAware: true,
-    daemonOriented: true,
-    sealedOrganism: true,
-    portalCompatible: true,
-    bridgeCompatible: true,
-    dualMembraneAware: true,
-    worldStateAware: true,
-    personaAware: true,
-    pulseDensityAware: true,
-    gpuLaneAware: true,
-    binaryOverlayAware: true,
-    epoch: "24.0-IMMORTAL"
-  }),
-
-  contract: Object.freeze({
-    purpose:
-      "Assemble all binary organs, wire anatomy and registry, compute organism artery, and boot the dualband organism deterministically.",
-
-    never: Object.freeze([
-      "perform cognition",
-      "override organ contracts",
-      "mutate organ internals",
-      "introduce randomness",
-      "bypass registry or anatomy",
-      "spawn multiple organisms implicitly",
-      "externalNetworkIO",
-      "filesystemMutation",
-      "organMutation",
-      "portalBypass",
-      "bridgeBypass"
-    ]),
-
-    always: Object.freeze([
-      "instantiate all binary organs explicitly",
-      "register organs in the binary registry",
-      "wire anatomy deterministically",
-      "persist anatomy and genome",
-      "compute organism artery snapshot",
-      "expose artery to NodeAdmin/Overmind",
-      "start scheduler only on boot",
-      "return a stable organism surface",
-      "respect sealedOrganismBoundary",
-      "remain daemonCompatible",
-      "remain portalCompatible",
-      "remain bridgeCompatible"
-    ])
-  })
-});
+export const OrganismKernelMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  IMPORT ALL BINARY ORGANS + CHUNKER
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
+
+// Required 3 for every “surface” in the organism graph
+export const pulseRole = Identity.pulseRole;
+
+export const surfaceMeta = Identity.surfaceMeta;
+
+export const pulseLoreContext = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+
+// Optional: export meta for tooling / dev panels
+export const EXPORT_META = Identity.EXPORT_META;
+
+
 import { AIBinaryAgent } from "./aiBinaryAgent.js";
 import { AIMemory } from "./aiMemory-v16.js";
 
@@ -167,6 +56,73 @@ import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry.js";
 import { AIBinaryEvolution } from "./aiBinaryEvolution.js";
 
 import { createPulseAIChunker } from "./PulseAIChunker-v20.js";
+
+// ============================================================================
+//  ORGANISM BOOTLOADER — PURE BEHAVIOR (NO META IN THIS FILE ANYMORE)
+// ============================================================================
+
+export async function AIDualbandOrganismBootloader() {
+  // Create chunker
+  const chunker = createPulseAIChunker();
+
+  // Instantiate binary organs
+  const agent = AIBinaryAgent();
+  const memory = AIMemory();
+  const anatomy = AIBinaryAnatomy();
+  const genome = AIBinaryGenome();
+  const vitals = AIBinaryVitals();
+  const metabolism = AIBinaryMetabolism();
+  const hormones = AIBinaryHormones();
+  const sentience = AIBinarySentience();
+  const consciousness = AIBinaryConsciousness();
+  const immunity = AIBinaryImmunity();
+  const pipeline = AIBinaryPipeline();
+  const reflex = AIBinaryReflex();
+  const scheduler = AIBinaryScheduler();
+  const registry = AIBinaryOrganRegistry();
+  const evolution = AIBinaryEvolution();
+
+  // Wire organism anatomy
+  registry.register("agent", agent);
+  registry.register("memory", memory);
+  registry.register("anatomy", anatomy);
+  registry.register("genome", genome);
+  registry.register("vitals", vitals);
+  registry.register("metabolism", metabolism);
+  registry.register("hormones", hormones);
+  registry.register("sentience", sentience);
+  registry.register("consciousness", consciousness);
+  registry.register("immunity", immunity);
+  registry.register("pipeline", pipeline);
+  registry.register("reflex", reflex);
+  registry.register("scheduler", scheduler);
+  registry.register("evolution", evolution);
+
+  // Compute organism artery
+  const artery = anatomy.computeArtery({
+    agent,
+    memory,
+    genome,
+    vitals,
+    metabolism,
+    hormones,
+    sentience,
+    consciousness,
+    immunity,
+    pipeline,
+    reflex,
+    scheduler,
+    evolution
+  });
+
+  // Expose stable organism surface
+  return Object.freeze({
+    artery,
+    registry,
+    chunker,
+    bootVersion: "v24.0-IMMORTAL"
+  });
+}
 
 // ============================================================================
 //  GLOBAL ORGANISM ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
@@ -427,7 +383,6 @@ function computeOrganismArtery({ registry, anatomy, genome, memory, scheduler, c
 
   return artery;
 }
-
 // ============================================================================
 //  createBinaryOrganism() — v24.0 IMMORTAL
 // ============================================================================
@@ -598,7 +553,6 @@ export function createBinaryOrganism({
     consciousness
   });
 
-  // Chunk artery for hot symbolic access (optional, non-mutating)
   const arteryChunks = kernelChunker.chunkJSON(artery, {
     label: "artery",
     band: "symbolic"
@@ -655,14 +609,15 @@ export function createBinaryOrganism({
 
 // ============================================================================
 //  bootBinaryOrganism() — v24.0 IMMORTAL
+//  (now delegates to AIDualbandOrganismBootloader defined on this page)
 // ============================================================================
 export async function bootBinaryOrganism(options = {}) {
-  const organism = createBinaryOrganism(options);
-
-  organism.scheduler.start();
+  const organism = await AIDualbandOrganismBootloader(options);
 
   const firstConsciousness =
-    organism.consciousness.generateConsciousnessPacket();
+    organism.consciousness?.generateConsciousnessPacket
+      ? organism.consciousness.generateConsciousnessPacket()
+      : null;
 
   return {
     ...organism,

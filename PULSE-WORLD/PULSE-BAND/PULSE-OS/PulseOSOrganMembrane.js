@@ -31,176 +31,21 @@
 //   • No timestamps, no randomness
 //   • Dual-band metadata ready (symbolic-primary, binary-non-executable)
 // ============================================================================
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseOSOrganMembrane",
-  version: "v14-Immortal",
-  layer: "membrane",
-  role: "os_organ_membrane",
-  lineage: "PulseOS-v14",
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+const Identity = OrganismIdentity(import.meta.url);
 
-  evo: {
-    membrane: true,
-    organBarrier: true,
-    reflexFilter: true,
-
-    deterministic: true,
-    driftProof: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true,
-
-    safeRouteFree: true,
-    metadataOnly: true
-  },
-
-  contract: {
-    always: [
-      "PulseOSTissueMembrane",
-      "PulseOSMucusMembrane"
-    ],
-    never: [
-      "legacyOrganMembrane",
-      "safeRoute",
-      "fetchViaCNS"
-    ]
-  }
-}
-*/
-
-// ============================================================================
-// ORGAN IDENTITY — v12.3‑EVO‑PRIME (A3 Organ Membrane)
-// ============================================================================
-export const PulseRole = {
-  type: "Barrier",
-  subsystem: "PulseOSOrganMembrane",
-  layer: "A3-OrganReflex",
-  version: "12.3-Evo-Prime",
-  identity: "PulseOSOrganMembrane-v12.3-Evo-Prime",
-
-  evo: {
-    // Core v12.3‑EVO invariants
-    driftProof: true,
-    deterministicField: true,
-    unifiedAdvantageField: true,
-    futureEvolutionReady: true,
-
-    // Reflex + membrane laws
-    zeroTiming: true,
-    zeroState: true,
-    zeroMutation: true,
-    zeroCompute: true,
-    zeroRoutingInfluence: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-
-    // Mesh + epithelial semantics
-    membraneLayer: "A3",
-    epithelialReflex: true,
-    meshLevel: true,
-    meshSentinel: true,
-    healingTriggerOnly: true,
-    degradationAnnotator: true,
-    dnaTagger: true,
-
-    // Mode + awareness
-    symbolicAware: true,
-    binaryAware: true,          // dual-band aware, symbolic-primary
-    dualBandReady: true,
-    binaryNonExecutable: true,
-
-    // Environment + safety
-    guardedWindowAccess: true,
-    environmentAgnostic: true,
-    multiInstanceReady: true
-  }
-};
-
-export const PulseOSOrganMembraneMeta = Object.freeze({
-  layer: "PulseOSOrganMembrane",
-  role: "A3_ORGAN_REFLEX_MEMBRANE",
-  version: "v12.3-Evo-BINARY-MAX",
-  identity: "PulseOSOrganMembrane-v12.3-Evo-BINARY-MAX",
-
-  guarantees: Object.freeze({
-    deterministic: true,
-    driftProof: true,
-    multiInstanceReady: true,
-
-    // Membrane laws
-    epithelialReflex: true,
-    organLevelBarrier: true,
-    meshSentinel: true,
-    meshLevel: true,
-    healingTriggerOnly: true,
-    degradationAnnotator: true,
-    dnaTagger: true,
-    oneWayReflex: true,
-
-    // Safety prohibitions
-    zeroTiming: true,
-    zeroState: true,
-    zeroMutation: true,
-    zeroCompute: true,
-    zeroRoutingInfluence: true,
-    zeroAsync: true,
-    zeroRandomness: true,
-    zeroUserCode: true,
-    zeroDynamicImports: true,
-    zeroEval: true,
-
-    // Dual-band awareness
-    dualBandAware: true,
-    symbolicAware: true,
-    binaryAware: true,
-    binaryNonExecutable: true,
-
-    // Environment
-    environmentAgnostic: true,
-    guardedWindowAccess: true,
-    worldLensAware: false
-  }),
-
-  contract: Object.freeze({
-    input: [
-      "MeshErrorEvent",
-      "MeshContext",
-      "DualBandContext"
-    ],
-    output: [
-      "OrganReflexEvent",
-      "OrganMembraneDiagnostics",
-      "OrganMembraneSignatures",
-      "OrganMembraneHealingState"
-    ]
-  }),
-
-  lineage: Object.freeze({
-    root: "PulseOS-v12-Evo",
-    parent: "PulseOS-v12.3-Evo",
-    ancestry: [
-      "PulseOSOrganMembrane-v9",
-      "PulseOSOrganMembrane-v10",
-      "PulseOSOrganMembrane-v11",
-      "PulseOSOrganMembrane-v11-Evo",
-      "PulseOSOrganMembrane-v11-Evo-Prime",
-      "PulseOSOrganMembrane-v12.3-Evo-Prime"
-    ]
-  }),
-
-  bands: Object.freeze({
-    supported: ["symbolic", "binary"],
-    default: "symbolic",
-    behavior: "organ-reflex"
-  }),
-
-  architecture: Object.freeze({
-    pattern: "A-B-A",
-    baseline: "mesh error → reflex classification → healing trigger",
-    adaptive: "symbolic-primary reflex with dual-band metadata",
-    return: "deterministic organ reflex event + signatures"
-  })
-});
+// 2 — EXPORT GENOME METADATA
+// export const PulseMeshMeta = Identity.OrganMeta;
+export const pulseRole = Identity.pulseRole;
+export const PulseRole = Identity.pulseRole;
+export const surfaceMeta = Identity.surfaceMeta;
+export const pulseLoreContext = Identity.pulseLoreContext;
+// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // LAYER CONSTANTS + DIAGNOSTICS
