@@ -105,3 +105,4 @@ export const artery =
   engine && engine.artery && engine.artery.backward
     ? engine.artery.backward
     : null;
+export const PulseBackward = createPulseMotionEngine;

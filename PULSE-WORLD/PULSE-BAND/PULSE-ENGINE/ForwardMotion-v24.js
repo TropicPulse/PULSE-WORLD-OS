@@ -106,3 +106,4 @@ export const artery =
   engine && engine.artery && engine.artery.forward
     ? engine.artery.forward
     : null;
+export const PulseForward = createPulseMotionEngine;
