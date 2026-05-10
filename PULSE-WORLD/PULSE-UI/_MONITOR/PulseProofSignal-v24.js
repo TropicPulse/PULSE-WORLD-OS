@@ -43,6 +43,98 @@ function emitSignalPacket(type, payload) {
   });
 }
 
+// ============================================================================
+//  COMMENT LOG GENERATION — SIGNAL IS AUTHORITY, LOGGER IS SINK
+// ============================================================================
+
+function safeClone(v) {
+  try {
+    return JSON.parse(JSON.stringify(v));
+  } catch {
+    return null;
+  }
+}
+
+function buildCommentFromSignalPacket(packet, kind = "direct") {
+  const env =
+    g.PulseSurface && g.PulseSurface.environment
+      ? safeClone(g.PulseSurface.environment)
+      : null;
+
+  const route =
+    g.PulseRouteMemory && g.PulseRouteMemory.currentRoute
+      ? safeClone(g.PulseRouteMemory.currentRoute)
+      : null;
+
+  const flow =
+    g.PulseUIFlow && g.PulseUIFlow.currentState
+      ? safeClone(g.PulseUIFlow.currentState)
+      : null;
+
+  const reflex =
+    g.PulseSkinReflex && g.PulseSkinReflex.currentReflex
+      ? safeClone(g.PulseSkinReflex.currentReflex)
+      : null;
+
+  const identity =
+    g.PulseProofBridge &&
+    typeof g.PulseProofBridge.getBridgeIdentitySnapshot === "function"
+      ? safeClone(g.PulseProofBridge.getBridgeIdentitySnapshot())
+      : null;
+
+  const bridgeEnv =
+    g.PulseProofBridge && g.PulseProofBridge.BRIDGE_ENV
+      ? safeClone(g.PulseProofBridge.BRIDGE_ENV)
+      : null;
+
+  const page =
+    typeof location !== "undefined" && location
+      ? location.pathname || null
+      : null;
+
+  return {
+    type: "comment",
+    ts: packet.timestamp,
+    signalPacketId: packet.packetId,
+    signalPacketType: packet.packetType,
+    summary: `Signal (${kind}) fired: ${packet.packetType}`,
+    details: {
+      packet: safeClone(packet),
+      route,
+      flow,
+      reflex,
+      page,
+      env,
+      identity,
+      bridgeEnv,
+      meta: {
+        version: "24.0-IMMORTAL++",
+        generator: "PulseProofSignalCommentEngine",
+        kind
+      }
+    }
+  };
+}
+
+function emitCommentLogForPacket(packet, kind = "direct") {
+  // Logger is a sink; signal is authority.
+  const logger =
+    (g.PulseLogger && typeof g.PulseLogger.log === "function"
+      ? g.PulseLogger
+      : null) ||
+    (g.PulseProofLogger && typeof g.PulseProofLogger.log === "function"
+      ? g.PulseProofLogger
+      : null);
+
+  if (!logger) return;
+
+  try {
+    const comment = buildCommentFromSignalPacket(packet, kind);
+    logger.log("comment", comment);
+  } catch {
+    // Comment generation must never break signal engine
+  }
+}
 
 // ============================================================================
 //  TRANSPORT LAYER — network-safe, logger-independent
@@ -232,7 +324,6 @@ function safeWrap(fn, wrapper) {
         stack: err && err.stack ? String(err.stack) : null
       });
       SignalBuffer.push(packet);
-      // Re-throw to preserve original behavior if desired
       throw err;
     }
 
@@ -273,17 +364,16 @@ function attachToLogger(logger) {
   if (typeof logger.pulseLog === "function") {
     const originalPulseLog = logger.pulseLog;
     logger.pulseLog = function pulseLogWithSignal(payload = {}) {
-      // Let logger build its entry first
       const result = originalPulseLog.call(logger, payload);
 
       try {
-        // If logger exposes makeLocalLogEntry/appendLocalLog, we don't rely on it.
-        // We just mirror the payload we see.
         const packet = emitSignalPacket("pulseLog-call", {
           source: "logger",
           payload
         });
         SignalBuffer.push(packet);
+        // also emit a comment for this signalized log
+        emitCommentLogForPacket(packet, "log-pulse");
       } catch {
         // ignore
       }
@@ -311,6 +401,7 @@ function attachToLogger(logger) {
         args
       });
       SignalBuffer.push(packet);
+      emitCommentLogForPacket(packet, "logger-console");
     });
 
     packets.push(
@@ -334,7 +425,10 @@ function attachToLogger(logger) {
       if (Array.isArray(entries)) {
         for (const entry of entries) {
           const packet = normalizeLogEntryToSignal(entry);
-          if (packet) SignalBuffer.push(packet);
+          if (packet) {
+            SignalBuffer.push(packet);
+            emitCommentLogForPacket(packet, "logger-entry");
+          }
         }
       }
       return entries;
@@ -348,20 +442,19 @@ function attachToLogger(logger) {
     );
   }
 
-  // Emit attach packets
   for (const p of packets) {
     SignalBuffer.push(p);
   }
 
   return packets;
 }
+
 // ============================================================================
 //  PUBLIC API — PulseProofSignal Engine (FRONTEND-SAFE IMMORTAL++)
 //  No OrganismMap, No Meta, No EXPORT_META, No evo.epoch
 // ============================================================================
 
 export const PulseProofSignal = Object.freeze({
-
   // Minimal identity (frontend-safe)
   version: "24.0-IMMORTAL++",
   source: "PulseProofSignal",
@@ -373,20 +466,26 @@ export const PulseProofSignal = Object.freeze({
   /**
    * Direct signal logging — bypasses logger entirely.
    * Safe even if logger is broken or missing.
+   * 🔥 NOW: also auto-creates a COMMENT LOG as signal authority.
    */
   signal(payload) {
     const packet = normalizeDirectSignal(payload);
     SignalBuffer.push(packet);
+    emitCommentLogForPacket(packet, "direct");
     return packet;
   },
 
   /**
    * Mirror a logger entry into signal space.
    * Safe even if logger is broken.
+   * 🔥 NOW: also auto-creates a COMMENT LOG for mirrored log entries.
    */
   fromLogEntry(entry) {
     const packet = normalizeLogEntryToSignal(entry);
-    if (packet) SignalBuffer.push(packet);
+    if (packet) {
+      SignalBuffer.push(packet);
+      emitCommentLogForPacket(packet, "log-entry");
+    }
     return packet;
   },
 
