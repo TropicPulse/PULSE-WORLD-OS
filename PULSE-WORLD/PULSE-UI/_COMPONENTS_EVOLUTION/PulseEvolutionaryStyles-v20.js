@@ -52,6 +52,93 @@ function escapeCSS(str) {
   return String(str).replace(/"/g, '\\"');
 }
 
+// ---------------------------------------------------------------------------
+// VERY SIMPLE CSS CASCADE MERGE ENGINE
+// map → submaps → final map
+// ---------------------------------------------------------------------------
+function mergeCSSCascade(rawCSS) {
+  if (!rawCSS || typeof rawCSS !== "string") return rawCSS;
+
+  const globalRules = new Map(); // selector -> Map(prop -> value)
+  const mediaBlocks = [];        // { query, css }
+
+  // 1) Extract @media blocks and keep them separate
+  let css = rawCSS;
+  const mediaRegex = /@media\s+([^{]+)\{([\s\S]*?)\}\s*/g;
+  let mediaMatch;
+  while ((mediaMatch = mediaRegex.exec(rawCSS)) !== null) {
+    const query = mediaMatch[1].trim();
+    const body = mediaMatch[2].trim();
+    mediaBlocks.push({ query, body });
+  }
+  css = rawCSS.replace(mediaRegex, "");
+
+  // 2) Parse global (non-media) rules
+  parseAndMergeRules(css, globalRules);
+
+  // 3) Parse and merge rules inside each media block
+  const mergedMediaBlocks = mediaBlocks.map(({ query, body }) => {
+    const mediaRules = new Map();
+    parseAndMergeRules(body, mediaRules);
+    const mediaCSS = emitMergedRules(mediaRules);
+    return mediaCSS ? `@media ${query} {\n${mediaCSS}\n}` : "";
+  }).filter(Boolean);
+
+  // 4) Emit final CSS: global + media
+  const globalCSS = emitMergedRules(globalRules);
+  return [globalCSS, ...mergedMediaBlocks].filter(Boolean).join("\n\n");
+}
+
+function parseAndMergeRules(css, rulesMap) {
+  if (!css) return;
+
+  // naive rule splitter: selector { ... }
+  const ruleRegex = /([^{]+)\{([^}]*)\}/g;
+  let match;
+  while ((match = ruleRegex.exec(css)) !== null) {
+    const selector = match[1].trim();
+    const body = match[2].trim();
+    if (!selector || !body) continue;
+
+    // ensure selector map exists
+    let propMap = rulesMap.get(selector);
+    if (!propMap) {
+      propMap = new Map();
+      rulesMap.set(selector, propMap);
+    }
+
+    // split declarations: prop: value;
+    const lines = body.split(";");
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) continue;
+      const colonIdx = line.indexOf(":");
+      if (colonIdx === -1) continue;
+
+      const prop = line.slice(0, colonIdx).trim();
+      const value = line.slice(colonIdx + 1).trim();
+      if (!prop || !value) continue;
+
+      // last one wins
+      propMap.set(prop, value);
+    }
+  }
+}
+
+function emitMergedRules(rulesMap) {
+  const chunks = [];
+  for (const [selector, propMap] of rulesMap.entries()) {
+    if (!propMap || propMap.size === 0) continue;
+    const decls = [];
+    for (const [prop, value] of propMap.entries()) {
+      decls.push(`${prop}: ${value};`);
+    }
+    if (decls.length === 0) continue;
+    chunks.push(`${selector} { ${decls.join(" ")} }`);
+  }
+  return chunks.join("\n");
+}
+
 // ============================================================================
 // CSS BUILDERS
 // ============================================================================
@@ -167,7 +254,9 @@ export function createPulseEvolutionaryStyles({
       if (skill) cssParts.push(buildAnimationCSS(skill));
     }
 
-    return cssParts.join("\n\n");
+    const rawCSS = cssParts.join("\n\n");
+    const mergedCSS = mergeCSSCascade(rawCSS);
+    return mergedCSS;
   }
 
   // -------------------------------------------------------------------------
@@ -194,7 +283,9 @@ export function createPulseEvolutionaryStyles({
       if (kind === "animations") cssParts.push(buildAnimationCSS(skill));
     }
 
-    return cssParts.join("\n\n");
+    const rawCSS = cssParts.join("\n\n");
+    const mergedCSS = mergeCSSCascade(rawCSS);
+    return mergedCSS;
   }
 
   // -------------------------------------------------------------------------
