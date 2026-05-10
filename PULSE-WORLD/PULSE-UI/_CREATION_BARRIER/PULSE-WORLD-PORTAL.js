@@ -41,12 +41,12 @@ import {
   PulseBinaryOrganismBoot,
   PulseProofBridgeMonitor
 } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-import * as PulseSkinReflex from "../_MONITOR/PulseUISkinReflex-v24.js";
-import * as PulseVitalsLogger from "../_MONITOR/PulseProofLogger-v24.js";
+import PulseSkinReflex from "../_MONITOR/PulseUISkinReflex-v24.js";
+import PulseVitalsLogger from "../_MONITOR/PulseProofLogger-v24.js";
 
-import * as PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
-import * as PulseUIFlow from "../_MONITOR/PulseUIFlow-v24.js";
-import * as PulsePageScanner from "../_MONITOR/PulseUIPageScanner-v24.js";
+import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
+import PulseUIFlow from "../_MONITOR/PulseUIFlow-v24.js";
+import PulsePageScanner from "../_MONITOR/PulseUIPageScanner-v24.js";
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseUIRouteMemory-v24.js";
 
 
