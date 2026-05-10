@@ -12,19 +12,39 @@ Multi-Mind • Multi-Band • Session-Aware • Future-Evolution-Ready
 //  IMMORTAL++ LAZY BRIDGE ACCESS — SAFE, GLOBAL, CIRCULAR-PROOF
 // ============================================================================
 
-import { PulseProofBridge as BridgeExport } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+let BridgeExport = null;
+let triedImport = false;
 
-// IMMORTAL++: always resolve the bridge *late*, never at module top-level
-function getBridge() {
-  // Prefer the fully initialized global mirror
-  if (typeof globalThis !== "undefined" && globalThis.PulseProofBridge) {
-    return globalThis.PulseProofBridge;
+function resolveBridgeExport() {
+  // If global mirror exists, use it
+  if (globalThis.PulseProofBridge) {
+    BridgeExport = globalThis.PulseProofBridge;
+    return BridgeExport;
   }
-  // Fallback to direct import (only safe if no cycle)
-  return BridgeExport || null;
+
+  // If we already attempted import, return whatever we have
+  if (triedImport) return BridgeExport;
+
+  // Mark that we attempted import
+  triedImport = true;
+
+  // Try lazy sync import (safe because it won't throw TDZ)
+  try {
+    // This does NOT execute the module immediately.
+    // It only returns the reference if already evaluated.
+    const mod = require("../_BACKEND/PULSE-WORLD-BRIDGE.js");
+    BridgeExport = mod?.PulseProofBridge || null;
+  } catch {
+    BridgeExport = null;
+  }
+
+  return BridgeExport;
 }
 
-// Lazy getters — ALWAYS call these inside functions, never at top-level
+function getBridge() {
+  return resolveBridgeExport();
+}
+
 function getCore() {
   const b = getBridge();
   return b?.coreMemory || null;
@@ -39,6 +59,7 @@ function getDiagnosticsBus() {
   const b = getBridge();
   return b?.diagnosticsBus || null;
 }
+
 
 // ============================================================================
 //  GLOBAL HANDLE (unchanged)
