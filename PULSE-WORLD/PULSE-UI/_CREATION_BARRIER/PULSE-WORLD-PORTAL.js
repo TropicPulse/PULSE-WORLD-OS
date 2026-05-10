@@ -29,7 +29,6 @@
 // ============================================================================
 // IMPORTS — PORTAL-ATTACHED ORGANS (SURFACE-SAFE)
 // ============================================================================
-
 import {
   route as BridgeRoute,
   PulseProofBridgeLogger as PulseProofLogger,
@@ -41,7 +40,8 @@ import {
   PulseBinaryOrganismBoot,
   PulseProofBridgeMonitor
 } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-import PulseSkinReflex from "../_MONITOR/PulseUISkinReflex-v24.js";
+
+import { createPulseSkinReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
 import PulseVitalsLogger from "../_MONITOR/PulseProofLogger-v24.js";
 
 import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
@@ -49,24 +49,26 @@ import PulseUIFlow from "../_MONITOR/PulseUIFlow-v24.js";
 import PulsePageScanner from "../_MONITOR/PulseUIPageScanner-v24.js";
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseUIRouteMemory-v24.js";
 
-
 import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
 import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 
 // ============================================================
-//  EXPORT SKINREFLEX A1 LAYER TO WINDOW
+//  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
 // ============================================================
+const PulseSkinReflex = null;
 try {
-if (typeof window !== "undefined" && PulseSkinReflex) {
+  PulseSkinReflex = createPulseSkinReflex();
+
+  console.log("[PORTAL] SkinReflex instance:", PulseSkinReflex);
+
   window.getHook    = PulseSkinReflex.getHook;
   window.getAuth    = PulseSkinReflex.getAuth;
   window.getMap     = PulseSkinReflex.getMap;
   window.callHelper = PulseSkinReflex.callHelper;
 
-  console.log("[PORTAL] SkinReflex loaded. getHook type:", typeof window.getHook);
-}
+  console.log("[PORTAL] getHook type:", typeof window.getHook);
 } catch (err) {
-  console.log("[PORTAL] SkinReflex Error" + err);
+  console.error("[PORTAL] SkinReflex Error:", err);
 }
 
 const g =
