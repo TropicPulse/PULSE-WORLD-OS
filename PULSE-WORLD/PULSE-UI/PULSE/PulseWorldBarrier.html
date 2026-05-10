@@ -961,6 +961,13 @@ document.addEventListener("DOMContentLoaded", () => {
     authMsg.style.display = "none";
   }
 
+  function showPinUI() {
+    emailSection.style.display = "none";
+    rememberSection.style.display = "none";
+    pinSection.style.display = "block";
+    authMsg.style.display = "block";
+  }
+
   /* ============================================================
      4. LOGIN BOOTSTRAP
   ============================================================ */
@@ -978,115 +985,122 @@ document.addEventListener("DOMContentLoaded", () => {
     hideTPLoader();
     window.location.href = returnTo || "/dashboard.html";
   }
+/* ============================================================
+   5. SEND PIN — UPGRADED WITH showLoginUI() + showPinUI()
+============================================================ */
+sendBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim().toLowerCase();
+  showTPLoader();
 
-  /* ============================================================
-     5. SEND PIN — FIXED
-  ============================================================ */
-  sendBtn.addEventListener("click", async () => {
-    const email = emailInput.value.trim().toLowerCase();
-    showTPLoader();
+  if (!email || !email.includes("@")) {
+    hideTPLoader();
+    authMsg.textContent = "Please Enter a Valid Email!";
+    authMsg.className = "msg error";
+    authMsg.style.display = "block";
+    showLoginUI();
+    emailInput.focus();
+    return;
+  }
 
-    if (!email || !email.includes("@")) {
-      hideTPLoader();
-      authMsg.textContent = "Please Enter a Valid Email!";
-      authMsg.className = "msg error";
-      authMsg.style.display = "block";
-      showLoginUI();
-      emailInput.focus();
+  authMsg.style.display = "none";
+
+  try {
+    const data = await getHook({ type: "sendPin", email });
+    hideTPLoader();
+
+    if (data && data.success) {
+      authMsg.className = "msg success";
+      authMsg.textContent = "PIN Sent! Check your Email!";
+      showPinUI();     // ← SWITCH TO PIN UI
+      pinInput.focus();
       return;
     }
 
-    authMsg.style.display = "none";
+    // FAILURE
+    authMsg.className = "msg error";
+    authMsg.textContent = data?.message || "Could not Send PIN. Try again!";
+    authMsg.style.display = "block";
+    showLoginUI();     // ← ONLY RESET ON FAILURE
+    emailInput.focus();
 
-    try {
-      const data = await getHook({ type: "sendPin", email });
-      hideTPLoader();
+  } catch (err) {
+    hideTPLoader();
+    authMsg.className = "msg error";
+    authMsg.textContent = "Network error. Try again!";
+    authMsg.style.display = "block";
+    showLoginUI();     // ← ONLY RESET ON FAILURE
+    emailInput.focus();
+  }
+});
 
-      if (data.success) {
-        authMsg.className = "msg success";
-        authMsg.textContent = "PIN Sent! Check your Email!";
-        authMsg.style.display = "block";
-
-        emailSection.style.display = "none";
-        rememberSection.style.display = "none";
-        pinSection.style.display = "block";
-        pinInput.focus();
-      } else {
-        authMsg.className = "msg error";
-        authMsg.textContent = "Could not Send PIN. Try again!";
-        authMsg.style.display = "block";
-        showLoginUI();
-        emailInput.focus();
-      }
-    } catch {
-      hideTPLoader();
-      authMsg.className = "msg error";
-      authMsg.textContent = "Network error. Try again!";
-      authMsg.style.display = "block";
-      showLoginUI();
-      emailInput.focus();
-    }
-  });
 
   /* ============================================================
      6. VERIFY PIN — FIXED
   ============================================================ */
-  verifyBtn.addEventListener("click", async () => {
-    const email = emailInput.value.trim().toLowerCase();
-    const pin   = pinInput.value.trim();
-    showTPLoader();
+  /* ============================================================
+   6. VERIFY PIN — UPGRADED WITH showPinUI()
+============================================================ */
+verifyBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim().toLowerCase();
+  const pin   = pinInput.value.trim();
+  showTPLoader();
 
-    if (pin.length !== 6) {
-      hideTPLoader();
-      authMsg.className = "msg error";
-      authMsg.textContent = "PIN must be 6 digits!";
-      authMsg.style.display = "block";
-      pinInput.focus();
+  if (pin.length !== 6) {
+    hideTPLoader();
+    authMsg.className = "msg error";
+    authMsg.textContent = "PIN must be 6 digits!";
+    authMsg.style.display = "block";
+    showPinUI();       // ← KEEP USER IN PIN UI
+    pinInput.focus();
+    return;
+  }
+
+  authMsg.style.display = "none";
+
+  try {
+    const data = await getHook({
+      type: "verifyPin",
+      email,
+      pin,
+      purpose: "login"
+    });
+
+    hideTPLoader();
+
+    if (data.success && data.identity) {
+      const canonical = {
+        ...data.identity,
+        trustedDevice: true
+      };
+
+      try {
+        localStorage.setItem("tp_identity_v9", JSON.stringify(canonical));
+        localStorage.setItem("tp_device_token_v9", "1");
+      } catch {}
+
+      window.PulseIdentity = canonical;
+
+      window.location.href = returnTo || "/dashboard.html";
       return;
     }
 
-    authMsg.style.display = "none";
+    // FAILURE
+    authMsg.className = "msg error";
+    authMsg.textContent = "Invalid PIN. Try again!";
+    authMsg.style.display = "block";
+    showPinUI();       // ← KEEP USER IN PIN UI
+    pinInput.focus();
 
-    try {
-      const data = await getHook({
-        type: "verifyPin",
-        email,
-        pin,
-        purpose: "login"
-      });
+  } catch (err) {
+    hideTPLoader();
+    authMsg.className = "msg error";
+    authMsg.textContent = "Network error. Try again!";
+    authMsg.style.display = "block";
+    showPinUI();       // ← KEEP USER IN PIN UI
+    pinInput.focus();
+  }
+});
 
-      hideTPLoader();
-
-      if (data.success && data.identity) {
-        const canonical = {
-          ...data.identity,
-          trustedDevice: true
-        };
-
-        try {
-          localStorage.setItem("tp_identity_v9", JSON.stringify(canonical));
-          localStorage.setItem("tp_device_token_v9", "1");
-        } catch {}
-
-        window.PulseIdentity = canonical;
-
-        window.location.href = returnTo || "/dashboard.html";
-        return;
-      }
-
-      authMsg.className = "msg error";
-      authMsg.textContent = "Invalid PIN. Try again!";
-      authMsg.style.display = "block";
-      pinInput.focus();
-
-    } catch {
-      hideTPLoader();
-      authMsg.className = "msg error";
-      authMsg.textContent = "Network error. Try again!";
-      authMsg.style.display = "block";
-      pinInput.focus();
-    }
-  });
 
   /* ============================================================
      7. PULSEBAND UI — IMMORTAL++
