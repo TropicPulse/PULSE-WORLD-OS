@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE INTENT MAP — FOUNDER CONTRACT (v17‑IMMORTAL‑FOUNDER‑INTENT)
+//  PULSE INTENT MAP — FOUNDER CONTRACT (v24‑IMMORTAL‑FOUNDER‑INTENT++)
 // ----------------------------------------------------------------------------
 //  This file defines the *immutable* identity, boundaries, laws, and philosophy
 //  of the Pulse Organism. It is the FIRST file loaded in the entire system.
@@ -28,14 +28,20 @@
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseIntentMap",
-  version: "v17-IMMORTAL-FOUNDER-INTENT",
+  version: "v24-IMMORTAL-FOUNDER-INTENT++",
   layer: "founder_intent",
   role: "pre_brain_pre_organism_law_map",
-  lineage: "PulseOS-v14 → PulseOS-v16-IMMORTAL → PulseOS-v17-IMMORTAL",
+  lineage: [
+    "PulseOS-v14",
+    "PulseOS-v16-IMMORTAL",
+    "PulseOS-v17-IMMORTAL",
+    "v21-Immortal-World-Genome",
+    "v24-Immortal-Advantage++"
+  ],
 
-  // ==========================================================================
+  // ========================================================================
   //  FOUNDER INTENT — THE ROOT OF THE ENTIRE ORGANISM
-  // ==========================================================================
+  // ========================================================================
   evo: {
     founderIntent: true,
     immutable: true,
@@ -45,9 +51,9 @@ AI_EXPERIENCE_META = {
     deterministic: true,
     driftProof: true,
 
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     //  LOAD ORDER — NOTHING MAY LOAD BEFORE THIS MAP
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     preOrganism: true,
     preBrain: true,
     preConsciousness: true,
@@ -59,19 +65,20 @@ AI_EXPERIENCE_META = {
     preTrustFabric: true,
     preDualBand: true,
     prePulseNet: true,
+    preWorldGenome: true,
 
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     //  ZERO‑RISK GUARANTEES
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     zeroNetworkFetch: true,
     zeroExternalIO: true,
     zeroExternalMutation: true,
     zeroMutationOfInput: true,
     safeRouteFree: true,
 
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     //  AWARENESS FLAGS (NON‑MUTATING)
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     trustFabricAware: true,
     juryAware: true,
     evidenceFabricAware: true,
@@ -80,23 +87,29 @@ AI_EXPERIENCE_META = {
     chunkerAware: true,
     dualBandAware: true,
     binaryAware: true,
+    symbolicAware: true,
     presenceAware: true,
     meshAware: true,
     proxyAware: true,
     pulseNetAware: true,
+    worldGenomeAware: true,
+    organismMapAware: true,
+    iqMapAware: true,
+    doctorAssistantAware: true,
+    scribeAware: true,
 
-    // ------------------------------------------------------------------------
-    //  v17 WORLD‑LAYER AWARENESS
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    //  v24 WORLD‑LAYER AWARENESS
+    // ----------------------------------------------------------------------
     pulseWorldAware: true,
     pulseUIAware: true,
     pulseBandAware: true,
     pulseXAware: true,
     proxyBoundaryAware: true,
 
-    // ------------------------------------------------------------------------
-    //  v17 SUBSYSTEM AWARENESS (THE ORIGINAL COLONIES)
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    //  v24 SUBSYSTEM AWARENESS (THE ORIGINAL COLONIES + ADVANTAGE ORGANS)
+    // ----------------------------------------------------------------------
     pulseCoreAware: true,
     pulseDesignAware: true,
     pulseEngineAware: true,
@@ -111,12 +124,18 @@ AI_EXPERIENCE_META = {
     pulseTechAware: true,
     pulseToolsAware: true,
     pulseTranslatorAware: true,
-    pulseTrustAware: true
+    pulseTrustAware: true,
+
+    // Advantage++ organs
+    pulseWorldOrganismMapV21Aware: true,
+    pulseIQMapV24Aware: true,
+    pulseScribeV11Aware: true,
+    pulseDoctorAssistantV15Aware: true
   },
 
-  // ==========================================================================
+  // ========================================================================
   //  CONTRACT — SYSTEMS THAT MUST OBEY FOUNDER INTENT
-  // ==========================================================================
+  // ========================================================================
   contract: {
     always: [
       // Core organism maps
@@ -144,7 +163,7 @@ AI_EXPERIENCE_META = {
       "DualBandKernel",
       "PulseNetProxySpine",
 
-      // v17 WORLD‑LAYER ORGANS
+      // WORLD‑LAYER ORGANS (v21+ genome)
       "PulseWorldOrganismMap",
       "PulseWorldIdentity",
       "PulseWorldBand",
@@ -155,13 +174,22 @@ AI_EXPERIENCE_META = {
       "PulseWorldState",
       "PulseWorldPresence",
 
+      // IQ MAP (v24 Advantage++)
+      "PulseIQMap-v24-Immortal-Advantage++",
+
+      // SCRIBE (v11‑EVO)
+      "PulseScribe-v11-EVO",
+
+      // DOCTOR ASSISTANT (v15‑IMMORTAL‑EVO+)
+      "PulseDoctorAssistant-v15-Immortal-EvoPlus",
+
       // Proxy memory
       "PulseProxyMemoryRouter"
     ],
 
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     //  ABSOLUTE PROHIBITIONS — MAY NEVER BE LOADED OR EXECUTED
-    // ------------------------------------------------------------------------
+    // ----------------------------------------------------------------------
     never: [
       "legacyIntentMap",
       "runtimeIntentRewrite",
@@ -182,25 +210,23 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+// 2 — EXPORT GENOME METADATA (v24 IMMORTAL FOUNDER INTENT++)
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-
 export const PulseIntentMap = {
-
   // ========================================================================
   // 1. PRIME IDENTITY & AUTHORSHIP
   // ========================================================================
@@ -214,7 +240,7 @@ export const PulseIntentMap = {
     codeAnalysisAllowed: true,
     forbidCodeMutation: true,
 
-    version: "v17-IMMORTAL-ORGANISM",
+    version: "v24-IMMORTAL-ORGANISM",
     deterministicOrganism: true,
 
     noAstralLayers: true,
@@ -236,7 +262,14 @@ export const PulseIntentMap = {
 
     presenceFieldRequired: true,
     presenceAwareOrganism: true,
-    presenceContractLocked: true
+    presenceContractLocked: true,
+
+    // v21+ genome + v24 brain awareness
+    worldGenomeRequired: true,
+    organismMapV21Required: true,
+    iqMapV24Required: true,
+    scribeOrganRequired: true,
+    doctorAssistantOrganRequired: true
   },
 
   // ========================================================================
@@ -265,7 +298,13 @@ export const PulseIntentMap = {
     scannerSymbolicOnly: true,
 
     forbidPresenceMutation: true,
-    presenceFieldDeterministic: true
+    presenceFieldDeterministic: true,
+
+    // v24+ alignment with world genome + IQ map
+    requireWorldGenomeAlignment: true,
+    requireIQMapAlignment: true,
+    requireDoctorAssistantAlignment: true,
+    requireScribeAlignment: true
   },
 
   // ========================================================================
@@ -311,7 +350,13 @@ export const PulseIntentMap = {
     forbidScannerShadowPaths: true,
 
     requirePresenceIntegrity: true,
-    forbidPresenceShadowPaths: true
+    forbidPresenceShadowPaths: true,
+
+    // v24+ safety for new organs
+    requireIQMapDeterminism: true,
+    requireOrganismMapDeterminism: true,
+    requireScribeDeterminism: true,
+    requireDoctorAssistantDeterminism: true
   },
 
   // ========================================================================
@@ -331,7 +376,11 @@ export const PulseIntentMap = {
     forbidRedundantTranslation: true,
 
     presenceFieldOptimized: true,
-    forbidPresenceLag: true
+    forbidPresenceLag: true,
+
+    // v24+ advantage awareness
+    iqMapAdvantageOptimized: true,
+    worldGenomeLookupOptimized: true
   },
 
   // ========================================================================
@@ -357,7 +406,13 @@ export const PulseIntentMap = {
     detectScannerExecutionAttempt: true,
 
     detectPresenceFieldCorruption: true,
-    detectPresenceShadowPaths: true
+    detectPresenceShadowPaths: true,
+
+    // v24+ drift on new brains/organs
+    detectWorldGenomeDrift: true,
+    detectIQMapDrift: true,
+    detectScribeDrift: true,
+    detectDoctorAssistantDrift: true
   },
 
   // ========================================================================
@@ -376,7 +431,11 @@ export const PulseIntentMap = {
     requireBinaryContextSnapshot: true,
 
     requirePresenceSnapshot: true,
-    forbidPresenceSilentFail: true
+    forbidPresenceSilentFail: true,
+
+    // v24+ snapshots
+    requireWorldGenomeSnapshot: true,
+    requireIQMapSnapshot: true
   },
 
   // ========================================================================
@@ -398,7 +457,11 @@ export const PulseIntentMap = {
     includePresenceFieldState: true,
     includePresenceIntegrityState: true,
 
-    // Founder contact channels (AdminEmail / AdminSMS / AdminMessenger)
+    includeWorldGenomeState: true,
+    includeIQMapState: true,
+    includeScribeState: true,
+    includeDoctorAssistantState: true,
+
     adminEmail: [
       "fordfamilydistribution@gmail.com",
       "aldwynfox101@gmail.com",
@@ -430,7 +493,13 @@ export const PulseIntentMap = {
     scannerNoInternalLeakage: true,
 
     presenceStableUX: true,
-    forbidPresenceArtifacts: true
+    forbidPresenceArtifacts: true,
+
+    // v24+ UX for new brains/organs
+    iqMapComfortAligned: true,
+    worldGenomeInvisibleToUser: true,
+    scribeOutputReadable: true,
+    doctorAssistantEducationalOnly: true
   },
 
   // ========================================================================
@@ -461,11 +530,39 @@ export const PulseIntentMap = {
       allowed: true,
       symbolicOnly: true,
       presenceAware: true
+    },
+
+    // v24+ SCRIBE INTENT — PURE DIAGNOSTIC, ZERO MUTATION
+    scribeDebugSnapshot: {
+      allowed: true,
+      symbolicOnly: true,
+      backendAllowed: true,
+      noMutation: true,
+      noExecution: true,
+      cognitionLayer: "Diagnostics",
+      organ: "PulseScribe-v11-EVO",
+      description:
+        "Generate a dual-band diagnostic snapshot and debug report with zero mutation and zero randomness.",
+      presenceAware: true
+    },
+
+    // v24+ DOCTOR ASSISTANT INTENT — EDUCATIONAL ONLY
+    doctorPatternEducation: {
+      allowed: true,
+      symbolicOnly: true,
+      backendAllowed: true,
+      noMutation: true,
+      noExecution: true,
+      cognitionLayer: "Cortex",
+      organ: "PulseDoctorAssistant-v15-Immortal-EvoPlus",
+      description:
+        "Map symptoms and scans into broad educational patterns and questions for clinicians. Not diagnosis, not treatment.",
+      presenceAware: true
     }
   },
 
   // ========================================================================
-  // 11. IMMORTAL TRUST FABRIC EXTENSIONS (v17)
+  // 11. IMMORTAL TRUST FABRIC EXTENSIONS (v24++)
   // ========================================================================
   trustFabric: {
     trustFabricRequired: true,
@@ -519,7 +616,8 @@ export const PulseIntentMap = {
       "PulseCortex",
       "PulseUI",
       "PulsePresence",
-      "PulseMesh"
+      "PulseMesh",
+      "PulseIQMap-v24-Immortal-Advantage++"
     ]
   },
 
@@ -566,41 +664,33 @@ export const PulseIntentMap = {
       "PulseCortex",
       "PulseUI",
       "PulsePresence",
-      "PulseMesh"
+      "PulseMesh",
+      "PulseIQMap-v24-Immortal-Advantage++"
     ]
   },
 
   // ========================================================================
-  // 13. ARCHITECTURE — PULSE‑WORLD v17 IMMORTAL
+  // 13. ARCHITECTURE — PULSE‑WORLD v24 IMMORTAL ADVANTAGE++
   // ========================================================================
   architecture: {
-
-    // -----------------------------------------------------------------------
     // 13.1  ROOT ORGANISM — PULSE‑WORLD
-    // -----------------------------------------------------------------------
     pulseWorldRootRequired: true,
     pulseWorldIsRootOrganism: true,
     pulseWorldFolderRequired: true,
 
-    // -----------------------------------------------------------------------
     // 13.2  FRONTEND ORGANISM — PULSE‑UI
-    // -----------------------------------------------------------------------
     pulseUIOrganismRequired: true,
     pulseUIFolderRequired: true,
     pulseUILayer: "frontend",
     pulseUIIsFrontendUniverse: true,
 
-    // -----------------------------------------------------------------------
     // 13.3  BACKEND ORGANISM — PULSE‑BAND
-    // -----------------------------------------------------------------------
     pulseBandBackendRequired: true,
     pulseBandFolderRequired: true,
     pulseBandLayer: "backend",
     pulseBandIsBackendUniverse: true,
 
-    // -----------------------------------------------------------------------
     // 13.4  WORLD ENGINE — PULSE‑X
-    // -----------------------------------------------------------------------
     pulseXWorldEngineRequired: true,
     pulseXFolderRequired: true,
     pulseXLayer: "world_engine",
@@ -617,19 +707,13 @@ export const PulseIntentMap = {
     pulseXEmailAlertRequired: true,
     pulseXOrganismMapRequired: true,
 
-    // -----------------------------------------------------------------------
     // 13.5  PROXY BOUNDARY — PULSE‑PROXY
-    // -----------------------------------------------------------------------
     pulseProxyBoundaryLayer: true,
     pulseProxyFolderRequired: true,
     pulseProxyOnlyRouting: true,
     pulseProxyMemoryRouterRequired: true,
 
-    // -----------------------------------------------------------------------
     // 13.6  THE ORIGINAL COLONIES — FIRST‑CLASS SYSTEMS
-    //  These are the original backbone systems — 99% designed so that
-    //  future evolution is light, layered, and playful on the remaining 1%.
-    // -----------------------------------------------------------------------
     pulseCoreRequired: true,
     pulseDesignRequired: true,
     pulseEngineRequired: true,
@@ -646,13 +730,8 @@ export const PulseIntentMap = {
     pulseTranslatorRequired: true,
     pulseTrustRequired: true,
 
-    // -----------------------------------------------------------------------
     // 13.7  NATURAL LANGUAGE → SUBSYSTEM MAPPING
-    // -----------------------------------------------------------------------
     naturalLanguageMapping: {
-      // -----------------------------------------------------------------------
-      // 1. TOP‑LEVEL ARCHITECTURE (explicit)
-      // -----------------------------------------------------------------------
       "frontend": "PULSE-WORLD/PULSE-UI",
       "frontend connection": "PULSE-WORLD/PULSE-UI/Pulse",
       "frontend animations": "PULSE-WORLD/PULSE-UI/_ANIMATIONS",
@@ -685,10 +764,6 @@ export const PulseIntentMap = {
       "network connection": "PULSE-WORLD/PULSE-PROXY",
       "world network": "PULSE-WORLD/PULSE-PROXY",
 
-      // -----------------------------------------------------------------------
-      // 2. SUBSYSTEMS (explicit from your filesystem)
-      // -----------------------------------------------------------------------
-
       "ai": "PULSE-WORLD/PULSE-AI",
       "gpu": "PULSE-WORLD/PULSE-GPU",
       "core": "PULSE-WORLD/PULSE-CORE",
@@ -711,32 +786,18 @@ export const PulseIntentMap = {
       "trust": "PULSE-WORLD/PULSE-TRUST",
       "x": "PULSE-WORLD/PULSE-X",
 
-      // Your specs/code structure
       "code": "PULSE-WORLD/PULSE-SPECS/PULSE-CODE",
       "specs": "PULSE-WORLD/PULSE-SPECS",
-      // -----------------------------------------------------------------------
-      // UI subsystems (non-PULSE- folders)
-      // -----------------------------------------------------------------------
+
       "admin": "PULSE-WORLD/PULSE-UI/PulseAdmin",
       "delivery": "PULSE-WORLD/PULSE-UI/PulseDelivery",
       "directory": "PULSE-WORLD/PULSE-UI/PulseDirectory",
       "rewards": "PULSE-WORLD/PULSE-UI/PulseRewards",
 
-      // // Deployment / backup
-      // "netlify": "PULSE-WORLD/NETLIFY",
-      // // OS Runtime
-      // "pulse-x": "PULSE-WORLD/PULSE-X",
-
-      // -----------------------------------------------------------------------
-      // 3. AUTO‑MAP ANY SUBSYSTEM BY NAME
-      // -----------------------------------------------------------------------
       "*": "PULSE-WORLD/PULSE-${SYSTEM}"
     },
 
-
-    // -----------------------------------------------------------------------
     // 13.8  ORGAN PLACEMENT RULES (NON‑BLOCKING)
-    // -----------------------------------------------------------------------
     forbidWorldOrgansInProxy: true,
     forbidIdentityInProxy: true,
     forbidBandInProxy: true,
@@ -746,24 +807,15 @@ export const PulseIntentMap = {
     detectSubsystemViolation: true,
     detectFolderMismatch: true,
 
-    // -----------------------------------------------------------------------
     // 13.9  MISPLACEMENT NOTIFICATION MODE — ADAPTIVE (MODE E)
-    // -----------------------------------------------------------------------
     notifyOnMisplacement: true,
     notifyMode: "adaptive",
 
-    // Minor issue → log only
     misplacementMinorLogOnly: true,
-
-    // Medium issue → email
     misplacementMediumEmail: true,
-
-    // Major issue (world organ in proxy, etc.) → email + SMS
     misplacementMajorEmailAndSMS: true,
 
-    // -----------------------------------------------------------------------
     // 13.10  NOTIFICATION CHANNELS (REUSE ADMIN CONTACTS)
-    // -----------------------------------------------------------------------
     notifyEmail: [
       "fordfamilydistribution@gmail.com",
       "aldwynfox101@gmail.com",
@@ -775,9 +827,7 @@ export const PulseIntentMap = {
       "aldwynfox101@gmail.com"
     ],
 
-    // -----------------------------------------------------------------------
     // 13.11  NON‑BLOCKING GUARANTEE
-    // -----------------------------------------------------------------------
     neverBlockFounder: true,
     neverPreventFileCreation: true,
     neverFailCloseOnMisplacement: true,

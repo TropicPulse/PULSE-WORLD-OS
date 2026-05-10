@@ -1,6 +1,6 @@
 // ============================================================================
-//  FILE: /PULSE-X/PulseIQMap-v20-Evolvable.js
-//  PULSE IQ MAP — THE EVOLVABLE BRAIN (v20‑IMMORTAL‑EVOLVABLE)
+//  FILE: /PULSE-X/PulseIQMap-v24-Immortal-Advantage++.js
+//  PULSE IQ MAP — THE EVOLVABLE BRAIN (v24‑IMMORTAL‑ADVANTAGE++)
 // ----------------------------------------------------------------------------
 //  This is the organism’s *consciousness layer*.
 //
@@ -47,7 +47,7 @@ AI_EXPERIENCE_META = {
   //  IDENTITY & VERSIONING
   // -------------------------------------------------------------------------
   identity: "IQMap",
-  version: "v20-IMMORTAL-EVOLVABLE",
+  version: "v24-IMMORTAL-ADVANTAGE++",
   layer: "consciousness",
   role: "organism_brain + ui_brain + comfort_pattern_brain",
 
@@ -63,7 +63,8 @@ AI_EXPERIENCE_META = {
     "v16-Immortal-CONSCIOUSNESS",
     "v18-Immortal-CONSCIOUSNESS+UI-SKILLS",
     "v19-Immortal-PATTERN",
-    "v20-Immortal-EVOLVABLE"
+    "v20-Immortal-EVOLVABLE",
+    "v24-Immortal-Advantage++"
   ],
 
   // -------------------------------------------------------------------------
@@ -128,63 +129,52 @@ AI_EXPERIENCE_META = {
   }
 }
 */
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+// 2 — EXPORT GENOME METADATA (v24 IMMORTAL ADVANTAGE++)
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // -----------------------------------------------------------------------------
 // IMPORTS (pure contracts; real system wires concrete implementations)
 // -----------------------------------------------------------------------------
 import { PulseOrganismMap } from "./PulseWorldOrganismMap-v21.js";
 import { createPulseAIChunker } from "../PULSE-AI/PulseAIChunker-v20.js";
-import { PulseProofBridgeLogger as logger, BridgeLog as log, BridgeWarn as warn, BridgeError as error, BridgeError as logError } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import {
+  PulseProofBridgeLogger as logger,
+  BridgeLog as log,
+  BridgeWarn as warn,
+  BridgeError as error,
+  BridgeError as logError
+} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // -----------------------------------------------------------------------------
-// VERSION MAP — CENTRALIZED VERSION TAGS FOR ALL SUB‑COMPONENTS
+// VERSION MAP — CENTRALIZED VERSION TAGS FOR ALL SUB‑COMPONENTS (v24++)
 // -----------------------------------------------------------------------------
 const VERSION_MAP = {
-  organism: "v16-IMMORTAL-ORGANISM",
-  iq: "v20-IMMORTAL-EVOLVABLE",
+  organism: "v24-IMMORTAL-ORGANISM",
+  iq: "v24-IMMORTAL-ADVANTAGE++",
 
-  uiSkillsGenome: "v20-UI-SKILLS-GENOME-EVOLVABLE",
-  uiSkillsBuilder: "v20-UI-SKILLS-BUILDER-EVOLVABLE",
-  uiCompiler: "v20-UI-COMPILER-PAGE-IMMORTAL",
+  uiSkillsGenome: "v24-UI-SKILLS-GENOME-ADVANTAGE++",
+  uiSkillsBuilder: "v24-UI-SKILLS-BUILDER-ADVANTAGE++",
+  uiCompiler: "v24-UI-COMPILER-PAGE-IMMORTAL",
 
-  patternEngine: "v20-PATTERN-ENGINE-COMFORT",
-  patternRegistry: "v20-PATTERN-REGISTRY-COMFORT",
-  patternPlanner: "v20-PATTERN-PLANNER-COMFORT",
-  patternExecutor: "v20-PATTERN-EXECUTOR-COMFORT"
+  patternEngine: "v24-PATTERN-ENGINE-COMFORT",
+  patternRegistry: "v24-PATTERN-REGISTRY-COMFORT",
+  patternPlanner: "v24-PATTERN-PLANNER-COMFORT",
+  patternExecutor: "v24-PATTERN-EXECUTOR-COMFORT"
 };
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
-const STRIPE_PASSWORD = process.env.STRIPE_SECRET_KEY;
-const JWT_SECRET = process.env.JWT_SECRET;
-// CLOUD RUN ENVIRONMENTS
-const TP_API_KEY = window.TP_API_KEY;
-const BASE_PAYMENT_URL = window.BASE_PAYMENT_URL;
-const GOOGLE_MAPS_KEY = window.GOOGLE_MAPS_KEY;
-const PLACEHOLDER_IMAGE_URL = window.PLACEHOLDER_IMAGE_URL;
 
-const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_SECRET_WEBHOOK;
-const MESSAGING_SERVICE_SID = process.env.MESSAGING_SERVICE_SID;
-const ACCOUNT_SID = process.env.ACCOUNT_SID;
-const AUTH_TOKEN = process.env.AUTH_TOKEN;
-
-// CONFIG
-const PIN_COLLECTION = process.env.PIN_COLLECTION;
-const RATE_LIMIT_WINDOW_MS = process.env.RATE_LIMIT_WINDOW_MS;
-const MAX_REQUESTS_PER_WINDOW = process.env.MAX_REQUESTS_PER_WINDOW;
-const PIN_TTL_MS = process.env.PIN_TTL_MS;
 // -----------------------------------------------------------------------------
 // FRONTEND / WORLD TOPOLOGY (WORLD‑LAYER VIEW)
 // -----------------------------------------------------------------------------
@@ -229,127 +219,90 @@ const DRIFT_METADATA = {
   ],
   scannerOrgans: ["PulseFileScanner", "PulseCodeAnalyzer"]
 };
+
 // -----------------------------------------------------------------------------
 // EVOLVABLE ROUTE EXPECTATIONS — IMMORTAL++ IQ-MAP
 // Pattern-based inference instead of static routing
 // -----------------------------------------------------------------------------
 function buildPageExpectations() {
   const patterns = [
-
-    // -------------------------------------------------------------------------
     // ROOT / UNIVERSAL
-    // -------------------------------------------------------------------------
     { match: /^\/$/, page: "PulseEvolutionaryPage" },
 
-    // -------------------------------------------------------------------------
     // IDENTITY / BARRIER / LOGIN
-    // -------------------------------------------------------------------------
     { match: /login/, page: "PulseWorldBarrier" },
 
-    // -------------------------------------------------------------------------
     // WORLD-LAYER / ORGANISM CORE
-    // -------------------------------------------------------------------------
     { match: /organism/, page: "PulseOSDashboard" },
     { match: /world/, page: "PulseWorldDashboard" },
     { match: /immune/, page: "PulseOSImmunities" },
     { match: /diagnostics/, page: "PulseOSDiagnostics" },
 
-    // -------------------------------------------------------------------------
     // INVENTORY / DASHBOARD ROOTS
-    // -------------------------------------------------------------------------
     { match: /^\/dashboard/, page: "PulseWorldInventory" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: MESSAGING / SEND
-    // -------------------------------------------------------------------------
     { match: /send/, page: "PulseSendDashboard" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: ECONOMY / EARN
-    // -------------------------------------------------------------------------
     { match: /earn/, page: "PulseEarnDashboard" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: GPU / COMPUTE
-    // -------------------------------------------------------------------------
     { match: /gpu/, page: "PulseGPUDashboard" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: AWARE / PRESENCE
-    // -------------------------------------------------------------------------
     { match: /aware/, page: "PulseAwareDashboard" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: AI
-    // -------------------------------------------------------------------------
     { match: /ai/, page: "PulseAIDashboard" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: SCANNER
-    // -------------------------------------------------------------------------
     { match: /scanner/, page: "PulseWorldScanner" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: PROXY / BAND
-    // -------------------------------------------------------------------------
     { match: /pulseband/, page: "PulseBandDashboard" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: PROXY / BAND
-    // -------------------------------------------------------------------------
     { match: /proxy/, page: "PulseProxyDashboard" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: ADMIN / DOMAIN CONTROL
-    // -------------------------------------------------------------------------
     { match: /admin/, page: "PulseWorldDomain" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: DIRECTORY / EVENTS
-    // -------------------------------------------------------------------------
     { match: /directory/, page: "TropicPulseDirectory" },
     { match: /events/, page: "TropicPulseEvents" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: DELIVERY
-    // -------------------------------------------------------------------------
     { match: /delivery/, page: "TropicPulseDelivery" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: REWARDS
-    // -------------------------------------------------------------------------
     { match: /rewards/, page: "PulseWorldRewards" },
     { match: /referral/, page: "PulseWorldReferralCode" },
 
-    // -------------------------------------------------------------------------
     // VAULT: WALLET
-    // -------------------------------------------------------------------------
     { match: /vault/, page: "PulseWorldVault" },
 
-    // -------------------------------------------------------------------------
     // DOMAIN: USER RECORDS / SKILLS
-    // -------------------------------------------------------------------------
     { match: /userrecords/, page: "PulseWorldSkills" }
   ];
 
-  // ---------------------------------------------------------------------------
   // EVOLVABLE EXPECTATION ENGINE
-  // Takes ANY route and infers the correct page identity
-  // ---------------------------------------------------------------------------
-  return new Proxy({}, {
-    get(_, route) {
-      if (typeof route !== "string") return ["PulseEvolutionaryPage"];
+  return new Proxy(
+    {},
+    {
+      get(_, route) {
+        if (typeof route !== "string") return ["PulseEvolutionaryPage"];
 
-      for (const p of patterns) {
-        if (p.match.test(route)) return [p.page];
+        for (const p of patterns) {
+          if (p.match.test(route)) return [p.page];
+        }
+
+        // fallback: everything unknown evolves through the Evolutionary Page
+        return ["PulseEvolutionaryPage"];
       }
-
-      // fallback: everything unknown evolves through the Evolutionary Page
-      return ["PulseEvolutionaryPage"];
     }
-  });
+  );
 }
-
 
 function interpretRoute(path = "", genome, pageExpectations) {
   if (!path || typeof path !== "string") return "/";
@@ -388,7 +341,7 @@ function buildOrganExpectationsFromGenome(genome) {
 // CHUNKER — IMMORTAL 32‑LANE SYMBOLIC CHUNKER FOR IQ MAP
 // -----------------------------------------------------------------------------
 const iqChunker = createPulseAIChunker({
-  id: "PulseAIChunker-IQMap-v20",
+  id: "PulseAIChunker-IQMap-v24",
   defaultChunkSize: 4096,
   maxChunkSize: 32768,
   trace: false
@@ -833,10 +786,10 @@ function buildComfortPlan(contextTag = "default") {
 }
 
 // ============================================================================
-// MAIN BUILDER — IMMORTAL EVOLVABLE IQ MAP (v20+)
+// MAIN BUILDER — IMMORTAL EVOLVABLE IQ MAP (v24+)
 // ============================================================================
 //
-// ROLE (v20+):
+// ROLE (v24+):
 //   • Build a full IQ Map from Organism Genome + Frontend Topology.
 //   • Auto-build an EVOLVABLE UI Skills Genome from evolutionSources.
 //   • Auto-build route → UI skills expectations (per-page skill bundles).
@@ -852,7 +805,7 @@ function buildComfortPlan(contextTag = "default") {
 //   • All outputs are deterministic for a given genome + evolutionSources.
 //
 // SAFETY:
-//   • v20 upgrade is EVOLUTIONARY + STRUCTURAL — richer helpers, no new IO.
+//   • v24 upgrade is EVOLUTIONARY + STRUCTURAL — richer helpers, no new IO.
 //   • All behavior is deterministic and organism-safe.
 // ============================================================================
 async function buildPulseIQMapEvolvable(evolutionSources) {
@@ -896,7 +849,7 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
   });
 
   // ---------------------------------------------------------------------------
-  // INTERNAL STATE — v20 EVOLVABLE UI SKILLS GENOME
+  // INTERNAL STATE — v24 EVOLVABLE UI SKILLS GENOME
   // ---------------------------------------------------------------------------
   let currentEvolutionSources = evolutionSources || {};
   let uiSkillsMap = buildEvolutionarySkillsFromSources(currentEvolutionSources);
@@ -948,10 +901,11 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
   // comfortPatternChunks already computed above
 
   // ---------------------------------------------------------------------------
-  // v20+ HELPER — REFRESH SKILLS WHEN ORGANISM MAP / FOLDERS EVOLVE
+  // v24+ HELPER — REFRESH SKILLS WHEN ORGANISM MAP / FOLDERS EVOLVE
   // ---------------------------------------------------------------------------
   function refreshSkills(nextEvolutionSources) {
-    currentEvolutionSources = nextEvolutionSources || currentEvolutionSources || {};
+    currentEvolutionSources =
+      nextEvolutionSources || currentEvolutionSources || {};
 
     uiSkillsMap = buildEvolutionarySkillsFromSources(currentEvolutionSources);
     uiSkillsIndex = buildUISkillsIndex(uiSkillsMap);
@@ -1011,7 +965,7 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
   }
 
   // ---------------------------------------------------------------------------
-  // v20+ HELPER — PLAN UPCOMING PAGE SKILLS (FOR NEXT‑PAGE CSS / PREWARM)
+  // v24+ HELPER — PLAN UPCOMING PAGE SKILLS (FOR NEXT‑PAGE CSS / PREWARM)
   // ---------------------------------------------------------------------------
   function planUpcomingSkills(routeSequence = []) {
     const skills = [];
@@ -1046,19 +1000,21 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
   }
 
   // ---------------------------------------------------------------------------
-  // RETURN IMMORTAL EVOLVABLE IQ MAP (v20+)
-// ---------------------------------------------------------------------------
+  // RETURN IMMORTAL EVOLVABLE IQ MAP (v24+)
+  // ---------------------------------------------------------------------------
   const iqMap = {
     log,
     warn,
     logError,
 
     meta: {
-      identity: "PulseIQMap-v20-Evolvable",
-      version: VERSION_MAP || "v20-Immortal-Evolvable",
+      identity: "PulseIQMap-v24-Immortal-Advantage++",
+      version: VERSION_MAP.iq,
       schemaVersion: "v4",
       description:
-        "IMMORTAL EVOLVABLE IQ MAP → Organism + UI + Comfort patterns, fully deterministic."
+        "IMMORTAL EVOLVABLE IQ MAP → Organism + UI + Comfort patterns, fully deterministic.",
+      owner: "Aldwyn",
+      aiSubordinate: true
     },
 
     version: VERSION_MAP,
@@ -1138,7 +1094,7 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
     chunkerMeta: iqChunker.getMeta(),
     getChunkerLaneStats: () => iqChunker.getLaneStats(),
 
-    // ⭐ v20+ EVOLUTIONARY HELPERS
+    // ⭐ v24+ EVOLUTIONARY HELPERS
     refreshSkills,
     planUpcomingSkills
   };
@@ -1147,7 +1103,7 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
 }
 
 // -----------------------------------------------------------------------------
-// EXPORT — IMMORTAL EVOLVABLE IQ MAP (PROMISE FACTORY, v20+)
+// EXPORT — IMMORTAL EVOLVABLE IQ MAP (PROMISE FACTORY, v24+)
 // You inject evolutionSources from your folder‑scanner organ.
 // -----------------------------------------------------------------------------
 export async function createPulseIQMap(evolutionSources) {

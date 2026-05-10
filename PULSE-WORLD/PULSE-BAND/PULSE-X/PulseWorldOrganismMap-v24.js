@@ -1,8 +1,8 @@
 // ============================================================================
-// PulseWorldOrganismMap-v21.js — v21‑IMMORTAL‑EVO‑WORLD
+// PulseWorldOrganismMap-v24.js — v24.0‑IMMORTAL‑WORLD‑GENOME++
 // THE JEWEL OF THE ORGANISM — THE GENOME
 // ----------------------------------------------------------------------------
-// LAWS OF THE ORGANISM (v21):
+// LAWS OF THE ORGANISM (v24):
 //   • Any folder starting with "PULSE-" is a SYSTEM.
 //   • Any .js file inside that folder is an ORGAN.
 //   • Any nested PULSE-* folder is a SUBSYSTEM.
@@ -11,26 +11,12 @@
 //   • The organism map IS the genome.
 //   • All subsystems read from THIS file.
 //   • ALL network fetch MUST go through Route API.
-//   • Genome must NEVER fetch directly.
+//   • Genome must NEVER fetch directly (only via Route API adapter).
 //   • Patterns > versions. Naming discipline IS evolution.
 //   • World-aware: detects PulseWorld, PulseWorldBand, PulseWorldOS, etc.
 //   • Evolves automatically as new PULSE-* folders appear.
-//
-// v21‑IMMORTAL‑EVO‑WORLD UPGRADE:
-//   • This file is now the SINGLE SOURCE OF TRUTH for:
-//       – systems
-//       – organs
-//       – adapters
-//       – AND full 7‑layer identity for every organ.
-//   • Organ pages no longer carry identity/meta blocks.
-//   • One import gives each organ its full identity genome.
-//
-//   Example organ usage:
-//
-//     import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
-//     export const META = OrganismIdentity["aiImmunity"]; // or "pulse-os/aiImmunity"
-//
-// ============================================================================
+//   • v24++: organism‑wide, band‑aware, artery‑aware, multi‑instance, drift‑proof.
+// ----------------------------------------------------------------------------
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
 //  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
@@ -111,7 +97,7 @@ export function getFsAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// ROUTE API — FETCH‑AWARE (IMMORTAL v21)
+// ROUTE API — FETCH‑AWARE (IMMORTAL v24)
 // ============================================================================
 export function getRouteAPI({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:routes] ${msg}`, data);
@@ -137,7 +123,13 @@ export function getRouteAPI({ trace = false } = {}) {
         meta: {
           layer: "PulseRouteAPI",
           role: "ROUTE_RESOLUTION",
-          version: "21-IMMORTAL-WORLD"
+          version: "24.0-IMMORTAL-WORLD",
+          evo: {
+            worldAware: true,
+            bandAware: true,
+            driftProof: true,
+            routeOnly: true
+          }
         }
       };
     },
@@ -194,7 +186,7 @@ export function getSchemaAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// FETCH API — ROUTE‑AWARE, IMMORTAL v21
+// FETCH API — ROUTE‑AWARE, IMMORTAL v24
 // ============================================================================
 export function getFetchAPI({ trace = false, routes } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:fetch] ${msg}`, data);
@@ -202,7 +194,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
   const meta = {
     layer: "PulseFetchAPI",
     role: "NETWORK_ADAPTER",
-    version: "21-IMMORTAL-WORLD",
+    version: "24.0-IMMORTAL-WORLD",
     evo: {
       deterministicField: true,
       unifiedAdvantageField: true,
@@ -237,7 +229,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
 }
 
 // ============================================================================
-// CACHESTORAGE ORGAN — v21‑IMMORTAL‑WORLD
+// CACHESTORAGE ORGAN — v24.0‑IMMORTAL‑WORLD
 // ============================================================================
 export function getCacheStorageOrgan({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:cache] ${msg}`, data);
@@ -289,7 +281,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     }
 
     const allFiles = await fsAPI.getAllFiles();
-    const cache = await caches.open("pulse-immortal-v21");
+    const cache = await caches.open("pulse-immortal-v24");
 
     for (const file of allFiles) {
       if (file.type !== "file") continue;
@@ -310,7 +302,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     meta: {
       layer: "PulseCacheStorageOrgan",
       role: "FIRST_FRAME_FREEZER",
-      version: "21-IMMORTAL-WORLD",
+      version: "24.0-IMMORTAL-WORLD",
       evo: {
         patternDriven: true,
         driftProof: true,
@@ -325,7 +317,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
 }
 
 // ============================================================================
-// SYSTEM CLASSIFIER — v21 (WORLD / UI / BAND / OS / ROUTER / PROXY / CORE / GPU / AI / EARN / TECH / etc.)
+// SYSTEM CLASSIFIER — v24 (WORLD / UI / BAND / OS / ROUTER / PROXY / CORE / GPU / AI / EARN / TECH / etc.)
 // ============================================================================
 function classifySystem(system) {
   const name = system.name.toLowerCase();
@@ -463,7 +455,7 @@ function classifySystem(system) {
 }
 
 // ============================================================================
-// SCAN SYSTEMS — Pure FS API, v21‑IMMORTAL‑WORLD
+// SCAN SYSTEMS — Pure FS API, v24‑IMMORTAL‑WORLD
 // ============================================================================
 async function scanPulseSystems() {
   fs = getFsAPI({ trace: false });
@@ -503,21 +495,9 @@ async function scanPulseSystems() {
 }
 
 // ============================================================================
-// IDENTITY GENERATION ENGINE — v21‑IMMORTAL‑EVO‑WORLD
+// IDENTITY GENERATION ENGINE — v24‑IMMORTAL‑WORLD‑GENOME++
 // ----------------------------------------------------------------------------
-// This is the major upgrade:
-//   • Auto-generates ALL 7 identity layers for EVERY organ discovered.
-//   • Centralizes identity in the genome.
-//   • Organs become behavior-only files with a single import.
-// ----------------------------------------------------------------------------
-// 7 LAYERS PER ORGAN:
-//   1. PulseRole          — deep biological identity
-//   2. OrganMeta          — organ meta block
-//   3. pulseRole          — CNS routing identity
-//   4. surfaceMeta        — understanding surface identity
-//   5. pulseLoreContext   — lore / purpose / story
-//   6. AI_EXPERIENCE_META — public-facing experience meta
-//   7. EXPORT_META        — devtools export meta
+// Same 7 layers, upgraded version/epoch + evo flags.
 // ============================================================================
 function toConstName(name) {
   return String(name || "")
@@ -535,8 +515,9 @@ function toTitleName(name) {
     .trim()
     .replace(/\b\w/g, c => c.toUpperCase());
 }
+
 // ============================================================================
-// ORGAN IDENTITY BUILDER — v21 IMMORTAL WORLD
+// ORGAN IDENTITY BUILDER — v24 IMMORTAL WORLD GENOME++
 // ============================================================================
 function buildOrganIdentity({ systemKey, system, organName }) {
   const organId = `${systemKey}/${organName}`;
@@ -545,7 +526,7 @@ function buildOrganIdentity({ systemKey, system, organName }) {
 
   const layer = system.layer || "generic";
   const roleConst = `${constName}_ORGAN`;
-  const version = "v21-IMMORTAL-EVO-WORLD";
+  const version = "v24.0-IMMORTAL-WORLD-GENOME++";
 
   // 1) PulseRole — deep biological identity
   const PulseRole = Object.freeze({
@@ -564,7 +545,9 @@ function buildOrganIdentity({ systemKey, system, organName }) {
       windowAware: true,
       packetAware: true,
       arteryAware: true,
-      prewarmAware: true
+      prewarmAware: true,
+      worldAware: true,
+      bandAware: true
     })
   });
 
@@ -585,7 +568,9 @@ function buildOrganIdentity({ systemKey, system, organName }) {
       registryAware: true,
       evolutionAware: true,
       multiInstanceReady: true,
-      epoch: version
+      epoch: version,
+      worldAware: true,
+      bandAware: true
     }),
     contract: Object.freeze({
       purpose: `Organ ${titleName} within system ${systemKey} at layer ${layer}.`,
@@ -621,8 +606,8 @@ function buildOrganIdentity({ systemKey, system, organName }) {
     page: organId,
     organ: titleName.replace(/\s+/g, ""),
     layer,
-    tier: "Immortal-Evo-World",
-    description: `Organ ${titleName} in system ${systemKey}, auto-mapped by PulseWorldOrganismMap.`,
+    tier: "Immortal-World-Genome-v24",
+    description: `Organ ${titleName} in system ${systemKey}, auto-mapped by PulseWorldOrganismMap v24.`,
     capabilities: {
       deterministic: true,
       driftProof: true,
@@ -639,7 +624,7 @@ function buildOrganIdentity({ systemKey, system, organName }) {
     version,
     layer,
     role: roleConst.toLowerCase(),
-    lineage: `${organName}-auto-v21-Immortal-Evo-World`,
+    lineage: `${organName}-auto-v24-Immortal-World-Genome`,
     evo: Object.freeze({
       deterministic: true,
       driftProof: true,
@@ -649,7 +634,9 @@ function buildOrganIdentity({ systemKey, system, organName }) {
       zeroMutationOfInput: true,
       binaryAware: true,
       symbolicAware: true,
-      dualBand: true
+      dualBand: true,
+      worldAware: true,
+      bandAware: true
     }),
     contract: Object.freeze({
       always: [],
@@ -683,7 +670,7 @@ function buildOrganIdentity({ systemKey, system, organName }) {
 }
 
 // ============================================================================
-// BUILD ORGAN IDENTITIES + PATH MAP — v21 IMMORTAL WORLD
+// BUILD ORGAN IDENTITIES + PATH MAP — v24 IMMORTAL WORLD GENOME++
 // ============================================================================
 function buildOrganIdentities(systems) {
   const identities = {};
@@ -714,7 +701,7 @@ function buildOrganIdentities(systems) {
 }
 
 // ============================================================================
-// BUILD ORGANISM MAP — v21 IMMORTAL WORLD GENOME
+// BUILD ORGANISM MAP — v24 IMMORTAL WORLD GENOME++
 // ============================================================================
 export async function buildPulseOrganismMap(baseDir = "/") {
   const systems = await scanPulseSystems(baseDir);
@@ -735,7 +722,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   }
 
   return Object.freeze({
-    version: "21‑IMMORTAL‑EVO‑WORLD‑GENOME",
+    version: "24.0‑IMMORTAL‑WORLD‑GENOME++",
     generatedAt: new Date().toISOString(),
     systems,
     identities,
@@ -753,10 +740,10 @@ export async function buildPulseOrganismMap(baseDir = "/") {
 }
 
 // ============================================================================
-// EXPORT — IMMORTAL WORLD GENOME
+// EXPORT — IMMORTAL WORLD GENOME v24++
 // ============================================================================
 export const PulseOrganismMap = await buildPulseOrganismMap("/");
 
-// NEW: OrganismIdentity is now a FUNCTION
+// OrganismIdentity is a FUNCTION (unchanged API)
 export const OrganismIdentity = (metaUrl) =>
   PulseOrganismMap.resolveIdentity(metaUrl);
