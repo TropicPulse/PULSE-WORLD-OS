@@ -1009,17 +1009,42 @@ sendBtn.addEventListener("click", async () => {
   authMsg.style.display = "none";
 
   try {
-    if (typeof window.getHook !== "function") {
-      throw new Error("getHook() is NOT defined — your login page cannot talk to backend.");
+    let data = null;
+
+    // ============================================================
+    // 1. PRIMARY PATH — PulseOS A1 Reflex Hook
+    // ============================================================
+    if (typeof window.getHook === "function") {
+      try {
+        data = await window.getHook("sendPin", { email, purpose: "login" });
+        console.log("[SEND PIN] A1 HOOK RESPONSE:", data);
+      } catch (err) {
+        console.warn("[SEND PIN] A1 hook failed:", err);
+      }
     }
 
-    const data = await window.getHook({ type: "sendPin", email });
+    // ============================================================
+    // 2. FALLBACK PATH — Firebase HTTPS
+    // ============================================================
+    if (!data || typeof data !== "object") {
+      console.warn("[SEND PIN] Falling back to Firebase HTTPS…");
 
-    console.log("[SEND PIN] RAW RESPONSE:", data);
+      try {
+        data = await fetch("/sendPin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, purpose: "login" })
+        }).then(r => r.json());
+      } catch (err) {
+        console.error("[SEND PIN] HTTPS fallback failed:", err);
+      }
+    }
 
     hideTPLoader();
 
-    // No response at all
+    // ============================================================
+    // 3. HANDLE RESPONSE
+    // ============================================================
     if (!data) {
       authMsg.className = "msg error";
       authMsg.textContent = "ERROR: Backend returned no response.";
@@ -1027,15 +1052,6 @@ sendBtn.addEventListener("click", async () => {
       return;
     }
 
-    // Response not an object
-    if (typeof data !== "object") {
-      authMsg.className = "msg error";
-      authMsg.textContent = "ERROR: Backend returned invalid data type.";
-      authMsg.style.display = "block";
-      return;
-    }
-
-    // Success
     if (data.success) {
       authMsg.className = "msg success";
       authMsg.textContent = "PIN Sent! Check your Email!";
@@ -1045,9 +1061,8 @@ sendBtn.addEventListener("click", async () => {
       return;
     }
 
-    // Backend returned error message
     authMsg.className = "msg error";
-    authMsg.textContent = data.message || "Backend error: Could not send PIN.";
+    authMsg.textContent = data.error || data.message || "Backend error: Could not send PIN.";
     authMsg.style.display = "block";
     showLoginUI();
     emailInput.focus();
@@ -1063,6 +1078,7 @@ sendBtn.addEventListener("click", async () => {
     emailInput.focus();
   }
 });
+
 
 /* ============================================================
    6. VERIFY PIN — FULL DEBUG VERSION
@@ -1085,32 +1101,49 @@ verifyBtn.addEventListener("click", async () => {
   authMsg.style.display = "none";
 
   try {
-    if (typeof window.getHook !== "function") {
-      throw new Error("getHook() is NOT defined — cannot verify PIN.");
+    let data = null;
+
+    // ============================================================
+    // 1. PRIMARY PATH — PulseOS A1 Reflex Hook
+    // ============================================================
+    if (typeof window.getHook === "function") {
+      try {
+        data = await window.getHook("verifyPin", {
+          email,
+          pin,
+          purpose: "login"
+        });
+        console.log("[VERIFY PIN] A1 HOOK RESPONSE:", data);
+      } catch (err) {
+        console.warn("[VERIFY PIN] A1 hook failed:", err);
+      }
     }
 
-    const data = await window.getHook({
-      type: "verifyPin",
-      email,
-      pin,
-      purpose: "login"
-    });
+    // ============================================================
+    // 2. FALLBACK PATH — Firebase HTTPS
+    // ============================================================
+    if (!data || typeof data !== "object") {
+      console.warn("[VERIFY PIN] Falling back to Firebase HTTPS…");
 
-    console.log("[VERIFY PIN] RAW RESPONSE:", data);
+      try {
+        data = await fetch("/verifyPin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, pin, purpose: "login" })
+        }).then(r => r.json());
+      } catch (err) {
+        console.error("[VERIFY PIN] HTTPS fallback failed:", err);
+      }
+    }
 
     hideTPLoader();
 
+    // ============================================================
+    // 3. HANDLE RESPONSE
+    // ============================================================
     if (!data) {
       authMsg.className = "msg error";
       authMsg.textContent = "ERROR: Backend returned no response.";
-      authMsg.style.display = "block";
-      showPinUI();
-      return;
-    }
-
-    if (typeof data !== "object") {
-      authMsg.className = "msg error";
-      authMsg.textContent = "ERROR: Backend returned invalid data type.";
       authMsg.style.display = "block";
       showPinUI();
       return;
@@ -1135,9 +1168,8 @@ verifyBtn.addEventListener("click", async () => {
       return;
     }
 
-    // Backend error
     authMsg.className = "msg error";
-    authMsg.textContent = data.message || "Invalid PIN. Try again.";
+    authMsg.textContent = data.error || data.message || "Invalid PIN. Try again.";
     authMsg.style.display = "block";
     showPinUI();
     pinInput.focus();
@@ -1153,7 +1185,6 @@ verifyBtn.addEventListener("click", async () => {
     pinInput.focus();
   }
 });
-
 
 
   /* ============================================================
