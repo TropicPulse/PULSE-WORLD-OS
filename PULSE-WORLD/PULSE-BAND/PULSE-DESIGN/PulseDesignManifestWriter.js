@@ -3,7 +3,7 @@
 // LAYER: THE SURVEYOR (Canonical Blueprint Writer, v17 IMMORTAL)
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 import fs from "fs";
 import path from "path";
 const Identity = OrganismIdentity(import.meta.url);

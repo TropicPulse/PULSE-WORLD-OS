@@ -3,7 +3,7 @@
 //  Dual‑Band Execution • Persona Routing • Organ Dispatch • Trust‑Aware
 //  PURE EXECUTION. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
@@ -38,9 +38,9 @@ import { createCognitiveFrame as createAIContext } from "./aiContext-v24.js";
 import { createBrainstem } from "./aiBrainstem-v24.js";
 import { resolvePersonaV12 } from "./aiPersonality.js";
 import { routeAIRequest } from "./aiRouter-v16.js";
-import { canPerformDynamic } from "./aiBoundaries.js";
+import { canPerformDynamic } from "./aiBoundaries-v24.js";
 
-import { createArchitectOrgan as runArchitectMode } from "./aiArchitect.js";
+import { createArchitectOrgan as runArchitectMode } from "./aiArchitect-v24.js";
 import { createClinicianOrgan as runObserverMode } from "./aiClinician-v24.js";
 import { createTouristAPI as runTourGuideMode } from "./aiTourist.js";
 

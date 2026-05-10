@@ -18,7 +18,7 @@
  *     - binary self-awareness artery metrics v3 (throughput, pressure, cost, budget)
  *     - multi-instance harmony + emission density awareness
  */
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

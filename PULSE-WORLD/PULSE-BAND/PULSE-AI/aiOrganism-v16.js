@@ -17,7 +17,7 @@
 //   • No direct internet / HTTP / DNS / WebSocket.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
@@ -50,7 +50,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS — binary organs (v11.3‑EVO lineage)
 // ============================================================================
-import { createAIBinaryAgent } from "./aiBinaryAgent.js";
+import { createAIBinaryAgent } from "./aiBinaryAgent-v24.js";
 import { createAIMemory } from "./aiMemory-v16.js";
 import { createAIBinaryPipeline } from "./aiPipeline.js";
 import { createAIBinaryReflex } from "./aiReflex-v24.js";
@@ -59,7 +59,7 @@ import { createAIBinaryPageScannerAdapter } from "./aiPageScannerAdapter.js";
 import { createAIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
 import { createAIBinaryGovernorAdapter } from "./aiGovernorAdapter-v24.js";
 import { createAIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
-import { createAIBinaryDelta } from "./aiBinaryDelta.js";
+import { createAIBinaryDelta } from "./aiBinaryDelta-v24.js";
 import { createAIConductor as createAIBinaryConductor } from "./aiConductor-v24.js";
 import { createAIBinaryMetabolism } from "./aiMetabolism.js";
 import { createAIBinaryHormones } from "./aiHormones-v24.js";
@@ -70,7 +70,7 @@ import { createAIBinaryNervousSystem } from "./aiNervousSystem.js";
 //  COMMANDMENTS / SUPEREGO LAYER
 // ============================================================================
 import { createPersonaEngine } from "./aiPersonality.js";
-import { createBoundariesEngine } from "./aiBoundaries.js";
+import { createBoundariesEngine } from "./aiBoundaries-v24.js";
 import { createPermissionsEngine } from "./aiPermissions.js";
 
 // ============================================================================
@@ -84,12 +84,12 @@ import createCognitiveFrame, {
 import {
   createContextEngine,
   prewarmContextEngine
-} from "./aiContextEngine-v16.js";
+} from "./aiContextEngine-v24.js";
 
 import {
   createCortex,
   prewarmAICortex
-} from "./aiCortex-v16.js";
+} from "./aiCortex-v24.js";
 
 // ============================================================================
 //  EMOTION / EXPERIENCE / PERSONALITY
@@ -120,7 +120,7 @@ import {
   formatDebugReport,
   formatDebugString,
   prewarmScribe
-} from "./aiDebug.js";
+} from "./aiDebug-v24.js";
 
 import {
   DiagnosticsMeta,

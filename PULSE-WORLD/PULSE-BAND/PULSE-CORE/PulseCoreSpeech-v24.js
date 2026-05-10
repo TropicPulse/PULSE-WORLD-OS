@@ -4,7 +4,7 @@
 // CORE SPEECH ORGAN — MESSAGE STORE + MEMORY FEEDER
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 const Identity = OrganismIdentity(import.meta.url);
 

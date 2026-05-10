@@ -4,7 +4,7 @@
 //  Universal Chunk Organ for PulseOS v18+ (Chunker + World + Identity Aware)
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

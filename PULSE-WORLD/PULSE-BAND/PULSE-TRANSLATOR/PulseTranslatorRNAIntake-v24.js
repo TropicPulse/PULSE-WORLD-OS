@@ -38,7 +38,7 @@ SCHEMA: RNA_INTAKE_SCHEMA_VERSION = "v4"
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

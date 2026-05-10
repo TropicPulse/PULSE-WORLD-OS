@@ -1,5 +1,5 @@
 /**
- * aiBinaryAgent.js — Pulse OS v24.0‑IMMORTAL Organ
+ * aiBinaryAgent-v24.js — Pulse OS v24.0‑IMMORTAL Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   This organ is the **Binary Compute Cortex** of the organism.

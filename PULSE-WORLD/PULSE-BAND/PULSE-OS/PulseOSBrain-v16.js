@@ -26,7 +26,7 @@
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
@@ -42,8 +42,8 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS — LAW: BRAIN MAY IMPORT ONLY PULSEIQ + ORGANISM + EVOLUTION
 // ============================================================================
-import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v20.js";
-import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v24.js";
+import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 import { PulseOSEvolution } from "./PulseOSBrainEvolution.js";
 
 import checkBand from "../PULSE-X/PULSE-WORLD-BAND.js";

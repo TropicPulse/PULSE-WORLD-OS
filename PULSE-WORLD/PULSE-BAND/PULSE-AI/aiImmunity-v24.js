@@ -1,10 +1,10 @@
 // ============================================================================
-//  aiImmunity.js — Pulse OS v24.0‑IMMORTAL++ Organ
+//  aiImmunity-v24.js — Pulse OS v24.0‑IMMORTAL++ Organ
 //  Binary Immune System • Quarantine Engine • Dualband Artery • Packet‑Aware
 //  PURE BINARY. ZERO NETWORK. ZERO RANDOMNESS IN LOGIC PATHS.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

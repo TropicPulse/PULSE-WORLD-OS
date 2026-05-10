@@ -3,7 +3,7 @@
 //  Self‑Definition • Role Assignment • Binary‑Aware Identity Drift
 //  PURE IDENTITY. ZERO MUTATION. ZERO RANDOMNESS. PULSE‑NET ONLY.
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
@@ -51,7 +51,7 @@ import {
   NeutralAIBoundaries,
   BoundaryModes,
   selectBoundaryMode
-} from "./aiBoundaries.js";
+} from "./aiBoundaries-v24.js";
 
 // ============================================================================
 // META — Persona Engine (v16‑IMMORTAL++)
@@ -212,7 +212,7 @@ export function getPersona(personaId, userId = null) {
 //  v16‑IMMORTAL++ — ARCHETYPE MAP (non-destructive)
 // ============================================================================
 export const PersonaArchetypes = Object.freeze({
-  architect: "aiArchitect.js",
+  architect: "aiArchitect-v24.js",
   observer: "aiDiagnostics-v24.js",
   tourguide: "aiTourist.js",
   neutral: "aiAssistant.js",

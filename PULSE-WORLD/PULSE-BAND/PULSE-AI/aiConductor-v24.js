@@ -4,7 +4,7 @@
 //  Conductor‑Artery • Binary‑Aware • Core‑Snapshot‑Ready
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

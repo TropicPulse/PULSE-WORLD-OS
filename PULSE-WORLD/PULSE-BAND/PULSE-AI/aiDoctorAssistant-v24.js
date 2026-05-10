@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiDoctorAssistant.js — PulseOS Doctor’s Assistant Organ — v24.0‑IMMORTAL‑EVO++
+//  aiDoctorAssistant-v24.js — PulseOS Doctor’s Assistant Organ — v24.0‑IMMORTAL‑EVO++
 //  Clinical Mapper • Pattern Interpreter • Route‑Based Medical Info Reader
 //  PURE COMPUTE. ZERO NETWORK FROM THIS ORGAN. ZERO RANDOMNESS.
 // ============================================================================

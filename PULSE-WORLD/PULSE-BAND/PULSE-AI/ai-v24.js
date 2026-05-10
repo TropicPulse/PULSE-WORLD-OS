@@ -7,7 +7,7 @@
   (keep your big AI_EXPERIENCE_META comment here if you want it for docs;
    it no longer drives runtime identity — the genome does)
 */
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
@@ -38,17 +38,17 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 
-import { AIBinaryAgent } from "./aiBinaryAgent.js";
+import { AIBinaryAgent } from "./aiBinaryAgent-v24.js";
 import { AIMemory } from "./aiMemory-v16.js";
 
-import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy.js";
-import { AIBinaryGenome } from "./aiGenome.js";
+import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy-v24.js";
+import { AIBinaryGenome } from "./aiGenome-v24.js";
 import { AIBinaryVitals } from "./aiVitals.js";
 import { AIBinaryMetabolism } from "./aiMetabolism.js";
-import { AIBinaryHormones } from "./aiHormones.js";
+import { AIBinaryHormones } from "./aiHormones-v24.js";
 import { AIBinarySentience } from "./aiSentience.js";
 import { AIBinaryConsciousness } from "./aiConsciousness.js";
-import { AIBinaryImmunity } from "./aiImmunity.js";
+import { AIBinaryImmunity } from "./aiImmunity-v24.js";
 import { AIBinaryPipeline } from "./aiPipeline.js";
 import { AIBinaryReflex } from "./aiReflex-v24.js";
 import { AIBinaryScheduler } from "./aiScheduler.js";

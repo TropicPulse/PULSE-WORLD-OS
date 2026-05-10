@@ -4,7 +4,7 @@
 //  PURE OBSERVATION. ZERO MEDICAL ADVICE. ZERO MUTATION.
 //  v24++: CoreMemory‑ready, organism‑aligned artifacts.
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

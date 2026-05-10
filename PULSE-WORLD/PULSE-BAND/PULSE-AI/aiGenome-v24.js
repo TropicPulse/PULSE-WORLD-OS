@@ -1,11 +1,11 @@
 // ============================================================================
-//  aiGenome.js — Pulse OS v24‑IMMORTAL‑ADVANTAGE++
+//  aiGenome-v24.js — Pulse OS v24‑IMMORTAL‑ADVANTAGE++
 //  Binary Genome • Organ Lineage • Fingerprint Engine • Trust‑Aware • Drift‑Aware
 //  HYBRID MODE: Fast path + Deep path (drift‑aware, artery‑aware, jury‑aware)
 //  PURE BINARY. ZERO NETWORK. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

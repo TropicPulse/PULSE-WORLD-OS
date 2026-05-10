@@ -1,10 +1,10 @@
 // ============================================================================
-//  aiHumilityFilter.js — PulseOS Humility Organ — v24‑IMMORTAL‑ADVANTAGE++
+//  aiHumilityFilter-v24.js — PulseOS Humility Organ — v24‑IMMORTAL‑ADVANTAGE++
 //  Removes superiority, snobbery, ego, obligation‑tone, and professor‑energy.
 //  PURE FILTER. ZERO MUTATION. ZERO RANDOMNESS. DUALBAND + ARTERY‑AWARE.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================

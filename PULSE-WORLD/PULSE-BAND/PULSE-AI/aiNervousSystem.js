@@ -29,7 +29,7 @@
 //      • does NOT override pipeline/reflex engines
 //      • treats all inputs as read-only
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

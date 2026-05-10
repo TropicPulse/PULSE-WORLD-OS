@@ -9,7 +9,7 @@
  *   • binary‑primary, dualband‑safe
  */
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 // v24++ identity (no hardcoded meta)
 const Identity = OrganismIdentity(import.meta.url);

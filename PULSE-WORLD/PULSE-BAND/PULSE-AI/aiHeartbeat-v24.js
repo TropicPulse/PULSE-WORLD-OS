@@ -1,11 +1,11 @@
 // ============================================================================
-//  aiHeartbeat.js — Pulse OS v24‑IMMORTAL‑ADVANTAGE++
+//  aiHeartbeat-v24.js — Pulse OS v24‑IMMORTAL‑ADVANTAGE++
 //  Mom/Dad/Earn Tri‑Heart • Dual‑Band Liveness • Bi‑Directional Fallback
 //  PURE LIVENESS. ZERO MUTATION OF INPUT. GLOBAL KEYS ONLY FOR LIVENESS.
 //  v24++: deterministic nudges • artery buckets • drift‑aware meta snapshot
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

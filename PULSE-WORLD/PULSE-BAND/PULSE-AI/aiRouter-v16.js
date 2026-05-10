@@ -5,7 +5,7 @@
 //  ROUTING ARTERY v4 • BINARY SNAPSHOT AWARE • HOT-PATH CACHED • HEALTH-SCORE DRIVEN
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
@@ -161,19 +161,19 @@ export const AIRouterMeta = Object.freeze({
 // ============================================================================
 
 const ArchetypePages = Object.freeze({
-  ARCHITECT: "aiArchitect.js",
+  ARCHITECT: "aiArchitect-v24.js",
   ASSISTANT: "aiAssistant.js",
-  BINARY_AGENT: "aiBinaryAgent.js",
+  BINARY_AGENT: "aiBinaryAgent-v24.js",
   CLINICIAN: "aiClinician-v24.js",
-  DEBUG: "aiDebug.js",
+  DEBUG: "aiDebug-v24.js",
   DIAGNOSTICS: "aiDiagnostics-v24.js",
   DIAGNOSTICS_WRITE: "aiDiagnosticsWrite-v24.js",
-  DOCTOR: "aiDoctorAssistant.js",
+  DOCTOR: "aiDoctorAssistant-v24.js",
   DOCTOR_ARCHITECT: "aiDoctorArchitect-v24.js",
   EARN: "aiEarn.js",
   ENTREPRENEUR: "aiEntrepreneur-v24.js",
   ENVIRONMENT: "aiEnvironment-v24.js",
-  EVOLUTION: "aiEvolution.js",
+  EVOLUTION: "aiEvolution-v24.js",
   EVOLUTIONARY: "aiEvolutionary-v24.js",
   LAWYER: "aiLawAssistant.js",
   POWER: "aiPower.js",

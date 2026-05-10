@@ -8,7 +8,7 @@
 // ============================================================================
 //  IDENTITY (from Organism Map)
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
@@ -31,10 +31,10 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 
 // Binary organism organs (needed by AIDualbandOrganismBootloader)
-import { AIBinaryAgent } from "./aiBinaryAgent.js";
+import { AIBinaryAgent } from "./aiBinaryAgent-v24.js";
 import { AIMemory } from "./aiMemory-v16.js";
-import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy.js";
-import { AIBinaryGenome } from "./aiGenome.js";
+import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy-v24.js";
+import { AIBinaryGenome } from "./aiGenome-v24.js";
 import { AIBinaryVitals } from "./aiVitals.js";
 import { AIBinaryMetabolism } from "./aiMetabolism.js";
 import { AIBinaryHormones } from "./aiHormones-v24.js";
@@ -78,7 +78,7 @@ import {
   formatDebugReport,
   formatDebugString,
   prewarmScribe
-} from "./aiDebug.js";
+} from "./aiDebug-v24.js";
 
 import { createPermissionsEngine } from "./aiPermissionsEngine-v24.js";
 import { createBoundariesEngine } from "./aiBoundariesEngine-v24.js";
@@ -87,14 +87,14 @@ import { createPersonaEngine } from "./aiPersonality.js";
 import {
   createContextEngine,
   prewarmContextEngine
-} from "./aiContextEngine-v16.js";
+} from "./aiContextEngine-v24.js";
 
 import createCognitiveFrame, {
   COGNITIVE_FRAME_META,
   prewarmCognitiveFrame
 } from "./aiContext-v24.js";
 
-import { createCortex, prewarmAICortex } from "./aiCortex-v16.js";
+import { createCortex, prewarmAICortex } from "./aiCortex-v24.js";
 import { createRouterEngine } from "./aiRouter-v16.js";
 import { runAI, ExecutionEngineMeta } from "./aiEngine-v24.js";
 
@@ -103,8 +103,8 @@ import aiEmotionEngine, { prewarmEmotionEngine } from "./aiEmotionEngine-v24.js"
 import createEarnAPI, { EarnMeta, prewarmEarnOrgan } from "./aiEarn-v24.js";
 
 import { createTouristAPI } from "./aiTourist.js";
-import { createArchitectAPI } from "./aiArchitect.js";
-import { createDoctorOrgan } from "./aiDoctorAssistant.js";
+import { createArchitectAPI } from "./aiArchitect-v24.js";
+import { createDoctorOrgan } from "./aiDoctorAssistant-v24.js";
 import { createDoctorArchitectOrgan } from "./aiDoctorArchitect-v24.js";
 
 import { createAIOrganism } from "./aiOrganism-v16.js";

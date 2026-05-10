@@ -21,7 +21,7 @@
 //   • All external IO must be routed via Pulse‑Net / Pulse surfaces.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
@@ -63,25 +63,25 @@ import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v20.js";
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-v16.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
 
-import { createArchitectAPI } from "./aiArchitect.js";
+import { createArchitectAPI } from "./aiArchitect-v24.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist.js";
 
 import { createEnvironmentAPI } from "./aiEnvironment-v24.js";
 import { createPowerAPI } from "./aiPowerPrime.js";
-import { createEvolutionAPI } from "./aiEvolution.js";
+import { createEvolutionAPI } from "./aiEvolution-v24.js";
 import { createEarnAPI } from "./aiEarn-v24.js";
 import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";
 
 import { createPersonaEngine } from "./aiPersonality.js";
-import { createBoundariesEngine } from "./aiBoundaries.js";
+import { createBoundariesEngine } from "./aiBoundaries-v24.js";
 import { createPermissionsEngine } from "./aiPermissions.js";
 import { createRouterEngine } from "./aiRouter-v16.js";
-import { createCortex } from "./aiCortex-v16.js";
+import { createCortex } from "./aiCortex-v24.js";
 
 import { createDualBandOrganism } from "./aiDualBand-v24.js";
 
 // Non-binary symbolic organs
-import { createDoctorAPI } from "./aiDoctorAssistant.js";
+import { createDoctorAPI } from "./aiDoctorAssistant-v24.js";
 import { createSurgeonAPI } from "./aiSurgeon-v24.js";
 import { createLawyerAPI } from "./aiLawAssistant.js";
 import { createEntrepreneurAPI } from "./aiEntrepreneur-v24.js";

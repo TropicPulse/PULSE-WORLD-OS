@@ -22,7 +22,7 @@
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 const PULSE_GPU_EVENT_EMITTER_META_V24 = Identity.OrganMeta;

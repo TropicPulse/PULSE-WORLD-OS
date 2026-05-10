@@ -28,7 +28,7 @@
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
@@ -91,8 +91,8 @@ import {
 // ============================================================================
 //  IMPORTS — MAPS (Intent, Organism, IQ)
 // ============================================================================
-import { PulseIntentMap } from "./PulseWorldIntentMap-v21.js";
-import { PulseOrganismMap } from "./PulseWorldOrganismMap-v21.js";
+import { PulseIntentMap } from "./PulseWorldIntentMap-v24.js";
+import { PulseOrganismMap } from "./PulseWorldOrganismMap-v24.js";
 import createPulseWorldCore from "../PULSE-EXPANSION/PulseUser-v24.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 

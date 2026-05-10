@@ -5,7 +5,7 @@
 //  OWNER‑SUBORDINATE: ALWAYS BELOW ALDWYN, NEVER TOP DOG.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
@@ -23,7 +23,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META        = Identity.EXPORT_META;
 
-import { getBoundariesForPersona, canPerformDynamic } from "./aiBoundaries.js";
+import { getBoundariesForPersona, canPerformDynamic } from "./aiBoundaries-v24.js";
 
 // ============================================================================
 //  INTERNAL HELPERS

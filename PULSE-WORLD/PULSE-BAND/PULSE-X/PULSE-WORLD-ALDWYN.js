@@ -38,7 +38,7 @@ AI_EXPERIENCE_META = {
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
@@ -55,9 +55,9 @@ import { PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeMonitor as 
 // ============================================================================
 //  GLOBAL MAPS
 // ============================================================================
-import { PulseOrganismMap } from "./PulseWorldOrganismMap-v21.js";
-import { PulseIQMap } from "./PulseWorldIQMap-v20.js";
-import { PulseIntentMap } from "./PulseWorldIntentMap-v21.js";
+import { PulseOrganismMap } from "./PulseWorldOrganismMap-v24.js";
+import { PulseIQMap } from "./PulseWorldIQMap-v24.js";
+import { PulseIntentMap } from "./PulseWorldIntentMap-v24.js";
 
 // ============================================================================
 //  AI ORGANISM (v16 IMMORTAL-INTEL)
@@ -121,7 +121,7 @@ import aiPersonalityEngine from "../PULSE-AI/aiPersonalityEngine-v24.js";
 //  2. CONTEXT + CORTEX
 // ============================================================================
 import createCognitiveFrame from "../PULSE-AI/aiContext-v24.js";
-import createContextEngine from "../PULSE-AI/aiContextEngine-v16.js";
+import createContextEngine from "../PULSE-AI/aiContextEngine-v24.js";
 
 // ============================================================================
 //  3. SAFETY + TONE
@@ -170,9 +170,9 @@ import createAIBinaryLoggerAdapter from "../PULSE-AI/aiLoggerAdapter.js";
 //  8. OPTIONAL (GLOBAL MAPS / FRAMES)
 // ============================================================================
 import createPersonalFrameOrgan from "../PULSE-AI/aiPersonalFrame-v24.js";
-import getBoundariesForPersona from "../PULSE-AI/aiBoundaries.js";
+import getBoundariesForPersona from "../PULSE-AI/aiBoundaries-v24.js";
 import getPermissionsForPersona from "../PULSE-AI/aiPermissions.js";
-import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v16.js";
+import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v24.js";
 
 
 // ============================================================================

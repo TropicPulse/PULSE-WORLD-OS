@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiHormones.js — Pulse OS v24‑IMMORTAL‑ADVANTAGE++
+//  aiHormones-v24.js — Pulse OS v24‑IMMORTAL‑ADVANTAGE++
 //  Binary Hormone System • Global Modulation • Tri‑Band Fusion • Artery‑First
 //  Window-Safe • Registry-Aware • Governor/Membrane-Ready • Drift-Aware
 // ============================================================================
@@ -15,7 +15,7 @@
 //    • Deterministic buckets, deterministic cost/pressure/throughput.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
