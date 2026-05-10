@@ -103,8 +103,8 @@ import { route as BridgeRoute, PulseProofBridgeLogger as PulseProofLogger, Pulse
 
 import * as PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
 import * as PulseUIFlow from "../_MONITOR/PulseUIFlow-v24.js";
-import * as PulsePageScanner from "./PulseUIPageScanner-v20.js";
-import { createPulseRouteMemory as PulseUIRouteMemory } from "./PulseUIRouteMemory-v20.js";
+import * as PulsePageScanner from "../_MONITOR/PulseUIPageScanner-v20.js";
+import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseUIRouteMemory-v20.js";
 import * as PulseSkinReflex from "../_MONITOR/PulseUISkinReflex-v20.js";
 
 import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
