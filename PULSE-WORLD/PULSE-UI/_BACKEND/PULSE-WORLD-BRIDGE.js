@@ -108,23 +108,29 @@ AI_EXPERIENCE_META = {
 */
 
 // ============================================================================
-//  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
+//  IMMORTAL++ CORRECT BOOT ORDER
 // ============================================================================
-import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
-import {
-  VitalsLogger as PulseProofLogger,
-  log,
-  warn,
-  error,
-  makeTelemetryPacket as emitTelemetry,
-  PulseVersion,
-  PulseColors,
-  PulseIcons
-} from "../_MONITOR/PulseProofLogger-v24.js";
+
+// 1. SkinReflex — must load FIRST (UI OS layer)
 import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v20.js";
+
+// 2. UIFlow — depends on SkinReflex
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
+
+// 3. UIErrors — depends on SkinReflex + Flow
 import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
-// NEW: CoreSpeech v24 speech organ is bridged via coreSpeechBridge
+
+// 4. Logger — depends on UIErrors
+import { 
+  VitalsLogger as PulseProofLogger, 
+  log, warn, error, 
+  makeTelemetryPacket as emitTelemetry, 
+  PulseVersion, PulseColors, PulseIcons
+} from "../_MONITOR/PulseProofLogger-v24.js";
+
+// 5. Monitor — depends on Logger
+import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
+
 
 const g =
   typeof globalThis !== "undefined"
