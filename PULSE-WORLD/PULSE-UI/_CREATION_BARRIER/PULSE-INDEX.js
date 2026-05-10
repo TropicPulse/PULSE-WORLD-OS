@@ -2,8 +2,6 @@
    0. BOOT MEMBRANE — MUST BE FIRST
 ============================================================ */
 
-// Import SkinReflex so A1 layer is loaded in this surface
-import "../_MONITOR/PulseUISkinReflex-v24.js";
 
 function mark(...args) {
   console.log("[INDEX]", ...args);

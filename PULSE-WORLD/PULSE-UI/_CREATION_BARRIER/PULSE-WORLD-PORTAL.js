@@ -54,6 +54,15 @@ import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldA
 // ============================================================================
 // GLOBAL HANDLE + OPTIONAL DB
 // ============================================================================
+// ============================================================
+//  EXPORT SKINREFLEX A1 LAYER TO WINDOW
+// ============================================================
+if (typeof window !== "undefined" && PulseSkinReflex) {
+  window.getHook    = PulseSkinReflex.getHook;
+  window.getAuth    = PulseSkinReflex.getAuth;
+  window.getMap     = PulseSkinReflex.getMap;
+  window.callHelper = PulseSkinReflex.callHelper;
+}
 
 const g =
   typeof globalThis !== "undefined"
