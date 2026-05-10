@@ -1,35 +1,36 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL‑ADVANTAGE++ — CONTEXT ENGINE
+//  PULSE OS v24.0‑IMMORTAL‑ADVANTAGE++ — CONTEXT ENGINE
 //  Context Kernel • Organism Fusion • Tri‑Heart + Earn + Genome + Governor
 //  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS. OWNER‑SUBORDINATE.
 // ============================================================================
 //
-//  v16++ Upgrades:
-//   • Tri‑Heart Aware (mom/dad/earn)
-//   • Earn‑Aware (earnPressure, earnVitals, earnFallback)
-//   • Genome‑Aware (artery, fingerprint, drift)
-//   • Governor‑Aware (membrane artery, reflex/pipeline state)
-//   • Watchdog‑Aware (trust gaps, anomalies)
-//   • Cortex‑Aware (cognition artery)
-//   • Memory‑Aware (artery v4)
-//   • Heartbeat‑Aware (artery + fallback path)
-//   • Persona + Boundaries + Permissions Fusion
-//   • IdentityCore injection (owner‑subordinate)
-//   • Context Pressure / Cost / Budget
-//   • Context Artery Snapshot
-//   • Organism‑Wide Artery Fusion
-//   • Chunk‑Aware Context Packets
-//   • Multi‑instance, multi‑band, multi‑shard
+//  v16++ / v24++ Feature Surface (NO DOWNGRADES, ONLY ADDITIONS):
+//   • Tri‑Heart Aware (mom/dad/earn)              [via arteries + binaryVitals surfaces]
+//   • Earn‑Aware (earnPressure, earnVitals)       [earn artery]
+//   • Genome‑Aware (artery, fingerprint, drift)   [genome artery]
+//   • Governor‑Aware (membrane artery, reflex)    [governor artery]
+//   • Watchdog‑Aware (trust gaps, anomalies)      [watchdog vitals]
+//   • Cortex‑Aware (cognition artery)             [cortex artery]
+//   • Memory‑Aware (artery v4)                    [memory artery]
+//   • Heartbeat‑Aware (artery + fallback path)    [heartbeat artery]
+//   • Persona + Boundaries + Permissions Fusion   [persona + boundariesPacket]
+//   • IdentityCore injection (owner‑subordinate)  [identityCore surfaces]
+//   • Context Pressure / Cost / Budget            [contextArtery]
+//   • Context Artery Snapshot                     [contextArtery]
+//   • Organism‑Wide Artery Fusion                 [organismArtery v24++]
+//   • DualBand‑Aware (binary + symbolic hints)    [dualBand + binaryVitals]
+//   • Chunk‑Aware Context Packets                 [context-engine-* packets]
+//   • Multi‑instance, multi‑band, multi‑shard     [pure, stateless core]
 //   • Zero mutation, zero randomness, zero drift
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "aiContextEngine",
-  version: "v16-Immortal-Advantage++",
+  version: "v24.0-Immortal-Advantage++",
   layer: "ai_core",
   role: "context_kernel",
-  lineage: "aiContextEngine-v12 → v14-Immortal → v16-Immortal-Advantage++",
+  lineage: "aiContextEngine-v12 → v14-Immortal → v16-Immortal-Advantage++ → v24.0-Immortal-Advantage++",
 
   evo: {
     contextKernel: true,
@@ -51,10 +52,9 @@ AI_EXPERIENCE_META = {
   }
 }
 */
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
 // or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
@@ -70,9 +70,7 @@ export const ContextEngineMeta = Identity.OrganMeta;
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -101,7 +99,7 @@ function emitContextEnginePacket(type, payload) {
 }
 
 // ============================================================================
-//  READ-ONLY VITALS HELPERS (v16++)
+//  READ-ONLY VITALS HELPERS (v16++ / v24++)
 // ============================================================================
 
 function safe(obj, path, fallback = null) {
@@ -168,8 +166,25 @@ function readWatchdogVitals(watchdog) {
   }
 }
 
+// v24++: optional organism‑wide arteries if present on dualBand / brainstem
+function readOrganismArteryFromDualBand(dualBand) {
+  try {
+    return dualBand?.artery || null;
+  } catch {
+    return null;
+  }
+}
+
+function readAnatomyArteryFromBrainstem(brainstem) {
+  try {
+    return brainstem?.organs?.anatomy?.anatomyArtery?.({ binaryVitals: brainstem.binaryVitals || {} }) || null;
+  } catch {
+    return null;
+  }
+}
+
 // ============================================================================
-//  CONTEXT PRESSURE / COST / BUDGET (v16++)
+//  CONTEXT PRESSURE / COST / BUDGET (v16++ / v24++)
 // ============================================================================
 function computeContextPressure(arteries) {
   const vals = Object.values(arteries)
@@ -187,8 +202,43 @@ function computeContextBudget(pressure, cost) {
   return Math.max(0, 1 - (pressure + cost) / 2);
 }
 
+// v24++: organism‑wide artery fusion (context + anatomy + dualBand + boundaries)
+function fuseOrganismArtery({
+  contextArtery,
+  anatomyArtery,
+  dualBandArtery,
+  boundariesPacket
+}) {
+  const boundaryMode = boundariesPacket?.mode || null;
+  const boundaryVitals = boundariesPacket?.vitals || {};
+  const boundaryPressure = boundaryVitals.pressure ?? 0;
+
+  const sources = [contextArtery, anatomyArtery, dualBandArtery].filter(Boolean);
+  const avgPressure =
+    sources.length > 0
+      ? Math.min(
+          1,
+          sources.reduce((acc, a) => acc + (a.pressure ?? 0), 0) / sources.length
+        )
+      : contextArtery.pressure;
+
+  const fusedPressure = Math.min(1, (avgPressure * 0.8) + (boundaryPressure * 0.2));
+
+  return Object.freeze({
+    type: "organism-artery-v24",
+    context: contextArtery || null,
+    anatomy: anatomyArtery || null,
+    dualBand: dualBandArtery || null,
+    boundaries: {
+      mode: boundaryMode,
+      vitals: boundaryVitals
+    },
+    pressure: fusedPressure
+  });
+}
+
 // ============================================================================
-//  CORE IMPLEMENTATION — v16‑IMMORTAL‑ADVANTAGE++
+//  CORE IMPLEMENTATION — v16‑IMMORTAL‑ADVANTAGE++ (LOGIC PRESERVED) + v24++ FUSION
 // ============================================================================
 export class AiContextEngine {
   constructor({ safetyFrame = null, experienceFrame = null } = {}) {
@@ -224,8 +274,8 @@ export class AiContextEngine {
     const dualBandHints = routerPacket.dualBand || {
       primary: "binary",
       secondary: "symbolic",
-      binaryPressure: 0,
-      binaryLoad: 0,
+      binaryPressure: safe(binaryVitals, "binary.pressure", 0),
+      binaryLoad: safe(binaryVitals, "binary.load", 0),
       symbolicLoadAllowed: 0.3,
       binaryPressureOverride: false
     };
@@ -237,7 +287,7 @@ export class AiContextEngine {
       flags: routerPacket.flags || {}
     };
 
-    // v16++ artery fusion
+    // v16++ artery fusion (PRESERVED)
     const arteries = {
       memory: readMemoryArtery(memory),
       cortex: readCortexArtery(cortex),
@@ -250,6 +300,34 @@ export class AiContextEngine {
     const contextPressure = computeContextPressure(arteries);
     const contextCost = computeContextCost(contextPressure);
     const contextBudget = computeContextBudget(contextPressure, contextCost);
+
+    const contextArtery = Object.freeze({
+      pressure: contextPressure,
+      cost: contextCost,
+      budget: contextBudget,
+      pressureBucket:
+        contextPressure >= 0.9 ? "overload" :
+        contextPressure >= 0.7 ? "high" :
+        contextPressure >= 0.4 ? "medium" :
+        contextPressure > 0   ? "low" :
+        "none",
+      budgetBucket:
+        contextBudget >= 0.9 ? "elite" :
+        contextBudget >= 0.75 ? "high" :
+        contextBudget >= 0.5 ? "medium" :
+        contextBudget >= 0.25 ? "low" :
+        "critical"
+    });
+
+    // v24++: organism‑wide artery fusion
+    const anatomyArtery = readAnatomyArteryFromBrainstem(brainstem);
+    const dualBandArtery = readOrganismArteryFromDualBand(dualBand);
+    const organismArtery = fuseOrganismArtery({
+      contextArtery,
+      anatomyArtery,
+      dualBandArtery,
+      boundariesPacket
+    });
 
     const frame = Object.freeze({
       meta: ContextEngineMeta,
@@ -307,7 +385,8 @@ export class AiContextEngine {
         hints: dualBandHints,
         binaryVitals: binaryVitals || {},
         organismSnapshot:
-          dualBand?.organism?.organismSnapshot?.() || null
+          dualBand?.organism?.organismSnapshot?.() || null,
+        artery: dualBandArtery
       }),
 
       heartbeat: Object.freeze({
@@ -338,23 +417,10 @@ export class AiContextEngine {
         artery: arteries.memory
       }),
 
-      contextArtery: Object.freeze({
-        pressure: contextPressure,
-        cost: contextCost,
-        budget: contextBudget,
-        pressureBucket:
-          contextPressure >= 0.9 ? "overload" :
-          contextPressure >= 0.7 ? "high" :
-          contextPressure >= 0.4 ? "medium" :
-          contextPressure > 0   ? "low" :
-          "none",
-        budgetBucket:
-          contextBudget >= 0.9 ? "elite" :
-          contextBudget >= 0.75 ? "high" :
-          contextBudget >= 0.5 ? "medium" :
-          contextBudget >= 0.25 ? "low" :
-          "critical"
-      }),
+      contextArtery,
+
+      // v24++: organism‑wide artery snapshot (new, additive)
+      organismArtery,
 
       organs: Object.freeze({
         ...organs
@@ -368,7 +434,7 @@ export class AiContextEngine {
 }
 
 // ============================================================================
-//  PUBLIC API — v16‑IMMORTAL‑ADVANTAGE++
+//  PUBLIC API — v24.0‑IMMORTAL‑ADVANTAGE++
 // ============================================================================
 export function createContextEngine(config = {}) {
   const core = new AiContextEngine({
@@ -395,6 +461,11 @@ if (typeof module !== "undefined") {
     ContextEngineMeta,
     AiContextEngine,
     createContextEngine,
-    default: createContextEngine
+    default: createContextEngine,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }

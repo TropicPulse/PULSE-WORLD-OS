@@ -1,6 +1,7 @@
 // ============================================================================
-//  aiDoctorAssistant.js — PulseOS Doctor’s Assistant Organ — v15-Immortal-Evo++
+//  aiDoctorAssistant.js — PulseOS Doctor’s Assistant Organ — v24.0‑IMMORTAL‑EVO++
 //  Clinical Mapper • Pattern Interpreter • Route‑Based Medical Info Reader
+//  PURE COMPUTE. ZERO NETWORK FROM THIS ORGAN. ZERO RANDOMNESS.
 // ============================================================================
 //
 //  CANONICAL ROLE:
@@ -31,36 +32,25 @@
 //      caller’s route() / CNS.
 //    • From this organ’s perspective: pure compute over provided data
 //      (symptoms, scans, routed educational medical text).
-//
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
 // or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const DoctorMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
@@ -80,6 +70,60 @@ function bucketPressure(v) {
   if (v >= 0.4) return "medium";
   if (v > 0) return "low";
   return "none";
+}
+
+
+  // ========================================================================
+  // ARCHETYPE ARTERY v3 — symbolic-only, deterministic
+  // ========================================================================
+  function archetypeArtery({ symptoms = [], scan = {}, binaryVitals = {} } = {}) {
+    const binaryPressure = extractBinaryPressure(binaryVitals);
+
+    const hasSymptoms = Array.isArray(symptoms) && symptoms.length > 0;
+    const hasScan = !!scan;
+
+    const localPressure =
+      (hasSymptoms ? 0.3 : 0) +
+      (hasScan ? 0.3 : 0) +
+      (binaryPressure * 0.4);
+
+    const pressure = Math.max(0, Math.min(1, localPressure));
+
+    return {
+      organism: {
+        pressure,
+        pressureBucket: bucketPressure(pressure)
+      },
+      symptoms: {
+        provided: hasSymptoms,
+        count: symptoms.length
+      },
+      scan: {
+        provided: hasScan,
+        distance: scan?.distance ?? null,
+        confidence: scan?.confidenceHint ?? "unknown"
+      }
+    };
+  }
+
+// v24++: simple owner/subordinate snapshot for Architect/Overmind
+function buildDoctorArterySnapshot({ symptoms = [], scan = {}, binaryVitals = {} } = {}) {
+  const binaryPressure = extractBinaryPressure(binaryVitals);
+  const archetype = archetypeArtery({ symptoms, scan, binaryVitals });
+
+  return Object.freeze({
+    type: "doctor-assistant-artery",
+    owner: "Aldwyn",
+    subordinate: true,
+    binaryPressure,
+    binaryPressureBucket: bucketPressure(binaryPressure),
+    archetype,
+    meta: {
+      identity: DoctorMeta.identity,
+      version: DoctorMeta.version,
+      role: "doctor_assistant"
+    }
+  });
 }
 
 // ============================================================================
@@ -115,7 +159,7 @@ function _medicalInfoPointer({ topic = "" } = {}) {
 }
 
 // ============================================================================
-// PUBLIC API — Create Doctor’s Assistant Organ (v15‑IMMORTAL‑EVO+)
+// PUBLIC API — Create Doctor’s Assistant Organ (v24.0‑IMMORTAL‑EVO++)
 // ============================================================================
 export function createDoctorOrgan(context = {}) {
 
@@ -390,7 +434,7 @@ export function createDoctorOrgan(context = {}) {
   }
 
   // ========================================================================
-  // PUBLIC DOCTOR’S ASSISTANT API (v15‑IMMORTAL‑EVO+)
+  // PUBLIC DOCTOR’S ASSISTANT API (v24.0‑IMMORTAL‑EVO++)
   // ========================================================================
   return Object.freeze({
     meta: DoctorMeta,
@@ -408,13 +452,21 @@ export function createDoctorOrgan(context = {}) {
     archetypeArtery,
     medicalInfoQuery,
     medicalInfoReader,
-    safetyLine
+    safetyLine,
+
+    // v24++ artery snapshot for Architect/Overmind
+    doctorArterySnapshot: buildDoctorArterySnapshot
   });
 }
 
 if (typeof module !== "undefined") {
   module.exports = {
     DoctorMeta,
-    createDoctorOrgan
+    createDoctorOrgan,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }

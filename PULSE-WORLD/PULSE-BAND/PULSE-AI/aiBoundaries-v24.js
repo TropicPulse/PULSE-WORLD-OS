@@ -1,13 +1,12 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL++ — SUPEREGO (DUAL‑BAND BOUNDARIES + TRUST FABRIC)
+//  PULSE OS v24.0‑IMMORTAL++ — SUPEREGO (DUAL‑BAND BOUNDARIES + TRUST FABRIC)
 //  Behavioral Constraints • Ethical Boundaries • Binary‑Aware Moral Law
 //  PURE CONSTRAINTS. ZERO RANDOMNESS. ZERO INTERNET.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
 // or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
@@ -23,9 +22,7 @@ export const SuperegoMeta = Identity.OrganMeta;
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -144,7 +141,7 @@ export function canPerform(persona, domain, action) {
 }
 
 // ============================================================================
-//  v16‑IMMORTAL++ — DUAL‑BAND BOUNDARY MODES (binary + trust aware)
+//  v24‑IMMORTAL++ — DUAL‑BAND BOUNDARY MODES (binary + trust aware)
 // ============================================================================
 export const BoundaryModes = Object.freeze({
   SAFE: Object.freeze({
@@ -184,7 +181,7 @@ export const BoundaryModes = Object.freeze({
 });
 
 // ============================================================================
-//  v16‑IMMORTAL++ — PRESSURE + TRUST EXTRACTION
+//  v24‑IMMORTAL++ — PRESSURE + TRUST EXTRACTION
 // ============================================================================
 function extractPressure(binaryVitals = {}) {
   if (binaryVitals?.metabolic && typeof binaryVitals.metabolic.pressure === "number") {
@@ -208,7 +205,7 @@ function extractTrustSignals(trustArtery = {}) {
 }
 
 // ============================================================================
-//  v16‑IMMORTAL++ — BOUNDARY MODE SELECTION (persona + vitals + trust)
+//  v24‑IMMORTAL++ — BOUNDARY MODE SELECTION (persona + vitals + trust)
 // ============================================================================
 export function selectBoundaryMode({
   personaId,
@@ -247,7 +244,7 @@ export function selectBoundaryMode({
 }
 
 // ============================================================================
-//  v16‑IMMORTAL++ — DYNAMIC BOUNDARY CHECK (symbolic + binary fusion)
+//  v24‑IMMORTAL++ — DYNAMIC BOUNDARY CHECK (symbolic + binary fusion)
 // ============================================================================
 export function canPerformDynamic(persona, domain, action, mode, binaryVitals = {}) {
   const staticCheck = canPerform(persona, domain, action);
@@ -276,7 +273,7 @@ export function canPerformDynamic(persona, domain, action, mode, binaryVitals = 
 }
 
 // ============================================================================
-//  v16‑IMMORTAL++ — BOUNDARY CACHE (READ‑ONLY, DETERMINISTIC KEYS)
+//  v24‑IMMORTAL++ — BOUNDARY CACHE (READ‑ONLY, DETERMINISTIC KEYS)
 // ============================================================================
 const _boundaryDecisionCache = Object.create(null);
 const _modeSelectionCache = Object.create(null);
@@ -331,7 +328,7 @@ export function canPerformDynamicCached(persona, domain, action, mode, binaryVit
 }
 
 // ============================================================================
-//  v16‑IMMORTAL++ — BOUNDARY ARTERY SNAPSHOT (READ‑ONLY, TRUST + DUALBAND)
+//  v24‑IMMORTAL++ — BOUNDARY ARTERY SNAPSHOT (READ‑ONLY, TRUST + DUALBAND)
 // ============================================================================
 function bucketPressure(v) {
   if (v >= 0.9) return "overload";
@@ -383,9 +380,8 @@ export function getBoundaryArterySnapshot({
 }
 
 // ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility (v16‑IMMORTAL++ dualband)
+//  DUAL EXPORT LAYER — CommonJS compatibility (v24‑IMMORTAL++ dualband)
 // ---------------------------------------------------------------------------
-/* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     SuperegoMeta,
@@ -402,6 +398,29 @@ if (typeof module !== "undefined" && module.exports) {
     canPerformDynamic,
     selectBoundaryModeCached,
     canPerformDynamicCached,
-    getBoundaryArterySnapshot
+    getBoundaryArterySnapshot,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }
+
+export default {
+  SuperegoMeta,
+  BoundaryLevels,
+  ArchitectAIBoundaries,
+  ObserverAIBoundaries,
+  TourGuideAIBoundaries,
+  NeutralAIBoundaries,
+  JuryAIBoundaries,
+  getBoundariesForPersona,
+  canPerform,
+  BoundaryModes,
+  selectBoundaryMode,
+  canPerformDynamic,
+  selectBoundaryModeCached,
+  canPerformDynamicCached,
+  getBoundaryArterySnapshot
+};

@@ -1,45 +1,30 @@
 // ============================================================================
-//  PULSE OS v12.3‑EVO+ — ANATOMY ORGAN
+//  PULSE OS v24.0‑IMMORTAL‑EVO++ — ANATOMY ORGAN
 //  Structural Map • Connectivity Skeleton • Organism Blueprint
 //  PURE STRUCTURE. ZERO ROUTING. ZERO COMPUTE.
 // ============================================================================
 
-/*
-  (You can keep this AI_EXPERIENCE_META block as documentation if you like;
-   runtime identity now comes from the Organism Map.)
-*/
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  META BLOCK — v24.0 IMMORTAL‑EVO++
 // ============================================================================
 export const AnatomyMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL‑EVO++
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-// HELPERS — PRESSURE + BUCKETS
+// HELPERS — PRESSURE + BUCKETS (v24 IMMORTAL BUCKET ENGINE)
 // ============================================================================
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
@@ -74,7 +59,7 @@ function bucketCost(v) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v12.3‑EVO+
+//  ORGAN IMPLEMENTATION — v24.0 IMMORTAL‑EVO++
 // ============================================================================
 export class AIAnatomy {
   constructor(config = {}) {
@@ -101,10 +86,9 @@ export class AIAnatomy {
     return true;
   }
 
-  // ---------------------------------------------------------
-  //  STRUCTURAL ARTERY METRICS
-  // ---------------------------------------------------------
-
+  // ========================================================================
+  //  STRUCTURAL ARTERY METRICS — v24 IMMORTAL‑EVO++
+  // ========================================================================
   _computeStructuralThroughput(organCount, connectionCount) {
     const organFactor = Math.min(1, organCount / 100);
     const connFactor  = Math.min(1, connectionCount / 200);
@@ -163,10 +147,9 @@ export class AIAnatomy {
     });
   }
 
-  // ---------------------------------------------------------
-  //  TOPOLOGY REGISTRATION
-  // ---------------------------------------------------------
-
+  // ========================================================================
+  //  TOPOLOGY REGISTRATION — v24 IMMORTAL‑EVO++
+  // ========================================================================
   registerOrgan(organId) {
     if (!this.topology.has(organId)) {
       this.topology.set(organId, {
@@ -208,10 +191,9 @@ export class AIAnatomy {
     this._trace("link", { a, b, artery });
   }
 
-  // ---------------------------------------------------------
-  //  ANATOMY SNAPSHOT (binary‑encoded)
-//  - optionally binary‑pressure‑aware (for logging only)
-// ---------------------------------------------------------
+  // ========================================================================
+  //  ANATOMY SNAPSHOT — v24 IMMORTAL‑EVO++
+  // ========================================================================
   snapshot(binaryVitals = {}) {
     const obj = {};
 
@@ -253,10 +235,9 @@ export class AIAnatomy {
     return packet;
   }
 
-  // ---------------------------------------------------------
-  //  ANATOMY STORAGE
-  // ---------------------------------------------------------
-
+  // ========================================================================
+  //  ANATOMY STORAGE — v24 IMMORTAL‑EVO++
+  // ========================================================================
   store(binaryVitals = {}) {
     const snap = this.snapshot(binaryVitals);
 
@@ -290,9 +271,9 @@ export class AIAnatomy {
     return Object.freeze(topology);
   }
 
-  // ---------------------------------------------------------
-  //  ANATOMY ARTERY v3 — symbolic-only, deterministic
-  // ---------------------------------------------------------
+  // ========================================================================
+  //  ANATOMY ARTERY v3 — v24 IMMORTAL‑EVO++
+// ========================================================================
   anatomyArtery({ binaryVitals = {} } = {}) {
     const artery = this._computeStructuralArtery();
     const binaryPressure = extractBinaryPressure(binaryVitals);
@@ -322,20 +303,18 @@ export class AIAnatomy {
     };
   }
 
-  // ---------------------------------------------------------
+  // ========================================================================
   //  INTERNAL HELPERS
-  // ---------------------------------------------------------
-
+  // ========================================================================
   _trace(event, payload) {
     if (!this.trace) return;
     console.log(`[${this.id}] ${event}`, payload);
   }
 }
 
-// ---------------------------------------------------------
+// ============================================================================
 // FACTORY EXPORT (ESM + CommonJS)
-// ---------------------------------------------------------
-
+// ============================================================================
 export function createAIAnatomy(config) {
   return new AIAnatomy(config);
 }

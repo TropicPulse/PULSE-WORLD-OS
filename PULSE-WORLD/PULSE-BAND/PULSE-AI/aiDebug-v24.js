@@ -1,43 +1,31 @@
 // ============================================================================
-//  PULSE OS v11‑EVO — THE SCRIBE
+//  PULSE OS v24.0‑IMMORTAL‑ADVANTAGE++ — THE SCRIBE
 //  Dual‑Band Diagnostic Recorder • Forensic Historian • Organism Snapshot
 //  PURE FORMATTING + SUMMARIZATION. ZERO MUTATION. ZERO RANDOMNESS.
+//  FULL v24++ ORGANISM‑AWARE SCRIBE
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const SCRIBE_META = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
-
-// ---------------------------------------------------------
-//  SCRIBE PREWARM ENGINE — v11‑EVO
-// ---------------------------------------------------------
+// ============================================================================
+//  SCRIBE PREWARM ENGINE — v24++
+// ============================================================================
 export function prewarmScribe() {
   try {
     const warmDiagnostics = {
@@ -63,6 +51,11 @@ export function prewarmScribe() {
         personaEngine: { getActivePersona: () => "ARCHITECT" },
         boundariesEngine: { getMode: () => "safe" },
         permissionsEngine: { snapshot: () => ({ allow: true }) }
+      },
+      organism: {
+        organismSnapshot: () => ({
+          artery: { pressure: 0.1, cost: 0.05, budget: 0.95 }
+        })
       }
     };
 
@@ -97,12 +90,13 @@ export function prewarmScribe() {
 
     return true;
   } catch (err) {
-    console.error("[Scribe Prewarm] Failed:", err);
+    console.error("[Scribe Prewarm v24] Failed:", err);
     return false;
   }
 }
+
 // ============================================================================
-// PUBLIC API — Build Debug Report (Object)
+//  PUBLIC API — Build Debug Report (Object)
 // ============================================================================
 export function formatDebugReport(context = {}, dualBand = null) {
   const { trace = [], diagnostics = {} } = context;
@@ -110,11 +104,12 @@ export function formatDebugReport(context = {}, dualBand = null) {
   const organismSnapshot = buildOrganismSnapshot(dualBand);
   const binarySnapshot = organismSnapshot?.binary || null;
   const symbolicSnapshot = organismSnapshot?.symbolic || null;
+  const organismArtery = organismSnapshot?.artery || null;
 
   return Object.freeze({
     meta: SCRIBE_META,
 
-    summary: buildSummary(diagnostics, binarySnapshot),
+    summary: buildSummary(diagnostics, binarySnapshot, organismArtery),
 
     trace: [...trace],
 
@@ -123,33 +118,40 @@ export function formatDebugReport(context = {}, dualBand = null) {
     slowdownCauses: [...(diagnostics.slowdownCauses || [])],
     driftDetected: diagnostics.driftDetected === true,
 
-    // NEW v11‑EVO — Dual‑Band Layers
+    // v24++ Dual‑Band Layers
     binary: binarySnapshot,
     symbolic: symbolicSnapshot,
     organism: organismSnapshot,
+    organismArtery,
 
-    // Evolutionary Layers
+    // v24++ Evolutionary Layers
     evolution: buildEvolutionaryNotes(context, organismSnapshot),
 
-    // CNS Layers
+    // v24++ CNS Layers
     organs: buildOrganSnapshot(context),
     routing: buildRoutingSnapshot(context),
     cortex: buildCortexSnapshot(context),
 
-    // Pulse lineage
+    // v24++ Pulse lineage
     pulse: buildPulseSnapshot(context)
   });
 }
 
 // ============================================================================
-// SUMMARY BUILDER — Dual‑Band Summary Lines (v11‑EVO)
+// SUMMARY BUILDER — v24++
 // ============================================================================
-function buildSummary(diagnostics, binary) {
+function buildSummary(diagnostics, binary, organismArtery) {
   const summary = [];
 
   if (binary) {
     summary.push(
       `🧠 Binary load=${binary.metabolic?.load ?? 0}, pressure=${binary.metabolic?.pressure ?? 0}`
+    );
+  }
+
+  if (organismArtery) {
+    summary.push(
+      `🌐 Organism pressure=${organismArtery.pressure ?? 0}, budget=${organismArtery.budget ?? "?"}`
     );
   }
 
@@ -172,10 +174,13 @@ function buildSummary(diagnostics, binary) {
 }
 
 // ============================================================================
-// ORGANISM SNAPSHOT — Dual‑Band (v11‑EVO)
+// ORGANISM SNAPSHOT — v24++
 // ============================================================================
 function buildOrganismSnapshot(dualBand) {
   if (!dualBand) return null;
+
+  const organismArtery =
+    dualBand.organism?.organismSnapshot?.()?.artery || null;
 
   return Object.freeze({
     timestamp: Date.now(),
@@ -186,12 +191,14 @@ function buildOrganismSnapshot(dualBand) {
       persona: dualBand.symbolic?.personaEngine?.getActivePersona?.() || null,
       boundaryMode: dualBand.symbolic?.boundariesEngine?.getMode?.() || null,
       permissions: dualBand.symbolic?.permissionsEngine?.snapshot?.() || null
-    }
+    },
+
+    artery: organismArtery
   });
 }
 
 // ============================================================================
-// EVOLUTIONARY NOTES — Dual‑Band Historian (v11‑EVO)
+// EVOLUTIONARY NOTES — v24++
 // ============================================================================
 function buildEvolutionaryNotes(context, organismSnapshot) {
   const notes = [];
@@ -199,6 +206,12 @@ function buildEvolutionaryNotes(context, organismSnapshot) {
   if (organismSnapshot?.binary?.metabolic) {
     notes.push(
       `Binary metabolic pressure=${organismSnapshot.binary.metabolic.pressure}`
+    );
+  }
+
+  if (organismSnapshot?.artery) {
+    notes.push(
+      `Organism artery pressure=${organismSnapshot.artery.pressure}`
     );
   }
 
@@ -215,7 +228,7 @@ function buildEvolutionaryNotes(context, organismSnapshot) {
 }
 
 // ============================================================================
-// ORGAN SNAPSHOT — Persona + Boundaries + Permissions (v11‑EVO)
+// ORGAN SNAPSHOT — v24++
 // ============================================================================
 function buildOrganSnapshot(context) {
   return Object.freeze({
@@ -226,7 +239,7 @@ function buildOrganSnapshot(context) {
 }
 
 // ============================================================================
-// ROUTING SNAPSHOT — Dual‑Band Router Decisions (v11‑EVO)
+// ROUTING SNAPSHOT — v24++
 // ============================================================================
 function buildRoutingSnapshot(context) {
   if (!context.routing) return null;
@@ -239,7 +252,7 @@ function buildRoutingSnapshot(context) {
 }
 
 // ============================================================================
-// CORTEX SNAPSHOT — Dual‑Band Cognition (v11‑EVO)
+// CORTEX SNAPSHOT — v24++
 // ============================================================================
 function buildCortexSnapshot(context) {
   if (!context.cortexPacket) return null;
@@ -255,7 +268,7 @@ function buildCortexSnapshot(context) {
 }
 
 // ============================================================================
-// PULSE SNAPSHOT — Pulse lineage + pattern (v11‑EVO)
+// PULSE SNAPSHOT — v24++
 // ============================================================================
 function buildPulseSnapshot(context) {
   if (!context.pulse) return null;
@@ -270,12 +283,12 @@ function buildPulseSnapshot(context) {
 }
 
 // ============================================================================
-// STRING FORMATTER — Pretty Printed Debug Report (v11‑EVO)
+// STRING FORMATTER — v24++
 // ============================================================================
 export function formatDebugString(context, dualBand = null) {
   const report = formatDebugReport(context, dualBand);
 
-  let out = "\n=== AI DEBUG REPORT (v11‑EVO) ===\n\n";
+  let out = "\n=== AI DEBUG REPORT (v24.0‑IMMORTAL‑ADVANTAGE++) ===\n\n";
 
   out += "SUMMARY:\n";
   report.summary.forEach(line => {
@@ -293,6 +306,9 @@ export function formatDebugString(context, dualBand = null) {
   out += "\nSYMBOLIC SNAPSHOT:\n";
   out += JSON.stringify(report.symbolic, null, 2) + "\n";
 
+  out += "\nORGANISM ARTERY:\n";
+  out += JSON.stringify(report.organismArtery, null, 2) + "\n";
+
   out += "\nROUTING:\n";
   out += JSON.stringify(report.routing, null, 2) + "\n";
 
@@ -308,17 +324,21 @@ export function formatDebugString(context, dualBand = null) {
 
   return out;
 }
+
 // ============================================================================
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
 // ============================================================================
 prewarmScribe();
 
-
-// CommonJS
 if (typeof module !== "undefined") {
   module.exports = {
     SCRIBE_META,
     formatDebugReport,
-    formatDebugString
+    formatDebugString,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }

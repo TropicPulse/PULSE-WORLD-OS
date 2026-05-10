@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v12.3‑EVO+ — ARCHITECT ORGAN
+//  PULSE OS v24.1‑IMMORTAL‑EVO++ — ARCHITECT ORGAN
 //  System + Identity + Architecture Insight
 //  PURE READ-ONLY. ZERO IDENTITY LEAKAGE. ZERO MUTATION.
 // ============================================================================
@@ -8,28 +8,25 @@
   (You can keep this AI_EXPERIENCE_META block as documentation;
    runtime identity now comes from the Organism Map.)
 */
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
+// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.1-IMMORTAL-EVO++"] if that's the key you chose
 
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  META BLOCK — v24.1 IMMORTAL‑EVO++ (ORGANISM KERNEL)
 //  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const ArchitectMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  SURFACE / ORGANISM LAYER EXPORTS — v24.1 IMMORTAL‑EVO++
 //  (for Understanding / CNS / Portal alignment)
 // ============================================================================
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -58,7 +55,7 @@ function bucketPressure(v) {
 }
 
 // ============================================================================
-// PUBLIC API — Create Architect Organ (v12.3‑EVO+)
+// PUBLIC API — Create Architect Organ (v24.1‑IMMORTAL‑EVO++ surface)
 // ============================================================================
 export function createArchitectOrgan({ db, evolutionAPI, personas } = {}) {
   // --------------------------------------------------------------------------
@@ -151,8 +148,8 @@ export function createArchitectOrgan({ db, evolutionAPI, personas } = {}) {
 
   // --------------------------------------------------------------------------
   // FILE SCAN (LOCAL ARCHITECT VIEW)
-//  - Purely descriptive: size, extension, layer, quick heuristics
-//  - Optionally enriched by evolutionAPI.scanFile / analyzeFile
+  //  - Purely descriptive: size, extension, layer, quick heuristics
+  //  - Optionally enriched by evolutionAPI.scanFile / analyzeFile
   // --------------------------------------------------------------------------
   async function scanFile(context, { filePath, contents, binaryVitals = {} }) {
     if (!assertOwnerArchitect(context)) return null;
@@ -189,7 +186,7 @@ export function createArchitectOrgan({ db, evolutionAPI, personas } = {}) {
 
   // --------------------------------------------------------------------------
   // DEAD COMPONENTS / ORPHANED ROUTES / DRIFT (via evolutionAPI)
-//  - All optional, read-only, owner+architect gated
+  //  - All optional, read-only, owner+architect gated
   // --------------------------------------------------------------------------
   async function getDeadComponents(context, { binaryVitals = {} } = {}) {
     if (!assertOwnerArchitect(context) || !evolutionAPI?.getDeadComponents) {
@@ -384,3 +381,5 @@ if (typeof module !== "undefined") {
     createArchitectOrgan
   };
 }
+
+export default createArchitectOrgan;

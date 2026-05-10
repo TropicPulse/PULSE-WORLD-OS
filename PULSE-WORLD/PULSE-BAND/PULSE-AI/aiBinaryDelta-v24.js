@@ -1,10 +1,10 @@
 /**
- * aiBinaryAgent.js — Pulse OS v16‑Immortal Organ
+ * aiBinaryAgent.js — Pulse OS v24.0‑IMMORTAL Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   This organ is the **Binary Compute Cortex** of the organism.
  *
- *   In the v16‑Immortal dualband organism:
+ *   In the v24‑Immortal dualband organism:
  *     - This organ remains a **binary‑only physiology organ**
  *     - It provides the organism’s low‑level compute reflexes
  *     - It measures compute throughput, pressure, cost, and budget
@@ -15,10 +15,10 @@
  *   This organ is NOT symbolic, NOT dualband, NOT cognitive.
  *   It is pure binary physiology — the “bit‑level cortex.”
  */
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
 // or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
@@ -34,9 +34,7 @@ export const BinaryAgentMeta = Identity.OrganMeta;
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -46,9 +44,8 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------
-//  BINARY AGENT PREWARM ENGINE — v16‑Immortal
+//  BINARY AGENT PREWARM ENGINE — v24‑Immortal (binary cortex)
 // ---------------------------------------------------------
-
 export function prewarmAIBinaryAgent(config = {}) {
   try {
     const {
@@ -126,9 +123,8 @@ export function prewarmAIBinaryAgent(config = {}) {
 }
 
 // ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — v16‑Immortal
+//  ORGAN IMPLEMENTATION — v24‑Immortal (binary cortex)
 // ---------------------------------------------------------
-
 class AIBinaryAgent {
   constructor(config = {}) {
     this.id = config.id || "ai-binary-agent";
@@ -148,7 +144,7 @@ class AIBinaryAgent {
       utilBucket: config.gpuUtilBucket ?? null
     });
 
-    // NEW: compute‑intelligence + delta integration
+    // compute‑intelligence + delta integration
     this.deltaEngine = config.deltaEngine || null;          // AIBinaryDelta or compatible
     this.triHeartId = config.triHeartId || "dad";           // "mom" | "dad" | "earn" etc
     this.sampleComputeSurface = config.sampleComputeSurface || null;
@@ -157,7 +153,6 @@ class AIBinaryAgent {
   // ---------------------------------------------------------
   //  BINARY COMPUTE ARTERY METRICS
   // ---------------------------------------------------------
-
   _computeComputeThroughput(inputCount, avgBits) {
     const countFactor = Math.min(1, inputCount / 20);
     const sizeFactor = Math.min(1, avgBits / this.maxBits);
@@ -238,9 +233,8 @@ class AIBinaryAgent {
   }
 
   // ---------------------------------------------------------
-  //  COMPUTE‑INTELLIGENCE SURFACE — IMMORTAL v16
+  //  COMPUTE‑INTELLIGENCE SURFACE — IMMORTAL v24
   // ---------------------------------------------------------
-
   _buildComputeIntelligenceSurface(arteryMetrics = {}, extras = {}) {
     const {
       throughput = 0,
@@ -311,7 +305,6 @@ class AIBinaryAgent {
   }
 
   // PUBLIC: computeIntelligenceSnapshot
-  // Given binary inputs (+ optional gpu/extras), returns:
   //   { artery, surface, deltaPacket? }
   computeIntelligenceSnapshot(binaryInputs = [], extras = {}, prevSurface = null) {
     const artery = this._computeArtery(binaryInputs);
@@ -336,7 +329,6 @@ class AIBinaryAgent {
   // ---------------------------------------------------------
   //  BINARY ENCODING / DECODING
   // ---------------------------------------------------------
-
   encodeNumber(value) {
     if (typeof value === "bigint") return value.toString(2);
     if (typeof value !== "number" || !Number.isFinite(value)) {
@@ -388,8 +380,7 @@ class AIBinaryAgent {
 
   // ---------------------------------------------------------
   //  BINARY COMPUTE SURFACE (Presence‑aware)
-// ---------------------------------------------------------
-
+  // ---------------------------------------------------------
   computeBinary(fn, ...inputs) {
     if (typeof fn !== "function") {
       throw new TypeError("computeBinary expects a function");
@@ -434,7 +425,6 @@ class AIBinaryAgent {
   // ---------------------------------------------------------
   //  EXAMPLE BINARY OPS
   // ---------------------------------------------------------
-
   addBinary(aBin, bBin) {
     this._assertBinary(aBin);
     this._assertBinary(bBin);
@@ -485,7 +475,6 @@ class AIBinaryAgent {
   // ---------------------------------------------------------
   //  INTERNAL HELPERS
   // ---------------------------------------------------------
-
   _bytesToBinary(bytes) {
     let out = "";
     for (const byte of bytes) {
@@ -532,9 +521,8 @@ class AIBinaryAgent {
 }
 
 // ---------------------------------------------------------
-//  PRESENCE SURFACE / FACTORY EXPORT — v16‑Immortal
+//  PRESENCE SURFACE / FACTORY EXPORT — v24‑Immortal
 // ---------------------------------------------------------
-
 export function createAIBinaryAgent(config = {}) {
   prewarmAIBinaryAgent(config); // one-time binary cortex warm-up
   return new AIBinaryAgent(config);
@@ -557,7 +545,6 @@ export { AIBinaryAgent };
 // ---------------------------------------------------------
 //  COMMONJS FALLBACK EXPORT (Dual‑Mode)
 // ---------------------------------------------------------
-
 if (typeof module !== "undefined") {
   module.exports = {
     AIBinaryAgent,
@@ -567,3 +554,5 @@ if (typeof module !== "undefined") {
     prewarmAIBinaryAgent
   };
 }
+
+export default createAIBinaryAgent;

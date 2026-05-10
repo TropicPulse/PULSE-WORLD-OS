@@ -1,5 +1,5 @@
 /**
- * aiCortex-v16.0-IMMORTAL-ADV — Pulse OS v16‑IMMORTAL-ADV Organ
+ * aiCortex-v24.0-IMMORTAL-ADV — Pulse OS v24.0‑IMMORTAL-ADV Organ
  * --------------------------------------------------------------
  * CANONICAL ROLE:
  *   Dual‑Band Executive Cortex of the organism (subordinate to Aldwyn).
@@ -21,10 +21,10 @@
  *   Ownership:
  *     • Explicitly subordinate to Aldwyn (canonical owner).
  */
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
 // or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
@@ -73,7 +73,7 @@ export function getGlobalCortexArteries() {
 }
 
 // ---------------------------------------------------------
-//  CORTEX PREWARM ENGINE — v16.0‑IMMORTAL‑ADV
+//  CORTEX PREWARM ENGINE — v24.0‑IMMORTAL‑ADV (logic from v16)
 // ---------------------------------------------------------
 export function prewarmAICortex(config = {}) {
   try {
@@ -124,23 +124,23 @@ export function prewarmAICortex(config = {}) {
     }
 
     if (trace) {
-      console.log("[AICortex Prewarm v16] complete");
+      console.log("[AICortex Prewarm v24] complete");
     }
 
     return true;
   } catch (err) {
-    console.error("[AICortex Prewarm v16] Failed:", err);
+    console.error("[AICortex Prewarm v24] Failed:", err);
     return false;
   }
 }
 
 // ---------------------------------------------------------
-//  CORTEX CLASS — v16.0‑IMMORTAL‑ADV
+//  CORTEX CLASS — v16.0‑IMMORTAL‑ADV LOGIC, v24 META
 // ---------------------------------------------------------
 
 export class AIDualBandCortex {
   constructor(config = {}) {
-    this.id = config.id || "ai-dualband-cortex-v16";
+    this.id = config.id || CortexMeta.identity || "ai-dualband-cortex-v24";
 
     // Binary / organism stack
     this.encoder = config.encoder;
@@ -174,7 +174,7 @@ export class AIDualBandCortex {
     this.trace = !!config.trace;
 
     if (!this.encoder) {
-      throw new Error("AIDualBandCortex v16 requires aiBinaryAgent encoder");
+      throw new Error("AIDualBandCortex v24 requires aiBinaryAgent encoder");
     }
 
     this.patternHistory = [];
@@ -626,7 +626,7 @@ export class AIDualBandCortex {
   _trace(event, payload) {
     if (!this.trace) return;
     console.log(
-      `[${this.id}#${this.instanceIndex}@v16] ${event}`,
+      `[${this.id}#${this.instanceIndex}@v24] ${event}`,
       payload
     );
   }
@@ -645,6 +645,11 @@ if (typeof module !== "undefined") {
     AIDualBandCortex,
     createCortex,
     getGlobalCortexArteries,
-    prewarmAICortex
+    prewarmAICortex,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }
