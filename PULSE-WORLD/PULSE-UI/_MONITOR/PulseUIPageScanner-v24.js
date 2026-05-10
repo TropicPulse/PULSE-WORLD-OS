@@ -1,10 +1,9 @@
 /*
 ===============================================================================
-FILE: /PULSE-UI/PulsePageScanner-v20.js
-LAYER: A2 DRIFT INTELLIGENCE • v20-Immortal-Evo+++
+FILE: /PULSE-UI/PulsePageScanner-v24.js
+LAYER: A2 DRIFT INTELLIGENCE • v24-IMMORTAL++
 ===============================================================================
 
-===============================================================================
 EXPORT_META = {
   organ: "PulseUI.PageScanner",
   layer: "pulse_ui",
@@ -33,13 +32,17 @@ EXPORT_META = {
   filesystem: "none"
 }
 */
+
 import PulseUIErrors from "./PulseUIErrors-v24.js"; // keep only if you actually call it
 
 // ============================================================================
 //  IMMORTAL++: NO DIRECT BRIDGE IMPORT — ALWAYS USE GLOBAL BRIDGE
 // ============================================================================
 
-const PAGESCANNER_SCHEMA_VERSION = "v5";
+const PAGESCANNER_SCHEMA_VERSION = "24.0";
+
+const PAGESCANNER_VERSION = "24.0-IMMORTAL++";
+const PAGESCANNER_ROUTE_ID = "pageScanner";
 
 // Global handle
 const g =
@@ -62,8 +65,13 @@ const db =
 // ============================================================================
 //  IMMORTAL++ BRIDGE RESOLUTION — NEVER IMPORT, NEVER TDZ
 // ============================================================================
+
 function getBridge() {
-  return globalThis.PulseProofBridge || null;
+  try {
+    return g.PulseProofBridge || null;
+  } catch {
+    return null;
+  }
 }
 
 function getCoreMemory() {
@@ -85,7 +93,7 @@ function getEvidenceBus() {
 // IMMORTAL LOCALSTORAGE MIRROR — PulsePageScannerStore
 // ============================================================================
 
-const PAGESCANNER_LS_KEY = "PulsePageScanner.v20.buffer";
+const PAGESCANNER_LS_KEY = "PulsePageScanner.v24.buffer";
 const PAGESCANNER_LS_MAX = 4000;
 
 function psHasLocalStorage() {
@@ -111,6 +119,7 @@ function psLoadBuffer() {
     return [];
   }
 }
+
 function psMirrorBufferToCoreMemory(buf) {
   try {
     const core = getCoreMemory();
@@ -118,13 +127,13 @@ function psMirrorBufferToCoreMemory(buf) {
 
     const envelope = {
       schemaVersion: PAGESCANNER_SCHEMA_VERSION,
-      version: "20.0-Immortal-Evo+++",
-      routeId: "pageScanner",
+      version: PAGESCANNER_VERSION,
+      routeId: PAGESCANNER_ROUTE_ID,
       buffer: buf,
       timestamp: Date.now()
     };
 
-    core.setRouteSnapshot("pageScanner", envelope);
+    core.setRouteSnapshot(PAGESCANNER_ROUTE_ID, envelope);
   } catch {
     // best-effort only
   }
@@ -188,10 +197,10 @@ export const PulsePageScannerStore = {
 
     try {
       const core = getCoreMemory();
-      core?.setRouteSnapshot?.("pageScanner", {
+      core?.setRouteSnapshot?.(PAGESCANNER_ROUTE_ID, {
         schemaVersion: PAGESCANNER_SCHEMA_VERSION,
-        version: "20.0-Immortal-Evo+++",
-        routeId: "pageScanner",
+        version: PAGESCANNER_VERSION,
+        routeId: PAGESCANNER_ROUTE_ID,
         buffer: [],
         cleared: true,
         timestamp: Date.now()
@@ -199,7 +208,6 @@ export const PulsePageScannerStore = {
     } catch {}
   }
 };
-
 
 // ============================================================================
 // ROLE
@@ -209,8 +217,8 @@ export const PageScannerRole = {
   type: "Organ",
   subsystem: "UI",
   layer: "PageScanner",
-  version: "20.0-Immortal-Evo+++",
-  identity: "PulsePageScanner-v20",
+  version: PAGESCANNER_VERSION,
+  identity: "PulsePageScanner-v24",
 
   evo: {
     driftProof: true,
@@ -270,6 +278,7 @@ const DriftChannels = Object.freeze({
 // ============================================================================
 // INTERNAL: deterministic signature generator
 // ============================================================================
+
 function deterministicSignature(obj) {
   const json = JSON.stringify(obj || {});
   let hash = 0;
@@ -290,11 +299,13 @@ function safeNormalizeError(err, origin) {
 // ---------------------------------------------------------------------------
 // Extract variable names from JS source
 // ---------------------------------------------------------------------------
+
 function extractVars(source = "") {
   appendPageScannerRecord("extractVars_in", { sourceLength: source.length });
   try {
-    const vars = [...source.matchAll(/(?:const|let|var)\s+([A-Za-z0-9_]+)/g)]
-      .map((m) => m[1]);
+    const vars = [...source.matchAll(/(?:const|let|var)\s+([A-Za-z0-9_]+)/g)].map(
+      (m) => m[1]
+    );
     appendPageScannerRecord("extractVars_out", { vars });
     return vars;
   } catch (err) {
@@ -306,6 +317,7 @@ function extractVars(source = "") {
 // ---------------------------------------------------------------------------
 // Normalize names (strip suffixes, digits, casing)
 // ---------------------------------------------------------------------------
+
 function normalizeName(name = "") {
   appendPageScannerRecord("normalizeName_in", { name });
   try {
@@ -324,6 +336,7 @@ function normalizeName(name = "") {
 // ---------------------------------------------------------------------------
 // Detect lineage drift between two sets of variables
 // ---------------------------------------------------------------------------
+
 function detectLineage(varsA = [], varsB = []) {
   appendPageScannerRecord("detectLineage_in", { varsA, varsB });
   try {
@@ -352,6 +365,7 @@ function detectLineage(varsA = [], varsB = []) {
 // ---------------------------------------------------------------------------
 // Detect and rewrite illegal admin imports (frontend-safe)
 // ---------------------------------------------------------------------------
+
 function rewriteIllegalImports(source = "") {
   appendPageScannerRecord("rewriteIllegalImports_in", {
     sourceLength: source.length
@@ -383,6 +397,7 @@ function rewriteIllegalImports(source = "") {
 // ---------------------------------------------------------------------------
 // Detect module mode drift (ESM vs CJS)
 // ---------------------------------------------------------------------------
+
 function detectModuleMode(source = "") {
   appendPageScannerRecord("detectModuleMode_in", {
     sourceLength: source.length
@@ -410,6 +425,7 @@ function detectModuleMode(source = "") {
 // ---------------------------------------------------------------------------
 // Detect export drift (ESM/CJS)
 // ---------------------------------------------------------------------------
+
 function detectExportDrift(source = "", vars = []) {
   appendPageScannerRecord("detectExportDrift_in", {
     sourceLength: source.length,
@@ -442,6 +458,7 @@ function detectExportDrift(source = "", vars = []) {
 // ---------------------------------------------------------------------------
 // Detect structural drift (shape + field mismatches)
 // ---------------------------------------------------------------------------
+
 function detectStructural(sourceA = "", sourceB = "") {
   appendPageScannerRecord("detectStructural_in", {
     sourceALength: sourceA.length,
@@ -511,23 +528,26 @@ function detectStructural(sourceA = "", sourceB = "") {
 // ---------------------------------------------------------------------------
 // Detect contract drift (function signature mismatches)
 // ---------------------------------------------------------------------------
+
 function detectContract(sourceA = "", sourceB = "") {
   appendPageScannerRecord("detectContract_in", {
     sourceALength: sourceA.length,
     sourceBLength: sourceB.length
   });
   try {
-    const sigA = [...sourceA.matchAll(/function\s+([A-Za-z0-9_]+)\(([^)]*)\)/g)]
-      .map((m) => ({
+    const sigA = [...sourceA.matchAll(/function\s+([A-Za-z0-9_]+)\(([^)]*)\)/g)].map(
+      (m) => ({
         name: m[1],
         params: m[2].split(",").map((s) => s.trim()).filter(Boolean)
-      }));
+      })
+    );
 
-    const sigB = [...sourceB.matchAll(/function\s+([A-Za-z0-9_]+)\(([^)]*)\)/g)]
-      .map((m) => ({
+    const sigB = [...sourceB.matchAll(/function\s+([A-Za-z0-9_]+)\(([^)]*)\)/g)].map(
+      (m) => ({
         name: m[1],
         params: m[2].split(",").map((s) => s.trim()).filter(Boolean)
-      }));
+      })
+    );
 
     const out = Object.freeze({
       sigA,
@@ -552,6 +572,7 @@ function detectContract(sourceA = "", sourceB = "") {
 // ---------------------------------------------------------------------------
 // Detect path drift (file moved or renamed)
 // ---------------------------------------------------------------------------
+
 function detectPathDrift(importLine = "") {
   appendPageScannerRecord("detectPathDrift_in", { importLine });
   try {
@@ -582,6 +603,7 @@ function detectPathDrift(importLine = "") {
 // ---------------------------------------------------------------------------
 // INTERNAL: map severity → drift tier
 // ---------------------------------------------------------------------------
+
 function mapSeverityToTier(severity) {
   if (severity <= 0) return DriftTiers.none;
   if (severity === 1) return DriftTiers.low;
@@ -594,6 +616,7 @@ function mapSeverityToTier(severity) {
 // ---------------------------------------------------------------------------
 // Build drift intelligence packet (adapter-ready)
 // ---------------------------------------------------------------------------
+
 function buildDriftPacket(context = {}) {
   appendPageScannerRecord("buildDriftPacket_in", { context });
 
@@ -641,7 +664,6 @@ function buildDriftPacket(context = {}) {
 
     appendPageScannerRecord("buildDriftPacket_out", out);
 
-    // IMMORTAL++: diagnostics + evidence buses (lazy bridge)
     try {
       getDiagnosticsBus()?.emit?.("PageScanner.driftPacket", out);
     } catch {}
@@ -679,10 +701,10 @@ function buildDriftPacket(context = {}) {
   }
 }
 
-
 // ---------------------------------------------------------------------------
 // PUBLIC ORGAN
 // ---------------------------------------------------------------------------
+
 export const PulsePageScanner = Object.freeze({
   PageScannerRole,
 
@@ -707,6 +729,7 @@ export default PulsePageScanner;
 // ============================================================================
 // GLOBAL EXPOSURE OF IMMORTAL STORE
 // ============================================================================
+
 try {
   if (typeof window !== "undefined") {
     window.PulsePageScanner = PulsePageScanner;

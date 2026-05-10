@@ -115,7 +115,7 @@ import {
   PulseColors,
   PulseIcons
 } from "../_MONITOR/PulseProofLogger-v24.js";
-import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v20.js";
+import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
 import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
 // NEW: CoreSpeech v24 speech organ is bridged via coreSpeechBridge
