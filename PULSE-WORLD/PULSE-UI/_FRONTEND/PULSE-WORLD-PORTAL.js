@@ -390,9 +390,57 @@ const baseMetaPack = {
 // ============================================================================
 // MEMBRANE BOOT (BROWSER ONLY) — PREWARM, CHUNKS, FETCH, IMAGE, PORTAL SURFACE
 // ============================================================================
-
 if (isBrowser()) {
   try {
+    // ------------------------------------------------------------------------
+    // PORTAL-SAFE CLONE HELPERS — STRIP NON-CLONEABLE FIELDS
+    // ------------------------------------------------------------------------
+    function portalSafeHeaders(headers) {
+      try {
+        if (!headers) return undefined;
+        const out = {};
+        if (headers instanceof Headers) {
+          headers.forEach((v, k) => {
+            out[k] = v;
+          });
+          return out;
+        }
+        if (typeof headers === "object") {
+          return { ...headers };
+        }
+      } catch (_) {}
+      return undefined;
+    }
+
+    function portalSafeFetchOptions(options) {
+      if (!options || typeof options !== "object") return undefined;
+
+      const safe = {};
+
+      if (options.method) safe.method = String(options.method);
+      const hdrs = portalSafeHeaders(options.headers);
+      if (hdrs) safe.headers = hdrs;
+
+      if (options.mode) safe.mode = String(options.mode);
+      if (options.cache) safe.cache = String(options.cache);
+      if (options.redirect) safe.redirect = String(options.redirect);
+      if (options.referrer) safe.referrer = String(options.referrer);
+      if (options.referrerPolicy)
+        safe.referrerPolicy = String(options.referrerPolicy);
+      if (options.credentials)
+        safe.credentials = String(options.credentials);
+
+      // DO NOT pass:
+      // - signal (AbortSignal)
+      // - window / document
+      // - body streams
+      // - functions
+      // - DOM objects
+      // - PerformanceTiming, PerformanceNavigation, etc.
+
+      return safe;
+    }
+
     // ------------------------------------------------------------------------
     // PORTAL-SAFE FETCH HELPERS — IMAGE + CHUNK + PREWARM
     // ------------------------------------------------------------------------
@@ -504,7 +552,7 @@ if (isBrowser()) {
     }
 
     // ------------------------------------------------------------------------
-    // FETCH PATCH — IMAGE SHORTCUT + OPTIONAL LOGGER ROUTE
+    // FETCH PATCH — IMAGE SHORTCUT + OPTIONAL LOGGER ROUTE (PORTAL-SAFE)
     // ------------------------------------------------------------------------
     try {
       const originalFetch = window.fetch?.bind(window);
@@ -530,9 +578,10 @@ if (isBrowser()) {
               typeof window.PulseLogger.route === "function";
 
             if (hasLoggerRoute && typeof url === "string") {
+              const safeOptions = portalSafeFetchOptions(options);
               const result = await window.PulseLogger.route("fetchProxy", {
                 url,
-                options
+                options: safeOptions
               });
 
               if (result && result.__fetched) {
