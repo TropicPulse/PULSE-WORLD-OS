@@ -1,10 +1,14 @@
 // ============================================================================
-//  PULSE OS v24.0‑IMMORTAL++ — PulseProofSignal Engine
+//  PULSE OS v24.0‑IMMORTAL++ — PulseProofSignal Engine (CSS-MERGED TOP LAYER)
 //  Signal-Grade Telemetry • Logger-Attached but Logger-Independent
 //  ZERO RANDOMNESS • ZERO EGO • DUALBAND-AWARE • ORGANISM-MAP-AWARE
+//  CSS-Style Signal Cascade • Top-Layer Merged Comments • Color-Aware Logs
 // ============================================================================
 
-console.log("PulseProofSignal v24-IMMORTAL-EVOLVABLE");
+console.log(
+  "%cPulseProofSignal v24-IMMORTAL-EVOLVABLE (CSS-MERGED)",
+  "color:#BA68C8;font-weight:bold;"
+);
 
 // Capture original console to avoid recursion and preserve native behavior
 const _c = { ...console };
@@ -55,6 +59,31 @@ function safeClone(v) {
   }
 }
 
+// Color map for logger rendering
+const SIGNAL_COLORS = {
+  "signal-direct": "color:#4FC3F7", // blue
+  "signal-log": "color:#81C784", // green
+  "signal-console-call": "color:#64B5F6", // light blue
+  "signal-logger-error": "color:#E57373", // red
+  "signal-attach": "color:#FFD54F", // yellow
+  "signal-attach-skip": "color:#B0BEC5", // grey
+  "signal-pulseLog-call": "color:#CE93D8", // violet
+  "signal-top-layer": "color:#BA68C8", // deep violet
+  default: "color:#90A4AE" // fallback grey
+};
+
+function getColorForPacket(packet) {
+  if (!packet || typeof packet !== "object") return SIGNAL_COLORS.default;
+  if (SIGNAL_COLORS[packet.packetType]) return SIGNAL_COLORS[packet.packetType];
+
+  const level = packet.level || packet.severity || "";
+  if (level === "error" || level === "critical") return SIGNAL_COLORS["signal-logger-error"];
+  if (level === "warn" || level === "warning") return "color:#FFB74D";
+  if (level === "info") return SIGNAL_COLORS["signal-log"];
+  if (level === "debug") return "color:#A5D6A7";
+  return SIGNAL_COLORS.default;
+}
+
 function buildCommentFromSignalPacket(packet, kind = "direct") {
   const env =
     g.PulseSurface && g.PulseSurface.environment
@@ -92,12 +121,15 @@ function buildCommentFromSignalPacket(packet, kind = "direct") {
       ? location.pathname || null
       : null;
 
-  return {
+  const color = getColorForPacket(packet);
+
+  const base = {
     type: "comment",
     ts: packet.timestamp,
     signalPacketId: packet.packetId,
     signalPacketType: packet.packetType,
     summary: `Signal (${kind}) fired: ${packet.packetType}`,
+    color,
     details: {
       packet: safeClone(packet),
       route,
@@ -114,25 +146,148 @@ function buildCommentFromSignalPacket(packet, kind = "direct") {
       }
     }
   };
+
+  // Pretty string for legacy loggers that stringify second arg
+  base.pretty = JSON.stringify(
+    {
+      summary: base.summary,
+      ts: base.ts,
+      packetType: base.signalPacketType,
+      route,
+      page,
+      env,
+      level: packet.level || null,
+      subsystem: packet.subsystem || null,
+      message: packet.message || null
+    },
+    null,
+    2
+  );
+
+  return base;
 }
 
+// ============================================================================
+//  CSS-STYLE TOP-LAYER MERGE ENGINE — collapse subsignals → 1 comment
+// ============================================================================
+
+const TopLayerMerge = {
+  _pending: null,
+  _scheduled: false,
+
+  _reset() {
+    this._pending = null;
+    this._scheduled = false;
+  },
+
+  _ensurePending() {
+    if (!this._pending) {
+      this._pending = {
+        packets: [],
+        kinds: []
+      };
+    }
+  },
+
+  add(packet, kind) {
+    if (!packet) return;
+    this._ensurePending();
+    this._pending.packets.push(packet);
+    this._pending.kinds.push(kind || "direct");
+
+    if (!this._scheduled) {
+      this._scheduled = true;
+      queueMicrotask(() => {
+        this._scheduled = false;
+        this.flush();
+      });
+    }
+  },
+
+  flush() {
+    if (!this._pending || !this._pending.packets.length) {
+      this._reset();
+      return;
+    }
+
+    const packets = this._pending.packets.slice();
+    const kinds = this._pending.kinds.slice();
+    this._reset();
+
+    const lastPacket = packets[packets.length - 1];
+    const mergedComment = this._buildMergedComment(packets, kinds, lastPacket);
+    this._emitToLogger(mergedComment);
+  },
+
+  _buildMergedComment(packets, kinds, lastPacket) {
+    // Base comment from last packet (top-layer style)
+    const base = buildCommentFromSignalPacket(lastPacket, "merged-burst");
+    base.summary = `Merged ${packets.length} signals (last: ${lastPacket.packetType})`;
+    base.signalPacketType = "signal-top-layer";
+
+    // Attach subsignal summary list
+    base.details.subsignals = packets.map((p, idx) => ({
+      id: p.packetId,
+      type: p.packetType,
+      kind: kinds[idx],
+      level: p.level || null,
+      subsystem: p.subsystem || null,
+      message: p.message || null,
+      ts: p.timestamp
+    }));
+
+    // Attach merged fields (CSS-style "computed signal")
+    const computed = {};
+    for (const p of packets) {
+      Object.assign(computed, p);
+    }
+    base.details.computed = safeClone(computed);
+
+    // Color based on last packet / computed level
+    base.color = getColorForPacket(lastPacket);
+
+    // Pretty string for legacy loggers
+    base.pretty = JSON.stringify(
+      {
+        summary: base.summary,
+        count: packets.length,
+        lastType: lastPacket.packetType,
+        lastLevel: lastPacket.level || null,
+        lastSubsystem: lastPacket.subsystem || null,
+        lastMessage: lastPacket.message || null
+      },
+      null,
+      2
+    );
+
+    return base;
+  },
+
+  _emitToLogger(comment) {
+    const logger =
+      (g.PulseLogger && typeof g.PulseLogger.log === "function"
+        ? g.PulseLogger
+        : null) ||
+      (g.PulseProofLogger && typeof g.PulseProofLogger.log === "function"
+        ? g.PulseProofLogger
+        : null);
+
+    if (!logger) return;
+
+    try {
+      logger.log("comment", comment);
+    } catch {
+      // Never throw into caller
+    }
+  }
+};
+
 function emitCommentLogForPacket(packet, kind = "direct") {
-  // Logger is a sink; signal is authority.
-  const logger =
-    (g.PulseLogger && typeof g.PulseLogger.log === "function"
-      ? g.PulseLogger
-      : null) ||
-    (g.PulseProofLogger && typeof g.PulseProofLogger.log === "function"
-      ? g.PulseProofLogger
-      : null);
-
-  if (!logger) return;
-
+  // Instead of logging every packet, we merge them CSS-style into a top-layer comment.
   try {
-    const comment = buildCommentFromSignalPacket(packet, kind);
-    logger.log("comment", comment);
+    TopLayerMerge.add(packet, kind);
   } catch {
-    // Comment generation must never break signal engine
+    // Merge failure must never break signal engine
   }
 }
 
@@ -324,6 +479,7 @@ function safeWrap(fn, wrapper) {
         stack: err && err.stack ? String(err.stack) : null
       });
       SignalBuffer.push(packet);
+      emitCommentLogForPacket(packet, "logger-error");
       throw err;
     }
 
@@ -372,7 +528,6 @@ function attachToLogger(logger) {
           payload
         });
         SignalBuffer.push(packet);
-        // also emit a comment for this signalized log
         emitCommentLogForPacket(packet, "log-pulse");
       } catch {
         // ignore
@@ -444,6 +599,7 @@ function attachToLogger(logger) {
 
   for (const p of packets) {
     SignalBuffer.push(p);
+    emitCommentLogForPacket(p, "attach");
   }
 
   return packets;
@@ -466,7 +622,7 @@ export const PulseProofSignal = Object.freeze({
   /**
    * Direct signal logging — bypasses logger entirely.
    * Safe even if logger is broken or missing.
-   * 🔥 NOW: also auto-creates a COMMENT LOG as signal authority.
+   * CSS-style: contributes to merged top-layer comment.
    */
   signal(payload) {
     const packet = normalizeDirectSignal(payload);
@@ -478,7 +634,7 @@ export const PulseProofSignal = Object.freeze({
   /**
    * Mirror a logger entry into signal space.
    * Safe even if logger is broken.
-   * 🔥 NOW: also auto-creates a COMMENT LOG for mirrored log entries.
+   * CSS-style: contributes to merged top-layer comment.
    */
   fromLogEntry(entry) {
     const packet = normalizeLogEntryToSignal(entry);
