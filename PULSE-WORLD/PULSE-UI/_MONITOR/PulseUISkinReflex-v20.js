@@ -1047,14 +1047,16 @@ export function createPulseSkinReflex({
     membraneAlive
   };
 }
+
 // ============================================================
 //  GLOBAL EXPORTS — MAKE SKINREFLEX + HELPERS AVAILABLE
 // ============================================================
 try {
   if (typeof window !== "undefined") {
 
-    // Create ONE instance of the organ
+    // Create ONE instance of the organ AND initialize it
     const _skin = createPulseSkinReflex();
+    _skin.init(); // ← THIS is what was missing
 
     // Export the full organ instance
     window.PulseSkinReflex = _skin;
