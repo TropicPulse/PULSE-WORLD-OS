@@ -56,6 +56,7 @@ import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldA
 // ============================================================
 //  EXPORT SKINREFLEX A1 LAYER TO WINDOW
 // ============================================================
+try {
 if (typeof window !== "undefined" && PulseSkinReflex) {
   window.getHook    = PulseSkinReflex.getHook;
   window.getAuth    = PulseSkinReflex.getAuth;
@@ -64,7 +65,9 @@ if (typeof window !== "undefined" && PulseSkinReflex) {
 
   console.log("[PORTAL] SkinReflex loaded. getHook type:", typeof window.getHook);
 }
-
+} catch (err) {
+  console.log("[PORTAL] SkinReflex Error" + err);
+}
 
 const g =
   typeof globalThis !== "undefined"
