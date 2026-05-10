@@ -864,6 +864,9 @@ if (isBrowser()) {
           if (binaryKernel) {
             window.__PulseBinaryBooted = true;
 
+            // ------------------------------------------------------------
+            // UI-SAFE SHADOW (NOT the organism, NOT sent to Understanding)
+            // ------------------------------------------------------------
             const safeBinaryView = {
               meta: PulseBinaryOrganismBoot?.layer
                 ? {
@@ -900,14 +903,23 @@ if (isBrowser()) {
 
             const frozenBinaryView = Object.freeze(safeBinaryView);
 
+            // ------------------------------------------------------------
+            // EXPOSE UI SHADOW (pages expect window.PulseBinary)
+            // ------------------------------------------------------------
             window.PulseBinary = window.PulseBinary
               ? Object.freeze({ ...window.PulseBinary, ...frozenBinaryView })
               : frozenBinaryView;
+
+            // ------------------------------------------------------------
+            // EXPOSE SAFE META FOR UNDERSTANDING (NO FUNCTIONS)
+            // ------------------------------------------------------------
+            window.__PulseBinaryMeta__ = frozenBinaryView.meta;
           }
         }
       } catch (err) {
         console.error("[PulsePortal-v20] Binary organism boot failed:", err);
       }
+
 
       // ----------------------------------------------------------------------
       // UNDERSTANDING BOOT — HIGH-LEVEL ORGANISM CONTEXT (CORTEX ENTRY)
