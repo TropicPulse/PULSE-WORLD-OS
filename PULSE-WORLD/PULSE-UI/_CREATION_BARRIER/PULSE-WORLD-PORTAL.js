@@ -53,9 +53,6 @@ import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseU
 import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
 import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 
-// ============================================================================
-// GLOBAL HANDLE + OPTIONAL DB
-// ============================================================================
 // ============================================================
 //  EXPORT SKINREFLEX A1 LAYER TO WINDOW
 // ============================================================
@@ -64,7 +61,10 @@ if (typeof window !== "undefined" && PulseSkinReflex) {
   window.getAuth    = PulseSkinReflex.getAuth;
   window.getMap     = PulseSkinReflex.getMap;
   window.callHelper = PulseSkinReflex.callHelper;
+
+  console.log("[PORTAL] SkinReflex loaded. getHook type:", typeof window.getHook);
 }
+
 
 const g =
   typeof globalThis !== "undefined"
