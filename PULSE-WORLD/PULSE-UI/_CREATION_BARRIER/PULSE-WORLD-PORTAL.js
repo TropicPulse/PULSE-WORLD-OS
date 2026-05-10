@@ -55,7 +55,7 @@ import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldA
 // ============================================================
 //  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
 // ============================================================
-const PulseSkinReflex = null;
+let PulseSkinReflex = null;
 try {
   PulseSkinReflex = createPulseSkinReflex();
 
