@@ -19,7 +19,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-import { createPulseOrgans } from "./PulseMeshOrgans.js";
+import { createPulseOrgans } from "./PulseMeshOrgans-V24.js";
 
 // ============================================================================
 // META — v16-IMMORTAL

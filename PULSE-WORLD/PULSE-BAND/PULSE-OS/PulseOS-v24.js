@@ -51,7 +51,7 @@ import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";
 import * as PulseSpinalCord from "./PulseOSSpinalCord-v16.js";
 
 // Presence / Mesh presence (symbolic/OS side)
-import * as PulseOSPresence from "./PulseOSPresence-v16.js";
+import * as PulseOSPresence from "./PulseOSPresence-V24.js";
 
 // IMMORTAL Mesh Presence Relay v16
 import {

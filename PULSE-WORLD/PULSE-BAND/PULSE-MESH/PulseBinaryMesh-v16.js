@@ -62,7 +62,7 @@ import { createOrganismMesh } from "./PulseMeshOrganism-v16.js";
 import PulseMeshSpine from "./PulseMeshSpine.js";
 
 // 2 — FLOW (mesh circulation)
-import PulseMeshFlow from "./PulseMeshFlow.js";
+import PulseMeshFlow from "./PulseMeshFlow-V24.js";
 
 // 3 — PRESENCE RELAY (mesh → world presence)
 import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v16.js";
@@ -77,23 +77,23 @@ import PulseMeshEndocrineSystem from "./PulseMeshEndocrineSystem.js";
 import PulseMeshImmuneSystem from "./PulseMeshImmuneSystem.js";
 
 // 7 — ORGANS (mesh organ registry)
-import PulseMeshOrgans from "./PulseMeshOrgans.js";
+import PulseMeshOrgans from "./PulseMeshOrgans-V24.js";
 
 // 8 — THALAMUS (relay after organs)
-import PulseMeshThalamus from "./PulseMeshThalamus.js";
+import PulseMeshThalamus from "./PulseMeshThalamus-V24.js";
 
 // ============================================================================
 // WORLD / PRESENCE LAYER
 // ============================================================================
-import PresenceAIView from "./PulseMeshPresenceAIView.js";
-import MentorUpgradeRequest from "./PulseMeshMentorUpgradeRequest.js";
+import PresenceAIView from "./PulseMeshPresenceAIView-V24.js";
+import MentorUpgradeRequest from "./PulseMeshMentorUpgradeRequest-V24.js";
 import { createPulseWorldSocialGraph } from "../PULSE-X/PulseWorldSocialGraph-v20.js";
 
 // ============================================================================
 // CORTEX + TENDONS (SHAPING LAYERS — ALWAYS LAST)
 // ============================================================================
-import { applyPulseCortex } from "./PulseMeshCortex.js";
-import { applyPulseMeshTendons } from "./PulseMeshTendons.js";
+import { applyPulseCortex } from "./PulseMeshCortex-V24.js";
+import { applyPulseMeshTendons } from "./PulseMeshTendons-V24.js";
 
 // ============================================================================
 // INTERNAL HELPERS

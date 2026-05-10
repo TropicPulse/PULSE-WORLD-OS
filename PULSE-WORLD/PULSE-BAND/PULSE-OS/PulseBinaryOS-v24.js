@@ -54,7 +54,7 @@ import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";             // E
 import * as PulseSpinalCord from "./PulseOSSpinalCord-v16.js";              // Wiring organ
 
 // Presence / Mesh presence (symbolic/OS side, optional)
-import * as PulseOSPresence from "./PulseOSPresence-v16.js";                // OS Presence Organ (optional)
+import * as PulseOSPresence from "./PulseOSPresence-V24.js";                // OS Presence Organ (optional)
 
 // Binary + symbolic mesh environment (IMMORTAL v16)
 import {

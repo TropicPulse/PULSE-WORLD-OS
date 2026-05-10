@@ -60,7 +60,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // (implementation itself can be upgraded to v24 later; interface remains stable)
 import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v20.js";
 
-import PulseOSPresence from "../PULSE-OS/PulseOSPresence-v16.js";
+import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
 
 import { createArchitectAPI } from "./aiArchitect-v24.js";

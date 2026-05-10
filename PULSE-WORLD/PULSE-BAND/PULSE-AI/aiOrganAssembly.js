@@ -57,7 +57,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ⭐ CNS‑SAFE v16 Chunker (32 lanes, Pulse‑Net aware)
 import { createPulseChunker } from "./PulseAIChunker-v20.js";
 
-import PulseOSPresence from "../PULSE-OS/PulseOSPresence-v16.js";
+import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
 import pulseAIChunker from "./PulseAIChunker-v20.js";
 import createPulseFileScanner from "./PulseFileScanner-v20.js";

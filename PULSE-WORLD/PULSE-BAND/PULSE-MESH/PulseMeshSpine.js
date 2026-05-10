@@ -43,12 +43,12 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 // export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
-import { createCommunityReflex } from "./PulseMeshFlow.js";
-import { applyPulseCortex } from "./PulseMeshCortex.js";
-import { applyPulseMeshTendons } from "./PulseMeshTendons.js";
+import { createCommunityReflex } from "./PulseMeshFlow-V24.js";
+import { applyPulseCortex } from "./PulseMeshCortex-V24.js";
+import { applyPulseMeshTendons } from "./PulseMeshTendons-V24.js";
 import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring-v20.js";
 import { createPulseMeshImmuneSystem as recordMeshDriftEvent } from "./PulseMeshImmuneSystem.js";
-import * as PulseMeshSkinReflex from "./PulseMeshSkinReflex.js";
+import * as PulseMeshSkinReflex from "./PulseMeshSkinReflex-V24.js";
 
 export const MeshMemory = {
   drift: [],
