@@ -1013,7 +1013,7 @@ sendBtn.addEventListener("click", async () => {
       throw new Error("getHook() is NOT defined — your login page cannot talk to backend.");
     }
 
-    const data = await getHook({ type: "sendPin", email });
+    const data = await window.getHook({ type: "sendPin", email });
 
     console.log("[SEND PIN] RAW RESPONSE:", data);
 
@@ -1089,7 +1089,7 @@ verifyBtn.addEventListener("click", async () => {
       throw new Error("getHook() is NOT defined — cannot verify PIN.");
     }
 
-    const data = await getHook({
+    const data = await window.getHook({
       type: "verifyPin",
       email,
       pin,
