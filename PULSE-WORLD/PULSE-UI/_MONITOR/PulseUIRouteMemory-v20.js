@@ -7,7 +7,10 @@ LAYER: REFLEX MEMORY ORGAN • v20-Immortal-Evo+++
 ===============================================================================
 */
 import PulseUIErrors from "./PulseUIErrors-v24.js";
-import { PulseProofBridge as BridgeExport } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+
+// ============================================================================
+//  IMMORTAL++: NO DIRECT BRIDGE IMPORTS — ALWAYS USE GLOBAL BRIDGE
+// ============================================================================
 
 // Global handle
 const g =
@@ -27,24 +30,26 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-// IMMORTAL++: lazy bridge resolution (no TDZ, no cycles)
+// ============================================================================
+//  IMMORTAL++ BRIDGE RESOLUTION — NEVER IMPORT, NEVER TDZ
+// ============================================================================
 function getBridge() {
-  if (typeof globalThis !== "undefined" && globalThis.PulseProofBridge) {
-    return globalThis.PulseProofBridge;
-  }
-  return BridgeExport || null;
+  return globalThis.PulseProofBridge || null;
 }
 
 function getCoreMemory() {
-  return getBridge()?.coreMemory || null;
+  const b = getBridge();
+  return b?.coreMemory || null;
 }
 
 function getDiagnosticsBus() {
-  return getBridge()?.diagnosticsBus || null;
+  const b = getBridge();
+  return b?.diagnosticsBus || null;
 }
 
 function getEvidenceBus() {
-  return getBridge()?.evidenceBus || null;
+  const b = getBridge();
+  return b?.evidenceBus || null;
 }
 
 const ROUTE_MEMORY_SCHEMA_VERSION = "v5";

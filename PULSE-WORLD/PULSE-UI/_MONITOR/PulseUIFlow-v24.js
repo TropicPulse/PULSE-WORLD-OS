@@ -30,28 +30,29 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-import { PulseProofBridge as BridgeExport } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-
-// IMMORTAL++: always resolve the bridge *late*, never at module top-level
+// ============================================================================
+//  IMMORTAL++ BRIDGE RESOLUTION — NEVER IMPORT, NEVER TDZ
+// ============================================================================
 function getBridge() {
-  if (typeof globalThis !== "undefined" && globalThis.PulseProofBridge) {
-    return globalThis.PulseProofBridge;
-  }
-  return BridgeExport || null;
+  return globalThis.PulseProofBridge || null;
 }
 
 // Lazy getters — ALWAYS call these inside functions, never at top-level
 function getRoute() {
-  return getBridge()?.route || null;
+  const b = getBridge();
+  return b?.route || null;
 }
 
 function getCoreMemory() {
-  return getBridge()?.coreMemory || null;
+  const b = getBridge();
+  return b?.coreMemory || null;
 }
 
 function getTrust() {
-  return getBridge()?.trust || null;
+  const b = getBridge();
+  return b?.trust || null;
 }
+
 
 // ============================================================================
 // IMMORTAL LOCALSTORAGE MIRROR — PulseUIFlowStore v24
