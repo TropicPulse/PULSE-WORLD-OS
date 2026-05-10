@@ -127,7 +127,6 @@ EXPORT_META = {
 }
 ===============================================================================
 */
-
 const UIFLOW_SCHEMA_VERSION = "v5";
 
 // Global handle
@@ -150,11 +149,28 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge as BridgeExport } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
-const route = PulseProofBridge?.route;
-const CoreMemory = PulseProofBridge?.coreMemory || null;
-const Trust = PulseProofBridge?.trust || null;
+// IMMORTAL++: always resolve the bridge *late*, never at module top-level
+function getBridge() {
+  if (typeof globalThis !== "undefined" && globalThis.PulseProofBridge) {
+    return globalThis.PulseProofBridge;
+  }
+  return BridgeExport || null;
+}
+
+// Lazy getters — ALWAYS call these inside functions, never at top-level
+function getRoute() {
+  return getBridge()?.route || null;
+}
+
+function getCoreMemory() {
+  return getBridge()?.coreMemory || null;
+}
+
+function getTrust() {
+  return getBridge()?.trust || null;
+}
 
 // ============================================================================
 // IMMORTAL LOCALSTORAGE MIRROR — PulseUIFlowStore v24
@@ -186,10 +202,11 @@ function loadFlowBuffer() {
     return [];
   }
 }
-
 function mirrorFlowBufferToCoreMemory(buf) {
-  if (!CoreMemory || typeof CoreMemory.setRouteSnapshot !== "function") return;
   try {
+    const core = getCoreMemory();
+    if (!core || typeof core.setRouteSnapshot !== "function") return;
+
     const envelope = {
       schemaVersion: UIFLOW_SCHEMA_VERSION,
       version: "24.0-Immortal-Evo++++",
@@ -197,7 +214,8 @@ function mirrorFlowBufferToCoreMemory(buf) {
       buffer: buf,
       timestamp: Date.now()
     };
-    CoreMemory.setRouteSnapshot("uiFlow", envelope);
+
+    core.setRouteSnapshot("uiFlow", envelope);
   } catch {
     // best-effort only
   }
@@ -205,10 +223,14 @@ function mirrorFlowBufferToCoreMemory(buf) {
 
 function saveFlowBuffer(buf) {
   if (!hasLocalStorage()) return;
+
   try {
     const trimmed =
       buf.length > UIFLOW_LS_MAX ? buf.slice(buf.length - UIFLOW_LS_MAX) : buf;
+
     window.localStorage.setItem(UIFLOW_LS_KEY, JSON.stringify(trimmed));
+
+    // Mirror to CoreMemory (lazy bridge)
     mirrorFlowBufferToCoreMemory(trimmed);
   } catch {}
 }
@@ -219,6 +241,7 @@ function appendFlowRecord(kind, payload) {
     kind,
     payload
   };
+
   const buf = loadFlowBuffer();
   buf.push(entry);
   saveFlowBuffer(buf);
@@ -228,14 +251,18 @@ export const PulseUIFlowStore = {
   getAll() {
     return loadFlowBuffer();
   },
+
   tail(n = 200) {
     const buf = loadFlowBuffer();
     return buf.slice(Math.max(0, buf.length - n));
   },
+
   clear() {
     saveFlowBuffer([]);
+
     try {
-      CoreMemory?.setRouteSnapshot?.("uiFlow", {
+      const core = getCoreMemory();
+      core?.setRouteSnapshot?.("uiFlow", {
         schemaVersion: UIFLOW_SCHEMA_VERSION,
         version: "24.0-Immortal-Evo++++",
         routeId: "uiFlow",
@@ -558,19 +585,21 @@ async function evolveToIntent(flowDef, extraPayload = {}) {
 
 function mirrorStateToCoreMemory() {
   try {
-    if (CoreMemory && typeof CoreMemory.setRouteSnapshot === "function") {
-      CoreMemory.setRouteSnapshot("uiFlowState", {
-        schemaVersion: UIFLOW_SCHEMA_VERSION,
-        version: "24.0-Immortal-Evo++++",
-        routeId: "uiFlowState",
-        state: UIFlowState.snapshot(),
-        timestamp: Date.now()
-      });
-    }
+    const core = getCoreMemory();
+    if (!core || typeof core.setRouteSnapshot !== "function") return;
+
+    core.setRouteSnapshot("uiFlowState", {
+      schemaVersion: UIFLOW_SCHEMA_VERSION,
+      version: "24.0-Immortal-Evo++++",
+      routeId: "uiFlowState",
+      state: UIFlowState.snapshot(),
+      timestamp: Date.now()
+    });
   } catch {
     // best-effort
   }
 }
+
 
 function buildDiagnosticsEnvelope() {
   const state = UIFlowState.snapshot();
@@ -593,11 +622,13 @@ function buildDiagnosticsEnvelope() {
   appendFlowRecord("diagnostics_envelope", envelope);
 
   try {
-    CoreMemory?.setRouteSnapshot?.("uiFlowDiagnostics", envelope);
+    const core = getCoreMemory();
+    core?.setRouteSnapshot?.("uiFlowDiagnostics", envelope);
   } catch {}
 
   return envelope;
 }
+
 
 // ============================================================================
 // PUBLIC API — IMMORTAL UI FLOW ENGINE v24
@@ -605,7 +636,6 @@ function buildDiagnosticsEnvelope() {
 
 export async function initUIFlow() {
   appendFlowRecord("init_start", {});
-
   logFlow("INIT_V24_START", {});
 
   if (!hasWindow) {
@@ -620,6 +650,7 @@ export async function initUIFlow() {
   let sessionId = null;
 
   try {
+    const route = getRoute();
     if (typeof route === "function") {
       identityContext = await route("identity.check", {
         reflexOrigin: "UIFlow-v24",
@@ -677,9 +708,7 @@ export async function initUIFlow() {
         lastTs: vitals[vitals.length - 1]?.ts || null
       });
     }
-  } catch {
-    // non-fatal
-  }
+  } catch {}
 
   const initialFlow = identityTrusted
     ? UIIntentFlowMap.dashboard
@@ -716,6 +745,7 @@ export async function initUIFlow() {
     sessionId
   };
 }
+
 
 export async function goToFlowIntent(flowId, options = {}) {
   appendFlowRecord("goToFlowIntent_in", { flowId, options });
@@ -781,6 +811,7 @@ export async function goToFlowIntent(flowId, options = {}) {
 
   let allowed = true;
   try {
+    const route = getRoute();
     if (typeof route === "function") {
       const result = await route("uiFlowIntentCheck", {
         from: currentFlow ? currentFlow.id : null,
@@ -828,7 +859,8 @@ export async function goToFlowIntent(flowId, options = {}) {
 
   // Optional: trust fabric hook
   try {
-    Trust?.recordEvent?.("uiFlowTransition", {
+    const trust = getTrust();
+    trust?.recordEvent?.("uiFlowTransition", {
       from: currentFlow ? currentFlow.id : null,
       to: targetFlow.id,
       diagnostics: diagEnvelope
@@ -841,6 +873,7 @@ export async function goToFlowIntent(flowId, options = {}) {
     to: targetFlow.id
   };
 }
+
 
 export function getUIFlowSnapshot() {
   const snap = {
