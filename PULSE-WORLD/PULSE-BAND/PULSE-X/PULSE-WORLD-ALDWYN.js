@@ -106,21 +106,21 @@ import {
 } from "../PULSE-CORE/PulseCoreSendMemoryAdapter-v20.js";
 
 import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
-import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor.js";
+import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor-v24.js";
 import { PulseBinaryTech } from "../PULSE-TECH/PulseBinaryTech-v20.js";
 
 // ============================================================================
 //  1. CORE CROWN CONTRACTS
 // ============================================================================
-import createBoundariesEngine from "../PULSE-AI/aiBoundariesEngine-v16.js";
-import createPermissionsEngine from "../PULSE-AI/aiPermissionsEngine-v16.js";
-import aiIdentityCore from "../PULSE-AI/aiIdentityCore.js";
-import aiPersonalityEngine from "../PULSE-AI/aiPersonalityEngine-v16.js";
+import createBoundariesEngine from "../PULSE-AI/aiBoundariesEngine-v24.js";
+import createPermissionsEngine from "../PULSE-AI/aiPermissionsEngine-v24.js";
+import aiIdentityCore from "../PULSE-AI/aiIdentityCore-v24.js";
+import aiPersonalityEngine from "../PULSE-AI/aiPersonalityEngine-v24.js";
 
 // ============================================================================
 //  2. CONTEXT + CORTEX
 // ============================================================================
-import createCognitiveFrame from "../PULSE-AI/aiContext.js";
+import createCognitiveFrame from "../PULSE-AI/aiContext-v24.js";
 import createContextEngine from "../PULSE-AI/aiContextEngine-v16.js";
 
 // ============================================================================
@@ -128,13 +128,13 @@ import createContextEngine from "../PULSE-AI/aiContextEngine-v16.js";
 // ============================================================================
 import createSafetyFrameOrgan from "../PULSE-AI/aiSafetyFrame.js";
 import aiToneEngine from "../PULSE-AI/aiToneEngine.js";
-import aiToneRouter from "../PULSE-AI/aiToneRouter.js";
+import aiToneRouter from "../PULSE-AI/aiToneRouter-v24.js";
 
 // ============================================================================
 //  4. META‑GOVERNANCE (CROWN LAYER)
 // ============================================================================
 import createJuryFrame from "../PULSE-AI/aiJuryFrame.js";
-import createAIBinaryGovernorAdapter from "../PULSE-AI/aiGovernorAdapter.js";
+import createAIBinaryGovernorAdapter from "../PULSE-AI/aiGovernorAdapter-v24.js";
 import {
   PulseTrustMeta,
   buildJuryFeed,
@@ -149,7 +149,7 @@ import {
 //  5. MEMORY + EXPERIENCE (META ONLY)
 // ============================================================================
 import createAIMemory from "../PULSE-AI/aiMemory-v16.js";
-import createAIExperience from "../PULSE-AI/aiExperience.js";
+import createAIExperience from "../PULSE-AI/aiExperience-v24.js";
 
 // ============================================================================
 //  6. PIPELINE + ENGINE + CHUNKER + FILE SCANNER
@@ -169,7 +169,7 @@ import createAIBinaryLoggerAdapter from "../PULSE-AI/aiLoggerAdapter.js";
 // ============================================================================
 //  8. OPTIONAL (GLOBAL MAPS / FRAMES)
 // ============================================================================
-import createPersonalFrameOrgan from "../PULSE-AI/aiPersonalFrame.js";
+import createPersonalFrameOrgan from "../PULSE-AI/aiPersonalFrame-v24.js";
 import getBoundariesForPersona from "../PULSE-AI/aiBoundaries.js";
 import getPermissionsForPersona from "../PULSE-AI/aiPermissions.js";
 import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v16.js";

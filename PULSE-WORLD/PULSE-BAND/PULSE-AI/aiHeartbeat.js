@@ -59,7 +59,7 @@ import {
   getRouteAPI,
   getSchemaAPI,
   getOrganismSnapshot
-} from "./aiDeps-v16.js";
+} from "./aiDeps-v24.js";
 
 // ============================================================================
 //  CONFIG — metabolic‑safe cadence

@@ -213,7 +213,7 @@ export function getPersona(personaId, userId = null) {
 // ============================================================================
 export const PersonaArchetypes = Object.freeze({
   architect: "aiArchitect.js",
-  observer: "aiDiagnostics.js",
+  observer: "aiDiagnostics-v24.js",
   tourguide: "aiTourist.js",
   neutral: "aiAssistant.js",
   jury: "aiJuryFrame.js",

@@ -65,7 +65,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 //  DEPENDENCIES
 // ---------------------------------------------------------------------------
 
-import { getOrganismSnapshot } from "./aiDeps-v16.js";
+import { getOrganismSnapshot } from "./aiDeps-v24.js";
 import {
   computePowerRiskVector,
   buildPowerRiskSummary,

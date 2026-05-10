@@ -42,10 +42,10 @@ import { AIBinarySentience } from "./aiSentience.js";
 import { AIBinaryConsciousness } from "./aiConsciousness.js";
 import { AIBinaryImmunity } from "./aiImmunity.js";
 import { AIBinaryPipeline } from "./aiPipeline.js";
-import { AIBinaryReflex } from "./aiReflex.js";
+import { AIBinaryReflex } from "./aiReflex-v24.js";
 import { AIBinaryScheduler } from "./aiScheduler.js";
-import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry.js";
-import { AIBinaryEvolution } from "./aiBinaryEvolution.js";
+import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
+import { AIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
 
 // Existing symbolic / tools imports
 import depsSurface, {
@@ -57,7 +57,7 @@ import depsSurface, {
   getOrganismSnapshot,
   emitDepsPacket,
   prewarmDepsLayer
-} from "./aiDeps-v16.js";
+} from "./aiDeps-v24.js";
 
 import {
   DiagnosticsMeta,
@@ -65,13 +65,13 @@ import {
   attachDiagnosticsOrgan,
   createDiagnosticsAPI,
   prewarmDiagnosticsOrgan
-} from "./aiDiagnostics.js";
+} from "./aiDiagnostics-v24.js";
 
 import {
   DiagnosticsWriteMeta,
   createDiagnosticsWriteOrgan,
   prewarmDiagnosticsWriteOrgan
-} from "./aiDiagnosticsWrite.js";
+} from "./aiDiagnosticsWrite-v24.js";
 
 import {
   SCRIBE_META,
@@ -80,8 +80,8 @@ import {
   prewarmScribe
 } from "./aiDebug.js";
 
-import { createPermissionsEngine } from "./aiPermissionsEngine-v16.js";
-import { createBoundariesEngine } from "./aiBoundariesEngine-v16.js";
+import { createPermissionsEngine } from "./aiPermissionsEngine-v24.js";
+import { createBoundariesEngine } from "./aiBoundariesEngine-v24.js";
 import { createPersonaEngine } from "./aiPersonality.js";
 
 import {
@@ -92,20 +92,20 @@ import {
 import createCognitiveFrame, {
   COGNITIVE_FRAME_META,
   prewarmCognitiveFrame
-} from "./aiContext.js";
+} from "./aiContext-v24.js";
 
 import { createCortex, prewarmAICortex } from "./aiCortex-v16.js";
 import { createRouterEngine } from "./aiRouter-v16.js";
 import { runAI, ExecutionEngineMeta } from "./aiEngine-v24.js";
 
-import aiDeliveryEngine, { prewarmDeliveryEngine } from "./aiDeliveryEngine.js";
-import aiEmotionEngine, { prewarmEmotionEngine } from "./aiEmotionEngine.js";
+import aiDeliveryEngine, { prewarmDeliveryEngine } from "./aiDeliveryEngine-v24.js";
+import aiEmotionEngine, { prewarmEmotionEngine } from "./aiEmotionEngine-v24.js";
 import createEarnAPI, { EarnMeta, prewarmEarnOrgan } from "./aiEarn-v24.js";
 
 import { createTouristAPI } from "./aiTourist.js";
 import { createArchitectAPI } from "./aiArchitect.js";
 import { createDoctorOrgan } from "./aiDoctorAssistant.js";
-import { createDoctorArchitectOrgan } from "./aiDoctorArchitect.js";
+import { createDoctorArchitectOrgan } from "./aiDoctorArchitect-v24.js";
 
 import { createAIOrganism } from "./aiOrganism-v16.js";
 

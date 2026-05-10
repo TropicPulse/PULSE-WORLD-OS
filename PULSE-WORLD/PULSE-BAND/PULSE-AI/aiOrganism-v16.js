@@ -53,14 +53,14 @@ export const EXPORT_META = Identity.EXPORT_META;
 import { createAIBinaryAgent } from "./aiBinaryAgent.js";
 import { createAIMemory } from "./aiMemory-v16.js";
 import { createAIBinaryPipeline } from "./aiPipeline.js";
-import { createAIBinaryReflex } from "./aiReflex.js";
+import { createAIBinaryReflex } from "./aiReflex-v24.js";
 import { createAIBinaryLoggerAdapter } from "./aiLoggerAdapter.js";
 import { createAIBinaryPageScannerAdapter } from "./aiPageScannerAdapter.js";
-import { createAIBinaryEvolution } from "./aiBinaryEvolution.js";
-import { createAIBinaryGovernorAdapter } from "./aiGovernorAdapter.js";
-import { createAIBinaryOrganRegistry } from "./aiBinaryOrganRegistry.js";
+import { createAIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
+import { createAIBinaryGovernorAdapter } from "./aiGovernorAdapter-v24.js";
+import { createAIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
 import { createAIBinaryDelta } from "./aiBinaryDelta.js";
-import { createAIConductor as createAIBinaryConductor } from "./aiConductor.js";
+import { createAIConductor as createAIBinaryConductor } from "./aiConductor-v24.js";
 import { createAIBinaryMetabolism } from "./aiMetabolism.js";
 import { createAIBinaryHormones } from "./aiHormones.js";
 import { createAIBinaryImmunity } from "./aiImmunity.js";
@@ -79,7 +79,7 @@ import { createPermissionsEngine } from "./aiPermissions.js";
 import createCognitiveFrame, {
   COGNITIVE_FRAME_META,
   prewarmCognitiveFrame
-} from "./aiContext.js";
+} from "./aiContext-v24.js";
 
 import {
   createContextEngine,
@@ -96,18 +96,18 @@ import {
 // ============================================================================
 import aiEmotionEngine, {
   prewarmEmotionEngine
-} from "./aiEmotionEngine.js";
+} from "./aiEmotionEngine-v24.js";
 
-import createExperienceEngine from "./aiExperience.js";
-import { createPersonalityEngine } from "./aiPersonalityEngine-v16.js";
-import { createPersonalFrame } from "./aiPersonalFrame.js";
+import createExperienceEngine from "./aiExperience-v24.js";
+import { createPersonalityEngine } from "./aiPersonalityEngine-v24.js";
+import { createPersonalFrame } from "./aiPersonalFrame-v24.js";
 
 // ============================================================================
 //  DELIVERY / EVOLUTION / DUALBAND
 // ============================================================================
 import aiDeliveryEngine, {
   prewarmDeliveryEngine
-} from "./aiDeliveryEngine.js";
+} from "./aiDeliveryEngine-v24.js";
 
 import { aiEvolutionEngine } from "./aiEvolutionEngine-v24.js";
 import { aiDualBand } from "./aiDualBand-v24.js";
@@ -128,13 +128,13 @@ import {
   attachDiagnosticsOrgan,
   createDiagnosticsAPI,
   prewarmDiagnosticsOrgan
-} from "./aiDiagnostics.js";
+} from "./aiDiagnostics-v24.js";
 
 import {
   DiagnosticsWriteMeta,
   createDiagnosticsWriteOrgan,
   prewarmDiagnosticsWriteOrgan
-} from "./aiDiagnosticsWrite.js";
+} from "./aiDiagnosticsWrite-v24.js";
 
 import depsSurface, {
   DepsMeta,
@@ -145,7 +145,7 @@ import depsSurface, {
   getOrganismSnapshot,
   emitDepsPacket,
   prewarmDepsLayer
-} from "./aiDeps-v16.js";
+} from "./aiDeps-v24.js";
 
 // ============================================================================
 //  AI ENGINE

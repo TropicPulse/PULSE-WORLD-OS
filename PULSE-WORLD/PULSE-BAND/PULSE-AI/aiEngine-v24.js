@@ -34,14 +34,14 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 
-import { createCognitiveFrame as createAIContext } from "./aiContext.js";
+import { createCognitiveFrame as createAIContext } from "./aiContext-v24.js";
 import { createBrainstem } from "./aiBrainstem-v24.js";
 import { resolvePersonaV12 } from "./aiPersonality.js";
 import { routeAIRequest } from "./aiRouter-v16.js";
 import { canPerformDynamic } from "./aiBoundaries.js";
 
 import { createArchitectOrgan as runArchitectMode } from "./aiArchitect.js";
-import { createClinicianOrgan as runObserverMode } from "./aiClinician.js";
+import { createClinicianOrgan as runObserverMode } from "./aiClinician-v24.js";
 import { createTouristAPI as runTourGuideMode } from "./aiTourist.js";
 
 // ============================================================================

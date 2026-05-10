@@ -64,11 +64,11 @@ import createPulseFileScanner from "./PulseFileScanner-v20.js";
 import { createArchitectAPI } from "./aiArchitect.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist.js";
 
-import { createEnvironmentAPI } from "./aiEnvironment.js";
+import { createEnvironmentAPI } from "./aiEnvironment-v24.js";
 import { createPowerAPI } from "./aiPowerPrime.js";
 import { createEvolutionAPI } from "./aiEvolution.js";
 import { createEarnAPI } from "./aiEarn-v24.js";
-import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite.js";
+import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";
 
 import { createPersonaEngine } from "./aiPersonality.js";
 import { createBoundariesEngine } from "./aiBoundaries.js";
@@ -80,12 +80,12 @@ import { createDualBandOrganism } from "./aiDualBand-v24.js";
 
 // Non-binary symbolic organs
 import { createDoctorAPI } from "./aiDoctorAssistant.js";
-import { createSurgeonAPI } from "./aiSurgeon.js";
+import { createSurgeonAPI } from "./aiSurgeon-v24.js";
 import { createLawyerAPI } from "./aiLawAssistant.js";
-import { createEntrepreneurAPI } from "./aiEntrepreneur.js";
-import { createVeterinarianAPI } from "./aiVeterinarian.js";
-import { createClinicianAPI } from "./aiClinician.js";
-import { createEvolutionaryAPI } from "./aiEvolutionary.js";
+import { createEntrepreneurAPI } from "./aiEntrepreneur-v24.js";
+import { createVeterinarianAPI } from "./aiVeterinarian-v24.js";
+import { createClinicianAPI } from "./aiClinician-v24.js";
+import { createEvolutionaryAPI } from "./aiEvolutionary-v24.js";
 
 // (Future trust / jury / evidence surfaces)
 import { createSafetyFrameOrgan } from "./aiSafetyFrame.js";

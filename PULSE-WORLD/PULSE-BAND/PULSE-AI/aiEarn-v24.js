@@ -53,7 +53,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 
-import { getOrganismSnapshot } from "./aiDeps-v16.js";
+import { getOrganismSnapshot } from "./aiDeps-v24.js";
 
 // ---------------------------------------------------------------------------
 // INTERNAL: deterministic helpers

@@ -99,12 +99,12 @@ import { PNSRepair } from "./PulseProxyPNSRepair-v20.js";
 import { createPulseEarnSendSystem } from "../PULSE-EARN/PulseEarnSendSystem-v24.js";
 
 import startPulseTimer from "./PulseProxyHeart-v20.js";
-import { createPulseOSHealerV12_3 as startPulseOSHealer } from "../PULSE-OS/PulseOSInflammatoryResponse.js";
-import { createGlobalHealerV12 as startGlobalHealer } from "../PULSE-OS/PulseOSImmuneSystem.js";
-import { PulseBinaryOSv11Evo as startPulseOS } from "../PULSE-OS/PulseBinaryOS-v16.js";
+import { createPulseOSHealerV12_3 as startPulseOSHealer } from "../PULSE-OS/PulseOSInflammatoryResponse-v24.js";
+import { createGlobalHealerV12 as startGlobalHealer } from "../PULSE-OS/PulseOSImmuneSystem-v24.js";
+import { PulseBinaryOSv11Evo as startPulseOS } from "../PULSE-OS/PulseBinaryOS-v24.js";
 
 // Binary/GPU metrics (descriptive only)
-import { getBinaryMetrics } from "../PULSE-OS/PulseBinaryOS-v16.js";
+import { getBinaryMetrics } from "../PULSE-OS/PulseBinaryOS-v24.js";
 import { getGPUMetrics } from "../PULSE-GPU/PulseGPU-v24.js";
 
 import { getStripe as Stripe, stripeInstance, determinePayoutCurrency } from "../PULSE-X/PulseWorldBank-v20.js";

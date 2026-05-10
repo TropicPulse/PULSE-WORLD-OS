@@ -76,7 +76,7 @@ import {
 // ============================================================================
 //  IMPORTS — COMPILER / CHUNKER / ACTNOW (v24+)
 // ============================================================================
-import { PulseWorldCompile } from "./PulseWorldCompiler-v20.js";
+import { PulseWorldCompile } from "../../PULSE-UI/_CREATION_BARRIER/PulseWorldCompiler-v20.js";
 import { createPulseChunker } from "./PulseWorldChunker-v20.js";
 import { createPulseWorldFightFlightResponseV20 } from "./PulseWorldFightFlightResponse-v20.js";
 

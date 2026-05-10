@@ -50,10 +50,10 @@ import { AIBinarySentience } from "./aiSentience.js";
 import { AIBinaryConsciousness } from "./aiConsciousness.js";
 import { AIBinaryImmunity } from "./aiImmunity.js";
 import { AIBinaryPipeline } from "./aiPipeline.js";
-import { AIBinaryReflex } from "./aiReflex.js";
+import { AIBinaryReflex } from "./aiReflex-v24.js";
 import { AIBinaryScheduler } from "./aiScheduler.js";
-import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry.js";
-import { AIBinaryEvolution } from "./aiBinaryEvolution.js";
+import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
+import { AIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
 
 import { createPulseAIChunker } from "./PulseAIChunker-v20.js";
 

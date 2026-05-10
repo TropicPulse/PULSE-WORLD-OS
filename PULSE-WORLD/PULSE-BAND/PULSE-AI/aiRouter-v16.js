@@ -164,22 +164,22 @@ const ArchetypePages = Object.freeze({
   ARCHITECT: "aiArchitect.js",
   ASSISTANT: "aiAssistant.js",
   BINARY_AGENT: "aiBinaryAgent.js",
-  CLINICIAN: "aiClinician.js",
+  CLINICIAN: "aiClinician-v24.js",
   DEBUG: "aiDebug.js",
-  DIAGNOSTICS: "aiDiagnostics.js",
-  DIAGNOSTICS_WRITE: "aiDiagnosticsWrite.js",
+  DIAGNOSTICS: "aiDiagnostics-v24.js",
+  DIAGNOSTICS_WRITE: "aiDiagnosticsWrite-v24.js",
   DOCTOR: "aiDoctorAssistant.js",
-  DOCTOR_ARCHITECT: "aiDoctorArchitect.js",
+  DOCTOR_ARCHITECT: "aiDoctorArchitect-v24.js",
   EARN: "aiEarn.js",
-  ENTREPRENEUR: "aiEntrepreneur.js",
-  ENVIRONMENT: "aiEnvironment.js",
+  ENTREPRENEUR: "aiEntrepreneur-v24.js",
+  ENVIRONMENT: "aiEnvironment-v24.js",
   EVOLUTION: "aiEvolution.js",
-  EVOLUTIONARY: "aiEvolutionary.js",
+  EVOLUTIONARY: "aiEvolutionary-v24.js",
   LAWYER: "aiLawAssistant.js",
   POWER: "aiPower.js",
-  SURGEON: "aiSurgeon.js",
+  SURGEON: "aiSurgeon-v24.js",
   TOURIST: "aiTourist.js",
-  VETERINARIAN: "aiVeterinarian.js"
+  VETERINARIAN: "aiVeterinarian-v24.js"
 });
 
 // ============================================================================

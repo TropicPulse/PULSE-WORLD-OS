@@ -23,7 +23,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // Cortex is ONLY imported here — NOT in Brain
-import { createPulseOSCortex } from "./PulseOSBrainCortex.js";
+import { createPulseOSCortex } from "./PulseOSBrainCortex-v24.js";
 
 const CORE_MEMORY_NAMESPACE = "PulseOSEvolution-v14-Immortal";
 

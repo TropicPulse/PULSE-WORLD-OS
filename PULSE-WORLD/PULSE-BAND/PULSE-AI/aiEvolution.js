@@ -49,7 +49,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 import { Personas } from "./aiPersonality.js";
-import { getOrganismSnapshot } from "./aiDeps-v16.js";
+import { getOrganismSnapshot } from "./aiDeps-v24.js";
 
 // ============================================================================
 //  INTERNAL CACHES — deterministic, in‑memory, per‑scope
