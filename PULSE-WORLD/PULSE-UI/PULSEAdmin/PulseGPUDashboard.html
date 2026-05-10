@@ -2,10 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+  <meta name="viewport"
+      content="width=device-width,
+               initial-scale=1,
+               maximum-scale=1,
+               minimum-scale=1,
+               user-scalable=no">
 <title>Pulse GPU Dashboard — Render & Compute Control Room</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<script src="../PULSE-WORLD-TOUCH.js"></script>
-<style>
+
+  <!-- 0. TOUCH — MUST LOAD FIRST -->
+  <script type="module" src="../_FRONTEND/PULSE-TOUCH.js"></script>
+
+  <!-- 1. PORTAL — MUST LOAD IMMEDIATELY AFTER TOUCH -->
+  <script type="module" src="../_FRONTEND/PULSE-WORLD-PORTAL.js"></script>
+
+  <style>
 /* GLOBAL */
 body {
     margin: 0;

@@ -11,7 +11,8 @@
 
   <title>Pulse EvolutionaryTrustedPage — v16-Evo-IMMORTAL</title>
 
-  <script src="../PULSE-WORLD-TOUCH.js"></script>
+  <!-- 0. TOUCH — MUST LOAD FIRST -->
+  <script type="module" src="../_FRONTEND/PULSE-TOUCH.js"></script>
 
   <!-- SKIN / MOTION -->
   <link rel="stylesheet" href="../_COMPONENTS_EVOLUTION/PulseEvolutionaryStyles.css" />
@@ -24,30 +25,29 @@
 <body>
   <div id="evo-wrapper"></div>
 
+  <!-- 1. PORTAL — MUST LOAD IMMEDIATELY AFTER TOUCH -->
+  <script type="module" src="../_FRONTEND/PULSE-WORLD-PORTAL.js"></script>
+
+  <!-- 2. EVO PAGE LOGIC — SAFE TO RUN AFTER PORTAL -->
   <script type="module">
     // ============================================================================
-    // 0. BOOT MEMBRANE — PORTAL / POWER / UNDERSTANDING
+    // EVO PAGE — NOW RUNNING INSIDE A FULL MEMBRANE
     // ============================================================================
-    import * as PulseWindow from "../_FRONTEND/PULSE-WORLD-PORTAL.js";
-    import PulsePowerAPI from "../_FRONTEND/PulsePower-v16.js";
-    import PulseUnderstanding, {
-      prewarmUnderstanding as prewarmUnderstandingLayer
-    } from "../_FRONTEND/PulseUnderstanding-v16.js";
 
-    function mark(label, extra) {
-      console.log("[EVO-PAGE]", label, extra || "");
-    }
-
-    // Icons
     import { PulseIcons } from "../_BACKEND/PulseEvolutionaryIcons.js";
 
-    // UI organism organs
     import { createPulseEvolutionaryCode } from "../_BACKEND/PulseEvolutionaryCode.js";
     import { createPulseEvolutionaryMemory } from "../_BACKEND/PulseEvolutionaryMemory.js";
     import { createPulseEvolutionaryBrain } from "../_BACKEND/PulseEvolutionaryBrain.js";
     import { createPulseEvolutionaryImpulse } from "../_BACKEND/PulseEvolutionaryImpulse.js";
     import { createPulseEvolutionaryRouter } from "../_BACKEND/PulseEvolutionaryRouter.js";
     import { createPulseEvolutionaryBinary } from "../_BACKEND/PulseEvolutionaryBinary.js";
+
+    function mark(label, extra) {
+      console.log("[EVO-PAGE]", label, extra || "");
+    }
+
+    mark("Membrane ready — running EvoPage logic");
 
     // Mock CNS (replace with real CNS when wired)
     const CNS = {

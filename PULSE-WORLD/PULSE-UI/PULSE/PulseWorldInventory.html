@@ -9,12 +9,6 @@
                minimum-scale=1,
                user-scalable=no">
   <title>Tropic Pulse Dashboard</title>
-<script src="../PULSE-WORLD-TOUCH.js"></script>
-<script type="module">
-/* 0. BOOT MEMBRANE — MUST BE FIRST */
-import * as PulseWindow from "../_FRONTEND/PULSE-WORLD-PORTAL.js";
-
-</script>
 
 <style>
   body {
@@ -954,7 +948,17 @@ import * as PulseWindow from "../_FRONTEND/PULSE-WORLD-PORTAL.js";
       <div class="logout" id="logoutBtn">Log Out</div>
     </div>
   </div>
-<script>
+
+  <!-- your login UI markup goes here -->
+
+  <!-- 0. TOUCH — MUST LOAD FIRST -->
+  <script type="module" src="../_FRONTEND/PULSE-TOUCH.js"></script>
+
+  <!-- 1. PORTAL — MUST LOAD IMMEDIATELY AFTER TOUCH -->
+  <script type="module" src="../_FRONTEND/PULSE-WORLD-PORTAL.js"></script>
+
+  <!-- 2. LOGIN PAGE LOGIC — SAFE TO RUN AFTER PORTAL -->
+  <script type="module">
   
 function mark(label) {
   console.log("[INDEX]", label);

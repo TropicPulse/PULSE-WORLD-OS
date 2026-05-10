@@ -54,40 +54,43 @@
     </div>
   </div>
 
-<script type="module">
-/* 0. BOOT MEMBRANE — MUST BE FIRST */
-import * as PulseWindow from "../_FRONTEND/PULSE-WORLD-PORTAL.js";
+  <!-- 0. TOUCH — MUST LOAD FIRST -->
+  <script type="module" src="../_FRONTEND/PULSE-TOUCH.js"></script>
 
-  window.__SERVER_HAS_TOKEN__ = true;
+  <!-- 1. PORTAL — MUST LOAD IMMEDIATELY AFTER TOUCH -->
+  <script type="module" src="../_FRONTEND/PULSE-WORLD-PORTAL.js"></script>
+
+  <!-- 2. PAGE LOGIC — SAFE TO RUN AFTER PORTAL -->
+  <script type="module">
+    window.__SERVER_HAS_TOKEN__ = true;
 
     document.addEventListener("DOMContentLoaded", () => {
-  const params = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(window.location.search);
 
-  // ⭐ Use displayName — the official public identity layer
-  const displayName = params.get("displayName") || "Friend";
+      // ⭐ Public-safe identity layer
+      const displayName = params.get("displayName") || "Friend";
 
-  // Server-side token presence check
-  if (!window.__SERVER_HAS_TOKEN__) {
-    window.location.href = "/error.html";
-    return;
-  }
+      // Server-side token presence check
+      if (!window.__SERVER_HAS_TOKEN__) {
+        window.location.href = "/error.html";
+        return;
+      }
 
-  // Browser sends NO TOKEN — only a trigger
-  fetch("/resendlink-trigger", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ request: true })
-  })
-  .then(() => {
-    window.location.href =
-      "/success.html?displayName=" +
-      encodeURIComponent(displayName);
-  })
-  .catch(() => {
-    window.location.href = "/error.html";
-  });
-});
-
+      // Browser sends NO TOKEN — only a trigger
+      fetch("/resendlink-trigger", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ request: true })
+      })
+      .then(() => {
+        window.location.href =
+          "/success.html?displayName=" +
+          encodeURIComponent(displayName);
+      })
+      .catch(() => {
+        window.location.href = "/error.html";
+      });
+    });
   </script>
 
 </body>
