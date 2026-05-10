@@ -721,11 +721,17 @@ text-align: center;
 
   <!-- 2. LOGIN PAGE LOGIC — SAFE TO RUN AFTER PORTAL -->
   <script type="module">
-  
-function mark(label) {
-  console.log("[INDEX]", label);
+
+/* ============================================================
+   0. MARKER
+============================================================ */
+function mark(...args) {
+  console.log("[LOGIN]", ...args);
 }
 
+/* ============================================================
+   1. LOADER UI
+============================================================ */
 function showTPLoader() {
   const el = document.getElementById("t-loading");
   if (!el) return;
@@ -741,8 +747,8 @@ function hideTPLoader() {
 }
 
 /* ============================================================
-   DOM ELEMENTS
-   ============================================================ */
+   2. DOM ELEMENTS
+============================================================ */
 const authMsg         = document.getElementById("authMsg");
 const pinSection      = document.getElementById("pinSection");
 const emailSection    = document.getElementById("emailSection");
@@ -756,8 +762,8 @@ const params   = new URLSearchParams(window.location.search);
 const returnTo = params.get("returnTo");
 
 /* ============================================================
-   UI HELPERS
-   ============================================================ */
+   3. UI HELPERS
+============================================================ */
 function showLoginUI() {
   emailSection.style.display = "block";
   rememberSection.style.display = "block";
@@ -766,8 +772,8 @@ function showLoginUI() {
 }
 
 /* ============================================================
-   1) LOGIN BOOTSTRAP
-   ============================================================ */
+   4. LOGIN BOOTSTRAP
+============================================================ */
 async function loginBootstrap() {
   showTPLoader();
 
@@ -784,8 +790,8 @@ async function loginBootstrap() {
 }
 
 /* ============================================================
-   2) SEND PIN
-   ============================================================ */
+   5. SEND PIN
+============================================================ */
 if (!window.__sendPinBound) {
   window.__sendPinBound = true;
 
@@ -837,8 +843,8 @@ if (!window.__sendPinBound) {
 }
 
 /* ============================================================
-   3) VERIFY PIN — v9.3 CANONICAL IDENTITY
-   ============================================================ */
+   6. VERIFY PIN
+============================================================ */
 if (!window.__verifyPinBound) {
   window.__verifyPinBound = true;
 
@@ -901,38 +907,112 @@ if (!window.__verifyPinBound) {
 }
 
 /* ============================================================
-   4) PULSEBAND BADGE — UI ONLY
-   ============================================================ */
-if (!window.__pulsebandListenersAttached) {
-  window.__pulsebandListenersAttached = true;
+   7. PULSEBAND UI — IMMORTAL++ (FULL)
+============================================================ */
+(function initPulseBandUI() {
+  if (window.__PULSEBAND_LOGIN_INIT__) return;
+  window.__PULSEBAND_LOGIN_INIT__ = true;
 
   const badge = document.getElementById("pulseband-badge");
   const panel = document.getElementById("pulseband-panel");
 
+  /* Badge toggle */
   if (badge && panel) {
-    badge.onclick = (e) => {
+    badge.addEventListener("click", (e) => {
       e.stopPropagation();
-      panel.style.display = panel.style.display === "block" ? "none" : "block";
-    };
+      panel.classList.toggle("pb-open");
+    });
 
     document.addEventListener("click", (e) => {
       const inside = panel.contains(e.target);
       const onBadge = badge.contains(e.target);
-      if (!inside && !onBadge) panel.style.display = "none";
+      if (!inside && !onBadge) panel.classList.remove("pb-open");
     });
   }
-}
+
+  /* Field bindings */
+  const pbFields = {
+    bars:       document.getElementById("pb-bars-text"),
+    phone:      document.getElementById("pb-phonebars-text"),
+    stability:  document.getElementById("pb-stability"),
+    latency:    document.getElementById("pb-latency"),
+    micro:      document.getElementById("pb-micro"),
+    route:      document.getElementById("pb-route"),
+    state:      document.getElementById("pb-state"),
+    sync:       document.getElementById("pb-sync"),
+    efficiency: document.getElementById("pb-efficiency"),
+    health:     document.getElementById("pb-health"),
+    advantage:  document.getElementById("pb-advantage"),
+    estimated:  document.getElementById("pb-estimated")
+  };
+
+  /* Engine waiter */
+  async function waitForEngines() {
+    while (
+      !window.VitalsMonitor ||
+      !window.VitalsMonitor.Vitals ||
+      !window.VitalsMonitor.Vitals.generate ||
+      !window.PulseBinary ||
+      !window.PulseBinary.Sentience
+    ) {
+      await new Promise(res => setTimeout(res, 50));
+    }
+  }
+
+  /* Updater */
+  async function updatePulseBand() {
+    try {
+      const vitals    = window.VitalsMonitor.Vitals.generate() ?? null;
+      const binary    = window.PulseBinary ?? null;
+      const sentience = binary?.Sentience?.snapshot?.() ?? null;
+
+      const signalBars  = vitals?.network?.bars ?? "—";
+      const phoneBars   = vitals?.device?.bars ?? signalBars;
+      const stability   = vitals?.stability?.score ?? null;
+      const latencyMs   = vitals?.latency?.ms ?? null;
+      const microPhase  = vitals?.micro?.phase ?? sentience?.phase ?? "Idle";
+      const route       = vitals?.network?.route ?? "Primary";
+      const state       = vitals?.state ?? "Active";
+      const syncAge     = vitals?.sync?.ageLabel ?? "Just now";
+      const efficiency  = vitals?.efficiency?.label ?? "Balanced";
+      const health      = vitals?.health?.label ?? "Excellent";
+      const advantage   = vitals?.advantage?.multiplier ?? 1.0;
+      const estimated   = vitals?.advantage?.percent ?? 0;
+
+      if (pbFields.bars)       pbFields.bars.textContent       = String(signalBars);
+      if (pbFields.phone)      pbFields.phone.textContent      = String(phoneBars);
+      if (pbFields.stability)  pbFields.stability.textContent  = stability != null ? `${stability}%` : "—";
+      if (pbFields.latency)    pbFields.latency.textContent    = latencyMs != null ? `${latencyMs} ms` : "—";
+      if (pbFields.micro)      pbFields.micro.textContent      = microPhase;
+      if (pbFields.route)      pbFields.route.textContent      = route;
+      if (pbFields.state)      pbFields.state.textContent      = state;
+      if (pbFields.sync)       pbFields.sync.textContent       = syncAge;
+      if (pbFields.efficiency) pbFields.efficiency.textContent = efficiency;
+      if (pbFields.health)     pbFields.health.textContent     = health;
+      if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
+      if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
+
+    } catch (err) {
+      console.log("[PULSEBAND LOGIN] update failed", err);
+    }
+  }
+
+  /* Boot */
+  (async () => {
+    await waitForEngines();
+    updatePulseBand();
+    setInterval(updatePulseBand, 1000);
+  })();
+})();
 
 /* ============================================================
-   5) DOM WRAPPER
-   ============================================================ */
+   8. DOM WRAPPER
+============================================================ */
 (async () => {
-  
   await loginBootstrap();
   hideTPLoader();
 })();
 </script>
-
 
 </body>
 </html>
