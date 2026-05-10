@@ -83,10 +83,44 @@ AI_EXPERIENCE_META = {
 }
 ===============================================================================
 */
+// ============================================================================
+//  IMMORTAL++ LAZY BRIDGE ACCESS — SAFE, GLOBAL, CIRCULAR-PROOF
+// ============================================================================
 
-import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge as BridgeExport } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
-// Global handle
+// IMMORTAL++: always resolve the bridge *late*, never at module top-level
+function getBridge() {
+  // Prefer the fully initialized global mirror
+  if (typeof globalThis !== "undefined" && globalThis.PulseProofBridge) {
+    return globalThis.PulseProofBridge;
+  }
+  // Fallback to direct import (only safe if no cycle)
+  return BridgeExport || null;
+}
+
+// Lazy getters — ALWAYS call these inside functions, never at top-level
+function getCore() {
+  const b = getBridge();
+  return b?.coreMemory || null;
+}
+
+function getEvidenceBus() {
+  const b = getBridge();
+  return b?.evidenceBus || null;
+}
+
+function getDiagnosticsBus() {
+  const b = getBridge();
+  return b?.diagnosticsBus || null;
+}
+
+const Core = getCore;
+const DiagnosticsBus = getDiagnosticsBus;
+const EvidenceBus = getEvidenceBus;
+// ============================================================================
+//  GLOBAL HANDLE (unchanged)
+// ============================================================================
 const g =
   typeof globalThis !== "undefined"
     ? globalThis
@@ -106,12 +140,10 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-// CoreMemory via PulseProofBridge (exact same CoreMemory, bridged)
-const Core = PulseProofBridge.coreMemory || null;
-
-// Optional evidence / diagnostics / admin channels (if present)
-const EvidenceBus = PulseProofBridge.evidenceBus || null;
-const DiagnosticsBus = PulseProofBridge.diagnosticsBus || null;
+// ============================================================================
+//  DO NOT USE Core/EvidenceBus/DiagnosticsBus DIRECTLY ANYMORE
+//  ALWAYS USE getCore(), getEvidenceBus(), getDiagnosticsBus()
+// ============================================================================
 
 // ============================================================================
 // IMMORTAL LOCALSTORAGE MIRROR — PulseUIErrorStore v24
