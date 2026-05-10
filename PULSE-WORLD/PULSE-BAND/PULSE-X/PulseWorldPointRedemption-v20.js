@@ -109,7 +109,6 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 import { onRequest, onCall } from "firebase-functions/v2/https";
-import { onDocumentWritten, onDocumentWrittenWithAuthContext} from "firebase-functions/v2/firestore";
 
 // ============================================================================
 // IMPORTS
