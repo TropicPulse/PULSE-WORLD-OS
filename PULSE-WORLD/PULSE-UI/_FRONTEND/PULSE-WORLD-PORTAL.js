@@ -842,7 +842,6 @@ if (isBrowser() && window.PulseSkinReflex?.membraneAlive) {
     console.error("[PulsePortal-v20] SkinReflex membraneAlive failed:", err);
   }
 }
-
 // ============================================================================
 // BINARY ORGANISM + UNDERSTANDING + UI FLOW BOOT — v20 IMMORTAL PORTAL
 // ============================================================================
@@ -1100,13 +1099,28 @@ if (isBrowser()) {
         console.error("[PulsePortal-v20] PulseBand boot failed:", err);
       }
 
+      // local safeEnv for this block so structure stays the same above
+      function safeEnvForBand(env) {
+        if (!env || typeof env !== "object") return {};
+        const out = { ...env };
+        delete out.performance;
+        delete out.timing;
+        delete out.navigation;
+        delete out.memory;
+        delete out.window;
+        delete out.document;
+        delete out.location;
+        delete out.history;
+        return out;
+      }
+
       // CHUNK SESSION START — OPTIONAL, CHUNK-AWARE SESSION MARKER
       try {
         if (window.PulseBandStart) {
           window.PulseBandStart({
             type: "chunk-session",
             surface: "PulsePortal-v20",
-            environment: PulseSurfaceEnvironment,
+            environment: safeEnvForBand(PulseSurfaceEnvironment),
             version: "20.0-Immortal-Evo+++"
           });
         }
@@ -1121,16 +1135,41 @@ if (isBrowser()) {
     }
   })();
 }
-
 // ============================================================================
 // EXPORT — PULSE PORTAL API
 // ============================================================================
+// ============================================================================
+// SAFE HELPERS (HOISTED SO EXPORT BLOCK CAN USE THEM)
+// ============================================================================
+function safeMeta(meta) {
+  if (!meta || typeof meta !== "object") return {};
+  const out = { ...meta };
+  delete out.performance;
+  delete out.timing;
+  delete out.navigation;
+  delete out.memory;
+  return out;
+}
+
+function safeEnv(env) {
+  if (!env || typeof env !== "object") return {};
+  const out = { ...env };
+  delete out.performance;
+  delete out.timing;
+  delete out.navigation;
+  delete out.memory;
+  delete out.window;
+  delete out.document;
+  delete out.location;
+  delete out.history;
+  return out;
+}
 
 const PulsePortalAPI = Object.freeze({
   VitalsMonitor: typeof window !== "undefined" ? window.VitalsMonitor : null,
   Logger: typeof window !== "undefined" ? window.PulseLogger : null,
   Understanding: PulseUnderstanding,
-  SurfaceEnvironment: PulseSurfaceEnvironment,
+  SurfaceEnvironment: safeEnv(PulseSurfaceEnvironment),
   UIFlow: typeof window !== "undefined" ? window.PulseUIFlow : null,
   Errors: typeof window !== "undefined" ? window.PulseUIErrors : null,
   meta: {
@@ -1141,6 +1180,7 @@ const PulsePortalAPI = Object.freeze({
 });
 
 export default PulsePortalAPI;
+
 // ============================================================================
 // GLOBAL MIRRORS — OPTIONAL, FOR NODE/SSR/TOOLS
 // ============================================================================
@@ -1149,26 +1189,32 @@ try {
   if (typeof global !== "undefined") {
     global.PulseBand =
       typeof window !== "undefined" ? window.PulseBand : global.PulseBand || null;
+
     global.PulseBandStart =
       typeof window !== "undefined"
         ? window.PulseBandStart
         : global.PulseBandStart || null;
+
     global.VitalsMonitor =
       typeof window !== "undefined"
         ? window.VitalsMonitor
         : global.VitalsMonitor || null;
+
     global.PulseLogger =
       typeof window !== "undefined"
         ? window.PulseLogger
         : global.PulseLogger || null;
+
     global.PulseUIFlow =
       typeof window !== "undefined"
         ? window.PulseUIFlow
         : global.PulseUIFlow || null;
+
     global.PulseUIErrors =
       typeof window !== "undefined"
         ? window.PulseUIErrors
         : global.PulseUIErrors || null;
+
     global.PulsePortalAPI = PulsePortalAPI;
   }
 } catch (err) {
