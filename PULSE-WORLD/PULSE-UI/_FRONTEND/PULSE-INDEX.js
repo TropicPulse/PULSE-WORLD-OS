@@ -1,6 +1,6 @@
 
 /* 0. BOOT MEMBRANE — MUST BE FIRST */
-import * as PulseWindow from "../_FRONTEND/PULSE-WORLD-PORTAL.js";
+
 
 function mark(label) {
   console.log("[INDEX]", label);
@@ -111,7 +111,7 @@ if (!window.__PULSE_UI_INIT__) {
         const file = testFile.files[0];
 
         const binary   = window.PulseBinary ?? null;
-        const vitalsFn = binary?.Vitals?.generate ?? PulseWindow.Vitals?.generate;
+        const vitalsFn = binary?.Vitals?.generate;
 
         const before = performance.now();
         await file.arrayBuffer();
