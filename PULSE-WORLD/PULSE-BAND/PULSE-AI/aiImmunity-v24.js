@@ -1,117 +1,126 @@
 // ============================================================================
-//  aiImmunity.js — Pulse OS v15-Immortal Organ
-//  Binary Immune System • Quarantine Engine • Binary-First • Dualband Artery
-// ----------------------------------------------------------------------------
-//  CANONICAL ROLE:
-//    This organ is the **Binary Immune System** of the organism.
-//
-//    It protects against:
-//      • corrupted binary packets
-//      • malformed signals
-//      • failing organs
-//      • drifted signatures
-//      • pipeline contamination
-//      • reflex misfires
-//
-//    It performs:
-//      • anomaly detection
-//      • organ quarantine
-//      • packet neutralization
-//      • structural isolation (via Anatomy)
-//      • binary immune artery scoring (throughput, pressure, cost, budget)
-//
-//    IMMUNITY MODEL (v15‑IMMORTAL, binary‑first, no wall‑clock dependency):
-//
-//      {
-//        type: "binary-immune-response",
-//        anomaly: <string>,
-//        organId: <string|null>,
-//        binary: { throughput, pressure, cost, budget, ...buckets },
-//        bits: <binary>,
-//        bitLength: <number>,
-//        cycle: <number>,
-//        band: "binary",
-//        highway: "binary_first_dualband",
-//        immortalityEpoch: "v15-Immortal"
-//      }
+//  aiImmunity.js — Pulse OS v24.0‑IMMORTAL++ Organ
+//  Binary Immune System • Quarantine Engine • Dualband Artery • Packet‑Aware
+//  PURE BINARY. ZERO NETWORK. ZERO RANDOMNESS IN LOGIC PATHS.
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  (backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const ImmunityMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
+// ============================================================================
+//  GLOBAL IMMUNE REGISTRY — window‑safe, read‑only from outside
+// ============================================================================
+const _globalImmuneRegistry = new Map();
+/**
+ * Registry key: `${id}#${instanceIndex}`
+ */
+function _registryKey(id, instanceIndex) {
+  return `${id || ImmunityMeta.identity}#${instanceIndex}`;
+}
+
+export function getGlobalImmuneState() {
+  const out = {};
+  for (const [k, v] of _globalImmuneRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
 
 // ============================================================================
-//  PREWARM — v15‑IMMORTAL (no time, no randomness)
+//  PACKET EMITTER — deterministic, immune‑scoped
 // ============================================================================
-export function prewarmAIBinaryImmunity() {
-  const payload = {
+function emitImmunePacket(type, payload) {
+  return Object.freeze({
+    meta: ImmunityMeta,
+    packetType: `immune-${type}`,
+    timestamp: Date.now(),
+    epoch: ImmunityMeta.evo.epoch,
+    ...payload
+  });
+}
+
+// ============================================================================
+//  PREWARM — v24.0‑IMMORTAL++ (dualband‑aware, no randomness)
+// ============================================================================
+export function prewarmAIBinaryImmunity(
+  dualBand = null,
+  { trace = false } = {}
+) {
+  const quarantinedCount =
+    dualBand?.binary?.immunity?.quarantinedCount ??
+    dualBand?.symbolic?.immunity?.quarantinedCount ??
+    0;
+
+  const pressure =
+    dualBand?.binary?.metabolic?.pressure ??
+    dualBand?.binary?.pressure ??
+    0;
+
+  const load =
+    dualBand?.binary?.metabolic?.load ??
+    dualBand?.binary?.load ??
+    0;
+
+  const baseBinary = {
+    throughput: 1,
+    throughputBucket: "elite",
+    pressure,
+    pressureBucket: pressure === 0 ? "none" : pressure >= 0.9 ? "overload" : pressure >= 0.7 ? "high" : pressure >= 0.4 ? "medium" : "low",
+    cost: 0,
+    costBucket: "none",
+    budget: 1,
+    budgetBucket: "elite"
+  };
+
+  const packet = emitImmunePacket("prewarm", {
     type: "binary-immune-prewarm",
     anomaly: "none",
     organId: null,
-    binary: {
-      throughput: 1,
-      throughputBucket: "elite",
-      pressure: 0,
-      pressureBucket: "none",
-      cost: 0,
-      costBucket: "none",
-      budget: 1,
-      budgetBucket: "elite"
-    },
+    binary: baseBinary,
     cycle: 0,
     band: "binary",
     highway: "binary_first_dualband",
-    meta: ImmunityMeta,
     immortalityEpoch: ImmunityMeta.evo.epoch,
+    quarantinedCount,
     bluetooth: {
       ready: false,
       channel: null
     }
-  };
-
-  const packet = Object.freeze({
-    ...payload,
-    bits: "0",       // symbolic warm bit, real engine uses encoder
-    bitLength: 1
   });
+
+  if (trace) {
+    console.log("[aiBinaryImmunity] prewarm", packet);
+  }
 
   return packet;
 }
 
-// ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — v15‑IMMORTAL
-// ---------------------------------------------------------
+// ============================================================================
+//  ORGAN IMPLEMENTATION — v24.0‑IMMORTAL++
+// ============================================================================
 export class AIBinaryImmunity {
   constructor(config = {}) {
-    this.id = config.id || "ai-binary-immunity";
+    this.id = config.id || ImmunityMeta.identity || "ai-binary-immunity";
+
     this.encoder = config.encoder;
     this.anatomy = config.anatomy;
     this.evolution = config.evolution;
@@ -121,15 +130,20 @@ export class AIBinaryImmunity {
     this.reflex = config.reflex || null;
     this.trace = !!config.trace;
 
+    this.dualBand = config.dualBand || null;
+
     if (!this.encoder) throw new Error("AIBinaryImmunity requires aiBinaryAgent encoder");
     if (!this.anatomy) throw new Error("AIBinaryImmunity requires aiBinaryAnatomy");
     if (!this.evolution) throw new Error("AIBinaryImmunity requires aiBinaryEvolution");
     if (!this.registry) throw new Error("AIBinaryImmunity requires aiBinaryOrganRegistry");
 
     this.quarantined = new Set();
-    this.cycle = 0; // deterministic local immune cycle (no timestamps)
+    this.cycle = 0; // deterministic local immune cycle (no wall‑clock in logic)
 
-    // Window-safe immune snapshot (no timestamps, no randomness)
+    // Instance index for registry
+    this.instanceIndex = AIBinaryImmunity._registerInstance();
+
+    // Window‑safe immune artery snapshot
     this.immuneArtery = {
       lastAnomaly: null,
       lastOrganId: null,
@@ -143,14 +157,43 @@ export class AIBinaryImmunity {
           lastBinary: this.immuneArtery.lastBinary,
           lastCycle: this.immuneArtery.lastCycle,
           quarantinedCount: this.quarantined.size,
-          epoch: ImmunityMeta.evo.epoch
+          epoch: ImmunityMeta.evo.epoch,
+          instanceIndex: this.instanceIndex,
+          instanceCount: AIBinaryImmunity.getInstanceCount()
         })
     };
+
+    this._updateGlobalRegistry();
   }
 
-  // ---------------------------------------------------------
+  // --------------------------------------------------------------------------
+  //  STATIC INSTANCE REGISTRY
+  // --------------------------------------------------------------------------
+  static _registerInstance() {
+    if (typeof AIBinaryImmunity._instanceCount !== "number") {
+      AIBinaryImmunity._instanceCount = 0;
+    }
+    const idx = AIBinaryImmunity._instanceCount;
+    AIBinaryImmunity._instanceCount += 1;
+    return idx;
+  }
+
+  static getInstanceCount() {
+    return typeof AIBinaryImmunity._instanceCount === "number"
+      ? AIBinaryImmunity._instanceCount
+      : 0;
+  }
+
+  _updateGlobalRegistry() {
+    const key = _registryKey(this.id, this.instanceIndex);
+    _globalImmuneRegistry.set(key, {
+      artery: this.immuneArtery.snapshot()
+    });
+  }
+
+  // --------------------------------------------------------------------------
   //  BINARY IMMUNE ARTERY METRICS (deterministic, bounded [0,1])
-  // ---------------------------------------------------------
+  // --------------------------------------------------------------------------
   _computeSanitationThroughput(anomalySeverity) {
     const raw = 1 - anomalySeverity;
     return Math.max(0, Math.min(1, raw));
@@ -195,23 +238,21 @@ export class AIBinaryImmunity {
     return "none";
   }
 
-  // ---------------------------------------------------------
-  //  IMMUNE RESPONSE GENERATION (binary-first, no timestamps)
-  // ---------------------------------------------------------
+  // --------------------------------------------------------------------------
+  //  IMMUNE RESPONSE GENERATION (binary‑first, no randomness)
+  // --------------------------------------------------------------------------
   _nextCycle() {
     this.cycle += 1;
     return this.cycle;
   }
 
-  _generateResponse(anomaly, organId = null, anomalySeverity = 0.5, binaryLength = 1) {
-    const cycle = this._nextCycle();
-
+  _buildBinaryArtery(anomalySeverity, binaryLength) {
     const throughput = this._computeSanitationThroughput(anomalySeverity);
     const pressure   = this._computeSanitationPressure(binaryLength, anomalySeverity);
     const cost       = this._computeSanitationCost(pressure, throughput);
     const budget     = this._computeSanitationBudget(throughput, cost);
 
-    const binary = {
+    return {
       throughput,
       throughputBucket: this._bucketLevel(throughput),
 
@@ -224,6 +265,11 @@ export class AIBinaryImmunity {
       budget,
       budgetBucket: this._bucketLevel(budget)
     };
+  }
+
+  _generateResponse(anomaly, organId = null, anomalySeverity = 0.5, binaryLength = 1) {
+    const cycle = this._nextCycle();
+    const binary = this._buildBinaryArtery(anomalySeverity, binaryLength);
 
     const payload = {
       type: "binary-immune-response",
@@ -235,7 +281,6 @@ export class AIBinaryImmunity {
       highway: "binary_first_dualband",
       meta: ImmunityMeta,
       immortalityEpoch: ImmunityMeta.evo.epoch,
-
       bluetooth: {
         ready: false,
         channel: null
@@ -257,6 +302,7 @@ export class AIBinaryImmunity {
     this.immuneArtery.lastCycle = cycle;
     this.immuneArtery.quarantinedCount = this.quarantined.size;
 
+    this._updateGlobalRegistry();
     this._trace("immune:generated", packet);
 
     return packet;
@@ -271,12 +317,18 @@ export class AIBinaryImmunity {
 
     this._trace("immune:emitted", { anomaly, organId });
 
-    return response;
+    return emitImmunePacket("response", {
+      anomaly,
+      organId,
+      severity,
+      binaryLength,
+      response
+    });
   }
 
-  // ---------------------------------------------------------
-  //  PACKET SANITIZATION
-  // ---------------------------------------------------------
+  // --------------------------------------------------------------------------
+  //  PACKET SANITIZATION — binary‑first
+  // --------------------------------------------------------------------------
   sanitize(binary) {
     if (typeof binary !== "string" || !/^[01]+$/.test(binary)) {
       const length = typeof binary === "string" ? binary.length : 1;
@@ -291,9 +343,9 @@ export class AIBinaryImmunity {
     return true;
   }
 
-  // ---------------------------------------------------------
-  //  ORGAN QUARANTINE
-  // ---------------------------------------------------------
+  // --------------------------------------------------------------------------
+  //  ORGAN QUARANTINE — evolution‑aware, anatomy‑safe
+  // --------------------------------------------------------------------------
   quarantineOrgan(organId) {
     this.quarantined.add(organId);
 
@@ -314,9 +366,9 @@ export class AIBinaryImmunity {
     }
   }
 
-  // ---------------------------------------------------------
-  //  SIGNATURE DRIFT DETECTION (evolution-aware)
-  // ---------------------------------------------------------
+  // --------------------------------------------------------------------------
+  //  SIGNATURE DRIFT DETECTION — evolution‑aware
+  // --------------------------------------------------------------------------
   checkOrgan(organId) {
     const record = this.registry.getOrganRecord(organId);
     if (!record) return;
@@ -330,9 +382,9 @@ export class AIBinaryImmunity {
     }
   }
 
-  // ---------------------------------------------------------
-  //  ORGANISM-WIDE IMMUNE SWEEP
-  // ---------------------------------------------------------
+  // --------------------------------------------------------------------------
+  //  ORGANISM‑WIDE IMMUNE SWEEP
+  // --------------------------------------------------------------------------
   sweep() {
     const organIds = this.registry.listOrgans();
 
@@ -343,33 +395,46 @@ export class AIBinaryImmunity {
     }
 
     this._trace("immune:sweep", { organs: organIds.length });
+    return emitImmunePacket("sweep", {
+      organCount: organIds.length,
+      quarantinedCount: this.quarantined.size,
+      artery: this.immuneArtery.snapshot()
+    });
   }
 
-  // ---------------------------------------------------------
+  // --------------------------------------------------------------------------
+  //  WINDOW‑SAFE ARTERY SNAPSHOT
+  // --------------------------------------------------------------------------
+  getImmuneArterySnapshot() {
+    return this.immuneArtery.snapshot();
+  }
+
+  // --------------------------------------------------------------------------
   //  INTERNAL HELPERS
-  // ---------------------------------------------------------
+  // --------------------------------------------------------------------------
   _trace(event, payload) {
     if (!this.trace) return;
-    console.log(`[${this.id}] ${event}`, payload);
+    console.log(`[${this.id}#${this.instanceIndex}] ${event}`, payload);
   }
 }
 
-// ---------------------------------------------------------
+// ============================================================================
 //  FACTORY
-// ---------------------------------------------------------
+// ============================================================================
 export function createAIBinaryImmunity(config) {
   return new AIBinaryImmunity(config);
 }
 
-// ---------------------------------------------------------
+// ============================================================================
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ---------------------------------------------------------
+// ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
     AIBinaryImmunity,
     createAIBinaryImmunity,
     ImmunityMeta,
     prewarmAIBinaryImmunity,
-    PulseRole
+    PulseRole,
+    getGlobalImmuneState
   };
 }

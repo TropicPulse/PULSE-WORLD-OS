@@ -1,6 +1,7 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-AI/aiEvolution.js
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-AI/aiEvolution-v24-Immortal-Advantage++.js
 // LAYER: EVOLUTION ORGAN (Organism Awareness + Drift + Growth Detection)
+// VERSION: v24-IMMORTAL-ADVANTAGE++
 // ============================================================================
 //
 // ROLE:
@@ -18,28 +19,26 @@
 //   • ZERO RANDOMNESS.
 //   • DETERMINISTIC ANALYSIS ONLY.
 // ============================================================================
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
+// ============================================================================
+//  META BLOCK — v24 IMMORTAL ADVANTAGE++ (ORGANISM KERNEL)
+//  (backed by the Organism Map instead of hardcoded here)
+// ============================================================================
 
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
 export const AI_EVOLUTION_META = Identity.OrganMeta;
 
 // ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
+//  SURFACE / ORGANISM LAYER EXPORTS — v24 IMMORTAL ADVANTAGE++
 //  (for Understanding / CNS / Portal alignment)
 // ============================================================================
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -65,7 +64,7 @@ const EVO_CACHE = Object.freeze({
 const ORGANISM_OVERVIEW_TTL_MS = 5 * 60 * 1000;  // 5 minutes
 const FILE_ANALYSIS_TTL_MS     = 60 * 1000;      // 60 seconds
 const SCHEMA_ANALYSIS_TTL_MS   = 60 * 1000;      // 60 seconds
-const ROUTE_ANALYSIS_TTL_MS    = 60 * 1000;      // 60 seconds;
+const ROUTE_ANALYSIS_TTL_MS    = 60 * 1000;      // 60 seconds
 
 function getCached(map, key) {
   const entry = map.get(key);
@@ -86,7 +85,7 @@ function setCached(map, key, packet, ttlMs) {
 }
 
 // ============================================================================
-//  PREWARM ENGINE — v11.3‑EVO
+//  PREWARM ENGINE — v24‑EVO‑ADVANTAGE++
 // ============================================================================
 //
 // Warms:
@@ -97,7 +96,13 @@ function setCached(map, key, packet, ttlMs) {
 //   • detectors + recommendation engine
 // ============================================================================
 
-export async function prewarmEvolutionOrgan(fsAPI, routeAPI, schemaAPI, dualBand = null, { trace = false } = {}) {
+export async function prewarmEvolutionOrgan(
+  fsAPI,
+  routeAPI,
+  schemaAPI,
+  dualBand = null,
+  { trace = false } = {}
+) {
   try {
     if (trace) console.log("[aiEvolution] prewarm: starting");
 
@@ -112,218 +117,222 @@ export async function prewarmEvolutionOrgan(fsAPI, routeAPI, schemaAPI, dualBand
     const sampleFiles = Array.isArray(files) ? files.slice(0, 5) : [];
     const sampleRoutes = Array.isArray(routes) ? routes.slice(0, 5) : [];
     const sampleSchemas = Array.isArray(schemas) ? schemas.slice(0, 5) : [];
+
     function summarizeSnapshot(snapshot) {
-    if (!snapshot) {
+      if (!snapshot) {
+        return Object.freeze({
+          present: false,
+          binaryBits: 0,
+          symbolicKeys: 0
+        });
+      }
+
+      const binaryStr =
+        typeof snapshot === "string"
+          ? snapshot
+          : typeof snapshot.binary === "string"
+          ? snapshot.binary
+          : "";
+
+      const symbolic =
+        snapshot && typeof snapshot.symbolic === "object"
+          ? snapshot.symbolic
+          : null;
+
+      const symbolicKeys = symbolic ? Object.keys(symbolic).length : 0;
+
       return Object.freeze({
-        present: false,
-        binaryBits: 0,
-        symbolicKeys: 0
+        present: true,
+        binaryBits: binaryStr.length,
+        symbolicKeys
       });
     }
 
-    const binaryStr =
-      typeof snapshot === "string"
-        ? snapshot
-        : typeof snapshot.binary === "string"
-        ? snapshot.binary
-        : "";
-
-    const symbolic =
-      snapshot && typeof snapshot.symbolic === "object"
-        ? snapshot.symbolic
-        : null;
-
-    const symbolicKeys = symbolic ? Object.keys(symbolic).length : 0;
-
-    return Object.freeze({
-      present: true,
-      binaryBits: binaryStr.length,
-      symbolicKeys
-    });
-  }
-
-  // --------------------------------------------------------------------------
-  // CHUNKING — keep packets bounded + deterministic
-  // --------------------------------------------------------------------------
-  function chunkArray(arr, size = 200) {
-    if (!Array.isArray(arr) || size <= 0) return [];
-    const chunks = [];
-    for (let i = 0; i < arr.length; i += size) {
-      chunks.push(Object.freeze(arr.slice(i, i + size)));
+    function chunkArray(arr, size = 200) {
+      if (!Array.isArray(arr) || size <= 0) return [];
+      const chunks = [];
+      for (let i = 0; i < arr.length; i += size) {
+        chunks.push(Object.freeze(arr.slice(i, i + size)));
+      }
+      return Object.freeze(chunks);
     }
-    return Object.freeze(chunks);
-  }
 
-  // --------------------------------------------------------------------------
-  // PACKET EMITTER — Evolution Packets v2
-  // --------------------------------------------------------------------------
-  function emitEvolutionPacket(type, payload, { severity = "info", driftLevel = "none" } = {}) {
-    return Object.freeze({
-      meta: AI_EVOLUTION_META,
-      packetType: `evo-${type}`,
-      packetId: `evo-${type}-${Date.now()}`,
-      timestamp: Date.now(),
-      organismEpoch: AI_EVOLUTION_META.evo.epoch,
-      severity,
-      driftLevel,
-      ...payload
-    });
-  }
+    function emitEvolutionPacket(
+      type,
+      payload,
+      { severity = "info", driftLevel = "none" } = {}
+    ) {
+      return Object.freeze({
+        meta: AI_EVOLUTION_META,
+        packetType: `evo-${type}`,
+        packetId: `evo-${type}-${Date.now()}`,
+        timestamp: Date.now(),
+        organismEpoch: AI_EVOLUTION_META.evo.epoch,
+        severity,
+        driftLevel,
+        ...payload
+      });
+    }
 
-  // --------------------------------------------------------------------------
-  // DETECTORS — Pure, Deterministic Analysis
-  // --------------------------------------------------------------------------
-  function detectUnusedImports(file) {
-    if (!file?.imports || !file?.references) return [];
-    return file.imports.filter(imp => !file.references.includes(imp.name));
-  }
+    function detectUnusedImports(file) {
+      if (!file?.imports || !file?.references) return [];
+      return file.imports.filter((imp) => !file.references.includes(imp.name));
+    }
 
-  function detectOrphanedRoutes(routeMap) {
-    if (!Array.isArray(routeMap)) return [];
-    return routeMap.filter(r => !r.inbound && !r.outbound);
-  }
+    function detectOrphanedRoutes(routeMap) {
+      if (!Array.isArray(routeMap)) return [];
+      return routeMap.filter((r) => !r.inbound && !r.outbound);
+    }
 
-  function detectDeadComponents(files) {
-    if (!Array.isArray(files)) return [];
-    return files.filter(
-      f =>
-        f.type === "component" &&
-        Array.isArray(f.references) &&
-        f.references.length === 0
-    );
-  }
+    function detectDeadComponents(files) {
+      if (!Array.isArray(files)) return [];
+      return files.filter(
+        (f) =>
+          f.type === "component" &&
+          Array.isArray(f.references) &&
+          f.references.length === 0
+      );
+    }
 
-  function detectSchemaDrift(schemas) {
-    const drift = [];
+    function detectSchemaDrift(schemas) {
+      const drift = [];
 
-    if (!Array.isArray(schemas)) return drift;
+      if (!Array.isArray(schemas)) return drift;
 
-    for (const s of schemas) {
-      if (!s?.expectedFields || !s?.actualFields) continue;
+      for (const s of schemas) {
+        if (!s?.expectedFields || !s?.actualFields) continue;
 
-      for (const key of Object.keys(s.expectedFields)) {
-        if (!s.actualFields[key]) {
-          drift.push({
-            schema: s.name,
-            field: key,
-            issue: "missing"
-          });
+        for (const key of Object.keys(s.expectedFields)) {
+          if (!s.actualFields[key]) {
+            drift.push({
+              schema: s.name,
+              field: key,
+              issue: "missing"
+            });
+          }
+        }
+
+        for (const key of Object.keys(s.actualFields)) {
+          if (!s.expectedFields[key]) {
+            drift.push({
+              schema: s.name,
+              field: key,
+              issue: "unexpected"
+            });
+          }
         }
       }
 
-      for (const key of Object.keys(s.actualFields)) {
-        if (!s.expectedFields[key]) {
-          drift.push({
-            schema: s.name,
-            field: key,
-            issue: "unexpected"
-          });
-        }
-      }
+      return drift;
     }
 
-    return drift;
-  }
+    function detectOrganDrift(files) {
+      if (!Array.isArray(files)) return [];
 
-  function detectOrganDrift(files) {
-    if (!Array.isArray(files)) return [];
+      return files
+        .filter((f) => f.type === "organ")
+        .map((f) => {
+          const missingExports =
+            f.expectedExports?.filter((e) => !f.exports?.includes(e)) || [];
+          const unusedExports =
+            f.exports?.filter((e) => !f.references?.includes(e)) || [];
 
-    return files
-      .filter(f => f.type === "organ")
-      .map(f => {
-        const missingExports =
-          f.expectedExports?.filter(e => !f.exports?.includes(e)) || [];
-        const unusedExports =
-          f.exports?.filter(e => !f.references?.includes(e)) || [];
+          return {
+            organ: f.name,
+            missingExports,
+            unusedExports
+          };
+        })
+        .filter(
+          (o) => o.missingExports.length > 0 || o.unusedExports.length > 0
+        );
+    }
 
-        return {
-          organ: f.name,
-          missingExports,
-          unusedExports
-        };
-      })
-      .filter(o => o.missingExports.length > 0 || o.unusedExports.length > 0);
-  }
+    function detectPageDrift(files) {
+      if (!Array.isArray(files)) return [];
 
-  function detectPageDrift(files) {
-    if (!Array.isArray(files)) return [];
+      return files
+        .filter((f) => f.type === "page")
+        .map((f) => {
+          const missingRoutes =
+            f.expectedRoutes?.filter((r) => !f.routes?.includes(r)) || [];
+          const unusedRoutes =
+            f.routes?.filter((r) => !f.references?.includes(r)) || [];
 
-    return files
-      .filter(f => f.type === "page")
-      .map(f => {
-        const missingRoutes =
-          f.expectedRoutes?.filter(r => !f.routes?.includes(r)) || [];
-        const unusedRoutes =
-          f.routes?.filter(r => !f.references?.includes(r)) || [];
+          return {
+            page: f.name,
+            missingRoutes,
+            unusedRoutes
+          };
+        })
+        .filter(
+          (p) => p.missingRoutes.length > 0 || p.unusedRoutes.length > 0
+        );
+    }
 
-        return {
-          page: f.name,
-          missingRoutes,
-          unusedRoutes
-        };
-      })
-      .filter(p => p.missingRoutes.length > 0 || p.unusedRoutes.length > 0);
-  }
+    function detectPulseEarnDrift(files) {
+      if (!Array.isArray(files)) return null;
 
-  function detectPulseEarnDrift(files) {
-    if (!Array.isArray(files)) return null;
+      const earn = files.find((f) => f.name === "PulseEarn-v16.js");
+      if (!earn) return null;
 
-    const earn = files.find(f => f.name === "PulseEarn-v16.js");
-    if (!earn) return null;
+      return {
+        missingExports:
+          earn.expectedExports?.filter((e) => !earn.exports?.includes(e)) ||
+          [],
+        unusedImports: detectUnusedImports(earn),
+        unusedExports:
+          earn.exports?.filter((e) => !earn.references?.includes(e)) || [],
+        deadPaths: earn.deadPaths || []
+      };
+    }
 
-    return {
-      missingExports:
-        earn.expectedExports?.filter(e => !earn.exports?.includes(e)) || [],
-      unusedImports: detectUnusedImports(earn),
-      unusedExports:
-        earn.exports?.filter(e => !earn.references?.includes(e)) || [],
-      deadPaths: earn.deadPaths || []
-    };
-  }
+    function detectEvolutionaryPatterns({
+      files = [],
+      routes = [],
+      schemaDrift = [],
+      organDrift = [],
+      pageDrift = []
+    }) {
+      const fileCount = Array.isArray(files) ? files.length : 0;
+      const routeCount = Array.isArray(routes) ? routes.length : 0;
 
-  function detectEvolutionaryPatterns({
-    files = [],
-    routes = [],
-    schemaDrift = [],
-    organDrift = [],
-    pageDrift = []
-  }) {
-    const fileCount = Array.isArray(files) ? files.length : 0;
-    const routeCount = Array.isArray(routes) ? routes.length : 0;
+      const deadComponents = detectDeadComponents(files);
+      const orphanedRoutes = detectOrphanedRoutes(routes);
 
-    const deadComponents = detectDeadComponents(files);
-    const orphanedRoutes = detectOrphanedRoutes(routes);
+      const newLimb =
+        fileCount > 0 &&
+        (schemaDrift.length > 0 ||
+          organDrift.length > 0 ||
+          pageDrift.length > 0);
 
-    const newLimb =
-      fileCount > 0 &&
-      (schemaDrift.length > 0 || organDrift.length > 0 || pageDrift.length > 0);
+      const overgrowth =
+        deadComponents.length > 10 || orphanedRoutes.length > 10;
 
-    const overgrowth =
-      deadComponents.length > 10 || orphanedRoutes.length > 10;
+      const starvation =
+        fileCount > 0 &&
+        schemaDrift.length === 0 &&
+        organDrift.length === 0 &&
+        pageDrift.length === 0 &&
+        deadComponents.length === 0 &&
+        orphanedRoutes.length === 0;
 
-    const starvation =
-      fileCount > 0 &&
-      schemaDrift.length === 0 &&
-      organDrift.length === 0 &&
-      pageDrift.length === 0 &&
-      deadComponents.length === 0 &&
-      orphanedRoutes.length === 0;
+      return Object.freeze({
+        newLimb,
+        overgrowth,
+        starvation,
+        counts: {
+          files: fileCount,
+          routes: routeCount,
+          schemaDrift: schemaDrift.length,
+          organDrift: organDrift.length,
+          pageDrift: pageDrift.length,
+          deadComponents: deadComponents.length,
+          orphanedRoutes: orphanedRoutes.length
+        }
+      });
+    }
 
-    return Object.freeze({
-      newLimb,
-      overgrowth,
-      starvation,
-      counts: {
-        files: fileCount,
-        routes: routeCount,
-        schemaDrift: schemaDrift.length,
-        organDrift: organDrift.length,
-        pageDrift: pageDrift.length,
-        deadComponents: deadComponents.length,
-        orphanedRoutes: orphanedRoutes.length
-      }
-    });
-  }
     detectUnusedImports(sampleFiles[0] || null);
     detectDeadComponents(sampleFiles);
     detectOrphanedRoutes(sampleRoutes);
@@ -344,20 +353,26 @@ export async function prewarmEvolutionOrgan(fsAPI, routeAPI, schemaAPI, dualBand
 }
 
 // ============================================================================
-//  FACTORY — Evolution Organ (v11.3‑EVO, dual‑band + recommendations)
+//  FACTORY — Evolution Organ (v24‑EVO‑ADVANTAGE++, dual‑band + recommendations)
 // ============================================================================
 
-export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) {
+export function createEvolutionAPI(
+  fsAPI,
+  routeAPI,
+  schemaAPI,
+  dualBand = null
+) {
   // --------------------------------------------------------------------------
   // ACCESS CONTROL — Owner + Architect Only
   // --------------------------------------------------------------------------
   function assertOwnerArchitect(context) {
     const allowed =
-      context.userIsOwner &&
-      context.personaId === Personas.ARCHITECT;
+      context.userIsOwner && context.personaId === Personas.ARCHITECT;
 
     if (!allowed) {
-      context.logStep?.("aiEvolution: access denied (requires owner + architect).");
+      context.logStep?.(
+        "aiEvolution: access denied (requires owner + architect)."
+      );
     }
     return allowed;
   }
@@ -420,9 +435,13 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
   }
 
   // --------------------------------------------------------------------------
-  // PACKET EMITTER — Evolution Packets v2
+  // PACKET EMITTER — Evolution Packets v2 (v24 Advantage++)
   // --------------------------------------------------------------------------
-  function emitEvolutionPacket(type, payload, { severity = "info", driftLevel = "none" } = {}) {
+  function emitEvolutionPacket(
+    type,
+    payload,
+    { severity = "info", driftLevel = "none" } = {}
+  ) {
     return Object.freeze({
       meta: AI_EVOLUTION_META,
       packetType: `evo-${type}`,
@@ -440,18 +459,18 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
   // --------------------------------------------------------------------------
   function detectUnusedImports(file) {
     if (!file?.imports || !file?.references) return [];
-    return file.imports.filter(imp => !file.references.includes(imp.name));
+    return file.imports.filter((imp) => !file.references.includes(imp.name));
   }
 
   function detectOrphanedRoutes(routeMap) {
     if (!Array.isArray(routeMap)) return [];
-    return routeMap.filter(r => !r.inbound && !r.outbound);
+    return routeMap.filter((r) => !r.inbound && !r.outbound);
   }
 
   function detectDeadComponents(files) {
     if (!Array.isArray(files)) return [];
     return files.filter(
-      f =>
+      (f) =>
         f.type === "component" &&
         Array.isArray(f.references) &&
         f.references.length === 0
@@ -494,12 +513,12 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
     if (!Array.isArray(files)) return [];
 
     return files
-      .filter(f => f.type === "organ")
-      .map(f => {
+      .filter((f) => f.type === "organ")
+      .map((f) => {
         const missingExports =
-          f.expectedExports?.filter(e => !f.exports?.includes(e)) || [];
+          f.expectedExports?.filter((e) => !f.exports?.includes(e)) || [];
         const unusedExports =
-          f.exports?.filter(e => !f.references?.includes(e)) || [];
+          f.exports?.filter((e) => !f.references?.includes(e)) || [];
 
         return {
           organ: f.name,
@@ -507,19 +526,21 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
           unusedExports
         };
       })
-      .filter(o => o.missingExports.length > 0 || o.unusedExports.length > 0);
+      .filter(
+        (o) => o.missingExports.length > 0 || o.unusedExports.length > 0
+      );
   }
 
   function detectPageDrift(files) {
     if (!Array.isArray(files)) return [];
 
     return files
-      .filter(f => f.type === "page")
-      .map(f => {
+      .filter((f) => f.type === "page")
+      .map((f) => {
         const missingRoutes =
-          f.expectedRoutes?.filter(r => !f.routes?.includes(r)) || [];
+          f.expectedRoutes?.filter((r) => !f.routes?.includes(r)) || [];
         const unusedRoutes =
-          f.routes?.filter(r => !f.references?.includes(r)) || [];
+          f.routes?.filter((r) => !f.references?.includes(r)) || [];
 
         return {
           page: f.name,
@@ -527,21 +548,23 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
           unusedRoutes
         };
       })
-      .filter(p => p.missingRoutes.length > 0 || p.unusedRoutes.length > 0);
+      .filter(
+        (p) => p.missingRoutes.length > 0 || p.unusedRoutes.length > 0
+      );
   }
 
   function detectPulseEarnDrift(files) {
     if (!Array.isArray(files)) return null;
 
-    const earn = files.find(f => f.name === "PulseEarn-v16.js");
+    const earn = files.find((f) => f.name === "PulseEarn-v16.js");
     if (!earn) return null;
 
     return {
       missingExports:
-        earn.expectedExports?.filter(e => !earn.exports?.includes(e)) || [],
+        earn.expectedExports?.filter((e) => !earn.exports?.includes(e)) || [],
       unusedImports: detectUnusedImports(earn),
       unusedExports:
-        earn.exports?.filter(e => !earn.references?.includes(e)) || [],
+        earn.exports?.filter((e) => !earn.references?.includes(e)) || [],
       deadPaths: earn.deadPaths || []
     };
   }
@@ -561,7 +584,9 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
 
     const newLimb =
       fileCount > 0 &&
-      (schemaDrift.length > 0 || organDrift.length > 0 || pageDrift.length > 0);
+      (schemaDrift.length > 0 ||
+        organDrift.length > 0 ||
+        pageDrift.length > 0);
 
     const overgrowth =
       deadComponents.length > 10 || orphanedRoutes.length > 10;
@@ -649,12 +674,13 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
       });
     }
 
-    if (pulseEarnDrift && (
-      pulseEarnDrift.missingExports.length > 0 ||
-      pulseEarnDrift.unusedExports.length > 0 ||
-      pulseEarnDrift.unusedImports.length > 0 ||
-      (pulseEarnDrift.deadPaths || []).length > 0
-    )) {
+    if (
+      pulseEarnDrift &&
+      (pulseEarnDrift.missingExports.length > 0 ||
+        pulseEarnDrift.unusedExports.length > 0 ||
+        pulseEarnDrift.unusedImports.length > 0 ||
+        (pulseEarnDrift.deadPaths || []).length > 0)
+    ) {
       recs.push({
         type: "earn-drift",
         message:
@@ -696,8 +722,8 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
   }
 
   // --------------------------------------------------------------------------
-  // PUBLIC API — Evolutionary Insight (v11.3‑EVO)
-// --------------------------------------------------------------------------
+  // PUBLIC API — Evolutionary Insight (v24‑EVO‑ADVANTAGE++)
+  // --------------------------------------------------------------------------
   return Object.freeze({
     // ----------------------------------------------------------------------
     // FULL ORGANISM OVERVIEW (code + routes + schemas + snapshot + recs)
@@ -718,7 +744,7 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
         schemaAPI.getAllSchemas()
       ]);
 
-      const unusedImports = files.flatMap(f => detectUnusedImports(f));
+      const unusedImports = files.flatMap((f) => detectUnusedImports(f));
       const orphanedRoutes = detectOrphanedRoutes(routes);
       const deadComponents = detectDeadComponents(files);
       const schemaDrift = detectSchemaDrift(schemas);
@@ -759,9 +785,15 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
       const packet = emitEvolutionPacket(
         "organism-overview",
         Object.freeze({
-          unusedImports: chunkArray(unusedImports.map(stripIdentityAnchors)),
-          orphanedRoutes: chunkArray(orphanedRoutes.map(stripIdentityAnchors)),
-          deadComponents: chunkArray(deadComponents.map(stripIdentityAnchors)),
+          unusedImports: chunkArray(
+            unusedImports.map(stripIdentityAnchors)
+          ),
+          orphanedRoutes: chunkArray(
+            orphanedRoutes.map(stripIdentityAnchors)
+          ),
+          deadComponents: chunkArray(
+            deadComponents.map(stripIdentityAnchors)
+          ),
           schemaDrift: chunkArray(schemaDrift.map(stripIdentityAnchors)),
           organDrift: chunkArray(organDrift.map(stripIdentityAnchors)),
           pageDrift: chunkArray(pageDrift.map(stripIdentityAnchors)),
@@ -776,7 +808,12 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
         }
       );
 
-      setCached(EVO_CACHE.organismOverview, cacheKey, packet, ORGANISM_OVERVIEW_TTL_MS);
+      setCached(
+        EVO_CACHE.organismOverview,
+        cacheKey,
+        packet,
+        ORGANISM_OVERVIEW_TTL_MS
+      );
       return packet;
     },
 
@@ -789,7 +826,9 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
       const cacheKey = filePath;
       const cached = getCached(EVO_CACHE.fileAnalysis, cacheKey);
       if (cached) {
-        context.logStep?.(`aiEvolution: file analysis cache hit "${filePath}".`);
+        context.logStep?.(
+          `aiEvolution: file analysis cache hit "${filePath}".`
+        );
         return cached;
       }
 
@@ -827,13 +866,15 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
       const cacheKey = schemaName;
       const cached = getCached(EVO_CACHE.schemaAnalysis, cacheKey);
       if (cached) {
-        context.logStep?.(`aiEvolution: schema analysis cache hit "${schemaName}".`);
+        context.logStep?.(
+          `aiEvolution: schema analysis cache hit "${schemaName}".`
+        );
         return cached;
       }
 
       const schemas = await schemaAPI.getAllSchemas();
       const target = Array.isArray(schemas)
-        ? schemas.filter(s => s.name === schemaName)
+        ? schemas.filter((s) => s.name === schemaName)
         : [];
 
       const drift = detectSchemaDrift(target);
@@ -850,7 +891,12 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
         }
       );
 
-      setCached(EVO_CACHE.schemaAnalysis, cacheKey, packet, SCHEMA_ANALYSIS_TTL_MS);
+      setCached(
+        EVO_CACHE.schemaAnalysis,
+        cacheKey,
+        packet,
+        SCHEMA_ANALYSIS_TTL_MS
+      );
       return packet;
     },
 
@@ -863,13 +909,15 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
       const cacheKey = routePrefix;
       const cached = getCached(EVO_CACHE.routeAnalysis, cacheKey);
       if (cached) {
-        context.logStep?.(`aiEvolution: route analysis cache hit "${routePrefix}".`);
+        context.logStep?.(
+          `aiEvolution: route analysis cache hit "${routePrefix}".`
+        );
         return cached;
       }
 
       const routes = await routeAPI.getRouteMap();
       const scoped = Array.isArray(routes)
-        ? routes.filter(r => (r.path || "").startsWith(routePrefix))
+        ? routes.filter((r) => (r.path || "").startsWith(routePrefix))
         : [];
 
       const orphaned = detectOrphanedRoutes(scoped);
@@ -887,12 +935,16 @@ export function createEvolutionAPI(fsAPI, routeAPI, schemaAPI, dualBand = null) 
         }
       );
 
-      setCached(EVO_CACHE.routeAnalysis, cacheKey, packet, ROUTE_ANALYSIS_TTL_MS);
+      setCached(
+        EVO_CACHE.routeAnalysis,
+        cacheKey,
+        packet,
+        ROUTE_ANALYSIS_TTL_MS
+      );
       return packet;
     }
   });
 }
-
 
 if (typeof module !== "undefined") {
   module.exports = {

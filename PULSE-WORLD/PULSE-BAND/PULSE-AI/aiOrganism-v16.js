@@ -62,8 +62,8 @@ import { createAIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
 import { createAIBinaryDelta } from "./aiBinaryDelta.js";
 import { createAIConductor as createAIBinaryConductor } from "./aiConductor-v24.js";
 import { createAIBinaryMetabolism } from "./aiMetabolism.js";
-import { createAIBinaryHormones } from "./aiHormones.js";
-import { createAIBinaryImmunity } from "./aiImmunity.js";
+import { createAIBinaryHormones } from "./aiHormones-v24.js";
+import { createAIBinaryImmunity } from "./aiImmunity-v24.js";
 import { createAIBinaryNervousSystem } from "./aiNervousSystem.js";
 
 // ============================================================================

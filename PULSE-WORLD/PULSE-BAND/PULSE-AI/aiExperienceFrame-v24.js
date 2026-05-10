@@ -1,7 +1,7 @@
 // ============================================================================
-//  PULSE OS v16-IMMORTAL-TRI-HEART — EXPERIENCE FRAME ORGAN
+//  PULSE OS v24-IMMORTAL-ADVANTAGE++ — EXPERIENCE FRAME ORGAN
 //  Conversational Repair • Misalignment Handling • UX + Organism Harmonization
-//  PURE FUNCTIONAL ON INPUT/OUTPUT. NO BINARY MUTATION.
+//  PURE FUNCTIONAL ON INPUT/OUTPUT. NO BINARY MUTATION. ZERO-IO. DETERMINISTIC.
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
@@ -12,7 +12,7 @@ const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  (backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const ExperienceFrameMeta = Identity.OrganMeta;
 
@@ -23,9 +23,7 @@ export const ExperienceFrameMeta = Identity.OrganMeta;
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -34,10 +32,8 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 // Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
-
 // ============================================================================
-//  INTERNAL HELPERS — BUCKETS
+//  INTERNAL HELPERS — BUCKETS (v24 Advantage++ tuned)
 // ============================================================================
 
 function bucketLevel(v) {
@@ -57,17 +53,23 @@ function bucketPressure(v) {
 }
 
 // ============================================================================
-//  PRESSURE EXTRACTION (BINARY + BOUNDARY)
+//  PRESSURE EXTRACTION (BINARY + BOUNDARY) — v24 Advantage++
 // ============================================================================
 
 function extractBinaryPressure(binaryVitals = {}) {
-  if (binaryVitals?.layered?.organism && typeof binaryVitals.layered.organism.pressure === "number") {
+  if (
+    binaryVitals?.layered?.organism &&
+    typeof binaryVitals.layered.organism.pressure === "number"
+  ) {
     return binaryVitals.layered.organism.pressure;
   }
   if (binaryVitals?.binary && typeof binaryVitals.binary.pressure === "number") {
     return binaryVitals.binary.pressure;
   }
-  if (binaryVitals?.metabolic && typeof binaryVitals.metabolic.pressure === "number") {
+  if (
+    binaryVitals?.metabolic &&
+    typeof binaryVitals.metabolic.pressure === "number"
+  ) {
     return binaryVitals.metabolic.pressure;
   }
   return 0;
@@ -84,7 +86,7 @@ function extractBoundaryPressure(boundaryArtery = {}) {
 }
 
 // ============================================================================
-//  TRI-HEART SNAPSHOT (MOM / DAD / BABY)
+//  TRI-HEART SNAPSHOT (MOM / DAD / BABY) — v24 Advantage++
 // ============================================================================
 
 function readGlobalTriHeart() {
@@ -154,7 +156,7 @@ function buildTriHeartSnapshot(metaTriHeart = {}) {
 }
 
 // ============================================================================
-//  EXPERIENCE CORE
+//  EXPERIENCE CORE — v24 IMMORTAL ADVANTAGE++
 // ============================================================================
 
 export class AiExperienceFrame {
@@ -173,7 +175,7 @@ export class AiExperienceFrame {
 
   // ---------------------------------------------------------------------------
   // PREWARM (NO-OP BUT EXPLICIT FOR CONSISTENCY)
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
   prewarm() {
     this._totalInteractions = this._totalInteractions || 0;
@@ -237,8 +239,8 @@ export class AiExperienceFrame {
   }
 
   // ---------------------------------------------------------------------------
-  // EXPERIENCE STATE CONSTRUCTION
-  // ---------------------------------------------------------------------------
+  // EXPERIENCE STATE CONSTRUCTION — v24 Advantage++
+// ---------------------------------------------------------------------------
 
   buildExperienceState({ context, base, meta, triHeart }) {
     const safetyStatus = meta?.safetyStatus || "ok";
@@ -252,11 +254,16 @@ export class AiExperienceFrame {
 
     const ambiguitySignal =
       worldLens === "ambiguous" ||
-      lenses.some(l => l.status === "warn" && /vague|indirect/i.test(l.notes || ""));
+      lenses.some(
+        (l) =>
+          l.status === "warn" && /vague|indirect|unclear/i.test(l.notes || "")
+      );
 
     const refusalSignal =
       safetyStatus === "blocked" ||
-      /can’t provide|cannot provide|not able to do that/i.test(base);
+      /can’t provide|cannot provide|not able to do that|i can.t do that/i.test(
+        base.toLowerCase()
+      );
 
     const personaId = meta?.personaId || context?.personaId || "neutral";
     const toneMode = meta?.toneMode || "default";
@@ -290,22 +297,25 @@ export class AiExperienceFrame {
       "you're not listening",
       "this is wrong",
       "you ignored",
-      "why can't you just"
+      "why can't you just",
+      "stay on point",
+      "answer the question",
+      "stop dodging"
     ];
 
-    return patterns.some(p => lowered.includes(p));
+    return patterns.some((p) => lowered.includes(p));
   }
 
   detectFrustrationFromNotes(notes) {
     if (!Array.isArray(notes)) return false;
     const joined = notes.join(" ").toLowerCase();
-    const patterns = ["off-topic", "indirect", "vague", "warn"];
-    return patterns.some(p => joined.includes(p));
+    const patterns = ["off-topic", "indirect", "vague", "warn", "frustration"];
+    return patterns.some((p) => joined.includes(p));
   }
 
   // ---------------------------------------------------------------------------
-  // REPAIR LOGIC (TRI-HEART AWARE)
-// ---------------------------------------------------------------------------
+  // REPAIR LOGIC (TRI-HEART AWARE, v24 Advantage++)
+  // ---------------------------------------------------------------------------
 
   applyRepairLogic({ base, state, triHeart }) {
     let text = base;
@@ -389,9 +399,7 @@ export class AiExperienceFrame {
       0,
       Math.min(
         1,
-        0.4 * frustrationRate +
-          0.3 * ambiguityRate +
-          0.3 * refusalRate
+        0.4 * frustrationRate + 0.3 * ambiguityRate + 0.3 * refusalRate
       )
     );
 
@@ -453,7 +461,8 @@ export class AiExperienceFrame {
 
     const triHeartArtery = {
       healthScore: triHeart?.healthScore ?? 0.5,
-      healthBucket: triHeart?.healthBucket || bucketLevel(triHeart?.healthScore ?? 0.5),
+      healthBucket:
+        triHeart?.healthBucket || bucketLevel(triHeart?.healthScore ?? 0.5),
       liveness: triHeart?.liveness || null,
       speed: triHeart?.speed || null,
       advantage: triHeart?.advantage || null,
@@ -471,8 +480,8 @@ export class AiExperienceFrame {
   }
 
   // ---------------------------------------------------------------------------
-  // CACHE KEY
-  // ---------------------------------------------------------------------------
+  // CACHE KEY — v24 Advantage++
+// ---------------------------------------------------------------------------
 
   _buildCacheKey(base, state, meta, triHeart) {
     const safetyStatus = state.safetyStatus;
@@ -486,10 +495,9 @@ export class AiExperienceFrame {
     const toneMode = state.toneMode || "default";
 
     const boundaryModeId = meta?.boundaryArtery?.mode?.id || "";
-    const pressureBucket =
-      bucketPressure(
-        extractBinaryPressure(meta?.binaryVitals || {})
-      );
+    const pressureBucket = bucketPressure(
+      extractBinaryPressure(meta?.binaryVitals || {})
+    );
 
     const triHeartBucket = triHeart?.healthBucket || "medium";
 
@@ -505,10 +513,24 @@ export class AiExperienceFrame {
       triHeartBucket
     ].join("|");
   }
+
+  // ---------------------------------------------------------------------------
+  // OPTIONAL: STATS SNAPSHOT (v24 Advantage++)
+  // ---------------------------------------------------------------------------
+
+  getStatsSnapshot() {
+    const total = this._totalInteractions || 1;
+    return Object.freeze({
+      totalInteractions: this._totalInteractions,
+      frustrationRate: this._frustrationCount / total,
+      ambiguityRate: this._ambiguityCount / total,
+      refusalRate: this._refusalCount / total
+    });
+  }
 }
 
 // ============================================================================
-//  PUBLIC API — Create Experience Frame Organ
+//  PUBLIC API — Create Experience Frame Organ (v24 IMMORTAL ADVANTAGE++)
 // ============================================================================
 
 export function createExperienceFrameOrgan(config = {}) {
@@ -537,12 +559,17 @@ export function createExperienceFrameOrgan(config = {}) {
         triHeart
       });
       return core._computeUxArtery({ state, meta, triHeart });
+    },
+
+    // optional stats snapshot for diagnostics
+    getStatsSnapshot() {
+      return core.getStatsSnapshot();
     }
   });
 }
 
 // ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility (v16-IMMORTAL dualband)
+//  DUAL EXPORT LAYER — CommonJS compatibility (v24-IMMORTAL dualband)
 // ---------------------------------------------------------------------------
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {

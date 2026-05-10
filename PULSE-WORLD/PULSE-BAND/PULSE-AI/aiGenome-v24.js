@@ -1,7 +1,7 @@
 // ============================================================================
-//  aiGenome.js — Pulse OS v16‑IMMORTAL++
-//  Binary Genome • Organ Lineage • Fingerprint Engine • Trust‑Aware
-//  HYBRID MODE: Fast path + Deep path (drift‑aware)
+//  aiGenome.js — Pulse OS v24‑IMMORTAL‑ADVANTAGE++
+//  Binary Genome • Organ Lineage • Fingerprint Engine • Trust‑Aware • Drift‑Aware
+//  HYBRID MODE: Fast path + Deep path (drift‑aware, artery‑aware, jury‑aware)
 //  PURE BINARY. ZERO NETWORK. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
@@ -9,11 +9,9 @@ import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  (backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const GenomeMeta = Identity.OrganMeta;
 
@@ -24,9 +22,7 @@ export const GenomeMeta = Identity.OrganMeta;
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -35,15 +31,14 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 // Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
 // ============================================================================
-// PACKET EMITTER
+// PACKET EMITTER — deterministic, trust‑aware
 // ============================================================================
 function emitGenomePacket(type, payload) {
   return Object.freeze({
     meta: {
       version: GenomeMeta.version,
-      epoch: GenomeMeta.evo.epoch,
+      epoch: GenomeMeta.evo?.epoch,
       identity: GenomeMeta.identity,
       layer: GenomeMeta.layer,
       role: GenomeMeta.role
@@ -55,16 +50,24 @@ function emitGenomePacket(type, payload) {
 }
 
 // ============================================================================
-// PREWARM
+// PREWARM — dual‑band + trust fabric + jury evidence
 // ============================================================================
-export function prewarmBinaryGenome(dualBand = null, { trace = false, trustFabric = null, juryFrame = null } = {}) {
+export function prewarmBinaryGenome(
+  dualBand = null,
+  { trace = false, trustFabric = null, juryFrame = null } = {}
+) {
   try {
+    const binaryPressure =
+      dualBand?.binary?.metabolic?.pressure ??
+      dualBand?.binary?.pressure ??
+      0;
+
     const packet = emitGenomePacket("prewarm", {
       message: "Binary genome prewarmed and lineage metrics aligned.",
-      binaryPressure: dualBand?.binary?.metabolic?.pressure ?? 0
+      binaryPressure
     });
 
-    trustFabric?.recordGenomePrewarm?.({ pressure: dualBand?.binary?.metabolic?.pressure ?? 0 });
+    trustFabric?.recordGenomePrewarm?.({ pressure: binaryPressure });
     juryFrame?.recordEvidence?.("genome-prewarm", packet);
 
     if (trace) console.log("[aiBinaryGenome] prewarm", packet);
@@ -81,7 +84,7 @@ export function prewarmBinaryGenome(dualBand = null, { trace = false, trustFabri
 }
 
 // ============================================================================
-// BINARY GENOME ORGAN — v16 IMMORTAL++
+// BINARY GENOME ORGAN — v24 IMMORTAL‑ADVANTAGE++
 // ============================================================================
 export class AIBinaryGenome {
   constructor(config = {}) {
@@ -98,21 +101,33 @@ export class AIBinaryGenome {
 
     this.trace = !!config.trace;
 
-    if (!this.encoder) throw new Error("AIBinaryGenome requires aiBinaryAgent encoder");
-    if (!this.registry) throw new Error("AIBinaryGenome requires aiBinaryOrganRegistry");
-    if (!this.evolution) throw new Error("AIBinaryGenome requires aiBinaryEvolution");
-    if (!this.memory) throw new Error("AIBinaryGenome requires aiBinaryMemory");
+    if (!this.encoder) {
+      throw new Error("AIBinaryGenome requires aiBinaryAgent encoder");
+    }
+    if (!this.registry) {
+      throw new Error("AIBinaryGenome requires aiBinaryOrganRegistry");
+    }
+    if (!this.evolution) {
+      throw new Error("AIBinaryGenome requires aiBinaryEvolution");
+    }
+    if (!this.memory) {
+      throw new Error("AIBinaryGenome requires aiBinaryMemory");
+    }
 
     this._cache = {
       organIds: null,
       signatures: null,
       fingerprint: null,
-      genomeBinary: null
+      genomeBinary: null,
+      lastDriftCount: 0,
+      lastSnapshotAt: 0
     };
+
+    this._ttlMs = config.cacheTtlMs || 60 * 1000; // 60s cache for fast path
   }
 
   // ========================================================================
-  // GENETIC METRICS
+  // GENETIC METRICS — artery‑style, deterministic
   // ========================================================================
   _computeGeneticThroughput(organCount, driftCount) {
     const driftFactor = Math.min(1, driftCount / Math.max(organCount, 1));
@@ -145,7 +160,7 @@ export class AIBinaryGenome {
     if (v >= 0.9) return "overload";
     if (v >= 0.7) return "high";
     if (v >= 0.4) return "medium";
-    if (v > 0)   return "low";
+    if (v > 0) return "low";
     return "none";
   }
 
@@ -153,12 +168,26 @@ export class AIBinaryGenome {
     if (v >= 0.8) return "heavy";
     if (v >= 0.5) return "moderate";
     if (v >= 0.2) return "light";
-    if (v > 0)    return "negligible";
+    if (v > 0) return "negligible";
     return "none";
   }
 
+  _classifyDriftLevel(driftCount, organCount) {
+    if (driftCount <= 0) return "none";
+    const ratio = driftCount / Math.max(organCount, 1);
+    if (ratio >= 0.5) return "severe";
+    if (ratio >= 0.2) return "moderate";
+    return "mild";
+  }
+
+  _cacheValid() {
+    if (!this._cache.genomeBinary) return false;
+    if (!this._ttlMs) return true;
+    return Date.now() - this._cache.lastSnapshotAt <= this._ttlMs;
+  }
+
   // ========================================================================
-  // GENOME GENERATION (FAST + DEEP)
+  // GENOME GENERATION (FAST + DEEP, drift‑aware)
 // ========================================================================
   generateGenome() {
     const organIds = this.registry.listOrgans?.() || [];
@@ -177,31 +206,49 @@ export class AIBinaryGenome {
       }
     }
 
-    const driftDetected =
-      driftCount > 0 ||
+    const organCountChanged =
       organIds.length !== (this._cache.organIds?.length || 0);
 
-    // FAST PATH
-    if (!driftDetected && this._cache.genomeBinary) {
+    const driftDetected = driftCount > 0 || organCountChanged;
+
+    // FAST PATH — no drift + cache valid
+    if (!driftDetected && this._cacheValid()) {
       const packet = emitGenomePacket("genome-fast", {
         drift: false,
+        driftLevel: "none",
         genomeBinary: this._cache.genomeBinary,
         fingerprint: this._cache.fingerprint,
         organIds,
-        signatures
+        signatures,
+        artery: this._cache.artery || null
       });
 
-      this.trustFabric?.recordGenomeFastPath?.({ organCount: organIds.length });
+      this.trustFabric?.recordGenomeFastPath?.({
+        organCount: organIds.length,
+        driftLevel: "none"
+      });
       this.juryFrame?.recordEvidence?.("genome-fast", packet);
+
+      if (this.trace) {
+        console.log("[aiBinaryGenome] fast-path", {
+          organCount: organIds.length
+        });
+      }
 
       return packet;
     }
 
-    // DEEP PATH
-    const throughput = this._computeGeneticThroughput(organIds.length, driftCount);
-    const pressure   = this._computeGeneticPressure(organIds.length, signatureBits);
-    const cost       = this._computeGeneticCost(pressure, throughput);
-    const budget     = this._computeGeneticBudget(throughput, cost);
+    // DEEP PATH — recompute artery + fingerprint
+    const throughput = this._computeGeneticThroughput(
+      organIds.length,
+      driftCount
+    );
+    const pressure = this._computeGeneticPressure(
+      organIds.length,
+      signatureBits
+    );
+    const cost = this._computeGeneticCost(pressure, throughput);
+    const budget = this._computeGeneticBudget(throughput, cost);
 
     const artery = {
       throughput,
@@ -213,6 +260,8 @@ export class AIBinaryGenome {
       budget,
       budgetBucket: this._bucketLevel(budget)
     };
+
+    const driftLevel = this._classifyDriftLevel(driftCount, organIds.length);
 
     const genomeObject = {
       organismId: "pulse-os-binary-organism",
@@ -232,10 +281,14 @@ export class AIBinaryGenome {
     this._cache.signatures = signatures;
     this._cache.fingerprint = fingerprint;
     this._cache.genomeBinary = binary;
+    this._cache.artery = artery;
+    this._cache.lastDriftCount = driftCount;
+    this._cache.lastSnapshotAt = Date.now();
 
     const packet = emitGenomePacket("genome-deep", {
       drift: true,
       driftCount,
+      driftLevel,
       genomeBinary: binary,
       fingerprint,
       organIds,
@@ -243,8 +296,20 @@ export class AIBinaryGenome {
       artery
     });
 
-    this.trustFabric?.recordGenomeDeepPath?.({ driftCount, organCount: organIds.length });
+    this.trustFabric?.recordGenomeDeepPath?.({
+      driftCount,
+      organCount: organIds.length,
+      driftLevel
+    });
     this.juryFrame?.recordEvidence?.("genome-deep", packet);
+
+    if (this.trace) {
+      console.log("[aiBinaryGenome] deep-path", {
+        organCount: organIds.length,
+        driftCount,
+        driftLevel
+      });
+    }
 
     return packet;
   }
@@ -264,6 +329,13 @@ export class AIBinaryGenome {
     });
 
     this.juryFrame?.recordEvidence?.("genome-store", out);
+
+    if (this.trace) {
+      console.log("[aiBinaryGenome] store", {
+        bits: packet.genomeBinary.length
+      });
+    }
+
     return out;
   }
 
@@ -272,32 +344,39 @@ export class AIBinaryGenome {
     const binary = this.memory.read(key);
 
     if (!binary) {
-      return emitGenomePacket("load-none", { hasGenome: false });
+      const packet = emitGenomePacket("load-none", { hasGenome: false });
+      this.juryFrame?.recordEvidence?.("genome-load-none", packet);
+      return packet;
     }
 
     const json = this.encoder.decode(binary, "string");
     const genome = JSON.parse(json);
 
-    return emitGenomePacket("load", {
+    const packet = emitGenomePacket("load", {
       hasGenome: true,
       organCount: genome.organIds.length,
       bits: binary.length,
       genome
     });
+
+    this.juryFrame?.recordEvidence?.("genome-load", packet);
+    return packet;
   }
 
   snapshotMetrics() {
     const packet = this.loadGenome();
     if (!packet.hasGenome) {
-      return emitGenomePacket("snapshot", {
+      const out = emitGenomePacket("snapshot", {
         hasGenome: false,
         artery: null
       });
+      this.juryFrame?.recordEvidence?.("genome-snapshot-none", out);
+      return out;
     }
 
     const artery = packet.genome.artery;
 
-    return emitGenomePacket("snapshot", {
+    const out = emitGenomePacket("snapshot", {
       hasGenome: true,
       artery,
       throughputBucket: artery.throughputBucket,
@@ -305,10 +384,30 @@ export class AIBinaryGenome {
       costBucket: artery.costBucket,
       budgetBucket: artery.budgetBucket
     });
+
+    this.juryFrame?.recordEvidence?.("genome-snapshot", out);
+    return out;
+  }
+
+  // Lightweight, read‑only snapshot for other organs (Evolution, Field, etc.)
+  getGenomeSnapshot() {
+    if (!this._cache.genomeBinary || !this._cache.artery) {
+      return emitGenomePacket("snapshot-lite", {
+        hasGenome: false,
+        artery: null
+      });
+    }
+
+    return emitGenomePacket("snapshot-lite", {
+      hasGenome: true,
+      artery: this._cache.artery,
+      organCount: this._cache.organIds?.length || 0,
+      driftCount: this._cache.lastDriftCount
+    });
   }
 
   // ========================================================================
-  // FINGERPRINT ENGINE
+  // FINGERPRINT ENGINE — deterministic, drift‑aware
   // ========================================================================
   _computeFingerprint(binary) {
     let out = "";

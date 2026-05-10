@@ -1,14 +1,13 @@
 // ============================================================================
-//  aiHeartbeat.js — Pulse OS v16‑IMMORTAL++
+//  aiHeartbeat.js — Pulse OS v24‑IMMORTAL‑ADVANTAGE++
 //  Mom/Dad/Earn Tri‑Heart • Dual‑Band Liveness • Bi‑Directional Fallback
 //  PURE LIVENESS. ZERO MUTATION OF INPUT. GLOBAL KEYS ONLY FOR LIVENESS.
+//  v24++: deterministic nudges • artery buckets • drift‑aware meta snapshot
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
@@ -23,9 +22,7 @@ export const AI_HEARTBEAT_META = Identity.OrganMeta;
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -34,14 +31,28 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 // Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
+// ---------------------------------------------------------------------------
+//  VERSION MAP — v24++ artery + tri‑heart
+// ---------------------------------------------------------------------------
+const HEARTBEAT_VERSION_MAP = Object.freeze({
+  version: AI_HEARTBEAT_META.version || "v24-IMMORTAL-ADVANTAGE++",
+  epoch: AI_HEARTBEAT_META.evo?.epoch || "v24",
+  artery: "v24-HEARTBEAT-ARTERY-ADVANTAGE++",
+  triHeart: "v24-TRI-HEART-ADVANTAGE++"
+});
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, heartbeat-scoped
 // ============================================================================
 function emitHeartbeatPacket(type, payload) {
   return Object.freeze({
-    meta: AI_HEARTBEAT_META,
+    meta: {
+      ...AI_HEARTBEAT_META,
+      heartbeatVersion: HEARTBEAT_VERSION_MAP.version,
+      heartbeatEpoch: HEARTBEAT_VERSION_MAP.epoch,
+      arteryVersion: HEARTBEAT_VERSION_MAP.artery,
+      triHeartVersion: HEARTBEAT_VERSION_MAP.triHeart
+    },
     packetType: `ai-heartbeat-${type}`,
     timestamp: Date.now(),
     epoch: AI_HEARTBEAT_META.evo.epoch,
@@ -88,7 +99,26 @@ let aiBusy = false;
 let lastRun = 0;
 let aiTimeFallbackTimer = null;
 
-// v16‑IMMORTAL++: heartbeat artery metrics (packet‑aware, tri‑heart)
+// ---------------------------------------------------------------------------
+//  BUCKET HELPERS — v24++ artery buckets
+// ---------------------------------------------------------------------------
+function bucketLevel(v) {
+  if (v >= 0.9) return "elite";
+  if (v >= 0.75) return "high";
+  if (v >= 0.5) return "medium";
+  if (v >= 0.25) return "low";
+  return "critical";
+}
+
+function bucketPressure(v) {
+  if (v >= 0.9) return "overload";
+  if (v >= 0.7) return "high";
+  if (v >= 0.4) return "medium";
+  if (v > 0) return "low";
+  return "none";
+}
+
+// v24‑IMMORTAL++: heartbeat artery metrics (packet‑aware, tri‑heart)
 const heartbeatArtery = {
   ticks: 0,
   pulses: 0,
@@ -99,7 +129,21 @@ const heartbeatArtery = {
   lastPrimaryState: "unknown",
   lastDadState: "unknown",
   lastEarnState: "unknown",
+  lastMode: "symbolic",
   snapshot() {
+    const pressureBucket = bucketPressure(this.lastPressure);
+    const loadBucket = bucketPressure(this.lastLoad);
+    const activityScore = Math.max(
+      0,
+      Math.min(
+        1,
+        this.ticks > 0
+          ? 1 - this.skips / Math.max(1, this.ticks + this.pulses)
+          : 0
+      )
+    );
+    const activityBucket = bucketLevel(activityScore);
+
     return Object.freeze({
       ticks: this.ticks,
       pulses: this.pulses,
@@ -109,7 +153,12 @@ const heartbeatArtery = {
       lastLoad: this.lastLoad,
       lastPrimaryState: this.lastPrimaryState,
       lastDadState: this.lastDadState,
-      lastEarnState: this.lastEarnState
+      lastEarnState: this.lastEarnState,
+      lastMode: this.lastMode,
+      pressureBucket,
+      loadBucket,
+      activityScore,
+      activityBucket
     });
   }
 };
@@ -129,7 +178,12 @@ const aiHeartbeatHealing = {
   lastIdleMs: 0,
   lastMomPulseSurface: null,
   lastEarnPulseSurface: null,
-  lastRandomNudgeAt: 0
+  lastRandomNudgeAt: 0,
+  lastMode: "symbolic",
+  lastTriHeartCompute: null,
+  lastTriHeartComputeDelta: null,
+  lastComputeSurface: null,
+  lastComputeDeltaPacket: null
 };
 
 // ============================================================================
@@ -254,52 +308,57 @@ function bootAiOrganism() {
 }
 
 // ============================================================================
-//  RANDOM NUDGE — soft, last-resort liveness push (no organs, no mutation)
+//  DETERMINISTIC NUDGE — v24++ (no Math.random)
+//  Uses timestamp modulus for ~3% cadence, but fully deterministic per tick.
+// ============================================================================
+function deterministicNudgeChance(now) {
+  // 0–99 → <3 means ~3% of ticks, but no RNG
+  return (now % 100) < 3;
+}
+
+// ============================================================================
+//  RANDOM NUDGE (v24++ deterministic) — soft, last-resort liveness push
 //  Mom is default, Dad secondary, Earn tertiary — but all can use each other
 //  as a reason to stay visible.
 // ============================================================================
 function randomHeartbeatNudge(reason = "random") {
-  // ~3% chance per check
-  if (Math.random() > 0.97) {
-    const now = Date.now();
-    try {
-      if (typeof globalThis !== "undefined") {
-        // Dad marks himself alive
-        globalThis[AI_HEARTBEAT_KEY] = now;
-
-        // Mom and Earn can see Dad as a reason to stay alive
-        // (they will read this key as part of their own logic)
-      }
-    } catch {}
-
-    aiHeartbeatHealing.lastRandomNudgeAt = now;
-    aiHeartbeatHealing.lastExitReason = "random_nudge";
-    aiHeartbeatHealing.lastReason = `random_nudge:${reason}`;
-
-    const momSurface = buildMomPulseSurface();
-    const earnSurface = buildEarnPulseSurface();
-    aiHeartbeatHealing.lastMomPulseSurface = momSurface;
-    aiHeartbeatHealing.lastEarnPulseSurface = earnSurface;
-
-    const packet = emitHeartbeatPacket("random-nudge", {
-      reason,
-      randomNudgeAt: now,
-      primaryState: heartbeatArtery.lastPrimaryState,
-      dadState: heartbeatArtery.lastDadState,
-      earnState: heartbeatArtery.lastEarnState,
-      momPulseSurface: momSurface,
-      earnPulseSurface: earnSurface
-    });
-    aiHeartbeatHealing.lastPacket = packet;
-
-    aiOrganism?.context?.logStep?.(
-      `[HEARTBEAT] Random nudge fired. reason=${reason}, primary=${heartbeatArtery.lastPrimaryState}, dad=${heartbeatArtery.lastDadState}, earn=${heartbeatArtery.lastEarnState}`
-    );
-
-    return packet;
+  const now = Date.now();
+  if (!deterministicNudgeChance(now)) {
+    return null;
   }
 
-  return null;
+  try {
+    if (typeof globalThis !== "undefined") {
+      // Dad marks himself alive
+      globalThis[AI_HEARTBEAT_KEY] = now;
+    }
+  } catch {}
+
+  aiHeartbeatHealing.lastRandomNudgeAt = now;
+  aiHeartbeatHealing.lastExitReason = "random_nudge";
+  aiHeartbeatHealing.lastReason = `random_nudge:${reason}`;
+
+  const momSurface = buildMomPulseSurface();
+  const earnSurface = buildEarnPulseSurface();
+  aiHeartbeatHealing.lastMomPulseSurface = momSurface;
+  aiHeartbeatHealing.lastEarnPulseSurface = earnSurface;
+
+  const packet = emitHeartbeatPacket("random-nudge", {
+    reason,
+    randomNudgeAt: now,
+    primaryState: heartbeatArtery.lastPrimaryState,
+    dadState: heartbeatArtery.lastDadState,
+    earnState: heartbeatArtery.lastEarnState,
+    momPulseSurface: momSurface,
+    earnPulseSurface: earnSurface
+  });
+  aiHeartbeatHealing.lastPacket = packet;
+
+  aiOrganism?.context?.logStep?.(
+    `[HEARTBEAT] Random nudge fired. reason=${reason}, primary=${heartbeatArtery.lastPrimaryState}, dad=${heartbeatArtery.lastDadState}, earn=${heartbeatArtery.lastEarnState}`
+  );
+
+  return packet;
 }
 
 // ============================================================================
@@ -336,6 +395,7 @@ async function aiHeartbeatTick(reason = "unknown") {
     aiHeartbeatHealing.lastComputeSurface = surface;
     aiHeartbeatHealing.lastComputeDeltaPacket = deltaPacket || null;
   }
+
   // Build mom compute surface (symbolic heart → presence only)
   const momComputeSurface = {
     pressure: 0,
@@ -349,12 +409,12 @@ async function aiHeartbeatTick(reason = "unknown") {
     gpuPressure: 0,
     gpuLoad: 0,
     gpuUtil: 0,
-    present: heartbeatArtery.lastPrimaryState === "alive",
+    present: heartbeatArtery.lastPrimaryState === "primary_active",
     capacity: 1,
     capacityBucket: "high",
     cortexId: "mom",
     triHeartId: "mom",
-    epoch: "v16-Immortal",
+    epoch: HEARTBEAT_VERSION_MAP.version,
     band: "symbolic"
   };
 
@@ -371,26 +431,25 @@ async function aiHeartbeatTick(reason = "unknown") {
     gpuPressure: 0,
     gpuLoad: 0,
     gpuUtil: 0,
-    present: heartbeatArtery.lastEarnState === "alive",
+    present: heartbeatArtery.lastEarnState === "earn_active",
     capacity: 1,
     capacityBucket: "high",
     cortexId: "earn",
     triHeartId: "earn",
-    epoch: "v16-Immortal",
+    epoch: HEARTBEAT_VERSION_MAP.version,
     band: "symbolic"
   };
 
-  if (binaryDelta && aiHeartbeatHealing.lastTriHeartCompute) {
-    const triPrev = aiHeartbeatHealing.lastTriHeartCompute;
+  if (binaryDelta) {
+    const triPrev = aiHeartbeatHealing.lastTriHeartCompute || null;
     const triNext = {
       mom: momComputeSurface,
-      dad: aiHeartbeatHealing.lastComputeSurface,
+      dad: aiHeartbeatHealing.lastComputeSurface || null,
       earn: earnComputeSurface
     };
 
     const triDeltaPacket = binaryDelta.triHeartComputeDelta(triPrev, triNext);
     aiHeartbeatHealing.lastTriHeartComputeDelta = triDeltaPacket;
-
     aiHeartbeatHealing.lastTriHeartCompute = triNext;
   }
 
@@ -534,7 +593,7 @@ async function aiHeartbeatTick(reason = "unknown") {
     // For Dad (this organ), we treat:
     // 1) Mom alive → fallback to mom pulse
     // 2) Earn alive → fallback to earn pulse
-    // 3) Otherwise → error + random nudge
+    // 3) Otherwise → error + deterministic nudge
 
     if (momPulseSurface.momPulseAlive) {
       const fallbackPacket = emitHeartbeatPacket("tick-fallback-mom-pulse", {
@@ -592,6 +651,41 @@ async function aiHeartbeatTick(reason = "unknown") {
 }
 
 // ============================================================================
+//  MODE RESOLUTION — symbolic / binary / both
+// ============================================================================
+function resolveHeartbeatMode(source) {
+  // Object-style source: { mode, binary, symbolic, ... }
+  if (source && typeof source === "object") {
+    if (source.mode === "binary" || source.mode === "symbolic" || source.mode === "both") {
+      return source.mode;
+    }
+    if (source.binary === true && source.symbolic === true) return "both";
+    if (source.binary === true) return "binary";
+    if (source.symbolic === true) return "symbolic";
+  }
+
+  // String-style hints
+  if (typeof source === "string") {
+    const s = source.toLowerCase();
+    if (s.startsWith("binary:") || s === "binary") return "binary";
+    if (s.startsWith("symbolic:") || s === "symbolic") return "symbolic";
+    if (s === "both" || s === "dual") return "both";
+  }
+
+  // Default: symbolic primary
+  return "symbolic";
+}
+
+// Current mode helper (fallback for internal paths)
+function getCurrentHeartbeatMode() {
+  return (
+    aiHeartbeatHealing.lastMode ||
+    heartbeatArtery.lastMode ||
+    "symbolic"
+  );
+}
+
+// ============================================================================
 //  PULSE ENTRY — ANY internal signal triggers a heartbeat (independent dad)
 //  Now symbolic/binary aware, mode-resolved per pulse.
 // ============================================================================
@@ -637,7 +731,6 @@ export function pulseAiHeartbeat(source = "unknown") {
   void aiHeartbeatTick(`pulse:${typeof source === "string" ? source : "object"}`);
   return packet;
 }
-
 
 // ============================================================================
 //  TIME FALLBACK — fires only if idle too long (dad self‑fallback)
@@ -701,7 +794,6 @@ function timeFallbackCheck() {
   }
 }
 
-
 // ============================================================================
 //  START — enable time fallback (independent pacer mode)
 //  Default mode: symbolic (can be overridden by pulses later).
@@ -741,44 +833,6 @@ export function startAiHeartbeat() {
   } catch {}
 }
 
-
-// ============================================================================
-//  MODE RESOLUTION — symbolic / binary / both
-// ============================================================================
-function resolveHeartbeatMode(source) {
-  // Object-style source: { mode, binary, symbolic, ... }
-  if (source && typeof source === "object") {
-    if (source.mode === "binary" || source.mode === "symbolic" || source.mode === "both") {
-      return source.mode;
-    }
-    if (source.binary === true && source.symbolic === true) return "both";
-    if (source.binary === true) return "binary";
-    if (source.symbolic === true) return "symbolic";
-  }
-
-  // String-style hints
-  if (typeof source === "string") {
-    const s = source.toLowerCase();
-    if (s.startsWith("binary:") || s === "binary") return "binary";
-    if (s.startsWith("symbolic:") || s === "symbolic") return "symbolic";
-    if (s === "both" || s === "dual") return "both";
-  }
-
-  // Default: symbolic primary
-  return "symbolic";
-}
-
-// Current mode helper (fallback for internal paths)
-function getCurrentHeartbeatMode() {
-  return (
-    aiHeartbeatHealing.lastMode ||
-    heartbeatArtery.lastMode ||
-    "symbolic"
-  );
-}
-
-
-
 // ============================================================================
 //  STOP — disable fallback
 // ============================================================================
@@ -795,7 +849,6 @@ export function stopAiHeartbeat() {
   const packet = emitHeartbeatPacket("stop", { mode });
   aiHeartbeatHealing.lastPacket = packet;
 }
-
 
 // ============================================================================
 //  WINDOW‑SAFE ARTERY SNAPSHOT — now mode-aware

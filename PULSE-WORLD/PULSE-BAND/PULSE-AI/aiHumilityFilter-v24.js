@@ -1,50 +1,35 @@
 // ============================================================================
-//  aiHumilityFilter.js — PulseOS Humility Organ — v15.0‑IMMORTAL
+//  aiHumilityFilter.js — PulseOS Humility Organ — v24‑IMMORTAL‑ADVANTAGE++
 //  Removes superiority, snobbery, ego, obligation‑tone, and professor‑energy.
 //  PURE FILTER. ZERO MUTATION. ZERO RANDOMNESS. DUALBAND + ARTERY‑AWARE.
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
-
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  META BLOCK — v24 IMMORTAL ADVANTAGE++
 // ============================================================================
-// export const OrganismKernelMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
+// ============================================================================
+//  HUMILITY FILTER ORGAN — v24 IMMORTAL ADVANTAGE++
+// ============================================================================
 export const aiHumilityFilter = {
 
-  // ─────────────────────────────────────────────────────────────
-  // META BLOCK — ORGAN IDENTITY (v15.0‑IMMORTAL)
-  // ─────────────────────────────────────────────────────────────
+  // -------------------------------------------------------------------------
+  // META — upgraded from v15 → v24 IMMORTAL ADVANTAGE++
+  // -------------------------------------------------------------------------
   meta: Object.freeze({
     type: "Cognitive",
     subsystem: "aiTone",
     layer: "C1-HumilityFilter",
-    version: "15.0-Immortal",
-    identity: "aiHumilityFilter-v15.0-Immortal",
+    version: "v24-IMMORTAL-ADVANTAGE++",
+    identity: "aiHumilityFilter-v24-IMMORTAL-ADVANTAGE++",
 
     evo: Object.freeze({
       driftProof: true,
@@ -71,7 +56,7 @@ export const aiHumilityFilter = {
 
       multiInstanceReady: true,
       readOnly: true,
-      epoch: "15.0-Immortal"
+      epoch: "v24-IMMORTAL-ADVANTAGE++"
     }),
 
     contract: Object.freeze({
@@ -123,9 +108,9 @@ export const aiHumilityFilter = {
     }
   }),
 
-  // ─────────────────────────────────────────────────────────────
-  // INTERNAL STATE — v15.0‑IMMORTAL (WINDOW + ARTERY)
-  // ─────────────────────────────────────────────────────────────
+  // -------------------------------------------------------------------------
+  // INTERNAL STATE — v24++ window + artery
+  // -------------------------------------------------------------------------
   _state: {
     instanceIndex: 0,
     windowMs: 60000,
@@ -152,9 +137,9 @@ export const aiHumilityFilter = {
     return this;
   },
 
-  // ─────────────────────────────────────────────────────────────
-  // ARTERY HELPERS — BUCKETS
-  // ─────────────────────────────────────────────────────────────
+  // -------------------------------------------------------------------------
+  // BUCKETS — v24++ deterministic
+  // -------------------------------------------------------------------------
   _bucketLevel(v) {
     if (v >= 0.9) return "elite";
     if (v >= 0.75) return "high";
@@ -188,9 +173,9 @@ export const aiHumilityFilter = {
     }
   },
 
-  // ─────────────────────────────────────────────────────────────
-  // ARTERY COMPUTATION — HUMILITY ARTERY v3
-  // ─────────────────────────────────────────────────────────────
+  // -------------------------------------------------------------------------
+  // HUMILITY ARTERY v24++ — deterministic, drift-aware
+  // -------------------------------------------------------------------------
   _computeHumilityArtery(externalPressure = 0) {
     const now = Date.now();
     this._rollWindow(now);
@@ -260,9 +245,9 @@ export const aiHumilityFilter = {
     return this._computeHumilityArtery(externalPressure);
   },
 
-  // ─────────────────────────────────────────────────────────────
-  // PACKET EMITTER — deterministic, tone-scoped
-  // ─────────────────────────────────────────────────────────────
+  // -------------------------------------------------------------------------
+  // PACKET EMITTER — v24++ deterministic
+  // -------------------------------------------------------------------------
   _emitPacket(type, payload) {
     return Object.freeze({
       meta: aiHumilityFilter.meta,
@@ -274,9 +259,9 @@ export const aiHumilityFilter = {
     });
   },
 
-  // ─────────────────────────────────────────────────────────────
-  // PREWARM — v15.0‑IMMORTAL
-  // ─────────────────────────────────────────────────────────────
+  // -------------------------------------------------------------------------
+  // PREWARM — v24++ artery alignment
+  // -------------------------------------------------------------------------
   prewarm({ trace = false, binaryVitals = null } = {}) {
     const externalPressure =
       binaryVitals?.metabolic?.pressure ??
@@ -286,22 +271,17 @@ export const aiHumilityFilter = {
     const artery = this._computeHumilityArtery(externalPressure);
 
     const packet = this._emitPacket("prewarm", {
-      message: "Humility filter prewarmed and humility artery aligned.",
+      message: "Humility filter prewarmed (v24++).",
       artery
     });
 
-    if (trace) {
-       
-      console.log("[aiHumilityFilter] prewarm", packet);
-    }
-
+    if (trace) console.log("[aiHumilityFilter] prewarm", packet);
     return packet;
   },
 
-  // ─────────────────────────────────────────────────────────────
-  // HUMILITY FILTER — CORE LOGIC (v15.0‑IMMORTAL)
-//  Symbolic-only, deterministic, ego-free.
-// ─────────────────────────────────────────────────────────────
+  // -------------------------------------------------------------------------
+  // HUMILITY FILTER — CORE LOGIC (v24 IMMORTAL ADVANTAGE++)
+  // -------------------------------------------------------------------------
   filter(text, context = {}) {
     if (!text || typeof text !== "string") {
       const artery = this._computeHumilityArtery(
@@ -341,7 +321,7 @@ export const aiHumilityFilter = {
       .replace(/\blet me explain\b/gi, "here’s the clean version")
       .replace(/\bactually\b/gi, "");
 
-    // 6. Evolution-aware softening (Presence → IMMORTAL)
+    // 6. Evolution-aware softening
     const evoMode = context?.evolutionMode || "passive";
 
     if (evoMode === "active") {
@@ -358,7 +338,7 @@ export const aiHumilityFilter = {
       .replace(/\bI am\b/gi, "I’m here")
       .replace(/\bI’m the\b/gi, "I’m here as");
 
-    // 8. Dual-band tone modulation (binary pressure)
+    // 8. Dual-band tone modulation
     const externalPressure =
       context?.binaryVitals?.metabolic?.pressure ??
       context?.binaryVitals?.layered?.organism?.pressure ??
@@ -370,9 +350,9 @@ export const aiHumilityFilter = {
 
     const trimmed = out.trim();
 
-    // ─────────────────────────────────────────────────────────
-    // UPDATE ARTERY STATE (symbolic-only metrics)
-// ─────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
+    // UPDATE ARTERY STATE
+    // -----------------------------------------------------------------------
     const s = this._state;
     const inLen = original.length;
     const outLen = trimmed.length;
@@ -397,7 +377,7 @@ export const aiHumilityFilter = {
 };
 
 // ============================================================================
-//  DUAL‑MODE EXPORTS
+//  EXPORT
 // ============================================================================
 export default aiHumilityFilter.init();
 

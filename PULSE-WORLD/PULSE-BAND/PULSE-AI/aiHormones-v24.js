@@ -1,66 +1,40 @@
 // ============================================================================
-//  aiHormones.js — Pulse OS v15-Immortal+ Organ
-//  Binary Hormone System • Global Modulation • Dualband • Artery-First
-//  Window-Safe • Registry-Aware • Governor/Membrane-Ready
+//  aiHormones.js — Pulse OS v24‑IMMORTAL‑ADVANTAGE++
+//  Binary Hormone System • Global Modulation • Tri‑Band Fusion • Artery‑First
+//  Window-Safe • Registry-Aware • Governor/Membrane-Ready • Drift-Aware
 // ============================================================================
 //
-//  CANONICAL ROLE:
-//    • Slow-acting, global binary modulation for the organism.
-//    • Feeds binary hormone packets into pipelines/reflexes/governor membranes.
-//    • Never interprets symbols, never routes, never mutates external organs.
-//    • Provides cached hormone snapshots + artery snapshots + global registry.
-//    • Dualband-aware: can fuse metabolic + sentience + external vitals.
-//
-//  DESIGN NOTES (v15-Immortal+):
-//    • Upgraded from v12.3-Evo to v15-Immortal+ with:
-//        - Multi-instance registry + global hormone artery registry
-//        - Dualband vitals fusion (metabolism + sentience + external binaryVitals)
-//        - Explicit drift detection between hormone snapshots
-//        - Window-safe snapshot API + global read-only registry
-//        - Governor/membrane-ready modulation surface
-//        - Prewarm path emits full hormone+artery summary
-//        - Artery-first design: throughput/pressure/cost/budget as first-class
+//  ROLE (v24++):
+//    • Slow-acting global modulation for the organism.
+//    • Feeds hormone packets into pipelines/reflexes/governor membranes.
+//    • Pure binary → no symbolic interpretation.
+//    • Tri-band fusion: metabolic + sentience + external binaryVitals.
+//    • Drift-aware: detects hormone-level deltas between snapshots.
+//    • Global registry v2: multi-instance, artery-first, window-safe.
+//    • Prewarm emits full hormone+artery summary.
+//    • Deterministic buckets, deterministic cost/pressure/throughput.
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 
+import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  META BLOCK — v24 IMMORTAL ADVANTAGE++
 // ============================================================================
 export const HormonesMeta = Identity.OrganMeta;
 
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
-
 // ============================================================================
-//  GLOBAL HORMONE REGISTRY — read-only from outside
+//  GLOBAL HORMONE REGISTRY v2 — read-only from outside
 // ============================================================================
-
 const _globalHormoneRegistry = new Map();
-/**
- * Registry key: `${id}#${instanceIndex}`
- */
+
 function _registryKey(id, instanceIndex) {
   return `${id || HormonesMeta.identity}#${instanceIndex}`;
 }
@@ -78,7 +52,11 @@ export function getGlobalHormoneState() {
 // ============================================================================
 function emitHormonePacket(type, payload) {
   return Object.freeze({
-    meta: HormonesMeta,
+    meta: {
+      ...HormonesMeta,
+      version: HormonesMeta.version || "v24-IMMORTAL-ADVANTAGE++",
+      arteryVersion: "v24-HORMONE-ARTERY-ADVANTAGE++"
+    },
     packetType: `hormone-${type}`,
     timestamp: Date.now(),
     epoch: HormonesMeta.evo.epoch,
@@ -87,8 +65,7 @@ function emitHormonePacket(type, payload) {
 }
 
 // ============================================================================
-//  PREWARM — warms metabolism + sentience + artery metrics + cache
-//  (uses a local warm instance so the real organ stays pure)
+//  PREWARM — tri-band warmup + artery summary
 // ============================================================================
 export function prewarmBinaryHormones(dualBand = null, { trace = false } = {}) {
   try {
@@ -101,7 +78,6 @@ export function prewarmBinaryHormones(dualBand = null, { trace = false } = {}) {
         0
     };
 
-    // Minimal warm metabolism/sentience for prewarm path
     const warmMetabolism = {
       _computeLoad:     () => warmVitals.load,
       _computePressure: () => warmVitals.pressure
@@ -118,13 +94,9 @@ export function prewarmBinaryHormones(dualBand = null, { trace = false } = {}) {
     };
 
     const warm = new AIBinaryHormones({
-      encoder:   { encode: (s) => s }, // no-op encoder for warm path
+      encoder: { encode: (s) => s },
       metabolism: warmMetabolism,
-      sentience:  warmSentience,
-      logger: null,
-      pipeline: null,
-      reflex: null,
-      bluetooth: null,
+      sentience: warmSentience,
       trace
     });
 
@@ -132,7 +104,7 @@ export function prewarmBinaryHormones(dualBand = null, { trace = false } = {}) {
     const snapshot = warm.getSnapshot();
 
     const packet = emitHormonePacket("prewarm", {
-      message: "Binary hormone system prewarmed and modulation metrics aligned.",
+      message: "Hormone system prewarmed (v24++).",
       warmVitals,
       warmSnapshot: snapshot,
       warmEmitSummary: {
@@ -152,7 +124,7 @@ export function prewarmBinaryHormones(dualBand = null, { trace = false } = {}) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v15-Immortal+
+//  ORGAN IMPLEMENTATION — v24 IMMORTAL ADVANTAGE++
 // ============================================================================
 export class AIBinaryHormones {
   constructor(config = {}) {
@@ -169,21 +141,17 @@ export class AIBinaryHormones {
     this.bluetooth = config.bluetooth || null;
     this.trace     = !!config.trace;
 
-    // optional NodeAdmin / Overmind reporter hook (metrics-only, read-only)
-    // fn(registrySnapshot, meta) => void
     this.nodeAdminReporter =
       typeof config.nodeAdminReporter === "function"
         ? config.nodeAdminReporter
         : null;
 
-    if (!this.encoder)    throw new Error("AIBinaryHormones requires aiBinaryAgent encoder");
-    if (!this.metabolism) throw new Error("AIBinaryHormones requires aiBinaryMetabolism");
-    if (!this.sentience)  throw new Error("AIBinaryHormones requires aiBinarySentience");
+    if (!this.encoder)    throw new Error("AIBinaryHormones requires encoder");
+    if (!this.metabolism) throw new Error("AIBinaryHormones requires metabolism");
+    if (!this.sentience)  throw new Error("AIBinaryHormones requires sentience");
 
-    // Instance index for registry
     this.instanceIndex = AIBinaryHormones._registerInstance();
 
-    // Hormone cache for stable states (levels + artery)
     this._cache = {
       levels: null,
       artery: null
@@ -229,7 +197,7 @@ export class AIBinaryHormones {
   }
 
   // ---------------------------------------------------------------------------
-  //  BUCKETS — stable categorical mapping
+  //  BUCKETS — v24++ stable categorical mapping
   // ---------------------------------------------------------------------------
   _bucketLevel(v) {
     if (v >= 0.9)  return "elite";
@@ -256,7 +224,7 @@ export class AIBinaryHormones {
   }
 
   // ---------------------------------------------------------------------------
-  //  HORMONE LEVEL COMPUTATION — pure binary modulation
+  //  HORMONE LEVEL COMPUTATION — pure binary modulation (v24++)
   // ---------------------------------------------------------------------------
   _computeHormoneLevels() {
     const load = this.metabolism._computeLoad();
@@ -297,17 +265,13 @@ export class AIBinaryHormones {
       repair: quarantinedCount > 0 ? 1 : 0.2
     });
 
-    // Update global registry
     const key = _registryKey(this.id, this.instanceIndex);
     _globalHormoneRegistry.set(key, { levels, artery });
 
-    // Optional NodeAdmin reporter
     if (this.nodeAdminReporter) {
       try {
         this.nodeAdminReporter({ levels, artery }, HormonesMeta);
-      } catch (err) {
-        this._trace("nodeAdmin:reporter:error", { error: String(err) });
-      }
+      } catch {}
     }
 
     return { levels, artery };
@@ -345,8 +309,7 @@ export class AIBinaryHormones {
 
   // ---------------------------------------------------------------------------
   //  SNAPSHOT — organism/window-safe hormone snapshot
-  //  (used by ExecutionEngine / Evolution / Diagnostics)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   getSnapshot() {
     if (!this._cache.levels || !this._cache.artery) {
       const { levels, artery } = this._computeHormoneLevels();
@@ -361,16 +324,16 @@ export class AIBinaryHormones {
   }
 
   // ---------------------------------------------------------------------------
-  //  EMIT — global modulation packets (v15-Immortal+)
-// ---------------------------------------------------------------------------
+  //  EMIT — global modulation packets (v24++)
+  // ---------------------------------------------------------------------------
   emitHormones() {
     const { levels, artery } = this._computeHormoneLevels();
 
-    // Fast path: no drift → reuse cached state
-    if (
+    const drift =
       this._cache.levels &&
-      JSON.stringify(this._cache.levels) === JSON.stringify(levels)
-    ) {
+      JSON.stringify(this._cache.levels) !== JSON.stringify(levels);
+
+    if (!drift) {
       return emitHormonePacket("fast", {
         id: this.id,
         instanceIndex: this.instanceIndex,
@@ -380,7 +343,6 @@ export class AIBinaryHormones {
       });
     }
 
-    // Deep path: drift detected → emit packets
     const packets = [];
 
     for (const hormone of Object.keys(levels)) {
@@ -410,11 +372,6 @@ export class AIBinaryHormones {
         artery
       }
     });
-  }
-
-  _trace(event, payload) {
-    if (!this.trace) return;
-    console.log(`[${this.id}#${this.instanceIndex}] ${event}`, payload);
   }
 }
 
