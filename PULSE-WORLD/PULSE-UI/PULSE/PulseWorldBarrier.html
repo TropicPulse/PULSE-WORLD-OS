@@ -1009,7 +1009,7 @@ sendBtn.addEventListener("click", async () => {
   authMsg.style.display = "none";
 
   try {
-    if (typeof getHook !== "function") {
+    if (typeof window.getHook !== "function") {
       throw new Error("getHook() is NOT defined — your login page cannot talk to backend.");
     }
 
