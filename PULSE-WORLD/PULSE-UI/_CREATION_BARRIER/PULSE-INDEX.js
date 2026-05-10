@@ -1,12 +1,14 @@
+/* ============================================================
+   0. BOOT MEMBRANE — MUST BE FIRST
+============================================================ */
 
-/* 0. BOOT MEMBRANE — MUST BE FIRST */
-
-
-function mark(label) {
-  console.log("[INDEX]", label);
+function mark(...args) {
+  console.log("[INDEX]", ...args);
 }
 
-/* 2. UI ONLY — ensure this runs ONCE */
+/* ============================================================
+   1. UI INIT — RUN ONCE ONLY
+============================================================ */
 if (!window.__PULSE_UI_INIT__) {
   window.__PULSE_UI_INIT__ = true;
 
@@ -14,7 +16,7 @@ if (!window.__PULSE_UI_INIT__) {
     mark("WINDOW DOM STARTED INDEX PAGE");
 
     /* ============================================================
-       3. PULSEBAND UI — UI ONLY (NO LOGIC)
+       2. PULSEBAND UI — UI ONLY (NO ENGINE LOGIC)
     ============================================================ */
     const pbBadge = document.getElementById("pulseband-badge");
     const pbPanel = document.getElementById("pulseband-panel");
@@ -50,11 +52,28 @@ if (!window.__PULSE_UI_INIT__) {
     };
 
     /* ============================================================
-       3B. PULSEBAND SNAPSHOT — UI ONLY
+       3. PULSEBAND SNAPSHOT — IMMORTAL++ UPGRADE
+       - Waits for engines
+       - Auto-refreshes
+       - Never throws
+       - UI-only
     ============================================================ */
-    (async () => {
+
+    async function waitForEngines() {
+      while (
+        !window.VitalsMonitor ||
+        !window.VitalsMonitor.Vitals ||
+        !window.VitalsMonitor.Vitals.generate ||
+        !window.PulseBinary ||
+        !window.PulseBinary.Sentience
+      ) {
+        await new Promise(res => setTimeout(res, 50));
+      }
+    }
+
+    async function updatePulseBand() {
       try {
-        const vitals    = window.VitalsMonitor.Vitals?.generate?.() ?? null;
+        const vitals    = window.VitalsMonitor.Vitals.generate() ?? null;
         const binary    = window.PulseBinary ?? null;
         const sentience = binary?.Sentience?.snapshot?.() ?? null;
 
@@ -83,9 +102,16 @@ if (!window.__PULSE_UI_INIT__) {
         if (pbFields.health)     pbFields.health.textContent     = health;
         if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
         if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
+
       } catch (err) {
-        mark("Window PulseBand snapshot failed", err);
+        mark("PulseBand update failed", err);
       }
+    }
+
+    (async () => {
+      await waitForEngines();
+      updatePulseBand();
+      setInterval(updatePulseBand, 1000); // IMMORTAL++ auto-refresh
     })();
 
     /* ============================================================
