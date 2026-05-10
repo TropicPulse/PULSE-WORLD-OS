@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-UI/_FRONTEND/PulseUICompiler-v24.js
+FILE: /PULSE-UI/_CREATION_BARRIER/PulseUICompiler-v24.js
 LAYER: UI GENOME → RENDERABLE BLUEPRINT COMPILER — IMMORTAL v24
 ===============================================================================
 AI_EXPERIENCE_META = {

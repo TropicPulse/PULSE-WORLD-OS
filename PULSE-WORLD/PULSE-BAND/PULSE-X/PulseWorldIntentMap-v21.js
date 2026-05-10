@@ -657,7 +657,7 @@ export const PulseIntentMap = {
       "frontend connection": "PULSE-WORLD/PULSE-UI/Pulse",
       "frontend animations": "PULSE-WORLD/PULSE-UI/_ANIMATIONS",
       "frontend backend connectors": "PULSE-WORLD/PULSE-UI/_BACKEND",
-      "frontend connectors": "PULSE-WORLD/PULSE-UI/_FRONTEND",
+      "frontend connectors": "PULSE-WORLD/PULSE-UI/_CREATION_BARRIER",
       "frontend components": "PULSE-WORLD/PULSE-UI/_COMPONENTS",
       "frontend icons": "PULSE-WORLD/PULSE-UI/_ICONS",
       "frontend helpers": "PULSE-WORLD/PULSE-UI/_HELPERS",

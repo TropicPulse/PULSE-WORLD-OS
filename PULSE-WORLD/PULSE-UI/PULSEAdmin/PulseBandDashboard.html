@@ -12,10 +12,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- 0. TOUCH — MUST LOAD FIRST -->
-  <script type="module" src="../_FRONTEND/PULSE-TOUCH.js"></script>
+  <script type="module" src="../_CREATION_BARRIER/PULSE-TOUCH.js"></script>
 
   <!-- 1. PORTAL — MUST LOAD IMMEDIATELY AFTER TOUCH -->
-  <script type="module" src="../_FRONTEND/PULSE-WORLD-PORTAL.js"></script>
+  <script type="module" src="../_CREATION_BARRIER/PULSE-WORLD-PORTAL.js"></script>
 
   <style>
     /* ---------------------------------------------------------
@@ -533,7 +533,7 @@
   
 <script type="module">
 /* 0. BOOT MEMBRANE — MUST BE FIRST */
-import * as PulseWindow from "../_FRONTEND/PULSE-WORLD-PORTAL.js";
+import * as PulseWindow from "../_CREATION_BARRIER/PULSE-WORLD-PORTAL.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const band = window.PulseBand;
