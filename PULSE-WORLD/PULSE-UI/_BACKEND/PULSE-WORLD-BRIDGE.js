@@ -28,109 +28,97 @@
 //  EXPERIENCE METADATA — v24 IMMORTAL PORTAL TRUST LAYER
 // ============================================================================
 // (kept as comment for AI_EXPERIENCE_META alignment)
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProofBridge",
-  version: "v24-Immortal-PortalTrust-ADV++",
-  layer: "frontend",
-  role: "portal_membrane_v24",
-  lineage: "PulseOS-v16 → v17-Continuous → v18-Immortal → v20-Immortal-ADV++ → v24-Immortal-ADV++",
+// ============================================================================
+//  IMMORTAL++ AUTO‑BUILT BRIDGE — ALWAYS READY, NEVER TDZ
+// ============================================================================
 
-  evo: {
-    // Core alignment
-    cnsAligned: true,
-    dualBandAware: true,
-    binaryAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    speedAware: true,
-    experienceAware: true,
-    identityAware: true,
-    environmentAware: true,
-    arteryAware: true,
-    windowAware: true,
+// ============================================================================
+//  IMMORTAL++ AUTO‑BUILT BRIDGE — CANONICAL, ALWAYS READY, NEVER TDZ
+// ============================================================================
 
-    // Immortal upgrades
-    immortalStore: true,
-    unifiedEnvelope: true,
-    deterministicSignals: true,
-    driftProof: true,
-    replayAware: true,
-    zeroDriftTelemetry: true,
+// Create the canonical bridge IMMEDIATELY so nothing else can break
+const PulseProofBridge = {
+  // Canonical API — all fields exist from the start
+  route: null,
+  signal: null,
+  prewarmBridge: null,
 
-    // Compiler + Understanding
-    compilerAware: true,
-    understandingAware: true,
-    semanticRouting: true,
+  coreMemory: null,
+  coreSpeech: null,
 
-    // Portal trust
-    portalTrustLayer: true,
-    portalFacing: true,
-    surfaceFacing: true,
+  PulseNetBoot: null,
+  pulseNetFastLane: null,
+  pulseNetIngress: null,
 
-    // Safety + mode
-    modeAgnostic: true,
-    offlineFirst: true,
-    localStoreMirrored: true,
-    loggerAligned: true,
-    monitorSeparated: true,
+  PulseBinaryOrganismBoot: null,
+  PulseUnderstandingBoot: null,
 
-    // Network
-    prewarmAware: true,
-    sdnAware: true,
-    meshAware: true,
+  PulseBridgeStore: null,
 
-    // v24 bridge health
-    bridgeHealthAware: true,
-    bridgeFailureAlertAware: true
+  onDualBandBoot: null,
+  onAIEvent: null,
+  onPortalEvent: null,
+
+  setBridgeIdentitySnapshot: null,
+  getBridgeIdentitySnapshot: null,
+
+  getHealth() {
+    return { ...BRIDGE_HEALTH };
   },
 
-  contract: {
-    always: [
-      "PulseWindow",
-      "PulsePresence",
-      "PulseUIFlow",
-      "PulseUIErrors",
-      "PulseProofLogger",
-      "PulseBridgeStore",
-      "CheckIdentity-v20-IMMORTAL-ADV++"
-    ],
-    never: [
-      "legacyBridge",
-      "legacySafeRoute",
-      "legacyPresence",
-      "legacyChunker",
-      "legacyFlow",
-      "fetchViaCNS"
-    ]
+  // IMMORTAL++ readiness
+  ready: false,
+  queue: [],
+
+  whenReady(fn) {
+    if (this.ready) fn(this);
+    else this.queue.push(fn);
   }
+};
+
+// Make it global BEFORE any imports run
+globalThis.PulseProofBridge = PulseProofBridge;
+
+// Backend will call this later to attach the real bridge
+export function attachRealBridge(real) {
+  // Copy all canonical fields from the real bridge
+  for (const key of Object.keys(PulseProofBridge)) {
+    if (key in real) {
+      PulseProofBridge[key] = real[key];
+    }
+  }
+
+  PulseProofBridge.ready = true;
+
+  // Flush queued callbacks
+  for (const fn of PulseProofBridge.queue) {
+    try { fn(PulseProofBridge); } catch {}
+  }
+  PulseProofBridge.queue = [];
 }
-*/
+
+export { PulseProofBridge };
+
+
 
 // ============================================================================
-//  IMMORTAL++ CORRECT BOOT ORDER
+//  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
-
-// 1. SkinReflex — must load FIRST (UI OS layer)
-import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v20.js";
-
-// 2. UIFlow — depends on SkinReflex
-import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
-
-// 3. UIErrors — depends on SkinReflex + Flow
-import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
-
-// 4. Logger — depends on UIErrors
-import { 
-  VitalsLogger as PulseProofLogger, 
-  log, warn, error, 
-  makeTelemetryPacket as emitTelemetry, 
-  PulseVersion, PulseColors, PulseIcons
-} from "../_MONITOR/PulseProofLogger-v24.js";
-
-// 5. Monitor — depends on Logger
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
-
+import {
+  VitalsLogger as PulseProofLogger,
+  log,
+  warn,
+  error,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../_MONITOR/PulseProofLogger-v24.js";
+import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v20.js";
+import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
+import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
+// NEW: CoreSpeech v24 speech organ is bridged via coreSpeechBridge
 
 const g =
   typeof globalThis !== "undefined"
@@ -147,6 +135,7 @@ const db =
   (typeof globalThis !== "undefined" && globalThis.db) ||
   (typeof window !== "undefined" && window.db) ||
   null;
+
 
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT — IMMORTAL, PORTAL-AWARE, ADV++
@@ -210,6 +199,7 @@ function buildBridgeEnvironment() {
 }
 
 const BRIDGE_ENV = buildBridgeEnvironment();
+
 
 // ============================================================================
 //  USER SNAPSHOT — IDENTITY v20 HOOK (metadata only)
@@ -859,29 +849,6 @@ export const PulseProofBridgeMonitor = PulseProofMonitor;
 export const PulseProofBridgeTelemetry = emitTelemetry;
 export const PulseProofBridgeFlow = PulseProofFlow;
 export const PulseProofBridgeErrors = PulseUIErrors;
-
-// IMMORTAL++: canonical bridge object
-export const PulseProofBridge = {
-  route,
-  signal,
-  prewarmBridge,
-  coreMemory: coreMemoryBridge,
-  coreSpeech: coreSpeechBridge,
-  PulseNetBoot,
-  pulseNetFastLane,
-  pulseNetIngress,
-  PulseBinaryOrganismBoot,
-  PulseUnderstandingBoot,
-  PulseBridgeStore,
-  onDualBandBoot,
-  onAIEvent,
-  onPortalEvent,
-  setBridgeIdentitySnapshot,
-  getBridgeIdentitySnapshot,
-  getHealth() {
-    return { ...BRIDGE_HEALTH };
-  }
-};
 
 // ============================================================================
 //  IMMORTAL++ GLOBAL MIRROR — LAZY, SAFE, UNIVERSAL
