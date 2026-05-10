@@ -101,11 +101,11 @@ AI_EXPERIENCE_META = {
 
 import { route as BridgeRoute, PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeLogger as PulseProofMonitor, BridgeLog as log, BridgeWarn as warn, BridgeError as error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot, PulseProofBridgeMonitor} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
-import * as PulseUIErrors from "./PulseUIErrors-v24.js";
-import * as PulseUIFlow from "./PulseUIFlow-v24.js";
-import * as PulsePageScanner from "../_FRONTEND/PulseUIPageScanner-v20.js";
-import { createPulseRouteMemory as PulseUIRouteMemory } from "../_FRONTEND/PulseUIRouteMemory-v20.js";
-import * as PulseSkinReflex from "../_FRONTEND/PulseUISkinReflex-v20.js";
+import * as PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
+import * as PulseUIFlow from "../_MONITOR/PulseUIFlow-v24.js";
+import * as PulsePageScanner from "./PulseUIPageScanner-v20.js";
+import { createPulseRouteMemory as PulseUIRouteMemory } from "./PulseUIRouteMemory-v20.js";
+import * as PulseSkinReflex from "../_MONITOR/PulseUISkinReflex-v20.js";
 
 import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
 import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";

@@ -22,7 +22,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 import { prewarmSDN } from "./PulseOSSDNPrewarm-v16.js";
-import { PageScannerV12 } from "../../PULSE-UI/_FRONTEND/PulseUISkinReflex-v20.js";
+import { createPulseSkinReflex as PageScannerV12 } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 
 // ============================================================================
