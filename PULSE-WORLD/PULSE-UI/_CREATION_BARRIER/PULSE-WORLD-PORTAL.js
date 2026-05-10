@@ -32,65 +32,42 @@ AI_EXPERIENCE_META = {
   version: "v20-Immortal-Evo+++",
   layer: "frontend",
   role: "portal_boot_membrane",
-  lineage: "PulseOS-v16 → v18-Immortal-Evo → v20-Immortal-Evo+++",
+  lineage: "PulseOS-v// ============================================================================
+// FILE: /PulseWorldPortal-v24.js
+// PULSE PORTAL — v24-Immortal-Evo+++
+// PORTAL-MEMBRANE • ONE-WAY GLASS • ZERO-TRUST SURFACE • ORGANISM BOOT SIGNAL
+// “The last surface before the organism. The first reflection of the portal.”
+// ============================================================================
+//
+//  DESIGN (v24-IMMORTAL PORTAL BOOT):
+//  - Unified Portal Boot Membrane:
+//      TOUCH  →  PULSE PORTAL  →  UNDERSTANDING  →  BINARY ORGANISM
+//  - Zero-trust surface:
+//      The page only sees PulsePortal shadows, never raw organs, CNS, or routing.
+//  - Binary-first, dual-band aware, evidence-aware, admin-aware:
+//      Surface is binary-aware and chunk-aligned, but projects only safe shadows.
+//  - Offline-first snapshot:
+//      Stable, deterministic environment snapshot safe for logs, vitals, trust, and bridge.
+//  - Prewarm-aware + Chunk-session-aware:
+//      Cooperates with PulseChunks + Bridge prewarm to reduce cold-start pain.
+//  - Portal Trust Layer v2:
+//      This file + PulseProofBridge-v24 form the “Portal Trust Layer v2” —
+//      the only surfaces that see both the outside page and the organism.
+//  - PulseTouch-aware:
+//      Reads PulseTouch skin snapshot as a first-contact hint into power/profile.
+//
+// ============================================================================
+//  AI EXPERIENCE METADATA — v24 IMMORTAL PULSE PORTAL
+// ============================================================================
 
-  evo: {
-    binaryAware: true,
-    dualBandAware: true,
-    chunkAligned: true,
-    presenceAware: true,
-    safeRouteFree: true,
-    cnsFallback: true,
-    normalizerAligned: true,
-
-    portalRoot: true,
-    portalTrustLayer: true,
-    surfaceMembrane: true,
-    zeroTrustSurface: true,
-    offlineFirst: true,
-    replayAware: true,
-
-    prewarmAware: true,
-    bridgeAligned: true,
-    loggerAligned: true,
-    monitorAligned: true,
-    powerProfileAware: true,
-
-    pulseTouchAware: true,
-    evidenceAware: true,
-    adminConsoleAware: true,
-    diagnosticsArteryAware: true,
-    pulseBandAware: true,
-    chunkSessionAware: true
-  },
-
-  contract: {
-    always: [
-      "PulsePresence",
-      "PulseChunks",
-      "PulseBand",
-      "PulsePresenceNormalizer",
-      "PulseUIFlow",
-      "PulseProofBridge",
-      "PulseProofLogger",
-      "VitalsMonitor",
-      "PulsePower",
-      "PulseTouch",
-      "PulseAdminDiagnostics",
-      "PulseWorldAdminPanel"
-    ],
-    never: [
-      "legacyPresence",
-      "legacyWindow",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyOfflineLoader",
-      "legacyChunker",
-      "v1.7Fallback",
-      "directCNSExposure",
-      "organMutationFromSurface"
-    ]
-  }
+/*
+AI_EXPERIENCE_META = {
+  identity: "PulsePortal",
+  version: "v24-Immortal-Evo+++",
+  layer: "frontend",
+  role: "portal_boot_membrane",
+  lineage: "PulseOS-v16 → v18-Immortal-Evo → v20-Immortal-Evo+++ → v24-Immortal-Evo+++",
+  ...
 }
 */
 
@@ -98,8 +75,17 @@ AI_EXPERIENCE_META = {
 // IMPORTS — PORTAL-ATTACHED ORGANS (SURFACE-SAFE)
 // ============================================================================
 
-
-import { route as BridgeRoute, PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeLogger as PulseProofMonitor, BridgeLog as log, BridgeWarn as warn, BridgeError as error, startUnderstanding as PulseUnderstanding, PulseBinaryOrganismBoot, PulseProofBridgeMonitor} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import {
+  route as BridgeRoute,
+  PulseProofBridgeLogger as PulseProofLogger,
+  PulseProofBridgeLogger as PulseProofMonitor,
+  BridgeLog as log,
+  BridgeWarn as warn,
+  BridgeError as error,
+  startUnderstanding as PulseUnderstanding,
+  PulseBinaryOrganismBoot,
+  PulseProofBridgeMonitor
+} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 import * as PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
 import * as PulseUIFlow from "../_MONITOR/PulseUIFlow-v24.js";
@@ -110,31 +96,6 @@ import * as PulseSkinReflex from "../_MONITOR/PulseUISkinReflex-v20.js";
 import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
 import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 
-// import {
-//   route as bridgeRoute,
-//   PulseProofLogger as PulseLogger,
-//   log,
-//   warn,
-//   error,
-//   startUnderstanding as PulseUnderstanding,
-//   PulseBinaryOrganismBoot,
-//   startPulseNet,
-//   pulseNetIngressFromUser,
-//   pulseNetFastLanePulse
-// } from "./_BACKEND/PULSE-WORLD-BRIDGE.js";
-
-// // IMMORTAL++ organ factories
-// import { PulseTouchDetector } from "./_OUTERSENSES/PULSE-TOUCH-DETECTOR.js";
-// import { PulseTouchWarmup } from "./_OUTERSENSES/PULSE-TOUCH-WARMUP.js";
-// import { PulseTouchSecurity } from "./_OUTERSENSES/PULSE-TOUCH-SECURITY.js";
-// import { PulseTouchGate } from "./_OUTERSENSES/PULSE-TOUCH-GATE.js";
-// import { pulseTouchAdvantageCortex } from "./_OUTERSENSES/PULSE-TOUCH-ADVANTAGE.js";
-// import { PulseTouchThreatShape } from "./_OUTERSENSES/PULSE-TOUCH-THREATSHAPE.js";
-
-// // Optional future‑oriented helpers (IMMORTAL++)
-// import { PulseTouchPredictor } from "./_OUTERSENSES/PULSE-TOUCH-PREDICTOR.js";
-// import { PulseTouchAnalytics } from "./_OUTERSENSES/PULSE-TOUCH-ANALYTICS.js";
-// import { PulsePresenceOracle } from "./_OUTERSENSES/PULSE-TOUCH-PRESENCE-ORACLE.js";
 // ============================================================================
 // GLOBAL HANDLE + OPTIONAL DB
 // ============================================================================
@@ -158,7 +119,7 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-console.log("Pulse Portal v20-Immortal-Evo+++");
+console.log("Pulse Portal v24-Immortal-Evo+++");
 
 // ============================================================================
 // BROWSER DETECTION — HARD MEMBRANE
@@ -178,7 +139,7 @@ function isBrowser() {
 }
 
 // ============================================================================
-// SURFACE ENVIRONMENT SNAPSHOT — v20 IMMORTAL
+// SURFACE ENVIRONMENT SNAPSHOT — v24 IMMORTAL (STRUCTURED-CLONE SAFE)
 // ============================================================================
 
 function buildSurfaceEnvironment() {
@@ -276,11 +237,22 @@ function buildSurfaceEnvironment() {
       ? document.visibilityState
       : null;
 
+  // 🔥 v24: structured-clone-safe performance snapshot (NO PerformanceTiming objects)
   const perf = window.performance || null;
   const performanceSnapshot = perf
     ? {
-        timing: perf.timing || null,
-        navigation: perf.navigation || null
+        timeOrigin:
+          typeof perf.timeOrigin === "number" ? perf.timeOrigin : null,
+        now:
+          typeof perf.now === "function"
+            ? (() => {
+                try {
+                  return perf.now();
+                } catch {
+                  return null;
+                }
+              })()
+            : null
       }
     : null;
 
@@ -313,7 +285,6 @@ function buildSurfaceEnvironment() {
 
 const PulseSurfaceEnvironment = buildSurfaceEnvironment();
 
-
 // ============================================================================
 // MEMBRANE META — PULSE PORTAL CONTEXT
 // ============================================================================
@@ -330,7 +301,7 @@ function buildRouteId() {
 const surfaceMeta = Object.freeze({
   layer: "PulseEvolutionaryPortal",
   role: "portal-membrane",
-  version: "20.0-Immortal-Evo+++",
+  version: "24.0-Immortal-Evo+++",
   evo: {
     browserOnly: true,
     membraneOnly: true,
@@ -362,7 +333,7 @@ const surfaceMeta = Object.freeze({
 });
 
 const pulseLoreContext = Object.freeze({
-  lineage: "PulseOS.Surface.Portal.Boot.v20"
+  lineage: "PulseOS.Surface.Portal.Boot.v24"
 });
 
 const pulseRole = Object.freeze({
@@ -370,7 +341,7 @@ const pulseRole = Object.freeze({
   type: "membrane",
   subsystem: "surface",
   layer: "portal",
-  version: "20.0-Immortal-Evo+++",
+  version: "24.0-Immortal-Evo+++",
   contract: {
     purpose:
       "Boot the organism from the surface, while exposing only a one-way glass: vitals, logs, understanding hooks, binary shadow, admin diagnostics, and route-level lore."
@@ -387,14 +358,14 @@ const baseMetaPack = {
   pulseRole,
   route: buildRouteId()
 };
+
 // ============================================================================
 // MEMBRANE BOOT (BROWSER ONLY) — PREWARM, CHUNKS, FETCH, IMAGE, PORTAL SURFACE
 // ============================================================================
+
 if (isBrowser()) {
   try {
-    // ------------------------------------------------------------------------
-    // PORTAL-SAFE CLONE HELPERS — STRIP NON-CLONEABLE FIELDS
-    // ------------------------------------------------------------------------
+    // PORTAL-SAFE CLONE HELPERS — STRIP NON-CLONEABLE FIELDS (kept as in your v24 draft)
     function portalSafeHeaders(headers) {
       try {
         if (!headers) return undefined;
@@ -767,34 +738,39 @@ if (isBrowser()) {
       ? Object.freeze({ ...window.PulseSurface, ...surfaceMeta })
       : surfaceMeta;
 
-    window.PulsePortal = window.PulsePortal || Object.freeze({
-      meta: surfaceMeta,
-      env: PulseSurfaceEnvironment,
-      logger: PulseProofLogger,
-      vitals: PulseProofMonitor,
-      ui: {
-        errors: PulseUIErrors,
-        flow: PulseUIFlow
-      },
-      skinReflex: PulseSkinReflex,
-      pageScanner: PulsePageScanner,
-      routeMemory: PulseUIRouteMemory,
-      bridge: {
-        route: BridgeRoute,
-        PulseProofLogger,
-        log,
-        warn,
-        error,
-        startUnderstanding: PulseUnderstanding,
-        bootBinaryOrganism: PulseBinaryOrganismBoot
-      },
-      admin: {
-        createAdminDiagnosticsOrgan,
-        createPulseWorldAdminPanel
-      },
-      touch: typeof window !== "undefined" ? window.__PULSE_TOUCH__ || null : null,
-      db
-    });
+    window.PulsePortal =
+      window.PulsePortal ||
+      Object.freeze({
+        meta: surfaceMeta,
+        env: PulseSurfaceEnvironment,
+        logger: PulseProofLogger,
+        vitals: PulseProofMonitor,
+        ui: {
+          errors: PulseUIErrors,
+          flow: PulseUIFlow
+        },
+        skinReflex: PulseSkinReflex,
+        pageScanner: PulsePageScanner,
+        routeMemory: PulseUIRouteMemory,
+        bridge: {
+          route: BridgeRoute,
+          PulseProofLogger,
+          log,
+          warn,
+          error,
+          startUnderstanding: PulseUnderstanding,
+          bootBinaryOrganism: PulseBinaryOrganismBoot
+        },
+        admin: {
+          createAdminDiagnosticsOrgan,
+          createPulseWorldAdminPanel
+        },
+        touch:
+          typeof window !== "undefined"
+            ? window.__PULSE_TOUCH__ || null
+            : null,
+        db
+      });
   } catch (err) {
     console.error("[PulsePortal-v24] Membrane chunk layer failed:", err);
   }
@@ -806,7 +782,6 @@ if (isBrowser()) {
 // ============================================================================
 
 try {
-  // Vitals monitor (backend optional; organs call into it)
   if (
     typeof window !== "undefined" &&
     window.VitalsMonitor &&
@@ -815,7 +790,6 @@ try {
     // no explicit start needed; updateUserMetrics is called by organs
   }
 
-  // Logger init (console hijack + AI console already done in logger file)
   if (
     typeof window !== "undefined" &&
     window.PulseLogger &&
@@ -824,7 +798,7 @@ try {
     // no explicit init required; logger file already hijacks console
   }
 } catch (err) {
-  console.error("[PulsePortal-v20] Vitals/Logger init failed:", err);
+  console.error("[PulsePortal-v24] Vitals/Logger init failed:", err);
 }
 
 try {
@@ -832,18 +806,19 @@ try {
     window.PulseUIErrors?.init?.();
   }
 } catch (err) {
-  console.error("[PulsePortal-v20] Error spine failed to initialize:", err);
+  console.error("[PulsePortal-v24] Error spine failed to initialize:", err);
 }
 
 if (isBrowser() && window.PulseSkinReflex?.membraneAlive) {
   try {
-    window.PulseSkinReflex.membraneAlive("Portal-v20");
+    window.PulseSkinReflex.membraneAlive("Portal-v24");
   } catch (err) {
-    console.error("[PulsePortal-v20] SkinReflex membraneAlive failed:", err);
+    console.error("[PulsePortal-v24] SkinReflex membraneAlive failed:", err);
   }
 }
+
 // ============================================================================
-// BINARY ORGANISM + UNDERSTANDING + UI FLOW BOOT — v20 IMMORTAL PORTAL
+// BINARY ORGANISM + UNDERSTANDING + UI FLOW BOOT — v24 IMMORTAL PORTAL
 // ============================================================================
 
 if (isBrowser()) {
@@ -851,9 +826,7 @@ if (isBrowser()) {
     try {
       let binaryKernel = null;
 
-      // ----------------------------------------------------------------------
       // BINARY ORGANISM BOOT — READ-ONLY SHADOW EXPOSED AS PulseBinary
-      // ----------------------------------------------------------------------
       try {
         if (!window.__PulseBinaryBooted) {
           binaryKernel =
@@ -864,9 +837,6 @@ if (isBrowser()) {
           if (binaryKernel) {
             window.__PulseBinaryBooted = true;
 
-            // ------------------------------------------------------------
-            // UI-SAFE SHADOW (NOT the organism, NOT sent to Understanding)
-            // ------------------------------------------------------------
             const safeBinaryView = {
               meta: PulseBinaryOrganismBoot?.layer
                 ? {
@@ -902,22 +872,11 @@ if (isBrowser()) {
             };
 
             const frozenBinaryView = Object.freeze(safeBinaryView);
-
-            // ------------------------------------------------------------
-            // EXPOSE UI SHADOW (pages expect window.PulseBinary)
-            // ------------------------------------------------------------
-            window.PulseBinary = window.PulseBinary
-              ? Object.freeze({ ...window.PulseBinary, ...frozenBinaryView })
-              : frozenBinaryView;
-
-            // ------------------------------------------------------------
-            // EXPOSE SAFE META FOR UNDERSTANDING (NO FUNCTIONS)
-            // ------------------------------------------------------------
-            window.__PulseBinaryMeta__ = frozenBinaryView.meta;
+            window.PulseBinary = window.PulseBinary || frozenBinaryView;
           }
         }
       } catch (err) {
-        console.error("[PulsePortal-v20] Binary organism boot failed:", err);
+        console.error("[PulsePortal-v24] Binary organism boot failed:", err);
       }
 
 
@@ -980,11 +939,10 @@ if (isBrowser()) {
         console.error("[PulsePortal-v20] UIFlow init failed:", err);
       }
     } catch (err) {
-      console.error("[PulsePortal-v20] Portal boot sequence failed:", err);
+      console.error("[PulsePortal-v24] Understanding boot failed:", err);
     }
   })();
 }
-
 
 // ============================================================================
 // UI FLOW CONTEXT PROJECTION — OPTIONAL, READ-ONLY SURFACE VIEW
