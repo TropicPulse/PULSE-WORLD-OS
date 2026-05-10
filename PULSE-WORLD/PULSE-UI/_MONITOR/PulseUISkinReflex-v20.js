@@ -1047,3 +1047,33 @@ export function createPulseSkinReflex({
     membraneAlive
   };
 }
+// ============================================================
+//  GLOBAL EXPORTS — MAKE SKINREFLEX + HELPERS AVAILABLE
+// ============================================================
+try {
+  if (typeof window !== "undefined") {
+
+    // Create ONE instance of the organ
+    const _skin = createPulseSkinReflex();
+
+    // Export the full organ instance
+    window.PulseSkinReflex = _skin;
+
+    // Export individual helpers
+    window.getHook       = _skin.getHook;
+    window.getAuth       = _skin.getAuth;
+    window.getMap        = _skin.getMap;
+    window.callHelper    = _skin.callHelper;
+    window.route         = _skin.route;
+    window.identity      = _skin.identity;
+    window.continuity    = _skin.continuity;
+    window.membraneAlive = _skin.membraneAlive;
+
+    // Optional aliases
+    window.PulseGetHook  = _skin.getHook;
+    window.PulseRoute    = _skin.route;
+    window.PulseMap      = _skin.getMap;
+  }
+} catch (err) {
+  console.error("[SkinReflex] Failed to export globals:", err);
+}
