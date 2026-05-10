@@ -6,75 +6,7 @@
 //  EXPERIENCE METADATA (v24 IMMORTAL)
 // ============================================================================
 // (kept as comment, used by higher-order systems)
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulseProofMonitor",
-  version: "v24-Immortal-Proof-Monitor",
-  layer: "frontend",
-  role: "observer_monitor",
-  lineage: "PulseOS-v24",
 
-  evo: {
-    binaryAware: true,
-    dualBandAware: true,
-    presenceAware: true,
-    advantageAware: true,
-    speedAware: true,
-    experienceAware: true,
-
-    chunkAligned: true,
-    chunkProfileAware: true,
-    actNowAware: true,
-    powerAware: true,
-    compilerAware: true,
-    routerMemoryAware: true,
-
-    safeRouteFree: true,
-    vitalsMonitor: true,
-    passive: true,
-
-    offlineFirst: true,
-    localStoreMirrored: true,
-    replayAware: true,
-    loggerAligned: true,
-    monitorSeparated: true,
-
-    driftProof: true,
-    deterministicVitals: true,
-    zeroDriftAverages: true,
-
-    backendOptional: true,
-    noRouting: true,
-    noHealing: true,
-    noOrgans: true,
-    noControl: true,
-
-    multiInstanceReady: true,
-    unifiedAdvantageField: true,
-    pulseEfficiencyAware: true,
-    futureEvolutionReady: true
-  },
-
-  contract: {
-    always: [
-      "PulseWindow",
-      "PulsePresence",
-      "PulseUIFlow",
-      "PulseUIErrors",
-      "PulseProofLogger"
-    ],
-    never: [
-      "legacyMonitor",
-      "legacyVitals",
-      "safeRoute",
-      "fetchViaCNS",
-      "legacyPresence",
-      "legacyChunker",
-      "legacyFlow"
-    ]
-  }
-}
-*/
 
 console.log("Monitor v24-Immortal-Proof");
 

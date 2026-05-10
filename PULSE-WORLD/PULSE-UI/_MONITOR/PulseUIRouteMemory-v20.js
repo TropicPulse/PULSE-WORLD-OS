@@ -3,104 +3,11 @@
 FILE: /PULSE-UI/PulseRouteMemory-v20.js
 LAYER: REFLEX MEMORY ORGAN • v20-Immortal-Evo+++
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseUI.RouteMemory",
-  version: "v20-Immortal-Evo+++",
-  layer: "pulse_ui",
-  role: "reflex_route_memory",
-  lineage: "SkinReflex.RouteMemory-v12 → v14-Immortal → v16-Immortal → v20-Immortal-Evo+++",
 
-  evo: {
-    reflexMemory: true,
-    degradationAware: true,
-    binaryShadowAware: true,
-    routeTraceAware: true,
-    coreMemoryAware: true,
-    routeAware: true,
-    lineageAware: true,
-    unifiedAdvantageField: true,
-    tierAware: true,
-    channelAware: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    futureEvolutionReady: true,
-
-    // v16 IMMORTAL SURFACE
-    schemaVersioned: true,
-    envelopeAware: true,
-    integrityAware: true,
-    bulkFlushAware: true,
-    offlineFirst: true,
-    localStoreMirrored: true,
-    replayAware: true,
-
-    // v20 IMMORTAL-EVO+++ EXT
-    evidenceAware: true,
-    diagnosticsAware: true,
-    portalAware: true,
-    touchAware: true,
-    uiFlowAware: true,
-    errorSpineAware: true,
-    overmindAware: true,
-    governorAware: true,
-    timeAxisAware: true,
-    sessionAware: true,
-    multiMindAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseUI.SkinReflex",
-      "PulseCore.Memory",
-      "PulseUIErrors",
-      "PulseProofBridge",
-      "PulseDiagnosticsBus",
-      "PulseEvidenceBus"
-    ],
-    never: [
-      "eval",
-      "Function",
-      "dynamicImport",
-      "fetchViaCNS",
-      "directFilesystemAccess",
-      "directNetworkAccess"
-    ]
-  }
-}
-===============================================================================
-EXPORT_META = {
-  organ: "PulseUI.RouteMemory",
-  layer: "pulse_ui",
-  stability: "IMMORTAL",
-  deterministic: true,
-  pure: true,
-
-  consumes: [
-    "Message",
-    "Frames",
-    "RouteTrace",
-    "Overrides"
-  ],
-
-  produces: [
-    "RouteMemoryEntry",
-    "RouteTrace",
-    "DegradationTier",
-    "RouteMemoryEnvelope"
-  ],
-
-  sideEffects: "localstorage_and_corememory_write_only",
-  network: "none",
-  filesystem: "none"
-}
 ===============================================================================
 */
+import PulseUIErrors from "./PulseUIErrors-v24.js";
+import { PulseProofBridge as BridgeExport } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // Global handle
 const g =
@@ -110,8 +17,6 @@ const g =
     ? global
     : typeof window !== "undefined"
     ? window
-    : typeof g !== "undefined"
-    ? g
     : {};
 
 // Prefer global db if present (logger page / server)
@@ -122,13 +27,27 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-import PulseUIErrors from "./PulseUIErrors-v24.js";
-import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+// IMMORTAL++: lazy bridge resolution (no TDZ, no cycles)
+function getBridge() {
+  if (typeof globalThis !== "undefined" && globalThis.PulseProofBridge) {
+    return globalThis.PulseProofBridge;
+  }
+  return BridgeExport || null;
+}
 
-// CoreMemory + buses via bridge
-const CoreMemory = PulseProofBridge?.coreMemory || null;
-const DiagnosticsBus = PulseProofBridge?.diagnosticsBus || null;
-const EvidenceBus = PulseProofBridge?.evidenceBus || null;
+function getCoreMemory() {
+  return getBridge()?.coreMemory || null;
+}
+
+function getDiagnosticsBus() {
+  return getBridge()?.diagnosticsBus || null;
+}
+
+function getEvidenceBus() {
+  return getBridge()?.evidenceBus || null;
+}
+
+const ROUTE_MEMORY_SCHEMA_VERSION = "v5";
 
 export const RouteMemoryRole = {
   type: "Organ",
@@ -179,9 +98,6 @@ export const RouteMemoryRole = {
     multiMindAware: true
   }
 };
-
-const ROUTE_MEMORY_SCHEMA_VERSION = "v5";
-
 // ---------------------------------------------------------------------------
 // ERROR NORMALIZATION
 // ---------------------------------------------------------------------------
@@ -246,9 +162,9 @@ function loadRouteMemoryBuffer() {
     return [];
   }
 }
-
 function mirrorRouteMemoryToCoreMemory(buffer) {
-  if (!CoreMemory || typeof CoreMemory.setRouteSnapshot !== "function") return;
+  const Core = getCoreMemory();
+  if (!Core || typeof Core.setRouteSnapshot !== "function") return;
   try {
     const envelope = {
       schemaVersion: ROUTE_MEMORY_SCHEMA_VERSION,
@@ -257,7 +173,7 @@ function mirrorRouteMemoryToCoreMemory(buffer) {
       buffer,
       timestamp: Date.now()
     };
-    CoreMemory.setRouteSnapshot("routeMemory", envelope);
+    Core.setRouteSnapshot("routeMemory", envelope);
   } catch {
     // best-effort only
   }
@@ -292,12 +208,14 @@ function appendRouteMemoryEntry(kind, key, envelopeSnapshot) {
 
   // Diagnostics bus mirror
   try {
-    DiagnosticsBus?.emit?.("RouteMemory.record", record);
+    const diag = getDiagnosticsBus();
+    diag?.emit?.("RouteMemory.record", record);
   } catch {}
 
   // Evidence bus mirror (low-entropy route memory intel)
   try {
-    EvidenceBus?.emit?.("RouteMemory.trace", {
+    const evidence = getEvidenceBus();
+    evidence?.emit?.("RouteMemory.trace", {
       kind,
       key,
       ts: record.ts,
@@ -313,7 +231,8 @@ export const PulseRouteMemoryStore = {
   clear() {
     saveRouteMemoryBuffer([]);
     try {
-      CoreMemory?.setRouteSnapshot?.("routeMemory", {
+      const Core = getCoreMemory();
+      Core?.setRouteSnapshot?.("routeMemory", {
         schemaVersion: ROUTE_MEMORY_SCHEMA_VERSION,
         version: RouteMemoryRole.version,
         routeId: "routeMemory",
@@ -338,7 +257,7 @@ export function createPulseRouteMemory({
   log = console.log,
   warn = console.warn
 } = {}) {
-  const Core = CoreMemory;
+  const Core = getCoreMemory();
 
   const RouteMemoryState = {
     bucketId,
@@ -518,7 +437,8 @@ export function createPulseRouteMemory({
       });
 
       try {
-        DiagnosticsBus?.emit?.("RouteMemory.remember", {
+        const diag = getDiagnosticsBus();
+        diag?.emit?.("RouteMemory.remember", {
           key,
           tier,
           degraded: entry.degraded,
@@ -527,7 +447,8 @@ export function createPulseRouteMemory({
         });
       } catch {}
       try {
-        EvidenceBus?.emit?.("RouteMemory.envelope", {
+        const evidence = getEvidenceBus();
+        evidence?.emit?.("RouteMemory.envelope", {
           key,
           tier,
           degraded: entry.degraded,
@@ -545,234 +466,239 @@ export function createPulseRouteMemory({
       return null;
     }
   }
+function markDegraded(
+  message,
+  frames,
+  healthScore = 0.85,
+  binaryAware = false,
+  channel = "ui"
+) {
+  nextSeq();
+  try {
+    const key = makeKey(message, frames);
+    const raw = readBucket(key);
+    if (!raw) return;
 
-  function markDegraded(
-    message,
-    frames,
-    healthScore = 0.85,
-    binaryAware = false,
-    channel = "ui"
-  ) {
-    nextSeq();
-    try {
-      const key = makeKey(message, frames);
-      const raw = readBucket(key);
-      if (!raw) return;
+    const { envelope: existingEnvelope, entry: existingEntry } = unwrapEnvelope(raw);
+    if (!existingEntry) return;
 
-      const { envelope: existingEnvelope, entry: existingEntry } = unwrapEnvelope(
-        raw
-      );
-      if (!existingEntry) return;
-
-      const entry = {
-        ...existingEntry,
-        degraded: true,
-        healthScore,
-        tier: classifyTier(healthScore),
-        dnaTag: binaryAware
-          ? "A1_BINARY_SHADOW_DEGRADED"
-          : "A1_SURFACE_DEGRADED"
-      };
-
-      const newEnvelope = buildEnvelope(key, entry, channel);
-
-      writeBucket(key, newEnvelope);
-
-      RouteMemoryState.lastKey = key;
-      RouteMemoryState.lastEntry = entry;
-      RouteMemoryState.lastEnvelope = newEnvelope;
-      RouteMemoryState.lastTier = entry.tier;
-      RouteMemoryState.lastChannel = channel;
-
-      appendRouteMemoryEntry("markDegraded", key, newEnvelope);
-
-      safeLog("ROUTE_MEMORY_DEGRADED", {
-        key,
-        healthScore,
-        tier: entry.tier,
-        dnaTag: entry.dnaTag,
-        channel
-      });
-
-      try {
-        DiagnosticsBus?.emit?.("RouteMemory.markDegraded", {
-          key,
-          tier: entry.tier,
-          channel,
-          dnaTag: entry.dnaTag
-        });
-      } catch {}
-    } catch (err) {
-      RouteMemoryState.lastError = String(err);
-      safeNormalizeError(err, "routememory.markDegraded");
-      safeLog("ROUTE_MEMORY_DEGRADED_ERROR", { error: String(err) });
-    }
-  }
-
-  function recall(message, frames) {
-    nextSeq();
-    try {
-      const key = makeKey(message, frames);
-      const raw = readBucket(key);
-      if (!raw) return null;
-
-      const { envelope, entry } = unwrapEnvelope(raw);
-      if (!entry) return null;
-
-      const effectiveEnvelope = envelope || buildEnvelope(key, entry);
-
-      RouteMemoryState.lastKey = key;
-      RouteMemoryState.lastEntry = entry;
-      RouteMemoryState.lastEnvelope = effectiveEnvelope;
-      RouteMemoryState.lastTier = entry.tier;
-      RouteMemoryState.lastChannel =
-        (effectiveEnvelope && effectiveEnvelope.channel) ||
-        RouteMemoryState.lastChannel ||
-        "ui";
-
-      safeLog("ROUTE_MEMORY_HIT", {
-        key,
-        frames: Array.isArray(entry.frames) ? entry.frames.length : 0,
-        degraded: entry.degraded,
-        healthScore: entry.healthScore,
-        tier: entry.tier,
-        dnaTag: entry.dnaTag,
-        channel: RouteMemoryState.lastChannel
-      });
-
-      appendRouteMemoryEntry("recall", key, effectiveEnvelope);
-
-      try {
-        DiagnosticsBus?.emit?.("RouteMemory.recall", {
-          key,
-          tier: entry.tier,
-          degraded: entry.degraded
-        });
-      } catch {}
-
-      return entry.routeTrace;
-    } catch (err) {
-      RouteMemoryState.lastError = String(err);
-      safeNormalizeError(err, "routememory.recall");
-      safeLog("ROUTE_MEMORY_RECALL_ERROR", { error: String(err) });
-      return null;
-    }
-  }
-
-  function getEntry(message, frames) {
-    nextSeq();
-    try {
-      const key = makeKey(message, frames);
-      const raw = readBucket(key);
-      if (!raw) return null;
-
-      const { envelope, entry } = unwrapEnvelope(raw);
-      const effectiveEnvelope = envelope || buildEnvelope(key, entry || {});
-
-      const out = {
-        key,
-        envelope: effectiveEnvelope,
-        entry: entry || null
-      };
-
-      appendRouteMemoryEntry("getEntry", key, effectiveEnvelope);
-
-      try {
-        DiagnosticsBus?.emit?.("RouteMemory.getEntry", {
-          key,
-          hasEntry: !!entry
-        });
-      } catch {}
-
-      return out;
-    } catch (err) {
-      RouteMemoryState.lastError = String(err);
-      safeNormalizeError(err, "routememory.getEntry");
-      safeLog("ROUTE_MEMORY_GETENTRY_ERROR", { error: String(err) });
-      return null;
-    }
-  }
-
-  function flushBucket() {
-    nextSeq();
-    try {
-      if (Core) {
-        if (typeof Core.setBucket === "function") {
-          Core.setBucket(bucketId, {});
-        }
-        if (typeof Core.setRouteSnapshot === "function") {
-          Core.setRouteSnapshot(`routeMemory:${bucketId}:__FLUSH__`, {
-            schemaVersion: ROUTE_MEMORY_SCHEMA_VERSION,
-            version: RouteMemoryRole.version,
-            bucketId,
-            cleared: true,
-            timestamp: Date.now()
-          });
-        }
-      }
-
-      appendRouteMemoryEntry("flushBucket", bucketId, {
-        schemaVersion: ROUTE_MEMORY_SCHEMA_VERSION,
-        bucketId,
-        cleared: true
-      });
-
-      safeLog("ROUTE_MEMORY_FLUSH_OK", { bucketId });
-
-      try {
-        DiagnosticsBus?.emit?.("RouteMemory.flushBucket", { bucketId });
-      } catch {}
-      try {
-        EvidenceBus?.emit?.("RouteMemory.flushBucket", {
-          bucketId,
-          timestamp: Date.now()
-        });
-      } catch {}
-
-      return { ok: true };
-    } catch (err) {
-      RouteMemoryState.lastError = String(err);
-      safeNormalizeError(err, "routememory.flushBucket");
-      safeLog("ROUTE_MEMORY_FLUSH_ERROR", { bucketId, error: String(err) });
-      return { ok: false, error: "FlushError" };
-    }
-  }
-
-  function snapshot() {
-    nextSeq();
-    const snap = {
-      schemaVersion: ROUTE_MEMORY_SCHEMA_VERSION,
-      bucketId,
-      lastKey: RouteMemoryState.lastKey,
-      lastTier: RouteMemoryState.lastTier,
-      lastChannel: RouteMemoryState.lastChannel,
-      lastError: RouteMemoryState.lastError,
-      hasEnvelope: !!RouteMemoryState.lastEnvelope
+    const entry = {
+      ...existingEntry,
+      degraded: true,
+      healthScore,
+      tier: classifyTier(healthScore),
+      dnaTag: binaryAware
+        ? "A1_BINARY_SHADOW_DEGRADED"
+        : "A1_SURFACE_DEGRADED"
     };
 
-    appendRouteMemoryEntry("snapshot", RouteMemoryState.lastKey, snap);
-    safeLog("SNAPSHOT", snap);
+    const newEnvelope = buildEnvelope(key, entry, channel);
+
+    writeBucket(key, newEnvelope);
+
+    RouteMemoryState.lastKey = key;
+    RouteMemoryState.lastEntry = entry;
+    RouteMemoryState.lastEnvelope = newEnvelope;
+    RouteMemoryState.lastTier = entry.tier;
+    RouteMemoryState.lastChannel = channel;
+
+    appendRouteMemoryEntry("markDegraded", key, newEnvelope);
+
+    safeLog("ROUTE_MEMORY_DEGRADED", {
+      key,
+      healthScore,
+      tier: entry.tier,
+      dnaTag: entry.dnaTag,
+      channel
+    });
 
     try {
-      DiagnosticsBus?.emit?.("RouteMemory.snapshot", snap);
+      const diag = getDiagnosticsBus();
+      diag?.emit?.("RouteMemory.markDegraded", {
+        key,
+        tier: entry.tier,
+        channel,
+        dnaTag: entry.dnaTag
+      });
+    } catch {}
+  } catch (err) {
+    RouteMemoryState.lastError = String(err);
+    safeNormalizeError(err, "routememory.markDegraded");
+    safeLog("ROUTE_MEMORY_DEGRADED_ERROR", { error: String(err) });
+  }
+}
+
+function recall(message, frames) {
+  nextSeq();
+  try {
+    const key = makeKey(message, frames);
+    const raw = readBucket(key);
+    if (!raw) return null;
+
+    const { envelope, entry } = unwrapEnvelope(raw);
+    if (!entry) return null;
+
+    const effectiveEnvelope = envelope || buildEnvelope(key, entry);
+
+    RouteMemoryState.lastKey = key;
+    RouteMemoryState.lastEntry = entry;
+    RouteMemoryState.lastEnvelope = effectiveEnvelope;
+    RouteMemoryState.lastTier = entry.tier;
+    RouteMemoryState.lastChannel =
+      (effectiveEnvelope && effectiveEnvelope.channel) ||
+      RouteMemoryState.lastChannel ||
+      "ui";
+
+    safeLog("ROUTE_MEMORY_HIT", {
+      key,
+      frames: Array.isArray(entry.frames) ? entry.frames.length : 0,
+      degraded: entry.degraded,
+      healthScore: entry.healthScore,
+      tier: entry.tier,
+      dnaTag: entry.dnaTag,
+      channel: RouteMemoryState.lastChannel
+    });
+
+    appendRouteMemoryEntry("recall", key, effectiveEnvelope);
+
+    try {
+      const diag = getDiagnosticsBus();
+      diag?.emit?.("RouteMemory.recall", {
+        key,
+        tier: entry.tier,
+        degraded: entry.degraded
+      });
     } catch {}
 
-    return snap;
+    return entry.routeTrace;
+  } catch (err) {
+    RouteMemoryState.lastError = String(err);
+    safeNormalizeError(err, "routememory.recall");
+    safeLog("ROUTE_MEMORY_RECALL_ERROR", { error: String(err) });
+    return null;
   }
+}
 
-  const PulseRouteMemory = {
-    RouteMemoryRole,
-    RouteMemoryState,
-    DegradationTiers,
-    remember,
-    markDegraded,
-    recall,
-    getEntry,
-    flushBucket,
-    snapshot,
-    core: Core,
-    store: PulseRouteMemoryStore
+function getEntry(message, frames) {
+  nextSeq();
+  try {
+    const key = makeKey(message, frames);
+    const raw = readBucket(key);
+    if (!raw) return null;
+
+    const { envelope, entry } = unwrapEnvelope(raw);
+    const effectiveEnvelope = envelope || buildEnvelope(key, entry || {});
+
+    const out = {
+      key,
+      envelope: effectiveEnvelope,
+      entry: entry || null
+    };
+
+    appendRouteMemoryEntry("getEntry", key, effectiveEnvelope);
+
+    try {
+      const diag = getDiagnosticsBus();
+      diag?.emit?.("RouteMemory.getEntry", {
+        key,
+        hasEntry: !!entry
+      });
+    } catch {}
+
+    return out;
+  } catch (err) {
+    RouteMemoryState.lastError = String(err);
+    safeNormalizeError(err, "routememory.getEntry");
+    safeLog("ROUTE_MEMORY_GETENTRY_ERROR", { error: String(err) });
+    return null;
+  }
+}
+
+function flushBucket() {
+  nextSeq();
+  try {
+    const Core = getCoreMemory();
+    if (Core) {
+      if (typeof Core.setBucket === "function") {
+        Core.setBucket(bucketId, {});
+      }
+      if (typeof Core.setRouteSnapshot === "function") {
+        Core.setRouteSnapshot(`routeMemory:${bucketId}:__FLUSH__`, {
+          schemaVersion: ROUTE_MEMORY_SCHEMA_VERSION,
+          version: RouteMemoryRole.version,
+          bucketId,
+          cleared: true,
+          timestamp: Date.now()
+        });
+      }
+    }
+
+    appendRouteMemoryEntry("flushBucket", bucketId, {
+      schemaVersion: ROUTE_MEMORY_SCHEMA_VERSION,
+      bucketId,
+      cleared: true
+    });
+
+    safeLog("ROUTE_MEMORY_FLUSH_OK", { bucketId });
+
+    try {
+      const diag = getDiagnosticsBus();
+      diag?.emit?.("RouteMemory.flushBucket", { bucketId });
+    } catch {}
+    try {
+      const evidence = getEvidenceBus();
+      evidence?.emit?.("RouteMemory.flushBucket", {
+        bucketId,
+        timestamp: Date.now()
+      });
+    } catch {}
+
+    return { ok: true };
+  } catch (err) {
+    RouteMemoryState.lastError = String(err);
+    safeNormalizeError(err, "routememory.flushBucket");
+    safeLog("ROUTE_MEMORY_FLUSH_ERROR", { bucketId, error: String(err) });
+    return { ok: false, error: "FlushError" };
+  }
+}
+
+function snapshot() {
+  nextSeq();
+  const snap = {
+    schemaVersion: ROUTE_MEMORY_SCHEMA_VERSION,
+    bucketId,
+    lastKey: RouteMemoryState.lastKey,
+    lastTier: RouteMemoryState.lastTier,
+    lastChannel: RouteMemoryState.lastChannel,
+    lastError: RouteMemoryState.lastError,
+    hasEnvelope: !!RouteMemoryState.lastEnvelope
   };
+
+  appendRouteMemoryEntry("snapshot", RouteMemoryState.lastKey, snap);
+  safeLog("SNAPSHOT", snap);
+
+  try {
+    const diag = getDiagnosticsBus();
+    diag?.emit?.("RouteMemory.snapshot", snap);
+  } catch {}
+
+  return snap;
+}
+
+const PulseRouteMemory = {
+  RouteMemoryRole,
+  RouteMemoryState,
+  DegradationTiers,
+  remember,
+  markDegraded,
+  recall,
+  getEntry,
+  flushBucket,
+  snapshot,
+  core: getCoreMemory(),
+  store: PulseRouteMemoryStore
+};
+
 
   safeLog("INIT", {
     bucketId,

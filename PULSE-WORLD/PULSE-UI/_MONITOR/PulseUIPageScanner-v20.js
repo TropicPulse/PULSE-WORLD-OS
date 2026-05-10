@@ -3,85 +3,7 @@
 FILE: /PULSE-UI/PulsePageScanner-v20.js
 LAYER: A2 DRIFT INTELLIGENCE • v20-Immortal-Evo+++
 ===============================================================================
-AI_EXPERIENCE_META = {
-  identity: "PulseUI.PageScanner",
-  version: "v20-Immortal-Evo+++",
-  layer: "pulse_ui",
-  role: "a2_drift_intelligence",
-  lineage: "PageScannerV12 → v14-Immortal → v16-Immortal → v20-Immortal-Evo+++",
 
-  evo: {
-    driftEngine: true,
-    structuralEngine: true,
-    lineageEngine: true,
-    moduleEngine: true,
-    exportEngine: true,
-    contractEngine: true,
-    pathEngine: true,
-
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-
-    dualBand: true,
-    binaryAware: true,
-    symbolicAware: true,
-
-    futureEvolutionReady: true,
-
-    // v14 IMMORTAL EXT
-    offlineFirst: true,
-    localStoreMirrored: true,
-    replayAware: true,
-    modeAgnostic: true,
-
-    // v16 IMMORTAL EXT
-    schemaVersioned: true,
-    envelopeAware: true,
-    tierAware: true,
-    channelAware: true,
-    signatureAware: true,
-    integrityAware: true,
-    driftTierAware: true,
-    lowEntropyPacket: true,
-    replayDeterministic: true,
-
-    // v20 IMMORTAL-EVO+++ EXT
-    evidenceAware: true,
-    diagnosticsAware: true,
-    adminPanelAware: true,
-    portalAware: true,
-    touchAware: true,
-    uiFlowAware: true,
-    errorSpineAware: true,
-    coreMemoryMirrored: true,
-    overmindAware: true,
-    governorAware: true,
-    timeAxisAware: true,
-    sessionAware: true,
-    multiMindAware: true
-  },
-
-  contract: {
-    always: [
-      "PulseUI.SkinReflex",
-      "PulseUI.RouteMemory",
-      "PulseUIErrors",
-      "PulseProofBridge",
-      "PulseCore.Memory",
-      "PulseDiagnosticsBus",
-      "PulseEvidenceBus"
-    ],
-    never: [
-      "eval",
-      "Function",
-      "dynamicImport",
-      "fetchViaCNS",
-      "directFilesystemAccess",
-      "directNetworkAccess"
-    ]
-  }
-}
 ===============================================================================
 EXPORT_META = {
   organ: "PulseUI.PageScanner",
@@ -111,9 +33,11 @@ EXPORT_META = {
   filesystem: "none"
 }
 */
+import PulseUIErrors from "./PulseUIErrors-v24.js"; // keep only if you actually call it
 
-import PulseUIErrors from "./PulseUIErrors-v24.js";
-import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge as BridgeExport } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+
+const PAGESCANNER_SCHEMA_VERSION = "v5";
 
 // Global handle
 const g =
@@ -135,12 +59,25 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-// CoreMemory + buses via PulseProofBridge
-const CoreMemory = PulseProofBridge?.coreMemory || null;
-const DiagnosticsBus = PulseProofBridge?.diagnosticsBus || null;
-const EvidenceBus = PulseProofBridge?.evidenceBus || null;
+// IMMORTAL++: lazy bridge resolution (no TDZ, no cycles)
+function getBridge() {
+  if (typeof globalThis !== "undefined" && globalThis.PulseProofBridge) {
+    return globalThis.PulseProofBridge;
+  }
+  return BridgeExport || null;
+}
 
-const PAGESCANNER_SCHEMA_VERSION = "v5";
+function getCoreMemory() {
+  return getBridge()?.coreMemory || null;
+}
+
+function getDiagnosticsBus() {
+  return getBridge()?.diagnosticsBus || null;
+}
+
+function getEvidenceBus() {
+  return getBridge()?.evidenceBus || null;
+}
 
 // ============================================================================
 // IMMORTAL LOCALSTORAGE MIRROR — PulsePageScannerStore
@@ -172,10 +109,11 @@ function psLoadBuffer() {
     return [];
   }
 }
-
 function psMirrorBufferToCoreMemory(buf) {
-  if (!CoreMemory || typeof CoreMemory.setRouteSnapshot !== "function") return;
   try {
+    const core = getCoreMemory();
+    if (!core || typeof core.setRouteSnapshot !== "function") return;
+
     const envelope = {
       schemaVersion: PAGESCANNER_SCHEMA_VERSION,
       version: "20.0-Immortal-Evo+++",
@@ -183,7 +121,8 @@ function psMirrorBufferToCoreMemory(buf) {
       buffer: buf,
       timestamp: Date.now()
     };
-    CoreMemory.setRouteSnapshot("pageScanner", envelope);
+
+    core.setRouteSnapshot("pageScanner", envelope);
   } catch {
     // best-effort only
   }
@@ -191,12 +130,16 @@ function psMirrorBufferToCoreMemory(buf) {
 
 function psSaveBuffer(buf) {
   if (!psHasLocalStorage()) return;
+
   try {
     const trimmed =
       buf.length > PAGESCANNER_LS_MAX
         ? buf.slice(buf.length - PAGESCANNER_LS_MAX)
         : buf;
+
     window.localStorage.setItem(PAGESCANNER_LS_KEY, JSON.stringify(trimmed));
+
+    // IMMORTAL++: lazy bridge mirror
     psMirrorBufferToCoreMemory(trimmed);
   } catch {}
 }
@@ -208,18 +151,19 @@ function appendPageScannerRecord(kind, payload) {
     kind,
     payload
   };
+
   const buf = psLoadBuffer();
   buf.push(entry);
   psSaveBuffer(buf);
 
   // Diagnostics bus mirror
   try {
-    DiagnosticsBus?.emit?.("PageScanner.record", entry);
+    getDiagnosticsBus()?.emit?.("PageScanner.record", entry);
   } catch {}
 
   // Evidence bus mirror (low-entropy drift intel)
   try {
-    EvidenceBus?.emit?.("PageScanner.trace", {
+    getEvidenceBus()?.emit?.("PageScanner.trace", {
       kind,
       ts: entry.ts,
       schemaVersion: PAGESCANNER_SCHEMA_VERSION
@@ -231,14 +175,18 @@ export const PulsePageScannerStore = {
   getAll() {
     return psLoadBuffer();
   },
+
   tail(n = 200) {
     const buf = psLoadBuffer();
     return buf.slice(Math.max(0, buf.length - n));
   },
+
   clear() {
     psSaveBuffer([]);
+
     try {
-      CoreMemory?.setRouteSnapshot?.("pageScanner", {
+      const core = getCoreMemory();
+      core?.setRouteSnapshot?.("pageScanner", {
         schemaVersion: PAGESCANNER_SCHEMA_VERSION,
         version: "20.0-Immortal-Evo+++",
         routeId: "pageScanner",
@@ -249,6 +197,7 @@ export const PulsePageScannerStore = {
     } catch {}
   }
 };
+
 
 // ============================================================================
 // ROLE
@@ -648,9 +597,8 @@ function buildDriftPacket(context = {}) {
 
   try {
     const structural = context.structural || {};
-    const severity = typeof structural.severity === "number"
-      ? structural.severity
-      : 0;
+    const severity =
+      typeof structural.severity === "number" ? structural.severity : 0;
 
     const tooFar = severity >= 3;
     const tier = mapSeverityToTier(severity);
@@ -691,12 +639,13 @@ function buildDriftPacket(context = {}) {
 
     appendPageScannerRecord("buildDriftPacket_out", out);
 
-    // Mirror into diagnostics + evidence buses
+    // IMMORTAL++: diagnostics + evidence buses (lazy bridge)
     try {
-      DiagnosticsBus?.emit?.("PageScanner.driftPacket", out);
+      getDiagnosticsBus()?.emit?.("PageScanner.driftPacket", out);
     } catch {}
+
     try {
-      EvidenceBus?.emit?.("PageScanner.driftEvidence", {
+      getEvidenceBus()?.emit?.("PageScanner.driftEvidence", {
         signature,
         tier,
         channel,
@@ -708,6 +657,7 @@ function buildDriftPacket(context = {}) {
     return out;
   } catch (err) {
     safeNormalizeError(err, "pagescanner.buildDriftPacket");
+
     const base = {
       schemaVersion: PAGESCANNER_SCHEMA_VERSION,
       role: PageScannerRole.identity,
@@ -716,14 +666,17 @@ function buildDriftPacket(context = {}) {
       timestamp: Date.now(),
       error: true
     };
+
     const out = Object.freeze({
       ...base,
       signature: deterministicSignature(base)
     });
+
     appendPageScannerRecord("buildDriftPacket_out_error", out);
     return out;
   }
 }
+
 
 // ---------------------------------------------------------------------------
 // PUBLIC ORGAN
