@@ -1,38 +1,4 @@
-// ============================================================================
-// FILE: /PulseWorldPortal-v20.js
-// PULSE PORTAL — v20-Immortal-Evo+++
-// PORTAL-MEMBRANE • ONE-WAY GLASS • ZERO-TRUST SURFACE • ORGANISM BOOT SIGNAL
-// “The last surface before the organism. The first reflection of the portal.”
-// ============================================================================
-//
-//  DESIGN (v20-IMMORTAL PORTAL BOOT):
-//  - Unified Portal Boot Membrane:
-//      TOUCH  →  PULSE PORTAL  →  UNDERSTANDING  →  BINARY ORGANISM
-//  - Zero-trust surface:
-//      The page only sees PulsePortal shadows, never raw organs, CNS, or routing.
-//  - Binary-first, dual-band aware, evidence-aware, admin-aware:
-//      Surface is binary-aware and chunk-aligned, but projects only safe shadows.
-//  - Offline-first snapshot:
-//      Stable, deterministic environment snapshot safe for logs, vitals, trust, and bridge.
-//  - Prewarm-aware + Chunk-session-aware:
-//      Cooperates with PulseChunks + Bridge prewarm to reduce cold-start pain.
-//  - Portal Trust Layer v2:
-//      This file + PulseProofBridge-v20 form the “Portal Trust Layer v2” —
-//      the only surfaces that see both the outside page and the organism.
-//  - PulseTouch-aware:
-//      Reads PulseTouch skin snapshot as a first-contact hint into power/profile.
-//
-// ============================================================================
-//  AI EXPERIENCE METADATA — v20 IMMORTAL PULSE PORTAL
-// ============================================================================
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulsePortal",
-  version: "v20-Immortal-Evo+++",
-  layer: "frontend",
-  role: "portal_boot_membrane",
-  lineage: "PulseOS-v// ============================================================================
+//============================================================================
 // FILE: /PulseWorldPortal-v24.js
 // PULSE PORTAL — v24-Immortal-Evo+++
 // PORTAL-MEMBRANE • ONE-WAY GLASS • ZERO-TRUST SURFACE • ORGANISM BOOT SIGNAL
@@ -59,17 +25,6 @@ AI_EXPERIENCE_META = {
 // ============================================================================
 //  AI EXPERIENCE METADATA — v24 IMMORTAL PULSE PORTAL
 // ============================================================================
-
-/*
-AI_EXPERIENCE_META = {
-  identity: "PulsePortal",
-  version: "v24-Immortal-Evo+++",
-  layer: "frontend",
-  role: "portal_boot_membrane",
-  lineage: "PulseOS-v16 → v18-Immortal-Evo → v20-Immortal-Evo+++ → v24-Immortal-Evo+++",
-  ...
-}
-*/
 
 // ============================================================================
 // IMPORTS — PORTAL-ATTACHED ORGANS (SURFACE-SAFE)
