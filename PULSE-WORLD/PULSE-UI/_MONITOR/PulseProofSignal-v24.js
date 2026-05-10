@@ -4,39 +4,45 @@
 //  ZERO RANDOMNESS • ZERO EGO • DUALBAND-AWARE • ORGANISM-MAP-AWARE
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+console.log("PulseProofSignal v24-IMMORTAL-EVOLVABLE");
 
-const Identity = OrganismIdentity(import.meta.url);
+// Capture original console to avoid recursion and preserve native behavior
+const _c = { ...console };
+
+// Global handle (safe, environment-agnostic)
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof self !== "undefined"
+    ? self
+    : {};
 
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  PACKET EMITTER — deterministic, signal-scoped, FRONTEND-SAFE
+//  No OrganismMap, No Meta, No EXPORT_META, No evo.epoch
 // ============================================================================
-export const PulseProofSignalMeta = Identity.OrganMeta;
 
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  PACKET EMITTER — deterministic, signal-scoped
-// ============================================================================
 function emitSignalPacket(type, payload) {
   const now = Date.now();
+
   return Object.freeze({
-    meta: PulseProofSignalMeta,
-    exportMeta: EXPORT_META,
     packetType: `signal-${type}`,
     packetId: `signal-${type}-${now}`,
     timestamp: now,
-    epoch: PulseProofSignalMeta.evo.epoch,
+
+    // IMMORTAL++: minimal, stable, frontend-safe identity
+    version: "24.0-IMMORTAL++",
+    source: "PulseProofSignal",
+
+    // user payload last
     ...payload
   });
 }
+
 
 // ============================================================================
 //  TRANSPORT LAYER — network-safe, logger-independent
@@ -349,13 +355,16 @@ function attachToLogger(logger) {
 
   return packets;
 }
-
 // ============================================================================
-//  PUBLIC API — PulseProofSignal Engine
+//  PUBLIC API — PulseProofSignal Engine (FRONTEND-SAFE IMMORTAL++)
+//  No OrganismMap, No Meta, No EXPORT_META, No evo.epoch
 // ============================================================================
 
 export const PulseProofSignal = Object.freeze({
-  meta: PulseProofSignalMeta,
+
+  // Minimal identity (frontend-safe)
+  version: "24.0-IMMORTAL++",
+  source: "PulseProofSignal",
 
   configure(config) {
     SignalBuffer.configure(config);
@@ -363,7 +372,7 @@ export const PulseProofSignal = Object.freeze({
 
   /**
    * Direct signal logging — bypasses logger entirely.
-   * Safe to call from anywhere, even if logger is broken.
+   * Safe even if logger is broken or missing.
    */
   signal(payload) {
     const packet = normalizeDirectSignal(payload);
@@ -373,7 +382,7 @@ export const PulseProofSignal = Object.freeze({
 
   /**
    * Mirror a logger entry into signal space.
-   * Can be used manually if you have access to the raw entry.
+   * Safe even if logger is broken.
    */
   fromLogEntry(entry) {
     const packet = normalizeLogEntryToSignal(entry);
@@ -383,20 +392,21 @@ export const PulseProofSignal = Object.freeze({
 
   /**
    * Attach to a logger module (non-invasive, failure-isolated).
+   * If logger breaks, signal still works.
    */
   attachToLogger(logger) {
     return attachToLogger(logger);
   },
 
   /**
-   * Flush buffered signals to network.
+   * Flush buffered signals (network-safe, fire-and-forget).
    */
   flush() {
     SignalBuffer.flush();
   },
 
   /**
-   * Inspect in-memory signal buffer (for dev panels / organism map views).
+   * Inspect in-memory signal buffer (dev panels, debugging).
    */
   tail(n = 200) {
     return SignalBuffer.tail(n);
@@ -404,16 +414,11 @@ export const PulseProofSignal = Object.freeze({
 });
 
 // ============================================================================
-//  DUAL-MODE EXPORTS
+//  DUAL-MODE EXPORTS — FRONTEND-SAFE
 // ============================================================================
+
 if (typeof module !== "undefined") {
   module.exports = {
-    PulseProofSignalMeta,
-    PulseProofSignal,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    PulseProofSignal
   };
 }

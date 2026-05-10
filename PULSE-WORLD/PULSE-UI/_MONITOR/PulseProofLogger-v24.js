@@ -396,7 +396,7 @@ function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
 //  IMMORTAL++: Logger and Signal are parallel, not dependent
 // ============================================================================
 
-import { PulseProofSignal } from "../PULSE-X/PulseProofSignal-v24.js";
+import { PulseProofSignal } from "./PulseProofSignal-v24.js";
 
 // ============================================================================
 //  CORE LOG ENTRY CREATION — IMMORTAL++
