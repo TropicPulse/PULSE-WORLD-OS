@@ -830,33 +830,37 @@ if (channel) {
     }
   });
 }
+// ============================================================================
+//  ALIASES / EXPORT SURFACE (v24 IMMORTAL++)
+// ============================================================================
 
-// ============================================================================
-//  ALIASES / EXPORT SURFACE (v24)
-// ============================================================================
 export const route = safeRoute;
 export const PulseBinaryOrganismBoot = startDualBandAI;
 export const PulseUnderstandingBoot = startUnderstanding;
 export const PulseNetBoot = startPulseNet;
+
 export const BridgeError = error;
 export const BridgeWarn = warn;
 export const BridgeLog = log;
+
 export const BridgeVersion = PulseVersion;
 export const BridgeColors = PulseColors;
 export const BridgeIcons = PulseIcons;
+
 export const PulseProofBridgeLogger = PulseProofLogger;
 export const PulseProofBridgeReflex = PulseProofReflex;
 export const PulseProofBridgeMonitor = PulseProofMonitor;
 export const PulseProofBridgeTelemetry = emitTelemetry;
-export const PulseProofBridgeFlow  = PulseProofFlow;
-export const PulseProofBridgeErrors  = PulseUIErrors;
+export const PulseProofBridgeFlow = PulseProofFlow;
+export const PulseProofBridgeErrors = PulseUIErrors;
 
+// IMMORTAL++: canonical bridge object
 export const PulseProofBridge = {
   route,
   signal,
   prewarmBridge,
   coreMemory: coreMemoryBridge,
-  coreSpeech: coreSpeechBridge, // Core speech organ exposed to UI + adapters
+  coreSpeech: coreSpeechBridge,
   PulseNetBoot,
   pulseNetFastLane,
   pulseNetIngress,
@@ -868,35 +872,53 @@ export const PulseProofBridge = {
   onPortalEvent,
   setBridgeIdentitySnapshot,
   getBridgeIdentitySnapshot,
-  // v24: expose health snapshot for UI/monitor overlays
   getHealth() {
     return { ...BRIDGE_HEALTH };
   }
 };
 
 // ============================================================================
-//  GLOBAL EXPOSURE OF IMMORTAL STORE + BRIDGE (v24)
+//  IMMORTAL++ GLOBAL MIRROR — LAZY, SAFE, UNIVERSAL
 // ============================================================================
-try {
-  if (typeof window !== "undefined") {
-    window.PulseBridgeStore = PulseBridgeStore;
-    window.PulseProofBridge = PulseProofBridge;
+
+(function exposeBridgeGlobally() {
+  try {
+    const roots = [
+      typeof globalThis !== "undefined" ? globalThis : null,
+      typeof window !== "undefined" ? window : null,
+      typeof global !== "undefined" ? global : null,
+      typeof self !== "undefined" ? self : null,
+      typeof g !== "undefined" ? g : null
+    ];
+
+    for (const root of roots) {
+      if (!root) continue;
+
+      // IMMORTAL++: never overwrite an existing bridge
+      if (!root.PulseProofBridge) {
+        Object.defineProperty(root, "PulseProofBridge", {
+          value: PulseProofBridge,
+          writable: false,
+          enumerable: true,
+          configurable: false
+        });
+      }
+
+      if (!root.PulseBridgeStore) {
+        Object.defineProperty(root, "PulseBridgeStore", {
+          value: PulseBridgeStore,
+          writable: false,
+          enumerable: true,
+          configurable: false
+        });
+      }
+    }
+  } catch (err) {
+    // IMMORTAL++: never throw, never break the membrane
+    console.error("[PulseProofBridge v24] Global exposure failed:", err);
   }
-  if (typeof global !== "undefined") {
-    global.PulseBridgeStore = PulseBridgeStore;
-    global.PulseProofBridge = PulseProofBridge;
-  }
-  if (typeof globalThis !== "undefined") {
-    globalThis.PulseBridgeStore = PulseBridgeStore;
-    globalThis.PulseProofBridge = PulseProofBridge;
-  }
-  if (typeof g !== "undefined") {
-    g.PulseBridgeStore = PulseBridgeStore;
-    g.PulseProofBridge = PulseProofBridge;
-  }
-} catch {
-  // never throw
-}
+})();
+
 
 // ============================================================================
 //  END OF PULSEPROOFBRIDGE-v24 — PORTAL TRUST LAYER SEALED
