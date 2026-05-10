@@ -390,6 +390,17 @@ function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
 // -----------------------------------------------------------------------------
 // CORE PULSE LOGGING PIPELINE — PURELY LOCAL, ZERO NETWORK
 // -----------------------------------------------------------------------------
+// ============================================================================
+//  PULSEPROOFLOGGER-v24 IMMORTAL++
+//  Pure Append-Only Logger • Signal-Mirrored • Zero Async • Zero Network
+//  IMMORTAL++: Logger and Signal are parallel, not dependent
+// ============================================================================
+
+import { PulseProofSignal } from "../PULSE-X/PulseProofSignal-v24.js";
+
+// ============================================================================
+//  CORE LOG ENTRY CREATION — IMMORTAL++
+// ============================================================================
 
 export function pulseLog({
   layer = null,
@@ -414,6 +425,7 @@ export function pulseLog({
   compilerVersion = null,
   organismVersion = null
 } = {}) {
+
   const detectedLayer = detectLayer(layer);
   const detectedPage = page || detectPage();
 
@@ -440,13 +452,23 @@ export function pulseLog({
     organismVersion
   };
 
+  // 1. Create local log entry
   const entry = makeLocalLogEntry(level, subsystem || "legacy", message, rest, meta);
+
+  // 2. Append locally (IMMORTAL++: pure local, zero async)
   appendLocalLog(entry);
+
+  // 3. Mirror to PulseProofSignal (IMMORTAL++: logger-independent)
+  try {
+    PulseProofSignal.fromLogEntry(entry);
+  } catch (_) {
+    // IMMORTAL++: signal must never break logger
+  }
 }
 
-// -----------------------------------------------------------------------------
-// ARG NORMALIZATION + SAFETY
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  ARG NORMALIZATION — IMMORTAL++
+// ============================================================================
 
 function normalizeArgs(args) {
   let subsystem = "legacy";
@@ -486,33 +508,23 @@ function mark404(message) {
   return message;
 }
 
-// -----------------------------------------------------------------------------
-// CORE LOGGING FUNCTIONS — PURE, BURST-SAFE, HEARTBEAT-FRIENDLY
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  CORE LOGGING FUNCTIONS — IMMORTAL++
+// ============================================================================
 
 export function log(...args) {
   const { subsystem, message, rest, raw } = normalizeArgs(args);
   const color = PulseColors[subsystem] || "#fff";
   const prefix = formatPrefix(subsystem);
-
   const safeMessage = mark404(message);
 
   if (raw) {
     _c.log(safeMessage, ...rest);
   } else {
-    _c.log(
-      `%c${prefix} — ${safeMessage}`,
-      `color:${color}; font-weight:bold;`,
-      ...rest
-    );
+    _c.log(`%c${prefix} — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
   }
 
-  pulseLog({
-    level: "log",
-    subsystem,
-    message: safeMessage,
-    rest
-  });
+  pulseLog({ level: "log", subsystem, message: safeMessage, rest });
 }
 
 export function warn(...args) {
@@ -520,18 +532,9 @@ export function warn(...args) {
   const prefix = formatPrefix(subsystem);
   const safeMessage = mark404(message);
 
-  _c.warn(
-    `%c${prefix} ⚠️ [WARN] — ${safeMessage}`,
-    "color:#FFEE58; font-weight:bold;",
-    ...rest
-  );
+  _c.warn(`%c${prefix} ⚠️ [WARN] — ${safeMessage}`, "color:#FFEE58; font-weight:bold;", ...rest);
 
-  pulseLog({
-    level: "warn",
-    subsystem,
-    message: safeMessage,
-    rest
-  });
+  pulseLog({ level: "warn", subsystem, message: safeMessage, rest });
 }
 
 export function error(...args) {
@@ -539,18 +542,9 @@ export function error(...args) {
   const prefix = formatPrefix(subsystem);
   const safeMessage = mark404(message);
 
-  _c.error(
-    `%c${prefix} 🟥 [ERROR] — ${safeMessage}`,
-    "color:#EF5350; font-weight:bold;",
-    ...rest
-  );
+  _c.error(`%c${prefix} 🟥 [ERROR] — ${safeMessage}`, "color:#EF5350; font-weight:bold;", ...rest);
 
-  pulseLog({
-    level: "error",
-    subsystem,
-    message: safeMessage,
-    rest
-  });
+  pulseLog({ level: "error", subsystem, message: safeMessage, rest });
 }
 
 export function critical(...args) {
@@ -565,55 +559,14 @@ export function critical(...args) {
   _c.error(`%c${safeMessage}`, "color:#D32F2F; font-weight:bold;", ...rest);
   _c.groupEnd();
 
-  pulseLog({
-    level: "critical",
-    subsystem,
-    message: safeMessage,
-    rest
-  });
+  pulseLog({ level: "critical", subsystem, message: safeMessage, rest });
 }
 
-// -----------------------------------------------------------------------------
-// GROUPING HELPERS
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  GROUPING HELPERS — IMMORTAL++
+// ============================================================================
 
-export function group(subsystem, label) {
-  const color = PulseColors[subsystem] || "#fff";
-  const prefix = formatPrefix(subsystem);
-  _c.groupCollapsed(
-    `%c${prefix} — ${label}`,
-    `color:${color}; font-weight:bold;`
-  );
-}
 
-export function groupEnd() {
-  _c.groupEnd();
-}
-
-// -----------------------------------------------------------------------------
-// PulseLoggerStore — HEARTBEAT INTERFACE (PURELY LOCAL)
-// -----------------------------------------------------------------------------
-
-export const PulseLoggerStore = {
-  getAll() {
-    return getLocalLogs();
-  },
-
-  clear() {
-    localLogBuffer = [];
-    persistLocalLogs(localLogBuffer);
-  },
-
-  tail(n = 200) {
-    const buf = getLocalLogs();
-    if (n <= 0) return [];
-    return buf.slice(Math.max(0, buf.length - n));
-  },
-
-  drainForHeartbeat() {
-    return drainLocalLogsForHeartbeat();
-  }
-};
 
 // -----------------------------------------------------------------------------
 // Pulse command handler (LOCAL-ONLY, NO NETWORK)
@@ -652,9 +605,53 @@ function handlePulseCommand(cmd) {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Legacy console redirects — logger is the membrane
-// -----------------------------------------------------------------------------
+export function group(subsystem, label) {
+  const color = PulseColors[subsystem] || "#fff";
+  const prefix = formatPrefix(subsystem);
+  _c.groupCollapsed(`%c${prefix} — ${label}`, `color:${color}; font-weight:bold;`);
+}
+
+export function groupEnd() {
+  _c.groupEnd();
+}
+
+// ============================================================================
+//  PulseLoggerStore — HEARTBEAT INTERFACE (IMMORTAL++)
+// ============================================================================
+
+export const PulseLoggerStore = {
+  getAll() {
+    return getLocalLogs();
+  },
+
+  clear() {
+    localLogBuffer = [];
+    persistLocalLogs(localLogBuffer);
+  },
+
+  tail(n = 200) {
+    const buf = getLocalLogs();
+    if (n <= 0) return [];
+    return buf.slice(Math.max(0, buf.length - n));
+  },
+
+  drainForHeartbeat() {
+    const drained = drainLocalLogsForHeartbeat();
+
+    // IMMORTAL++: mirror drained logs to signal
+    try {
+      for (const entry of drained) {
+        PulseProofSignal.fromLogEntry(entry);
+      }
+    } catch (_) {}
+
+    return drained;
+  }
+};
+
+// ============================================================================
+//  LEGACY CONSOLE REDIRECTS — IMMORTAL++
+// ============================================================================
 
 const originalConsoleLog = _c.log;
 const originalConsoleWarn = _c.warn;
@@ -668,17 +665,12 @@ console.log = (...args) => {
   log(...args);
 };
 
-console.warn = (...args) => {
-  warn(...args);
-};
+console.warn = (...args) => warn(...args);
+console.error = (...args) => error(...args);
 
-console.error = (...args) => {
-  error(...args);
-};
-
-// -----------------------------------------------------------------------------
-// GLOBAL LOGGER BINDINGS — v24 IMMORTAL + OFFLINE LOG SURFACE
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  GLOBAL LOGGER BINDINGS — IMMORTAL++
+// ============================================================================
 
 (function bindLogger() {
   try {
@@ -716,9 +708,9 @@ console.error = (...args) => {
   }
 })();
 
-// -----------------------------------------------------------------------------
-// VitalsLogger EXPORT
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  EXPORT IMMORTAL++ LOGGER
+// ============================================================================
 
 export const VitalsLogger = {
   log,
@@ -730,10 +722,8 @@ export const VitalsLogger = {
   makeTelemetryPacket,
   getLocalLogs,
   PulseLoggerStore,
-  meta: { layer: "PulseProofLogger", version: "24.0-Immortal-EVOLVABLE" }
+  meta: { layer: "PulseProofLogger", version: "24.0-IMMORTAL++" }
 };
 
 export const logger = { ...VitalsLogger };
-
-const PulseProofLogger = logger;
-export default PulseProofLogger;
+export default logger;
