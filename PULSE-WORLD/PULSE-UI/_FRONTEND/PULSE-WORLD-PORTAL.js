@@ -912,14 +912,44 @@ if (isBrowser()) {
 
       // ----------------------------------------------------------------------
       // UNDERSTANDING BOOT — HIGH-LEVEL ORGANISM CONTEXT (CORTEX ENTRY)
-// ----------------------------------------------------------------------
+      //  → make the boot packet structured-clone safe
+      // ----------------------------------------------------------------------
+      function safeMeta(meta) {
+        if (!meta || typeof meta !== "object") return {};
+        const out = { ...meta };
+        delete out.performance;
+        delete out.timing;
+        delete out.navigation;
+        delete out.memory;
+        return out;
+      }
+
+      function safeEnv(env) {
+        if (!env || typeof env !== "object") return {};
+        const out = { ...env };
+
+        // Strip anything that might be a browser intrinsic or heavy object
+        delete out.performance;
+        delete out.timing;
+        delete out.navigation;
+        delete out.memory;
+        delete out.window;
+        delete out.document;
+        delete out.location;
+        delete out.history;
+
+        return out;
+      }
+
       try {
         if (typeof PulseUnderstanding === "function") {
-          await PulseUnderstanding({
-            meta: baseMetaPack,
-            env: PulseSurfaceEnvironment,
+          const safeBootPacket = {
+            meta: safeMeta(baseMetaPack),
+            env: safeEnv(PulseSurfaceEnvironment),
             binary: window.PulseBinary || null
-          });
+          };
+
+          await PulseUnderstanding(safeBootPacket);
         }
       } catch (err) {
         console.error("[PulsePortal-v20] Understanding boot failed:", err);
@@ -931,8 +961,8 @@ if (isBrowser()) {
       try {
         if (PulseUIFlow && typeof PulseUIFlow.init === "function") {
           PulseUIFlow.init({
-            meta: baseMetaPack,
-            env: PulseSurfaceEnvironment,
+            meta: safeMeta(baseMetaPack),
+            env: safeEnv(PulseSurfaceEnvironment)
           });
         }
       } catch (err) {
@@ -943,6 +973,7 @@ if (isBrowser()) {
     }
   })();
 }
+
 
 // ============================================================================
 // UI FLOW CONTEXT PROJECTION — OPTIONAL, READ-ONLY SURFACE VIEW
