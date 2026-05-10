@@ -1085,7 +1085,7 @@ verifyBtn.addEventListener("click", async () => {
   authMsg.style.display = "none";
 
   try {
-    if (typeof getHook !== "function") {
+    if (typeof window.getHook !== "function") {
       throw new Error("getHook() is NOT defined — cannot verify PIN.");
     }
 
