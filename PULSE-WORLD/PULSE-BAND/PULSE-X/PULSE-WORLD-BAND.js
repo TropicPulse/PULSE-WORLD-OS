@@ -1,43 +1,62 @@
 // ============================================================================
-// FILE: /PULSE-PROXY/PULSE-WORLD-BAND-v21-Immortal-WorldBand-Presence-Advantage.js
-// PULSE-WORLD-BAND INSTANCE ORCHESTRATOR — “CHECKBAND” — v21‑IMMORTAL‑WORLDBAND‑PRESENCE‑ADVANTAGE
+// FILE: /PULSE-PROXY/PULSE-WORLD-BAND-v24-ImmortalPlus-WorldBand-Presence-Advantage.js
+// PULSE-WORLD-BAND INSTANCE ORCHESTRATOR — “CHECKBAND” — v24‑IMMORTAL++‑WORLDBAND‑PRESENCE‑ADVANTAGE
 // “THE WORLD-BAND CONTROLLER / INSTANCE ADRENAL SYSTEM / BINARY-FIRST ORCHESTRATOR”
 // Backbone for PulseWorld + PulseBand presence + PulseNet pulses + instance scaling
+// v24++: Presence-aware, PulseTouch-aware, Advantage-aware, bridge-aligned diagnostics
+//        zero-drift, deterministic, binary-signatured world-band projection.
 // ============================================================================
 //
-// ROLE (v21‑IMMORTAL‑WORLDBAND‑PRESENCE‑ADVANTAGE / PULSE‑WORLD‑BAND):
+// ROLE (v24‑IMMORTAL++‑WORLDBAND‑PRESENCE‑ADVANTAGE / PULSE‑WORLD‑BAND):
 //   • Backend-only, PULSE-folder organ (safe for OSKernel + proxy spine).
 //   • Backbone world-band controller for PulseWorld + PulseBand + PulseNet + presence + advantage.
 //   • Orchestrates per-user “instance world-band” deterministically.
 //   • Reads UserScores → presence/pulse quality → computes band size + world-band shape.
 //   • Binary-first, dualband: symbolic view + binary compression metadata.
-//   • No timers, no intervals, no Date.now — pure metadata + deterministic writes.
+//   • No timers, no intervals, no Date.now in core math — only for logging / seq.
 //   • Designed for binary organism + presence upgrade + advantage cascade + world-lens routing.
 //   • Emits rich band state snapshots for CNS / OS-Healer / GlobalHealer / Pulse-World.
+//   • v24++: Touch-aware hints, advantage score, drift flags, fast-lane eligibility surfaces.
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v21.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-export const PulseOSCheckBandMeta = Identity.OrganMeta;
+export const PulseOSCheckBandMeta = {
+  ...Identity.OrganMeta,
+  version: "v24-IMMORTAL++-WorldBand-Presence-Advantage",
+  role: "worldband_adrenal_controller",
+  layer: "PulseWorldBand-A3"
+};
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-export const ADRENAL_CONTEXT = Identity.pulseLoreContext;
+export const ADRENAL_CONTEXT = {
+  ...Identity.pulseLoreContext,
+  organ: "PulseWorldBand",
+  version: "v24-IMMORTAL++-WorldBand-Presence-Advantage"
+};
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 const admin = global.db;
-const db    = global.db;
-import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+const db = global.db;
+
+import {
+  PulseProofBridgeLogger as logger
+} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { PulseLineage } from "../PULSE-PROXY/PulseProxyBBB-v20.js";
 
 // ============================================================================
 //  MODES — Orchestrator routing modes
 // ============================================================================
+
 export const ORCHESTRATOR_MODES = {
   NORMAL: "normal",
   EARN_STRESS: "earn-stress",
@@ -47,13 +66,14 @@ export const ORCHESTRATOR_MODES = {
 // ============================================================================
 //  CONFIG — Physiological Limits (drift-proof, binary-aware)
 // ============================================================================
-export const NORMAL_MAX     = 4;
-export const UPGRADED_MAX   = 8;
-export const HIGHEND_MAX    = 8;
-export const TEST_EARN_MAX  = 16;
 
-export const UPGRADED_MULT  = 2;
-export const HIGHEND_MULT   = 2;
+export const NORMAL_MAX = 4;
+export const UPGRADED_MAX = 8;
+export const HIGHEND_MAX = 8;
+export const TEST_EARN_MAX = 16;
+
+export const UPGRADED_MULT = 2;
+export const HIGHEND_MULT = 2;
 export const EARN_MODE_MULT = 1.5;
 
 export const ENABLE_INSTANCE_LOGGING = true;
@@ -69,7 +89,7 @@ export const PULSE_QUALITY = {
 };
 
 export const PRESENCE_TIER = {
-  FULL: "full",          // strong Bluetooth + device presence
+  FULL: "full", // strong Bluetooth + device presence
   PARTIAL: "partial",
   BACKGROUND: "background",
   OFFLINE: "offline",
@@ -79,12 +99,15 @@ export const PRESENCE_TIER = {
 // ============================================================================
 //  INTERNAL STATE — Active “cells” per user (CHECKBAND REGISTRY)
 // ============================================================================
+
 const activeWorkers = new Map(); // userId -> worker[]
 let lastBandStateSnapshot = null; // last global band state snapshot
+const userBandCache = new Map(); // userId -> last user band state (v24++ diagnostics)
 
 // ============================================================================
 //  BINARY HELPERS — Instance Signatures + Drift Flags
 // ============================================================================
+
 let adrenalSeq = 0; // deterministic sequence counter (replaces Date.now)
 
 function computeBinaryInstanceSignature(userId, index, deviceTier, mode) {
@@ -110,6 +133,7 @@ function computeBandDriftFlags(finalInstances, maxAllowed) {
 // ============================================================================
 //  DEVICE TIER → MAX INSTANCES (deterministic)
 // ============================================================================
+
 function getDeviceMax(deviceTier, testEarnActive, orchestratorMode) {
   if (orchestratorMode === ORCHESTRATOR_MODES.DRAIN) {
     return 1;
@@ -134,6 +158,7 @@ function getDeviceMax(deviceTier, testEarnActive, orchestratorMode) {
 //  • Worse pulses/presence → lower band, never higher
 //  • Always returns factor in (0, 1], never 0
 // ============================================================================
+
 function computePulsePresenceDegradeFactor(pulseQuality, presenceTier) {
   const pq = pulseQuality || PULSE_QUALITY.UNKNOWN;
   const pt = presenceTier || PRESENCE_TIER.UNKNOWN;
@@ -167,8 +192,78 @@ function computePulsePresenceDegradeFactor(pulseQuality, presenceTier) {
 }
 
 // ============================================================================
+//  ADVANTAGE SCORE — v24++ presence/pulse/BT → scalar
+//  • Higher score → better candidate for fast-lane / advantage cascades
+// ============================================================================
+
+function computeBandAdvantageScore({
+  pulseQuality,
+  presenceTier,
+  bluetoothPresence,
+  finalInstances
+}) {
+  const pq = pulseQuality || PULSE_QUALITY.UNKNOWN;
+  const pt = presenceTier || PRESENCE_TIER.UNKNOWN;
+  const bt = !!bluetoothPresence;
+
+  let score = 0;
+
+  // Pulse quality
+  if (pq === PULSE_QUALITY.EXCELLENT) score += 4;
+  else if (pq === PULSE_QUALITY.GOOD) score += 3;
+  else if (pq === PULSE_QUALITY.WEAK) score += 2;
+  else if (pq === PULSE_QUALITY.CRITICAL) score += 1;
+  else score += 2; // UNKNOWN
+
+  // Presence tier
+  if (pt === PRESENCE_TIER.FULL) score += 4;
+  else if (pt === PRESENCE_TIER.PARTIAL) score += 3;
+  else if (pt === PRESENCE_TIER.BACKGROUND) score += 2;
+  else if (pt === PRESENCE_TIER.OFFLINE) score += 1;
+  else score += 2; // UNKNOWN
+
+  // Bluetooth presence
+  if (bt) score += 2;
+
+  // Instances (more band → slightly higher score, capped)
+  if (finalInstances >= 4) score += 2;
+  else if (finalInstances >= 2) score += 1;
+
+  // Normalize to 0–10
+  if (score > 10) score = 10;
+  if (score < 0) score = 0;
+
+  return score;
+}
+
+// ============================================================================
+//  TOUCH / PRESENCE DRIFT FLAGS — v24++
+//  • Symbolic-only: we don’t read window, but we can mark suspicious combos
+// ============================================================================
+
+function computePresenceDriftFlags({ pulseQuality, presenceTier, bluetoothPresence }) {
+  const flags = [];
+  const pq = pulseQuality || PULSE_QUALITY.UNKNOWN;
+  const pt = presenceTier || PRESENCE_TIER.UNKNOWN;
+  const bt = !!bluetoothPresence;
+
+  if (pt === PRESENCE_TIER.OFFLINE && bt) {
+    flags.push("offline_but_bluetooth_present");
+  }
+  if (pq === PULSE_QUALITY.CRITICAL && pt === PRESENCE_TIER.FULL) {
+    flags.push("critical_pulse_full_presence_mismatch");
+  }
+  if (pq === PULSE_QUALITY.EXCELLENT && pt === PRESENCE_TIER.OFFLINE) {
+    flags.push("excellent_pulse_offline_presence_mismatch");
+  }
+
+  return flags;
+}
+
+// ============================================================================
 //  COMPUTE FINAL INSTANCE COUNT — Deterministic + presence/pulse aware
 // ============================================================================
+
 function computeFinalInstances(
   base,
   deviceTier,
@@ -185,7 +280,7 @@ function computeFinalInstances(
     final = 1;
   } else {
     if (deviceTier === "upgraded") final *= UPGRADED_MULT;
-    if (deviceTier === "highend")  final *= HIGHEND_MULT;
+    if (deviceTier === "highend") final *= HIGHEND_MULT;
 
     if (earnMode) {
       final = Math.floor(final * EARN_MODE_MULT);
@@ -201,7 +296,10 @@ function computeFinalInstances(
   }
 
   // Presence/pulse degrade ladder — only ever scales DOWN
-  const degradeFactor = computePulsePresenceDegradeFactor(pulseQuality, presenceTier);
+  const degradeFactor = computePulsePresenceDegradeFactor(
+    pulseQuality,
+    presenceTier
+  );
   final = Math.floor(final * degradeFactor);
 
   const max = getDeviceMax(deviceTier, testEarnActive, orchestratorMode);
@@ -219,6 +317,7 @@ function computeFinalInstances(
 //  WORLD-BAND PROJECTION — deterministic world-lens view of band state
 //  • No randomness, pure function of band + presence/pulse
 // ============================================================================
+
 function computeWorldBandProjection({
   finalInstances,
   pulseQuality,
@@ -230,26 +329,26 @@ function computeWorldBandProjection({
   const pt = presenceTier || PRESENCE_TIER.UNKNOWN;
 
   let localWeight = 0.5;
-  let edgeWeight  = 0.3;
-  let meshWeight  = 0.2;
+  let edgeWeight = 0.3;
+  let meshWeight = 0.2;
 
   // Presence drives locality
   if (pt === PRESENCE_TIER.FULL) {
     localWeight = 0.7;
-    edgeWeight  = 0.2;
-    meshWeight  = 0.1;
+    edgeWeight = 0.2;
+    meshWeight = 0.1;
   } else if (pt === PRESENCE_TIER.PARTIAL) {
     localWeight = 0.55;
-    edgeWeight  = 0.3;
-    meshWeight  = 0.15;
+    edgeWeight = 0.3;
+    meshWeight = 0.15;
   } else if (pt === PRESENCE_TIER.BACKGROUND) {
     localWeight = 0.4;
-    edgeWeight  = 0.35;
-    meshWeight  = 0.25;
+    edgeWeight = 0.35;
+    meshWeight = 0.25;
   } else if (pt === PRESENCE_TIER.OFFLINE) {
     localWeight = 0.25;
-    edgeWeight  = 0.4;
-    meshWeight  = 0.35;
+    edgeWeight = 0.4;
+    meshWeight = 0.35;
   }
 
   // Pulse quality nudges mesh vs edge
@@ -270,13 +369,13 @@ function computeWorldBandProjection({
   }
 
   localWeight = clamp01(localWeight);
-  edgeWeight  = clamp01(edgeWeight);
-  meshWeight  = clamp01(meshWeight);
+  edgeWeight = clamp01(edgeWeight);
+  meshWeight = clamp01(meshWeight);
 
   const sum = localWeight + edgeWeight + meshWeight || 1;
   localWeight /= sum;
-  edgeWeight  /= sum;
-  meshWeight  /= sum;
+  edgeWeight /= sum;
+  meshWeight /= sum;
 
   const fastLaneEligible =
     pq === PULSE_QUALITY.EXCELLENT &&
@@ -295,6 +394,7 @@ function computeWorldBandProjection({
 // ============================================================================
 //  LOG USER SNAPSHOT — deterministic, immune-safe, presence/pulse/world aware
 // ============================================================================
+
 async function logUserInstanceSnapshot(userId, snapshot) {
   if (!ENABLE_INSTANCE_LOGGING) return;
 
@@ -306,6 +406,9 @@ async function logUserInstanceSnapshot(userId, snapshot) {
       binaryBandSignature: snapshot.binaryBandSignature,
       binaryBandDriftFlags: snapshot.binaryBandDriftFlags,
       worldBandProjection: snapshot.worldBandProjection,
+      bandAdvantageScore: snapshot.bandAdvantageScore,
+      presenceDriftFlags: snapshot.presenceDriftFlags,
+      lineage: PulseLineage || null,
       ...snapshot
     });
   } catch (err) {
@@ -316,6 +419,7 @@ async function logUserInstanceSnapshot(userId, snapshot) {
 // ============================================================================
 //  LAUNCH WORKER — binary-first, presence-aware metadata
 // ============================================================================
+
 function launchWorker(userId, workerIndex, orchestratorMode, deviceTier) {
   const workerName = `${userId}-instance-${workerIndex}`;
   const binarySignature = computeBinaryInstanceSignature(
@@ -348,6 +452,7 @@ function launchWorker(userId, workerIndex, orchestratorMode, deviceTier) {
 // ============================================================================
 //  KILL WORKER — deterministic shutdown
 // ============================================================================
+
 function killWorker(worker) {
   logger.log("adrenal", "shutdown", {
     worker: worker.name,
@@ -359,6 +464,7 @@ function killWorker(worker) {
 // ============================================================================
 //  BAND STATE SNAPSHOT + DIAGNOSTICS SURFACES
 // ============================================================================
+
 function buildUserBandState({
   userId,
   baseInstances,
@@ -375,7 +481,10 @@ function buildUserBandState({
   degradeFactor,
   binaryBandSignature,
   driftFlags,
-  worldBandProjection
+  worldBandProjection,
+  bandAdvantageScore,
+  presenceDriftFlags,
+  touchHint
 }) {
   return {
     userId,
@@ -393,7 +502,10 @@ function buildUserBandState({
     degradeFactor,
     binaryBandSignature,
     driftFlags,
-    worldBandProjection
+    worldBandProjection,
+    bandAdvantageScore,
+    presenceDriftFlags,
+    touchHint
   };
 }
 
@@ -419,9 +531,13 @@ export function getCheckBandDiagnostics() {
   const snapshot = lastBandStateSnapshot || { users: [] };
   const totalUsers = snapshot.users.length;
   let totalInstances = 0;
+  let fastLaneEligibleUsers = 0;
 
   for (const u of snapshot.users) {
     totalInstances += u.currentWorkers || 0;
+    if (u.worldBandProjection?.fastLaneEligible) {
+      fastLaneEligibleUsers += 1;
+    }
   }
 
   return {
@@ -431,22 +547,117 @@ export function getCheckBandDiagnostics() {
     },
     totalUsers,
     totalInstances,
+    fastLaneEligibleUsers,
     mode: snapshot.mode || ORCHESTRATOR_MODES.NORMAL,
     seq: snapshot.seq || adrenalSeq
   };
 }
 
 // ============================================================================
-//  MAIN ORCHESTRATOR LOOP — v21‑IMMORTAL‑WORLDBAND‑PRESENCE‑ADVANTAGE
+//  PURE PROJECTION HELPER — v24++ (cache/prewarm-friendly)
+//  • Given a UserScores-like record, compute band state without touching DB.
+// ============================================================================
+
+export function projectWorldBandForUser({
+  userId,
+  data,
+  orchestratorMode = ORCHESTRATOR_MODES.NORMAL
+}) {
+  const baseInstances = data.instances ?? 1;
+  const deviceTier = data.deviceTier ?? "normal";
+  const earnMode = data.earnMode ?? false;
+  const testEarnActive = data.testEarnActive ?? false;
+
+  const pulseQuality = data.pulseQuality || PULSE_QUALITY.UNKNOWN;
+  const presenceTier = data.presenceTier || PRESENCE_TIER.UNKNOWN;
+  const bluetoothPresence = !!data.bluetoothPresence;
+
+  const {
+    finalInstances,
+    maxAllowed,
+    degradeFactor,
+    driftFlags
+  } = computeFinalInstances(
+    baseInstances,
+    deviceTier,
+    earnMode,
+    testEarnActive,
+    orchestratorMode,
+    pulseQuality,
+    presenceTier
+  );
+
+  const worldBandProjection = computeWorldBandProjection({
+    finalInstances,
+    pulseQuality,
+    presenceTier,
+    bluetoothPresence
+  });
+
+  const bandAdvantageScore = computeBandAdvantageScore({
+    pulseQuality,
+    presenceTier,
+    bluetoothPresence,
+    finalInstances
+  });
+
+  const presenceDriftFlags = computePresenceDriftFlags({
+    pulseQuality,
+    presenceTier,
+    bluetoothPresence
+  });
+
+  const binaryBandSignatureSeed =
+    `${userId}|${finalInstances}|` +
+    `${deviceTier}|${orchestratorMode}|${adrenalSeq}|` +
+    `${pulseQuality}|${presenceTier}`;
+  let bandHash = 0;
+  for (let i = 0; i < binaryBandSignatureSeed.length; i++) {
+    bandHash =
+      (bandHash * 31 + binaryBandSignatureSeed.charCodeAt(i)) >>> 0;
+  }
+  const binaryBandSignature =
+    "BAND-STATE-" + bandHash.toString(16).padStart(8, "0");
+
+  return {
+    userId,
+    baseInstances,
+    finalInstances,
+    deviceTier,
+    earnMode,
+    testEarnActive,
+    maxAllowed,
+    mode: orchestratorMode,
+    pulseQuality,
+    presenceTier,
+    bluetoothPresence,
+    degradeFactor,
+    binaryBandSignature,
+    driftFlags,
+    worldBandProjection,
+    bandAdvantageScore,
+    presenceDriftFlags
+  };
+}
+
+// ============================================================================
+//  MAIN ORCHESTRATOR LOOP — v24‑IMMORTAL++‑WORLDBAND‑PRESENCE‑ADVANTAGE
 //  • Reads presence/pulse fields if present, otherwise safe defaults
 //  • Worse pulses/presence → lower band, never higher
 //  • Emits global band state snapshot for CNS / OS‑Healer / Pulse‑World
+//  • v24++: Touch hint passthrough, advantage score, drift flags, cache
 // ============================================================================
+
 export async function runInstanceOrchestrator(pulse) {
   const orchestratorMode =
     pulse?.mode && Object.values(ORCHESTRATOR_MODES).includes(pulse.mode)
       ? pulse.mode
       : ORCHESTRATOR_MODES.NORMAL;
+
+  const touchHint =
+    pulse?.touchHint ||
+    pulse?.pulseTouch ||
+    null; // symbolic-only hint from Pulse‑Touch / Pulse‑World if provided
 
   logger.log("adrenal", "tick_start", {
     ...ADRENAL_CONTEXT,
@@ -461,14 +672,14 @@ export async function runInstanceOrchestrator(pulse) {
     const userId = doc.id;
     const data = doc.data() || {};
 
-    const baseInstances   = data.instances ?? 1;
-    const deviceTier      = data.deviceTier ?? "normal";
-    const earnMode        = data.earnMode ?? false;
-    const testEarnActive  = data.testEarnActive ?? false;
+    const baseInstances = data.instances ?? 1;
+    const deviceTier = data.deviceTier ?? "normal";
+    const earnMode = data.earnMode ?? false;
+    const testEarnActive = data.testEarnActive ?? false;
 
     // Presence / pulse quality inputs (optional, safe defaults)
-    const pulseQuality      = data.pulseQuality || PULSE_QUALITY.UNKNOWN;
-    const presenceTier      = data.presenceTier || PRESENCE_TIER.UNKNOWN;
+    const pulseQuality = data.pulseQuality || PULSE_QUALITY.UNKNOWN;
+    const presenceTier = data.presenceTier || PRESENCE_TIER.UNKNOWN;
     const bluetoothPresence = !!data.bluetoothPresence; // symbolic only
 
     const {
@@ -571,6 +782,19 @@ export async function runInstanceOrchestrator(pulse) {
       bluetoothPresence
     });
 
+    const bandAdvantageScore = computeBandAdvantageScore({
+      pulseQuality,
+      presenceTier,
+      bluetoothPresence,
+      finalInstances
+    });
+
+    const presenceDriftFlags = computePresenceDriftFlags({
+      pulseQuality,
+      presenceTier,
+      bluetoothPresence
+    });
+
     const userBandState = buildUserBandState({
       userId,
       baseInstances,
@@ -587,10 +811,14 @@ export async function runInstanceOrchestrator(pulse) {
       degradeFactor,
       binaryBandSignature,
       driftFlags,
-      worldBandProjection
+      worldBandProjection,
+      bandAdvantageScore,
+      presenceDriftFlags,
+      touchHint
     });
 
     usersState.push(userBandState);
+    userBandCache.set(userId, userBandState);
 
     // SNAPSHOT — Immune-safe Logging (deterministic, presence/pulse/world aware)
     await logUserInstanceSnapshot(userId, {
@@ -609,7 +837,9 @@ export async function runInstanceOrchestrator(pulse) {
       degradeFactor,
       binaryBandSignature,
       binaryBandDriftFlags: driftFlags,
-      worldBandProjection
+      worldBandProjection,
+      bandAdvantageScore,
+      presenceDriftFlags
     });
   }
 
@@ -628,12 +858,14 @@ export async function runInstanceOrchestrator(pulse) {
 }
 
 // ============================================================================
-//–  DEFAULT EXPORT — IMMORTAL PULSE‑WORLD‑BAND ORGAN
+//  DEFAULT EXPORT — IMMORTAL++ PULSE‑WORLD‑BAND ORGAN (v24)
 // ============================================================================
+
 export default {
   meta: PulseOSCheckBandMeta,
   PulseRole,
   runInstanceOrchestrator,
   getCheckBandStateSnapshot,
-  getCheckBandDiagnostics
+  getCheckBandDiagnostics,
+  projectWorldBandForUser
 };
