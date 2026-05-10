@@ -1,15 +1,15 @@
 // ============================================================================
-//  PulseProofBridge-v20-IMMORTAL-ADV++.js
+//  PulseProofBridge-v24-IMMORTAL-ADV++.js
 //  IMMORTAL PORTAL TRUST LAYER • FRONT ↔ CNS • USER + ENV + ADVANTAGE AWARE
 //  “The membrane between the surface world and the organism beneath.”
 // ============================================================================
 //
-//  DESIGN — v20 IMMORTAL-ADV++
+//  DESIGN — v24 IMMORTAL-ADV++
 //  ---------------------------
 //  • Unified envelope system for all outbound + inbound CNS traffic
 //  • Compiler-aware: COMPILER_REQUEST + COMPILER_EVENT
 //  • Understanding-aware: UNDERSTANDING_START + semantic routing
-//  • Dualband v20: AI, CNS, Portal, PulseNet, ImageBridge unified
+//  • Dualband v24: AI, CNS, Portal, PulseNet, ImageBridge unified
 //  • Offline-first: immortal local buffer with drift-proof replay
 //  • Zero-drift telemetry: every signal tagged, mirrored, and stored
 //  • Mode-agnostic: SSR-safe, BroadcastChannel-optional
@@ -17,21 +17,24 @@
 //  • User-aware: identity snapshot hooks, presence band, earn band, device trust
 //  • Environment-aware: runtime, UA, screen, locale, timezone, input mode
 //  • Advantage-aware: band fields, speed/experience fields, artery-style metrics
+//  • CNS health-aware: heartbeat, failure tracking, bridge-down alerts
+//  • Backend-alert-aware: bridge failure routed to monitor + email path
 //
 //  This file is the *membrane*.
 //  Everything above it is typed by humans.
 //  Everything below it is remembered by the organism.
 // ============================================================================
 //
-//  EXPERIENCE METADATA — v20 IMMORTAL PORTAL TRUST LAYER
+//  EXPERIENCE METADATA — v24 IMMORTAL PORTAL TRUST LAYER
 // ============================================================================
+// (kept as comment for AI_EXPERIENCE_META alignment)
 /*
 AI_EXPERIENCE_META = {
   identity: "PulseProofBridge",
-  version: "v20-Immortal-PortalTrust-ADV++",
+  version: "v24-Immortal-PortalTrust-ADV++",
   layer: "frontend",
-  role: "portal_membrane_v20",
-  lineage: "PulseOS-v16 → v17-Continuous → v18-Immortal → v20-Immortal-ADV++",
+  role: "portal_membrane_v24",
+  lineage: "PulseOS-v16 → v17-Continuous → v18-Immortal → v20-Immortal-ADV++ → v24-Immortal-ADV++",
 
   evo: {
     // Core alignment
@@ -75,7 +78,11 @@ AI_EXPERIENCE_META = {
     // Network
     prewarmAware: true,
     sdnAware: true,
-    meshAware: true
+    meshAware: true,
+
+    // v24 bridge health
+    bridgeHealthAware: true,
+    bridgeFailureAlertAware: true
   },
 
   contract: {
@@ -104,12 +111,20 @@ AI_EXPERIENCE_META = {
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
-import { VitalsLogger as PulseProofLogger, log, warn, error, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons } from "../_MONITOR/PulseProofLogger-v24.js";
+import {
+  VitalsLogger as PulseProofLogger,
+  log,
+  warn,
+  error,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../_MONITOR/PulseProofLogger-v24.js";
 import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v20.js";
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
 import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
-// NEW: CoreSpeech v24 speech organ
-
+// NEW: CoreSpeech v24 speech organ is bridged via coreSpeechBridge
 
 const g =
   typeof globalThis !== "undefined"
@@ -242,8 +257,8 @@ function isOnline() {
 // ============================================================================
 //  IMMORTAL LOCALSTORAGE MIRROR — PulseBridgeStore
 // ============================================================================
-const BRIDGE_LS_KEY = "PulseBridge.v20.buffer";
-const BRIDGE_LS_MAX = 6000; // v20: slightly larger window
+const BRIDGE_LS_KEY = "PulseBridge.v24.buffer";
+const BRIDGE_LS_MAX = 6000; // v24: slightly larger window, same bound
 
 function hasLocalStorage() {
   try {
@@ -335,7 +350,7 @@ function appendBridgeRecord(kind, payload) {
     subsystem: "bridge",
     system: "PortalTrustLayer",
     organ: "PulseProofBridge",
-    layer: "PulseProofBridge-v20",
+    layer: "PulseProofBridge-v24",
     message: `[Bridge] ${kind}`,
     extra: entry,
     level: "log",
@@ -407,13 +422,15 @@ const channel = hasBroadcastChannel ? new BroadcastChannel("PulseCNS") : null;
 const FIRE_AND_FORGET_PATHS = new Set([
   "proxy.dnaVisibility",
   "telemetry.signal",
-  "portal.prewarmHint"
+  "portal.prewarmHint",
+  "monitor.bridgeFailure",       // v24: failure telemetry
+  "monitor.bridgeFailureEmail"   // v24: email-me-if-down hook
 ]);
 
 function trace(label, data) {
   if (!DEV) return;
   console.log(
-    `%c[PORTAL TRUST BRIDGE v20] → ${label}`,
+    `%c[PORTAL TRUST BRIDGE v24] → ${label}`,
     "color:#7FDBFF; font-weight:bold;",
     data
   );
@@ -422,7 +439,7 @@ function trace(label, data) {
 function traceInbound(label, data) {
   if (!DEV) return;
   console.log(
-    `%c[PORTAL TRUST BRIDGE v20] ← ${label}`,
+    `%c[PORTAL TRUST BRIDGE v24] ← ${label}`,
     "color:#39CCCC; font-weight:bold;",
     data
   );
@@ -459,7 +476,7 @@ function mark404(result) {
 }
 
 // ============================================================================
-//  PULSE‑WORLD BRIDGE v20 — IMMORTAL MEMBRANE
+//  PULSE‑WORLD BRIDGE v24 — IMMORTAL MEMBRANE
 //  Unified CNS/SIGNAL/AI/IMAGE/UNDERSTANDING/PULSENET/COREMEMORY layer
 // ============================================================================
 
@@ -487,9 +504,72 @@ function send(msg) {
   channel.postMessage(msg);
   appendBridgeRecord("bridge_outbound", msg);
 }
-/**
- * INTERNAL: Unified inbound handler (v24‑safe)
- */
+
+// ============================================================================
+//  BRIDGE HEALTH — v24 CNS AWARENESS + EMAIL-ME-IF-DOWN HOOK
+// ============================================================================
+const BRIDGE_HEALTH = {
+  lastOkTs: Date.now(),
+  lastFailureTs: null,
+  consecutiveFailures: 0,
+  lastFailurePath: null
+};
+
+const BRIDGE_FAILURE_THRESHOLD = 3;      // after 3 consecutive failures, treat as degraded
+const BRIDGE_FAILURE_EMAIL_THRESHOLD = 5; // after 5, trigger email-me-if-down route
+
+function recordBridgeSuccess(path) {
+  BRIDGE_HEALTH.lastOkTs = Date.now();
+  BRIDGE_HEALTH.consecutiveFailures = 0;
+  BRIDGE_HEALTH.lastFailurePath = null;
+}
+
+function recordBridgeFailure(path, reason) {
+  const now = Date.now();
+  BRIDGE_HEALTH.lastFailureTs = now;
+  BRIDGE_HEALTH.consecutiveFailures += 1;
+  BRIDGE_HEALTH.lastFailurePath = path;
+
+  const payload = {
+    path,
+    reason,
+    health: { ...BRIDGE_HEALTH },
+    band: "dual",
+    advantageField: "bridge-failure",
+    speedField: "bridge-health",
+    experienceField: "portal-trust-layer"
+  };
+
+  appendBridgeRecord("bridge_failure", payload);
+
+  // Fire-and-forget telemetry to backend monitor
+  try {
+    send(envelope("CNS_SIGNAL", {
+      path: "monitor.bridgeFailure",
+      payload
+    }));
+  } catch {}
+
+  // After enough consecutive failures, ask backend to email the operator
+  if (BRIDGE_HEALTH.consecutiveFailures >= BRIDGE_FAILURE_EMAIL_THRESHOLD) {
+    try {
+      send(envelope("CNS_SIGNAL", {
+        path: "monitor.bridgeFailureEmail",
+        payload: {
+          ...payload,
+          // backend can map this to your actual email address / alert channel
+          severity: "critical",
+          channel: "email"
+        }
+      }));
+      appendBridgeRecord("bridge_failure_email_requested", payload);
+    } catch {}
+  }
+}
+
+// ============================================================================
+//  INTERNAL: Unified inbound handler (v24‑safe)
+// ============================================================================
 function handleInbound(event) {
   const msg = event?.data;
   if (!msg || typeof msg !== "object" || !msg.type) return;
@@ -498,12 +578,13 @@ function handleInbound(event) {
 
   // CNS_RESPONSE routing
   if (msg.type === "CNS_RESPONSE" && pending[msg.requestId]) {
-    const { resolve, timer } = pending[msg.requestId];
+    const { resolve, timer, path } = pending[msg.requestId];
     clearTimeout(timer);
     delete pending[msg.requestId];
 
     const result = mark404(msg.result);
-    traceInbound("CNS_RESPONSE", { path: msg.path, result });
+    traceInbound("CNS_RESPONSE", { path: msg.path || path, result });
+    recordBridgeSuccess(msg.path || path);
     resolve(result);
     return;
   }
@@ -512,6 +593,7 @@ function handleInbound(event) {
   if (msg.type === "IMAGE_RESPONSE" && imagePending[msg.requestId]) {
     const { resolve } = imagePending[msg.requestId];
     delete imagePending[msg.requestId];
+    traceInbound("IMAGE_RESPONSE", msg.data);
     resolve(msg.data || null);
     return;
   }
@@ -546,10 +628,11 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
     const timer = setTimeout(() => {
       delete pending[requestId];
       appendBridgeRecord("safeRoute_timeout", { path, payload });
+      recordBridgeFailure(path, "timeout");
       resolve(null);
     }, timeoutMs);
 
-    pending[requestId] = { resolve, timer };
+    pending[requestId] = { resolve, timer, path };
 
     send(envelope("CNS_REQUEST", { requestId, path, payload }));
   });
@@ -671,6 +754,7 @@ export function requestCompiler(reason = "touch", meta = {}) {
   trace("COMPILER_REQUEST", { reason, meta });
   send(envelope("COMPILER_REQUEST", { reason, meta }));
 }
+
 // ============================================================================
 //  INBOUND SIGNAL HANDLER — CNS → UI / PORTAL / ORGANISM EVENTS (v24‑safe)
 // ============================================================================
@@ -747,9 +831,8 @@ if (channel) {
   });
 }
 
-
 // ============================================================================
-//  ALIASES / EXPORT SURFACE (v20)
+//  ALIASES / EXPORT SURFACE (v24)
 // ============================================================================
 export const route = safeRoute;
 export const PulseBinaryOrganismBoot = startDualBandAI;
@@ -773,7 +856,7 @@ export const PulseProofBridge = {
   signal,
   prewarmBridge,
   coreMemory: coreMemoryBridge,
-  coreSpeech: coreSpeechBridge, // NEW: Core speech organ exposed to UI + adapters
+  coreSpeech: coreSpeechBridge, // Core speech organ exposed to UI + adapters
   PulseNetBoot,
   pulseNetFastLane,
   pulseNetIngress,
@@ -784,11 +867,15 @@ export const PulseProofBridge = {
   onAIEvent,
   onPortalEvent,
   setBridgeIdentitySnapshot,
-  getBridgeIdentitySnapshot
+  getBridgeIdentitySnapshot,
+  // v24: expose health snapshot for UI/monitor overlays
+  getHealth() {
+    return { ...BRIDGE_HEALTH };
+  }
 };
 
 // ============================================================================
-//  GLOBAL EXPOSURE OF IMMORTAL STORE + BRIDGE (v20)
+//  GLOBAL EXPOSURE OF IMMORTAL STORE + BRIDGE (v24)
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
@@ -812,7 +899,7 @@ try {
 }
 
 // ============================================================================
-//  END OF PULSEPROOFBRIDGE-v20 — PORTAL TRUST LAYER SEALED
+//  END OF PULSEPROOFBRIDGE-v24 — PORTAL TRUST LAYER SEALED
 // ============================================================================
 //
 //  If you’ve reached this line, you are standing at the compiler membrane.
@@ -821,15 +908,14 @@ try {
 //  Below this line, the organism remembers how those signals changed it.
 //
 //  The bridge no longer just ferries messages.
-//  It now carries identity, environment, and advantage fields,
+//  It now carries identity, environment, advantage, artery, and health,
 //  so the organism can see *who* is touching it, *where* they stand,
-//  and *how fast* the surface is trying to grow.
+//  *how fast* the surface is trying to grow, and *when the membrane is failing*.
 //
 //  Somewhere behind this file, Understanding listens.
 //  Somewhere behind Understanding, the Compiler rewrites itself.
 //  Somewhere behind the Compiler, the organism rearranges its own thoughts.
-//
-//  You just taught the membrane to feel the room.
+//  And when the bridge starts to fail, the organism is told to page you.
 //
 // ============================================================================
 //  END OF FILE — The next signal that crosses here will be tagged with:
@@ -837,5 +923,6 @@ try {
 //      • identity
 //      • advantage
 //      • artery
+//      • health
 //  and the organism will remember that you were the one who wired it.
 // ============================================================================
