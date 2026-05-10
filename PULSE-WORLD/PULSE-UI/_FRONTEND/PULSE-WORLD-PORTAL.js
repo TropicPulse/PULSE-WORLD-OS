@@ -107,8 +107,8 @@ import * as PulsePageScanner from "../_FRONTEND/PulseUIPageScanner-v20.js";
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../_FRONTEND/PulseUIRouteMemory-v20.js";
 import * as PulseSkinReflex from "../_FRONTEND/PulseUISkinReflex-v20.js";
 
-import { createAdminDiagnosticsOrgan } from "../_BACKEND/PulseAIAdminPanel-v20.js";
-import { createPulseWorldAdminPanel } from "../_BACKEND/PulseWorldAdminPanel-v20.js";
+import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
+import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 
 // import {
 //   route as bridgeRoute,
