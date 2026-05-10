@@ -8,7 +8,7 @@
 // (kept as comment, used by higher-order systems)
 
 
-console.log("Monitor v24-Immortal-Proof");
+console.log("PulseProofMonitor v24-IMMORTAL-EVOLVABLE");
 
 import { pulseLog, log, warn, error } from "./PulseProofLogger-v24.js";
 

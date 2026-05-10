@@ -227,7 +227,7 @@ export const PulseVersion = {
   renderer: "24.0",
   gpu: "24.0",
   band: "24.0",
-  legacy: "11.x"
+  legacy: "16.x"
 };
 
 export const PulseRoles = {
