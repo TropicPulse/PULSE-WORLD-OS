@@ -96,7 +96,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // prewarm, caching, and deterministic lane-aligned compilation tasks.
 // ============================================================================
 import esbuild from "esbuild";
-import { createPulseWorldCompilerWorker as CompilerWorker } from "../../PULSE-BAND/PULSE-X/PulseWorldCompilerWorker-v20.js"; 
+import { createPulseWorldCompilerWorker as CompilerWorker } from "./PulseWorldCompilerWorker-v20.js"; 
 // NOTE: This is a stable identity import, NOT a relative path.
 //       IMMORTAL organs must never use relative filesystem imports.
 
