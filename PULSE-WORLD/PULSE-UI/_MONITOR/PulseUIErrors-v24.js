@@ -115,9 +115,6 @@ function getDiagnosticsBus() {
   return b?.diagnosticsBus || null;
 }
 
-const Core = getCore;
-const DiagnosticsBus = getDiagnosticsBus;
-const EvidenceBus = getEvidenceBus;
 // ============================================================================
 //  GLOBAL HANDLE (unchanged)
 // ============================================================================
@@ -226,20 +223,20 @@ function uiePassesDedup(envelope) {
     return true;
   }
 }
-
 function appendUIErrorRecord(kind, payload) {
   const entry = {
     ts: Date.now(),
     kind,
     payload
   };
+
   const buf = uieLoadBuffer();
   buf.push(entry);
   uieSaveBuffer(buf);
 
   // CoreMemory mirror via bridge (router-style snapshot)
   try {
-    Core?.setRouteSnapshot?.("ui_errors", {
+    getCore()?.setRouteSnapshot?.("ui_errors", {
       schemaVersion: UIE_SCHEMA_VERSION,
       version: "24.0-Immortal-Evo+++",
       kind,
@@ -250,7 +247,7 @@ function appendUIErrorRecord(kind, payload) {
 
   // Optional: append to a rolling log channel
   try {
-    Core?.appendLog?.("ui_errors_log", {
+    getCore()?.appendLog?.("ui_errors_log", {
       schemaVersion: UIE_SCHEMA_VERSION,
       version: "24.0-Immortal-Evo+++",
       kind,
@@ -260,7 +257,7 @@ function appendUIErrorRecord(kind, payload) {
 
   // Optional: diagnostics bus
   try {
-    DiagnosticsBus?.emit?.("ui_error_record", {
+    getDiagnosticsBus()?.emit?.("ui_error_record", {
       kind,
       entry
     });
@@ -271,14 +268,17 @@ export const PulseUIErrorStore = {
   getAll() {
     return uieLoadBuffer();
   },
+
   tail(n = 400) {
     const buf = uieLoadBuffer();
     return buf.slice(Math.max(0, buf.length - n));
   },
+
   clear() {
     uieSaveBuffer([]);
+
     try {
-      Core?.setRouteSnapshot?.("ui_errors", {
+      getCore()?.setRouteSnapshot?.("ui_errors", {
         schemaVersion: UIE_SCHEMA_VERSION,
         version: "24.0-Immortal-Evo+++",
         cleared: true,
@@ -287,6 +287,7 @@ export const PulseUIErrorStore = {
     } catch {}
   }
 };
+
 
 // ============================================================================
 // INTERNAL: advantage + integrity + experience blocks + severity/tags
@@ -663,45 +664,44 @@ export const PulseUIErrors = (() => {
     try {
       window?.PulseWorldAdminPanel?.onError?.(envelope);
     } catch {}
+// Understanding (SDN)
+try {
+  window?.Pulse?.SDN?.emitImpulse?.("ErrorSpine", {
+    modeKind: "dual",
+    executionContext: {
+      sceneType: "error",
+      workloadClass: "ui-error",
+      dispatchSignature: "PulseUIErrors.v24",
+      shapeSignature: "error-spine",
+      extensionId: "PulseUIErrors"
+    },
+    errorEnvelope: envelope
+  });
+} catch {}
 
-    // Understanding (SDN)
-    try {
-      window?.Pulse?.SDN?.emitImpulse?.("ErrorSpine", {
-        modeKind: "dual",
-        executionContext: {
-          sceneType: "error",
-          workloadClass: "ui-error",
-          dispatchSignature: "PulseUIErrors.v24",
-          shapeSignature: "error-spine",
-          extensionId: "PulseUIErrors"
-        },
-        errorEnvelope: envelope
-      });
-    } catch {}
+// Evidence bus (for AI evidence alignment)
+try {
+  getEvidenceBus()?.recordErrorEvidence?.({
+    envelope,
+    severity: envelope.severity,
+    tags: envelope.tags
+  });
+} catch {}
 
-    // Evidence bus (for AI evidence alignment)
-    try {
-      EvidenceBus?.recordErrorEvidence?.({
-        envelope,
-        severity: envelope.severity,
-        tags: envelope.tags
-      });
-    } catch {}
+// Binary shadow
+try {
+  window?.PulseBinary?.Vitals?.generate?.();
+} catch {}
 
-    // Binary shadow
-    try {
-      window?.PulseBinary?.Vitals?.generate?.();
-    } catch {}
+// SkinReflex
+try {
+  window?.PulseSkinReflex?.onError?.(envelope);
+} catch {}
 
-    // SkinReflex
-    try {
-      window?.PulseSkinReflex?.onError?.(envelope);
-    } catch {}
-
-    // CoreMemory mirror (full envelope)
-    try {
-      Core?.setRouteSnapshot?.("ui_errors_last", envelope);
-    } catch {}
+// CoreMemory mirror (full envelope)
+try {
+  getCore()?.setRouteSnapshot?.("ui_errors_last", envelope);
+} catch {}
   }
 
   // --------------------------------------------------------------------------
