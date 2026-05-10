@@ -484,13 +484,12 @@ function send(msg) {
   channel.postMessage(msg);
   appendBridgeRecord("bridge_outbound", msg);
 }
-
 /**
- * INTERNAL: Unified inbound handler
+ * INTERNAL: Unified inbound handler (v24‑safe)
  */
 function handleInbound(event) {
-  const msg = event.data;
-  if (!msg || !msg.type) return;
+  const msg = event?.data;
+  if (!msg || typeof msg !== "object" || !msg.type) return;
 
   appendBridgeRecord("bridge_inbound", msg);
 
@@ -503,41 +502,43 @@ function handleInbound(event) {
     const result = mark404(msg.result);
     traceInbound("CNS_RESPONSE", { path: msg.path, result });
     resolve(result);
+    return;
   }
 
   // IMAGE_RESPONSE routing
   if (msg.type === "IMAGE_RESPONSE" && imagePending[msg.requestId]) {
     const { resolve } = imagePending[msg.requestId];
     delete imagePending[msg.requestId];
-    resolve(msg.data);
+    resolve(msg.data || null);
+    return;
   }
 }
 
 // Attach inbound listener once
-if (channel && !channel.__PULSE_BRIDGE_BOUND_V20__) {
-  channel.__PULSE_BRIDGE_BOUND_V20__ = true;
+if (channel && !channel.__PULSE_BRIDGE_BOUND_V24__) {
+  channel.__PULSE_BRIDGE_BOUND_V24__ = true;
   channel.addEventListener("message", handleInbound);
 }
 
 // Pending maps
-const pending = {};
-const imagePending = {};
+const pending = Object.create(null);
+const imagePending = Object.create(null);
 
 // ============================================================================
-//  SAFE ROUTE — CNS_REQUEST → CNS_RESPONSE (Unified v20)
+//  SAFE ROUTE — CNS_REQUEST → CNS_RESPONSE (v24‑safe)
 // ============================================================================
 export function safeRoute(path, payload = {}, timeoutMs = 10000) {
   trace("CNS (SAFE)", { path, payload });
 
-  const requestId = `req-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const requestId =
+    "req-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
 
-  // Fire-and-forget paths
+  // Fire‑and‑forget paths
   if (FIRE_AND_FORGET_PATHS.has(path)) {
     send(envelope("CNS_REQUEST", { requestId, path, payload }));
     return Promise.resolve(null);
   }
 
-  // Normal request/response
   return new Promise((resolve) => {
     const timer = setTimeout(() => {
       delete pending[requestId];
@@ -552,7 +553,7 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
 }
 
 // ============================================================================
-//  SIGNAL — FIRE-AND-FORGET PORTAL SIGNALS (Unified v20)
+//  SIGNAL — FIRE‑AND‑FORGET PORTAL SIGNALS (v24‑safe)
 // ============================================================================
 export function signal(path, payload = {}) {
   trace("SIGNAL", { path, payload });
@@ -560,11 +561,11 @@ export function signal(path, payload = {}) {
 }
 
 // ============================================================================
-//  PREWARM — HINT PORTAL / CNS / SDN (Unified v20)
+//  PREWARM — HINT PORTAL / CNS / SDN (v24‑safe)
 // ============================================================================
 export function prewarmBridge(hints = {}) {
   try {
-    if (typeof window !== "undefined" && window?.prewarmAssets && Array.isArray(hints.assets)) {
+    if (typeof window !== "undefined" && window.prewarmAssets && Array.isArray(hints.assets)) {
       window.prewarmAssets(hints.assets);
       appendBridgeRecord("prewarm_assets", { urls: hints.assets });
     }
@@ -580,13 +581,14 @@ export function prewarmBridge(hints = {}) {
 }
 
 // ============================================================================
-//  CORE MEMORY BRIDGE (Unified v20)
+//  CORE MEMORY BRIDGE (v24‑safe)
 // ============================================================================
 export const coreMemoryBridge = {
   read: (key) => safeRoute("coreMemory.read", { key }),
   write: (key, value) => safeRoute("coreMemory.write", { key, value }),
   start: () => safeRoute("coreMemory.start", { ts: Date.now() })
 };
+
 export const coreSpeechBridge = {
   messages: () => safeRoute("coreSpeech.messages", {}),
   stats: () => safeRoute("coreSpeech.stats", {}),
@@ -595,17 +597,20 @@ export const coreSpeechBridge = {
   clear: () => safeRoute("coreSpeech.clear", {})
 };
 
-
 // ============================================================================
-//  FIRE-AND-FORGET ROUTE (Unified v20)
+//  FIRE‑AND‑FORGET ROUTE (v24‑safe)
 // ============================================================================
 export function fireAndForgetRoute(path, payload = {}) {
   trace("FIRE_AND_FORGET", { path, payload });
-  send(envelope("CNS_REQUEST", { requestId: `ff-${Date.now()}`, path, payload }));
+  send(envelope("CNS_REQUEST", {
+    requestId: "ff-" + Date.now().toString(36),
+    path,
+    payload
+  }));
 }
 
 // ============================================================================
-//  START DUALBAND AI (Unified v20)
+//  START DUALBAND AI (v24‑safe)
 // ============================================================================
 export function startDualBandAI(options = {}) {
   trace("DUALBAND_AI_START", options);
@@ -613,18 +618,23 @@ export function startDualBandAI(options = {}) {
 }
 
 // ============================================================================
-//  IMAGE FETCH THROUGH BRIDGE (Unified v20)
+//  IMAGE FETCH THROUGH BRIDGE (v24‑safe)
 // ============================================================================
 export function fetchImageThroughBridge(url) {
   trace("IMAGE_FETCH", { url });
 
-  const requestId = `img-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const requestId =
+    "img-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
 
   return new Promise((resolve) => {
     imagePending[requestId] = { resolve };
     send(envelope("IMAGE_REQUEST", { requestId, url }));
   });
 }
+
+// ============================================================================
+//  PULSENET FASTLANE / INGRESS (v24‑safe)
+// ============================================================================
 export function pulseNetFastLane(data = {}) {
   trace("PULSENET_FASTLANE", data);
   send(envelope("PULSENET_FASTLANE", data));
@@ -636,7 +646,7 @@ export function pulseNetIngress(data = {}) {
 }
 
 // ============================================================================
-//  START UNDERSTANDING (Unified v20)
+//  START UNDERSTANDING (v24‑safe)
 // ============================================================================
 export function startUnderstanding(options = {}) {
   trace("UNDERSTANDING_START", options);
@@ -644,7 +654,7 @@ export function startUnderstanding(options = {}) {
 }
 
 // ============================================================================
-//  START PULSE-NET (Unified v20)
+//  START PULSE‑NET (v24‑safe)
 // ============================================================================
 export function startPulseNet(options = {}) {
   trace("PULSENET_START", options);
@@ -652,19 +662,18 @@ export function startPulseNet(options = {}) {
 }
 
 // ============================================================================
-//  COMPILER REQUEST — TOUCH → BRIDGE → COMPILER (v20)
+//  COMPILER REQUEST — TOUCH → BRIDGE → COMPILER (v24‑safe)
 // ============================================================================
 export function requestCompiler(reason = "touch", meta = {}) {
   trace("COMPILER_REQUEST", { reason, meta });
   send(envelope("COMPILER_REQUEST", { reason, meta }));
 }
-
 // ============================================================================
-//  INBOUND SIGNAL HANDLER — CNS → UI / PORTAL / ORGANISM EVENTS (v20)
+//  INBOUND SIGNAL HANDLER — CNS → UI / PORTAL / ORGANISM EVENTS (v24‑safe)
 // ============================================================================
 if (channel) {
   channel.addEventListener("message", (event) => {
-    const msg = event.data;
+    const msg = event?.data;
     if (!msg || typeof msg !== "object") return;
 
     appendBridgeRecord("inbound_raw", msg);
@@ -718,7 +727,7 @@ if (channel) {
       case "IMAGE_RESPONSE": {
         traceInbound("IMAGE_RESPONSE", msg.data);
         appendBridgeRecord("image_response", msg.data);
-        // resolution is handled by fetchImageThroughBridge’s pending map
+        // resolution handled by fetchImageThroughBridge pending map
         break;
       }
 
@@ -729,11 +738,12 @@ if (channel) {
       }
 
       default:
-        // other CNS messages are handled by safeRoute / internal handlers
+        // other CNS messages handled by safeRoute / internal handlers
         break;
     }
   });
 }
+
 
 // ============================================================================
 //  ALIASES / EXPORT SURFACE (v20)
