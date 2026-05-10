@@ -985,8 +985,12 @@ document.addEventListener("DOMContentLoaded", () => {
     hideTPLoader();
     window.location.href = returnTo || "/dashboard.html";
   }
+
 /* ============================================================
    5. SEND PIN — UPGRADED WITH showLoginUI() + showPinUI()
+============================================================ */
+/* ============================================================
+   5. SEND PIN — FULL DEBUG VERSION
 ============================================================ */
 sendBtn.addEventListener("click", async () => {
   const email = emailInput.value.trim().toLowerCase();
@@ -994,7 +998,7 @@ sendBtn.addEventListener("click", async () => {
 
   if (!email || !email.includes("@")) {
     hideTPLoader();
-    authMsg.textContent = "Please Enter a Valid Email!";
+    authMsg.textContent = "Invalid email format.";
     authMsg.className = "msg error";
     authMsg.style.display = "block";
     showLoginUI();
@@ -1005,40 +1009,63 @@ sendBtn.addEventListener("click", async () => {
   authMsg.style.display = "none";
 
   try {
+    if (typeof getHook !== "function") {
+      throw new Error("getHook() is NOT defined — your login page cannot talk to backend.");
+    }
+
     const data = await getHook({ type: "sendPin", email });
+
+    console.log("[SEND PIN] RAW RESPONSE:", data);
+
     hideTPLoader();
 
-    if (data && data.success) {
+    // No response at all
+    if (!data) {
+      authMsg.className = "msg error";
+      authMsg.textContent = "ERROR: Backend returned no response.";
+      authMsg.style.display = "block";
+      return;
+    }
+
+    // Response not an object
+    if (typeof data !== "object") {
+      authMsg.className = "msg error";
+      authMsg.textContent = "ERROR: Backend returned invalid data type.";
+      authMsg.style.display = "block";
+      return;
+    }
+
+    // Success
+    if (data.success) {
       authMsg.className = "msg success";
       authMsg.textContent = "PIN Sent! Check your Email!";
-      showPinUI();     // ← SWITCH TO PIN UI
+      authMsg.style.display = "block";
+      showPinUI();
       pinInput.focus();
       return;
     }
 
-    // FAILURE
+    // Backend returned error message
     authMsg.className = "msg error";
-    authMsg.textContent = data?.message || "Could not Send PIN. Try again!";
+    authMsg.textContent = data.message || "Backend error: Could not send PIN.";
     authMsg.style.display = "block";
-    showLoginUI();     // ← ONLY RESET ON FAILURE
+    showLoginUI();
     emailInput.focus();
 
   } catch (err) {
+    console.error("[SEND PIN ERROR]", err);
+
     hideTPLoader();
     authMsg.className = "msg error";
-    authMsg.textContent = "Network error. Try again!";
+    authMsg.textContent = "EXCEPTION: " + err.message;
     authMsg.style.display = "block";
-    showLoginUI();     // ← ONLY RESET ON FAILURE
+    showLoginUI();
     emailInput.focus();
   }
 });
 
-
-  /* ============================================================
-     6. VERIFY PIN — FIXED
-  ============================================================ */
-  /* ============================================================
-   6. VERIFY PIN — UPGRADED WITH showPinUI()
+/* ============================================================
+   6. VERIFY PIN — FULL DEBUG VERSION
 ============================================================ */
 verifyBtn.addEventListener("click", async () => {
   const email = emailInput.value.trim().toLowerCase();
@@ -1048,9 +1075,9 @@ verifyBtn.addEventListener("click", async () => {
   if (pin.length !== 6) {
     hideTPLoader();
     authMsg.className = "msg error";
-    authMsg.textContent = "PIN must be 6 digits!";
+    authMsg.textContent = "PIN must be exactly 6 digits.";
     authMsg.style.display = "block";
-    showPinUI();       // ← KEEP USER IN PIN UI
+    showPinUI();
     pinInput.focus();
     return;
   }
@@ -1058,6 +1085,10 @@ verifyBtn.addEventListener("click", async () => {
   authMsg.style.display = "none";
 
   try {
+    if (typeof getHook !== "function") {
+      throw new Error("getHook() is NOT defined — cannot verify PIN.");
+    }
+
     const data = await getHook({
       type: "verifyPin",
       email,
@@ -1065,7 +1096,25 @@ verifyBtn.addEventListener("click", async () => {
       purpose: "login"
     });
 
+    console.log("[VERIFY PIN] RAW RESPONSE:", data);
+
     hideTPLoader();
+
+    if (!data) {
+      authMsg.className = "msg error";
+      authMsg.textContent = "ERROR: Backend returned no response.";
+      authMsg.style.display = "block";
+      showPinUI();
+      return;
+    }
+
+    if (typeof data !== "object") {
+      authMsg.className = "msg error";
+      authMsg.textContent = "ERROR: Backend returned invalid data type.";
+      authMsg.style.display = "block";
+      showPinUI();
+      return;
+    }
 
     if (data.success && data.identity) {
       const canonical = {
@@ -1076,7 +1125,9 @@ verifyBtn.addEventListener("click", async () => {
       try {
         localStorage.setItem("tp_identity_v9", JSON.stringify(canonical));
         localStorage.setItem("tp_device_token_v9", "1");
-      } catch {}
+      } catch (err) {
+        console.error("[IDENTITY STORAGE ERROR]", err);
+      }
 
       window.PulseIdentity = canonical;
 
@@ -1084,22 +1135,25 @@ verifyBtn.addEventListener("click", async () => {
       return;
     }
 
-    // FAILURE
+    // Backend error
     authMsg.className = "msg error";
-    authMsg.textContent = "Invalid PIN. Try again!";
+    authMsg.textContent = data.message || "Invalid PIN. Try again.";
     authMsg.style.display = "block";
-    showPinUI();       // ← KEEP USER IN PIN UI
+    showPinUI();
     pinInput.focus();
 
   } catch (err) {
+    console.error("[VERIFY PIN ERROR]", err);
+
     hideTPLoader();
     authMsg.className = "msg error";
-    authMsg.textContent = "Network error. Try again!";
+    authMsg.textContent = "EXCEPTION: " + err.message;
     authMsg.style.display = "block";
-    showPinUI();       // ← KEEP USER IN PIN UI
+    showPinUI();
     pinInput.focus();
   }
 });
+
 
 
   /* ============================================================
