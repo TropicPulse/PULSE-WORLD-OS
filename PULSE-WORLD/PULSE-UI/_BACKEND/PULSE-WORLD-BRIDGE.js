@@ -61,7 +61,7 @@ export { PulseProofBridge };
 // ============================================================================
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
-
+import { PulseProofSignal } from "../_MONITOR/PulseProofSignal-v24.js";
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
 import {
   VitalsLogger as PulseProofLogger,
