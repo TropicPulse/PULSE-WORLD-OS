@@ -82,11 +82,26 @@ logID.reset = () => {
 };
 
 
+// ============================================================================
+//  DOM TIMING — NEW
+// ============================================================================
 logID("BOOT MEMBRANE START");
+
+// Start DOM timing
+let __DOM_START = performance.now();
+logID("DOM START", true);
+
 
 if (!window.__PULSE_UI_INIT__) {
   window.__PULSE_UI_INIT__ = true;
+
 document.addEventListener("DOMContentLoaded", () => {
+
+  // End DOM timing
+  const __DOM_END = performance.now();
+  const __DOM_TOTAL = (__DOM_END - __DOM_START).toFixed(1);
+  logOK(`DOM END — TOTAL LOAD ${__DOM_TOTAL}ms`, true);
+
   logOK("DOM CONTENT LOADED — INDEX PAGE");
 
   // ============================================================================
