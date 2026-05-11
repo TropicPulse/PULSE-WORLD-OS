@@ -509,7 +509,6 @@ async function scanPulseSystems() {
   return systems;
 }
 
-
 // ============================================================================
 // IDENTITY GENERATION ENGINE — v24‑IMMORTAL‑WORLD‑GENOME++
 // ----------------------------------------------------------------------------
