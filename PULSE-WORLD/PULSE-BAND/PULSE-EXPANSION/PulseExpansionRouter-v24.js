@@ -37,8 +37,8 @@ import {
   getPulseExpansionContext
 } from "./PulseExpansion-v24.js";
 
-import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v24.js";
-import { PulseServerMeta, createPulseServer } from "./PulseServer-v24.js";
+import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
+import { PulseServerMeta, createPulseServer } from "./PulseExpansionServer-v24.js";
 
 // User lanes + world core
 import {
@@ -46,7 +46,7 @@ import {
   createPulseWorldCore,
   pulseUser,
   PulseUserMeta
-} from "./PulseUser-v24.js";
+} from "./PulseExpansionUser-v24.js";
 
 // Mesh (symbolic + binary) — v24 IMMORTAL ORGANISM
 import createBinaryMesh, {
@@ -58,12 +58,12 @@ import createPulseMesh, {
 } from "../PULSE-MESH/PulseMesh-v16.js";
 
 // Beacon engine (optional, for presence / region signals)
-import PulseBeaconEngine from "./PulseBeaconEngine-v20.js";
+import PulseBeaconEngine from "./PulseExpansionBeaconEngine-v20.js";
 
 // Beacon membrane (for meta only, if needed)
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
-} from "./PulseBeaconMesh-v20.js";
+} from "./PulseExpansionBeaconMesh-v20.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";

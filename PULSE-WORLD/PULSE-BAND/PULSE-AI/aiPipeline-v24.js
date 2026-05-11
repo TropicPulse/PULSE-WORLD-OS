@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL‑EVO — BINARY PIPELINE ORGAN
+//  PULSE OS v24‑IMMORTAL++ — BINARY PIPELINE ORGAN
 //  Compute Bloodstream • Flow Artery Metrics • Deterministic Binary Engine
 //  PURE FLOW ENGINE. ZERO RANDOMNESS. ZERO EXTERNAL MUTATION.
 //  DUALBAND‑AWARE • GPU‑FRIENDLY • OVERMIND‑AWARE
@@ -7,8 +7,6 @@
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
@@ -20,20 +18,11 @@ export const PipelineMeta = Identity.OrganMeta;
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
 //  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
-
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, pipeline-scoped
@@ -51,7 +40,7 @@ function emitPipelinePacket(type, payload) {
 }
 
 // ============================================================================
-//  PREWARM — IMMORTAL‑EVO
+//  PREWARM — v24‑IMMORTAL++
 // ============================================================================
 export function prewarmBinaryPipeline({ trace = false, context = {} } = {}) {
   const packet = emitPipelinePacket("prewarm", {
@@ -69,7 +58,7 @@ export function prewarmBinaryPipeline({ trace = false, context = {} } = {}) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v16‑IMMORTAL‑EVO
+//  ORGAN IMPLEMENTATION — v24‑IMMORTAL++
 // ============================================================================
 export class AIBinaryPipeline {
   constructor(config = {}) {
@@ -357,7 +346,7 @@ export class AIBinaryPipeline {
 }
 
 // ============================================================================
-//  FACTORY — v16‑IMMORTAL‑EVO
+//  FACTORY — v24‑IMMORTAL++
 // ============================================================================
 export function createAIBinaryPipeline(config = {}) {
   return new AIBinaryPipeline(config);
@@ -366,7 +355,7 @@ export function createAIBinaryPipeline(config = {}) {
 // ============================================================================
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
 // ============================================================================
-if (typeof module !== "undefined") {
+if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     PipelineMeta,
     AIBinaryPipeline,

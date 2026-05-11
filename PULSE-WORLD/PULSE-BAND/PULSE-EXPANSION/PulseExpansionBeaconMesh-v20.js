@@ -81,32 +81,32 @@ import {
   PulseCastleMeta,
   createPulseCastle,
   getPulseCastleContext
-} from "./PulseCastle-v24.js";
+} from "./PulseExpansionCastle-v24.js";
 import {
   PulseServerMeta,
   createPulseServer,
   getPulseServerContext
-} from "./PulseServer-v24.js";
+} from "./PulseExpansionServer-v24.js";
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PulseRouter-v24.js";
+} from "./PulseExpansionRouter-v24.js";
 
 // User lanes
-import { getPulseUserContext } from "./PulseUser-v24.js";
+import { getPulseUserContext } from "./PulseExpansionUser-v24.js";
 
 // WorldCore (AI mirror)
 import {
   createPulseWorldCore,
   pulseWorldCore
-} from "../PULSE-EXPANSION/PulseAIWorldCore-v20.js";
+} from "./PulseExpansionAIWorldCore-v20.js";
 
 // Beacon Engine + Console
 import {
   getBeaconEngineContext,
   PulseBeaconEngine
-} from "./PulseBeaconEngine-v20.js";
-import { getConsoleContext } from "./PulseBeaconConsole-v20.js";
+} from "./PulseExpansionBeaconEngine-v20.js";
+import { getConsoleContext } from "./PulseExpansionBeaconConsole-v20.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
@@ -131,12 +131,12 @@ import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 // Continuance (GPU continuance physics)
 import {
   getLastContinuanceState
-} from "../PULSE-FINALITY/PulseContinuance-v20.js";
+} from "../PULSE-FINALITY/PulseFinalityContinuance-v20.js";
 
 // OmniHosting (hosting physics / artery metrics)
 import {
   getLastOmniHostingState
-} from "../PULSE-FINALITY/PulseOmniHosting-v20.js";
+} from "../PULSE-FINALITY/PulseFinalityOmniHosting-v20.js";
 
 // Proxy context (IMMORTAL dual-band envelope)
 import {

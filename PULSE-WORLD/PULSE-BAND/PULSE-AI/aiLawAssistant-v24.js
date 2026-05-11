@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiLawAssistant.js — PulseOS Legal Assistant Organ — v24.0‑IMMORTAL++
+//  aiLawAssistant-v24.js — PulseOS Legal Assistant Organ — v24.0‑IMMORTAL++
 //  Structured • Neutral • Doctrine‑Aware • Route‑Based Law Reader
 //  v24+ UPGRADE: OrganismMap identity + Signal-aware tracing + global handle
 // ============================================================================

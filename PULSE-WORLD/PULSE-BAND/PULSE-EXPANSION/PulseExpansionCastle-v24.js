@@ -51,19 +51,19 @@ import {
 import {
   PulseServerMeta,
   createPulseServer
-} from "./PulseServer-v24.js";
+} from "./PulseExpansionServer-v24.js";
 
 // Router (meta only, for organism context)
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PulseRouter-v24.js";
+} from "./PulseExpansionRouter-v24.js";
 
 // User lanes / WorldCore (v16 IMMORTAL ORGANISM)
 import {
   PulseWorldCoreMeta, PulseUserMeta,
   createPulseWorldCore
-} from "./PulseUser-v24.js";
+} from "./PulseExpansionUser-v24.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
@@ -74,10 +74,10 @@ import createBinaryMesh, {
 } from "../PULSE-MESH/PulseBinaryMesh-v16.js";
 
 // Beacon engine + membrane
-import PulseBeaconEngine from "./PulseBeaconEngine-v20.js";
+import PulseBeaconEngine from "./PulseExpansionBeaconEngine-v20.js";
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
-} from "./PulseBeaconMesh-v20.js";
+} from "./PulseExpansionBeaconMesh-v20.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
@@ -103,7 +103,7 @@ import {
   getProxyMode,
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
-import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
+import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
 
 const _castleEvolution = createPulseNodeEvolutionV16({
   nodeType: "castle",

@@ -27,11 +27,11 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-import { createBinaryPulse } from "../PULSE-TECH/PulseBinaryTech-v20.js";
-import { createBinaryWaveScanner } from "./PulseWaveScanner.js";
-import { createBinaryLoopScanner } from "./PulseLoopScanner.js";
-import { createPulseAdminInspector } from "./PulseAdminInspector.js";
-import { createPageEvo as PageEvo } from "./PulseBinaryFramework.js";
+import { createBinaryPulse } from "../PULSE-TECH/PulseTechBinary-v20.js";
+import { createBinaryWaveScanner } from "./PulseToolsWaveScanner.js";
+import { createBinaryLoopScanner } from "./PulseToolsLoopScanner.js";
+import { createPulseAdminInspector } from "./PulseToolsAdminInspector.js";
+import { createPageEvo as PageEvo } from "./PulseToolsBinaryFramework.js";
 
 // ============================================================================
 // GRID HELPERS

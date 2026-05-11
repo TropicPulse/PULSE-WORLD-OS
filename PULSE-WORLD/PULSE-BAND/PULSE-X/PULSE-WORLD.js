@@ -39,8 +39,8 @@ import { db, admin } from "./PulseWorldGenome-v20.js";
 //  • Hybrid crown model: OvermindPrime sees heartbeats + AI requests
 // ============================================================================
 import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
-import { PulseForward as createForwardEngine } from "../PULSE-ENGINE/ForwardMotion-v24.js";
-import { PulseBackward as createBackwardEngine } from "../PULSE-ENGINE/BackwardMotion-v24.js";
+import { PulseForward as createForwardEngine } from "../PULSE-ENGINE/PulseEngineForwardMotion-v24.js";
+import { PulseBackward as createBackwardEngine } from "../PULSE-ENGINE/PulseEngineBackwardMotion-v24.js";
 
 import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
 

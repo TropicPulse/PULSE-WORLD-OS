@@ -1,47 +1,84 @@
 // ============================================================================
-//  aiLoggerAdapter.js — Pulse OS v16‑IMMORTAL
+//  aiLoggerAdapter.js — Pulse OS v24.0‑IMMORTAL++
 //  Binary Logger Membrane • Shadow Forensics • Artery Metrics • Window‑Safe
 //  PURE MEMBRANE. ZERO INTERPRETATION. ZERO RANDOMNESS. DELTA‑AWARE, CI‑AWARE.
+//  v24+ UPGRADE: OrganismMap identity + Signal-aware tracing + global handle
 // ============================================================================
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
+// ============================================================================
+//  GLOBAL HANDLE (v24 IMMORTAL, environment-agnostic)
+// ============================================================================
+
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof self !== "undefined"
+    ? self
+    : {};
+
+// ============================================================================
+//  IDENTITY (v24 IMMORTAL)
+// ============================================================================
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
 export const LoggerAdapterMeta = Identity.OrganMeta;
+export const LOGGER_ADAPTER_IDENTITY = Identity;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
 
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
+
+// ============================================================================
+//  v24+ SIGNAL-AWARE TRACE LAYER (optional, non-fatal)
+// ============================================================================
+
+function traceLoggerEvent(event, payload, traceFlag) {
+  if (!traceFlag) return;
+
+  const message = `[aiLoggerAdapter] ${event}`;
+
+  const s = g.PulseProofSignal;
+  if (s && typeof s.signal === "function") {
+    s.signal({
+      level: "info",
+      subsystem: "logger-adapter",
+      message,
+      extra: payload || {},
+      system: pulseRole,
+      organ: LoggerAdapterMeta.identity,
+      layer: surfaceMeta?.layer,
+      band: "dual"
+    });
+    return;
+  }
+
+  console.log(message, payload);
+}
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, logger-scoped
 // ============================================================================
+
 function emitLoggerPacket(type, payload, { severity = "info" } = {}) {
+  const now = Date.now();
   return Object.freeze({
     meta: LoggerAdapterMeta,
     packetType: `logger-${type}`,
-    packetId: `logger-${type}-${Date.now()}`,
-    timestamp: Date.now(),
+    packetId: `logger-${type}-${now}`,
+    timestamp: now,
     epoch: LoggerAdapterMeta.evo.epoch,
     severity,
     ...payload
@@ -49,14 +86,15 @@ function emitLoggerPacket(type, payload, { severity = "info" } = {}) {
 }
 
 // ============================================================================
-//  PREWARM — v16‑IMMORTAL membrane + artery + CI warmup
+//  PREWARM — v24‑IMMORTAL membrane + artery + CI warmup
 // ============================================================================
+
 export function prewarmLoggerAdapter(
   dualBand = null,
   {
     trace = false,
-    computeSurface = null,   // optional: current compute-intelligence surface
-    computeDeltaPacket = null // optional: last compute delta packet
+    computeSurface = null,
+    computeDeltaPacket = null
   } = {}
 ) {
   const binaryPressure = dualBand?.binary?.metabolic?.pressure ?? 0;
@@ -76,13 +114,14 @@ export function prewarmLoggerAdapter(
     computeDeltaPacket: computeDeltaPacket || null
   });
 
-  if (trace) console.log("[LoggerAdapter] prewarm", packet);
+  traceLoggerEvent("prewarm", packet, trace);
   return packet;
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v16‑IMMORTAL
+//  ORGAN IMPLEMENTATION — v24‑IMMORTAL++
 // ============================================================================
+
 export class AIBinaryLoggerAdapter {
   constructor(config = {}) {
     this.id = config.id || LoggerAdapterMeta.identity;
@@ -91,20 +130,20 @@ export class AIBinaryLoggerAdapter {
     this.shadowLogger = config.shadowLogger || null;
     this.trace = !!config.trace;
 
-    // optional CI / delta context (read-only, never interpreted)
     this.computeSurfaceProvider = config.computeSurfaceProvider || null;
     this.computeDeltaProvider = config.computeDeltaProvider || null;
-    this.triHeartId = config.triHeartId || "dad"; // which heart this membrane is closest to
+    this.triHeartId = config.triHeartId || "dad";
 
     if (!this.logger || typeof this.logger.log !== "function") {
-      throw new Error("AIBinaryLoggerAdapter requires a ProofLogger-like object with .log()");
+      throw new Error(
+        "AIBinaryLoggerAdapter requires a ProofLogger-like object with .log()"
+      );
     }
 
     if (this.shadowLogger && typeof this.shadowLogger.logRaw !== "function") {
       throw new Error("shadowLogger must implement .logRaw(binaryString, meta)");
     }
 
-    // v16‑IMMORTAL artery — membrane load + pressure metrics + CI counters
     this.artery = {
       packetsIn: 0,
       packetsOut: 0,
@@ -119,6 +158,7 @@ export class AIBinaryLoggerAdapter {
   // ---------------------------------------------------------------------------
   //  ARTERY SNAPSHOT + BUCKETS — window-safe metrics
   // ---------------------------------------------------------------------------
+
   _snapshotArtery() {
     const {
       packetsIn,
@@ -130,7 +170,7 @@ export class AIBinaryLoggerAdapter {
     } = this.artery;
 
     const load = Math.min(1, (packetsIn + packetsOut) / 4000);
-    const pressure = Math.min(1, lastPacketBits / 262144); // 256 KiB window
+    const pressure = Math.min(1, lastPacketBits / 262144);
 
     return {
       packetsIn,
@@ -149,22 +189,23 @@ export class AIBinaryLoggerAdapter {
   _bucketLoad(v) {
     if (v >= 0.95) return "saturated";
     if (v >= 0.75) return "high";
-    if (v >= 0.4)  return "medium";
-    if (v > 0)     return "low";
+    if (v >= 0.4) return "medium";
+    if (v > 0) return "low";
     return "idle";
   }
 
   _bucketPressure(v) {
     if (v >= 0.95) return "overload";
     if (v >= 0.75) return "high";
-    if (v >= 0.4)  return "medium";
-    if (v > 0)     return "low";
+    if (v >= 0.4) return "medium";
+    if (v > 0) return "low";
     return "none";
   }
 
   // ---------------------------------------------------------------------------
   //  OPTIONAL CI / DELTA CONTEXT — read-only, non-interpreting
   // ---------------------------------------------------------------------------
+
   _getComputeContext() {
     let computeSurface = null;
     let computeDeltaPacket = null;
@@ -173,7 +214,7 @@ export class AIBinaryLoggerAdapter {
       if (typeof this.computeSurfaceProvider === "function") {
         computeSurface = this.computeSurfaceProvider() || null;
       }
-    } catch (_) {
+    } catch {
       computeSurface = null;
     }
 
@@ -181,7 +222,7 @@ export class AIBinaryLoggerAdapter {
       if (typeof this.computeDeltaProvider === "function") {
         computeDeltaPacket = this.computeDeltaProvider() || null;
       }
-    } catch (_) {
+    } catch {
       computeDeltaPacket = null;
     }
 
@@ -191,6 +232,7 @@ export class AIBinaryLoggerAdapter {
   // ---------------------------------------------------------------------------
   //  PACKET BUILDER — pure, deterministic, identity-safe
   // ---------------------------------------------------------------------------
+
   _buildPacket(bits, meta = {}, severity = "info") {
     const { computeSurface, computeDeltaPacket } = this._getComputeContext();
 
@@ -228,25 +270,26 @@ export class AIBinaryLoggerAdapter {
   // ---------------------------------------------------------------------------
   //  ALWAYS-ON SHADOW LOGGER — non-blocking, non-recursive
   // ---------------------------------------------------------------------------
+
   _shadowLog(bits, meta) {
     if (!this.shadowLogger) return;
 
     try {
       this.shadowLogger.logRaw(bits, meta);
-    } catch (_) {
-      // shadow logger must NEVER break the organism
+    } catch {
+      // never break organism
     }
   }
 
   // ---------------------------------------------------------------------------
   //  PRIMARY LOGGING — ProofLogger (human-facing)
 // ---------------------------------------------------------------------------
+
   logBinary(binaryStr, meta = {}, { severity = "info" } = {}) {
     this._assertBinary(binaryStr);
 
     const packet = this._buildPacket(binaryStr, meta, severity);
 
-    // Shadow logger ALWAYS fires first
     this._shadowLog(binaryStr, packet.meta);
 
     this._trace("logBinary:packet", {
@@ -262,7 +305,7 @@ export class AIBinaryLoggerAdapter {
     this.artery.lastPacketBits = packet.bitLength;
     this.artery.lastSeverity = severity;
 
-    return emitLoggerPacket(
+    const out = emitLoggerPacket(
       "logged",
       {
         bitLength: packet.bitLength,
@@ -272,11 +315,15 @@ export class AIBinaryLoggerAdapter {
       },
       { severity }
     );
+
+    traceLoggerEvent("logBinary", out, this.trace);
+    return out;
   }
 
   // ---------------------------------------------------------------------------
   //  PIPELINE ATTACHMENT — window-safe observer
   // ---------------------------------------------------------------------------
+
   attachToPipeline(pipeline) {
     if (!pipeline || typeof pipeline.addObserver !== "function") {
       throw new Error("attachToPipeline expects a pipeline organ");
@@ -293,12 +340,19 @@ export class AIBinaryLoggerAdapter {
 
     this._trace("attachToPipeline", { pipeline: pipeline.id });
 
-    return emitLoggerPacket("pipeline-attached", { pipelineId: pipeline.id });
+    const out = emitLoggerPacket("pipeline-attached", {
+      pipelineId: pipeline.id,
+      artery: this._snapshotArtery()
+    });
+
+    traceLoggerEvent("attachToPipeline", out, this.trace);
+    return out;
   }
 
   // ---------------------------------------------------------------------------
   //  REFLEX ATTACHMENT — window-safe reflex logging
   // ---------------------------------------------------------------------------
+
   attachToReflex(reflex) {
     if (!reflex || typeof reflex.run !== "function") {
       throw new Error("attachToReflex expects a reflex organ");
@@ -306,7 +360,7 @@ export class AIBinaryLoggerAdapter {
 
     const originalRun = reflex.run.bind(reflex);
 
-    reflex.run = (binaryInput) => {
+    reflex.run = binaryInput => {
       const result = originalRun(binaryInput);
 
       if (result !== null && result !== undefined) {
@@ -323,21 +377,31 @@ export class AIBinaryLoggerAdapter {
 
     this._trace("attachToReflex", { reflex: reflex.id });
 
-    return emitLoggerPacket("reflex-attached", { reflexId: reflex.id });
+    const out = emitLoggerPacket("reflex-attached", {
+      reflexId: reflex.id,
+      artery: this._snapshotArtery()
+    });
+
+    traceLoggerEvent("attachToReflex", out, this.trace);
+    return out;
   }
 
   // ---------------------------------------------------------------------------
   //  SNAPSHOT — window-safe membrane state
   // ---------------------------------------------------------------------------
+
   snapshotMembrane() {
-    return emitLoggerPacket("snapshot", {
+    const out = emitLoggerPacket("snapshot", {
       artery: this._snapshotArtery()
     });
+    traceLoggerEvent("snapshotMembrane", out, this.trace);
+    return out;
   }
 
   // ---------------------------------------------------------------------------
   //  INTERNAL HELPERS
   // ---------------------------------------------------------------------------
+
   _assertBinary(str) {
     if (typeof str !== "string" || !/^[01]+$/.test(str)) {
       throw new TypeError("expected binary string");
@@ -345,23 +409,43 @@ export class AIBinaryLoggerAdapter {
   }
 
   _trace(event, payload) {
-    if (!this.trace) return;
-    console.log(`[${this.id}] ${event}`, payload);
+    traceLoggerEvent(event, payload, this.trace);
   }
 }
 
 // ============================================================================
 //  FACTORY
 // ============================================================================
+
 export function createAIBinaryLoggerAdapter(config) {
   return new AIBinaryLoggerAdapter(config);
 }
 
+// ============================================================================
+//  ORGAN EXPORT — v24 IMMORTAL
+// ============================================================================
+
+export const aiLoggerAdapter = Object.freeze({
+  meta: LoggerAdapterMeta,
+  create: createAIBinaryLoggerAdapter
+});
+
+// ============================================================================
+//  DUAL‑MODE EXPORTS (ESM + CommonJS)
+// ============================================================================
+
 if (typeof module !== "undefined") {
   module.exports = {
+    LOGGER_ADAPTER_IDENTITY,
+    LoggerAdapterMeta,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META,
     AIBinaryLoggerAdapter,
     createAIBinaryLoggerAdapter,
-    LoggerAdapterMeta,
-    prewarmLoggerAdapter
+    prewarmLoggerAdapter,
+    aiLoggerAdapter
   };
 }

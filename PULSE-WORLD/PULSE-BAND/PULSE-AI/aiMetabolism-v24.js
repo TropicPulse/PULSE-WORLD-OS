@@ -1,6 +1,8 @@
 // ============================================================================
-//  aiMetabolism.js — Pulse OS v15.0-Immortal Organ
-//  Binary Metabolism Engine • BinaryCore • Deterministic • Metabolic Artery v3
+//  aiMetabolism-v24.js — Pulse OS v24.0-IMMORTAL-CORE++ Organ
+//  Binary Metabolism Engine • BinaryCore • Deterministic • Metabolic Artery v4
+//  v24+ UPGRADE: OrganismMap identity, dualband-aware, Signal-aware tracing,
+//  global metabolic artery registry, window-safe snapshots, Overmind/Heartbeat hooks
 // ----------------------------------------------------------------------------
 //  CANONICAL ROLE:
 //    This organ is the **Binary Metabolism Engine** of the organism.
@@ -22,16 +24,35 @@
 //      • metabolic regulator
 //      • binary energy artery source
 // ============================================================================
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
-const Identity = OrganismIdentity(import.meta.url);
+// ============================================================================
+//  GLOBAL HANDLE (v24 IMMORTAL, environment-agnostic)
+// ============================================================================
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof self !== "undefined"
+    ? self
+    : {};
+
+// ============================================================================
+//  IDENTITY (v24 IMMORTAL)
+// ============================================================================
+
+const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
 //  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
+
 export const MetabolismMeta = Identity.OrganMeta;
 
 // ============================================================================
@@ -41,9 +62,7 @@ export const MetabolismMeta = Identity.OrganMeta;
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -72,22 +91,62 @@ export function getGlobalMetabolicArteries() {
 }
 
 // ---------------------------------------------------------
-//  PREWARM — v15.0-Immortal
+//  v24+ SIGNAL-AWARE TRACE LAYER (optional, non-fatal)
+// ---------------------------------------------------------
+function traceMetabolismEvent(event, payload, traceFlag) {
+  if (!traceFlag) return;
+
+  const message = `[AIBinaryMetabolism] ${event}`;
+
+  const s = g.PulseProofSignal;
+  if (s && typeof s.signal === "function") {
+    s.signal({
+      level: "info",
+      subsystem: "binary-metabolism",
+      message,
+      extra: payload || {},
+      system: pulseRole,
+      organ: MetabolismMeta.identity,
+      layer: surfaceMeta?.layer,
+      band: "dual"
+    });
+    return;
+  }
+
+  console.log(message, payload);
+}
+
+// ---------------------------------------------------------
+//  PACKET EMITTER — deterministic, metabolism-scoped
+// ---------------------------------------------------------
+function emitMetabolismPacket(type, payload) {
+  const now = Date.now();
+  return Object.freeze({
+    meta: MetabolismMeta,
+    packetType: `metabolism-${type}`,
+    packetId: `metabolism-${type}-${now}`,
+    timestamp: now,
+    epoch: MetabolismMeta.evo.epoch,
+    ...payload
+  });
+}
+
+// ---------------------------------------------------------
+//  PREWARM — v24.0-IMMORTAL-CORE++
 // ---------------------------------------------------------
 export function prewarmAIBinaryMetabolism({ trace = false } = {}) {
-  const packet = Object.freeze({
+  const packet = emitMetabolismPacket("prewarm", {
     type: "binary-metabolism-prewarm",
-    meta: MetabolismMeta,
-    epoch: MetabolismMeta.evo.epoch,
-    message: "Metabolism engine prewarmed and metabolic artery v3 aligned."
+    message:
+      "Metabolism engine prewarmed and metabolic artery v4 aligned (v24 IMMORTAL)."
   });
 
-  if (trace) console.log("[AIBinaryMetabolism] prewarm", packet);
+  traceMetabolismEvent("prewarm", packet, trace);
   return packet;
 }
 
 // ============================================================================
-//  ARTERY HELPERS — v3 (PURE, STATELESS)
+//  ARTERY HELPERS — v4 (PURE, STATELESS)
 // ============================================================================
 function bucketLevel(v) {
   if (v >= 0.9) return "elite";
@@ -114,7 +173,7 @@ function bucketCost(v) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v15.0-Immortal
+//  ORGAN IMPLEMENTATION — v24.0-IMMORTAL-CORE++
 // ============================================================================
 export class AIBinaryMetabolism {
   constructor(config = {}) {
@@ -126,6 +185,22 @@ export class AIBinaryMetabolism {
     this.vitals = config.vitals || null;
     this.logger = config.logger || null;
     this.trace = !!config.trace;
+
+    // optional reporters (metrics-only, read-only)
+    this.nodeAdminReporter =
+      typeof config.nodeAdminReporter === "function"
+        ? config.nodeAdminReporter
+        : null;
+
+    this.overmindReporter =
+      typeof config.overmindReporter === "function"
+        ? config.overmindReporter
+        : null;
+
+    this.heartbeatReporter =
+      typeof config.heartbeatReporter === "function"
+        ? config.heartbeatReporter
+        : null;
 
     if (!this.encoder) {
       throw new Error("AIBinaryMetabolism requires aiBinaryAgent encoder");
@@ -142,7 +217,7 @@ export class AIBinaryMetabolism {
     // multi-instance identity
     this.instanceIndex = AIBinaryMetabolism._registerInstance();
 
-    // Window‑safe metabolic artery snapshot (v3)
+    // Window‑safe metabolic artery snapshot (v4)
     this.metabolicArtery = {
       throughput: 0,
       pressure: 0,
@@ -258,7 +333,7 @@ export class AIBinaryMetabolism {
   }
 
   // ---------------------------------------------------------
-  //  METABOLIC ARTERY v3 — SNAPSHOT + REGISTRY
+  //  METABOLIC ARTERY v4 — SNAPSHOT + REGISTRY + REPORTERS
   // ---------------------------------------------------------
   _computeMetabolicArtery() {
     const load = this._computeLoad();
@@ -318,10 +393,44 @@ export class AIBinaryMetabolism {
       });
     }
 
+    const metaForReport = {
+      id: this.id,
+      instanceIndex: this.instanceIndex,
+      epoch: MetabolismMeta.evo.epoch
+    };
+
+    if (this.nodeAdminReporter) {
+      try {
+        this.nodeAdminReporter(artery, metaForReport);
+      } catch (err) {
+        this._trace("nodeAdmin:reporter:error", { error: String(err) });
+      }
+    }
+
+    if (this.overmindReporter) {
+      try {
+        this.overmindReporter(artery, metaForReport);
+      } catch (err) {
+        this._trace("overmind:reporter:error", { error: String(err) });
+      }
+    }
+
+    if (this.heartbeatReporter) {
+      try {
+        this.heartbeatReporter(artery, metaForReport);
+      } catch (err) {
+        this._trace("heartbeat:reporter:error", { error: String(err) });
+      }
+    }
+
     return artery;
   }
 
   getMetabolicArtery() {
+    return this._computeMetabolicArtery();
+  }
+
+  getMetabolicArterySnapshot() {
     return this._computeMetabolicArtery();
   }
 
@@ -358,11 +467,11 @@ export class AIBinaryMetabolism {
     const json = JSON.stringify(payload);
     const encoded = this.encoder.encode(json);
 
-    const packet = {
+    const packet = emitMetabolismPacket("snapshot", {
       ...payload,
       bits: encoded,
       bitLength: encoded.length
-    };
+    });
 
     this._trace("metabolism:packet", {
       bits: packet.bitLength,
@@ -382,9 +491,6 @@ export class AIBinaryMetabolism {
       this.pipeline.run(packet.bits);
     }
 
-    // NOTE: scheduler wiring remains binary-only and non-blocking.
-    // Existing scheduler implementations may expect different payload shapes;
-    // we keep the original pattern to avoid external drift.
     if (this.scheduler && typeof this.scheduler.scheduleTask === "function") {
       this.scheduler.scheduleTask({
         type: "metabolism",
@@ -403,14 +509,23 @@ export class AIBinaryMetabolism {
   }
 
   // ---------------------------------------------------------
+  //  ARTERY SNAPSHOT PACKET
+  // ---------------------------------------------------------
+  snapshotMetabolicArteryPacket() {
+    const artery = this._computeMetabolicArtery();
+    const packet = emitMetabolismPacket("artery-snapshot", {
+      artery
+    });
+
+    this._trace("metabolism:artery-snapshot", { artery });
+    return packet;
+  }
+
+  // ---------------------------------------------------------
   //  INTERNAL HELPERS
   // ---------------------------------------------------------
   _trace(event, payload) {
-    if (!this.trace) return;
-    console.log(
-      `[${this.id}#${this.instanceIndex}] ${event}`,
-      payload
-    );
+    traceMetabolismEvent(event, payload, this.trace);
   }
 }
 

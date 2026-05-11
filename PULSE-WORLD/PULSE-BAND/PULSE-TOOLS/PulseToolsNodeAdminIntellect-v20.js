@@ -1,45 +1,53 @@
 // ============================================================================
-//  PULSE OS v20‑IMMORTAL‑ADV+++ — NODEADMIN ORGAN
-//  Network Brain • Sentinel Command • Intent + Memory Cortex
-//  OVERMIND‑PRIME‑AWARE • PRESENCE‑AWARE • MESH/CASTLE/EXPANSION/ROUTER/BEACON‑AWARE
-//  PREWARM/CACHE/CHUNK‑AWARE • DETERMINISTIC • SYNTHETIC‑ONLY • ARTERY v5
-//  EVOLUTION‑AWARE (v20) • HEATMAP‑AWARE (v20) • SHIFTER‑AWARE • SNAPSHOT‑AWARE
+//  FILE: /PulseOS/PULSE-TOOLS/PulseNodeAdmin-v20-IMMORTAL-ADV-INTELLECT++.js
+//  PULSE OS v20‑IMMORTAL‑ADV‑INTELLECT++ — NODEADMIN ORGAN
+//  Network Brain • Sentinel Command • Intent + Memory + IQ + Artery v5
+//  OVERMIND‑PRIME‑AWARE • PRESENCE/MESH/CASTLE/EXPANSION/ROUTER/BEACON/WORLDCORE‑AWARE
+//  PREWARM/CACHE/CHUNK‑AWARE • DUAL‑BAND • ADVANTAGE/PRESENCE/HEATMAP‑AWARE
+//  PURE SYNTHETIC INTELLECT • ZERO RANDOMNESS • ZERO MUTATION OF EXTERNAL STATE
 // ============================================================================
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+
 /*
 AI_EXPERIENCE_META = {
   identity: "aiNodeAdmin",
-  version: "v20-Immortal-Adv+++",
+  version: "v20-Immortal-Adv-Intellect++",
   layer: "ai_core",
   role: "nodeadmin_organ",
-  lineage: "PulseNodeAdmin-v11-Evo → v12.3-Presence-Evo++ → v16-Immortal-Adv++ → v20-Immortal-Adv+++",
+  lineage: "v11 → v12.3-Presence-Evo → v16-Immortal-Intellect → v16-Immortal-Adv++ → v20-Immortal-Adv-Intellect++",
 
   evo: {
     nodeAdmin: true,
     networkBrain: true,
     sentinelCommand: true,
-    intentCortex: true,
+    presenceIntellect: true,
     memoryCortex: true,
+    intentCortex: true,
 
     presenceAware: true,
+    socialGraphAware: true,
+    earnAware: true,
+    reproductionAware: true,
+
+    meshAware: true,
+    castleAware: true,
+    expansionAware: true,
+    routerAware: true,
+    beaconAware: true,
+    worldCoreAware: true,
+
     advantageAware: true,
+    dualBand: true,
+    binaryFieldAware: true,
+    waveFieldAware: true,
+    bandAware: true,
+
     chunkPrewarmAware: true,
     soldierAware: true,
     treasuryAware: true,
-    castleAware: true,
-    serverAware: true,
-    expansionAware: true,
-    meshAware: true,
-    routeAware: true,
-    bandAware: true,
-    binaryFieldAware: true,
-    waveFieldAware: true,
+    arteryAware: true,
+    overmindAware: true,
+    heatmapAware: true,
+    shifterAware: true,
 
     deterministic: true,
     driftProof: true,
@@ -47,25 +55,11 @@ AI_EXPERIENCE_META = {
     zeroNetwork: true,
     zeroFilesystem: true,
     zeroMutationOfInput: true,
-
-    arteryV5: true,
-    spiralAware: true,
-    windowAware: true,
-    multiInstanceIdentity: true,
-    packetAware: true,
-    snapshotAware: true,
-
-    evolutionAwareV20: true,
-    heatmapAwareV20: true,
-    shifterAware: true,
-    presenceBandAware: true,
-    earnAware: true,
-    worldCoreAware: true,
-    beaconAware: true
+    zeroRandomness: true
   },
 
   contract: {
-    always: ["aiOvermind", "aiExpansion", "aiReproduction", "aiServiceGateway"],
+    always: ["aiOvermind", "aiExpansion", "aiReproduction", "aiServiceGateway", "aiCortex", "aiContextEngine"],
     never: ["safeRoute", "fetchViaCNS"]
   }
 }
@@ -85,8 +79,257 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 // export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // ============================================================================
-//  GLOBAL NODEADMIN ARTERY REGISTRY — v20 IMMORTAL‑ADV+++
+// IQ MAP — v20-IMMORTAL-ADV-INTELLECT++
+// ============================================================================
+
+export const PulseNodeAdminIQMap = Object.freeze({
+  identity: {
+    name: "PulseNodeAdmin",
+    version: "v20-Immortal-Adv-Intellect++",
+    role: "Sentinel Command Brain",
+    description:
+      "Circling guardian cortex that analyzes all layers, manages modes, executes intents, interprets custom actions, integrates memory + backend AI + presence + social graph + earn readiness + mesh/castle/expansion/router/beacon/worldCore signals + band/binary/wave fields + soldier/load maps + prewarm/cache/chunk hints + artery v5."
+  },
+
+  purpose: {
+    primary: [
+      "Protect the organism",
+      "Guide scanning, repair, and cooling",
+      "Interpret commands and intents",
+      "Route energy and attention",
+      "Provide reports, advice, arteries, and IQ maps",
+      "Integrate backend AI intelligence (advisory-only)",
+      "Maintain memory of events and decisions",
+      "Integrate presence and social graph signals",
+      "Integrate mesh, castle, expansion, router, beacon, worldCore signals",
+      "Coordinate with reproduction and earn organs"
+    ],
+    secondary: [
+      "Expose abilities, IQ map, and help menus",
+      "Support custom message interpretation",
+      "Evolve via new intents and mappings (governed)",
+      "Surface civilization-level patterns (clusters, mentors, jobs, routes)"
+    ]
+  },
+
+  modes: {
+    idle: {
+      description: "Neutral state. Minimal activity. Monitoring only.",
+      frequency: 1.0,
+      wavelength: 1.0
+    },
+    scan: {
+      description: "Deep scanning mode. Slow frequency, long wavelength.",
+      frequency: 0.4,
+      wavelength: 1.6
+    },
+    boost: {
+      description: "High-energy repair mode. Fast frequency, short wavelength.",
+      frequency: 1.8,
+      wavelength: 0.7
+    },
+    cool: {
+      description: "Cooling mode. Low frequency, long wavelength.",
+      frequency: 0.3,
+      wavelength: 1.8
+    },
+    guard: {
+      description: "Perimeter defense mode. Edge-biased sentinel loops.",
+      frequency: 1.0,
+      wavelength: 1.0
+    },
+    presence: {
+      description:
+        "Presence-governed mode. Social + earn + expansion + reproduction aware.",
+      frequency: 1.2,
+      wavelength: 1.0
+    }
+  },
+
+  sentinels: {
+    description:
+      "Multiple circling guardians with phase offsets, loop indices, energy fields, and frequency/wavelength modulation.",
+    parameters: ["phaseOffset", "loopIndex", "energy", "frequency", "wavelength"],
+    behaviors: [
+      "circling",
+      "edge-guarding",
+      "deep scanning",
+      "rapid repair",
+      "cooling sweep",
+      "presence-biased routing"
+    ]
+  },
+
+  intents: {
+    description: "Named actions that NodeAdmin can execute. Command vocabulary.",
+    examples: [
+      "focus-body",
+      "focus-home",
+      "focus-town",
+      "focus-node",
+      "scan-town-deep",
+      "cool-system",
+      "guard-perimeter",
+      "boost-system",
+      "presence-govern",
+      "optimize-route",
+      "review-reproduction-plan",
+      "prewarm-castle",
+      "prewarm-mesh",
+      "prewarm-router",
+      "rebalance-soldiers"
+    ]
+  },
+
+  commandMappings: {
+    description: "Heuristic + backend-AI-driven rules for interpreting custom messages.",
+    examples: [
+      { pattern: "scan home", mapsTo: "focus-home", mode: "scan" },
+      { pattern: "scan town", mapsTo: "scan-town-deep", mode: "scan" },
+      { pattern: "boost body", mapsTo: "focus-body", mode: "boost" },
+      { pattern: "cool system", mapsTo: "cool-system", mode: "cool" },
+      { pattern: "guard", mapsTo: "guard-perimeter", mode: "guard" },
+      { pattern: "presence mode", mapsTo: "presence-govern", mode: "presence" },
+      { pattern: "optimize routes", mapsTo: "optimize-route", mode: "presence" },
+      { pattern: "review reproduction", mapsTo: "review-reproduction-plan", mode: "presence" }
+    ]
+  },
+
+  abilities: {
+    categories: {
+      scanning: ["deep scan", "broad scan", "targeted scan", "multi-sentinel scan"],
+      repair: ["boost energy", "repair field", "assist field", "node stabilization"],
+      guarding: ["perimeter guard", "edge bias", "sentinel hardening"],
+      cooling: ["system cool", "energy dampening"],
+      intelligence: [
+        "layer scoring",
+        "focus selection",
+        "advice generation",
+        "custom action interpretation",
+        "backend AI integration",
+        "memory recall",
+        "help menu generation",
+        "IQ map exposure",
+        "artery snapshot generation"
+      ],
+      presence: [
+        "presence-aware mode selection",
+        "presence-band awareness",
+        "system-age awareness",
+        "power-user influence awareness",
+        "job-readiness awareness"
+      ],
+      socialGraph: [
+        "cluster detection",
+        "expansion wave detection",
+        "mentorship flow awareness",
+        "job economy awareness"
+      ],
+      reproduction: [
+        "spawn-node recommendation",
+        "spawn-advanced-node recommendation",
+        "expansion-trigger awareness",
+        "route-node-plan awareness",
+        "castle-reproduction-plan awareness"
+      ],
+      meshCastleExpansion: [
+        "mesh-pressure awareness",
+        "castle-load awareness",
+        "route-stability awareness",
+        "expansion-need awareness",
+        "router-suggestion awareness",
+        "beacon presence/advantage awareness",
+        "band/binary/wave-field awareness",
+        "worldCore mode/load awareness"
+      ],
+      earn: ["earn-readiness scoring", "earn-context awareness"],
+      performance: [
+        "prewarm hint coordination",
+        "cache hint coordination",
+        "chunk hint coordination",
+        "soldier-load map awareness"
+      ]
+    }
+  },
+
+  memory: {
+    categories: [
+      "mode-change",
+      "sentinels-updated",
+      "advice",
+      "intent-executed",
+      "intent-registered",
+      "custom-backend",
+      "custom-local",
+      "report",
+      "question",
+      "router-advice",
+      "beacon-advice",
+      "worldcore-advice",
+      "presence-advice",
+      "social-advice",
+      "earn-advice",
+      "reproduction-advice",
+      "mesh-advice",
+      "castle-advice",
+      "expansion-advice",
+      "reproduction-plan",
+      "overmind-bridge-set",
+      "directive-applied",
+      "prewarm-hints-set",
+      "cache-hints-set",
+      "chunk-hints-set"
+    ]
+  },
+
+  reports: {
+    description:
+      "Structured snapshots of NodeAdmin state: mode, sentinels, focus, presence, social, earn, reproduction, mesh, castle, expansion, router, beacon, worldCore, perf hints, soldier/load maps, arteries."
+  },
+
+  questions: {
+    examples: [
+      "Where are you?",
+      "What mode are you in?",
+      "What layer needs attention?",
+      "What are your abilities?",
+      "What do you recommend?",
+      "What’s happening in the town layer?",
+      "What’s your energy distribution?",
+      "What is the presence situation?",
+      "Who is the top power user nearby?",
+      "Should we expand or spawn new nodes?",
+      "What is the mesh pressure?",
+      "Is the castle overloaded?",
+      "Is the route stable?",
+      "What reproduction plan do you see?",
+      "What does your artery say about pressure and budget?"
+    ]
+  },
+
+  helpMenu: {
+    description:
+      "Help menu listing commands, intents, modes, abilities, and how presence/mesh/castle/expansion/router/beacon/worldCore signals are used."
+  },
+
+  evolution: {
+    description: "Guidelines for extending NodeAdmin.",
+    rules: [
+      "Do NOT break deterministic safety contracts.",
+      "Add new abilities via intents, not by mutating core logic.",
+      "Extend command mappings and IQ map rather than hardcoding ad-hoc behavior.",
+      "Use memory patterns to propose new intents or mode rules.",
+      "Backend AI may propose changes; humans or higher-level governance should approve.",
+      "Presence, social, mesh, castle, expansion integrations must remain metadata-only and non-invasive.",
+      "Artery metrics are advisory-only and must not directly drive destructive behavior."
+    ]
+  }
+});
+
+// ============================================================================
+//  GLOBAL NODEADMIN ARTERY REGISTRY — v20 IMMORTAL‑ADV‑INTELLECT++
 // ============================================================================
 
 const _globalNodeAdminArteryRegistry = new Map();
@@ -147,7 +390,7 @@ function bucketCost(v) {
 }
 
 // ============================================================================
-//  NODEADMIN ARTERY v5 — IMMORTAL‑GRADE
+//  NODEADMIN ARTERY v5 — IMMORTAL‑GRADE, MERGED INTELLECT + ADV
 // ============================================================================
 
 function computeNodeAdminArteryV5({
@@ -162,14 +405,19 @@ function computeNodeAdminArteryV5({
   windowMs,
   windowStart,
   instanceIndex,
-  instanceCount
+  instanceCount,
+  windowEvents,
+  lastAdvice,
+  meshSnapshot,
+  expansionSnapshot,
+  routerSnapshot
 }) {
   const now = Date.now();
   const elapsedMs = Math.max(1, now - windowStart);
 
-  const soldierCount = Object.keys(soldierRegistry).length;
-  const castleIds = Object.keys(castleLoad);
-  const serverIds = Object.keys(serverLoad);
+  const soldierCount = Object.keys(soldierRegistry || {}).length;
+  const castleIds = Object.keys(castleLoad || {});
+  const serverIds = Object.keys(serverLoad || {});
 
   const avgCastleLoad =
     castleIds.length === 0
@@ -188,6 +436,26 @@ function computeNodeAdminArteryV5({
       ? clamp01(lastExpansionPlan.expansions.length / 32)
       : 0;
 
+  const evalDensity = Math.min(1, (windowEvents || 0) / 512);
+
+  const meshPressure =
+    meshSnapshot?.DensityHealth?.A_metrics?.meshPressureIndex ??
+    meshSnapshot?.metrics?.meshPressureIndex ??
+    0;
+
+  const expansionNeedRaw =
+    expansionSnapshot?.MeshBrain?.B_expansionRules?.expansionNeed ??
+    expansionSnapshot?.expansionNeed ??
+    "none";
+
+  const routerErrorRate =
+    routerSnapshot?.routeField?.routeErrorRate ??
+    routerSnapshot?.metrics?.errorRate ??
+    0;
+
+  const expansionNeedScore =
+    expansionNeedRaw === "high" ? 1 : expansionNeedRaw === "medium" ? 0.6 : 0.2;
+
   const modePressureBase =
     mode === "boost"
       ? 0.8
@@ -205,17 +473,24 @@ function computeNodeAdminArteryV5({
   const castlePressure = clamp01(avgCastleLoad);
   const serverPressure = clamp01(avgServerLoad);
 
-  const pressure = clamp01(
-    modePressureBase * 0.3 +
-      soldierPressure * 0.2 +
-      castlePressure * 0.2 +
-      serverPressure * 0.2 +
-      expansionIntensity * 0.1
+  const pressureBase = clamp01(
+    modePressureBase * 0.2 +
+      soldierPressure * 0.15 +
+      castlePressure * 0.15 +
+      serverPressure * 0.15 +
+      expansionIntensity * 0.1 +
+      (meshPressure / 100) * 0.1 +
+      evalDensity * 0.1 +
+      routerErrorRate * 0.05
   );
 
-  const throughput = clamp01(1 - pressure);
+  const throughput = clamp01(1 - pressureBase);
+  const pressure = pressureBase;
   const cost = clamp01(pressure * (1 - throughput));
   const budget = clamp01(throughput - cost);
+
+  const reproductionHint = lastAdvice?.reproductionTrigger || "none";
+  const earnReadiness = lastAdvice?.earnReadiness || "unknown";
 
   return Object.freeze({
     meta: NodeAdminMeta,
@@ -248,8 +523,13 @@ function computeNodeAdminArteryV5({
 
     expansion: {
       hasPlan: !!lastExpansionPlan,
-      expansionIntensity
+      expansionIntensity,
+      expansionNeedScore
     },
+
+    evalDensity,
+    meshPressureIndex: meshPressure,
+    routerErrorRate,
 
     throughput,
     pressure,
@@ -259,29 +539,32 @@ function computeNodeAdminArteryV5({
     throughputBucket: bucket(throughput),
     pressureBucket: bucketPressure(pressure),
     costBucket: bucketCost(cost),
-    budgetBucket: bucket(budget)
+    budgetBucket: bucket(budget),
+
+    reproductionHint,
+    earnReadiness
   });
 }
 
 // ============================================================================
-//  IMPORTS — ANALYSIS / SCANNERS / EVOLUTION / HEATMAP (v20)
+//  IMPORTS — ANALYSIS / SCANNERS / HEATMAP / EVOLUTION
 // ============================================================================
 
-import PulseAdminInspector from "./PulseAdminInspector.js";
-import PulseBehaviorScanner from "./PulseBehaviorScanner.js";
-import PulseBinaryBehaviorScanner from "./PulseBehaviorScanner.js";
-import PulseBinaryFramework from "./PulseBinaryFramework.js";
-import PulseBinaryLoopScanner from "./PulseLoopScanner.js";
-import PulseBinaryWaveScanner from "./PulseWaveScanner.js";
-import PulseEvolutionaryScanner from "./PulseEvolutionaryScanner.js";
-import PulseHeatMap from "./PulseHeatMap-v20.js";
-import PulseLoopScanner from "./PulseLoopScanner.js";
-import PulseNodeAdminIntellect from "./PulseNodeAdminIntellect-v20.js";
-import { createPulseNodeEvolutionV20 as PulseNodeAdminEvolution } from "./PulseNodeEvolution-v20.js";
-import PulseWaveScanner from "./PulseWaveScanner.js";
+import PulseAdminInspector from "./PulseToolsAdminInspector.js";
+import PulseBehaviorScanner from "./PulseToolsBehaviorScanner.js";
+import PulseBinaryBehaviorScanner from "./PulseToolsBehaviorScanner.js";
+import PulseBinaryFramework from "./PulseToolsBinaryFramework.js";
+import PulseBinaryLoopScanner from "./PulseToolsLoopScanner.js";
+import PulseBinaryWaveScanner from "./PulseToolsWaveScanner.js";
+import PulseEvolutionaryScanner from "./PulseToolsEvolutionaryScanner.js";
+import PulseHeatMap from "./PulseToolsHeatMap-v20.js";
+import PulseLoopScanner from "./PulseToolsLoopScanner.js";
+import PulseNodeAdminIntellect from "./PulseToolsNodeAdminIntellect-v20.js";
+import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "./PulseToolsNodeEvolution-v20.js";
+import PulseWaveScanner from "./PulseToolsWaveScanner.js";
 
 // ============================================================================
-//  FACTORY: createPulseNodeAdmin — v20‑IMMORTAL‑ADV+++
+//  FACTORY: createPulseNodeAdmin — v20‑IMMORTAL‑ADV‑INTELLECT++
 // ============================================================================
 
 let _nodeAdminInstanceCount = 0;
@@ -289,7 +572,7 @@ let _nodeAdminInstanceCount = 0;
 // Shared evolution organ for all NodeAdmin instances (sectional, stateless, deterministic)
 const _nodeAdminEvolution = PulseNodeAdminEvolution({
   nodeType: "admin",
-  trace: false // or true if you want evolution‑level tracing
+  trace: false
 });
 
 export function createPulseNodeAdmin({
@@ -381,15 +664,13 @@ export function createPulseNodeAdmin({
   // Artery window
   let _windowStart = Date.now();
   const windowMs = 60000;
+  let _windowEvents = 0;
 
   // ---------------------------------------------------------------------------
-  // EVOLUTION LAYER HELPER (Shifter‑first, sectional fallback, v20)
-// ---------------------------------------------------------------------------
+  // EVOLUTION LAYER HELPER (Shifter‑first, sectional fallback)
+  // ---------------------------------------------------------------------------
   function evolveAdminPulse(pulse, extraCtx = {}) {
-    if (
-      !_nodeAdminEvolution ||
-      typeof _nodeAdminEvolution.evolveNodePulse !== "function"
-    ) {
+    if (!_nodeAdminEvolution || typeof _nodeAdminEvolution.evolveNodePulse !== "function") {
       return pulse;
     }
 
@@ -407,7 +688,7 @@ export function createPulseNodeAdmin({
       routerSnapshot,
       beaconSnapshot,
       worldCoreSnapshot,
-      artery: getNodeAdminArtery?.(), // safe: function defined later
+      artery: getNodeAdminArtery?.(),
       lastAdvice: memory.lastAdvice,
       ...extraCtx
     };
@@ -429,6 +710,7 @@ export function createPulseNodeAdmin({
       data
     };
     memory.events.push(entry);
+    _windowEvents += 1;
     if (memory.events.length > 500) {
       memory.events.shift();
     }
@@ -442,9 +724,32 @@ export function createPulseNodeAdmin({
     return filtered.slice(-limit);
   }
 
+  function rollWindow(now) {
+    if (now - _windowStart >= windowMs) {
+      _windowStart = now;
+      _windowEvents = 0;
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // OVERMIND BRIDGE
   // ---------------------------------------------------------------------------
+  function getStateSnapshot() {
+    return Object.freeze({
+      organId: NodeAdminMeta.organId,
+      mode,
+      tick,
+      cycle,
+      sentinelCount: sentinels.length,
+      lastAdvice: memory.lastAdvice,
+      lastSentinels: memory.lastSentinels,
+      soldierRegistry,
+      castleLoad,
+      serverLoad,
+      lastExpansionPlan
+    });
+  }
+
   function emitToOvermind(eventType, payload) {
     if (!overmind || typeof overmind.emit !== "function") return;
     overmind.emit({
@@ -667,8 +972,8 @@ export function createPulseNodeAdmin({
   }
 
   // ---------------------------------------------------------------------------
-  // CORE UPDATE — SENTINEL ENGINE
-  // ---------------------------------------------------------------------------
+  // CORE UPDATE — SENTINEL ENGINE (IQ MAP DRIVEN)
+// ---------------------------------------------------------------------------
   function updateSentinels(maxLoopIndex) {
     tick++;
 
@@ -680,26 +985,26 @@ export function createPulseNodeAdmin({
       const baseLoop = (tick + i * 7) % maxLoopIndex;
       const basePhase = s.phase + tick * 0.05;
 
-      let frequency = 1.0;
-      let wavelength = 1.0;
+      let frequency = PulseNodeAdminIQMap.modes.idle.frequency;
+      let wavelength = PulseNodeAdminIQMap.modes.idle.wavelength;
 
       if (mode === "scan") {
-        frequency = 0.4;
-        wavelength = 1.6;
+        frequency = PulseNodeAdminIQMap.modes.scan.frequency;
+        wavelength = PulseNodeAdminIQMap.modes.scan.wavelength;
       } else if (mode === "boost") {
-        frequency = 1.8;
-        wavelength = 0.7;
+        frequency = PulseNodeAdminIQMap.modes.boost.frequency;
+        wavelength = PulseNodeAdminIQMap.modes.boost.wavelength;
       } else if (mode === "cool") {
-        frequency = 0.3;
-        wavelength = 1.8;
+        frequency = PulseNodeAdminIQMap.modes.cool.frequency;
+        wavelength = PulseNodeAdminIQMap.modes.cool.wavelength;
       } else if (mode === "guard") {
-        frequency = 1.0;
-        wavelength = 1.0;
+        frequency = PulseNodeAdminIQMap.modes.guard.frequency;
+        wavelength = PulseNodeAdminIQMap.modes.guard.wavelength;
         const edgeBias = i % 2 === 0 ? 0 : maxLoopIndex - 1;
         s.loopIndex = edgeBias;
       } else if (mode === "presence") {
-        frequency = 1.2;
-        wavelength = 1.0;
+        frequency = PulseNodeAdminIQMap.modes.presence.frequency;
+        wavelength = PulseNodeAdminIQMap.modes.presence.wavelength;
       }
 
       if (mode !== "guard") {
@@ -829,7 +1134,11 @@ export function createPulseNodeAdmin({
   // ---------------------------------------------------------------------------
   function meshAdvice() {
     if (!meshSnapshot) return null;
-    const m = meshSnapshot.DensityHealth?.A_metrics || meshSnapshot.metrics || {};
+    const m =
+      meshSnapshot.DensityHealth?.A_metrics ||
+      meshSnapshot.metrics ||
+      meshSnapshot.densityHealth?.A_metrics ||
+      {};
     const pressure = m.meshPressureIndex ?? 0;
     const strength = m.meshStrength || "unknown";
 
@@ -873,6 +1182,8 @@ export function createPulseNodeAdmin({
     if (!routerSnapshot) return null;
 
     const r = routerSnapshot.routeField || routerSnapshot.metrics || {};
+    const suggestions = routerSnapshot.suggestions || {};
+
     const stable = r.routeStable ?? r.stable ?? null;
     const errorRate = r.errorRate ?? r.routeErrorRate ?? 0;
     const hops = r.avgHops ?? r.hops ?? null;
@@ -882,12 +1193,18 @@ export function createPulseNodeAdmin({
     else if (stable === false || errorRate > 0.05) status = "unstable";
     else status = "degraded";
 
-    const advice = { routeStable: stable, errorRate, hops, status };
+    const advice = {
+      routeStable: stable,
+      errorRate,
+      hops,
+      status,
+      betterRoutes: suggestions.betterRoutes || null,
+      corridorProtection: suggestions.corridorProtection || null
+    };
     remember("router-advice", advice);
     return advice;
   }
 
-  
   function beaconAdvice() {
     if (!beaconSnapshot) return null;
 
@@ -928,7 +1245,7 @@ export function createPulseNodeAdmin({
   }
 
   // ---------------------------------------------------------------------------
-  // INTELLECT: ANALYZE LAYERS + FLAGS + PRESENCE + WORLD → MODE / FOCUS
+  // LAYER SCORING + INTELLECT CORE
   // ---------------------------------------------------------------------------
   function scoreLayer(summary) {
     if (!summary) return 0;
@@ -1057,26 +1374,12 @@ export function createPulseNodeAdmin({
     return report;
   }
 
-  function getStateSnapshot() {
-    return Object.freeze({
-      organId: NodeAdminMeta.organId,
-      mode,
-      tick,
-      cycle,
-      sentinelCount: sentinels.length,
-      lastAdvice: memory.lastAdvice,
-      lastSentinels: memory.lastSentinels,
-      soldierRegistry,
-      castleLoad,
-      serverLoad,
-      lastExpansionPlan
-    });
-  }
-
   // ---------------------------------------------------------------------------
   // NODEADMIN ARTERY API
   // ---------------------------------------------------------------------------
   function getNodeAdminArtery() {
+    rollWindow(Date.now());
+
     const artery = computeNodeAdminArteryV5({
       mode,
       tick,
@@ -1089,7 +1392,12 @@ export function createPulseNodeAdmin({
       windowMs,
       windowStart: _windowStart,
       instanceIndex,
-      instanceCount: _nodeAdminInstanceCount
+      instanceCount: _nodeAdminInstanceCount,
+      windowEvents: _windowEvents,
+      lastAdvice: memory.lastAdvice,
+      meshSnapshot,
+      expansionSnapshot,
+      routerSnapshot
     });
 
     const key = _registryKey(instanceId, instanceIndex);
@@ -1107,7 +1415,7 @@ export function createPulseNodeAdmin({
       intents: Object.keys(intentHandlers),
       features: [
         "multi-sentinel circling",
-        "mode-based frequency/wavelength modulation",
+        "mode-based frequency/wavelength modulation (IQ map driven)",
         "layer scoring + focus selection",
         "advice engine (suggested mode + focus)",
         "intent execution (AIS++)",
@@ -1137,8 +1445,7 @@ export function createPulseNodeAdmin({
         "cache hint coordination",
         "chunk hint coordination",
         "nodeAdmin artery v5 snapshots",
-        "evolution-layer v20 shifter-first integration",
-        "heatmap v20 awareness (via snapshots/intellect)"
+        "IQ map exposure and help menu"
       ]
     };
   }
@@ -1146,6 +1453,7 @@ export function createPulseNodeAdmin({
   function getManual() {
     return {
       meta: NodeAdminMeta,
+      iqMap: PulseNodeAdminIQMap,
       description: "NodeAdmin is the network brain / sentinel command organ.",
       usage: {
         setMode:
@@ -1172,14 +1480,16 @@ export function createPulseNodeAdmin({
         setCacheHints:
           "nodeAdmin.setCacheHints({ castle, expansion, mesh, router, worldCore })",
         setChunkHints:
-          "nodeAdmin.setChunkHints({ castle, expansion, mesh, router, worldCore })"
+          "nodeAdmin.setChunkHints({ castle, expansion, mesh, router, worldCore })",
+        evolveAdminPulse:
+          "nodeAdmin.evolveAdminPulse(pulse, { extraContext }) // shifter-first + sectional fallback"
       }
     };
   }
 
   // ---------------------------------------------------------------------------
-  // PUBLIC API — v20‑IMMORTAL‑ADV+++
-// ---------------------------------------------------------------------------
+  // PUBLIC API — v20‑IMMORTAL‑ADV‑INTELLECT++
+  // ---------------------------------------------------------------------------
   return Object.freeze({
     meta: NodeAdminMeta,
     instanceIndex,
@@ -1220,7 +1530,7 @@ export function createPulseNodeAdmin({
     // intellect
     analyzeAndAdvise,
 
-    // evolution (fallback pulse system layer, shifter‑first, v20)
+    // evolution (fallback pulse system layer, shifter‑first)
     evolveAdminPulse,
 
     // introspection
@@ -1232,6 +1542,7 @@ export function createPulseNodeAdmin({
 if (typeof module !== "undefined") {
   module.exports = {
     NodeAdminMeta,
+    PulseNodeAdminIQMap,
     createPulseNodeAdmin,
     getGlobalNodeAdminArteries
   };

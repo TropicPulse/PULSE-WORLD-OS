@@ -1,41 +1,29 @@
 // ============================================================================
-//  PULSE OS v16-Immortal++ — THE EGO
-//  Capability Contract • Self‑Regulation • Evolutionary + Trust Control
-//  PURE PERMISSIONS. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS. PULSE‑NET ONLY.
+//  PULSE OS v24.0-IMMORTAL++ — THE EGO-CORE
+//  Capability Contract • Self‑Regulation • Dual‑Band Capability Artery v5
+//  PURE PERMISSIONS. ZERO MUTATION. ZERO RANDOMNESS IN LOGIC. PULSE‑NET ONLY.
 // ============================================================================
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const EgoMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
 // ============================================================================
-// UNIVERSAL FORBIDDEN ACTIONS — Immutable (v16‑IMMORTAL++)
+// UNIVERSAL FORBIDDEN ACTIONS — Immutable (v24‑IMMORTAL++)
 // ============================================================================
 export const ForbiddenActions = Object.freeze({
   canExecuteArbitraryCode: false,
@@ -61,7 +49,7 @@ export const ForbiddenActions = Object.freeze({
 });
 
 // ============================================================================
-// PERSONA PERMISSIONS — v16 IMMORTAL++
+// PERSONA PERMISSIONS — v24 IMMORTAL++
 //  All personas inherit ForbiddenActions implicitly; these flags are scoped
 //  capabilities inside Pulse / Pulse‑Net, never raw OS / internet.
 // ============================================================================
@@ -334,11 +322,11 @@ export function getPermissionsForPersona(persona, userIsOwner = false) {
 
   switch (persona) {
     case "architect": return ArchitectAIPermissions;
-    case "observer": return ObserverAIPermissions;
+    case "observer":  return ObserverAIPermissions;
     case "tourguide": return TourGuideAIPermissions;
-    case "jury": return JuryAIPermissions;
-    case "neutral": return NeutralAIPermissions;
-    default: return NeutralAIPermissions;
+    case "jury":      return JuryAIPermissions;
+    case "neutral":   return NeutralAIPermissions;
+    default:          return NeutralAIPermissions;
   }
 }
 
@@ -346,20 +334,41 @@ export function getPermissionsForPersona(persona, userIsOwner = false) {
 // PERMISSION CHECK — Ego Decision
 // ============================================================================
 export function checkPermission(persona, action, userIsOwner = false) {
-  if (ForbiddenActions[action] === false) return false;
+  // If action is explicitly forbidden at the universal layer, it is never allowed.
+  if (Object.prototype.hasOwnProperty.call(ForbiddenActions, action)) {
+    if (ForbiddenActions[action] === false) return false;
+  }
 
   const permissions = getPermissionsForPersona(persona, userIsOwner);
   return permissions[action] === true;
 }
 
 // ============================================================================
-// CAPABILITY ARTERY v4 — Pure, Read‑Only, Deterministic, Trust‑Aware
+// CAPABILITY ARTERY v5 — Dual‑Band, Trust‑Aware, Deterministic
 // ============================================================================
+
+export const CapabilityClasses = Object.freeze({
+  SYSTEM_READ: "system-read",
+  DIAGNOSTIC_READ: "diagnostic-read",
+  USER_FACING: "user-facing",
+  JURY_INTERNAL: "jury-internal",
+  MINIMAL: "minimal"
+});
+
+export const PersonaCapabilityClass = Object.freeze({
+  architect: CapabilityClasses.SYSTEM_READ,
+  observer:  CapabilityClasses.DIAGNOSTIC_READ,
+  tourguide: CapabilityClasses.USER_FACING,
+  neutral:   CapabilityClasses.MINIMAL,
+  owner:     CapabilityClasses.SYSTEM_READ,
+  jury:      CapabilityClasses.JURY_INTERNAL
+});
+
 function bucketPressure(v) {
   if (v >= 0.9) return "overload";
   if (v >= 0.7) return "high";
   if (v >= 0.4) return "medium";
-  if (v > 0) return "low";
+  if (v > 0)    return "low";
   return "none";
 }
 
@@ -376,6 +385,8 @@ function extractBinaryPressure(binaryVitals = {}) {
     return binaryVitals.layered.organism.pressure;
   if (binaryVitals?.binary?.pressure != null)
     return binaryVitals.binary.pressure;
+  if (binaryVitals?.pressure != null)
+    return binaryVitals.pressure;
   return 0;
 }
 
@@ -389,27 +400,46 @@ function extractBoundaryPressure(boundaryArtery = {}) {
 
 function extractTrustSignals(trustArtery = {}) {
   return {
-    honeypotRisk: trustArtery.honeypotRisk ?? 0,
+    honeypotRisk:  trustArtery.honeypotRisk  ?? 0,
     dominanceRisk: trustArtery.dominanceRisk ?? 0,
-    anomalyScore: trustArtery.anomalyScore ?? 0
+    anomalyScore:  trustArtery.anomalyScore  ?? 0
   };
 }
 
-export function getCapabilityArterySnapshot({
+function extractJurySignals(juryArtery = {}) {
+  return {
+    disagreementScore: juryArtery.disagreementScore ?? 0,
+    evidencePressure:  juryArtery.evidencePressure  ?? 0
+  };
+}
+
+function extractPersonaSignals(personaArtery = {}) {
+  return {
+    volatility: personaArtery.volatility ?? 0,
+    driftRisk:  personaArtery.driftRisk  ?? 0
+  };
+}
+
+// Pure v5 fusion logic (no side effects)
+function _computeCapabilityArteryV5({
   persona,
   userIsOwner = false,
   binaryVitals = {},
   boundaryArtery = {},
-  trustArtery = {}
+  trustArtery = {},
+  juryArtery = {},
+  personaArtery = {}
 }) {
   const permissions = getPermissionsForPersona(persona, userIsOwner);
 
   const readCount = Object.values(permissions).filter(v => v === true).length;
   const forbiddenCount = Object.values(ForbiddenActions).filter(v => v === false).length;
 
-  const binaryPressure = extractBinaryPressure(binaryVitals);
+  const binaryPressure   = extractBinaryPressure(binaryVitals);
   const boundaryPressure = extractBoundaryPressure(boundaryArtery);
-  const trustSignals = extractTrustSignals(trustArtery);
+  const trustSignals     = extractTrustSignals(trustArtery);
+  const jurySignals      = extractJurySignals(juryArtery);
+  const personaSignals   = extractPersonaSignals(personaArtery);
 
   const localPressureBase = forbiddenCount > 0 ? 0.4 : 0.1;
   const trustPressureBoost = Math.max(
@@ -418,21 +448,35 @@ export function getCapabilityArterySnapshot({
     trustSignals.anomalyScore
   ) * 0.3;
 
-  const localPressure = Math.min(1, localPressureBase + trustPressureBoost);
+  const juryPressureBoost = Math.max(
+    jurySignals.disagreementScore,
+    jurySignals.evidencePressure
+  ) * 0.2;
+
+  const personaPressureBoost = Math.max(
+    personaSignals.volatility,
+    personaSignals.driftRisk
+  ) * 0.2;
+
+  const localPressure = Math.min(
+    1,
+    localPressureBase + trustPressureBoost + juryPressureBoost + personaPressureBoost
+  );
 
   const fusedPressure = Math.max(
     0,
     Math.min(
       1,
-      0.4 * localPressure +
-        0.35 * binaryPressure +
-        0.25 * boundaryPressure
+      0.35 * localPressure +
+        0.30 * binaryPressure +
+        0.20 * boundaryPressure +
+        0.15 * (jurySignals.evidencePressure || 0)
     )
   );
 
   const throughput = Math.max(0, Math.min(1, 1 - fusedPressure));
-  const cost = Math.max(0, Math.min(1, fusedPressure * (1 - throughput)));
-  const budget = Math.max(0, Math.min(1, throughput - cost));
+  const cost       = Math.max(0, Math.min(1, fusedPressure * (1 - throughput)));
+  const budget     = Math.max(0, Math.min(1, throughput - cost));
 
   return {
     organism: {
@@ -444,7 +488,7 @@ export function getCapabilityArterySnapshot({
     },
     persona: {
       id: persona,
-      capabilityClass: PersonaCapabilityClass[persona] || "minimal"
+      capabilityClass: PersonaCapabilityClass[persona] || CapabilityClasses.MINIMAL
     },
     forbidden: {
       count: forbiddenCount,
@@ -464,36 +508,234 @@ export function getCapabilityArterySnapshot({
       pressureBucket: bucketPressure(binaryPressure)
     },
     trust: {
-      honeypotRisk: trustSignals.honeypotRisk,
+      honeypotRisk:  trustSignals.honeypotRisk,
       dominanceRisk: trustSignals.dominanceRisk,
-      anomalyScore: trustSignals.anomalyScore
+      anomalyScore:  trustSignals.anomalyScore
+    },
+    jury: {
+      disagreementScore: jurySignals.disagreementScore,
+      evidencePressure:  jurySignals.evidencePressure
+    },
+    personaSignals: {
+      volatility: personaSignals.volatility,
+      driftRisk:  personaSignals.driftRisk
     }
   };
 }
 
-// ============================================================================
-// HIGH-LEVEL RESOLVER — v16 IMMORTAL++
-// ============================================================================
-export const CapabilityClasses = Object.freeze({
-  SYSTEM_READ: "system-read",
-  DIAGNOSTIC_READ: "diagnostic-read",
-  USER_FACING: "user-facing",
-  JURY_INTERNAL: "jury-internal",
-  MINIMAL: "minimal"
-});
+// Public pure helper (backwards‑compatible name, v5 logic)
+export function getCapabilityArterySnapshot({
+  persona,
+  userIsOwner = false,
+  binaryVitals = {},
+  boundaryArtery = {},
+  trustArtery = {},
+  juryArtery = {},
+  personaArtery = {}
+}) {
+  return _computeCapabilityArteryV5({
+    persona,
+    userIsOwner,
+    binaryVitals,
+    boundaryArtery,
+    trustArtery,
+    juryArtery,
+    personaArtery
+  });
+}
 
-export const PersonaCapabilityClass = Object.freeze({
-  architect: CapabilityClasses.SYSTEM_READ,
-  observer: CapabilityClasses.DIAGNOSTIC_READ,
-  tourguide: CapabilityClasses.USER_FACING,
-  neutral: CapabilityClasses.MINIMAL,
-  owner: CapabilityClasses.SYSTEM_READ,
-  jury: CapabilityClasses.JURY_INTERNAL
-});
+// ============================================================================
+//  GLOBAL CAPABILITY ARTERY REGISTRY (READ‑ONLY, METRICS‑ONLY)
+// ============================================================================
+const _globalCapabilityArteryRegistry = new Map();
+/**
+ * Registry key: `${id}#${instanceIndex}#${persona || "neutral"}`
+ */
+function _registryKey(id, instanceIndex, persona) {
+  return `${id || EgoMeta.identity}#${instanceIndex}#${persona || "neutral"}`;
+}
 
-// ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility (v16‑IMMORTAL++ dualband)
-// ---------------------------------------------------------------------------
+export function getGlobalCapabilityArteries() {
+  const out = {};
+  for (const [k, v] of _globalCapabilityArteryRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
+// ============================================================================
+//  PACKET EMITTER — deterministic, ego‑scoped
+// ============================================================================
+function emitEgoPacket(type, payload) {
+  return Object.freeze({
+    meta: EgoMeta,
+    packetType: `ego-${type}`,
+    timestamp: Date.now(),
+    epoch: EgoMeta.evo.epoch,
+    ...payload
+  });
+}
+
+// ============================================================================
+//  PREWARM — v24.0‑IMMORTAL++
+// ============================================================================
+export function prewarmEgoCore({ trace = false } = {}) {
+  const packet = emitEgoPacket("prewarm", {
+    message: "Ego‑Core prewarmed, capability artery v5 aligned."
+  });
+
+  if (trace) console.log("[EgoCore] prewarm", packet);
+  return packet;
+}
+
+// ============================================================================
+//  ORGAN IMPLEMENTATION — v24.0‑IMMORTAL++ Ego‑Core
+// ============================================================================
+export class AIEgoCore {
+  constructor(config = {}) {
+    this.id = config.id || EgoMeta.identity;
+    this.persona = config.persona || "neutral";
+    this.userIsOwner = !!config.userIsOwner;
+    this.trace = !!config.trace;
+
+    // Providers: functions returning latest arteries/vitals, or static snapshots
+    this.binaryVitalsProvider   = config.binaryVitalsProvider   || null;
+    this.boundaryArteryProvider = config.boundaryArteryProvider || null;
+    this.trustArteryProvider    = config.trustArteryProvider    || null;
+    this.juryArteryProvider     = config.juryArteryProvider     || null;
+    this.personaArteryProvider  = config.personaArteryProvider  || null;
+
+    this.instanceIndex = AIEgoCore._registerInstance();
+  }
+
+  // Static instance registry
+  static _registerInstance() {
+    if (typeof AIEgoCore._instanceCount !== "number") {
+      AIEgoCore._instanceCount = 0;
+    }
+    const idx = AIEgoCore._instanceCount;
+    AIEgoCore._instanceCount += 1;
+    return idx;
+  }
+
+  static getInstanceCount() {
+    return typeof AIEgoCore._instanceCount === "number"
+      ? AIEgoCore._instanceCount
+      : 0;
+  }
+
+  _collectInputs() {
+    const binaryVitals =
+      typeof this.binaryVitalsProvider === "function"
+        ? this.binaryVitalsProvider()
+        : this.binaryVitalsProvider || {};
+
+    const boundaryArtery =
+      typeof this.boundaryArteryProvider === "function"
+        ? this.boundaryArteryProvider()
+        : this.boundaryArteryProvider || {};
+
+    const trustArtery =
+      typeof this.trustArteryProvider === "function"
+        ? this.trustArteryProvider()
+        : this.trustArteryProvider || {};
+
+    const juryArtery =
+      typeof this.juryArteryProvider === "function"
+        ? this.juryArteryProvider()
+        : this.juryArteryProvider || {};
+
+    const personaArtery =
+      typeof this.personaArteryProvider === "function"
+        ? this.personaArteryProvider()
+        : this.personaArteryProvider || {};
+
+    return {
+      binaryVitals,
+      boundaryArtery,
+      trustArtery,
+      juryArtery,
+      personaArtery
+    };
+  }
+
+  _computeCapabilityArtery() {
+    const inputs = this._collectInputs();
+
+    const arteryCore = _computeCapabilityArteryV5({
+      persona: this.persona,
+      userIsOwner: this.userIsOwner,
+      ...inputs
+    });
+
+    const snapshot = {
+      ...arteryCore,
+      meta: {
+        id: this.id,
+        persona: this.persona,
+        instanceIndex: this.instanceIndex,
+        instanceCount: AIEgoCore.getInstanceCount(),
+        timestamp: Date.now()
+      }
+    };
+
+    const key = _registryKey(this.id, this.instanceIndex, this.persona);
+    _globalCapabilityArteryRegistry.set(key, snapshot);
+
+    this._trace("capability:computed", {
+      persona: this.persona,
+      pressure: snapshot.organism.pressure,
+      budget: snapshot.organism.budget
+    });
+
+    return snapshot;
+  }
+
+  // Window‑safe snapshot for other organs
+  getCapabilityArterySnapshot() {
+    return this._computeCapabilityArtery();
+  }
+
+  // Capability packet for NodeAdmin / Overmind / Trust / Jury
+  emitCapabilityPacket() {
+    const artery = this._computeCapabilityArtery();
+
+    const packet = emitEgoPacket("capability-snapshot", {
+      id: this.id,
+      persona: this.persona,
+      instanceIndex: this.instanceIndex,
+      instanceCount: AIEgoCore.getInstanceCount(),
+      artery
+    });
+
+    this._trace("capability:packet", {
+      persona: this.persona,
+      pressure: artery.organism.pressure,
+      budget: artery.organism.budget
+    });
+
+    return packet;
+  }
+
+  _trace(event, payload) {
+    if (!this.trace) return;
+    console.log(
+      `[${this.id}#${this.instanceIndex}@${this.persona}] ${event}`,
+      payload
+    );
+  }
+}
+
+// ============================================================================
+//  FACTORY
+// ============================================================================
+export function createAIEgoCore(config) {
+  return new AIEgoCore(config);
+}
+
+// ============================================================================
+//  DUAL‑MODE EXPORTS — CommonJS compatibility (v24‑IMMORTAL++ dualband)
+// ============================================================================
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
@@ -509,6 +751,10 @@ if (typeof module !== "undefined" && module.exports) {
     checkPermission,
     CapabilityClasses,
     PersonaCapabilityClass,
-    getCapabilityArterySnapshot
+    getCapabilityArterySnapshot,
+    getGlobalCapabilityArteries,
+    prewarmEgoCore,
+    AIEgoCore,
+    createAIEgoCore
   };
 }

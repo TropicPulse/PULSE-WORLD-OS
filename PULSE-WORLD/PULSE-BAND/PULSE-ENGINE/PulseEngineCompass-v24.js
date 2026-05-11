@@ -37,11 +37,11 @@ const g =
     : {};
 
 // Lane wrappers (v24)
-import * as Forward from "./ForwardMotion-v24.js";
-import * as Backward from "./BackwardMotion-v24.js";
+import * as Forward from "./PulseEngineForwardMotion-v24.js";
+import * as Backward from "./PulseEngineBackwardMotion-v24.js";
 
 // DB adapter (v24)
-import { createPulseDB } from "./PulseDB-v24.js";
+import { createPulseDB } from "./PulseEngineDB-v24.js";
 
 // Memory keys
 const LAST_LANE_KEY   = "pulse:v24:lastMotionLane";

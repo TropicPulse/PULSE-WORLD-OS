@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL++ — BRAINSTEM
+//  PULSE OS v24‑IMMORTAL++ — BRAINSTEM
 //  Organ Assembly • Dual‑Band Context Binding • CNS + Pulse‑Net Integration
 //  PURE ORGANISM. ZERO MUTATION. ZERO RANDOMNESS. ZERO DIRECT INTERNET.
 // ============================================================================
 //
-// ROLE (v16‑Immortal++ Hybrid Spine):
+// ROLE (v24‑Immortal++ Hybrid Spine):
 //   • Assemble CNS engines, symbolic organs, and the dual‑band organism
 //     into a unified, deterministic, drift‑proof Pulse OS organism.
 //   • Bind persona/boundaries/permissions/router/cortex to DualBand organism.
@@ -23,8 +23,6 @@
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
@@ -51,6 +49,20 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
+//  GLOBAL HANDLE (WINDOW/WORKER/NODE SAFE)
+// ============================================================================
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof self !== "undefined"
+    ? self
+    : {};
+
+// ============================================================================
 //  IMPORTS
 // ============================================================================
 
@@ -70,9 +82,9 @@ import { createEvolutionAPI } from "./aiEvolution-v24.js";
 import { createEarnAPI } from "./aiEarn-v24.js";
 import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";
 
-import { createPersonaEngine } from "./aiPersonality.js";
+import { createPersonaEngine } from "./aiPersonality-v24.js";
 import { createBoundariesEngine } from "./aiBoundaries-v24.js";
-import { createPermissionsEngine } from "./aiPermissions.js";
+import { createPermissionsEngine } from "./aiPermissions-v24.js";
 import { createRouterEngine } from "./aiRouter-v16.js";
 import { createCortex } from "./aiCortex-v24.js";
 
@@ -81,15 +93,15 @@ import { createDualBandOrganism } from "./aiDualBand-v24.js";
 // Non-binary symbolic organs
 import { createDoctorAPI } from "./aiDoctorAssistant-v24.js";
 import { createSurgeonAPI } from "./aiSurgeon-v24.js";
-import { createLawyerAPI } from "./aiLawAssistant.js";
+import { createLawyerAPI } from "./aiLawAssistant-v24.js";
 import { createEntrepreneurAPI } from "./aiEntrepreneur-v24.js";
 import { createVeterinarianAPI } from "./aiVeterinarian-v24.js";
 import { createClinicianAPI } from "./aiClinician-v24.js";
 import { createEvolutionaryAPI } from "./aiEvolutionary-v24.js";
 
 // (Future trust / jury / evidence surfaces)
-import { createSafetyFrameOrgan } from "./aiSafetyFrame.js";
-import { createJuryFrame } from "./aiJuryFrame.js";
+import { createSafetyFrameOrgan } from "./aiSafetyFrame-v24.js";
+import { createJuryFrame } from "./aiJuryFrame-v24.js";
 
 // ============================================================================
 //  INTERNAL HELPERS — Pulse‑Net + Chunker lanes
@@ -162,23 +174,23 @@ function buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSur
 }
 
 // ============================================================================
-//  ORGAN ASSEMBLY — v16‑IMMORTAL++ Hybrid Spine
+//  ORGAN ASSEMBLY — v24‑IMMORTAL++ Hybrid Spine
 // ============================================================================
 export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   // ------------------------------------------------------------------------
   // 0) UNIVERSAL CNS GLOBAL SURFACE (legacy; Pulse‑Net is primary)
-// ------------------------------------------------------------------------
-  global.db    = db;
-  global.log   = context.log;
-  global.warn  = context.warn;
-  global.error = context.error;
+  // ------------------------------------------------------------------------
+  g.db = g.db || db;
+  g.log = g.log || context.log;
+  g.warn = g.warn || context.warn;
+  g.error = g.error || context.error;
 
-  global.fsAPI     = fsAPI;
-  global.routeAPI  = routeAPI;
-  global.schemaAPI = schemaAPI;
-  global.fetchAPI  = context.fetchAPI || global.fetchAPI || null;
+  g.fsAPI = g.fsAPI || fsAPI;
+  g.routeAPI = g.routeAPI || routeAPI;
+  g.schemaAPI = g.schemaAPI || schemaAPI;
+  g.fetchAPI = context.fetchAPI || g.fetchAPI || null;
 
-  const admin = global.db;
+  const admin = g.db;
 
   // ------------------------------------------------------------------------
   // 1) PULSE‑NET SURFACE
@@ -187,7 +199,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
   // ------------------------------------------------------------------------
   // 2) CNS CHUNKER — v16 Hybrid Spine (32 lanes, Pulse‑Net aware)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   const chunker = createPulseChunker(
     buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSurface)
   );
@@ -205,7 +217,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
   // ------------------------------------------------------------------------
   // 3) CNS ENGINES (identity, persona, boundaries, permissions)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   const personaEngine = createPersonaEngine({ context, db });
   const boundariesEngine = createBoundariesEngine({ context, db });
   const permissionsEngine = createPermissionsEngine({ context, db });
@@ -230,7 +242,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
   // ------------------------------------------------------------------------
   // 5) DUAL‑BAND ORGANISM (symbolic ↔ binary, artery‑aware)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   const dualBand = createDualBandOrganism({
     trace: context.trace,
     db,
@@ -241,7 +253,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
   // ------------------------------------------------------------------------
   // 6) REAL ORGANS (symbolic service organs)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   const osPresence = PulseOSPresence.create({
     SystemClock: context.SystemClock,
     IdentityDirectory: context.IdentityDirectory,
@@ -265,8 +277,8 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   const evolutionary = createEvolutionaryAPI({ context, db });
 
   // ------------------------------------------------------------------------
-  // 7) CORE ORGANS (v10.4 → v16‑IMMORTAL++)
-// ------------------------------------------------------------------------
+  // 7) CORE ORGANS (v10.4 → v24‑IMMORTAL++)
+  // ------------------------------------------------------------------------
   const architect = createArchitectAPI({ context, db });
   const tourist = createTouristAPI({ context, db });
   const environment = createEnvironmentAPI({ context, db, fsAPI, routeAPI });
@@ -276,8 +288,8 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   const diagnosticsWrite = createDiagnosticsWriteAPI({ context, db });
 
   // (Future trust/jury/evidence organs)
-  // const trustFabric = createTrustFabricAPI({ context, db });
-  // const juryFrame = createJuryFrameAPI({ context, db });
+  // const safetyFrame = createSafetyFrameOrgan({ context, db });
+  // const juryFrame = createJuryFrame({ context, db });
 
   // ------------------------------------------------------------------------
   // 8) UNIVERSAL SYSTEM MAP
@@ -306,7 +318,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     diagnosticsWrite,
     osPresence,
     meshPresenceRelay
-    // trustFabric,
+    // safetyFrame,
     // juryFrame
   });
 
@@ -318,7 +330,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
   // ------------------------------------------------------------------------
   // 10) UNIVERSAL REGISTRATION WITH CHUNKER (lane‑aware)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   if (chunker?.registerBackendOrgan) {
     for (const [name, system] of Object.entries(ALL_SYSTEMS)) {
       if (system?.chunk || system?.prewarm) {
@@ -381,7 +393,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
   // ------------------------------------------------------------------------
   // 12) RETURN FULL ORGANISM MAP (frozen, read‑only)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   return Object.freeze(ALL_SYSTEMS);
 }
 

@@ -34,7 +34,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 // Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-import { aiToneEngine } from "./aiToneEngine.js";
+import { aiToneEngine } from "./aiToneEngine-v24.js";
 import { aiPersonalityEngine } from "./aiPersonalityEngine-v24.js";
 import { aiIdentityCore } from "./aiIdentityCore-v24.js";
 

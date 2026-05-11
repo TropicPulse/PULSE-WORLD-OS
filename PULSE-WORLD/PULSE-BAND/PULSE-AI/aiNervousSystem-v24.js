@@ -1,7 +1,7 @@
 // ============================================================================
-//  aiNervousSystem.js — Pulse OS v15.0-Immortal Organ
-//  Binary Nervous System • Routing Brainstem • Deterministic • Routing Artery v3
-//  Dualband • Registry-Aware • Multi-Instance • Spiral-Safe
+//  aiNervousSystem.js — Pulse OS v24.0-IMMORTAL++
+//  Binary Nervous System • Routing Brainstem • Deterministic • Routing Artery v4
+//  Dualband • Registry-Aware • Multi-Instance • Spiral-Safe • Signal-Aware
 // ============================================================================
 //
 //  CANONICAL ROLE:
@@ -29,43 +29,42 @@
 //      • does NOT override pipeline/reflex engines
 //      • treats all inputs as read-only
 // ============================================================================
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
+// ============================================================================
+//  GLOBAL HANDLE (v24 IMMORTAL)
+// ============================================================================
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof self !== "undefined"
+    ? self
+    : {};
+
+// ============================================================================
+//  IDENTITY (v24 IMMORTAL)
+// ============================================================================
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
 export const NervousSystemMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
+//  SURFACE EXPORTS — v24 IMMORTAL
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-//  GLOBAL ROUTING ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
+//  GLOBAL ROUTING ARTERY REGISTRY
 // ============================================================================
-//
-//  Registry key: `${id}#${instanceIndex}`
-//  Value: latest routing artery snapshot for that instance.
-//
 const _globalRoutingArteryRegistry = new Map();
 
 function _registryKey(id, instanceIndex) {
@@ -81,7 +80,7 @@ export function getGlobalRoutingArteries() {
 }
 
 // ============================================================================
-//  BUCKET HELPERS — v3 (PURE, STATELESS)
+//  BUCKET HELPERS — v4
 // ============================================================================
 function _bucketLevel(v) {
   if (v >= 0.9) return "elite";
@@ -108,32 +107,57 @@ function _bucketCost(v) {
 }
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, routing-scoped
+//  SIGNAL-AWARE TRACE LAYER
+// ============================================================================
+function traceNervousEvent(event, payload, traceFlag) {
+  if (!traceFlag) return;
+
+  const s = g.PulseProofSignal;
+  if (s && typeof s.signal === "function") {
+    s.signal({
+      subsystem: "nervous-system",
+      level: "info",
+      message: `[AIBinaryNervousSystem] ${event}`,
+      extra: payload || {},
+      organ: NervousSystemMeta.identity,
+      layer: surfaceMeta?.layer,
+      band: "dual"
+    });
+    return;
+  }
+
+  console.log(`[AIBinaryNervousSystem] ${event}`, payload);
+}
+
+// ============================================================================
+//  PACKET EMITTER
 // ============================================================================
 function emitRoutingPacket(type, payload) {
+  const now = Date.now();
   return Object.freeze({
     meta: NervousSystemMeta,
     packetType: `routing-${type}`,
-    timestamp: Date.now(),
+    packetId: `routing-${type}-${now}`,
+    timestamp: now,
     epoch: NervousSystemMeta.evo.epoch,
     ...payload
   });
 }
 
 // ============================================================================
-//  PREWARM — v15.0-Immortal
+//  PREWARM
 // ============================================================================
 export function prewarmAIBinaryNervousSystem({ trace = false } = {}) {
   const packet = emitRoutingPacket("prewarm", {
-    message: "Nervous system prewarmed and routing artery v3 aligned."
+    message: "Nervous system prewarmed and routing artery v4 aligned."
   });
 
-  if (trace) console.log("[AIBinaryNervousSystem] prewarm", packet);
+  traceNervousEvent("prewarm", packet, trace);
   return packet;
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v15.0-Immortal
+//  ORGAN IMPLEMENTATION — v24 IMMORTAL++
 // ============================================================================
 export class AIBinaryNervousSystem {
   constructor(config = {}) {
@@ -145,34 +169,23 @@ export class AIBinaryNervousSystem {
     this.logger = config.logger || null;
     this.trace = !!config.trace;
 
-    // Optional NodeAdmin reporter hook (metrics-only, read-only)
-    // fn(artery, meta) => void
     this.nodeAdminReporter =
       typeof config.nodeAdminReporter === "function"
         ? config.nodeAdminReporter
         : null;
 
-    if (!this.encoder) {
-      throw new Error("AIBinaryNervousSystem requires aiBinaryAgent encoder");
-    }
-    if (!this.anatomy?.topology?.get) {
-      throw new Error(
-        "AIBinaryNervousSystem requires aiBinaryAnatomy with topology Map"
-      );
-    }
-    if (!this.immunity?.sanitize || !this.immunity.quarantined) {
+    if (!this.encoder) throw new Error("AIBinaryNervousSystem requires encoder");
+    if (!this.anatomy?.topology?.get)
+      throw new Error("AIBinaryNervousSystem requires aiBinaryAnatomy");
+    if (!this.immunity?.sanitize || !this.immunity.quarantined)
       throw new Error("AIBinaryNervousSystem requires aiBinaryImmunity");
-    }
-    if (!this.registry) {
+    if (!this.registry)
       throw new Error("AIBinaryNervousSystem requires aiBinaryOrganRegistry");
-    }
 
     this.organs = new Map();
 
-    // Multi-instance identity
     this.instanceIndex = AIBinaryNervousSystem._registerInstance();
 
-    // Routing artery v3 window configuration
     this.windowMs =
       typeof config.windowMs === "number" && config.windowMs > 0
         ? config.windowMs
@@ -187,7 +200,6 @@ export class AIBinaryNervousSystem {
     this._totalBits = 0;
     this._totalTargets = 0;
 
-    // Window-safe routing artery snapshot (per-instance)
     this.routingArtery = {
       throughput: 0,
       pressure: 0,
@@ -214,7 +226,7 @@ export class AIBinaryNervousSystem {
   }
 
   // --------------------------------------------------------------------------
-  //  STATIC INSTANCE REGISTRY — Multi-Instance Harmony
+  //  STATIC INSTANCE REGISTRY
   // --------------------------------------------------------------------------
   static _registerInstance() {
     if (typeof AIBinaryNervousSystem._instanceCount !== "number") {
@@ -226,13 +238,14 @@ export class AIBinaryNervousSystem {
   }
 
   static getInstanceCount() {
-    return typeof AIBinaryNervousSystem._instanceCount === "number"
-      ? AIBinaryNervousSystem._instanceCount
-      : 0;
+    return (
+      AIBinaryNervousSystem._instanceCount ||
+      0
+    );
   }
 
   // --------------------------------------------------------------------------
-  //  WINDOW ROLLING — Routing Artery v3
+  //  WINDOW ROLLING
   // --------------------------------------------------------------------------
   _rollWindow(now) {
     if (now - this._windowStart >= this.windowMs) {
@@ -244,7 +257,7 @@ export class AIBinaryNervousSystem {
   }
 
   // --------------------------------------------------------------------------
-  //  ROUTING ARTERY v3 — Harmonic Load + Buckets
+  //  ROUTING ARTERY v4
   // --------------------------------------------------------------------------
   _computeRoutingArtery() {
     const now = Date.now();
@@ -264,20 +277,16 @@ export class AIBinaryNervousSystem {
     const avgBits =
       this._windowRoutes > 0 ? this._windowBits / this._windowRoutes : 0;
 
-    // Normalize factors into [0,1]
-    const targetFactor = Math.min(1, avgTargets / 16);   // fanout
-    const sizeFactor = Math.min(1, avgBits / 50000);     // payload size
-    const loadFactor = Math.min(1, harmonicLoad / 128);  // per-instance load
+    const targetFactor = Math.min(1, avgTargets / 16);
+    const sizeFactor = Math.min(1, avgBits / 50000);
+    const loadFactor = Math.min(1, harmonicLoad / 128);
 
-    const pressureBase = Math.max(
+    const pressure = Math.max(
       0,
       Math.min(1, (targetFactor + sizeFactor + loadFactor) / 3)
     );
-    const pressure = pressureBase;
 
-    const throughputBase = Math.max(0, 1 - pressure);
-    const throughput = Math.max(0, Math.min(1, throughputBase));
-
+    const throughput = Math.max(0, Math.min(1, 1 - pressure));
     const cost = Math.max(0, Math.min(1, pressure * (1 - throughput)));
     const budget = Math.max(0, Math.min(1, throughput - cost));
 
@@ -312,10 +321,9 @@ export class AIBinaryNervousSystem {
       budgetBucket: _bucketLevel(budget),
 
       id: this.id,
-      timestamp: Date.now()
+      timestamp: now
     };
 
-    // Update per-instance snapshot
     this.routingArtery.throughput = throughput;
     this.routingArtery.pressure = pressure;
     this.routingArtery.cost = cost;
@@ -323,11 +331,9 @@ export class AIBinaryNervousSystem {
     this.routingArtery.routesPerSec = routesPerSec;
     this.routingArtery.harmonicLoad = harmonicLoad;
 
-    // Update global registry
     const key = _registryKey(this.id, this.instanceIndex);
     _globalRoutingArteryRegistry.set(key, artery);
 
-    // Optional NodeAdmin reporter
     if (this.nodeAdminReporter) {
       try {
         this.nodeAdminReporter(artery, NervousSystemMeta);
@@ -370,7 +376,7 @@ export class AIBinaryNervousSystem {
 
   // --------------------------------------------------------------------------
   //  ROUTING PACKET (binary, artery-aware)
-// --------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   _generateRoutingPacket(sourceId, targets, bits) {
     const bitLength = bits.length;
 
@@ -416,7 +422,6 @@ export class AIBinaryNervousSystem {
       bitLength: encoded.length
     };
 
-    // Update last-known routing state
     this.routingArtery.lastTargets = targets;
     this.routingArtery.lastSource = sourceId;
 
@@ -429,7 +434,7 @@ export class AIBinaryNervousSystem {
   }
 
   // --------------------------------------------------------------------------
-  //  LOCAL ROUTING METRIC HELPERS (v11-style, kept for compatibility)
+  //  LOCAL ROUTING METRIC HELPERS (legacy-compatible)
 // --------------------------------------------------------------------------
   _computeRoutingThroughput(targetCount, bitLength) {
     const loadFactor = Math.min(1, targetCount / 10);
@@ -460,7 +465,6 @@ export class AIBinaryNervousSystem {
 
     const targets = this._determineTargets(sourceId);
 
-    // Update window counters before artery computation
     const now = Date.now();
     this._rollWindow(now);
     this._windowRoutes += 1;
@@ -479,7 +483,6 @@ export class AIBinaryNervousSystem {
 
     const artery = this._computeRoutingArtery();
 
-    // Spiral warning (non-blocking)
     if (
       artery.pressureBucket === "overload" ||
       artery.budgetBucket === "critical"
@@ -520,8 +523,7 @@ export class AIBinaryNervousSystem {
   //  INTERNAL TRACE
   // --------------------------------------------------------------------------
   _trace(event, payload) {
-    if (!this.trace) return;
-    console.log(`[${this.id}#${this.instanceIndex}] ${event}`, payload);
+    traceNervousEvent(event, payload, this.trace);
   }
 }
 

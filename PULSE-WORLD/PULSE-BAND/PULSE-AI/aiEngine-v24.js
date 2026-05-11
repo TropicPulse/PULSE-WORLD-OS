@@ -36,7 +36,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 
 import { createCognitiveFrame as createAIContext } from "./aiContext-v24.js";
 import { createBrainstem } from "./aiBrainstem-v24.js";
-import { resolvePersonaV12 } from "./aiPersonality.js";
+import { resolvePersonaV12 } from "./aiPersonality-v24.js";
 import { routeAIRequest } from "./aiRouter-v16.js";
 import { canPerformDynamic } from "./aiBoundaries-v24.js";
 

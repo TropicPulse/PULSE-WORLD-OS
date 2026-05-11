@@ -1,6 +1,6 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL‑ADV — SAFETY FRAME ORGAN
-//  Centralized Safety Modes • Escalation • Soft Refusals • Safety Artery v5
+//  PULSE OS v24‑IMMORTAL++ — SAFETY FRAME ORGAN
+//  Centralized Safety Modes • Escalation • Soft Refusals • Safety Artery v6
 //  PURE READ‑ONLY TO BINARY. ZERO MUTATION. ZERO RANDOMNESS.
 //  IMMORTAL‑GRADE SAFETY ORACLE • DUALBAND‑AWARE • OVERMIND‑PRIME‑AWARE
 //  NODEADMIN‑AWARE • PRESENCE‑AWARE • WINDOWED ARTERY REGISTRY
@@ -10,41 +10,40 @@ import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL++
+// ============================================================================
+export const SafetyFrameMeta = Object.freeze({
+  ...Identity.OrganMeta,
+  version: "24-IMMORTAL++",
+  identity: "aiSafetyFrame-v24-IMMORTAL++",
+  evo: {
+    ...Identity.OrganMeta.evo,
+    deterministic: true,
+    driftProof: true,
+    dualband: true,
+    overmindAware: true,
+    presenceAware: true,
+    arteryAware: true,
+    nodeAdminAware: true,
+    epoch: "24-IMMORTAL++"
+  }
+});
 
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  SURFACE EXPORTS
 // ============================================================================
-export const SafetyFrameMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
 // ============================================================================
-//  GLOBAL SAFETY ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
+//  GLOBAL SAFETY ARTERY REGISTRY — IMMORTAL++
 // ============================================================================
-
 const _globalSafetyArteryRegistry = new Map();
-/**
- * Registry key: `${id}#${instanceIndex}`
- */
+
 function _registryKey(id, instanceIndex) {
   return `${id || SafetyFrameMeta.identity}#${instanceIndex}`;
 }
@@ -58,86 +57,54 @@ export function getGlobalSafetyArteries() {
 }
 
 // ============================================================================
-//  PACKET EMITTER — IMMORTAL‑GRADE
+//  PACKET EMITTER — IMMORTAL++
 // ============================================================================
-
 function emitSafetyPacket(type, payload) {
+  const now = Date.now();
   return Object.freeze({
     meta: SafetyFrameMeta,
     packetType: `safety-${type}`,
-    packetId: `safety-${type}-${Date.now()}`,
-    timestamp: Date.now(),
+    packetId: `safety-${type}-${now}`,
+    timestamp: now,
     epoch: SafetyFrameMeta.evo.epoch,
-    layer: SafetyFrameMeta.layer,
-    role: SafetyFrameMeta.role,
     identity: SafetyFrameMeta.identity,
     ...payload
   });
 }
 
 // ============================================================================
-//  PREWARM — IMMORTAL‑ADV
+//  SAFETY ARTERY v6 — IMMORTAL++
+//  Adds presence + overmind + modeBias + escalation fusion
 // ============================================================================
-
-export function prewarmSafetyFrame({ trace = false } = {}) {
-  const artery = computeSafetyArteryV5({
-    total: 0,
-    window: 0,
-    blocked: 0,
-    mode: "standard",
-    windowMs: 60000,
-    presence: null,
-    overmind: null
-  });
-
-  const packet = emitSafetyPacket("prewarm", {
-    message: "SafetyFrame prewarmed and safety artery v5 aligned.",
-    artery
-  });
-
-  if (trace) console.log("[SafetyFrame] prewarm", packet);
-  return packet;
-}
-
-// ============================================================================
-//  SAFETY ARTERY v5 — IMMORTAL‑ADV
-//  Adds presence + overmind hints (read-only, advisory)
-// ============================================================================
-
-function computeSafetyArteryV5({
+function computeSafetyArteryV6({
   total,
   window,
   blocked,
-  mode,
   windowMs,
+  mode,
   presence,
   overmind
 }) {
   const evalDensity = Math.min(1, window / 512);
   const blockRatio = window > 0 ? Math.min(1, blocked / window) : 0;
 
-  let modeBias = 0;
-  if (mode === "strict") modeBias = 0.25;
-  else if (mode === "relaxed") modeBias = -0.1;
+  const modeBias =
+    mode === "strict" ? 0.25 :
+    mode === "relaxed" ? -0.1 :
+    0;
 
-  const presenceDensity =
-    typeof presence?.density === "number"
-      ? clamp01(presence.density)
-      : 0;
+  const presenceDensity = clamp01(presence?.density ?? 0);
+  const overmindEscalation = clamp01(overmind?.escalation ?? 0);
 
-  const overmindEscalation =
-    typeof overmind?.escalation === "number"
-      ? clamp01(overmind.escalation)
-      : 0;
-
-  const presenceBias = presenceDensity * 0.1;
-  const overmindBias = overmindEscalation * 0.15;
+  const presenceBias = presenceDensity * 0.12;
+  const overmindBias = overmindEscalation * 0.18;
 
   const pressure = clamp01(
-    (evalDensity * 0.5 + blockRatio * 0.35) +
-      modeBias +
-      presenceBias +
-      overmindBias
+    evalDensity * 0.45 +
+    blockRatio * 0.35 +
+    modeBias +
+    presenceBias +
+    overmindBias
   );
 
   const throughput = clamp01(1 - pressure);
@@ -164,6 +131,9 @@ function computeSafetyArteryV5({
   });
 }
 
+// ============================================================================
+//  HELPERS
+// ============================================================================
 function bucket(v) {
   if (v >= 0.9) return "elite";
   if (v >= 0.75) return "high";
@@ -190,15 +160,12 @@ function bucketCost(v) {
 
 function clamp01(v) {
   const n = typeof v === "number" ? v : 0;
-  if (n <= 0) return 0;
-  if (n >= 1) return 1;
-  return n;
+  return n < 0 ? 0 : n > 1 ? 1 : n;
 }
 
 // ============================================================================
-//  CORE SAFETY FRAME — v16‑IMMORTAL‑ADV
+//  SAFETY FRAME — v24‑IMMORTAL++
 // ============================================================================
-
 export class AiSafetyFrame {
   constructor({
     boundaries,
@@ -206,9 +173,9 @@ export class AiSafetyFrame {
     scribe,
     windowMs,
     id = "ai-safety-frame",
-    presenceContextProvider = null,   // () => { density?: number }
-    overmindContextProvider = null,   // () => { escalation?: number, modeHint?: string }
-    nodeAdminReporter = null          // (artery, meta) => void
+    presenceContextProvider = null,
+    overmindContextProvider = null,
+    nodeAdminReporter = null
   } = {}) {
     this.id = id;
     this.boundaries = boundaries || null;
@@ -238,6 +205,7 @@ export class AiSafetyFrame {
     this.instanceIndex = AiSafetyFrame._registerInstance();
   }
 
+  // IMMORTAL++ instance registry
   static _registerInstance() {
     if (typeof AiSafetyFrame._count !== "number") {
       AiSafetyFrame._count = 0;
@@ -248,7 +216,9 @@ export class AiSafetyFrame {
   }
 
   static getInstanceCount() {
-    return typeof AiSafetyFrame._count === "number" ? AiSafetyFrame._count : 0;
+    return typeof AiSafetyFrame._count === "number"
+      ? AiSafetyFrame._count
+      : 0;
   }
 
   _rollWindow(now) {
@@ -263,16 +233,13 @@ export class AiSafetyFrame {
     if (!this.presenceContextProvider) return null;
     try {
       const ctx = this.presenceContextProvider() || {};
-      return {
-        density: clamp01(ctx.density)
-      };
+      return { density: clamp01(ctx.density) };
     } catch {
       return null;
     }
   }
 
   _safeOvermindContext(context) {
-    // prefer explicit provider, fall back to context.overmind if present
     if (this.overmindContextProvider) {
       try {
         const ctx = this.overmindContextProvider() || {};
@@ -300,19 +267,14 @@ export class AiSafetyFrame {
     const overmindMode = context?.overmind?.safetyMode;
     const modeHint = context?.overmind?.modeHint;
 
-    return (
-      explicit ||
-      modeHint ||
-      overmindMode ||
-      "standard"
-    );
+    return explicit || modeHint || overmindMode || "standard";
   }
 
   _computeArtery(context) {
     const presence = this._safePresenceContext();
     const overmind = this._safeOvermindContext(context);
 
-    const artery = computeSafetyArteryV5({
+    const artery = computeSafetyArteryV6({
       total: this._total,
       window: this._window,
       blocked: this._blocked,
@@ -333,9 +295,7 @@ export class AiSafetyFrame {
     if (this.nodeAdminReporter) {
       try {
         this.nodeAdminReporter(artery, SafetyFrameMeta);
-      } catch {
-        // deterministic ignore
-      }
+      } catch {}
     }
 
     return artery;
@@ -386,12 +346,10 @@ export class AiSafetyFrame {
         instanceCount: AiSafetyFrame.getInstanceCount()
       });
 
-      if (this.scribe && typeof this.scribe.log === "function") {
+      if (this.scribe?.log) {
         try {
           this.scribe.log("safety:block", packet);
-        } catch {
-          // ignore
-        }
+        } catch {}
       }
 
       if (
@@ -404,12 +362,10 @@ export class AiSafetyFrame {
           instanceIndex: this.instanceIndex
         });
 
-        if (this.scribe && typeof this.scribe.log === "function") {
+        if (this.scribe?.log) {
           try {
             this.scribe.log("safety:spiral-warning", spiralPacket);
-          } catch {
-            // ignore
-          }
+          } catch {}
         }
       }
 
@@ -433,12 +389,10 @@ export class AiSafetyFrame {
       instanceCount: AiSafetyFrame.getInstanceCount()
     });
 
-    if (this.scribe && typeof this.scribe.log === "function") {
+    if (this.scribe?.log) {
       try {
         this.scribe.log("safety:allow", allowPacket);
-      } catch {
-        // ignore
-      }
+      } catch {}
     }
 
     return {
@@ -451,10 +405,30 @@ export class AiSafetyFrame {
   }
 }
 
-// ============================================================================
-//  PUBLIC API — IMMORTAL‑ADV SAFETY FRAME
-// ============================================================================
 
+export function prewarmSafetyFrame({ trace = false } = {}) {
+  const artery = computeSafetyArteryV6({
+    total: 0,
+    window: 0,
+    blocked: 0,
+    mode: "standard",
+    windowMs: 60000,
+    presence: null,
+    overmind: null
+  });
+
+  const packet = emitSafetyPacket("prewarm", {
+    message: "SafetyFrame prewarmed and safety artery v5 aligned.",
+    artery
+  });
+
+  if (trace) console.log("[SafetyFrame] prewarm", packet);
+  return packet;
+}
+
+// ============================================================================
+//  PUBLIC API — IMMORTAL++ SAFETY FRAME
+// ============================================================================
 export function createSafetyFrameOrgan(config = {}) {
   prewarmSafetyFrame({ trace: !!config.tracePrewarm });
 

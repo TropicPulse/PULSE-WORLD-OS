@@ -45,19 +45,19 @@ import {
 import {
   PulseCastleMeta,
   computeCastlePresence
-} from "./PulseCastle-v24.js";
+} from "./PulseExpansionCastle-v24.js";
 
 // Router v24
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PulseRouter-v24.js";
+} from "./PulseExpansionRouter-v24.js";
 
 // User lanes / WorldCore
 import {
   getPulseUserContext,
   createPulseWorldCore
-} from "./PulseUser-v24.js";
+} from "./PulseExpansionUser-v24.js";
 
 // Adrenal (compute starter / circulation governor)
 import {
@@ -116,7 +116,7 @@ import {
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
-import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
+import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
 
 // ============================================================================
 //  TYPES

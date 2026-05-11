@@ -1,10 +1,10 @@
 // ============================================================================
-//  PULSE OS v12.3‑EVO+ — THE INSTRUMENTS
+//  PULSE OS v24‑IMMORTAL++ — THE INSTRUMENTS ORGAN
 //  Cognitive Analysis Organ • Diagnostic Tools • Evolutionary Sensors
-//  PURE ANALYSIS. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS.
+//  PURE ANALYSIS. ZERO MUTATION. ZERO TIME. ZERO RANDOMNESS. PULSE‑NET ONLY.
 // ============================================================================
 //
-// ROLE (v12.3‑EVO+):
+// ROLE (v24‑IMMORTAL++):
 //   The INSTRUMENTS organ provides:
 //     • Schema analysis
 //     • Drift detection
@@ -17,7 +17,7 @@
 //   They NEVER mutate data, NEVER modify external systems,
 //   NEVER introduce randomness, and NEVER override Router/Cortex decisions.
 //
-// ARCHITECTURE (v12.3‑EVO+):
+// ARCHITECTURE (v24‑IMMORTAL++):
 //   INSTRUMENTS = Cognitive Analysis Organ
 //     → Reads data
 //     → Translates to PulseFields
@@ -32,10 +32,10 @@
 //   • NO intent logic lives here.
 //   • NO assistant logic lives here.
 //   • NO API logic lives here.
-//   • ALL cognition lives in aiTools.js.
-//   • INSTRUMENTS is imported BY aiTools.js.
+//   • ALL cognition lives in aiTools-v24.js.
+//   • INSTRUMENTS is imported BY aiTools-v24.js.
 //
-// SECURITY POLICY (v12.3‑EVO+):
+// SECURITY POLICY (v24‑IMMORTAL++):
 //   • This file contains NO secure logic.
 //   • Secure CNS logic belongs ONLY in Brainstem.
 //   • This file must remain pure, deterministic, and read‑only.
@@ -43,32 +43,27 @@
 // CONTRACT:
 //   • ZERO randomness.
 //   • ZERO mutation.
-//   • ZERO side effects.
+//   • ZERO side effects (beyond logging/diagnostic callbacks).
 //   • ZERO identity leakage.
 //   • PURE deterministic analysis.
 // ============================================================================
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  (backed by the Organism Map)
 // ============================================================================
-// export const OrganismKernelMeta = Identity.OrganMeta;
+export const InstrumentsMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
 //  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -80,8 +75,16 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // SECTION 1 — IMPORTS
 // ============================================================================
-import { translateFirestoreDocument, translateFirestoreField } from "../PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v24.js";
-import { translateSQLSchema, translatePulseSchemaToFirestore } from "../PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v24.js";
+import {
+  translateFirestoreDocument,
+  translateFirestoreField
+} from "../PULSE-TRANSLATOR/PulseTranslatorRNAIntake-v24.js";
+
+import {
+  translateSQLSchema,
+  translatePulseSchemaToFirestore
+} from "../PULSE-TRANSLATOR/PulseTranslatorRNAOutput-v24.js";
+
 import { validatePulseField } from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";
 
 // ============================================================================
@@ -198,7 +201,6 @@ function _markAnalysis({ heavy = false } = {}) {
   ) {
     // Soft spiral warning — non‑blocking, logging only
     // (keeps harmony, never blocks organism)
-     
     console.log("[aiInstruments] spiral-warning", artery);
   }
 }
@@ -396,4 +398,30 @@ export function detectEvolutionaryPatterns(context, pulse = {}) {
   }
 
   return pulse;
+}
+
+// ---------------------------------------------------------------------------
+//  DUAL EXPORT LAYER — CommonJS compatibility (v24‑IMMORTAL++ dualband)
+// ---------------------------------------------------------------------------
+/* c8 ignore next 10 */
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    InstrumentsMeta,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+    AI_INSTRUMENTS_INSTANCE_INDEX,
+    getInstrumentsArterySnapshot,
+    analyzeFirestoreDoc,
+    analyzeSQLSchema,
+    detectDrift,
+    detectSlowdownPatterns,
+    validatePulseSchema,
+    analyzeRoute,
+    analyzeLogs,
+    analyzeErrors,
+    detectEvolutionaryPatterns
+  };
 }

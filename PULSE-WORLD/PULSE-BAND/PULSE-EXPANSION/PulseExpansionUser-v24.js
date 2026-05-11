@@ -31,11 +31,11 @@ import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v24.js";
 
 // Mesh + BeaconMesh meta
 import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v16.js";
-import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseBeaconMesh-v20.js";
+import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseExpansionBeaconMesh-v20.js";
 
-import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v24.js";
-import { PulseServerMeta, createPulseServer } from "./PulseServer-v24.js";
-import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v24.js";
+import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
+import { PulseServerMeta, createPulseServer } from "./PulseExpansionServer-v24.js";
+import { PulseRouterMeta, createPulseRouter } from "./PulseExpansionRouter-v24.js";
 import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v24.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 
@@ -59,7 +59,7 @@ import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js"
 import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 
 // Evolution engine
-import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
+import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
 
 // ============================================================================
 // FACTORY: createPulseWorldCore — v24 IMMORTAL ORGANISM JURY-READY

@@ -34,7 +34,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 // Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-import { getPermissionsForPersona, ForbiddenActions } from "./aiPermissions.js";
+import { getPermissionsForPersona, ForbiddenActions } from "./aiPermissions-v24.js";
 
 // ============================================================================
 //  INTERNAL HELPERS

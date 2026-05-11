@@ -1,8 +1,8 @@
 // ============================================================================
-// ForwardMotion-v24-Immortal-Evo+++ — Forward Motion Page Wrapper
+// BackwardMotion-v24-Immortal-Evo+++ — Backward Motion Page Wrapper
 //  • Thin directional wrapper around PulseMotionEngine-v24
 //  • No compute logic, no shifter logic, no artery logic
-//  • Lane-specific intent: expansion, prediction, forward motion
+//  • Lane-specific intent: stabilization, compression, reduction
 //  • Evidence-aware, diagnostics-aware, multi-band, session-aware
 // ============================================================================
 import {
@@ -20,7 +20,6 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 // export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
-
 // ============================================================================
 // GLOBAL HANDLE (membrane-safe, environment-agnostic)
 // ============================================================================
@@ -33,7 +32,7 @@ const g =
     ? window
     : {};
 
-// Safe presence/advantage contexts (zero-mutation)
+// Safe presence/advantage contexts (optional, zero-mutation)
 const presenceContext =
   (typeof window !== "undefined" && window.PULSE_PRESENCE) ||
   g.PULSE_PRESENCE ||
@@ -47,51 +46,51 @@ const advantageContext =
 // ============================================================================
 // ENGINE IMPORT (v24 IMMORTAL MOTION ENGINE)
 // ============================================================================
-import { createPulseMotionEngine } from "./PulseMotionEngine-v24.js";
+import { createPulseMotionEngine } from "./PulseEngineMotionEngine-v24.js";
 
 // ============================================================================
-// ENGINE INSTANCE (FORWARD FACE) — ZERO-COMPUTE WRAPPER
+// ENGINE INSTANCE (BACKWARD FACE) — ZERO-COMPUTE WRAPPER
 // ============================================================================
 let engine = null;
 
 try {
   engine = createPulseMotionEngine({
-    instanceId: "motion-forward",
+    instanceId: "motion-backward",
     presenceContext,
     advantageContext,
-    triHeartId: "forward-heart",
-    lane: "forward",
-    mode: "expansion",
+    triHeartId: "backward-heart",
+    lane: "backward",
+    mode: "compression",
     band: "dual"
   });
 } catch {
-  // ForwardMotion must never throw during wiring; engine may remain null.
+  // BackwardMotion must never throw during wiring; engine may remain null.
 }
 
 /*
-FORWARD_MOTION_ROLE = {
-  lane: "forward",
-  motionType: "expansion",
-  description: "Expands patterns, predicts next states, generates prefillChunks",
-  engineMethod: "tickForward",
-  safety: "ForwardMotion must never modify engine internals"
+BACKWARD_MOTION_ROLE = {
+  lane: "backward",
+  motionType: "compression",
+  description: "Stabilizes patterns, dedupes, reduces, generates compressedHints",
+  engineMethod: "tickBackward",
+  safety: "BackwardMotion must never modify engine internals"
 }
 */
 
 // ============================================================================
-// PUBLIC API — FORWARD MOTION (PURE INTERFACE, ZERO LOGIC)
+// PUBLIC API — BACKWARD MOTION (PURE INTERFACE, ZERO LOGIC)
 // ============================================================================
 
 export function submit(job) {
-  if (!engine || typeof engine.submitForwardJob !== "function") return;
-  engine.submitForwardJob(job);
+  if (!engine || typeof engine.submitBackwardJob !== "function") return;
+  engine.submitBackwardJob(job);
 }
 
 export function tick() {
-  if (!engine || typeof engine.tickForward !== "function") {
+  if (!engine || typeof engine.tickBackward !== "function") {
     return { ok: false, reason: "ENGINE_UNAVAILABLE" };
   }
-  return engine.tickForward();
+  return engine.tickBackward();
 }
 
 export function prewarm() {
@@ -103,7 +102,7 @@ export function prewarm() {
 
 // Expose artery for UI/debug (read-only surface)
 export const artery =
-  engine && engine.artery && engine.artery.forward
-    ? engine.artery.forward
+  engine && engine.artery && engine.artery.backward
+    ? engine.artery.backward
     : null;
-export const PulseForward = createPulseMotionEngine;
+export const PulseBackward = createPulseMotionEngine;

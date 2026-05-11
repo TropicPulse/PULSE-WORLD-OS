@@ -72,9 +72,9 @@ import { createEvolutionAPI } from "./aiEvolution-v24.js";
 import { createEarnAPI } from "./aiEarn-v24.js";
 import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";
 
-import { createPersonaEngine } from "./aiPersonality.js";
+import { createPersonaEngine } from "./aiPersonality-v24.js";
 import { createBoundariesEngine } from "./aiBoundaries-v24.js";
-import { createPermissionsEngine } from "./aiPermissions.js";
+import { createPermissionsEngine } from "./aiPermissions-v24.js";
 import { createRouterEngine } from "./aiRouter-v16.js";
 import { createCortex } from "./aiCortex-v24.js";
 
@@ -90,7 +90,7 @@ import { createClinicianAPI } from "./aiClinician-v24.js";
 import { createEvolutionaryAPI } from "./aiEvolutionary-v24.js";
 
 // (Trust / jury / evidence surfaces would be imported here when implemented)
-import { createSafetyFrameOrgan } from "./aiSafetyFrame.js";
+import { createSafetyFrameOrgan } from "./aiSafetyFrame-v24.js";
 import { createJuryFrame } from "./aiJuryFrame-v24.js";
 
 // ============================================================================

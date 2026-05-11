@@ -29,34 +29,34 @@ import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-
 import {
   PulseCastleMeta,
   summarizeCastlePresence
-} from "./PulseCastle-v24.js";
+} from "./PulseExpansionCastle-v24.js";
 
 import {
   PulseWorldCoreMeta,
   createPulseWorldCore
-} from "./PulseUser-v24.js"; // world core stays v16 but referenced as OS meta
+} from "./PulseExpansionUser-v24.js"; // world core stays v16 but referenced as OS meta
 
 // v16 server/router
 import {
   PulseServerMeta,
   createPulseServer
-} from "./PulseServer-v24.js";
+} from "./PulseExpansionServer-v24.js";
 
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PulseRouter-v24.js";
+} from "./PulseExpansionRouter-v24.js";
 
 // Beacon mesh / engine
 import {
   PulseBeaconMeshMeta,
   PulseBeaconMesh
-} from "./PulseBeaconMesh-v20.js";
+} from "./PulseExpansionBeaconMesh-v20.js";
 
 import {
   PulseBeaconMeta as PulseBeaconEngineMeta,
   createPulseBeaconEngine
-} from "./PulseBeaconEngine-v20.js";
+} from "./PulseExpansionBeaconEngine-v20.js";
 
 // v16 mesh + binary mesh metas
 import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v16.js";
@@ -83,7 +83,7 @@ import {
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
-import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseNodeEvolution-v20.js";
+import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
 
 // ============================================================================
 //  PULSE-NET BRIDGE CONTRACT (NO IMPORTS, PURELY INJECTED)

@@ -39,9 +39,9 @@ export const EXPORT_META = Identity.EXPORT_META;
 //  IMPORTS — Personas / Overmind / NodeAdmin
 // ============================================================================
 
-import { Personas, getPersona } from "./aiPersonality.js";
+import { Personas, getPersona } from "./aiPersonality-v24.js";
 import Overmind from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
-import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v20.js";
+import NodeAdmin from "../PULSE-TOOLS/PulseToolsNodeAdmin-v20.js";
 
 // ============================================================================
 //  IMPORTS — Organism Context (HYBRID: attach OR pull)
@@ -49,18 +49,18 @@ import NodeAdmin from "../PULSE-TOOLS/PulseNodeAdmin-v20.js";
 // ============================================================================
 
 // WorldCore / User
-import { PulseWorldCoreMeta, createPulseWorldCore} from "../PULSE-EXPANSION/PulseUser-v24.js";
+import { PulseWorldCoreMeta, createPulseWorldCore} from "../PULSE-EXPANSION/PulseExpansionUser-v24.js";
 
 // Castle / Mesh / BeaconMesh / Expansion / Server / Router
-import { PulseCastleMeta } from "../PULSE-EXPANSION/PulseCastle-v24.js";
+import { PulseCastleMeta } from "../PULSE-EXPANSION/PulseExpansionCastle-v24.js";
 import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v16.js";
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
-} from "../PULSE-EXPANSION/PulseBeaconMesh-v20.js";
-import PulseBeaconEngine from "../PULSE-EXPANSION/PulseBeaconEngine-v20.js";
+} from "../PULSE-EXPANSION/PulseExpansionBeaconMesh-v20.js";
+import PulseBeaconEngine from "../PULSE-EXPANSION/PulseExpansionBeaconEngine-v20.js";
 import { PulseExpansionMeta } from "../PULSE-EXPANSION/PulseExpansion-v24.js";
-import { PulseServerMeta } from "../PULSE-EXPANSION/PulseServer-v24.js";
-import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseRouter-v24.js";
+import { PulseServerMeta } from "../PULSE-EXPANSION/PulseExpansionServer-v24.js";
+import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseExpansionRouter-v24.js";
 
 // Earn / Band / Send
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
@@ -175,7 +175,7 @@ const ArchetypePages = Object.freeze({
   ENVIRONMENT: "aiEnvironment-v24.js",
   EVOLUTION: "aiEvolution-v24.js",
   EVOLUTIONARY: "aiEvolutionary-v24.js",
-  LAWYER: "aiLawAssistant.js",
+  LAWYER: "aiLawAssistant-v24.js",
   POWER: "aiPower.js",
   SURGEON: "aiSurgeon-v24.js",
   TOURIST: "aiTourist.js",

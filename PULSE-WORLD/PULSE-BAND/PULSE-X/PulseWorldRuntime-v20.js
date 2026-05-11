@@ -39,9 +39,9 @@ export const EXPORT_META = Identity.EXPORT_META;
 import * as PulseWorldRegioning from "../PULSE-EXPANSION/PulseExpansion-v24.js";
 
 // Delta Engine (CoreMemory integrations)
-import * as PulseContinuance from "../PULSE-FINALITY/PulseContinuance-v20.js";
-import * as PulseOmniHosting from "../PULSE-FINALITY/PulseOmniHosting-v20.js";
-import * as PulseSchema from "../PULSE-FINALITY/PulseSchema-v20.js";
+import * as PulseContinuance from "../PULSE-FINALITY/PulseFinalityContinuance-v20.js";
+import * as PulseOmniHosting from "../PULSE-FINALITY/PulseFinalityOmniHosting-v20.js";
+import * as PulseSchema from "../PULSE-FINALITY/PulseFinalitySchema-v20.js";
 
 // Specs / Genome (for runtime‑aware schema hooks)
 import { PULSE_FIELDS_SPEC } from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";

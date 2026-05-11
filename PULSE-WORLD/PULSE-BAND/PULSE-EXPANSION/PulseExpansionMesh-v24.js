@@ -64,10 +64,10 @@ export const EXPORT_META = Identity.EXPORT_META;
 
 import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v24.js";
 import { PulseCastleMeta, createPulseCastle } from "./PulseCastle-v24.js";
-import { PulseServerMeta, createPulseServer } from "./PulseServer-v24.js";
-import { PulseRouterMeta, createPulseRouter } from "./PulseRouter-v24.js";
+import { PulseServerMeta, createPulseServer } from "./PulseExpansionServer-v24.js";
+import { PulseRouterMeta, createPulseRouter } from "./PulseExpansionRouter-v24.js";
 
-import { getPulseUserContext, createPulseWorldCore } from "./PulseUser-v24.js";
+import { getPulseUserContext, createPulseWorldCore } from "./PulseExpansionUser-v24.js";
 
 import { getBeaconEngineContext } from "./PulseBeaconEngine-v20.js";
 import { getConsoleContext } from "./PulseBeaconConsole-v20.js";

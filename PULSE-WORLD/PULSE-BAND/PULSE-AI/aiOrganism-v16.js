@@ -51,27 +51,27 @@ export const EXPORT_META = Identity.EXPORT_META;
 //  IMPORTS — binary organs (v11.3‑EVO lineage)
 // ============================================================================
 import { createAIBinaryAgent } from "./aiBinaryAgent-v24.js";
-import { createAIMemory } from "./aiMemory-v16.js";
-import { createAIBinaryPipeline } from "./aiPipeline.js";
+import { createAIMemory } from "./aiMemory-v24.js";
+import { createAIBinaryPipeline } from "./aiPipeline-v24.js";
 import { createAIBinaryReflex } from "./aiReflex-v24.js";
-import { createAIBinaryLoggerAdapter } from "./aiLoggerAdapter.js";
-import { createAIBinaryPageScannerAdapter } from "./aiPageScannerAdapter.js";
+import { createAIBinaryLoggerAdapter } from "./aiLoggerAdapter-v24.js";
+import { createAIBinaryPageScannerAdapter } from "./aiPageScannerAdapter-v24.js";
 import { createAIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
 import { createAIBinaryGovernorAdapter } from "./aiGovernorAdapter-v24.js";
 import { createAIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
 import { createAIBinaryDelta } from "./aiBinaryDelta-v24.js";
 import { createAIConductor as createAIBinaryConductor } from "./aiConductor-v24.js";
-import { createAIBinaryMetabolism } from "./aiMetabolism.js";
+import { createAIBinaryMetabolism } from "./aiMetabolism-v24.js";
 import { createAIBinaryHormones } from "./aiHormones-v24.js";
 import { createAIBinaryImmunity } from "./aiImmunity-v24.js";
-import { createAIBinaryNervousSystem } from "./aiNervousSystem.js";
+import { createAIBinaryNervousSystem } from "./aiNervousSystem-v24.js";
 
 // ============================================================================
 //  COMMANDMENTS / SUPEREGO LAYER
 // ============================================================================
-import { createPersonaEngine } from "./aiPersonality.js";
+import { createPersonaEngine } from "./aiPersonality-v24.js";
 import { createBoundariesEngine } from "./aiBoundaries-v24.js";
-import { createPermissionsEngine } from "./aiPermissions.js";
+import { createPermissionsEngine } from "./aiPermissions-v24.js";
 
 // ============================================================================
 //  COGNITIVE FRAME / CONTEXT / CORTEX

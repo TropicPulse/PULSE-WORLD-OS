@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL++ — BINARY WATCHDOG ORGAN
+//  PULSE OS v24‑IMMORTAL++ — BINARY WATCHDOG ORGAN
 //  Liveness Sentinel • Drift Detection • Trust‑Aware • Jury‑Aware
 //  PURE BINARY OBSERVER. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
@@ -7,8 +7,6 @@
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
@@ -23,9 +21,7 @@ export const WatchdogMeta = Identity.OrganMeta;
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -33,7 +29,6 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
 // Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
-
 
 // ============================================================================
 // PRESSURE HELPERS (for artery fusion)
@@ -65,11 +60,11 @@ function extractTrustSignals(trustArtery = {}) {
 }
 
 // ============================================================================
-// WATCHDOG IMPLEMENTATION — v16 IMMORTAL++
+// WATCHDOG IMPLEMENTATION — v24 IMMORTAL++
 // ============================================================================
 export class AIBinaryWatchdog {
   constructor(config = {}) {
-    this.id = config.id || "ai-binary-watchdog";
+    this.id = config.id || WatchdogMeta.identity || "ai-binary-watchdog";
     this.encoder = config.encoder;
     this.chunker = config.chunker || null;
     this.heartbeat = config.heartbeat || null;
@@ -109,7 +104,7 @@ export class AIBinaryWatchdog {
 
   // ============================================================
   // PREWARM HOOKS (NON-BLOCKING, OPTIONAL)
-// ============================================================
+  // ============================================================
   _prewarm() {
     if (typeof this.encoder.prewarm === "function") {
       this.encoder.prewarm();
@@ -139,7 +134,7 @@ export class AIBinaryWatchdog {
 
   // ============================================================
   // OBSERVER ATTACHMENT (SAFE WRAPPING)
-// ============================================================
+  // ============================================================
   _attachObservers() {
     if (this.pipeline?.addObserver) {
       this.pipeline.addObserver(() => {
@@ -149,9 +144,9 @@ export class AIBinaryWatchdog {
 
     if (this.reflex?.run) {
       const originalRun = this.reflex.run.bind(this.reflex);
-      this.reflex.run = (binary) => {
+      this.reflex.run = (binary, ctx) => {
         this.lastReflexActivity = Date.now();
-        return originalRun(binary);
+        return originalRun(binary, ctx);
       };
     }
 
@@ -191,7 +186,11 @@ export class AIBinaryWatchdog {
         1,
         0.5 * base +
           0.3 * pressure +
-          0.2 * Math.max(trust.honeypotRisk, trust.dominanceRisk, trust.anomalyScore)
+          0.2 * Math.max(
+            trust.honeypotRisk,
+            trust.dominanceRisk,
+            trust.anomalyScore
+          )
       )
     );
 
@@ -207,7 +206,7 @@ export class AIBinaryWatchdog {
 
   // ============================================================
   // WATCHDOG ARTERY SNAPSHOT (WINDOW‑SAFE)
-// ============================================================
+  // ============================================================
   getWatchdogArterySnapshot({ binaryVitals = {}, trustArtery = {} } = {}) {
     const pressure = extractBinaryPressure(binaryVitals);
     const trust = extractTrustSignals(trustArtery);
@@ -236,7 +235,7 @@ export class AIBinaryWatchdog {
 
   // ============================================================
   // BINARY ANOMALY PACKET GENERATION (CHUNK‑AWARE)
-// ============================================================
+  // ============================================================
   _generateAlert(anomaly, { binaryVitals = {}, trustArtery = {} } = {}) {
     this._anomalyCount += 1;
     this._lastAnomalyType = anomaly;
@@ -268,7 +267,8 @@ export class AIBinaryWatchdog {
     const packet = {
       ...payload,
       bits: emittedBits,
-      bitLength: typeof emittedBits === "string" ? emittedBits.length : bits.length
+      bitLength:
+        typeof emittedBits === "string" ? emittedBits.length : bits.length
     };
 
     this._lastAlert = packet;
@@ -318,7 +318,7 @@ export class AIBinaryWatchdog {
 
   // ============================================================
   // WATCHDOG CHECKS (DETERMINISTIC)
-// ============================================================
+  // ============================================================
   _check({ binaryVitals = {}, trustArtery = {} } = {}) {
     const now = Date.now();
 
@@ -345,7 +345,7 @@ export class AIBinaryWatchdog {
 
   // ============================================================
   // WATCHDOG CONTROL
-// ============================================================
+  // ============================================================
   start(loopContextProvider = () => ({})) {
     if (this._timer) return;
     this._timer = setInterval(() => {
@@ -364,14 +364,14 @@ export class AIBinaryWatchdog {
 
   // ============================================================
   // READ-ONLY SNAPSHOTS
-// ============================================================
+  // ============================================================
   getLastAlert() {
     return this._lastAlert;
   }
 
   // ============================================================
   // INTERNAL HELPERS
-// ============================================================
+  // ============================================================
   _trace(event, payload) {
     if (!this.trace) return;
     console.log(`[${this.id}] ${event}`, payload);
@@ -379,14 +379,14 @@ export class AIBinaryWatchdog {
 }
 
 // ============================================================================
-// FACTORY
+// FACTORY — v24‑IMMORTAL++
 // ============================================================================
 export function createAIBinaryWatchdog(config) {
   return new AIBinaryWatchdog(config);
 }
 
 // ---------------------------------------------------------------------------
-// DUAL EXPORT LAYER — CommonJS compatibility (v16‑IMMORTAL++ dualband)
+// DUAL EXPORT LAYER — CommonJS compatibility (v24‑IMMORTAL++ dualband)
 // ---------------------------------------------------------------------------
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {

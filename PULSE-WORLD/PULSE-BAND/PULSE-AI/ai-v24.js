@@ -39,17 +39,17 @@ export const EXPORT_META = Identity.EXPORT_META;
 
 
 import { AIBinaryAgent } from "./aiBinaryAgent-v24.js";
-import { AIMemory } from "./aiMemory-v16.js";
+import { AIMemory } from "./aiMemory-v24.js";
 
 import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy-v24.js";
 import { AIBinaryGenome } from "./aiGenome-v24.js";
 import { AIBinaryVitals } from "./aiVitals.js";
-import { AIBinaryMetabolism } from "./aiMetabolism.js";
+import { AIBinaryMetabolism } from "./aiMetabolism-v24.js";
 import { AIBinaryHormones } from "./aiHormones-v24.js";
 import { AIBinarySentience } from "./aiSentience.js";
-import { AIBinaryConsciousness } from "./aiConsciousness.js";
+import { AIBinaryConsciousness } from "./aiConsciousness-v24.js";
 import { AIBinaryImmunity } from "./aiImmunity-v24.js";
-import { AIBinaryPipeline } from "./aiPipeline.js";
+import { AIBinaryPipeline } from "./aiPipeline-v24.js";
 import { AIBinaryReflex } from "./aiReflex-v24.js";
 import { AIBinaryScheduler } from "./aiScheduler.js";
 import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";

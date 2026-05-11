@@ -26,7 +26,7 @@ const REGION_MESH_SCHEMA_VERSION = "v3";
 // Imports — Regioning + CoreMemory bridge
 // ---------------------------------------------------------------------------
 
-import RegioningPhysicsAPI from "./RegioningPhysics-v16.js";
+import RegioningPhysicsAPI from "./PulseRegioningPhysics-v16.js";
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const {

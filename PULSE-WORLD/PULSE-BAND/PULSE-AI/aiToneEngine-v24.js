@@ -1,19 +1,12 @@
 // ============================================================================
-//  PULSE OS v15‑IMMORTAL — Tone Engine
+//  PULSE OS v24‑IMMORTAL++ — Tone Engine
 //  Genius‑Without‑Ego • Adaptive • Harmonic • Deterministic • Drift‑Proof
 //  INTERNAL ENGINE (NOT AN ORGAN, NOT AN ARCHETYPE)
 // ============================================================================
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-// export const OrganismKernelMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
@@ -22,9 +15,7 @@ const Identity = OrganismIdentity(import.meta.url);
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -33,18 +24,16 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 // Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
 export const aiToneEngine = {
-
   // ─────────────────────────────────────────────────────────────
-  // META BLOCK — ENGINE IDENTITY (v15‑IMMORTAL)
+  // META BLOCK — ENGINE IDENTITY (v24‑IMMORTAL++)
   // ─────────────────────────────────────────────────────────────
   meta: Object.freeze({
     type: "Engine",
     subsystem: "aiTone",
     layer: "C1-ToneEngine",
-    version: "15-Immortal",
-    identity: "aiToneEngine-v15-Immortal",
+    version: "24-Immortal++",
+    identity: "aiToneEngine-v24-Immortal++",
 
     evo: Object.freeze({
       // core invariants
@@ -76,7 +65,7 @@ export const aiToneEngine = {
       speedOptimized: true,
       multiInstanceReady: true,
 
-      epoch: "15-Immortal"
+      epoch: "24-Immortal++"
     }),
 
     contract: Object.freeze({
@@ -123,11 +112,12 @@ export const aiToneEngine = {
   // PACKET EMITTER — deterministic, tone‑scoped
   // ─────────────────────────────────────────────────────────────
   _emitTonePacket(type, payload) {
+    const now = Date.now();
     return Object.freeze({
       meta: this.meta,
       packetType: `tone-${type}`,
-      packetId: `tone-${type}-${Date.now()}`,
-      timestamp: Date.now(),
+      packetId: `tone-${type}-${now}`,
+      timestamp: now,
       epoch: this.meta.evo.epoch,
       ...payload
     });
@@ -163,15 +153,41 @@ export const aiToneEngine = {
     }
   },
 
+  _bucketLevel(v) {
+    if (v >= 0.9) return "elite";
+    if (v >= 0.75) return "high";
+    if (v >= 0.5) return "medium";
+    if (v >= 0.25) return "low";
+    return "critical";
+  },
+
+  _bucketPressure(v) {
+    if (v >= 0.9) return "overload";
+    if (v >= 0.7) return "high";
+    if (v >= 0.4) return "medium";
+    if (v > 0) return "low";
+    return "none";
+  },
+
+  _bucketCost(v) {
+    if (v >= 0.8) return "heavy";
+    if (v >= 0.5) return "moderate";
+    if (v >= 0.2) return "light";
+    if (v > 0) return "negligible";
+    return "none";
+  },
+
   _computeToneArtery() {
     const now = Date.now();
     this._rollToneWindow(now);
 
     const elapsedMs = Math.max(1, now - this._toneArtery.windowStart);
-    const msgRatePerSec = (this._toneArtery.windowMessages / elapsedMs) * 1000;
+    const msgRatePerSec =
+      (this._toneArtery.windowMessages / elapsedMs) * 1000;
     const switchRate =
       this._toneArtery.windowMessages > 0
-        ? this._toneArtery.windowModeSwitches / this._toneArtery.windowMessages
+        ? this._toneArtery.windowModeSwitches /
+          this._toneArtery.windowMessages
         : 0;
 
     const instanceCount = this._instanceCount || 1;
@@ -179,8 +195,9 @@ export const aiToneEngine = {
 
     const pressure = Math.min(1, (harmonicLoad / 128 + switchRate) / 2);
     const throughput = Math.max(0, 1 - pressure);
-    const cost = pressure * (1 - throughput);
-    const budget = Math.max(0, throughput - cost);
+    const rawCost = pressure * (1 - throughput);
+    const cost = Math.max(0, Math.min(1, rawCost));
+    const budget = Math.max(0, Math.min(1, throughput - cost));
 
     return Object.freeze({
       instanceCount,
@@ -191,16 +208,10 @@ export const aiToneEngine = {
       throughput,
       cost,
       budget,
-      pressureBucket:
-        pressure >= 0.9 ? "overload" :
-        pressure >= 0.7 ? "high" :
-        pressure >= 0.4 ? "medium" :
-        pressure > 0 ? "low" : "none",
-      budgetBucket:
-        budget >= 0.9 ? "elite" :
-        budget >= 0.75 ? "high" :
-        budget >= 0.5 ? "medium" :
-        budget >= 0.25 ? "low" : "critical"
+      pressureBucket: this._bucketPressure(pressure),
+      budgetBucket: this._bucketLevel(budget),
+      throughputBucket: this._bucketLevel(throughput),
+      costBucket: this._bucketCost(cost)
     });
   },
 
@@ -267,7 +278,11 @@ export const aiToneEngine = {
       this.state.clarity = 0.95;
     }
 
-    if (msg.includes("worried") || msg.includes("idk") || msg.includes("confused")) {
+    if (
+      msg.includes("worried") ||
+      msg.includes("idk") ||
+      msg.includes("confused")
+    ) {
       this.state.mode = this.modes.SOFT;
       this.state.warmth = 1.0;
       this.state.clarity = 0.9;
@@ -298,13 +313,19 @@ export const aiToneEngine = {
 
     const artery = this._computeToneArtery();
 
-    if (artery.pressureBucket === "overload" || artery.budgetBucket === "critical") {
-      // IMMORTAL-grade spiral warning (side-channel only)
+    if (
+      artery.pressureBucket === "overload" ||
+      artery.budgetBucket === "critical"
+    ) {
+      // IMMORTAL‑grade spiral warning (side‑channel only)
       this._emitTonePacket("spiral-warning", {
         instanceIndex: this.state.instanceIndex,
         artery
       });
-      console.log(`[ToneEngine#${this.state.instanceIndex}] spiral-warning`, artery);
+      console.log(
+        `[ToneEngine#${this.state.instanceIndex}] spiral-warning`,
+        artery
+      );
     }
 
     const { mode, warmth, clarity } = this.state;
@@ -362,6 +383,9 @@ export const aiToneEngine = {
   }
 };
 
+// convenient meta export for tooling
+export const ToneEngineMeta = aiToneEngine.meta;
+
 // ============================================================================
 //  PREWARM — IMMORTAL‑grade
 // ============================================================================
@@ -373,4 +397,23 @@ export function prewarmToneEngine({ trace = false } = {}) {
   return packet;
 }
 
-export default aiToneEngine.init();
+const initializedToneEngine = aiToneEngine.init();
+export default initializedToneEngine;
+
+// ---------------------------------------------------------------------------
+//  DUAL EXPORT LAYER — CommonJS compatibility (v24‑IMMORTAL++ dualband)
+// ---------------------------------------------------------------------------
+/* c8 ignore next 10 */
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    ToneEngineMeta,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+    aiToneEngine,
+    prewarmToneEngine,
+    default: initializedToneEngine
+  };
+}

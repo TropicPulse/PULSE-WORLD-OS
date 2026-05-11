@@ -163,7 +163,7 @@ export {
 // ============================================================================
 //  OPTIONAL: AI WORLD CORE META (AI‑MIRROR WORLDVIEW, v20)
 // ============================================================================
-export { PulseWorldCoreMeta } from "../PULSE-EXPANSION/PulseAIWorldCore-v20.js";
+export { PulseWorldCoreMeta } from "../PULSE-EXPANSION/PulseExpansionAIWorldCore-v20.js";
 
 // ============================================================================
 //  OPTIONAL: BAND / CNS META (PulseWorldBand, v20)

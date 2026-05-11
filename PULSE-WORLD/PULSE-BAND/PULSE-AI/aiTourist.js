@@ -53,7 +53,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 
-import { Personas } from "./aiPersonality.js";
+import { Personas } from "./aiPersonality-v24.js";
 
 function emitTouristChunkPacket(type, payload) {
   return Object.freeze({

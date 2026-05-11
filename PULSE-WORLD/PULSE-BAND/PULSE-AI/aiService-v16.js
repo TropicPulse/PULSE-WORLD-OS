@@ -47,7 +47,7 @@ import {
   detectDrift,
   detectSlowdownPatterns,
   validatePulseSchema
-} from "./aiTools.js";
+} from "./aiTools-v24.js";
 
 // ============================================================================
 //  GLOBAL RELAY ARTERY REGISTRY — v16 IMMORTAL‑ADV++

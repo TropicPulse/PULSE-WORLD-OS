@@ -1,5 +1,5 @@
 /**
- * aiConsciousness.js — Pulse OS v24.0‑IMMORTAL++ Consciousness Organ
+ * aiConsciousness-v24.js — Pulse OS v24.0‑IMMORTAL++ Consciousness Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   This organ is the **Consciousness Layer** of the organism.

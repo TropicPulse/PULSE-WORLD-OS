@@ -26,10 +26,10 @@ const MULTI_ORG_SCHEMA_VERSION = "v3";
 // Imports (v16 IMMORTAL)
 // -------------------------
 
-import SnapshotPhysicsAPI from "./SnapshotPhysics-v16.js";
-import DeltaEngineAPI from "./DeltaEngine-v16.js";
-import DeploymentPhysicsAPI from "./DeploymentPhysics-v16.js";
-import RegionMeshRoutingAPI from "./RegionMeshRouting-v16.js";
+import SnapshotPhysicsAPI from "./PulseRegioningSnapshotPhysics-v16.js";
+import DeltaEngineAPI from "./PulseRegioningDeltaEngine-v16.js";
+import DeploymentPhysicsAPI from "./PulseRegioningPulseRegioningDeploymentPhysics-v16.js";
+import RegionMeshRoutingAPI from "./PulseRegioningMeshRouting-v16.js";
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const { projectSnapshotForDelta } = SnapshotPhysicsAPI;

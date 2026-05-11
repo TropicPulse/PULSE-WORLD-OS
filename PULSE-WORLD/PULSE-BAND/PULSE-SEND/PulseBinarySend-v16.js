@@ -81,8 +81,8 @@ export function getBinarySendHealingState() {
 }
 
 // --- Evolution Engines ------------------------------------------------------
-import { createPulseV2 as PulseV2EvolutionEngine } from "./PulseV2EvolutionEngine-v16.js";
-import { createPulseV3 as PulseV3UnifiedOrganism } from "./PulseV3UnifiedOrganism-v16.js";
+import { createPulseV2 as PulseV2EvolutionEngine } from "./PulseSendV2EvolutionEngine-v16.js";
+import { createPulseV3 as PulseV3UnifiedOrganism } from "./PulseSendV3UnifiedOrganism-v16.js";
 
 // --- Impulse Layer ----------------------------------------------------------
 import { createPulseSendImpulse as PulseSendImpulse } from "./PulseSendImpulse-v16.js";

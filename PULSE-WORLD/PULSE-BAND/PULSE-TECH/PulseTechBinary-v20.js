@@ -45,10 +45,10 @@ import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSen
 import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse-v24.js";
 
 // v2 Evolution Engine (earn-side v2)
-import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseV2EvolutionEngine-v16.js";
+import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseSendV2EvolutionEngine-v16.js";
 
 // v3 Unified organism pulse
-import { createPulseV3 } from "../PULSE-SEND/PulseV3UnifiedOrganism-v16.js";
+import { createPulseV3 } from "../PULSE-SEND/PulseSendV3UnifiedOrganism-v16.js";
 
 
 // ===========================================================================
