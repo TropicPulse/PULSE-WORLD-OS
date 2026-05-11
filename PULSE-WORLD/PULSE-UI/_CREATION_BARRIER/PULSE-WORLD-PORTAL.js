@@ -31,8 +31,8 @@
 // ============================================================================
 import {
   route as BridgeRoute,
-  PulseProofBridgeLogger as PulseProofLogger,
-  PulseProofBridgeLogger as PulseProofMonitor,
+  PulseProofBridgeMonitor as PulseVitalsMonitor,
+  PulseProofBridgeLogger as PulseVitalsLogger,
   BridgeLog as log,
   BridgeWarn as warn,
   BridgeError as error,
@@ -42,7 +42,6 @@ import {
 } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 import { createPulseSkinReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
-import PulseVitalsLogger from "../_MONITOR/PulseProofLogger-v24.js";
 
 import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
 import PulseUIFlow from "../_MONITOR/PulseUIFlow-v24.js";
@@ -956,7 +955,7 @@ window.PulsePortal =
     // ------------------------------------------------------------------------
     meta: surfaceMeta,
     env: PulseSurfaceEnvironment,
-    logger: PulseProofLogger,
+    logger: PulseVitalsLogger,
 
     // ------------------------------------------------------------------------
     // ⭐ NEW: v26 Signal Snapshot API
@@ -968,7 +967,7 @@ window.PulsePortal =
     // ------------------------------------------------------------------------
     // LEGACY FIELDS — PRESERVED EXACTLY AS YOU SAID
     // ------------------------------------------------------------------------
-    vitals: PulseProofMonitor,
+    vitals: PulseVitalsMonitor,
     ui: {
       errors: PulseUIErrors,
       flow: PulseUIFlow
@@ -979,7 +978,7 @@ window.PulsePortal =
 
     bridge: {
       route: BridgeRoute,
-      PulseProofLogger,
+      PulseVitalsLogger,
       log,
       warn,
       error,
