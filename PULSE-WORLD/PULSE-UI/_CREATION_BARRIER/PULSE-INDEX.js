@@ -1,52 +1,43 @@
 // ============================================================================
 //  PULSE-INDEX v25 — IMMORTAL++
-//  Frontend UI • Signal-Driven Only
-//  No PulseBand • No PulseBinary • No VitalsMonitor • No Understanding import
-//  CSS-Merged Signal Snapshot → UI
+//  Frontend UI • Portal-Signal Driven • Zero Backend Imports
+//  Reads ONLY from window.PulsePortal.getSignal()
 // ============================================================================
 
-// ⭐ Import upgraded CSS‑merged signal engine (frontend-safe)
-import { PulseProofSignal } from "../_MONITOR/PulseProofSignal-v25.js";
+// No backend imports. No Understanding. No Bridge. No PulseBand.
+// Only Portal + DOM + CSS-merged signal snapshot.
 
-/* ============================================================
-   IMMORTAL COLOR CONSTANTS
-============================================================ */
+// ============================================================
+// IMMORTAL COLOR CONSTANTS
+// ============================================================
 const C_ID   = "color:#00E5FF; font-weight:bold; font-family:monospace;";
 const C_OK   = "color:#00FF9C; font-family:monospace;";
 const C_INFO = "color:#E8F8FF; font-family:monospace;";
 const C_WARN = "color:#FFE066; font-family:monospace;";
 const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;";
 
-function logID(msg, ...rest) {
-  console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_INFO, ...rest);
-}
-function logOK(msg, ...rest) {
-  console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_OK, ...rest);
-}
-function logWarn(msg, ...rest) {
-  console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_WARN, ...rest);
-}
-function logErr(msg, ...rest) {
-  console.error(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_ERR, ...rest);
-}
+function logID(msg, ...rest)  { console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_INFO, ...rest); }
+function logOK(msg, ...rest)  { console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_OK, ...rest); }
+function logWarn(msg, ...rest){ console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_WARN, ...rest); }
+function logErr(msg, ...rest) { console.error(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_ERR, ...rest); }
 
-/* ============================================================
-   0. BOOT MEMBRANE — MUST BE FIRST
-============================================================ */
+// ============================================================
+// 0. BOOT MEMBRANE
+// ============================================================
 logID("BOOT MEMBRANE START");
 
-/* ============================================================
-   1. UI INIT — RUN ONCE ONLY
-============================================================ */
+// ============================================================
+// 1. UI INIT — RUN ONCE
+// ============================================================
 if (!window.__PULSE_UI_INIT__) {
   window.__PULSE_UI_INIT__ = true;
 
   document.addEventListener("DOMContentLoaded", () => {
     logOK("DOM CONTENT LOADED — INDEX PAGE");
 
-    /* ============================================================
-       2. PULSEBAND UI — UI ONLY (visual shell)
-    ============================================================ */
+    // ============================================================
+    // 2. PULSEBAND UI SHELL (visual only)
+    // ============================================================
     try {
       logID("INIT PULSEBAND UI");
 
@@ -75,9 +66,9 @@ if (!window.__PULSE_UI_INIT__) {
       logErr("PulseBand UI init failed", err);
     }
 
-    /* ============================================================
-       3. PULSEBAND SNAPSHOT — SIGNAL-DRIVEN ONLY
-    ============================================================ */
+    // ============================================================
+    // 3. PULSEBAND SNAPSHOT — PORTAL SIGNAL MODE
+    // ============================================================
     const pbFields = {
       bars:       document.getElementById("pb-bars-text"),
       phone:      document.getElementById("pb-phonebars-text"),
@@ -93,61 +84,44 @@ if (!window.__PULSE_UI_INIT__) {
       estimated:  document.getElementById("pb-estimated")
     };
 
-    // Get latest CSS-merged signal snapshot from Signal engine
-    function getLatestSignalSnapshot() {
-      const comments = PulseProofSignal.comments(1);
-      if (!comments || !comments.length) return null;
-
-      const last = comments[0];
-      // v25 top-layer merged comment should carry computed state
-      const computed = last?.details?.computed || null;
-      return computed;
+    // ⭐ NEW — get signal snapshot from Portal
+    function getSignalSnapshot() {
+      try {
+        return window.PulsePortal?.getSignal?.() || null;
+      } catch {
+        return null;
+      }
     }
 
+    // ⭐ NEW — engine boot waits for first signal snapshot
     async function waitForEngines() {
-      logID("WAITING FOR ENGINES — SIGNAL MODE");
+      logID("WAITING FOR ENGINES — PORTAL SIGNAL MODE");
 
       let spins = 0;
 
       while (true) {
         spins++;
 
-        const snap = getLatestSignalSnapshot();
+        const snap = getSignalSnapshot();
         if (snap) {
-          logOK("ENGINES READY — Signal snapshot available", { spins });
-          return;
-        }
-
-        const comments = PulseProofSignal.comments(1);
-        if (comments && comments.length) {
-          logOK("ENGINES READY — Signal engine online (no computed snapshot yet)", {
-            spins
-          });
+          logOK("ENGINES READY — Portal signal snapshot available", { spins });
           return;
         }
 
         if (spins > 200) {
-          logWarn("Engines not fully ready, proceeding anyway", {
-            spins,
-            hasSnapshot: !!snap,
-            hasSignal: !!(comments && comments.length)
-          });
+          logWarn("Engines not fully ready, proceeding anyway", { spins });
           return;
         }
 
-        logWarn("Engines not ready yet…", {
-          spin: spins,
-          hasSnapshot: !!snap,
-          hasSignal: !!(comments && comments.length)
-        });
-
+        logWarn("Engines not ready yet…", { spin: spins });
         await new Promise((res) => setTimeout(res, 100));
       }
     }
 
+    // ⭐ NEW — PulseBand UI driven by Portal.getSignal()
     async function updatePulseBand() {
       try {
-        const snap = getLatestSignalSnapshot();
+        const snap = getSignalSnapshot();
 
         if (!snap) {
           logWarn("No signal snapshot yet — PulseBand UI idle");
@@ -180,12 +154,13 @@ if (!window.__PULSE_UI_INIT__) {
         if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
         if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
 
-        logOK("PulseBand UI updated (Signal snapshot)");
+        logOK("PulseBand UI updated (Portal signal snapshot)");
       } catch (err) {
         logErr("PulseBand update failed", err);
       }
     }
 
+    // ⭐ NEW — Engine boot + UI loop
     (async () => {
       try {
         await waitForEngines();
@@ -196,16 +171,14 @@ if (!window.__PULSE_UI_INIT__) {
       }
     })();
 
-    /* ============================================================
-       4. GPU TEST — SIGNAL-DRIVEN
-    ============================================================ */
+    // ============================================================
+    // 4. GPU TEST — PORTAL SIGNAL MODE
+    // ============================================================
     try {
       const testBtn     = document.getElementById("tp-test-button");
       const testFile    = document.getElementById("tp-test-file");
       const testStatus  = document.getElementById("tp-test-status");
       const testMetrics = document.getElementById("tp-test-metrics");
-
-      if (!testBtn) logWarn("GPU test button missing");
 
       testBtn?.addEventListener("click", async () => {
         try {
@@ -227,7 +200,7 @@ if (!window.__PULSE_UI_INIT__) {
           const after = performance.now();
           const decodeMs = Math.round(after - before);
 
-          const snap = getLatestSignalSnapshot();
+          const snap = getSignalSnapshot();
 
           const gpuSmooth   = snap?.stability?.score ?? null;
           const advantage   = snap?.advantage?.multiplier ?? null;
@@ -249,7 +222,7 @@ if (!window.__PULSE_UI_INIT__) {
           }
 
           if (testStatus) testStatus.textContent = "Test complete.";
-          logOK("GPU test complete (Signal snapshot)");
+          logOK("GPU test complete (Portal signal snapshot)");
         } catch (err) {
           logErr("GPU test failed", err);
           if (testStatus)  testStatus.textContent  = "Test failed.";
@@ -260,9 +233,9 @@ if (!window.__PULSE_UI_INIT__) {
       logErr("GPU test init failed", err);
     }
 
-    /* ============================================================
-       5. CAROUSEL — UI ONLY (safe delayed init)
-    ============================================================ */
+    // ============================================================
+    // 5. CAROUSEL — UI ONLY
+    // ============================================================
     try {
       function initCarousel() {
         const carousel = document.getElementById("appCarousel");
@@ -321,9 +294,9 @@ if (!window.__PULSE_UI_INIT__) {
       logErr("Carousel init failed", err);
     }
 
-    /* ============================================================
-       6. FAQ ACCORDION — UI ONLY
-    ============================================================ */
+    // ============================================================
+    // 6. FAQ ACCORDION — UI ONLY
+    // ============================================================
     try {
       document.querySelectorAll("[data-faq]").forEach((item) => {
         const btn = item.querySelector(".faq-question");
