@@ -53,12 +53,12 @@ import {
 } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ⭐ NEW: Import upgraded CSS‑merged signal engine
-import { PulseProofSignal } from "../_MONITOR/PulseProofSignal-v25.js";
+import { PulseProofSignal } from "../../PULSE-UI/_MONITOR/PulseProofSignal-v25.js";
 
 // ============================================================================
 //  IMPORTS — COMPILER / CHUNKER / ACTNOW
 // ============================================================================
-import { PulseWorldCompile } from "../../PULSE-UI/_CREATION_BARRIER/PulseWorldCompiler-v20.js";
+import { PulseWorldCompile } from "./PulseWorldCompiler-v20.js";
 import { createPulseChunker } from "./PulseWorldChunker-v20.js";
 import { createPulseWorldFightFlightResponseV20 } from "./PulseWorldFightFlightResponse-v20.js";
 

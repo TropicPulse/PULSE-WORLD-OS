@@ -44,7 +44,7 @@ This keeps the IMMORTAL organ pure and deterministic.
 ===============================================================================
 */
 
-import { PulseWorldCompile } from "../../PULSE-UI/_CREATION_BARRIER/PulseWorldCompiler-v20.js";
+import { PulseWorldCompile } from "./PulseWorldCompiler-v20.js";
 // 2 — EXPORT GENOME METADATA
 // export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
 
