@@ -555,9 +555,9 @@ function buildOrganIdentity({ systemKey, system, organName }) {
   const layer = system.layer || "generic";
   const roleConst = `${constName}_ORGAN`;
 
-  // NEW: subsystem + version from scan
-  const subsystem = extractSubsystem(systemKey);
-  const version = `${extractVersion(systemKey)}-IMMORTAL-WORLD-GENOME++`;
+  const subsystem = system.subsystem;
+  const version = `${system.version}-IMMORTAL-WORLD-GENOME++`;
+
 
   // NEW: IDENTITY_META — PURELY FROM SCAN
   const IDENTITY_META = Object.freeze({
