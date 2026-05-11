@@ -749,7 +749,7 @@ function extractVersion(systemKey) {
   return match ? `v${match[1]}.0` : "v24.0";
 }
 
-function buildOrganIdentity({ systemKey, system, organName }) {
+function buildOrganIdentity({ systemKey, system, organName, portName, handler }) {
   const organId = `${systemKey}/${organName}`;
   const constName = toConstName(organName);
   const titleName = toTitleName(organName);
@@ -760,14 +760,26 @@ function buildOrganIdentity({ systemKey, system, organName }) {
   const subsystem = system.subsystem;
   const version = `${system.version}-IMMORTAL-WORLD-GENOME++`;
 
+  const PORT_IDENTITY = Object.freeze({
+    // canonical port name this organ wants to answer to
+    portName: portName || subsystem || systemKey,
+    // optional: extra aliases this organ wants
+    aliases: Object.freeze([
+      portName,
+      subsystem,
+      systemKey
+    ].filter(Boolean)),
+    // handler function reference (wired at registration time)
+    handler: handler || null
+  });
 
-  // NEW: IDENTITY_META — PURELY FROM SCAN
   const IDENTITY_META = Object.freeze({
     subsystem,
     version,
     role: `${subsystem.toUpperCase()} SUBSYSTEM`,
-    icon: "🔹",      // generic icon (no external maps)
-    color: "#4DD0E1" // generic color (no external maps)
+    icon: "🔹",
+    color: "#4DD0E1",
+    PORT_IDENTITY
   });
 
   // 1) PulseRole — deep biological identity

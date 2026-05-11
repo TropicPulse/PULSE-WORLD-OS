@@ -4,10 +4,11 @@
 //  ZERO RANDOMNESS • ZERO EGO • DUALBAND-AWARE • ORGANISM-MAP-AWARE
 //  CSS-Style Signal Cascade • Top-Layer Merged Comments • Color-Aware Logs
 //  BEAST + UI CONTEXT • EMITS ONLY ON CHANGE
+//  v25+ UPGRADE: SignalPort-style dispatch via OrganismMap (if present)
 // ============================================================================
 
 console.log(
-  "%cPulseProofSignal v25-IMMORTAL-EVOLVABLE (CSS-MERGED, OFFLINE)",
+  "%cPulseProofSignal v25-IMMORTAL-EVOLVABLE (CSS-MERGED, OFFLINE, +SignalPort)",
   "color:#BA68C8;font-weight:bold;"
 );
 
@@ -166,8 +167,10 @@ function buildCommentFromSignalPacket(packet, kind = "direct") {
 }
 
 // ============================================================================
-//  CSS-STYLE TOP-LAYER MERGE ENGINE — collapse subsignals → 1 comment
-//  + CHANGE DETECTION: emit ONLY when computed state changes
+/*  CSS-STYLE TOP-LAYER MERGE ENGINE — collapse subsignals → 1 comment
+ *  + CHANGE DETECTION: emit ONLY when computed state changes
+ *  (unchanged core behavior; we only read from it via latest())
+ */
 // ============================================================================
 
 const TopLayerMerge = {
@@ -441,9 +444,95 @@ function normalizeDirectSignal(payload = {}) {
 }
 
 // ============================================================================
+//  SIGNALPORT-STYLE DISPATCH — USING ORGANISMMAP IF PRESENT
+// ============================================================================
+
+function resolveTargetViaOrganismMap(target) {
+  if (!target || !g.OrganismMap) return null;
+
+  const map = g.OrganismMap;
+  if (typeof map.resolve === "function") {
+    return map.resolve(target);
+  }
+
+  const aliases = map.aliases || {};
+  const systems = map.systems || {};
+
+  const keyRaw =
+    aliases[target] ||
+    aliases[target.toLowerCase?.()] ||
+    target.toLowerCase?.() ||
+    target;
+
+  return systems[keyRaw] || null;
+}
+
+function dispatchSignalToOrganism(target, payload = {}) {
+  const resolved = resolveTargetViaOrganismMap(target);
+
+  if (!resolved || typeof resolved.handler !== "function") {
+    // still log that a dispatch was attempted
+    const packet = normalizeDirectSignal({
+      subsystem: "signalport",
+      message: `No handler for target: ${target}`,
+      extra: { target, resolved: resolved ? true : false },
+      level: "warn"
+    });
+    SignalBuffer.push(packet);
+    emitCommentLogForPacket(packet, "direct");
+
+    return {
+      ok: false,
+      reason: "NO_HANDLER",
+      target,
+      resolved: null
+    };
+  }
+
+  let result;
+  let error = null;
+
+  try {
+    result = resolved.handler(payload);
+  } catch (err) {
+    error = err;
+  }
+
+  const packet = normalizeDirectSignal({
+    subsystem: target,
+    message: payload?.message || payload?.type || "dispatch",
+    extra: {
+      target,
+      resolved: true,
+      error: error ? String(error) : null
+    },
+    ...payload
+  });
+
+  SignalBuffer.push(packet);
+  emitCommentLogForPacket(packet, "direct");
+
+  if (error) {
+    return {
+      ok: false,
+      reason: "HANDLER_ERROR",
+      target,
+      resolved: true,
+      error: String(error)
+    };
+  }
+
+  return {
+    ok: true,
+    target,
+    resolved: true,
+    result
+  };
+}
+
+// ============================================================================
 //  PUBLIC API — PulseProofSignal Engine (FRONTEND-SAFE IMMORTAL++)
-//  No OrganismMap, No Meta, No EXPORT_META, No evo.epoch
-//  No logger attach, No network transport
+//  + SignalPort-style dispatch
 // ============================================================================
 
 export const PulseProofSignal = Object.freeze({
@@ -486,8 +575,45 @@ export const PulseProofSignal = Object.freeze({
    */
   comments(n = 100) {
     return SignalBuffer.comments(n);
+  },
+
+  /**
+   * ⭐ Get latest merged computed snapshot (details.computed) directly.
+   * Returns null if no merged comment exists yet.
+   */
+  latest() {
+    const comments = SignalBuffer.comments(1);
+    if (!comments || !comments.length) return null;
+    return comments[0]?.details?.computed || null;
+  },
+
+  /**
+   * ⭐ SignalPort-style dispatch:
+   * send a signal "to" a subsystem name, resolved via OrganismMap.
+   * Does NOT require OrganismMap, but uses it if present.
+   */
+  dispatch(target, payload = {}) {
+    return dispatchSignalToOrganism(target, payload);
   }
 });
+
+// ============================================================================
+//  SIGNALPORT — THIN WRAPPER OVER PulseProofSignal.dispatch
+// ============================================================================
+
+export const SignalPort = Object.freeze({
+  /**
+   * Universal port: send to "pulseband", "proxy", "gpu", etc.
+   * Uses OrganismMap to resolve and route.
+   */
+  send(target, payload = {}) {
+    return PulseProofSignal.dispatch(target, payload);
+  }
+});
+
+// Attach to global (optional but convenient in your world)
+g.PulseProofSignal = g.PulseProofSignal || PulseProofSignal;
+g.SignalPort = g.SignalPort || SignalPort;
 
 // ============================================================================
 //  DUAL-MODE EXPORTS — FRONTEND-SAFE
@@ -495,6 +621,7 @@ export const PulseProofSignal = Object.freeze({
 
 if (typeof module !== "undefined") {
   module.exports = {
-    PulseProofSignal
+    PulseProofSignal,
+    SignalPort
   };
 }
