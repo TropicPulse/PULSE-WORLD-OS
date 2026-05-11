@@ -760,19 +760,77 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
   const subsystem = system.subsystem;
   const version = `${system.version}-IMMORTAL-WORLD-GENOME++`;
 
+  // ---------------------------------------------------------------------------
+  //  PORT IDENTITY v26 — TRUE SIGNALPORT ROUTING SOURCE OF TRUTH
+  // ---------------------------------------------------------------------------
+  const canonicalPort =
+    (portName || subsystem || systemKey || organName)
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+
   const PORT_IDENTITY = Object.freeze({
-    // canonical port name this organ wants to answer to
-    portName: portName || subsystem || systemKey,
-    // optional: extra aliases this organ wants
-    aliases: Object.freeze([
-      portName,
+    // canonical port name this organ answers to
+    portName: canonicalPort,
+
+    // auto-aliasing: subsystem, systemKey, organName, raw portName
+    aliases: Object.freeze(
+      [
+        canonicalPort,
+        portName,
+        subsystem,
+        systemKey,
+        organName,
+        organName.toLowerCase(),
+        systemKey.replace("pulse-", "")
+      ]
+        .filter(Boolean)
+        .map(a => a.toLowerCase().replace(/[^a-z0-9]/g, ""))
+    ),
+
+    // handler function reference (wired at organ boot)
+    handler: handler || null,
+
+    // routing metadata
+    route: Object.freeze({
       subsystem,
-      systemKey
-    ].filter(Boolean)),
-    // handler function reference (wired at registration time)
-    handler: handler || null
+      systemKey,
+      organName,
+      canonicalPort
+    }),
+
+    // port capabilities
+    capabilities: Object.freeze({
+      deterministic: true,
+      driftProof: true,
+      pureCompute: true,
+      zeroNetwork: true,
+      zeroFilesystem: true,
+      zeroMutationOfInput: true,
+      worldAware: true,
+      bandAware: true
+    }),
+
+    // port contract
+    contract: Object.freeze({
+      purpose: `Port for organ ${organName} in subsystem ${subsystem}.`,
+      never: Object.freeze([
+        "introduce randomness",
+        "mutate external organs",
+        "depend on wall-clock time",
+        "break deterministic routing"
+      ]),
+      always: Object.freeze([
+        "route deterministically",
+        "respect organ identity",
+        "emit inspectable state only",
+        "remain drift-proof"
+      ])
+    })
   });
 
+  // ---------------------------------------------------------------------------
+  //  IDENTITY META
+  // ---------------------------------------------------------------------------
   const IDENTITY_META = Object.freeze({
     subsystem,
     version,
@@ -782,7 +840,9 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     PORT_IDENTITY
   });
 
+  // ---------------------------------------------------------------------------
   // 1) PulseRole — deep biological identity
+  // ---------------------------------------------------------------------------
   const PulseRole = Object.freeze({
     type: "Organ",
     subsystem,
@@ -805,7 +865,9 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     })
   });
 
+  // ---------------------------------------------------------------------------
   // 2) OrganMeta
+  // ---------------------------------------------------------------------------
   const OrganMeta = Object.freeze({
     layer,
     role: roleConst,
@@ -845,10 +907,14 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     })
   });
 
+  // ---------------------------------------------------------------------------
   // 3) pulseRole
+  // ---------------------------------------------------------------------------
   const pulseRole = `ai.organism.${organName}`;
 
+  // ---------------------------------------------------------------------------
   // 4) surfaceMeta
+  // ---------------------------------------------------------------------------
   const surfaceMeta = Object.freeze({
     id: organId,
     layer,
@@ -859,7 +925,9 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     IDENTITY_META
   });
 
+  // ---------------------------------------------------------------------------
   // 5) pulseLoreContext
+  // ---------------------------------------------------------------------------
   const pulseLoreContext = Object.freeze({
     page: organId,
     organ: titleName.replace(/\s+/g, ""),
@@ -878,7 +946,9 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     }
   });
 
+  // ---------------------------------------------------------------------------
   // 6) AI_EXPERIENCE_META
+  // ---------------------------------------------------------------------------
   const AI_EXPERIENCE_META = Object.freeze({
     identity: organName,
     version,
@@ -906,7 +976,9 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     })
   });
 
+  // ---------------------------------------------------------------------------
   // 7) EXPORT_META
+  // ---------------------------------------------------------------------------
   const EXPORT_META = Object.freeze({
     file: `${organName}.js`,
     organ: titleName.replace(/\s+/g, ""),
@@ -919,6 +991,9 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     IDENTITY_META
   });
 
+  // ---------------------------------------------------------------------------
+  // FINAL RETURN
+  // ---------------------------------------------------------------------------
   return Object.freeze({
     id: organId,
     system: systemKey,
@@ -934,6 +1009,7 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     EXPORT_META
   });
 }
+
 // ============================================================================
 // BUILD ORGAN IDENTITIES + PATH MAP — v24.1 IMMORTAL WORLD GENOME++
 // ============================================================================
@@ -992,6 +1068,28 @@ export async function buildPulseOrganismMap(baseDir = "/") {
 
   const { identities, identitiesByPath } = buildOrganIdentities(systems);
 
+  // ⭐ NEW: Build port-based routing tables for Signal
+  const portSystems = Object.create(null);
+  const portAliases = Object.create(null);
+
+  for (const idKey of Object.keys(identities)) {
+    const identity = identities[idKey];
+    const port = identity?.IDENTITY_META?.PORT_IDENTITY;
+    if (!port) continue;
+
+    const portName = port.portName;
+    const aliases = port.aliases || [];
+
+    // store full identity under canonical port
+    portSystems[portName] = identity;
+
+    // store aliases → canonical port
+    for (const alias of aliases) {
+      const key = alias.toLowerCase().replace(/[^a-z0-9]/g, "");
+      portAliases[key] = portName;
+    }
+  }
+
   // Identity resolver
   function resolveIdentity(metaUrl) {
     const normalized = metaUrl.replace("file://", "").split("?")[0];
@@ -1001,10 +1099,18 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   return Object.freeze({
     version: "24.1‑IMMORTAL‑WORLD‑GENOME++",
     generatedAt: new Date().toISOString(),
+
+    // raw scan output
     systems,
     identities,
     identitiesByPath,
+
+    // ⭐ NEW: port routing tables for Signal
+    portSystems,
+    portAliases,
+
     resolveIdentity,
+
     adapters: {
       db: dbAdapter,
       fs: fsAdapter,
@@ -1015,6 +1121,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
     }
   });
 }
+
 
 // ============================================================================
 // EXPORT — IMMORTAL WORLD GENOME v24.1++

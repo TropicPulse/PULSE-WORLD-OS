@@ -446,36 +446,89 @@ function normalizeDirectSignal(payload = {}) {
 // ============================================================================
 //  SIGNALPORT-STYLE DISPATCH — USING ORGANISMMAP IF PRESENT
 // ============================================================================
-
 function resolveTargetViaOrganismMap(target) {
   if (!target || !g.OrganismMap) return null;
 
   const map = g.OrganismMap;
-  if (typeof map.resolve === "function") {
-    return map.resolve(target);
+  const systems = map.systems || {};
+  const aliases = map.aliases || {};
+
+  // Normalize target → canonical lookup key
+  const key = String(target)
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+  // ---------------------------------------------------------------------------
+  // 1. Direct alias match → canonical port
+  // ---------------------------------------------------------------------------
+  const aliasMatch = aliases[key];
+  if (aliasMatch && systems[aliasMatch]) {
+    return systems[aliasMatch];
   }
 
-  const aliases = map.aliases || {};
-  const systems = map.systems || {};
+  // ---------------------------------------------------------------------------
+  // 2. Direct system match (canonical port name)
+  // ---------------------------------------------------------------------------
+  if (systems[key]) {
+    return systems[key];
+  }
 
-  const keyRaw =
-    aliases[target] ||
-    aliases[target.toLowerCase?.()] ||
-    target.toLowerCase?.() ||
-    target;
+  // ---------------------------------------------------------------------------
+  // 3. Match PORT_IDENTITY.portName
+  // ---------------------------------------------------------------------------
+  for (const sysKey of Object.keys(systems)) {
+    const identity = systems[sysKey];
+    const port = identity?.IDENTITY_META?.PORT_IDENTITY?.portName;
 
-  return systems[keyRaw] || null;
+    if (port && port === key) {
+      return identity;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // 4. Match PORT_IDENTITY.aliases
+  // ---------------------------------------------------------------------------
+  for (const sysKey of Object.keys(systems)) {
+    const identity = systems[sysKey];
+    const portAliases = identity?.IDENTITY_META?.PORT_IDENTITY?.aliases || [];
+
+    if (portAliases.includes(key)) {
+      return identity;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // 5. Fuzzy match: startsWith
+  // ---------------------------------------------------------------------------
+  for (const sysKey of Object.keys(systems)) {
+    if (sysKey.startsWith(key)) {
+      return systems[sysKey];
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // 6. Fuzzy match: contains
+  // ---------------------------------------------------------------------------
+  for (const sysKey of Object.keys(systems)) {
+    if (sysKey.includes(key)) {
+      return systems[sysKey];
+    }
+  }
+
+  return null;
 }
 
+
 function dispatchSignalToOrganism(target, payload = {}) {
+  // 1. Resolve via OrganismMap
   const resolved = resolveTargetViaOrganismMap(target);
 
-  if (!resolved || typeof resolved.handler !== "function") {
-    // still log that a dispatch was attempted
+  // 2. If OrganismMap didn't find anything, fail early
+  if (!resolved) {
     const packet = normalizeDirectSignal({
       subsystem: "signalport",
-      message: `No handler for target: ${target}`,
-      extra: { target, resolved: resolved ? true : false },
+      message: `No subsystem found for target: ${target}`,
+      extra: { target, resolved: false },
       level: "warn"
     });
     SignalBuffer.push(packet);
@@ -483,27 +536,54 @@ function dispatchSignalToOrganism(target, payload = {}) {
 
     return {
       ok: false,
-      reason: "NO_HANDLER",
+      reason: "NO_SUBSYSTEM",
       target,
       resolved: null
     };
   }
 
-  let result;
+  // 3. Pull PORT_IDENTITY from the organ identity
+  const portIdentity =
+    resolved.IDENTITY_META?.PORT_IDENTITY ||
+    resolved.PORT_IDENTITY ||
+    null;
+
+  if (!portIdentity || typeof portIdentity.handler !== "function") {
+    const packet = normalizeDirectSignal({
+      subsystem: "signalport",
+      message: `No PORT_IDENTITY handler for target: ${target}`,
+      extra: { target, resolved: true },
+      level: "warn"
+    });
+    SignalBuffer.push(packet);
+    emitCommentLogForPacket(packet, "direct");
+
+    return {
+      ok: false,
+      reason: "NO_PORT_HANDLER",
+      target,
+      resolved: true
+    };
+  }
+
+  // 4. Execute handler
+  let result = null;
   let error = null;
 
   try {
-    result = resolved.handler(payload);
+    result = portIdentity.handler(payload);
   } catch (err) {
     error = err;
   }
 
+  // 5. Log the dispatch as a signal
   const packet = normalizeDirectSignal({
-    subsystem: target,
+    subsystem: portIdentity.portName,
     message: payload?.message || payload?.type || "dispatch",
     extra: {
       target,
-      resolved: true,
+      port: portIdentity.portName,
+      aliases: portIdentity.aliases,
       error: error ? String(error) : null
     },
     ...payload
@@ -512,12 +592,13 @@ function dispatchSignalToOrganism(target, payload = {}) {
   SignalBuffer.push(packet);
   emitCommentLogForPacket(packet, "direct");
 
+  // 6. Return result
   if (error) {
     return {
       ok: false,
       reason: "HANDLER_ERROR",
       target,
-      resolved: true,
+      port: portIdentity.portName,
       error: String(error)
     };
   }
@@ -525,10 +606,12 @@ function dispatchSignalToOrganism(target, payload = {}) {
   return {
     ok: true,
     target,
-    resolved: true,
+    port: portIdentity.portName,
     result
   };
 }
+
+
 
 // ============================================================================
 //  PUBLIC API — PulseProofSignal Engine (FRONTEND-SAFE IMMORTAL++)
