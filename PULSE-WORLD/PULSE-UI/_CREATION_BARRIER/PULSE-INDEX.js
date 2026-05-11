@@ -20,23 +20,7 @@ function logWarn(msg, ...rest) {
 function logErr(msg, ...rest) {
   console.error(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_ERR, ...rest);
 }
-// TEMP: hard‑wired PulseBand stub
-window.pulseband = {
-  snapshot() {
-    return {
-      network: { bars: 5, route: "TestRoute" },
-      device: { bars: 4 },
-      stability: { score: 99 },
-      latency: { ms: 12, microMs: 0.4 },
-      micro: { phase: "TestPhase" },
-      state: "Active",
-      sync: { ageLabel: "Just now" },
-      efficiency: { label: "TestEff" },
-      health: { label: "TestHealth" },
-      advantage: { multiplier: 2.5, percent: 150 }
-    };
-  }
-};
+
 
 /* ============================================================
    0. BOOT MEMBRANE — MUST BE FIRST
