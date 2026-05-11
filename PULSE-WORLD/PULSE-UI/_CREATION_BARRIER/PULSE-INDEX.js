@@ -203,57 +203,97 @@ async function waitForEngines() {
   logOK("ENGINES READY — PulseBand fully embedded");
 }
 
+async function updatePulseBand() {
+  try {
+    // ============================================================
+    // 1. PULSEBAND FIRST — REAL SESSION ENGINE
+    // ============================================================
+    const band = window.pulseband || window.PulseBand || null;
 
-    async function updatePulseBand() {
-      try {
-        if (!window.VitalsMonitor) {
-          logWarn("VitalsMonitor missing");
-          return;
-        }
-        if (!window.PulseBinary) {
-          logWarn("PulseBinary missing");
-          return;
-        }
+    if (band && typeof band.snapshot === "function") {
+      const snap = band.snapshot() || {};
 
-        const vitals    = window.VitalsMonitor.Vitals.generate() ?? null;
-        const binary    = window.PulseBinary ?? null;
-        const sentience = binary?.Sentience?.snapshot?.() ?? null;
+      const signalBars  = snap?.network?.bars ?? "—";
+      const phoneBars   = snap?.device?.bars ?? signalBars;
+      const stability   = snap?.stability?.score ?? null;
+      const latencyMs   = snap?.latency?.ms ?? null;
+      const microPhase  = snap?.micro?.phase ?? "Idle";
+      const route       = snap?.network?.route ?? "Primary";
+      const state       = snap?.state ?? "Active";
+      const syncAge     = snap?.sync?.ageLabel ?? "Just now";
+      const efficiency  = snap?.efficiency?.label ?? "Balanced";
+      const health      = snap?.health?.label ?? "Excellent";
+      const advantage   = snap?.advantage?.multiplier ?? 1.0;
+      const estimated   = snap?.advantage?.percent ?? 0;
 
-        if (!vitals) logWarn("Vitals generate() returned null");
-        if (!sentience) logWarn("Sentience snapshot missing");
+      if (pbFields.bars)       pbFields.bars.textContent       = String(signalBars);
+      if (pbFields.phone)      pbFields.phone.textContent      = String(phoneBars);
+      if (pbFields.stability)  pbFields.stability.textContent  = stability != null ? `${stability}%` : "—";
+      if (pbFields.latency)    pbFields.latency.textContent    = latencyMs != null ? `${latencyMs} ms` : "—";
+      if (pbFields.micro)      pbFields.micro.textContent      = microPhase;
+      if (pbFields.route)      pbFields.route.textContent      = route;
+      if (pbFields.state)      pbFields.state.textContent      = state;
+      if (pbFields.sync)       pbFields.sync.textContent       = syncAge;
+      if (pbFields.efficiency) pbFields.efficiency.textContent = efficiency;
+      if (pbFields.health)     pbFields.health.textContent     = health;
+      if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
+      if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
 
-        const signalBars  = vitals?.network?.bars ?? "—";
-        const phoneBars   = vitals?.device?.bars ?? signalBars;
-        const stability   = vitals?.stability?.score ?? null;
-        const latencyMs   = vitals?.latency?.ms ?? null;
-        const microPhase  = vitals?.micro?.phase ?? sentience?.phase ?? "Idle";
-        const route       = vitals?.network?.route ?? "Primary";
-        const state       = vitals?.state ?? "Active";
-        const syncAge     = vitals?.sync?.ageLabel ?? "Just now";
-        const efficiency  = vitals?.efficiency?.label ?? "Balanced";
-        const health      = vitals?.health?.label ?? "Excellent";
-        const advantage   = vitals?.advantage?.multiplier ?? 1.0;
-        const estimated   = vitals?.advantage?.percent ?? 0;
-
-        // UI updates
-        if (pbFields.bars)       pbFields.bars.textContent       = String(signalBars);
-        if (pbFields.phone)      pbFields.phone.textContent      = String(phoneBars);
-        if (pbFields.stability)  pbFields.stability.textContent  = stability != null ? `${stability}%` : "—";
-        if (pbFields.latency)    pbFields.latency.textContent    = latencyMs != null ? `${latencyMs} ms` : "—";
-        if (pbFields.micro)      pbFields.micro.textContent      = microPhase;
-        if (pbFields.route)      pbFields.route.textContent      = route;
-        if (pbFields.state)      pbFields.state.textContent      = state;
-        if (pbFields.sync)       pbFields.sync.textContent       = syncAge;
-        if (pbFields.efficiency) pbFields.efficiency.textContent = efficiency;
-        if (pbFields.health)     pbFields.health.textContent     = health;
-        if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
-        if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
-
-        logOK("PulseBand UI updated");
-      } catch (err) {
-        logErr("PulseBand update failed", err);
-      }
+      logOK("PulseBand UI updated (PulseBand session engine)");
+      return;
     }
+
+    // ============================================================
+    // 2. FALLBACK: PulseBinary + VitalsMonitor
+    // ============================================================
+    if (!window.VitalsMonitor) {
+      logWarn("VitalsMonitor missing");
+      return;
+    }
+    if (!window.PulseBinary) {
+      logWarn("PulseBinary missing");
+      return;
+    }
+
+    const vitals    = window.VitalsMonitor.Vitals.generate() ?? null;
+    const binary    = window.PulseBinary ?? null;
+    const sentience = binary?.Sentience?.snapshot?.() ?? null;
+
+    if (!vitals) logWarn("Vitals generate() returned null");
+    if (!sentience) logWarn("Sentience snapshot missing");
+
+    const signalBars  = vitals?.network?.bars ?? "—";
+    const phoneBars   = vitals?.device?.bars ?? signalBars;
+    const stability   = vitals?.stability?.score ?? null;
+    const latencyMs   = vitals?.latency?.ms ?? null;
+    const microPhase  = vitals?.micro?.phase ?? sentience?.phase ?? "Idle";
+    const route       = vitals?.network?.route ?? "Primary";
+    const state       = vitals?.state ?? "Active";
+    const syncAge     = vitals?.sync?.ageLabel ?? "Just now";
+    const efficiency  = vitals?.efficiency?.label ?? "Balanced";
+    const health      = vitals?.health?.label ?? "Excellent";
+    const advantage   = vitals?.advantage?.multiplier ?? 1.0;
+    const estimated   = vitals?.advantage?.percent ?? 0;
+
+    if (pbFields.bars)       pbFields.bars.textContent       = String(signalBars);
+    if (pbFields.phone)      pbFields.phone.textContent      = String(phoneBars);
+    if (pbFields.stability)  pbFields.stability.textContent  = stability != null ? `${stability}%` : "—";
+    if (pbFields.latency)    pbFields.latency.textContent    = latencyMs != null ? `${latencyMs} ms` : "—";
+    if (pbFields.micro)      pbFields.micro.textContent      = microPhase;
+    if (pbFields.route)      pbFields.route.textContent      = route;
+    if (pbFields.state)      pbFields.state.textContent      = state;
+    if (pbFields.sync)       pbFields.sync.textContent       = syncAge;
+    if (pbFields.efficiency) pbFields.efficiency.textContent = efficiency;
+    if (pbFields.health)     pbFields.health.textContent     = health;
+    if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
+    if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
+
+    logOK("PulseBand UI updated (PulseBinary fallback)");
+  } catch (err) {
+    logErr("PulseBand update failed", err);
+  }
+}
+
 
     (async () => {
       try {
@@ -264,122 +304,175 @@ async function waitForEngines() {
         logErr("PulseBand engine loop failed", err);
       }
     })();
+/* ============================================================
+   4. GPU TEST — UI ONLY (PulseBand-aware)
+============================================================ */
+try {
+  const testBtn     = document.getElementById("tp-test-button");
+  const testFile    = document.getElementById("tp-test-file");
+  const testStatus  = document.getElementById("tp-test-status");
+  const testMetrics = document.getElementById("tp-test-metrics");
 
-    /* ============================================================
-       4. GPU TEST — UI ONLY
-    ============================================================ */
+  if (!testBtn) logWarn("GPU test button missing");
+
+  testBtn?.addEventListener("click", async () => {
     try {
-      const testBtn     = document.getElementById("tp-test-button");
-      const testFile    = document.getElementById("tp-test-file");
-      const testStatus  = document.getElementById("tp-test-status");
-      const testMetrics = document.getElementById("tp-test-metrics");
-
-      if (!testBtn) logWarn("GPU test button missing");
-
-      testBtn?.addEventListener("click", async () => {
-        try {
-          if (!testFile?.files?.length) {
-            if (testStatus) testStatus.textContent = "Please select a file first.";
-            logWarn("GPU test: no file selected");
-            return;
-          }
-
-          if (testStatus)  testStatus.textContent  = "Running GPU warm test…";
-          if (testMetrics) testMetrics.textContent = "";
-
-          await new Promise((res) => requestAnimationFrame(res));
-
-          const file = testFile.files[0];
-
-          const binary   = window.PulseBinary ?? null;
-          const vitalsFn = binary?.Vitals?.generate;
-
-          if (!binary) logWarn("PulseBinary missing during GPU test");
-          if (!vitalsFn) logWarn("Vitals.generate missing during GPU test");
-
-          const before = performance.now();
-          await file.arrayBuffer();
-          const after = performance.now();
-
-          const vitalsAfter = vitalsFn ? await vitalsFn() : null;
-
-          if (!vitalsAfter) logWarn("Vitals after GPU test missing");
-
-          const gpuSmooth   = vitalsAfter?.stability?.score ?? null;
-          const advantage   = vitalsAfter?.advantage?.multiplier ?? null;
-          const route       = vitalsAfter?.network?.route ?? null;
-          const cpuImpact   = vitalsAfter?.cpu?.impact ?? null;
-          const memImpact   = vitalsAfter?.memory?.impact ?? null;
-          const microMs     = vitalsAfter?.latency?.microMs ?? null;
-          const decodeMs    = Math.round(after - before);
-
-          if (testMetrics) {
-            testMetrics.innerHTML = `
-              GPU Smoothness: <strong>${gpuSmooth != null ? gpuSmooth + "%" : "—"}</strong><br>
-              PulseBand Advantage: <strong>${advantage != null ? advantage + "×" : "—"}</strong><br>
-              Network Route: <strong>${route ?? "—"}</strong><br>
-              CPU Impact: <strong>${cpuImpact != null ? cpuImpact + "%" : "—"}</strong><br>
-              Memory Impact: <strong>${memImpact != null ? memImpact + "%" : "—"}</strong><br>
-              Micro Latency: <strong>${microMs != null ? microMs + " ms" : "—"}</strong><br>
-              Decode Speed: <strong>${decodeMs} ms</strong>
-            `;
-          }
-
-          if (testStatus) testStatus.textContent = "Test complete.";
-          logOK("GPU test complete");
-        } catch (err) {
-          logErr("GPU test failed", err);
-          if (testStatus)  testStatus.textContent  = "Test failed.";
-          if (testMetrics) testMetrics.textContent = "";
-        }
-      });
-    } catch (err) {
-      logErr("GPU test init failed", err);
-    }
-
-    /* ============================================================
-       5. CAROUSEL — UI ONLY
-    ============================================================ */
-    try {
-      const carousel = document.getElementById("appCarousel");
-      if (!carousel) logWarn("Carousel missing");
-
-      if (carousel) {
-        const track  = carousel.querySelector(".carousel-track");
-        const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
-        const dots   = Array.from(carousel.querySelectorAll(".carousel-dot"));
-        const arrows = Array.from(carousel.querySelectorAll(".carousel-arrow"));
-
-        const visibleSlides = 2;
-        const totalSlides   = slides.length;
-        const maxIndex      = totalSlides - visibleSlides;
-
-        let currentIndex = 0;
-
-        function updateCarousel(index) {
-          const clamped = Math.max(0, Math.min(index, maxIndex));
-          currentIndex = clamped;
-
-          const offset = -(clamped * (100 / visibleSlides));
-          track.style.transform = `translateX(${offset}%)`;
-
-          dots.forEach((dot, i) => dot.classList.toggle("active", i === clamped));
-        }
-
-        dots.forEach((dot, i) => dot.addEventListener("click", () => updateCarousel(i)));
-
-        arrows.forEach((arrow) => {
-          arrow.addEventListener("click", () => {
-            const dir = arrow.getAttribute("data-dir");
-            updateCarousel(dir === "next" ? currentIndex + 1 : currentIndex - 1);
-          });
-        });
-
-        logOK("Carousel initialized");
+      if (!testFile?.files?.length) {
+        if (testStatus) testStatus.textContent = "Please select a file first.";
+        logWarn("GPU test: no file selected");
+        return;
       }
+
+      if (testStatus)  testStatus.textContent  = "Running GPU warm test…";
+      if (testMetrics) testMetrics.textContent = "";
+
+      await new Promise((res) => requestAnimationFrame(res));
+
+      const file = testFile.files[0];
+
+      // ============================================================
+      // 1. PULSEBAND FIRST — REAL SESSION ENGINE
+      // ============================================================
+      const band = window.pulseband || window.PulseBand || null;
+
+      const before = performance.now();
+      await file.arrayBuffer();
+      const after = performance.now();
+      const decodeMs = Math.round(after - before);
+
+      if (band && typeof band.snapshot === "function") {
+        const snap = band.snapshot() || {};
+
+        const gpuSmooth   = snap?.stability?.score ?? null;
+        const advantage   = snap?.advantage?.multiplier ?? null;
+        const route       = snap?.network?.route ?? null;
+        const cpuImpact   = snap?.cpu?.impact ?? null;
+        const memImpact   = snap?.memory?.impact ?? null;
+        const microMs     = snap?.latency?.microMs ?? null;
+
+        if (testMetrics) {
+          testMetrics.innerHTML = `
+            GPU Smoothness: <strong>${gpuSmooth != null ? gpuSmooth + "%" : "—"}</strong><br>
+            PulseBand Advantage: <strong>${advantage != null ? advantage + "×" : "—"}</strong><br>
+            Network Route: <strong>${route ?? "—"}</strong><br>
+            CPU Impact: <strong>${cpuImpact != null ? cpuImpact + "%" : "—"}</strong><br>
+            Memory Impact: <strong>${memImpact != null ? memImpact + "%" : "—"}</strong><br>
+            Micro Latency: <strong>${microMs != null ? microMs + " ms" : "—"}</strong><br>
+            Decode Speed: <strong>${decodeMs} ms</strong>
+          `;
+        }
+
+        if (testStatus) testStatus.textContent = "Test complete.";
+        logOK("GPU test complete (PulseBand)");
+        return;
+      }
+
+      // ============================================================
+      // 2. FALLBACK: PulseBinary + VitalsMonitor
+      // ============================================================
+      const binary   = window.PulseBinary ?? null;
+      const vitalsFn = binary?.Vitals?.generate;
+
+      if (!binary) logWarn("PulseBinary missing during GPU test");
+      if (!vitalsFn) logWarn("Vitals.generate missing during GPU test");
+
+      const vitalsAfter = vitalsFn ? await vitalsFn() : null;
+
+      if (!vitalsAfter) logWarn("Vitals after GPU test missing");
+
+      const gpuSmooth   = vitalsAfter?.stability?.score ?? null;
+      const advantage   = vitalsAfter?.advantage?.multiplier ?? null;
+      const route       = vitalsAfter?.network?.route ?? null;
+      const cpuImpact   = vitalsAfter?.cpu?.impact ?? null;
+      const memImpact   = vitalsAfter?.memory?.impact ?? null;
+      const microMs     = vitalsAfter?.latency?.microMs ?? null;
+
+      if (testMetrics) {
+        testMetrics.innerHTML = `
+          GPU Smoothness: <strong>${gpuSmooth != null ? gpuSmooth + "%" : "—"}</strong><br>
+          PulseBand Advantage: <strong>${advantage != null ? advantage + "×" : "—"}</strong><br>
+          Network Route: <strong>${route ?? "—"}</strong><br>
+          CPU Impact: <strong>${cpuImpact != null ? cpuImpact + "%" : "—"}</strong><br>
+          Memory Impact: <strong>${memImpact != null ? memImpact + "%" : "—"}</strong><br>
+          Micro Latency: <strong>${microMs != null ? microMs + " ms" : "—"}</strong><br>
+          Decode Speed: <strong>${decodeMs} ms</strong>
+        `;
+      }
+
+      if (testStatus) testStatus.textContent = "Test complete.";
+      logOK("GPU test complete (PulseBinary fallback)");
     } catch (err) {
-      logErr("Carousel init failed", err);
+      logErr("GPU test failed", err);
+      if (testStatus)  testStatus.textContent  = "Test failed.";
+      if (testMetrics) testMetrics.textContent = "";
     }
+  });
+} catch (err) {
+  logErr("GPU test init failed", err);
+}
+
+/* ============================================================
+   5. CAROUSEL — UI ONLY (safe delayed init)
+============================================================ */
+try {
+  function initCarousel() {
+    const carousel = document.getElementById("appCarousel");
+    if (!carousel) {
+      logWarn("Carousel missing — retrying…");
+      return false;
+    }
+
+    const track  = carousel.querySelector(".carousel-track");
+    const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
+    const dots   = Array.from(carousel.querySelectorAll(".carousel-dot"));
+    const arrows = Array.from(carousel.querySelectorAll(".carousel-arrow"));
+
+    if (!track || slides.length === 0) {
+      logWarn("Carousel structure incomplete — retrying…");
+      return false;
+    }
+
+    const visibleSlides = 2;
+    const totalSlides   = slides.length;
+    const maxIndex      = totalSlides - visibleSlides;
+
+    let currentIndex = 0;
+
+    function updateCarousel(index) {
+      const clamped = Math.max(0, Math.min(index, maxIndex));
+      currentIndex = clamped;
+
+      const offset = -(clamped * (100 / visibleSlides));
+      track.style.transform = `translateX(${offset}%)`;
+
+      dots.forEach((dot, i) => dot.classList.toggle("active", i === clamped));
+    }
+
+    dots.forEach((dot, i) => dot.addEventListener("click", () => updateCarousel(i)));
+
+    arrows.forEach((arrow) => {
+      arrow.addEventListener("click", () => {
+        const dir = arrow.getAttribute("data-dir");
+        updateCarousel(dir === "next" ? currentIndex + 1 : currentIndex - 1);
+      });
+    });
+
+    logOK("Carousel initialized");
+    return true;
+  }
+
+  // Retry until carousel exists (max 50 attempts)
+  let attempts = 0;
+  const carouselInterval = setInterval(() => {
+    attempts++;
+    if (initCarousel() || attempts > 50) {
+      clearInterval(carouselInterval);
+    }
+  }, 100);
+} catch (err) {
+  logErr("Carousel init failed", err);
+}
+
 
     /* ============================================================
        6. FAQ ACCORDION — UI ONLY
