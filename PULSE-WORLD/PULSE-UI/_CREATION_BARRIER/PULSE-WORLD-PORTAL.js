@@ -66,7 +66,6 @@ try {
   window.getMap     = PulseSkinReflex.getMap;
   window.callHelper = PulseSkinReflex.callHelper;
 
-  console.log("[PORTAL] getHook type:", typeof window.getHook);
 } catch (err) {
   console.error("[PORTAL] SkinReflex Error:", err);
 }

@@ -7,8 +7,11 @@
 // ============================================================================
 // (kept as comment, used by higher-order systems)
 
+console.log(
+  "%c[PulseProofMonitor v24‑IMMORTAL‑EVOLVABLE] Loaded — A1/A2/A3 Universal Membrane Active",
+  "color:#00FF9C; font-weight:bold; font-family:monospace;"
+);
 
-console.log("PulseProofMonitor v24-IMMORTAL-EVOLVABLE");
 
 import { pulseLog, log, warn, error } from "./PulseProofLogger-v24.js";
 
