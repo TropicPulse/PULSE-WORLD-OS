@@ -1091,7 +1091,29 @@ text-align: center;
 
   <!-- 2. LOGIN PAGE LOGIC — SAFE TO RUN AFTER PORTAL -->
   <script type="module">
+// ============================================================================
+//  DOM TIMING — LOGIN PAGE
+// ============================================================================
+logID("BOOT MEMBRANE START (LOGIN)");
+
+let __DOM_START = performance.now();
+logID("DOM START (LOGIN)", true);
+
+
+// ============================================================================
+//  LOGIN PAGE — DOMContentLoaded
+// ============================================================================
 document.addEventListener("DOMContentLoaded", () => {
+
+  // ========================================================================
+  //  DOM END TIMING
+  // ========================================================================
+  const __DOM_END = performance.now();
+  const __DOM_TOTAL = (__DOM_END - __DOM_START).toFixed(1);
+  logOK(`DOM END — TOTAL LOAD ${__DOM_TOTAL}ms (LOGIN)`, true);
+
+  logOK("DOM CONTENT LOADED — LOGIN PAGE");
+
 
   /* ============================================================
      0. MARKER
@@ -1194,7 +1216,6 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error("getHook() is NOT defined — your login page cannot talk to backend.");
       }
 
-      // ⭐ FIXED SIGNATURE
       const data = await window.getHook("sendPin", { email, purpose: "login" });
 
       console.log("[SEND PIN] RAW RESPONSE:", data);
@@ -1267,7 +1288,6 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error("getHook() is NOT defined — cannot verify PIN.");
       }
 
-      // ⭐ FIXED SIGNATURE
       const data = await window.getHook("verifyPin", {
         email,
         pin,
@@ -1331,99 +1351,118 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ============================================================
-     7. PULSEBAND UI — IMMORTAL++
-  ============================================================ */
-  (function initPulseBandUI() {
-    if (window.__PULSEBAND_LOGIN_INIT__) return;
-    window.__PULSEBAND_LOGIN_INIT__ = true;
 
-    const badge = document.getElementById("pulseband-badge");
-    const panel = document.getElementById("pulseband-panel");
+  // ============================================================================
+  //  PULSEBAND PANEL TOGGLE — MATCHES INDEX
+  // ============================================================================
+  try {
+    const pbBadge = document.getElementById("pulseband-badge");
+    const pbPanel = document.getElementById("pulseband-panel");
+    let pbOpen = false;
 
-    if (badge && panel) {
-      badge.addEventListener("click", (e) => {
-        e.stopPropagation();
-        panel.classList.toggle("pb-open");
+    if (!pbBadge) logWarn("pbBadge missing");
+    if (!pbPanel) logWarn("pbPanel missing");
+
+    if (pbBadge && pbPanel) {
+      pbBadge.addEventListener("click", () => {
+        pbOpen = !pbOpen;
+        pbPanel.classList.toggle("pb-open", pbOpen);
+        logOK("PulseBand panel toggled (LOGIN)", pbOpen);
       });
 
       document.addEventListener("click", (e) => {
-        const inside = panel.contains(e.target);
-        const onBadge = badge.contains(e.target);
-        if (!inside && !onBadge) panel.classList.remove("pb-open");
+        if (!pbPanel.contains(e.target) && !pbBadge.contains(e.target)) {
+          pbOpen = false;
+          pbPanel.classList.remove("pb-open");
+        }
       });
     }
+  } catch (err) {
+    logErr("PulseBand UI init failed (LOGIN)", err);
+  }
 
-    const pbFields = {
-      bars:       document.getElementById("pb-bars-text"),
-      phone:      document.getElementById("pb-phonebars-text"),
-      stability:  document.getElementById("pb-stability"),
-      latency:    document.getElementById("pb-latency"),
-      micro:      document.getElementById("pb-micro"),
-      route:      document.getElementById("pb-route"),
-      state:      document.getElementById("pb-state"),
-      sync:       document.getElementById("pb-sync"),
-      efficiency: document.getElementById("pb-efficiency"),
-      health:     document.getElementById("pb-health"),
-      advantage:  document.getElementById("pb-advantage"),
-      estimated:  document.getElementById("pb-estimated")
-    };
 
-    async function waitForEngines() {
-      while (
-        !window.VitalsMonitor ||
-        !window.VitalsMonitor.Vitals ||
-        !window.VitalsMonitor.Vitals.generate ||
-        !window.PulseBinary ||
-        !window.PulseBinary.Sentience
-      ) {
-        await new Promise(res => setTimeout(res, 50));
-      }
+  // ============================================================================
+  //  PULSEBAND FIELD REFERENCES — MATCHES INDEX
+  // ============================================================================
+  const pbFields = {
+    bars:       document.getElementById("pb-bars-text"),
+    phone:      document.getElementById("pb-phonebars-text"),
+    stability:  document.getElementById("pb-stability"),
+    latency:    document.getElementById("pb-latency"),
+    micro:      document.getElementById("pb-micro"),
+    route:      document.getElementById("pb-route"),
+    state:      document.getElementById("pb-state"),
+    sync:       document.getElementById("pb-sync"),
+    efficiency: document.getElementById("pb-efficiency"),
+    health:     document.getElementById("pb-health"),
+    advantage:  document.getElementById("pb-advantage"),
+    estimated:  document.getElementById("pb-estimated")
+  };
+
+
+  // ============================================================================
+  //  PORTAL SIGNAL SNAPSHOT
+  // ============================================================================
+  function getSignalSnapshot() {
+    try {
+      return window.PulsePortal?.getSignal?.() || null;
+    } catch {
+      return null;
     }
+  }
 
-    async function updatePulseBand() {
-      try {
-        const vitals    = window.VitalsMonitor.Vitals.generate() ?? null;
-        const binary    = window.PulseBinary ?? null;
-        const sentience = binary?.Sentience?.snapshot?.() ?? null;
 
-        const signalBars  = vitals?.network?.bars ?? "—";
-        const phoneBars   = vitals?.device?.bars ?? signalBars;
-        const stability   = vitals?.stability?.score ?? null;
-        const latencyMs   = vitals?.latency?.ms ?? null;
-        const microPhase  = vitals?.micro?.phase ?? sentience?.phase ?? "Idle";
-        const route       = vitals?.network?.route ?? "Primary";
-        const state       = vitals?.state ?? "Active";
-        const syncAge     = vitals?.sync?.ageLabel ?? "Just now";
-        const efficiency  = vitals?.efficiency?.label ?? "Balanced";
-        const health      = vitals?.health?.label ?? "Excellent";
-        const advantage   = vitals?.advantage?.multiplier ?? 1.0;
-        const estimated   = vitals?.advantage?.percent ?? 0;
+  // ============================================================================
+  //  PULSE-DRIVEN UI UPDATE — MATCHES INDEX
+  // ============================================================================
+  function onPulse(packet) {
+    try {
+      const snap = getSignalSnapshot();
+      if (!snap) return;
 
-        if (pbFields.bars)       pbFields.bars.textContent       = String(signalBars);
-        if (pbFields.phone)      pbFields.phone.textContent      = String(phoneBars);
-        if (pbFields.stability)  pbFields.stability.textContent  = stability != null ? `${stability}%` : "—";
-        if (pbFields.latency)    pbFields.latency.textContent    = latencyMs != null ? `${latencyMs} ms` : "—";
-        if (pbFields.micro)      pbFields.micro.textContent      = microPhase;
-        if (pbFields.route)      pbFields.route.textContent      = route;
-        if (pbFields.state)      pbFields.state.textContent      = state;
-        if (pbFields.sync)       pbFields.sync.textContent       = syncAge;
-        if (pbFields.efficiency) pbFields.efficiency.textContent = efficiency;
-        if (pbFields.health)     pbFields.health.textContent     = health;
-        if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
-        if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
+      const signalBars  = snap?.network?.bars ?? "—";
+      const phoneBars   = snap?.device?.bars ?? signalBars;
+      const stability   = snap?.stability?.score ?? null;
+      const latencyMs   = snap?.latency?.ms ?? null;
+      const microPhase  = snap?.micro?.phase ?? snap?.phase ?? "Idle";
+      const route       = snap?.network?.route ?? snap?.route ?? "Primary";
+      const state       = snap?.state ?? "Active";
+      const syncAge     = snap?.sync?.ageLabel ?? "Just now";
+      const efficiency  = snap?.efficiency?.label ?? "Balanced";
+      const health      = snap?.health?.label ?? "Excellent";
+      const advantage   = snap?.advantage?.multiplier ?? 1.0;
+      const estimated   = snap?.advantage?.percent ?? 0;
 
-      } catch (err) {
-        console.log("[PULSEBAND LOGIN] update failed", err);
-      }
+      if (pbFields.bars)       pbFields.bars.textContent       = String(signalBars);
+      if (pbFields.phone)      pbFields.phone.textContent      = String(phoneBars);
+      if (pbFields.stability)  pbFields.stability.textContent  = stability != null ? `${stability}%` : "—";
+      if (pbFields.latency)    pbFields.latency.textContent    = latencyMs != null ? `${latencyMs} ms` : "—";
+      if (pbFields.micro)      pbFields.micro.textContent      = microPhase;
+      if (pbFields.route)      pbFields.route.textContent      = route;
+      if (pbFields.state)      pbFields.state.textContent      = state;
+      if (pbFields.sync)       pbFields.sync.textContent       = syncAge;
+      if (pbFields.efficiency) pbFields.efficiency.textContent = efficiency;
+      if (pbFields.health)     pbFields.health.textContent     = health;
+      if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
+      if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
+
+    } catch (err) {
+      logErr("Pulse-driven UI update failed (LOGIN)", err);
     }
+  }
 
-    (async () => {
-      await waitForEngines();
-      updatePulseBand();
-      setInterval(updatePulseBand, 1000);
-    })();
-  })();
+
+  // ============================================================================
+  //  SUBSCRIBE TO CNS PULSES — MATCHES INDEX
+  // ============================================================================
+  if (window.PulseProofSignal?.subscribe) {
+    window.PulseProofSignal.subscribe(onPulse);
+    logOK("Pulse-driven UI subscribed to engine (LOGIN)");
+  } else {
+    logWarn("PulseProofSignal.subscribe missing — LOGIN UI will not pulse");
+  }
+
 
   /* ============================================================
      8. DOM WRAPPER
