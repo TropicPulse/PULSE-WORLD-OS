@@ -15,21 +15,21 @@
 // 7) AI CONSOLE / PROMPTS ARE REMOVED FROM LOGGER.
 // 8) LOGGER IS SCHEMA-STABLE AND EVOLVABLE.
 // ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../../PULSE-BAND/PULSE-X/PulseWorldOrganismMap-v24.js";
-const Identity = OrganismIdentity(import.meta.url);
+// import {
+//   OrganismIdentity,
+//   buildPulseOrganismMap as buildOrganismMap
+// } from "../../PULSE-BAND/PULSE-X/PulseWorldOrganismMap-v24.js";
+// const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
+// // 2 — EXPORT GENOME METADATA
+// // export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
+// export const pulseRole = Identity.pulseRole;
+// export const PulseRole = Identity.pulseRole;
+// export const surfaceMeta = Identity.surfaceMeta;
+// export const pulseLoreContext = Identity.pulseLoreContext;
+// // export const WBC_CONTEXT = Identity.pulseLoreContext;
+// export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
+// export const EXPORT_META = Identity.EXPORT_META;
 
 console.log("PulseProofLogger v24-IMMORTAL-EVOLVABLE");
 
@@ -712,24 +712,56 @@ export function groupEnd() {
 
 function resolveFromOrganismMap() {
   try {
+    // Get caller file URL from stack
     const stack = new Error().stack;
     const match = stack.match(/(file:\/\/[^\s)]+)/);
     if (!match) return null;
 
     const fileUrl = match[1];
-    const identity = OrganismIdentity(fileUrl);
-    if (!identity) return null;
 
+    // Extract filename
+    const fileName = fileUrl.split("/").pop(); // e.g. "pulse-pages-v24.js"
+
+    // ---------------------------------------------
+    // VERSION DETECTION FROM FILENAME
+    // ---------------------------------------------
+    let version = "v12.3"; // default fallback
+
+    const versionMatch = fileName.match(/-v(\d+(\.\d+)?)/i);
+    if (versionMatch) {
+      version = `v${versionMatch[1]}`;
+    }
+
+    // ---------------------------------------------
+    // SUBSYSTEM DETECTION FROM FILENAME
+    // ---------------------------------------------
+    // pulse-pages-v24.js → "pages"
+    // pulse-vault-v16.js → "vault"
+    // pulse-cns.js       → "cns"
+    let subsystem = "legacy";
+
+    const subsystemMatch = fileName
+      .replace(/\.js$/i, "")
+      .replace(/-v\d+(\.\d+)?$/i, "") // remove version
+      .replace(/^pulse-/, "");        // remove prefix
+
+    if (subsystemMatch) subsystem = subsystemMatch.toLowerCase();
+
+    // ---------------------------------------------
+    // RETURN META FOR LOGGER
+    // ---------------------------------------------
     return {
-      subsystem: identity.subsystem || "legacy",
-      version: identity.IDENTITY_META?.version || "v16.0",
-      color: identity.IDENTITY_META?.color || PulseColorFallback,
-      icon: identity.IDENTITY_META?.icon || "🔹"
+      subsystem,
+      version,
+      color: PulseColors[subsystem] || PulseColorFallback,
+      icon: "🔹"
     };
+
   } catch {
     return null;
   }
 }
+
 
 
 // -----------------------------------------------------------------------------
