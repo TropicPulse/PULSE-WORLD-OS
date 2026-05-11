@@ -2,6 +2,8 @@
 //  PulseProofBridge-v24-IMMORTAL-ADV++ (UPGRADED: SIGNAL/LOGGER DIFFERENTIAL)
 // ============================================================================
 
+import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
+
 const PulseProofBridge = {
   route: null,
   signal: null,
@@ -58,7 +60,6 @@ export function attachRealBridge(real) {
 
 export { PulseProofBridge };
 
-import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
 // ============================================================================
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
@@ -76,7 +77,6 @@ import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseU
 
 import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
 import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
-
 
 
 const g =
@@ -848,7 +848,6 @@ export const BridgeColors = PulseColors;
 export const BridgeIcons = PulseIcons;
 
 export const PulseProofBridgeLogger = PulseProofLogger;
-export const PulseProofWorldEndpoint = PulseWorldEndpoint;
 export const PulseProofBridgeReflex = PulseProofReflex;
 export const PulseProofBridgeMonitor = PulseProofMonitor;
 export const PulseProofBridgeTelemetry = emitTelemetry;
