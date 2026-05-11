@@ -583,7 +583,8 @@ function mark404(message) {
 // ---------------------------------------------------------------------------
 //  UNIFIED CHRONO CORE — v26
 // ---------------------------------------------------------------------------
-let _pulseChronoLast = performance.now();
+let _pulseChronoLast = window.__PULSE_CHRONO_LAST__ || performance.now();
+
 
 function _chronoLabel(absolute) {
   const now = performance.now();
@@ -613,6 +614,7 @@ export function log(...args) {
   const prefix      = `${icon} ${safe.toUpperCase()} ${version}`;
   const safeMessage = mark404(message);
   const time        = _chronoLabel(absolute);
+  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   // RAW MODE — SAME COLORS, SAME FORMAT, SAME %d SUPPORT
   if (raw) {
@@ -656,6 +658,7 @@ export function warn(...args) {
 
   const safeMessage = mark404(message);
   const time = _chronoLabel(absolute);
+  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.warn(
     `%c${prefix} ⚠️ [WARN] — ${safeMessage} %c${time}`,
@@ -686,6 +689,7 @@ export function error(...args) {
 
   const safeMessage = mark404(message);
   const time = _chronoLabel(absolute);
+  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.error(
     `%c${prefix} 🟥 [ERROR] — ${safeMessage} %c${time}`,
@@ -716,6 +720,7 @@ export function critical(...args) {
 
   const safeMessage = mark404(message);
   const time = _chronoLabel(absolute);
+  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.groupCollapsed(
     `%c${prefix} 💀 [CRITICAL] — ${safeMessage} %c${time}`,
@@ -753,6 +758,7 @@ export function comment(...args) {
 
   const safeMessage = mark404(message);
   const time = _chronoLabel(absolute);
+  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.log(
     `%c${prefix} 📝 [COMMENT] — ${safeMessage} %c${time}`,
@@ -780,6 +786,7 @@ export function group(subsystem, label, absolute = false) {
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const time = _chronoLabel(absolute);
+  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.groupCollapsed(
     `%c${prefix} — ${label} %c${time}`,

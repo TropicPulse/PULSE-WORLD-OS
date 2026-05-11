@@ -1230,6 +1230,11 @@ function applyGateDecision(gateDecision, skin) {
 
       window.__PULSE_TOUCH__ = touch;
 
+      // ⭐ GLOBAL TIMER START — THE TRUE BEGINNING
+      window.__PULSE_TOUCH_T0__ = performance.now();
+      window.__PULSE_CHRONO_LAST__ = window.__PULSE_TOUCH_T0__;
+
+
       // 2 — Preload ALL UI pages (HTML/CSS/JS/IMG)
       if (touch.preloader && typeof touch.preloader.preloadAllPages === "function") {
         touch.preloader.preloadAllPages();
