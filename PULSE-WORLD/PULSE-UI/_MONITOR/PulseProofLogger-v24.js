@@ -440,8 +440,15 @@ function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
 // ============================================================================
 //  CORE LOG ENTRY CREATION — IMMORTAL++
 // ============================================================================
+// ============================================================================
+//  IMMORTAL LOGGER — FIXED FOR SIGNAL GROUPING + ORGANISM MAP
+// ============================================================================
 
 import { PulseProofSignal } from "./PulseProofSignal-v24.js";
+
+// ============================================================================
+//  PULSE LOG — FIXED (NO MORE LOGGER → SIGNAL → LOGGER LOOPS)
+// ============================================================================
 
 export function pulseLog({
   layer = null,
@@ -497,14 +504,20 @@ export function pulseLog({
 
   appendLocalLog(entry);
 
+  // ⭐ CRITICAL FIX:
+  // DO NOT mirror signal logs back into Signal.
+  // This restores grouping and stops infinite loops.
+  if (entry.subsystem === "signal") {
+    return;
+  }
+
   try {
-    // Signal side has guard to avoid re-signalizing signal subsystem
     PulseProofSignal.fromLogEntry(entry);
   } catch (_) {}
 }
 
 // ============================================================================
-//  ARG NORMALIZATION — DETERMINISTIC
+//  ARG NORMALIZATION — unchanged except for object handling
 // ============================================================================
 
 function normalizeArgs(args) {
@@ -514,12 +527,10 @@ function normalizeArgs(args) {
 
   const first = args[0];
 
-  // Raw CSS logs: log("%c...", ...)
   if (typeof first === "string" && first.startsWith("%c")) {
     return { subsystem: null, message: first, rest: args.slice(1), raw: true };
   }
 
-  // comment("comment", { ... }) — signal top-layer comments
   if (
     args.length === 2 &&
     first === "comment" &&
@@ -543,7 +554,6 @@ function normalizeArgs(args) {
     };
   }
 
-  // log("SkinReflex instance:", { ... }) — keep object as object, not [object Object]
   if (
     args.length >= 2 &&
     typeof first === "string" &&
@@ -553,22 +563,18 @@ function normalizeArgs(args) {
     return { subsystem: null, message: first, rest: args.slice(1), raw: false };
   }
 
-  // log("gpu", "message")
   if (args.length >= 2 && typeof first === "string" && typeof args[1] === "string") {
     return { subsystem: first, message: args[1], rest: args.slice(2), raw: false };
   }
 
-  // log({ ... })
   if (typeof first === "object" && first !== null) {
     return { subsystem: null, message: "", rest: [first], raw: false };
   }
 
-  // log("message")
   if (args.length === 1) {
     return { subsystem: null, message: first, rest: [], raw: false };
   }
 
-  // log("a", "b", "c")
   return { subsystem: null, message: args.join(" "), rest: [], raw: false };
 }
 
@@ -580,7 +586,7 @@ function mark404(message) {
 }
 
 // ============================================================================
-//  CORE LOGGING FUNCTIONS — DETERMINISTIC
+//  CORE LOGGING FUNCTIONS — unchanged except for using IMMORTAL MAP
 // ============================================================================
 
 export function log(...args) {
@@ -709,6 +715,7 @@ export function comment(...args) {
   pulseLog({ level: "comment", subsystem: safe, message: safeMessage, rest });
 }
 
+
 // -----------------------------------------------------------------------------
 //  GROUPING HELPERS — IMMORTAL++
 // -----------------------------------------------------------------------------
@@ -732,17 +739,17 @@ export function groupEnd() {
   _c.groupEnd();
 }
 
-// -----------------------------------------------------------------------------
-//  ORGANISM MAP RESOLUTION — FILENAME + FOLDER → SUBSYSTEM + VERSION
-// -----------------------------------------------------------------------------
+
+// ============================================================================
+//  IMMORTAL ORGANISM MAP LOOKUP — O(1)
+// ============================================================================
+
 function resolveFromOrganismMap() {
   try {
-    // If the global map exists, use it
     if (window.PulseOrganismMap && typeof window.PulseOrganismMap.resolveCaller === "function") {
-      return window.PulseOrganismMap.resolveCaller();
+      return window.PulseOrganismMap.resolveCaller(new Error().stack);
     }
 
-    // If no map exists, fallback to legacy
     return {
       subsystem: "legacy",
       version: "v12.3",
@@ -759,7 +766,6 @@ function resolveFromOrganismMap() {
     };
   }
 }
-
 
 // -----------------------------------------------------------------------------
 //  Pulse command handler (LOCAL-ONLY, NO NETWORK)
