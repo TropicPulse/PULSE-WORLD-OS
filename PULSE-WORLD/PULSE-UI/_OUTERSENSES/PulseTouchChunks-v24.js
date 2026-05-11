@@ -174,12 +174,15 @@ function shouldSkipChunk(filePath = "", fileSize = 0) {
   if (filePath.includes("firebase-admin")) return true;
   if (filePath.includes("env")) return true;
   if (filePath.includes("package")) return true;
-  if (filePath.includes("PulseCORS")) return true;
+  if (filePath.includes("PulseWorldTransport")) return true;
   if (filePath.includes("PulseOSLongTermMemory")) return true;
   if (filePath.includes("index.html")) return true;
 
   if (
     filePath.includes("PulseChunker") ||
+    filePath.includes("Portal") ||
+    filePath.includes("Index") ||
+    filePath.includes("User") ||
     filePath.includes("Brainstem") ||
     filePath.includes("Organs") ||
     filePath.includes("PulsePresence")
