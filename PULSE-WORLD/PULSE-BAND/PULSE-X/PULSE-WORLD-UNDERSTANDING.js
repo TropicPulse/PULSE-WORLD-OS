@@ -53,7 +53,7 @@ import {
 } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ⭐ NEW: Import upgraded CSS‑merged signal engine
-import { PulseProofSignal } from "../../PULSE-UI/_MONITOR/PulseProofSignal-v25.js";
+import { PulseProofSignal } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-SIGNAL.js";
 
 // ============================================================================
 //  IMPORTS — COMPILER / CHUNKER / ACTNOW

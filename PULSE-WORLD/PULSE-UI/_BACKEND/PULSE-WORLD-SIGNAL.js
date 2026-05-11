@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v25.0‑IMMORTAL++ — PulseProofSignal Engine (CSS-MERGED TOP LAYER)
+//  PULSE OS v25.0‑IMMORTAL++ — PULSE-WORLD-SIGNAL Engine (CSS-MERGED TOP LAYER)
 //  Signal-Grade Telemetry • Logger-Independent • Offline-First
 //  ZERO RANDOMNESS • ZERO EGO • DUALBAND-AWARE • ORGANISM-MAP-AWARE
 //  CSS-Style Signal Cascade • Top-Layer Merged Comments • Color-Aware Logs
