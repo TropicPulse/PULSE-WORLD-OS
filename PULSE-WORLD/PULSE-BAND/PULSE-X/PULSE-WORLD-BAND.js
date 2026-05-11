@@ -997,6 +997,12 @@ if (typeof window !== "undefined") {
   }
 }
 
+export function checkBand(band) {
+  return getCheckBandStateSnapshot(band);
+}
+window.checkBand = checkBand;
+window.CheckBand = checkBand;
+window.checkband = checkBand;
 // ============================================================================
 //  DEFAULT EXPORT — IMMORTAL++ PULSE‑WORLD‑BAND ORGAN (v24)
 // ============================================================================
