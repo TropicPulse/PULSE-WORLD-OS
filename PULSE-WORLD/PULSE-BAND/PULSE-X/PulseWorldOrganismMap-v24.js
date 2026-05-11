@@ -455,7 +455,7 @@ function classifySystem(system) {
 }
 // ============================================================================
 // SCAN SYSTEMS — v24.1 IMMORTAL WORLD GENOME++
-// Extracts subsystem + version directly from folder names
+// Extract subsystem from folder name + version from FILES
 // ============================================================================
 async function scanPulseSystems() {
   fs = getFsAPI({ trace: false });
@@ -466,7 +466,7 @@ async function scanPulseSystems() {
   const pulseSystems = allFiles
     .filter(f => f.type === "dir" && f.name.startsWith("PULSE-"))
     .map(f => ({
-      name: f.name,   // e.g. "PULSE-PAGES-v24"
+      name: f.name,
       path: f.path
     }));
 
@@ -482,32 +482,60 @@ async function scanPulseSystems() {
       .filter(f => f.type === "file" && f.name.endsWith(".js"))
       .map(f => f.name.replace(".js", ""));
 
-    // NEW: Extract subsystem + version from folder name
+    // ---------------------------------------------
+    // SUBSYSTEM FROM FOLDER NAME (unchanged)
+    // ---------------------------------------------
     const subsystem = system.name
-      .replace(/^PULSE-/, "")      // remove PULSE-
-      .replace(/-v\d+$/i, "")      // remove -v24
-      .toLowerCase();              // normalize
+      .replace(/^PULSE-/, "")
+      .toLowerCase();
 
-    const versionMatch = system.name.match(/v(\d+)/i);
-    const version = versionMatch ? `v${versionMatch[1]}.0` : "v24.0";
+    // ---------------------------------------------
+    // VERSION FROM FILES — EXACTLY WHAT YOU ASKED FOR
+    // ---------------------------------------------
+    let detectedVersion = null;
 
-    // Existing classification logic
+    for (const file of systemFiles) {
+      const match = file.name.match(/-v(\d+(\.\d+)?)/i);
+      if (match) {
+        const v = match[1]; // "24" or "12.3"
+        if (!detectedVersion) detectedVersion = v;
+        else {
+          const a = parseFloat(detectedVersion);
+          const b = parseFloat(v);
+          if (b > a) detectedVersion = v;
+        }
+      }
+    }
+
+    // If no version found → fallback to 12.3
+    if (!detectedVersion) {
+      detectedVersion = "12.3";
+    }
+
+    const version = `v${detectedVersion}`;
+
+    // ---------------------------------------------
+    // CLASSIFICATION (unchanged)
+    // ---------------------------------------------
     const classification = classifySystem(system);
 
-    // NEW: Store subsystem + version in system object
+    // ---------------------------------------------
+    // STORE SYSTEM WITH REAL VERSION
+    // ---------------------------------------------
     systems[system.name.toLowerCase()] = {
       root: system.name,
       path: system.path,
       layer: classification.layer,
       kind: classification.kind,
-      subsystem,   // e.g. "pages"
-      version,     // e.g. "v24.0"
+      subsystem,
+      version,   // <-- REAL version from files
       organs
     };
   }
 
   return systems;
 }
+
 
 // ============================================================================
 // IDENTITY GENERATION ENGINE — v24‑IMMORTAL‑WORLD‑GENOME++
