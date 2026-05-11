@@ -85,9 +85,8 @@ if (!window.__PULSE_UI_INIT__) {
     };
     
 async function waitForEngines() {
-  logID("WAITING FOR ENGINES — HARD‑WIRE MODE");
+  logID("WAITING FOR ENGINES — HARD‑WIRE MODE + PULSEBAND SUPPORT");
 
-  // Try to attach to kernel if Pulse‑Touch booted it
   async function tryWireKernel() {
     let Kernel =
       window.PulseBinaryKernel ||
@@ -98,87 +97,109 @@ async function waitForEngines() {
       Kernel = await Kernel;
     }
 
-    if (!Kernel) {
-      logWarn("Kernel not found yet — waiting for Pulse‑Touch or OS boot…");
-      return;
-    }
+    if (Kernel) {
+      window.PulseBinaryKernel = Kernel;
 
-    // Expose kernel globally
-    window.PulseBinaryKernel = Kernel;
+      if (!window.PulseBinary) {
+        const vitalsImpl =
+          Kernel?.Vitals?.generateVitals ||
+          Kernel?.Vitals?.generate ||
+          null;
 
-    // Build PulseBinary shadow if missing
-    if (!window.PulseBinary) {
-      const vitalsImpl =
-        Kernel?.Vitals?.generateVitals ||
-        Kernel?.Vitals?.generate ||
-        null;
+        const sentienceImpl = Kernel?.Sentience?.snapshot || null;
+        const consciousnessImpl =
+          Kernel?.Consciousness?.generateConsciousnessPacket ||
+          Kernel?.Consciousness?.latest ||
+          null;
 
-      const sentienceImpl = Kernel?.Sentience?.snapshot || null;
-      const consciousnessImpl =
-        Kernel?.Consciousness?.generateConsciousnessPacket ||
-        Kernel?.Consciousness?.latest ||
-        null;
+        window.PulseBinary = Object.freeze({
+          meta: Kernel.meta || null,
+          Vitals: {
+            generate: () => (vitalsImpl ? vitalsImpl() : null)
+          },
+          Sentience: {
+            snapshot: () => (sentienceImpl ? sentienceImpl() : null)
+          },
+          Consciousness: {
+            latest: () => (consciousnessImpl ? consciousnessImpl() : null)
+          }
+        });
 
-      window.PulseBinary = Object.freeze({
-        meta: Kernel.meta || null,
-        Vitals: {
-          generate: () => (vitalsImpl ? vitalsImpl() : null)
-        },
-        Sentience: {
-          snapshot: () => (sentienceImpl ? sentienceImpl() : null)
-        },
-        Consciousness: {
-          latest: () => (consciousnessImpl ? consciousnessImpl() : null)
-        }
-      });
+        logOK("PulseBinary shadow created on index page");
+      }
 
-      logOK("PulseBinary shadow created on index page");
-    }
-
-    // Build VitalsMonitor if missing
-    if (!window.VitalsMonitor) {
-      logWarn("VitalsMonitor missing — creating inline monitor");
-      window.VitalsMonitor = {
-        Vitals: {
-          generate() {
-            try {
-              return window.PulseBinary?.Vitals?.generate?.() ?? null;
-            } catch (err) {
-              logErr("VitalsMonitor.Vitals.generate failed", err);
-              return null;
+      if (!window.VitalsMonitor) {
+        logWarn("VitalsMonitor missing — creating inline monitor");
+        window.VitalsMonitor = {
+          Vitals: {
+            generate() {
+              try {
+                return window.PulseBinary?.Vitals?.generate?.() ?? null;
+              } catch (err) {
+                logErr("VitalsMonitor.Vitals.generate failed", err);
+                return null;
+              }
             }
           }
-        }
-      };
+        };
+      }
     }
   }
 
-  // HARD‑WIRE LOOP
+  // NEW: Try to wire PulseBand FIRST
+  function tryWirePulseBand() {
+    if (window.pulseband && !window.PulseBand) {
+      window.PulseBand = window.pulseband;
+      logOK("PulseBand detected via window.pulseband");
+    }
+
+    if (window.PulseBand) {
+      // PulseBand is a session engine, not a vitals engine
+      // but we expose it so updatePulseBand() can use it if needed
+      return true;
+    }
+
+    return false;
+  }
+
   let spins = 0;
-  while (
-    !window.VitalsMonitor ||
-    !window.VitalsMonitor.Vitals ||
-    !window.VitalsMonitor.Vitals.generate ||
-    !window.PulseBinary ||
-    !window.PulseBinary.Sentience
-  ) {
+
+  while (true) {
     spins++;
 
-    // Try to wire kernel + PulseBand every 10 spins
+    // 1. Prefer PulseBand if present
+    if (tryWirePulseBand()) {
+      logOK("PulseBand available — engines ready");
+      return;
+    }
+
+    // 2. Try to wire PulseBinaryKernel every 10 spins
     if (spins % 10 === 0) {
       await tryWireKernel();
     }
 
+    // 3. If PulseBinary + VitalsMonitor exist → ready
+    if (
+      window.VitalsMonitor &&
+      window.VitalsMonitor.Vitals &&
+      window.VitalsMonitor.Vitals.generate &&
+      window.PulseBinary &&
+      window.PulseBinary.Sentience
+    ) {
+      logOK("PulseBinary engines ready");
+      return;
+    }
+
     logWarn("Engines not ready yet…", {
       spin: spins,
-      hasVitalsMonitor: !!window.VitalsMonitor,
+      hasPulseBand: !!window.PulseBand,
       hasPulseBinary: !!window.PulseBinary,
+      hasVitalsMonitor: !!window.VitalsMonitor,
       hasKernel: !!window.PulseBinaryKernel
     });
 
     await new Promise((res) => setTimeout(res, 100));
   }
-
   logOK("ENGINES READY — PulseBand fully embedded");
 }
 
