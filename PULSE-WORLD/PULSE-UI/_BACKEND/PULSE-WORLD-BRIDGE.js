@@ -848,6 +848,7 @@ export const BridgeColors = PulseColors;
 export const BridgeIcons = PulseIcons;
 
 export const PulseProofBridgeLogger = PulseProofLogger;
+export const PulseProofWorldEndpoint = PulseWorldEndpoint;
 export const PulseProofBridgeReflex = PulseProofReflex;
 export const PulseProofBridgeMonitor = PulseProofMonitor;
 export const PulseProofBridgeTelemetry = emitTelemetry;

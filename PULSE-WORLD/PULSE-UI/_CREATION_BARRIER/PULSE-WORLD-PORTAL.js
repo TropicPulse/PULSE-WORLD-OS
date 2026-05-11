@@ -31,6 +31,7 @@
 // ============================================================================
 
 import {
+  PulseWorldEndpoint,
   route as BridgeRoute,
   PulseProofBridgeMonitor as PulseVitalsMonitor,
   PulseProofBridgeLogger as PulseVitalsLogger,
@@ -48,7 +49,6 @@ import {
   PulseProofBridgeRouteMemory as PulseUIRouteMemory,
   PulseProofBridgeWorldAdminPanel as createPulseWorldAdminPanel,
   PulseProofBridgeAdminDiagnostics as createAdminDiagnosticsOrgan} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-
 
 // ============================================================
 //  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
