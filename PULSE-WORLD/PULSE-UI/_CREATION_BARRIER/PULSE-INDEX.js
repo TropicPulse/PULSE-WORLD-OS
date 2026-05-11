@@ -20,232 +20,197 @@ logID("BOOT MEMBRANE START");
 
 if (!window.__PULSE_UI_INIT__) {
   window.__PULSE_UI_INIT__ = true;
+document.addEventListener("DOMContentLoaded", () => {
+  logOK("DOM CONTENT LOADED — INDEX PAGE");
 
-  document.addEventListener("DOMContentLoaded", () => {
-    logOK("DOM CONTENT LOADED — INDEX PAGE");
+  // ============================================================================
+  //  PULSEBAND PANEL TOGGLE
+  // ============================================================================
+  try {
+    const pbBadge = document.getElementById("pulseband-badge");
+    const pbPanel = document.getElementById("pulseband-panel");
+    let pbOpen = false;
 
-    // ============================================================================
-    //  PULSEBAND PANEL TOGGLE
-    // ============================================================================
-    try {
-      const pbBadge = document.getElementById("pulseband-badge");
-      const pbPanel = document.getElementById("pulseband-panel");
-      let pbOpen = false;
+    if (!pbBadge) logWarn("pbBadge missing");
+    if (!pbPanel) logWarn("pbPanel missing");
 
-      if (!pbBadge) logWarn("pbBadge missing");
-      if (!pbPanel) logWarn("pbPanel missing");
-
-      if (pbBadge && pbPanel) {
-        pbBadge.addEventListener("click", () => {
-          pbOpen = !pbOpen;
-          pbPanel.classList.toggle("pb-open", pbOpen);
-          logOK("PulseBand panel toggled", pbOpen);
-        });
-
-        document.addEventListener("click", (e) => {
-          if (!pbPanel.contains(e.target) && !pbBadge.contains(e.target)) {
-            pbOpen = false;
-            pbPanel.classList.remove("pb-open");
-          }
-        });
-      }
-    } catch (err) {
-      logErr("PulseBand UI init failed", err);
-    }
-
-    // ============================================================================
-    //  PULSEBAND FIELD REFERENCES
-    // ============================================================================
-    const pbFields = {
-      bars:       document.getElementById("pb-bars-text"),
-      phone:      document.getElementById("pb-phonebars-text"),
-      stability:  document.getElementById("pb-stability"),
-      latency:    document.getElementById("pb-latency"),
-      micro:      document.getElementById("pb-micro"),
-      route:      document.getElementById("pb-route"),
-      state:      document.getElementById("pb-state"),
-      sync:       document.getElementById("pb-sync"),
-      efficiency: document.getElementById("pb-efficiency"),
-      health:     document.getElementById("pb-health"),
-      advantage:  document.getElementById("pb-advantage"),
-      estimated:  document.getElementById("pb-estimated")
-    };
-
-    // ============================================================================
-    //  PORTAL SIGNAL SNAPSHOT
-    // ============================================================================
-    function getSignalSnapshot() {
-      try {
-        return window.PulsePortal?.getSignal?.() || null;
-      } catch {
-        return null;
-      }
-    }
-
-    // ============================================================================
-    //  WAIT FOR ENGINES (Portal signal ready)
-    // ============================================================================
-    async function waitForEngines() {
-      logID("WAITING FOR ENGINES — PORTAL SIGNAL MODE");
-
-      let spins = 0;
-
-      while (true) {
-        spins++;
-
-        const snap = getSignalSnapshot();
-        if (snap) {
-          logOK("ENGINES READY — Portal signal snapshot available", { spins });
-          return;
-        }
-
-        if (spins > 200) {
-          logWarn("Engines not fully ready, proceeding anyway", { spins });
-          return;
-        }
-
-        logWarn("Engines not ready yet…", { spin: spins });
-        await new Promise((res) => setTimeout(res, 100));
-      }
-    }
-
-    // ============================================================================
-    //  UPDATE PULSEBAND UI FROM PORTAL SIGNAL
-    // ============================================================================
-    async function updatePulseBand() {
-      try {
-        const snap = getSignalSnapshot();
-
-        if (!snap) {
-          logWarn("No signal snapshot yet — PulseBand UI idle");
-          return;
-        }
-
-        const signalBars  = snap?.network?.bars ?? "—";
-        const phoneBars   = snap?.device?.bars ?? signalBars;
-        const stability   = snap?.stability?.score ?? null;
-        const latencyMs   = snap?.latency?.ms ?? null;
-        const microPhase  = snap?.micro?.phase ?? snap?.phase ?? "Idle";
-        const route       = snap?.network?.route ?? snap?.route ?? "Primary";
-        const state       = snap?.state ?? "Active";
-        const syncAge     = snap?.sync?.ageLabel ?? "Just now";
-        const efficiency  = snap?.efficiency?.label ?? "Balanced";
-        const health      = snap?.health?.label ?? "Excellent";
-        const advantage   = snap?.advantage?.multiplier ?? 1.0;
-        const estimated   = snap?.advantage?.percent ?? 0;
-
-        if (pbFields.bars)       pbFields.bars.textContent       = String(signalBars);
-        if (pbFields.phone)      pbFields.phone.textContent      = String(phoneBars);
-        if (pbFields.stability)  pbFields.stability.textContent  = stability != null ? `${stability}%` : "—";
-        if (pbFields.latency)    pbFields.latency.textContent    = latencyMs != null ? `${latencyMs} ms` : "—";
-        if (pbFields.micro)      pbFields.micro.textContent      = microPhase;
-        if (pbFields.route)      pbFields.route.textContent      = route;
-        if (pbFields.state)      pbFields.state.textContent      = state;
-        if (pbFields.sync)       pbFields.sync.textContent       = syncAge;
-        if (pbFields.efficiency) pbFields.efficiency.textContent = efficiency;
-        if (pbFields.health)     pbFields.health.textContent     = health;
-        if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
-        if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
-
-        logOK("PulseBand UI updated (Portal signal snapshot)");
-      } catch (err) {
-        logErr("PulseBand update failed", err);
-      }
-    }
-
-    // ============================================================================
-    //  ENGINE LOOP
-    // ============================================================================
-    (async () => {
-      try {
-        await waitForEngines();
-        updatePulseBand();
-        setInterval(updatePulseBand, 1000);
-      } catch (err) {
-        logErr("PulseBand engine loop failed", err);
-      }
-    })();
-
-    // ============================================================================
-    //  GPU TEST
-    // ============================================================================
-    try {
-      const testBtn     = document.getElementById("tp-test-button");
-      const testFile    = document.getElementById("tp-test-file");
-      const testStatus  = document.getElementById("tp-test-status");
-      const testMetrics = document.getElementById("tp-test-metrics");
-
-      testBtn?.addEventListener("click", async () => {
-        try {
-          if (!testFile?.files?.length) {
-            if (testStatus) testStatus.textContent = "Please select a file first.";
-            logWarn("GPU test: no file selected");
-            return;
-          }
-
-          if (testStatus)  testStatus.textContent  = "Running GPU warm test…";
-          if (testMetrics) testMetrics.textContent = "";
-
-          await new Promise((res) => requestAnimationFrame(res));
-
-          const file = testFile.files[0];
-
-          const before = performance.now();
-          await file.arrayBuffer();
-          const after = performance.now();
-          const decodeMs = Math.round(after - before);
-
-          const snap = getSignalSnapshot();
-
-          const gpuSmooth   = snap?.stability?.score ?? null;
-          const advantage   = snap?.advantage?.multiplier ?? null;
-          const route       = snap?.network?.route ?? snap?.route ?? null;
-          const cpuImpact   = snap?.cpu?.impact ?? null;
-          const memImpact   = snap?.memory?.impact ?? null;
-          const microMs     = snap?.latency?.microMs ?? null;
-
-          if (testMetrics) {
-            testMetrics.innerHTML = `
-              GPU Smoothness: <strong>${gpuSmooth != null ? gpuSmooth + "%" : "—"}</strong><br>
-              Pulse Advantage: <strong>${advantage != null ? advantage + "×" : "—"}</strong><br>
-              Network Route: <strong>${route ?? "—"}</strong><br>
-              CPU Impact: <strong>${cpuImpact != null ? cpuImpact + "%" : "—"}</strong><br>
-              Memory Impact: <strong>${memImpact != null ? memImpact + "%" : "—"}</strong><br>
-              Micro Latency: <strong>${microMs != null ? microMs + " ms" : "—"}</strong><br>
-              Decode Speed: <strong>${decodeMs} ms</strong>
-            `;
-          }
-
-          if (testStatus) testStatus.textContent = "Test complete.";
-          logOK("GPU test complete (Portal signal snapshot)");
-        } catch (err) {
-          logErr("GPU test failed", err);
-          if (testStatus)  testStatus.textContent  = "Test failed.";
-          if (testMetrics) testMetrics.textContent = "";
-        }
-      });
-    } catch (err) {
-      logErr("GPU test init failed", err);
-    }
-
-    // ============================================================================
-    //  FAQ ACCORDION
-    // ============================================================================
-    try {
-      document.querySelectorAll("[data-faq]").forEach((item) => {
-        const btn = item.querySelector(".faq-question");
-        btn.addEventListener("click", () => {
-          const isOpen = item.classList.contains("open");
-          document.querySelectorAll("[data-faq]").forEach((i) => i.classList.remove("open"));
-          if (!isOpen) item.classList.add("open");
-        });
+    if (pbBadge && pbPanel) {
+      pbBadge.addEventListener("click", () => {
+        pbOpen = !pbOpen;
+        pbPanel.classList.toggle("pb-open", pbOpen);
+        logOK("PulseBand panel toggled", pbOpen);
       });
 
-      logOK("FAQ accordion initialized");
-    } catch (err) {
-      logErr("FAQ accordion failed", err);
+      document.addEventListener("click", (e) => {
+        if (!pbPanel.contains(e.target) && !pbBadge.contains(e.target)) {
+          pbOpen = false;
+          pbPanel.classList.remove("pb-open");
+        }
+      });
     }
+  } catch (err) {
+    logErr("PulseBand UI init failed", err);
+  }
 
-    logOK("INDEX PAGE FULLY INITIALIZED");
-  });
+  // ============================================================================
+  //  PULSEBAND FIELD REFERENCES
+  // ============================================================================
+  const pbFields = {
+    bars:       document.getElementById("pb-bars-text"),
+    phone:      document.getElementById("pb-phonebars-text"),
+    stability:  document.getElementById("pb-stability"),
+    latency:    document.getElementById("pb-latency"),
+    micro:      document.getElementById("pb-micro"),
+    route:      document.getElementById("pb-route"),
+    state:      document.getElementById("pb-state"),
+    sync:       document.getElementById("pb-sync"),
+    efficiency: document.getElementById("pb-efficiency"),
+    health:     document.getElementById("pb-health"),
+    advantage:  document.getElementById("pb-advantage"),
+    estimated:  document.getElementById("pb-estimated")
+  };
+
+  // ============================================================================
+  //  PORTAL SIGNAL SNAPSHOT
+  // ============================================================================
+  function getSignalSnapshot() {
+    try {
+      return window.PulsePortal?.getSignal?.() || null;
+    } catch {
+      return null;
+    }
+  }
+
+  // ============================================================================
+  //  PULSE-DRIVEN UI UPDATE (NO TIMER, NO WAIT LOOP)
+  // ============================================================================
+  function onPulse(packet) {
+    try {
+      const snap = getSignalSnapshot();
+      if (!snap) return; // engine hasn't pulsed yet — stay silent
+
+      const signalBars  = snap?.network?.bars ?? "—";
+      const phoneBars   = snap?.device?.bars ?? signalBars;
+      const stability   = snap?.stability?.score ?? null;
+      const latencyMs   = snap?.latency?.ms ?? null;
+      const microPhase  = snap?.micro?.phase ?? snap?.phase ?? "Idle";
+      const route       = snap?.network?.route ?? snap?.route ?? "Primary";
+      const state       = snap?.state ?? "Active";
+      const syncAge     = snap?.sync?.ageLabel ?? "Just now";
+      const efficiency  = snap?.efficiency?.label ?? "Balanced";
+      const health      = snap?.health?.label ?? "Excellent";
+      const advantage   = snap?.advantage?.multiplier ?? 1.0;
+      const estimated   = snap?.advantage?.percent ?? 0;
+
+      if (pbFields.bars)       pbFields.bars.textContent       = String(signalBars);
+      if (pbFields.phone)      pbFields.phone.textContent      = String(phoneBars);
+      if (pbFields.stability)  pbFields.stability.textContent  = stability != null ? `${stability}%` : "—";
+      if (pbFields.latency)    pbFields.latency.textContent    = latencyMs != null ? `${latencyMs} ms` : "—";
+      if (pbFields.micro)      pbFields.micro.textContent      = microPhase;
+      if (pbFields.route)      pbFields.route.textContent      = route;
+      if (pbFields.state)      pbFields.state.textContent      = state;
+      if (pbFields.sync)       pbFields.sync.textContent       = syncAge;
+      if (pbFields.efficiency) pbFields.efficiency.textContent = efficiency;
+      if (pbFields.health)     pbFields.health.textContent     = health;
+      if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
+      if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
+
+    } catch (err) {
+      logErr("Pulse-driven UI update failed", err);
+    }
+  }
+
+  // ============================================================================
+  //  SUBSCRIBE TO CNS PULSES
+  // ============================================================================
+  if (window.PulseProofSignal?.subscribe) {
+    window.PulseProofSignal.subscribe(onPulse);
+    logOK("Pulse-driven UI subscribed to engine");
+  } else {
+    logWarn("PulseProofSignal.subscribe missing — UI will not pulse");
+  }
+
+  // ============================================================================
+  //  GPU TEST (UNCHANGED)
+  // ============================================================================
+  try {
+    const testBtn     = document.getElementById("tp-test-button");
+    const testFile    = document.getElementById("tp-test-file");
+    const testStatus  = document.getElementById("tp-test-status");
+    const testMetrics = document.getElementById("tp-test-metrics");
+
+    testBtn?.addEventListener("click", async () => {
+      try {
+        if (!testFile?.files?.length) {
+          if (testStatus) testStatus.textContent = "Please select a file first.";
+          logWarn("GPU test: no file selected");
+          return;
+        }
+
+        if (testStatus)  testStatus.textContent  = "Running GPU warm test…";
+        if (testMetrics) testMetrics.textContent = "";
+
+        await new Promise((res) => requestAnimationFrame(res));
+
+        const file = testFile.files[0];
+
+        const before = performance.now();
+        await file.arrayBuffer();
+        const after = performance.now();
+        const decodeMs = Math.round(after - before);
+
+        const snap = getSignalSnapshot();
+
+        const gpuSmooth   = snap?.stability?.score ?? null;
+        const advantage   = snap?.advantage?.multiplier ?? null;
+        const route       = snap?.network?.route ?? snap?.route ?? null;
+        const cpuImpact   = snap?.cpu?.impact ?? null;
+        const memImpact   = snap?.memory?.impact ?? null;
+        const microMs     = snap?.latency?.microMs ?? null;
+
+        if (testMetrics) {
+          testMetrics.innerHTML = `
+            GPU Smoothness: <strong>${gpuSmooth != null ? gpuSmooth + "%" : "—"}</strong><br>
+            Pulse Advantage: <strong>${advantage != null ? advantage + "×" : "—"}</strong><br>
+            Network Route: <strong>${route ?? "—"}</strong><br>
+            CPU Impact: <strong>${cpuImpact != null ? cpuImpact + "%" : "—"}</strong><br>
+            Memory Impact: <strong>${memImpact != null ? memImpact + "%" : "—"}</strong><br>
+            Micro Latency: <strong>${microMs != null ? microMs + " ms" : "—"}</strong><br>
+            Decode Speed: <strong>${decodeMs} ms</strong>
+          `;
+        }
+
+        if (testStatus) testStatus.textContent = "Test complete.";
+        logOK("GPU test complete (Portal signal snapshot)");
+      } catch (err) {
+        logErr("GPU test failed", err);
+        if (testStatus)  testStatus.textContent  = "Test failed.";
+        if (testMetrics) testMetrics.textContent = "";
+      }
+    });
+  } catch (err) {
+    logErr("GPU test init failed", err);
+  }
+
+  // ============================================================================
+  //  FAQ ACCORDION (UNCHANGED)
+  // ============================================================================
+  try {
+    document.querySelectorAll("[data-faq]").forEach((item) => {
+      const btn = item.querySelector(".faq-question");
+      btn.addEventListener("click", () => {
+        const isOpen = item.classList.contains("open");
+        document.querySelectorAll("[data-faq]").forEach((i) => i.classList.remove("open"));
+        if (!isOpen) item.classList.add("open");
+      });
+    });
+
+    logOK("FAQ accordion initialized");
+  } catch (err) {
+    logErr("FAQ accordion failed", err);
+  }
+
+  logOK("INDEX PAGE FULLY INITIALIZED");
+});
+
 }
