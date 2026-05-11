@@ -32,17 +32,19 @@ const g =
     : {};
 import { PulseProofBridgeFlow as initUIFlow, PulseProofBridgeErrors as PulseUIErrors, route, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { db, admin } from "./PulseWorldGenome-v20.js";
-
+import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
+import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v24.js";
+import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
 // ============================================================================
 // PULSE-NET v14-Immortal — Backend Gateway + Crown Throne Room
 //  • Single internet edge (via NetworkOrgan → route(...))
 //  • Hybrid crown model: OvermindPrime sees heartbeats + AI requests
 // ============================================================================
-import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
+
 import { PulseForward as createForwardEngine } from "../PULSE-ENGINE/PulseEngineForwardMotion-v24.js";
 import { PulseBackward as createBackwardEngine } from "../PULSE-ENGINE/PulseEngineBackwardMotion-v24.js";
 
-import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
+
 
 // ============================================================================
 // GLOBAL ORGANISM MEMORY (shared across all imports)
