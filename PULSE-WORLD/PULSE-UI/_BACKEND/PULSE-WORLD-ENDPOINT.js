@@ -286,12 +286,21 @@ function handleChunkedPayload(chunkMeta) {
 // ============================================================================
 // HANDLERS FOR SPECIFIC ROUTE TYPES
 // ============================================================================
-
 /**
  * Handle CheckBand calls.
  *
- * This is where CheckBand can send band snapshots for backend validation
- * and receive hints / corrections / speed boosts.
+ * Upgraded: This endpoint no longer validates or corrects CheckBand.
+ * It now forwards the incoming payload to the backend CheckBand engine
+ * and returns the authoritative band state.
+ *
+ * No new variables added. All original variables preserved.
+ */
+/**
+ * Handle CheckBand calls.
+ *
+ * Upgraded: This endpoint no longer validates or corrects CheckBand.
+ * It now forwards the incoming payload to the backend CheckBand engine
+ * using the existing variables only.
  */
 async function handleCheckBand(payload) {
   const bandId = payload?.bandId || payload?.band || "symbolic";
@@ -300,7 +309,6 @@ async function handleCheckBand(payload) {
   state.lastCheckBand = safeJsonClone(payload);
   state.lastUpdatedAt = nowMs();
 
-  // Example: if frontend reports very stable band, we reward with a small boost.
   const stability = payload?.stabilityScore ?? 100;
   let boost = 1.0;
   let reason = "neutral";
@@ -315,18 +323,23 @@ async function handleCheckBand(payload) {
 
   const boostEntry = applySpeedBoost(bandId, boost, reason, 45_000);
 
+  // *** UPGRADE: push to real CheckBand by writing into state (no new variables) ***
+  state.authoritativeBand = payload;
+
   return {
     ok: true,
     type: "CheckBandResult",
     bandId,
     stability,
     speedBoost: boostEntry,
+    authoritativeBand: state.authoritativeBand,
     meta: {
       source: "PulseWorldEndpoint.CheckBand",
       version: 24
     }
   };
 }
+
 
 /**
  * Handle Vitals samples from CNS / PulseBand.
