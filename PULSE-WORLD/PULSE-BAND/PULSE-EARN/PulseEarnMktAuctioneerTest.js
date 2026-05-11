@@ -1,7 +1,8 @@
 // ============================================================================
-// TEST SCRIPT — Vast.ai Adapter Test (v16‑IMMORTAL‑INTEL A‑B‑A Deterministic)
-// Pulse‑Earn v16‑IMMORTAL‑INTEL
+// TEST SCRIPT — Vast.ai Adapter Test (v24‑IMMORTAL++ A‑B‑A‑GPU Deterministic)
+// Pulse‑Earn v24‑IMMORTAL++
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
@@ -9,20 +10,26 @@ import {
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 import {
   PulseEarnMktAuctioneer,
   getPulseEarnMktAuctioneerHealingState
 } from "./PulseEarnMktAuctioneer.js";
 
-// Optional deterministic global presence hints
+// Deterministic local device profile (GPU + bandwidth + stability)
+const deviceProfile = {
+  gpuScore: 900,          // strong GPU
+  bandwidthMbps: 200,     // high network bandwidth
+  stabilityScore: 0.97    // very stable node
+};
+
+// Optional deterministic global presence hints (A‑B‑A mesh/castle/region)
 const globalHints = {
   presenceContext: {
     bandPresence: "symbolic",
@@ -56,83 +63,97 @@ const globalHints = {
 
 function run() {
   console.log("==============================================");
-  console.log(" PULSE‑EARN VAST.AI ADAPTER — TEST RUN (v16‑IMMORTAL‑INTEL)");
+  console.log(" PULSE‑EARN VAST.AI ADAPTER — TEST RUN (v24‑IMMORTAL++)");
   console.log("==============================================\n");
 
   // ---------------------------------------------------------
-  // 1. PING TEST (presence‑aware, dual‑hash, A‑B‑A)
+  // 1. PING TEST (v24 IMMORTAL++ — presence + advantage + chunk + A‑B‑A)
   // ---------------------------------------------------------
   console.log("🔹 Testing ping()...");
-  const ping = PulseEarnMktAuctioneer.ping(globalHints);
+  const ping = PulseEarnMktAuctioneer.ping(deviceProfile, globalHints);
   console.log("Ping result:", ping);
   console.log("Cycle Index:", ping.cycleIndex);
-  console.log("Presence Tier:", ping.auctioneerPresenceProfile.presenceTier);
-  console.log("Band:", ping.band);
+  console.log("Presence Tier:", ping.presenceField?.presenceTier);
+  console.log("Band:", ping.band || ping._abaBand || "symbolic");
   console.log("Signature (INTEL):", ping.signatureIntel);
   console.log("Signature (Classic):", ping.signatureClassic);
-  console.log("Binary Profile:", ping.binaryProfile);
-  console.log("Wave Profile:", ping.waveProfile, "\n");
+  console.log("Binary Field:", ping.binaryField);
+  console.log("Wave Field:", ping.waveField);
+  console.log("Advantage Field:", ping.advantageField);
+  console.log("Chunk Plan:", ping.chunkPlan, "\n");
 
   // ---------------------------------------------------------
-  // 2. FETCH JOBS TEST (presence‑aware, dual‑hash, A‑B‑A)
+  // 2. FETCH JOBS TEST (v24 IMMORTAL++ — presence + advantage + chunk + A‑B‑A)
   // ---------------------------------------------------------
   console.log("🔹 Testing fetchJobs()...");
-  const fetch = PulseEarnMktAuctioneer.fetchJobs(globalHints);
+  const fetch = PulseEarnMktAuctioneer.fetchJobs(deviceProfile, globalHints);
   const jobs = fetch.jobs || [];
 
   console.log(`Fetched ${jobs.length} jobs`);
   console.log("Cycle Index:", fetch.cycleIndex);
-  console.log("Presence Tier:", fetch.auctioneerPresenceProfile?.presenceTier);
-  console.log("Band:", fetch.band);
+  console.log("Presence Tier:", fetch.presenceField?.presenceTier);
+  console.log("Band:", fetch.band || fetch._abaBand || "symbolic");
   console.log("Signature (INTEL):", fetch.signatureIntel);
   console.log("Signature (Classic):", fetch.signatureClassic);
-  console.log("Binary Profile:", fetch.binaryProfile);
-  console.log("Wave Profile:", fetch.waveProfile, "\n");
+  console.log("Binary Field:", fetch.binaryField);
+  console.log("Wave Field:", fetch.waveField);
+  console.log("Advantage Field:", fetch.advantageField);
+  console.log("Chunk Plan:", fetch.chunkPlan, "\n");
 
   if (jobs.length > 0) {
     console.log("Sample job:", jobs[0], "\n");
   }
 
   // ---------------------------------------------------------
-  // 3. NORMALIZATION CHECK (presence‑aware, dual‑hash)
+  // 3. NORMALIZATION CHECK (v24 IMMORTAL++ — dual‑hash + A‑B‑A + GPU fields)
   // ---------------------------------------------------------
   if (jobs.length > 0) {
     console.log("🔹 Testing normalizeJob()...");
-    const normalized = PulseEarnMktAuctioneer.normalizeJob(jobs[0], globalHints);
+    const normalized = PulseEarnMktAuctioneer.normalizeJob(
+      jobs[0],
+      deviceProfile,
+      globalHints
+    );
     console.log("Normalized job:", normalized);
-    console.log("Presence Tier:", normalized?.presenceTier);
+    console.log("Presence Tier:", normalized?.presenceField?.presenceTier);
     console.log("Advantage Field:", normalized?.advantageField);
-    console.log("Hints Field:", normalized?.hintsField, "\n");
+    console.log("Chunk Plan:", normalized?.chunkPlan);
+    console.log("A‑B‑A Band:", normalized?._abaBand);
+    console.log("A‑B‑A Binary Density:", normalized?._abaBinaryDensity);
+    console.log("A‑B‑A Wave Amplitude:", normalized?._abaWaveAmplitude, "\n");
   }
 
   // ---------------------------------------------------------
-  // 4. SUBMIT RESULT TEST (presence‑aware, deterministic, dual‑hash)
+  // 4. SUBMIT RESULT TEST (v24 IMMORTAL++ — deterministic + dual‑hash)
   // ---------------------------------------------------------
   if (jobs.length > 0) {
     console.log("🔹 Testing submitResult()...");
     const submit = PulseEarnMktAuctioneer.submitResult(
       jobs[0],
       { ok: true },
+      deviceProfile,
       globalHints
     );
     console.log("Submit result:", submit);
     console.log("Cycle Index:", submit.cycleIndex);
-    console.log("Presence Tier:", submit.auctioneerPresenceProfile.presenceTier);
-    console.log("Band:", submit.band);
+    console.log("Presence Tier:", submit.presenceField?.presenceTier);
+    console.log("Band:", submit.band || submit._abaBand || "symbolic");
     console.log("Signature (INTEL):", submit.signatureIntel);
     console.log("Signature (Classic):", submit.signatureClassic);
-    console.log("Binary Profile:", submit.binaryProfile);
-    console.log("Wave Profile:", submit.waveProfile, "\n");
+    console.log("Binary Field:", submit.binaryField);
+    console.log("Wave Field:", submit.waveField);
+    console.log("Advantage Field:", submit.advantageField);
+    console.log("Chunk Plan:", submit.chunkPlan, "\n");
   }
 
   // ---------------------------------------------------------
-  // 5. HEALING STATE (v16‑IMMORTAL‑INTEL signatures)
-// ---------------------------------------------------------
+  // 5. HEALING STATE (v24‑IMMORTAL++ dual‑hash surfaces)
+  // ---------------------------------------------------------
   console.log("🔹 Healing State:");
   console.log(getPulseEarnMktAuctioneerHealingState());
 
   console.log("\n==============================================");
-  console.log(" TEST COMPLETE (v16‑IMMORTAL‑INTEL)");
+  console.log(" TEST COMPLETE (v24‑IMMORTAL++)");
   console.log("==============================================");
 }
 

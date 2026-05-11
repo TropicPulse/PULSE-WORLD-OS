@@ -40,7 +40,7 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   summarizeCastlePresence
-} from "./PulseExpansion-v24.js";
+} from "./PULSE-EXPANSION-INTERNET.js";
 
 import {
   PulseCastleMeta,

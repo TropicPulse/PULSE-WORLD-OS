@@ -1,26 +1,32 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktConsulate-v16-IMMORTAL-INTEL.js
-// LAYER: THE CONSULATE (v16 IMMORTAL + INTEL + DualHash + Presence + Advantage + Chunk)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktConsulate-v24-IMMORTAL-INTEL.js
+// LAYER: THE CONSULATE (v24 IMMORTAL + INTEL + DualHash + Presence + Advantage + Chunk + Artery)
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+// ---------------------------------------------------------------------------
+//  ORGANISM META (v24 IMMORTAL)
+// ---------------------------------------------------------------------------
+
+export const PulseEarnMktConsulateMeta = Identity.OrganMeta;
+
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
-import { PulseEarnMktEmbassyLedger } from "./PulseEarnMktEmbassyLedger.js";
+
+import { PulseEarnMktEmbassyLedger } from "./PulseEarnMktEmbassyLedger-v24.js";
 
 // ============================================================================
-// HASH HELPERS — v16 IMMORTAL INTEL
+// HASH HELPERS — v24 IMMORTAL INTEL (dual‑hash)
 // ============================================================================
 
 function computeHash(str) {
@@ -50,9 +56,7 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash
@@ -69,8 +73,9 @@ function clamp01(v) {
 }
 
 // ============================================================================
-// CONSULATE STATE — v16 IMMORTAL INTEL
+// CONSULATE STATE — v24 IMMORTAL INTEL
 // ============================================================================
+
 const consulateState = {
   resultCache: new Map(),
   fingerprintIndex: new Map(),
@@ -109,12 +114,19 @@ const consulateState = {
 
   lastPresenceField: null,
   lastAdvantageField: null,
-  lastChunkPrewarmPlan: null
+  lastChunkPrewarmPlan: null,
+
+  // Artery / band context (v24 dualband-ish)
+  lastBand: "symbolic",
+  lastWorldBand: "world",
+  lastArterySignatureIntel: null,
+  lastArterySignatureClassic: null
 };
 
 // ============================================================================
 // STABLE STRINGIFY
 // ============================================================================
+
 function stableStringify(obj) {
   if (obj === null || typeof obj !== "object") return JSON.stringify(obj);
   if (Array.isArray(obj)) return `[${obj.map(stableStringify).join(",")}]`;
@@ -123,8 +135,9 @@ function stableStringify(obj) {
 }
 
 // ============================================================================
-// PRESENCE FIELD — v16 IMMORTAL INTEL
+// PRESENCE FIELD — v24 IMMORTAL INTEL
 // ============================================================================
+
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
   if (pressure >= 100) return "high";
@@ -161,7 +174,7 @@ function buildPresenceField(consulateState, globalHints = {}) {
 
   const intelPayload = {
     kind: "consulatePresence",
-    version: "v16-IMMORTAL-INTEL",
+    version: "v24-IMMORTAL-INTEL",
     presenceTier,
     meshPressureIndex,
     castleLoadLevel,
@@ -177,7 +190,7 @@ function buildPresenceField(consulateState, globalHints = {}) {
   const sig = buildDualHashSignature("CONSULATE_PRESENCE", intelPayload, classicString);
 
   return {
-    presenceVersion: "v16-IMMORTAL-INTEL",
+    presenceVersion: "v24-IMMORTAL-INTEL",
     presenceTier,
     meshPressureIndex,
     castleLoadLevel,
@@ -187,13 +200,22 @@ function buildPresenceField(consulateState, globalHints = {}) {
     unique,
     cycleIndex: consulateState.cycleIndex,
     presenceSignatureIntel: sig.intel,
-    presenceSignatureClassic: sig.classic
+    presenceSignatureClassic: sig.classic,
+
+    // v24 presence bands
+    bandPresence: ghP.bandPresence || "symbolic",
+    routerPresence: ghP.routerPresence || "consulate",
+    devicePresence: ghP.devicePresence || "earn-router",
+    regionId: region.regionId || "consulate-region",
+    regionTag: region.regionTag || "consulate-region",
+    castleId: castle.castleId || "consulate-castle"
   };
 }
 
 // ============================================================================
-// ADVANTAGE FIELD — v16 IMMORTAL INTEL
+// ADVANTAGE FIELD — v24 IMMORTAL INTEL (C‑24.0)
 // ============================================================================
+
 function buildAdvantageField(consulateState, presenceField, globalHints = {}) {
   const fpCount = consulateState.fingerprintIndex.size;
   const factorCount = consulateState.factorIndex.size;
@@ -222,7 +244,7 @@ function buildAdvantageField(consulateState, presenceField, globalHints = {}) {
 
   const intelPayload = {
     kind: "consulateAdvantage",
-    version: "C-16.0",
+    version: "C-24.0",
     fpCount,
     factorCount,
     cacheSize,
@@ -238,7 +260,7 @@ function buildAdvantageField(consulateState, presenceField, globalHints = {}) {
   const sig = buildDualHashSignature("CONSULATE_ADVANTAGE", intelPayload, classicString);
 
   return {
-    advantageVersion: "C-16.0",
+    advantageVersion: "C-24.0",
     fpCount,
     factorCount,
     cacheSize,
@@ -252,8 +274,9 @@ function buildAdvantageField(consulateState, presenceField, globalHints = {}) {
 }
 
 // ============================================================================
-// CHUNK / PREWARM PLAN — v16 IMMORTAL INTEL
+// CHUNK / PREWARM PLAN — v24 IMMORTAL INTEL
 // ============================================================================
+
 function buildChunkPrewarmPlan(consulateState, presenceField, advantageField) {
   const basePriority =
     presenceField.presenceTier === "critical"
@@ -275,7 +298,7 @@ function buildChunkPrewarmPlan(consulateState, presenceField, advantageField) {
 
   const intelPayload = {
     kind: "consulateChunkPlan",
-    version: "v16-IMMORTAL-INTEL",
+    version: "v24-IMMORTAL-INTEL",
     priority,
     presenceTier: presenceField.presenceTier,
     advantageTier: advantageField.advantageTier
@@ -287,7 +310,7 @@ function buildChunkPrewarmPlan(consulateState, presenceField, advantageField) {
   const sig = buildDualHashSignature("CONSULATE_CHUNK_PLAN", intelPayload, classicString);
 
   return {
-    planVersion: "v16-IMMORTAL-INTEL",
+    planVersion: "v24-IMMORTAL-INTEL",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -315,8 +338,9 @@ function buildChunkPrewarmPlan(consulateState, presenceField, advantageField) {
 }
 
 // ============================================================================
-// FINGERPRINTING — v16 dual hash
+// FINGERPRINTING — v24 dual hash
 // ============================================================================
+
 function fingerprintJob(job) {
   const core = {
     marketplaceId: job.marketplaceId || job._sourceMarketplaceId || null,
@@ -337,8 +361,9 @@ function fingerprintJob(job) {
 }
 
 // ============================================================================
-// FACTOR EXTRACTION — v16 dual hash
+// FACTOR EXTRACTION — v24 dual hash (GPU‑aware)
 // ============================================================================
+
 function extractFactors(job) {
   const f = [];
 
@@ -370,8 +395,9 @@ function indexFactors(fp, factors) {
 }
 
 // ============================================================================
-// MONEY SLOPE
+// MONEY SLOPE (GPU‑sensitive via job fields)
 // ============================================================================
+
 function computeMoneySlope(job) {
   const payout = Number(job.payout ?? 0);
   const sec = Number(job.estimatedSeconds ?? 0);
@@ -380,22 +406,24 @@ function computeMoneySlope(job) {
 }
 
 // ============================================================================
-// MARKETPLACE PROFILE
+// MARKETPLACE PROFILE (GPU‑weighted)
 // ============================================================================
+
 function getMarketplaceProfile(id) {
   switch (id) {
-    case "runpod": return { base: 1.1, gpu: 1.2, short: 1.1, bw: 1.0 };
-    case "spheron": return { base: 1.0, gpu: 0.9, short: 1.3, bw: 1.0 };
+    case "runpod": return { base: 1.1, gpu: 1.25, short: 1.1, bw: 1.0 };
+    case "spheron": return { base: 1.0, gpu: 0.95, short: 1.3, bw: 1.0 };
     case "salad": return { base: 1.05, gpu: 1.1, short: 1.0, bw: 1.0 };
-    case "akash": return { base: 0.95, gpu: 1.0, short: 1.0, bw: 1.0 };
-    case "vast": return { base: 1.15, gpu: 1.2, short: 1.1, bw: 1.0 };
+    case "akash": return { base: 0.95, gpu: 1.05, short: 1.0, bw: 1.0 };
+    case "vast": return { base: 1.15, gpu: 1.3, short: 1.1, bw: 1.0 };
     default: return { base: 1.0, gpu: 1.0, short: 1.0, bw: 1.0 };
   }
 }
 
 // ============================================================================
-// A‑B‑A Influence
+// A‑B‑A Influence (band + binary + wave)
 // ============================================================================
+
 function computeAbaModifiers(job) {
   const band = job._abaBand || null;
   const density = Number(job._abaBinaryDensity ?? 0);
@@ -409,8 +437,9 @@ function computeAbaModifiers(job) {
 }
 
 // ============================================================================
-// PRIORITY SCORE — v16 dual hash
+// PRIORITY SCORE — v24 dual hash (GPU‑aware)
 // ============================================================================
+
 function computePriorityScore(job) {
   const slope = computeMoneySlope(job);
   if (slope <= 0) return 0;
@@ -418,14 +447,23 @@ function computePriorityScore(job) {
   const profile = getMarketplaceProfile(job.marketplaceId);
   const { bandFactor, binaryFactor, waveFactor } = computeAbaModifiers(job);
 
+  // GPU‑weighted: heavier emphasis on minGpuScore for GPU‑rich jobs
+  const gpuScore = Number(job.minGpuScore ?? 0);
+  const gpuBoost = 1.0 + Math.min(gpuScore / 1000, profile.gpu - 1.0);
+
   const score =
     slope *
     profile.base *
     bandFactor *
     binaryFactor *
-    waveFactor;
+    waveFactor *
+    gpuBoost;
 
-  const sig = buildDualHashSignature("CONSULATE_PRIORITY", { jobId: job.id, score }, `${job.id}::${score}`);
+  const sig = buildDualHashSignature(
+    "CONSULATE_PRIORITY",
+    { jobId: job.id, score },
+    `${job.id}::${score}`
+  );
   consulateState.lastPrioritySignatureIntel = sig.intel;
   consulateState.lastPrioritySignatureClassic = sig.classic;
 
@@ -433,8 +471,9 @@ function computePriorityScore(job) {
 }
 
 // ============================================================================
-// MARKETPLACE STATS — v16 dual hash
+// MARKETPLACE STATS — v24 dual hash
 // ============================================================================
+
 function updateMarketplaceStats(jobs) {
   const grouped = new Map();
 
@@ -472,7 +511,11 @@ function updateMarketplaceStats(jobs) {
     snapshot[id] = entry;
   }
 
-  const sig = buildDualHashSignature("CONSULATE_MKT_STATS", { snapshot }, JSON.stringify(snapshot));
+  const sig = buildDualHashSignature(
+    "CONSULATE_MKT_STATS",
+    { snapshot },
+    JSON.stringify(snapshot)
+  );
   consulateState.lastMarketplaceStatsSignatureIntel = sig.intel;
   consulateState.lastMarketplaceStatsSignatureClassic = sig.classic;
 }
@@ -480,6 +523,7 @@ function updateMarketplaceStats(jobs) {
 // ============================================================================
 // FETCH JOBS FROM ALL MARKETPLACES
 // ============================================================================
+
 function fetchJobsFromAllMarketplaces(deviceId, globalHints = {}) {
   const { marketplaces } = PulseEarnMktEmbassyLedger;
   const all = [];
@@ -510,6 +554,7 @@ function fetchJobsFromAllMarketplaces(deviceId, globalHints = {}) {
 // ============================================================================
 // INTELLIGENCE PASS
 // ============================================================================
+
 function processJobsIntelligently(jobs) {
   const unique = [];
   const { stats, resultCache, fingerprintIndex } = consulateState;
@@ -571,6 +616,7 @@ function processJobsIntelligently(jobs) {
 // ============================================================================
 // PRIORITY SORTING
 // ============================================================================
+
 function sortJobsByPriority(jobs) {
   const scored = jobs.map(j => ({ job: j, score: computePriorityScore(j) }));
   scored.sort((a, b) => b.score - a.score);
@@ -578,8 +624,67 @@ function sortJobsByPriority(jobs) {
 }
 
 // ============================================================================
+// ARTERY SNAPSHOT (v24) — world‑band consulate artery
+// ============================================================================
+
+export function getConsulateArterySnapshotV5(globalHints = {}) {
+  const presenceField = consulateState.lastPresenceField ||
+    buildPresenceField(consulateState, globalHints);
+  const advantageField = consulateState.lastAdvantageField ||
+    buildAdvantageField(consulateState, presenceField, globalHints);
+  const chunkPlan = consulateState.lastChunkPrewarmPlan ||
+    buildChunkPrewarmPlan(consulateState, presenceField, advantageField);
+
+  const band = normalizeBand("symbolic");
+  const worldBand = "world";
+
+  const intelPayload = {
+    kind: "consulateArtery",
+    cycleIndex: consulateState.cycleIndex,
+    band,
+    worldBand,
+    presenceTier: presenceField.presenceTier,
+    advantageTier: advantageField.advantageTier,
+    stats: { ...consulateState.stats }
+  };
+
+  const classicString =
+    `CONSULATE_ARTERY::${consulateState.cycleIndex}::${presenceField.presenceTier}`;
+
+  const sig = buildDualHashSignature("CONSULATE_ARTERY", intelPayload, classicString);
+
+  consulateState.lastBand = band;
+  consulateState.lastWorldBand = worldBand;
+  consulateState.lastArterySignatureIntel = sig.intel;
+  consulateState.lastArterySignatureClassic = sig.classic;
+
+  return Object.freeze({
+    organism: {
+      pressure: presenceField.meshPressureIndex + presenceField.castleLoadLevel,
+      presenceTier: presenceField.presenceTier
+    },
+    stats: { ...consulateState.stats },
+    bands: {
+      band,
+      worldBand
+    },
+    presence: presenceField,
+    advantage: advantageField,
+    chunkPlan,
+    meta: {
+      version: PulseEarnMktConsulateMeta.version,
+      epoch: PulseEarnMktConsulateMeta.evo.epoch,
+      identity: PulseEarnMktConsulateMeta.identity,
+      arterySignatureIntel: sig.intel,
+      arterySignatureClassic: sig.classic
+    }
+  });
+}
+
+// ============================================================================
 // PUBLIC: getRoutedJobs
 // ============================================================================
+
 function getRoutedJobs(deviceId, globalHints = {}) {
   consulateState.cycleIndex++;
 
@@ -617,6 +722,7 @@ function getRoutedJobs(deviceId, globalHints = {}) {
 // ============================================================================
 // PUBLIC: recordJobResult
 // ============================================================================
+
 function recordJobResult(job, result) {
   if (!job) return;
 
@@ -641,6 +747,7 @@ function recordJobResult(job, result) {
 // ============================================================================
 // PUBLIC: getHealingState
 // ============================================================================
+
 function getPulseEarnMktConsulateHealingState() {
   const marketplaceStats = {};
   for (const [id, v] of consulateState.marketplaceStats.entries()) {
@@ -670,15 +777,23 @@ function getPulseEarnMktConsulateHealingState() {
 
     lastPresenceField: consulateState.lastPresenceField,
     lastAdvantageField: consulateState.lastAdvantageField,
-    lastChunkPrewarmPlan: consulateState.lastChunkPrewarmPlan
+    lastChunkPrewarmPlan: consulateState.lastChunkPrewarmPlan,
+
+    lastBand: consulateState.lastBand,
+    lastWorldBand: consulateState.lastWorldBand,
+    lastArterySignatureIntel: consulateState.lastArterySignatureIntel,
+    lastArterySignatureClassic: consulateState.lastArterySignatureClassic
   };
 }
 
 // ============================================================================
-// EXPORTED API
+// EXPORTED API (v24 IMMORTAL INTEL)
 // ============================================================================
+
 export const PulseEarnMktConsulate = {
+  meta: PulseEarnMktConsulateMeta,
   getRoutedJobs,
   recordJobResult,
-  getHealingState: getPulseEarnMktConsulateHealingState
+  getHealingState: getPulseEarnMktConsulateHealingState,
+  getConsulateArterySnapshotV5
 };

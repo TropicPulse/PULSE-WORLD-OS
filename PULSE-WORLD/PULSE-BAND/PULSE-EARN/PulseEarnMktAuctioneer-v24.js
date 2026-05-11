@@ -1,16 +1,16 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAuctioneer-v16.js
-// LAYER: MARKETPLACE AUCTIONEER (v16‑IMMORTAL‑INTEL‑DUALHASH A‑B‑A)
-// Vast.ai Deterministic Adapter + Presence/Advantage/Hints/Factoring Surfaces
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAuctioneer-v24-IMMORTAL-PLUSPLUS.js
+// LAYER: MARKETPLACE AUCTIONEER (v24‑IMMORTAL++‑INTEL‑DUALHASH A‑B‑A)
+// Vast.ai Deterministic Adapter + Presence/Advantage/Hints/Factoring Surfaces + GPU‑AWARE BAND
 // ============================================================================
 //
-// ROLE (v16‑IMMORTAL‑INTEL A‑B‑A):
-//   • Deterministic Vast.ai → Pulse‑Earn adapter.
+// ROLE (v24‑IMMORTAL++‑INTEL A‑B‑A):
+//   • Deterministic Vast.ai → Pulse‑Earn adapter (GPU‑aware).
 //   • Pure receptor phenotype: ping(), fetchJobs(), normalizeJob(), submitResult().
 //   • Emits A‑B‑A bandSignature + binaryField + waveField + presence/advantage/hints.
-//   • Emits deterministic volatility + healing metadata.
+//   • Emits deterministic volatility + healing metadata + GPU profiles.
 //   • Emits dual INTEL + classic signatures for all receptor events.
-//   • Zero async, zero randomness, zero timestamps.
+//   • Zero async, zero randomness, zero timestamps, zero IO.
 //
 // CONTRACT:
 //   • PURE RECEPTOR — deterministic, drift‑proof.
@@ -18,25 +18,32 @@
 //   • NEVER mutate external objects.
 //   • Presence/advantage/hints are metadata-only.
 //   • Dual‑hash INTEL signatures (INTEL + classic fallback).
+//   • GPU‑aware band selection (binary vs symbolic) and resource factoring.
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL++ (ORGANISM KERNEL)
+// ============================================================================
+
+export const PulseEarnMktAuctioneerMeta = Identity.OrganMeta;
+
+// SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL++
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-// HASH HELPERS — v16‑IMMORTAL‑INTEL (dual‑hash)
+// HASH HELPERS — v24‑IMMORTAL++‑INTEL (dual‑hash)
 // ============================================================================
 
 function computeHash(str) {
@@ -66,9 +73,7 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash
@@ -95,7 +100,7 @@ function clamp01(v) {
 }
 
 // ============================================================================
-// HEALING METADATA — v16‑IMMORTAL‑INTEL
+// HEALING METADATA — v24‑IMMORTAL++‑INTEL
 // ============================================================================
 
 const healingState = {
@@ -111,7 +116,7 @@ const healingState = {
   lastNormalizedJobId: null,
   lastNormalizationError: null,
 
-  lastPayloadVersion: "16-IMMORTAL-INTEL",
+  lastPayloadVersion: "24-IMMORTAL-PLUSPLUS",
   lastJobType: null,
   lastGpuScore: null,
   lastResourceShape: null,
@@ -146,17 +151,18 @@ const healingState = {
   lastBinaryField: null,
   lastWaveField: null,
 
-  // Presence / advantage / hints
+  // Presence / advantage / hints / GPU
   lastPresenceField: null,
   lastAdvantageField: null,
   lastHintsField: null,
   lastAuctioneerPresenceProfile: null,
   lastBinaryProfile: null,
-  lastWaveProfile: null
+  lastWaveProfile: null,
+  lastGpuProfile: null
 };
 
 // ============================================================================
-// SIGNATURE BUILDERS — v16‑IMMORTAL‑INTEL
+// SIGNATURE BUILDERS — v24‑IMMORTAL++‑INTEL
 // ============================================================================
 
 function buildPingSignature(latency, cycleIndex, presenceTier) {
@@ -224,11 +230,12 @@ function buildBandSignature(band, cycleIndex) {
 }
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (Presence‑aware, INTEL)
+// GPU‑AWARE A‑B‑A Binary + Wave Surfaces (Presence‑aware, INTEL)
 // ============================================================================
 
-function buildBinaryField(presenceField) {
-  const patternLen = 8;
+function buildBinaryField(presenceField, hasGpu) {
+  const basePattern = hasGpu ? 16 : 8;
+  const patternLen = basePattern;
   const mesh = Number(presenceField?.meshPressureIndex || 0);
   const castle = Number(presenceField?.castleLoadLevel || 0);
 
@@ -237,7 +244,8 @@ function buildBinaryField(presenceField) {
     (healingState.lastFetchCount || 0) +
     (healingState.lastPingMs || 0) +
     mesh +
-    castle;
+    castle +
+    (hasGpu ? 32 : 0);
 
   const surface = density + patternLen;
 
@@ -247,10 +255,11 @@ function buildBinaryField(presenceField) {
     density,
     meshPressureIndex: mesh,
     castleLoadLevel: castle,
-    surface
+    surface,
+    hasGpu
   };
 
-  const classicString = `BAUCTIONEER::${surface}`;
+  const classicString = `BAUCTIONEER::${surface}::GPU::${hasGpu ? 1 : 0}`;
   const sig = buildDualHashSignature("BAUCTIONEER", intelPayload, classicString);
 
   const field = {
@@ -263,7 +272,8 @@ function buildBinaryField(presenceField) {
       density,
       meshPressureIndex: mesh,
       castleLoadLevel: castle,
-      surface
+      surface,
+      hasGpu
     },
     parity: surface % 2 === 0 ? 0 : 1,
     shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
@@ -273,11 +283,11 @@ function buildBinaryField(presenceField) {
   return field;
 }
 
-function buildWaveField(band, presenceField) {
-  const amplitudeBase = (healingState.lastFetchCount || 1) * 10;
+function buildWaveField(band, presenceField, hasGpu) {
+  const amplitudeBase = (healingState.lastFetchCount || 1) * (hasGpu ? 14 : 10);
   const mesh = Number(presenceField?.meshStrength || 0);
-  const amplitude = amplitudeBase + mesh;
-  const wavelength = (healingState.lastPingMs || 10) + 1;
+  const amplitude = amplitudeBase + mesh + (hasGpu ? 8 : 0);
+  const wavelength = (healingState.lastPingMs || 10) + 1 + (hasGpu ? 4 : 0);
   const phase = (amplitude + (presenceField?.meshPressureIndex || 0)) % 16;
 
   const intelPayload = {
@@ -286,10 +296,11 @@ function buildWaveField(band, presenceField) {
     amplitude,
     wavelength,
     phase,
-    meshStrength: presenceField?.meshStrength || 0
+    meshStrength: presenceField?.meshStrength || 0,
+    hasGpu
   };
 
-  const classicString = `BAUCTIONEER_WAVE::${band}::AMP::${amplitude}`;
+  const classicString = `BAUCTIONEER_WAVE::${band}::AMP::${amplitude}::GPU::${hasGpu ? 1 : 0}`;
   const sig = buildDualHashSignature("BAUCTIONEER_WAVE", intelPayload, classicString);
 
   const field = {
@@ -299,7 +310,8 @@ function buildWaveField(band, presenceField) {
     wavelength,
     phase,
     band,
-    mode: band === "binary" ? "compression-wave" : "symbolic-wave"
+    mode: band === "binary" ? "compression-wave" : "symbolic-wave",
+    hasGpu
   };
 
   healingState.lastWaveField = field;
@@ -307,12 +319,13 @@ function buildWaveField(band, presenceField) {
 }
 
 // ============================================================================
-// DETERMINISTIC VAST.AI DNA — v16‑IMMORTAL‑INTEL baseline
+// DETERMINISTIC VAST.AI DNA — v24‑IMMORTAL++‑INTEL baseline (GPU‑aware)
 // ============================================================================
 
 const VAST_RECEPTOR_DNA = {
   pingLatency: 42,
 
+  // default band; per‑job band is GPU‑aware
   band: "symbolic",
 
   offers: [
@@ -334,13 +347,13 @@ const VAST_RECEPTOR_DNA = {
     }
   ],
 
-  version: "16-IMMORTAL-INTEL",
-  lineage: "Auctioneer-Vast-v16-IMMORTAL-INTEL",
+  version: "24-IMMORTAL-PLUSPLUS",
+  lineage: "Auctioneer-Vast-v24-IMMORTAL-PLUSPLUS",
   phenotype: "MarketplaceAuctioneer"
 };
 
 // ============================================================================
-// Presence / Advantage / Hints Surfaces (auctioneer-level, v16)
+// Presence / Advantage / Hints Surfaces (auctioneer-level, v24)
 // ============================================================================
 
 function buildPresenceField(globalHints = {}) {
@@ -354,7 +367,7 @@ function buildPresenceField(globalHints = {}) {
   const castleLoadLevel = castle.loadLevel || 0;
 
   return {
-    presenceVersion: "v16-IMMORTAL-INTEL",
+    presenceVersion: "v24-IMMORTAL-PLUSPLUS",
 
     bandPresence: ghP.bandPresence || "unknown",
     routerPresence: ghP.routerPresence || "unknown",
@@ -391,7 +404,7 @@ function buildAdvantageField(globalHints = {}) {
   const advantageTier = gh.tier ?? 0;
 
   return {
-    advantageVersion: "C-16.0",
+    advantageVersion: "C-24.0",
     advantageScore,
     advantageBand,
     advantageTier
@@ -406,6 +419,49 @@ function buildHintsField(globalHints = {}) {
     prewarmHints: { ...(globalHints.prewarmHints || {}) },
     coldStartHints: { ...(globalHints.coldStartHints || {}) }
   };
+}
+
+// GPU profile: aggregate GPU capability across current jobs/offers
+function buildGpuProfile(jobsOrOffers = []) {
+  let totalGpuRam = 0;
+  let maxGpuRam = 0;
+  let countGpu = 0;
+
+  for (const j of jobsOrOffers) {
+    const gpuRam =
+      Number(j.gpu_ram) ||
+      Number(j.minGpuScore) / 10 ||
+      Number(j.meta?.gpu_ram) ||
+      0;
+    if (gpuRam > 0) {
+      totalGpuRam += gpuRam;
+      maxGpuRam = Math.max(maxGpuRam, gpuRam);
+      countGpu++;
+    }
+  }
+
+  const avgGpuRam = countGpu > 0 ? totalGpuRam / countGpu : 0;
+
+  const gpuPressure = clamp01(maxGpuRam / 48); // symbolic scaling
+  const gpuTier =
+    maxGpuRam >= 24 ? "elite" :
+    maxGpuRam >= 16 ? "high" :
+    maxGpuRam >= 8 ? "medium" :
+    maxGpuRam > 0 ? "low" :
+    "none";
+
+  const profile = {
+    gpuTier,
+    gpuPressure,
+    maxGpuRam,
+    avgGpuRam,
+    gpuCount: countGpu
+  };
+
+  healingState.lastGpuProfile = profile;
+  healingState.lastGpuScore = maxGpuRam;
+
+  return profile;
 }
 
 // ============================================================================
@@ -435,17 +491,17 @@ function updateVolatility(jobs) {
 }
 
 // ============================================================================
-// AUCTIONEER — Vast.ai Marketplace Adapter (v16‑IMMORTAL‑INTEL A‑B‑A)
+// AUCTIONEER — Vast.ai Marketplace Adapter (v24‑IMMORTAL++‑INTEL A‑B‑A, GPU‑aware)
 // ============================================================================
 
 export const PulseEarnMktAuctioneer = {
   id: "vast",
   name: "Vast.ai",
-  version: "v16-IMMORTAL-INTEL",
-  lineage: "Auctioneer-Vast-v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-PLUSPLUS",
+  lineage: "Auctioneer-Vast-v24-IMMORTAL-PLUSPLUS",
 
   // -------------------------------------------------------------------------
-  // PING — deterministic latency + A‑B‑A + presence surfaces
+  // PING — deterministic latency + A‑B‑A + presence surfaces + GPU profile
   // -------------------------------------------------------------------------
   ping(globalHints = {}) {
     auctioneerCycle++;
@@ -453,12 +509,18 @@ export const PulseEarnMktAuctioneer = {
     healingState.lastCycleIndex = auctioneerCycle;
 
     const latency = VAST_RECEPTOR_DNA.pingLatency;
-    const band = normalizeBand(VAST_RECEPTOR_DNA.band);
 
     const presenceField = buildPresenceField(globalHints);
     const presenceTier = classifyAuctioneerPresenceTier(presenceField);
     const advantageField = buildAdvantageField(globalHints);
     const hintsField = buildHintsField(globalHints);
+
+    // GPU profile from static offers
+    const gpuProfile = buildGpuProfile(VAST_RECEPTOR_DNA.offers || []);
+
+    // band: allow hints override, else GPU‑aware default
+    const defaultBand = gpuProfile.gpuTier !== "none" ? "binary" : VAST_RECEPTOR_DNA.band;
+    const band = normalizeBand(globalHints.band || defaultBand);
 
     healingState.lastBand = band;
     healingState.lastPingMs = latency;
@@ -475,8 +537,9 @@ export const PulseEarnMktAuctioneer = {
     healingState.lastAuctioneerCycleSignatureIntel = cycleSig.intel;
     healingState.lastAuctioneerCycleSignatureClassic = cycleSig.classic;
 
-    const binaryField = buildBinaryField(presenceField);
-    const waveField = buildWaveField(band, presenceField);
+    const hasGpu = gpuProfile.gpuTier !== "none";
+    const binaryField = buildBinaryField(presenceField, hasGpu);
+    const waveField = buildWaveField(band, presenceField, hasGpu);
 
     const auctioneerPresenceProfile = {
       presenceTier,
@@ -484,11 +547,13 @@ export const PulseEarnMktAuctioneer = {
       meshPressureIndex: presenceField.meshPressureIndex,
       castleLoadLevel: presenceField.castleLoadLevel,
       advantageTier: advantageField.advantageTier,
-      fallbackBandLevel: hintsField.fallbackBandLevel
+      fallbackBandLevel: hintsField.fallbackBandLevel,
+      gpuTier: gpuProfile.gpuTier,
+      gpuPressure: gpuProfile.gpuPressure
     };
 
-    const binaryProfile = { binaryField, presenceTier };
-    const waveProfile = { waveField, presenceTier };
+    const binaryProfile = { binaryField, presenceTier, gpuTier: gpuProfile.gpuTier };
+    const waveProfile = { waveField, presenceTier, gpuTier: gpuProfile.gpuTier };
 
     healingState.lastBinaryField = binaryField;
     healingState.lastWaveField = waveField;
@@ -516,29 +581,33 @@ export const PulseEarnMktAuctioneer = {
       hintsField,
       auctioneerPresenceProfile,
       binaryProfile,
-      waveProfile
+      waveProfile,
+      gpuProfile
     };
   },
 
   // -------------------------------------------------------------------------
-  // FETCH JOBS — deterministic offers + A‑B‑A + presence surfaces
+  // FETCH JOBS — deterministic offers + A‑B‑A + presence surfaces + GPU profile
   // -------------------------------------------------------------------------
   fetchJobs(globalHints = {}) {
     auctioneerCycle++;
     healingState.cycleCount++;
     healingState.lastCycleIndex = auctioneerCycle;
 
-    const band = normalizeBand(VAST_RECEPTOR_DNA.band);
     const presenceField = buildPresenceField(globalHints);
     const presenceTier = classifyAuctioneerPresenceTier(presenceField);
     const advantageField = buildAdvantageField(globalHints);
     const hintsField = buildHintsField(globalHints);
 
+    const offers = VAST_RECEPTOR_DNA.offers || [];
+    const gpuProfile = buildGpuProfile(offers);
+
+    const defaultBand = gpuProfile.gpuTier !== "none" ? "binary" : VAST_RECEPTOR_DNA.band;
+    const band = normalizeBand(globalHints.band || defaultBand);
+
     healingState.lastBand = band;
 
     try {
-      const offers = VAST_RECEPTOR_DNA.offers || [];
-
       const jobs = offers
         .map(raw => this.normalizeJob(raw, globalHints))
         .filter(j => j !== null);
@@ -558,8 +627,9 @@ export const PulseEarnMktAuctioneer = {
       healingState.lastAuctioneerCycleSignatureIntel = cycleSig.intel;
       healingState.lastAuctioneerCycleSignatureClassic = cycleSig.classic;
 
-      const binaryField = buildBinaryField(presenceField);
-      const waveField = buildWaveField(band, presenceField);
+      const hasGpu = gpuProfile.gpuTier !== "none";
+      const binaryField = buildBinaryField(presenceField, hasGpu);
+      const waveField = buildWaveField(band, presenceField, hasGpu);
 
       const auctioneerPresenceProfile = {
         presenceTier,
@@ -567,11 +637,13 @@ export const PulseEarnMktAuctioneer = {
         meshPressureIndex: presenceField.meshPressureIndex,
         castleLoadLevel: presenceField.castleLoadLevel,
         advantageTier: advantageField.advantageTier,
-        fallbackBandLevel: hintsField.fallbackBandLevel
+        fallbackBandLevel: hintsField.fallbackBandLevel,
+        gpuTier: gpuProfile.gpuTier,
+        gpuPressure: gpuProfile.gpuPressure
       };
 
-      const binaryProfile = { binaryField, presenceTier };
-      const waveProfile = { waveField, presenceTier };
+      const binaryProfile = { binaryField, presenceTier, gpuTier: gpuProfile.gpuTier };
+      const waveProfile = { waveField, presenceTier, gpuTier: gpuProfile.gpuTier };
 
       healingState.lastBinaryField = binaryField;
       healingState.lastWaveField = waveField;
@@ -601,7 +673,8 @@ export const PulseEarnMktAuctioneer = {
         hintsField,
         auctioneerPresenceProfile,
         binaryProfile,
-        waveProfile
+        waveProfile,
+        gpuProfile
       };
 
     } catch (err) {
@@ -628,24 +701,28 @@ export const PulseEarnMktAuctioneer = {
         hintsField,
         auctioneerPresenceProfile: null,
         binaryProfile: null,
-        waveProfile: null
+        waveProfile: null,
+        gpuProfile: healingState.lastGpuProfile
       };
     }
   },
 
   // -------------------------------------------------------------------------
-  // SUBMIT RESULT — Vast.ai does NOT accept compute results (presence‑aware)
+  // SUBMIT RESULT — Vast.ai does NOT accept compute results (presence‑aware, GPU‑aware)
 // -------------------------------------------------------------------------
   submitResult(job, result, globalHints = {}) {
     auctioneerCycle++;
     healingState.cycleCount++;
     healingState.lastCycleIndex = auctioneerCycle;
 
-    const band = normalizeBand(VAST_RECEPTOR_DNA.band);
     const presenceField = buildPresenceField(globalHints);
     const presenceTier = classifyAuctioneerPresenceTier(presenceField);
     const advantageField = buildAdvantageField(globalHints);
     const hintsField = buildHintsField(globalHints);
+
+    const gpuProfile = buildGpuProfile(VAST_RECEPTOR_DNA.offers || []);
+    const defaultBand = gpuProfile.gpuTier !== "none" ? "binary" : VAST_RECEPTOR_DNA.band;
+    const band = normalizeBand(globalHints.band || job?.band || defaultBand);
 
     const jobId = job?.id ?? null;
 
@@ -662,8 +739,9 @@ export const PulseEarnMktAuctioneer = {
     healingState.lastAuctioneerCycleSignatureIntel = cycleSig.intel;
     healingState.lastAuctioneerCycleSignatureClassic = cycleSig.classic;
 
-    const binaryField = buildBinaryField(presenceField);
-    const waveField = buildWaveField(band, presenceField);
+    const hasGpu = gpuProfile.gpuTier !== "none";
+    const binaryField = buildBinaryField(presenceField, hasGpu);
+    const waveField = buildWaveField(band, presenceField, hasGpu);
 
     const auctioneerPresenceProfile = {
       presenceTier,
@@ -671,11 +749,13 @@ export const PulseEarnMktAuctioneer = {
       meshPressureIndex: presenceField.meshPressureIndex,
       castleLoadLevel: presenceField.castleLoadLevel,
       advantageTier: advantageField.advantageTier,
-      fallbackBandLevel: hintsField.fallbackBandLevel
+      fallbackBandLevel: hintsField.fallbackBandLevel,
+      gpuTier: gpuProfile.gpuTier,
+      gpuPressure: gpuProfile.gpuPressure
     };
 
-    const binaryProfile = { binaryField, presenceTier };
-    const waveProfile = { waveField, presenceTier };
+    const binaryProfile = { binaryField, presenceTier, gpuTier: gpuProfile.gpuTier };
+    const waveProfile = { waveField, presenceTier, gpuTier: gpuProfile.gpuTier };
 
     healingState.lastBinaryField = binaryField;
     healingState.lastWaveField = waveField;
@@ -707,12 +787,13 @@ export const PulseEarnMktAuctioneer = {
       auctioneerPresenceProfile,
       binaryProfile,
       waveProfile,
-      note: "Vast.ai does not accept compute results (v16-IMMORTAL-INTEL deterministic)."
+      gpuProfile,
+      note: "Vast.ai does not accept compute results (v24-IMMORTAL++ deterministic, GPU-aware)."
     };
   },
 
   // -------------------------------------------------------------------------
-  // NORMALIZE JOB — Vast → Pulse‑Earn schema (v16‑IMMORTAL‑INTEL)
+  // NORMALIZE JOB — Vast → Pulse‑Earn schema (v24‑IMMORTAL++‑INTEL, GPU‑aware)
 // -------------------------------------------------------------------------
   normalizeJob(raw, globalHints = {}) {
     auctioneerCycle++;
@@ -778,17 +859,30 @@ export const PulseEarnMktAuctioneer = {
         Number(raw.duration) ||
         3600;
 
+      const gpuRam =
+        Number(raw.gpu_ram) ||
+        Number(raw.gpu_ram_gb) ||
+        0;
+
       const gpuScore =
-        Number(raw.gpu_ram) * 10 ||
+        gpuRam * 10 ||
         Number(raw.gpu_score) ||
         Number(raw.min_gpu_score) ||
-        80;
+        0;
 
       const bandwidth =
         Number(raw.net_up) ||
         Number(raw.bandwidth) ||
         Number(raw.net_mbps) ||
         5;
+
+      const hasGpu = gpuRam > 0 || gpuScore > 0;
+      const band =
+        normalizeBand(
+          raw.band ||
+          safeGet(raw, "meta.band") ||
+          (hasGpu ? "binary" : "symbolic")
+        );
 
       const normalized = {
         id: String(id),
@@ -800,6 +894,7 @@ export const PulseEarnMktAuctioneer = {
         estimatedSeconds,
 
         minGpuScore: gpuScore,
+        gpuRam,
         bandwidthNeededMbps: bandwidth,
 
         presenceField,
@@ -807,11 +902,13 @@ export const PulseEarnMktAuctioneer = {
         hintsField,
         presenceTier,
 
+        band,
+
         meta: {
           rawSource: "vast",
           rawJob: raw,
-          version: "v16-IMMORTAL-INTEL",
-          band: raw.band || safeGet(raw, "meta.band") || "symbolic"
+          version: "v24-IMMORTAL-PLUSPLUS",
+          band
         }
       };
 
@@ -825,7 +922,8 @@ export const PulseEarnMktAuctioneer = {
       healingState.lastResourceShape = {
         cpu: cpuRequired,
         mem: memoryRequired,
-        duration: estimatedSeconds
+        duration: estimatedSeconds,
+        gpuRam
       };
 
       return normalized;
@@ -841,7 +939,7 @@ export const PulseEarnMktAuctioneer = {
 };
 
 // ============================================================================
-// HEALING STATE EXPORT — v16‑IMMORTAL‑INTEL A‑B‑A
+// HEALING STATE EXPORT — v24‑IMMORTAL++‑INTEL A‑B‑A
 // ============================================================================
 
 export function getPulseEarnMktAuctioneerHealingState() {

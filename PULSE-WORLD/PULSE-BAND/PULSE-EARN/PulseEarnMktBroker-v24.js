@@ -1,13 +1,14 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktBroker-v16-IMMORTAL-INTEL.js
-// LAYER: THE RUNPOD BROKER (v16‑IMMORTAL‑INTEL‑DUALHASH)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktBroker-v24-IMMORTAL-INTEL-PLUS.js
+// LAYER: THE RUNPOD BROKER (v24‑IMMORTAL‑INTEL‑DUALHASH)
 // ============================================================================
 //
-// ROLE (v16‑IMMORTAL‑INTEL):
+// ROLE (v24‑IMMORTAL‑INTEL):
 //   • Deterministic RunPod → Pulse‑Earn broker.
 //   • Pure receptor phenotype: registerDevice(), requestJob(), submitJob(), normalizeJob().
 //   • Emits A‑B‑A bandSignature + binaryField + waveField + presence/advantage/chunk surfaces.
 //   • Emits dual INTEL + classic signatures for all broker events.
+//   • GPU‑forward advantage + chunk planning surfaces.
 //   • Zero async, zero randomness, zero timestamps.
 //
 // CONTRACT:
@@ -24,17 +25,15 @@ import {
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 export const RUNPOD_RECEPTOR_DNA = {
-  version: "v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-INTEL-PLUS",
   receptorType: "runpod",
   jobs: [
     { id: "ping", payload: { type: "ping" } },
@@ -44,7 +43,7 @@ export const RUNPOD_RECEPTOR_DNA = {
 };
 
 // ============================================================================
-// HASH HELPERS — v16‑IMMORTAL‑INTEL (dual‑hash)
+// HASH HELPERS — v24‑IMMORTAL‑INTEL (dual‑hash)
 // ============================================================================
 
 function computeHash(str) {
@@ -170,7 +169,7 @@ function buildWaveField(cycle, band) {
 }
 
 // ============================================================================
-// Presence Field (v16‑IMMORTAL‑INTEL)
+// Presence Field (v24‑IMMORTAL‑INTEL)
 // ============================================================================
 
 function buildPresenceField(jobOrRaw, device, cycle) {
@@ -190,7 +189,7 @@ function buildPresenceField(jobOrRaw, device, cycle) {
 
   const intelPayload = {
     kind: "runpodPresence",
-    presenceVersion: "v16-IMMORTAL-INTEL",
+    presenceVersion: "v24-IMMORTAL-INTEL-PLUS",
     presenceTier,
     idLen,
     typeLen,
@@ -204,7 +203,7 @@ function buildPresenceField(jobOrRaw, device, cycle) {
   const sig = buildDualHashSignature("RUNPOD_PRESENCE", intelPayload, classicString);
 
   return {
-    presenceVersion: "v16-IMMORTAL-INTEL",
+    presenceVersion: "v24-IMMORTAL-INTEL-PLUS",
     presenceTier,
     idLen,
     typeLen,
@@ -216,7 +215,7 @@ function buildPresenceField(jobOrRaw, device, cycle) {
 }
 
 // ============================================================================
-// Advantage‑C Field (v16.0)
+// Advantage‑C Field (v24.0) — GPU‑forward
 // ============================================================================
 
 function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
@@ -226,15 +225,15 @@ function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
   const amplitude = bandPack.waveField.amplitude;
 
   const advantageScore =
-    gpuScore * 0.0005 +
-    bandwidth * 0.0002 +
+    gpuScore * 0.0007 +
+    bandwidth * 0.00025 +
     density * 0.00001 +
     amplitude * 0.00001 +
-    (presenceField.presenceTier === "presence_high" ? 0.01 : 0);
+    (presenceField.presenceTier === "presence_high" ? 0.012 : 0);
 
   const intelPayload = {
     kind: "runpodAdvantage",
-    advantageVersion: "C-16.0",
+    advantageVersion: "C-24.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
@@ -250,7 +249,7 @@ function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
   const sig = buildDualHashSignature("RUNPOD_ADVANTAGE", intelPayload, classicString);
 
   return {
-    advantageVersion: "C-16.0",
+    advantageVersion: "C-24.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
@@ -264,7 +263,7 @@ function buildAdvantageField(jobOrRaw, device, bandPack, presenceField) {
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan (v16‑IMMORTAL‑INTEL)
+// Chunk / Cache / Prewarm Plan (v24‑IMMORTAL‑INTEL)
 // ============================================================================
 
 function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
@@ -275,12 +274,12 @@ function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
       ? 2
       : 1;
 
-  const gpuBoost = (device?.gpuScore || 0) > 600 ? 1 : 0;
+  const gpuBoost = (device?.gpuScore || 0) > 600 ? 2 : (device?.gpuScore || 0) > 300 ? 1 : 0;
   const priority = basePriority + gpuBoost;
 
   const intelPayload = {
     kind: "runpodChunkPrewarmPlan",
-    planVersion: "v16-IMMORTAL-INTEL",
+    planVersion: "v24-IMMORTAL-INTEL-PLUS",
     priority,
     presenceTier: presenceField.presenceTier,
     gpuScore: device?.gpuScore || 0
@@ -292,7 +291,7 @@ function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
   const sig = buildDualHashSignature("RUNPOD_CHUNK_PLAN", intelPayload, classicString);
 
   return {
-    planVersion: "v16-IMMORTAL-INTEL",
+    planVersion: "v24-IMMORTAL-INTEL-PLUS",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -314,7 +313,7 @@ function buildChunkPrewarmPlan(jobOrRaw, device, presenceField) {
 }
 
 // ============================================================================
-// Healing Metadata — v16‑IMMORTAL‑INTEL
+// Healing Metadata — v24‑IMMORTAL‑INTEL
 // ============================================================================
 
 const runpodHealing = {
@@ -358,7 +357,7 @@ const runpodHealing = {
 let runpodCycle = 0;
 
 // ============================================================================
-// Signature builders — v16‑IMMORTAL‑INTEL
+// Signature builders — v24‑IMMORTAL‑INTEL
 // ============================================================================
 
 function buildRegisterSignature(deviceId, cycleIndex) {
@@ -420,7 +419,7 @@ function normalizeJob(raw, deviceProfile = {}) {
   runpodHealing.cycleCount++;
   runpodHealing.lastCycleIndex = runpodCycle;
 
-  const band = normalizeBand("symbolic");
+  const band = normalizeBand(deviceProfile.gpuScore > 0 ? "binary" : "symbolic");
   runpodHealing.lastBand = band;
 
   const bandSig = buildBandSignature(band, runpodCycle);
@@ -452,11 +451,12 @@ function normalizeJob(raw, deviceProfile = {}) {
     memoryRequired: 4096,
     estimatedSeconds: 600,
 
-    minGpuScore: 200,
-    bandwidthNeededMbps: 10,
+    minGpuScore: deviceProfile.gpuScore || 200,
+    bandwidthNeededMbps: deviceProfile.bandwidthMbps || 10,
 
     payload,
-    priority
+    priority,
+    band
   };
 
   const normSig = buildNormalizationSignature(jobId, runpodCycle);
@@ -501,7 +501,7 @@ function registerDevice({ deviceId, gpuInfo = {}, meta = {} } = {}, deviceProfil
   runpodHealing.cycleCount++;
   runpodHealing.lastCycleIndex = runpodCycle;
 
-  const band = normalizeBand("symbolic");
+  const band = normalizeBand(deviceProfile.gpuScore > 0 ? "binary" : "symbolic");
   runpodHealing.lastBand = band;
 
   const bandSig = buildBandSignature(band, runpodCycle);
@@ -568,7 +568,7 @@ function requestJob({ deviceId, filters = {} } = {}, deviceProfile = {}) {
   runpodHealing.cycleCount++;
   runpodHealing.lastCycleIndex = runpodCycle;
 
-  const band = normalizeBand("symbolic");
+  const band = normalizeBand(deviceProfile.gpuScore > 0 ? "binary" : "symbolic");
   runpodHealing.lastBand = band;
 
   const bandSig = buildBandSignature(band, runpodCycle);
@@ -641,7 +641,7 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
   runpodHealing.cycleCount++;
   runpodHealing.lastCycleIndex = runpodCycle;
 
-  const band = normalizeBand("symbolic");
+  const band = normalizeBand(deviceProfile.gpuScore > 0 ? "binary" : "symbolic");
   runpodHealing.lastBand = band;
 
   const bandSig = buildBandSignature(band, runpodCycle);
@@ -696,7 +696,7 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
       presenceField,
       advantageField,
       chunkPlan,
-      note: "RunPod submission simulated deterministically (v16-IMMORTAL-INTEL)."
+      note: "RunPod submission simulated deterministically (v24-IMMORTAL-INTEL-PLUS, GPU-forward)."
     }
   };
 }
@@ -708,8 +708,8 @@ function submitJob({ jobId, result, error: jobError = null } = {}, deviceProfile
 export const PulseEarnMktBroker = {
   id: "runpod",
   name: "RunPod",
-  version: "v16-IMMORTAL-INTEL",
-  lineage: "RunPodAdapter-v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-INTEL-PLUS",
+  lineage: "RunPodAdapter-v24-IMMORTAL-INTEL-PLUS",
 
   registerDevice,
   requestJob,

@@ -40,7 +40,7 @@ import {
 import {
   PulseServerMeta,
   createPulseServer
-} from "./PulseExpansionServer-v24.js";
+} from "./PULSE-EXPANSION-SERVER.js";
 
 import {
   PulseRouterMeta,

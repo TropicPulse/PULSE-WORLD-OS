@@ -66,7 +66,7 @@ import {
   createPulseExpansion,
   pulseExpansion,
   PulseExpansionMeta
-} from "../PULSE-EXPANSION/PulseExpansion-v24.js";
+} from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET.js";
 
 // (optional) direct access if you want to surface them:
 const Expansion = pulseExpansion; // singleton

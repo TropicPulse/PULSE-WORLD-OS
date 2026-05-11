@@ -1,25 +1,25 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktCourier-v16-IMMORTAL-INTEL.js
-// LAYER: THE COURIER (v16 IMMORTAL + INTEL + DualHash + Presence + Advantage + Chunk)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktCourier-v24-IMMORTAL-INTEL++.js
+// LAYER: THE COURIER (v24 IMMORTAL++ + INTEL + DualHash + Presence + Advantage + Chunk)
+// Spheron GPU‑aware A‑B‑A courier
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-// HASH HELPERS — v16 IMMORTAL INTEL
+// HASH HELPERS — v24 IMMORTAL INTEL++
 // ============================================================================
 
 function computeHash(str) {
@@ -31,7 +31,6 @@ function computeHash(str) {
   return `h${h}`;
 }
 
-// Primary INTEL hash — deterministic, structure-aware, no IO, no time.
 function computeHashIntelligence(payload) {
   const base = JSON.stringify(payload || "");
   let h = 0;
@@ -49,9 +48,7 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash
@@ -63,13 +60,10 @@ function normalizeBand(b) {
   return x === "binary" ? "binary" : "symbolic";
 }
 
-function clamp01(v) {
-  return Math.max(0, Math.min(1, v));
-}
+// ============================================================================
+// COURIER STATE — v24 IMMORTAL INTEL++
+// ============================================================================
 
-// ============================================================================
-// COURIER STATE — v16 IMMORTAL INTEL
-// ============================================================================
 const healingState = {
   lastPingMs: null,
   lastPingError: null,
@@ -83,7 +77,6 @@ const healingState = {
   cycleCount: 0,
   lastCycleIndex: null,
 
-  // Dual signatures
   lastPingSignatureIntel: null,
   lastPingSignatureClassic: null,
 
@@ -116,6 +109,7 @@ let courierCycle = 0;
 // ============================================================================
 // SPHERON DNA (deterministic)
 // ============================================================================
+
 const SPHERON_RECEPTOR_DNA = {
   pingLatency: 42,
   jobs: [
@@ -138,14 +132,15 @@ const SPHERON_RECEPTOR_DNA = {
       type: "compute"
     }
   ],
-  version: "v16-IMMORTAL-INTEL",
-  lineage: "Courier-Spheron-v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-INTEL++",
+  lineage: "Courier-Spheron-v24-IMMORTAL-INTEL++",
   phenotype: "MarketplaceReceptor"
 };
 
 // ============================================================================
-// PRESENCE FIELD — v16 IMMORTAL INTEL
+// PRESENCE FIELD — v24 IMMORTAL INTEL++
 // ============================================================================
+
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
   if (pressure >= 100) return "high";
@@ -183,7 +178,7 @@ function buildPresenceField(jobOrRaw, deviceProfile = {}, cycle, globalHints = {
 
   const intelPayload = {
     kind: "courierPresence",
-    version: "v16-IMMORTAL-INTEL",
+    version: "v24-IMMORTAL-INTEL++",
     presenceTier,
     meshPressureIndex,
     castleLoadLevel,
@@ -199,7 +194,7 @@ function buildPresenceField(jobOrRaw, deviceProfile = {}, cycle, globalHints = {
   const sig = buildDualHashSignature("COURIER_PRESENCE", intelPayload, classicString);
 
   return {
-    presenceVersion: "v16-IMMORTAL-INTEL",
+    presenceVersion: "v24-IMMORTAL-INTEL++",
     presenceTier,
     meshPressureIndex,
     castleLoadLevel,
@@ -214,8 +209,9 @@ function buildPresenceField(jobOrRaw, deviceProfile = {}, cycle, globalHints = {
 }
 
 // ============================================================================
-// ADVANTAGE FIELD — v16 IMMORTAL INTEL
+// ADVANTAGE FIELD — v24 IMMORTAL INTEL++
 // ============================================================================
+
 function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, globalHints = {}) {
   const gpuScore = deviceProfile?.gpuScore || 0;
   const bandwidth = deviceProfile?.bandwidthMbps || 0;
@@ -224,8 +220,8 @@ function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, g
   const amplitude = bandPack.waveField.amplitude;
 
   const baseScore =
-    gpuScore * 0.0005 +
-    bandwidth * 0.0002 +
+    gpuScore * 0.0007 +
+    bandwidth * 0.00025 +
     density * 0.00001 +
     amplitude * 0.00001;
 
@@ -247,7 +243,7 @@ function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, g
 
   const intelPayload = {
     kind: "courierAdvantage",
-    version: "C-16.0",
+    version: "C-24.0",
     gpuScore,
     bandwidth,
     density,
@@ -264,7 +260,7 @@ function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, g
   const sig = buildDualHashSignature("COURIER_ADVANTAGE", intelPayload, classicString);
 
   return {
-    advantageVersion: "C-16.0",
+    advantageVersion: "C-24.0",
     gpuScore,
     bandwidth,
     binaryDensity: density,
@@ -279,8 +275,9 @@ function buildAdvantageField(jobOrRaw, deviceProfile, bandPack, presenceField, g
 }
 
 // ============================================================================
-// CHUNK / PREWARM PLAN — v16 IMMORTAL INTEL
+// CHUNK / PREWARM PLAN — v24 IMMORTAL INTEL++
 // ============================================================================
+
 function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantageField) {
   const basePriority =
     presenceField.presenceTier === "critical"
@@ -302,7 +299,7 @@ function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantage
 
   const intelPayload = {
     kind: "courierChunkPlan",
-    version: "v16-IMMORTAL-INTEL",
+    version: "v24-IMMORTAL-INTEL++",
     priority,
     presenceTier: presenceField.presenceTier,
     advantageTier: advantageField.advantageTier
@@ -314,7 +311,7 @@ function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantage
   const sig = buildDualHashSignature("COURIER_CHUNK_PLAN", intelPayload, classicString);
 
   return {
-    planVersion: "v16-IMMORTAL-INTEL",
+    planVersion: "v24-IMMORTAL-INTEL++",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -336,8 +333,9 @@ function buildChunkPrewarmPlan(jobOrRaw, deviceProfile, presenceField, advantage
 }
 
 // ============================================================================
-// A‑B‑A SURFACES — v16 IMMORTAL INTEL
+// A‑B‑A SURFACES — v24 IMMORTAL INTEL++
 // ============================================================================
+
 function buildBinaryField(cycle, hasGpu, presenceField) {
   const patternLen = hasGpu ? 16 : 10;
   const baseDensity = patternLen + cycle + (hasGpu ? 25 : 8);
@@ -353,7 +351,8 @@ function buildBinaryField(cycle, hasGpu, presenceField) {
     surface,
     meshPressureIndex: mesh,
     castleLoadLevel: castle,
-    cycleIndex: cycle
+    cycleIndex: cycle,
+    hasGpu
   };
 
   const classicString = `COURIER_BIN::${surface}`;
@@ -407,17 +406,15 @@ function buildWaveField(cycle, band, presenceField) {
 }
 
 // ============================================================================
-// COURIER ORGAN — v16 IMMORTAL INTEL
+// COURIER ORGAN — v24 IMMORTAL INTEL++
 // ============================================================================
+
 export const PulseEarnMktCourier = {
   id: "spheron",
   name: "Spheron Compute",
-  version: "v16-IMMORTAL-INTEL",
-  lineage: "Courier-Spheron-v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-INTEL++",
+  lineage: "Courier-Spheron-v24-IMMORTAL-INTEL++",
 
-  // -------------------------------------------------------------------------
-  // PING — v16 dual-hash + presence + advantage + chunk
-  // -------------------------------------------------------------------------
   ping(deviceProfile = {}, globalHints = {}) {
     courierCycle++;
     healingState.cycleCount++;
@@ -471,9 +468,6 @@ export const PulseEarnMktCourier = {
     };
   },
 
-   // -------------------------------------------------------------------------
-  // FETCH JOBS — v16 dual-hash + presence + advantage + chunk
-  // -------------------------------------------------------------------------
   fetchJobs(deviceProfile = {}, globalHints = {}) {
     courierCycle++;
     healingState.cycleCount++;
@@ -545,9 +539,6 @@ export const PulseEarnMktCourier = {
     };
   },
 
-  // -------------------------------------------------------------------------
-  // SUBMIT RESULT — v16 dual-hash + presence + advantage + chunk
-  // -------------------------------------------------------------------------
   submitResult(job, result, deviceProfile = {}, globalHints = {}) {
     courierCycle++;
     healingState.cycleCount++;
@@ -618,9 +609,6 @@ export const PulseEarnMktCourier = {
     };
   },
 
-  // -------------------------------------------------------------------------
-  // NORMALIZE JOB — v16 dual-hash + presence + advantage + chunk
-  // -------------------------------------------------------------------------
   normalizeJob(raw, deviceProfile = {}, globalHints = {}) {
     try {
       if (!raw || typeof raw !== "object" || !raw.id) {
@@ -725,6 +713,7 @@ export const PulseEarnMktCourier = {
 // ============================================================================
 // HEALING STATE EXPORT
 // ============================================================================
+
 export function getPulseEarnMktCourierHealingState() {
   return { ...healingState };
 }

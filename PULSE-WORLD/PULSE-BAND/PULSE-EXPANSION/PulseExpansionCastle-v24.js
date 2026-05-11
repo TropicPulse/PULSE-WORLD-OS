@@ -45,13 +45,13 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
-} from "./PulseExpansion-v24.js";
+} from "./PULSE-EXPANSION-INTERNET.js";
 
 // Server
 import {
   PulseServerMeta,
   createPulseServer
-} from "./PulseExpansionServer-v24.js";
+} from "./PULSE-EXPANSION-SERVER.js";
 
 // Router (meta only, for organism context)
 import {

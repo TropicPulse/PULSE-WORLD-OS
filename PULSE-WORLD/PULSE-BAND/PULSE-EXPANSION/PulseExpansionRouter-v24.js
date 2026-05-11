@@ -35,10 +35,10 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
-} from "./PulseExpansion-v24.js";
+} from "./PULSE-EXPANSION-INTERNET.js";
 
 import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
-import { PulseServerMeta, createPulseServer } from "./PulseExpansionServer-v24.js";
+import { PulseServerMeta, createPulseServer } from "./PULSE-EXPANSION-SERVER.js";
 
 // User lanes + world core
 import {

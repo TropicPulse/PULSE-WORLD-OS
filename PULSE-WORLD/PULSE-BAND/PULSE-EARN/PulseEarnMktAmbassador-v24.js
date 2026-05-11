@@ -1,39 +1,46 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAmbassador-v16-IMMORTAL-INTEL.js
-// LAYER: THE AMBASSADOR (v16‑IMMORTAL‑INTEL + A‑B‑A)
+// FILE: tropic-pulse-functions/PULSE-WORLD/PULSE-EARN/PulseEarnMktAmbassador-v24-IMMORTAL-PLUSPLUS.js
+// LAYER: THE AMBASSADOR (v24‑IMMORTAL‑PLUSPLUS + A‑B‑A + INTEL)
 // ============================================================================
 //
-// ROLE (v16‑IMMORTAL‑INTEL):
+// ROLE (v24‑IMMORTAL‑PLUSPLUS):
 //   THE AMBASSADOR — deterministic Akash marketplace receptor.
-//   • Normalizes Akash leases into the unified v16 job schema.
-//   • Emits unified v16 presence/advantage/hints surfaces.
+//   • Normalizes Akash leases into unified Earn job schema.
+//   • Emits unified presence/advantage/hints surfaces (v24+).
 //   • Emits A‑B‑A binary/wave surfaces (INTEL + classic signatures).
 //   • Deterministic ping(), fetchJobs(), submitResult(), normalizeJob().
-//   • No network, no async, no randomness.
+//   • PURE RECEPTOR: no network, no async, no randomness.
 //
-// CONTRACT (v16‑IMMORTAL‑INTEL):
-//   • PURE RECEPTOR — deterministic, drift‑proof, zero IO.
-//   • Unified Earn v16 presence model.
-//   • Unified v16 job schema.
-//   • A‑B‑A surfaces preserved.
+// CONTRACT:
+//   • PURE SYMBOLIC RECEPTOR — drift‑proof, zero IO.
+//   • Earn‑aware, NodeAdmin‑aware, Organism‑aware artery surfaces.
 //   • Dual‑hash INTEL signatures (INTEL + classic fallback).
+//   • v24 OrganismIdentity‑backed meta.
 // ============================================================================
-//
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+// ============================================================================
+
+export const PulseEarnAmbassadorMeta = Identity.OrganMeta;
+
+// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
+
+// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // ============================================================================
 // Deterministic Akash Receptor DNA (INTEL‑aware but static)
 // ============================================================================
@@ -66,17 +73,16 @@ const AKASH_RECEPTOR_DNA = {
     }
   ],
 
-  version: "16-IMMORTAL-INTEL",
-  lineage: "Ambassador-Akash-v16-IMMORTAL-INTEL",
+  version: "24-IMMORTAL-PLUSPLUS",
+  lineage: "Ambassador-Akash-v24-IMMORTAL-PLUSPLUS",
   phenotype: "MarketplaceAmbassador"
 };
 
 // ============================================================================
-// Healing Metadata — v16‑IMMORTAL‑INTEL
+// Healing Metadata — v24‑IMMORTAL‑PLUSPLUS
 // ============================================================================
 
 const ambassadorHealing = {
-  // Ping / fetch / submit / normalization
   lastPingOk: null,
   lastPingError: null,
 
@@ -163,15 +169,12 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash
   };
 }
-
 
 function normalizeBand(band) {
   const b = String(band || "symbolic").toLowerCase();
@@ -189,7 +192,7 @@ function buildBandSignature(band, cycleIndex) {
 }
 
 // ============================================================================
-// A‑B‑A Surfaces (v16 unified INTEL)
+// A‑B‑A Surfaces (INTEL)
 // ============================================================================
 
 function buildBinaryField(cycle, hasGpu, presenceField) {
@@ -265,7 +268,7 @@ function buildWaveField(cycle, band, presenceField) {
 }
 
 // ============================================================================
-// Unified Earn v16 Presence Tier
+// Unified Earn Presence Tier
 // ============================================================================
 
 function classifyPresenceTier(pressure) {
@@ -277,7 +280,7 @@ function classifyPresenceTier(pressure) {
 }
 
 // ============================================================================
-// Unified v16 Presence Field (INTEL)
+// Unified Presence Field (INTEL)
 // ============================================================================
 
 function buildPresenceField(globalHints = {}, cycle) {
@@ -315,7 +318,7 @@ function buildPresenceField(globalHints = {}, cycle) {
   const sig = buildDualHashSignature("AMBASSADOR_PRESENCE", intelPayload, classicString);
 
   return {
-    presenceVersion: "v16-IMMORTAL-INTEL",
+    presenceVersion: "v24-IMMORTAL-PLUSPLUS",
     presenceTier,
 
     presenceSignatureIntel: sig.intel,
@@ -341,23 +344,25 @@ function buildPresenceField(globalHints = {}, cycle) {
 }
 
 // ============================================================================
-// Advantage‑C v16 (INTEL)
+// Advantage‑C v24 (INTEL)
 // ============================================================================
 
 function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
   const density = bandPack.binaryField.binarySurface.density;
   const amplitude = bandPack.waveField.amplitude;
 
-  const baseScore =
-    density * 0.00001 +
-    amplitude * 0.00001;
+  const baseScore = density * 0.00001 + amplitude * 0.00001;
 
   const presenceBoost =
-    presenceField.presenceTier === "critical" ? 0.02 :
-    presenceField.presenceTier === "high" ? 0.015 :
-    presenceField.presenceTier === "elevated" ? 0.01 :
-    presenceField.presenceTier === "soft" ? 0.005 :
-    0;
+    presenceField.presenceTier === "critical"
+      ? 0.02
+      : presenceField.presenceTier === "high"
+      ? 0.015
+      : presenceField.presenceTier === "elevated"
+      ? 0.01
+      : presenceField.presenceTier === "soft"
+      ? 0.005
+      : 0;
 
   const advantageScore = baseScore + presenceBoost;
 
@@ -369,7 +374,7 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
   const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
 
   return {
-    advantageVersion: "C-16.0",
+    advantageVersion: "C-24.0",
     advantageScore,
     advantageTier,
     fallbackBandLevel
@@ -377,7 +382,7 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}) {
 }
 
 // ============================================================================
-// Hints Field (chunk/cache/prewarm/coldStart) — v16
+// Hints Field (chunk/cache/prewarm/coldStart)
 // ============================================================================
 
 function buildHintsField(globalHints = {}) {
@@ -412,7 +417,7 @@ function buildHintsField(globalHints = {}) {
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan v16 (INTEL)
+// Chunk / Cache / Prewarm Plan v24 (INTEL)
 // ============================================================================
 
 function buildChunkPrewarmPlan(presenceField, advantageField, hintsField) {
@@ -438,7 +443,7 @@ function buildChunkPrewarmPlan(presenceField, advantageField, hintsField) {
   const priority = basePriority + advantageBoost + hintBoost;
 
   return {
-    planVersion: "v16.0-Ambassador-AdvantageC-INTEL",
+    planVersion: "v24.0-Ambassador-AdvantageC-INTEL",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -479,12 +484,16 @@ function buildAmbassadorCycleSignature(cycleIndex, presenceField, bandPack) {
 }
 
 // ============================================================================
-// Normalization — Akash Lease → Unified v16 Earn Job
+// Normalization — Akash Lease → Unified Earn Job
 // ============================================================================
 
 function normalizeAkashLeaseToEarnJob(lease, cycleIndex, presenceField, bandPack) {
   if (!lease || typeof lease !== "object") {
-    const sig = buildDualHashSignature("AMBASSADOR_NORMALIZE", { kind: "invalid_raw" }, "NORM::AKASH::NONE");
+    const sig = buildDualHashSignature(
+      "AMBASSADOR_NORMALIZE",
+      { kind: "invalid_raw" },
+      "NORM::AKASH::NONE"
+    );
     return {
       error: "invalid_raw_lease",
       job: null,
@@ -494,7 +503,11 @@ function normalizeAkashLeaseToEarnJob(lease, cycleIndex, presenceField, bandPack
   }
 
   if (!lease.id) {
-    const sig = buildDualHashSignature("AMBASSADOR_NORMALIZE", { kind: "missing_id" }, "NORM::AKASH::NONE");
+    const sig = buildDualHashSignature(
+      "AMBASSADOR_NORMALIZE",
+      { kind: "missing_id" },
+      "NORM::AKASH::NONE"
+    );
     return {
       error: "missing_id",
       job: null,
@@ -505,7 +518,11 @@ function normalizeAkashLeaseToEarnJob(lease, cycleIndex, presenceField, bandPack
 
   const payout = Number(lease.price?.amount ?? 0);
   if (!Number.isFinite(payout) || payout <= 0) {
-    const sig = buildDualHashSignature("AMBASSADOR_NORMALIZE", { kind: "non_positive_payout" }, "NORM::AKASH::NONE");
+    const sig = buildDualHashSignature(
+      "AMBASSADOR_NORMALIZE",
+      { kind: "non_positive_payout" },
+      "NORM::AKASH::NONE"
+    );
     return {
       error: "non_positive_payout",
       job: null,
@@ -519,7 +536,11 @@ function normalizeAkashLeaseToEarnJob(lease, cycleIndex, presenceField, bandPack
   const estimatedSeconds = Number(lease.duration ?? 600);
 
   if (!Number.isFinite(estimatedSeconds) || estimatedSeconds <= 0) {
-    const sig = buildDualHashSignature("AMBASSADOR_NORMALIZE", { kind: "non_positive_duration" }, "NORM::AKASH::NONE");
+    const sig = buildDualHashSignature(
+      "AMBASSADOR_NORMALIZE",
+      { kind: "non_positive_duration" },
+      "NORM::AKASH::NONE"
+    );
     return {
       error: "non_positive_duration",
       job: null,
@@ -591,17 +612,103 @@ function normalizeAkashLeaseToEarnJob(lease, cycleIndex, presenceField, bandPack
 }
 
 // ============================================================================
-// AMBASSADOR CLIENT — v16‑IMMORTAL‑INTEL
+// AMBASSADOR ARTERY SNAPSHOT v5 — Earn / Presence / Advantage / Band
+// ============================================================================
+
+export function getAmbassadorArterySnapshotV5({
+  ok = false,
+  phase = "idle", // ping | fetch | submit
+  cycleIndex = 0,
+  band = "symbolic",
+  presenceField = null,
+  advantageField = null,
+  hintsField = null,
+  jobs = [],
+  errors = []
+} = {}) {
+  const presenceTier = presenceField?.presenceTier || "idle";
+  const meshPressureIndex = presenceField?.meshPressureIndex || 0;
+  const castleLoadLevel = presenceField?.castleLoadLevel || 0;
+
+  const advantageScore = advantageField?.advantageScore ?? 0;
+  const advantageTier = advantageField?.advantageTier ?? 0;
+
+  const jobCount = jobs.length || 0;
+  const errorCount = errors.length || 0;
+
+  const pressure = Math.max(
+    0,
+    Math.min(
+      1,
+      (meshPressureIndex / 200 + castleLoadLevel / 200 + jobCount / 16) / 3
+    )
+  );
+
+  const bucketPressure = (v) => {
+    if (v >= 0.9) return "overload";
+    if (v >= 0.7) return "high";
+    if (v >= 0.4) return "medium";
+    if (v > 0) return "low";
+    return "none";
+  };
+
+  const arterySignature = computeHash(
+    [
+      "AMBASSADOR_ARTERY_V5",
+      phase,
+      band,
+      presenceTier,
+      cycleIndex,
+      jobCount,
+      errorCount,
+      pressure.toFixed(3),
+      advantageScore.toFixed(5),
+      advantageTier
+    ].join("::")
+  );
+
+  return Object.freeze({
+    ok,
+    phase,
+    band,
+    cycleIndex,
+    jobs: jobCount,
+    errors: errorCount,
+    presence: {
+      presenceTier,
+      meshPressureIndex,
+      castleLoadLevel
+    },
+    advantage: {
+      advantageScore,
+      advantageTier
+    },
+    pressure: {
+      value: pressure,
+      bucket: bucketPressure(pressure)
+    },
+    hints: hintsField || null,
+    meta: {
+      version: PulseEarnAmbassadorMeta.version,
+      epoch: PulseEarnAmbassadorMeta.evo.epoch,
+      identity: PulseEarnAmbassadorMeta.identity,
+      arterySignature
+    }
+  });
+}
+
+// ============================================================================
+// AMBASSADOR CLIENT — v24‑IMMORTAL‑PLUSPLUS
 // ============================================================================
 
 export const PulseEarnMktAmbassador = {
   id: "akash",
   name: "Akash Network",
-  version: "v16-IMMORTAL-INTEL",
-  lineage: "Ambassador-Akash-v16-IMMORTAL-INTEL",
+  version: "v24-IMMORTAL-PLUSPLUS",
+  lineage: "Ambassador-Akash-v24-IMMORTAL-PLUSPLUS",
 
   // -------------------------------------------------------------------------
-  // Ping — unified v16 presence
+  // Ping — unified presence
   // -------------------------------------------------------------------------
   ping(globalHints = {}) {
     ambassadorCycle++;
@@ -627,9 +734,17 @@ export const PulseEarnMktAmbassador = {
       globalHints
     );
 
-    const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField, hintsField);
+    const chunkPlan = buildChunkPrewarmPlan(
+      presenceField,
+      advantageField,
+      hintsField
+    );
 
-    const cycleSig = buildAmbassadorCycleSignature(ambassadorCycle, presenceField, bandPack);
+    const cycleSig = buildAmbassadorCycleSignature(
+      ambassadorCycle,
+      presenceField,
+      bandPack
+    );
 
     ambassadorHealing.lastPingOk = true;
     ambassadorHealing.lastPingError = null;
@@ -652,6 +767,18 @@ export const PulseEarnMktAmbassador = {
     ambassadorHealing.lastAmbassadorCycleSignatureIntel = cycleSig.intel;
     ambassadorHealing.lastAmbassadorCycleSignatureClassic = cycleSig.classic;
 
+    const artery = getAmbassadorArterySnapshotV5({
+      ok: true,
+      phase: "ping",
+      cycleIndex: ambassadorCycle,
+      band,
+      presenceField,
+      advantageField,
+      hintsField,
+      jobs: [],
+      errors: []
+    });
+
     return {
       latency,
       cycleIndex: ambassadorCycle,
@@ -665,12 +792,13 @@ export const PulseEarnMktAmbassador = {
       presenceField,
       advantageField,
       hintsField,
-      chunkPlan
+      chunkPlan,
+      artery
     };
   },
 
   // -------------------------------------------------------------------------
-  // Fetch Jobs — unified v16 presence
+  // Fetch Jobs — unified presence
   // -------------------------------------------------------------------------
   fetchJobs(globalHints = {}) {
     ambassadorCycle++;
@@ -694,11 +822,15 @@ export const PulseEarnMktAmbassador = {
       globalHints
     );
 
-    const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField, hintsField);
+    const chunkPlan = buildChunkPrewarmPlan(
+      presenceField,
+      advantageField,
+      hintsField
+    );
 
     try {
       const leases = AKASH_RECEPTOR_DNA.leases;
-      ambassadorHealing.lastPayloadVersion = "16-akash-dna";
+      ambassadorHealing.lastPayloadVersion = "24-akash-dna";
 
       const jobs = [];
       const errors = [];
@@ -712,7 +844,11 @@ export const PulseEarnMktAmbassador = {
           band
         };
         const classicString = `AMBASSADOR_FETCH::${ambassadorCycle}::JOBS::0::ERR::1::${band}`;
-        const fetchSig = buildDualHashSignature("AMBASSADOR_FETCH", intelPayload, classicString);
+        const fetchSig = buildDualHashSignature(
+          "AMBASSADOR_FETCH",
+          intelPayload,
+          classicString
+        );
 
         ambassadorHealing.lastFetchError = "invalid_leases_payload";
         ambassadorHealing.lastFetchCount = 0;
@@ -734,6 +870,18 @@ export const PulseEarnMktAmbassador = {
         ambassadorHealing.lastAmbassadorCycleSignatureIntel = fetchSig.intel;
         ambassadorHealing.lastAmbassadorCycleSignatureClassic = fetchSig.classic;
 
+        const artery = getAmbassadorArterySnapshotV5({
+          ok: false,
+          phase: "fetch",
+          cycleIndex: ambassadorCycle,
+          band,
+          presenceField,
+          advantageField,
+          hintsField,
+          jobs: [],
+          errors: [{ error: "invalid_leases_payload" }]
+        });
+
         return {
           success: false,
           cycleIndex: ambassadorCycle,
@@ -747,7 +895,8 @@ export const PulseEarnMktAmbassador = {
           binaryField,
           waveField,
           fetchSignatureIntel: fetchSig.intel,
-          fetchSignatureClassic: fetchSig.classic
+          fetchSignatureClassic: fetchSig.classic,
+          artery
         };
       }
 
@@ -769,8 +918,10 @@ export const PulseEarnMktAmbassador = {
           });
           ambassadorHealing.lastNormalizedJobId = norm.job.id;
           ambassadorHealing.lastNormalizationError = null;
-          ambassadorHealing.lastNormalizationSignatureIntel = norm.normalizationSignatureIntel;
-          ambassadorHealing.lastNormalizationSignatureClassic = norm.normalizationSignatureClassic;
+          ambassadorHealing.lastNormalizationSignatureIntel =
+            norm.normalizationSignatureIntel;
+          ambassadorHealing.lastNormalizationSignatureClassic =
+            norm.normalizationSignatureClassic;
         }
       }
 
@@ -782,9 +933,14 @@ export const PulseEarnMktAmbassador = {
         band
       };
       const classicString = `AMBASSADOR_FETCH::${ambassadorCycle}::JOBS::${jobs.length}::ERR::${errors.length}::${band}`;
-      const fetchSig = buildDualHashSignature("AMBASSADOR_FETCH", intelPayload, classicString);
+      const fetchSig = buildDualHashSignature(
+        "AMBASSADOR_FETCH",
+        intelPayload,
+        classicString
+      );
 
-      ambassadorHealing.lastFetchError = errors.length > 0 ? "partial_errors" : null;
+      ambassadorHealing.lastFetchError =
+        errors.length > 0 ? "partial_errors" : null;
       ambassadorHealing.lastFetchCount = jobs.length;
       ambassadorHealing.lastFetchSignatureIntel = fetchSig.intel;
       ambassadorHealing.lastFetchSignatureClassic = fetchSig.classic;
@@ -804,6 +960,18 @@ export const PulseEarnMktAmbassador = {
       ambassadorHealing.lastAmbassadorCycleSignatureIntel = fetchSig.intel;
       ambassadorHealing.lastAmbassadorCycleSignatureClassic = fetchSig.classic;
 
+      const artery = getAmbassadorArterySnapshotV5({
+        ok: true,
+        phase: "fetch",
+        cycleIndex: ambassadorCycle,
+        band,
+        presenceField,
+        advantageField,
+        hintsField,
+        jobs,
+        errors
+      });
+
       return {
         success: true,
         cycleIndex: ambassadorCycle,
@@ -817,9 +985,9 @@ export const PulseEarnMktAmbassador = {
         binaryField,
         waveField,
         fetchSignatureIntel: fetchSig.intel,
-        fetchSignatureClassic: fetchSig.classic
+        fetchSignatureClassic: fetchSig.classic,
+        artery
       };
-
     } catch (err) {
       const intelPayload = {
         kind: "fetch",
@@ -829,7 +997,11 @@ export const PulseEarnMktAmbassador = {
         band
       };
       const classicString = `AMBASSADOR_FETCH::${ambassadorCycle}::JOBS::0::ERR::1::${band}`;
-      const fetchSig = buildDualHashSignature("AMBASSADOR_FETCH", intelPayload, classicString);
+      const fetchSig = buildDualHashSignature(
+        "AMBASSADOR_FETCH",
+        intelPayload,
+        classicString
+      );
 
       ambassadorHealing.lastFetchError = err.message;
       ambassadorHealing.lastFetchCount = 0;
@@ -851,6 +1023,18 @@ export const PulseEarnMktAmbassador = {
       ambassadorHealing.lastAmbassadorCycleSignatureIntel = fetchSig.intel;
       ambassadorHealing.lastAmbassadorCycleSignatureClassic = fetchSig.classic;
 
+      const artery = getAmbassadorArterySnapshotV5({
+        ok: false,
+        phase: "fetch",
+        cycleIndex: ambassadorCycle,
+        band,
+        presenceField,
+        advantageField,
+        hintsField,
+        jobs: [],
+        errors: [{ error: err.message }]
+      });
+
       return {
         success: false,
         cycleIndex: ambassadorCycle,
@@ -864,13 +1048,14 @@ export const PulseEarnMktAmbassador = {
         binaryField,
         waveField,
         fetchSignatureIntel: fetchSig.intel,
-        fetchSignatureClassic: fetchSig.classic
+        fetchSignatureClassic: fetchSig.classic,
+        artery
       };
     }
   },
 
   // -------------------------------------------------------------------------
-  // Submit Result — unified v16 presence
+  // Submit Result — unified presence
   // -------------------------------------------------------------------------
   submitResult(job, result, globalHints = {}) {
     ambassadorCycle++;
@@ -895,7 +1080,11 @@ export const PulseEarnMktAmbassador = {
       globalHints
     );
 
-    const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField, hintsField);
+    const chunkPlan = buildChunkPrewarmPlan(
+      presenceField,
+      advantageField,
+      hintsField
+    );
 
     const jobId = job?.id ?? null;
 
@@ -906,8 +1095,12 @@ export const PulseEarnMktAmbassador = {
       band,
       hasResult: !!result
     };
-    const classicString = `AMBASSADOR_SUBMIT::${ambassadorCycle}::${jobId || "NO_JOB"}::${band}`;
-    const submitSig = buildDualHashSignature("AMBASSADOR_SUBMIT", intelPayload, classicString);
+    const classicString = `AMBASSADOR_SUBMIT::${ambassadorCycle}::${jobId}::${band}::${!!result}`;
+    const submitSig = buildDualHashSignature(
+      "AMBASSADOR_SUBMIT",
+      intelPayload,
+      classicString
+    );
 
     ambassadorHealing.lastSubmitJobId = jobId;
     ambassadorHealing.lastSubmitError = null;
@@ -929,13 +1122,24 @@ export const PulseEarnMktAmbassador = {
     ambassadorHealing.lastAmbassadorCycleSignatureIntel = submitSig.intel;
     ambassadorHealing.lastAmbassadorCycleSignatureClassic = submitSig.classic;
 
+    const artery = getAmbassadorArterySnapshotV5({
+      ok: true,
+      phase: "submit",
+      cycleIndex: ambassadorCycle,
+      band,
+      presenceField,
+      advantageField,
+      hintsField,
+      jobs: job ? [job] : [],
+      errors: []
+    });
+
     return {
       success: true,
       cycleIndex: ambassadorCycle,
-      marketplace: "akash",
       band,
       jobId,
-      result,
+      hasResult: !!result,
       presenceField,
       advantageField,
       hintsField,
@@ -944,99 +1148,47 @@ export const PulseEarnMktAmbassador = {
       waveField,
       submitSignatureIntel: submitSig.intel,
       submitSignatureClassic: submitSig.classic,
-      bandSignatureIntel: bandSig.intel,
-      bandSignatureClassic: bandSig.classic
-    };
-  },
-
-  // -------------------------------------------------------------------------
-  // Normalize Job — unified v16 job schema + A‑B‑A + presence
-  // -------------------------------------------------------------------------
-  normalizeJob(raw, globalHints = {}) {
-    ambassadorCycle++;
-    ambassadorHealing.cycleCount++;
-    ambassadorHealing.lastCycleIndex = ambassadorCycle;
-
-    const presenceField = buildPresenceField(globalHints, ambassadorCycle);
-    const hintsField = buildHintsField(globalHints);
-
-    const hasGpu = !!(raw && raw.resources && raw.resources.gpu);
-    const band = hasGpu ? "binary" : "symbolic";
-    const bandSig = buildBandSignature(band, ambassadorCycle);
-
-    const binaryField = buildBinaryField(ambassadorCycle, hasGpu, presenceField);
-    const waveField = buildWaveField(ambassadorCycle, band, presenceField);
-
-    const bandPack = { band, binaryField, waveField };
-
-    const advantageField = buildAdvantageField(
-      bandPack,
-      presenceField,
-      globalHints
-    );
-
-    const chunkPlan = buildChunkPrewarmPlan(presenceField, advantageField, hintsField);
-
-    ambassadorHealing.lastBand = band;
-    ambassadorHealing.lastBandSignatureIntel = bandSig.intel;
-    ambassadorHealing.lastBandSignatureClassic = bandSig.classic;
-
-    ambassadorHealing.lastBinaryField = binaryField;
-    ambassadorHealing.lastWaveField = waveField;
-    ambassadorHealing.lastPresenceField = presenceField;
-    ambassadorHealing.lastAdvantageField = advantageField;
-    ambassadorHealing.lastHintsField = hintsField;
-    ambassadorHealing.lastChunkPrewarmPlan = chunkPlan;
-
-    const norm = normalizeAkashLeaseToEarnJob(
-      raw,
-      ambassadorCycle,
-      presenceField,
-      bandPack
-    );
-
-    if (norm.error) {
-      ambassadorHealing.lastNormalizationError = norm.error;
-      ambassadorHealing.lastNormalizationSignatureIntel = norm.normalizationSignatureIntel;
-      ambassadorHealing.lastNormalizationSignatureClassic = norm.normalizationSignatureClassic;
-
-      ambassadorHealing.lastAmbassadorCycleSignatureIntel = norm.normalizationSignatureIntel;
-      ambassadorHealing.lastAmbassadorCycleSignatureClassic = norm.normalizationSignatureClassic;
-
-      return null;
-    }
-
-    ambassadorHealing.lastResourceShape = {
-      cpu: norm.job.payload.data.resources?.cpu?.units ?? null,
-      mem: norm.job.payload.data.resources?.memory?.quantity ?? null,
-      duration: raw?.duration ?? null
-    };
-
-    ambassadorHealing.lastNormalizedJobId = norm.job.id;
-    ambassadorHealing.lastNormalizationError = null;
-    ambassadorHealing.lastNormalizationSignatureIntel = norm.normalizationSignatureIntel;
-    ambassadorHealing.lastNormalizationSignatureClassic = norm.normalizationSignatureClassic;
-
-    ambassadorHealing.lastAmbassadorCycleSignatureIntel = norm.normalizationSignatureIntel;
-    ambassadorHealing.lastAmbassadorCycleSignatureClassic = norm.normalizationSignatureClassic;
-
-    return {
-      ...norm.job,
-      _abaBand: band,
-      _abaBinaryDensity: binaryField.binarySurface.density,
-      _abaWaveAmplitude: waveField.amplitude,
-      presenceField,
-      advantageField,
-      hintsField,
-      chunkPlan
+      artery
     };
   }
 };
 
 // ============================================================================
-// Healing State Export — Ambassador Interaction Log (v16‑IMMORTAL‑INTEL)
+// FACTORY — v24‑IMMORTAL‑PLUSPLUS ORGAN SURFACE
 // ============================================================================
 
-export function getPulseEarnMktAmbassadorHealingState() {
-  return { ...ambassadorHealing };
+export function createPulseEarnMktAmbassador() {
+  return Object.freeze({
+    meta: PulseEarnAmbassadorMeta,
+    role: pulseRole,
+    surfaceMeta,
+    lore: pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+    healingSnapshot: () => ({ ...ambassadorHealing }),
+    ping: (hints) => PulseEarnMktAmbassador.ping(hints),
+    fetchJobs: (hints) => PulseEarnMktAmbassador.fetchJobs(hints),
+    submitResult: (job, result, hints) =>
+      PulseEarnMktAmbassador.submitResult(job, result, hints),
+    getAmbassadorArterySnapshotV5
+  });
+}
+
+// ============================================================================
+// DUAL‑MODE EXPORTS (ESM + CommonJS)
+// ============================================================================
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    PulseEarnAmbassadorMeta,
+    pulseRole,
+    PulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+    PulseEarnMktAmbassador,
+    createPulseEarnMktAmbassador,
+    getAmbassadorArterySnapshotV5
+  };
 }

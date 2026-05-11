@@ -36,7 +36,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // -----------------------------------------------------------------------------
 
 // World / Regioning (Expansion)
-import * as PulseWorldRegioning from "../PULSE-EXPANSION/PulseExpansion-v24.js";
+import * as PulseWorldRegioning from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET.js";
 
 // Delta Engine (CoreMemory integrations)
 import * as PulseContinuance from "../PULSE-FINALITY/PulseFinalityContinuance-v20.js";

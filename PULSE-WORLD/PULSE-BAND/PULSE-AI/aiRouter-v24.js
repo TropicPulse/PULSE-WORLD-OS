@@ -18,8 +18,8 @@ import { PulseCastleMeta } from "../PULSE-EXPANSION/PulseExpansionCastle-v24.js"
 import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v16.js";
 import PulseBeaconMesh, { PulseBeaconMeshMeta } from "../PULSE-EXPANSION/PulseExpansionBeaconMesh-v20.js";
 import PulseBeaconEngine from "../PULSE-EXPANSION/PulseExpansionBeaconEngine-v20.js";
-import { PulseExpansionMeta } from "../PULSE-EXPANSION/PulseExpansion-v24.js";
-import { PulseServerMeta } from "../PULSE-EXPANSION/PulseExpansionServer-v24.js";
+import { PulseExpansionMeta } from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET.js";
+import { PulseServerMeta } from "../PULSE-EXPANSION/PULSE-EXPANSION-SERVER.js";
 import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseExpansionRouter-v24.js";
 
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";

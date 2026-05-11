@@ -74,7 +74,7 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
-} from "./PulseExpansion-v24.js";
+} from "./PULSE-EXPANSION-INTERNET.js";
 
 // Castle / beacon / console
 import {
@@ -86,7 +86,7 @@ import {
   PulseServerMeta,
   createPulseServer,
   getPulseServerContext
-} from "./PulseExpansionServer-v24.js";
+} from "./PULSE-EXPANSION-SERVER.js";
 import {
   PulseRouterMeta,
   createPulseRouter
