@@ -21,23 +21,14 @@ function logOK(msg, ...rest)  { console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_
 function logWarn(msg, ...rest){ console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_WARN, ...rest); }
 function logErr(msg, ...rest) { console.error(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_ERR, ...rest); }
 
-// ============================================================
-// 0. BOOT MEMBRANE
-// ============================================================
 logID("BOOT MEMBRANE START");
 
-// ============================================================
-// 1. UI INIT — RUN ONCE
-// ============================================================
 if (!window.__PULSE_UI_INIT__) {
   window.__PULSE_UI_INIT__ = true;
 
   document.addEventListener("DOMContentLoaded", () => {
     logOK("DOM CONTENT LOADED — INDEX PAGE");
 
-    // ============================================================
-    // 2. PULSEBAND UI SHELL (visual only)
-    // ============================================================
     try {
       logID("INIT PULSEBAND UI");
 
@@ -66,9 +57,6 @@ if (!window.__PULSE_UI_INIT__) {
       logErr("PulseBand UI init failed", err);
     }
 
-    // ============================================================
-    // 3. PULSEBAND SNAPSHOT — PORTAL SIGNAL MODE
-    // ============================================================
     const pbFields = {
       bars:       document.getElementById("pb-bars-text"),
       phone:      document.getElementById("pb-phonebars-text"),
@@ -171,9 +159,6 @@ if (!window.__PULSE_UI_INIT__) {
       }
     })();
 
-    // ============================================================
-    // 4. GPU TEST — PORTAL SIGNAL MODE
-    // ============================================================
     try {
       const testBtn     = document.getElementById("tp-test-button");
       const testFile    = document.getElementById("tp-test-file");
@@ -233,70 +218,6 @@ if (!window.__PULSE_UI_INIT__) {
       logErr("GPU test init failed", err);
     }
 
-    // ============================================================
-    // 5. CAROUSEL — UI ONLY
-    // ============================================================
-    try {
-      function initCarousel() {
-        const carousel = document.getElementById("appCarousel");
-        if (!carousel) {
-          logWarn("Carousel missing — retrying…");
-          return false;
-        }
-
-        const track  = carousel.querySelector(".carousel-track");
-        const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
-        const dots   = Array.from(carousel.querySelectorAll(".carousel-dot"));
-        const arrows = Array.from(carousel.querySelectorAll(".carousel-arrow"));
-
-        if (!track || slides.length === 0) {
-          logWarn("Carousel structure incomplete — retrying…");
-          return false;
-        }
-
-        const visibleSlides = 2;
-        const totalSlides   = slides.length;
-        const maxIndex      = totalSlides - visibleSlides;
-
-        let currentIndex = 0;
-
-        function updateCarousel(index) {
-          const clamped = Math.max(0, Math.min(index, maxIndex));
-          currentIndex = clamped;
-
-          const offset = -(clamped * (100 / visibleSlides));
-          track.style.transform = `translateX(${offset}%)`;
-
-          dots.forEach((dot, i) => dot.classList.toggle("active", i === clamped));
-        }
-
-        dots.forEach((dot, i) => dot.addEventListener("click", () => updateCarousel(i)));
-
-        arrows.forEach((arrow) => {
-          arrow.addEventListener("click", () => {
-            const dir = arrow.getAttribute("data-dir");
-            updateCarousel(dir === "next" ? currentIndex + 1 : currentIndex - 1);
-          });
-        });
-
-        logOK("Carousel initialized");
-        return true;
-      }
-
-      let attempts = 0;
-      const carouselInterval = setInterval(() => {
-        attempts++;
-        if (initCarousel() || attempts > 50) {
-          clearInterval(carouselInterval);
-        }
-      }, 100);
-    } catch (err) {
-      logErr("Carousel init failed", err);
-    }
-
-    // ============================================================
-    // 6. FAQ ACCORDION — UI ONLY
-    // ============================================================
     try {
       document.querySelectorAll("[data-faq]").forEach((item) => {
         const btn = item.querySelector(".faq-question");
