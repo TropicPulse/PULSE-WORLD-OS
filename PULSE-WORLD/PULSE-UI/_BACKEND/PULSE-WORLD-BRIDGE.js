@@ -61,10 +61,11 @@ export { PulseProofBridge };
 // ============================================================================
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
-
-
-import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
 import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons} from "../_MONITOR/PulseProofLogger-v24.js";
+import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
+
+import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
+
 import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
 import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
@@ -74,7 +75,7 @@ import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseU
 
 import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
 import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
-import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
+
 
 
 const g =
