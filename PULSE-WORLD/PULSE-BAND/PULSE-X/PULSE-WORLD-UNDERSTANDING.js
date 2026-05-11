@@ -1,31 +1,9 @@
 // ============================================================================
-//  PulseNetUnderstanding-v24-ImmortalPlus.js — v24-IMMORTAL++ (HYBRID LOADER)
+//  PulseNetUnderstanding-v25-ImmortalPlus.js — v25-IMMORTAL++
 //  Cortical Opener • Symbolic Kernel Loader • Binary Shadow Integrator
 //  Deterministic Brainstem • Runtime/Scheduler/Substrate Unifier
-//  v24++: Compiler ⇄ Chunker ⇄ ACTNOW pipeline with cache, lanes, profiles,
-//         prewarm surfaces, PulseTouch-aware power, and bridge-aligned
-//         actnow.packet emission + PulseNet advantage awareness.
+//  v25++: Now consumes PulseProofSignal v25 (CSS-MERGED, OFFLINE-FIRST)
 // ============================================================================
-//
-//  v24-IMMORTAL++ HYBRID CONTRACT:
-//  -------------------------------
-//   • DO NOT boot the binary organism (Window already did).
-//   • DO load symbolic kernel + symbolic organs (via User/OS chain).
-//   • DO integrate binary shadow from window.PulseBinary.
-//   • DO integrate Flow (window.PulseUI) and Page/Portal intel.
-//   • DO unify runtime, scheduler, substrate.
-//   • DO expose OS API (symbolic + binary shadow).
-//   • DO NOT expose raw organs to the outside.
-//   • DO NOT mutate Window or Page.
-//   • MAY read membrane intel from window.PulseSurface, PulsePower, portals,
-//     PulseTouch, PulseWorld, and PulseNet.
-//   • MAY use Compiler → Chunker → ACTNOW pipeline with cache + lanes + profiles.
-//   • MUST remain bridge-aligned and IMMORTAL++ safe.
-// ============================================================================
-//  PULSE OS — PulseUnderstanding-v24-ImmortalPlus
-//  CORTICAL OPENER • HYBRID KERNEL • COMPILER → CHUNKER → ACTNOW ORCHESTRATOR
-// ============================================================================
-
 
 import {
   OrganismIdentity,
@@ -33,7 +11,6 @@ import {
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
@@ -42,7 +19,7 @@ export const PULSE_UNDERSTANDING_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-console.log("Come to Understanding v24-ImmortalPlus");
+console.log("Come to Understanding v25-ImmortalPlus");
 
 // Global handle
 const g =
@@ -56,7 +33,7 @@ const g =
     ? g
     : {};
 
-// Prefer global db if present (logger page / server)
+// Prefer global db if present
 const db =
   (g && g.db) ||
   (typeof global !== "undefined" && global.db) ||
@@ -65,7 +42,7 @@ const db =
   null;
 
 // ============================================================================
-//  IMPORTS — BRIDGE / LOGGER (v24 bridge, lane/profile-aware)
+//  IMPORTS — BRIDGE / LOGGER
 // ============================================================================
 import {
   route,
@@ -75,15 +52,18 @@ import {
   error
 } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
+// ⭐ NEW: Import upgraded CSS‑merged signal engine
+import { PulseProofSignal } from "../_MONITOR/PulseProofSignal-v25.js";
+
 // ============================================================================
-//  IMPORTS — COMPILER / CHUNKER / ACTNOW (v24+)
+//  IMPORTS — COMPILER / CHUNKER / ACTNOW
 // ============================================================================
 import { PulseWorldCompile } from "../../PULSE-UI/_CREATION_BARRIER/PulseWorldCompiler-v20.js";
 import { createPulseChunker } from "./PulseWorldChunker-v20.js";
 import { createPulseWorldFightFlightResponseV20 } from "./PulseWorldFightFlightResponse-v20.js";
 
 // ============================================================================
-//  IMPORTS — PRESENTATION / POWER (v24)
+//  IMPORTS — PRESENTATION / POWER
 // ============================================================================
 import {
   getPulsePowerSnapshot as PulseSurfaceEnvironment,
@@ -109,7 +89,7 @@ import { createPulseSend as PulseSendSym } from "../PULSE-SEND/PulseSend-v16.js"
 import { createEarn as PulseEarnSym } from "../PULSE-EARN/PulseEarn-v24.js";
 
 // ============================================================================
-//  IMPORTS — BINARY SHADOW (NO BOOT HERE)
+//  IMPORTS — BINARY SHADOW
 // ============================================================================
 import { createBinaryProxy } from "../PULSE-PROXY/PulseBinaryProxy-v20.js";
 import { createBinaryRouter as PulseRouterBin } from "../PULSE-ROUTER/PulseBinaryRouter-v24.js";
@@ -117,18 +97,49 @@ import { PulseBinaryGPU as PulseGPUBin } from "../PULSE-GPU/PulseBinaryGPU-v24.j
 import { createBinaryMesh as PulseMeshBin } from "../PULSE-MESH/PulseBinaryMesh-v16.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
-// Optional: derive a surface power profile from TOUCH + environment
-const PulseSurfacePower =
-  PulsePowerAPI && typeof PulsePowerAPI.buildSurfacePower === "function"
-    ? PulsePowerAPI.buildSurfacePower(
-        PulseSurfaceEnvironment,
-        typeof window !== "undefined" ? window.__PULSE_TOUCH__ || null : null
-      )
-    : null;
+// ============================================================================
+//  ⭐ NEW SECTION — PulseSignalState (CSS‑MERGED SNAPSHOT)
+// ============================================================================
+
+const PulseSignalState = {
+  snapshot: null,
+
+  updateFromSignal(comment) {
+    if (!comment || !comment.details || !comment.details.computed) return;
+    this.snapshot = comment.details.computed;
+  },
+
+  get() {
+    return this.snapshot;
+  }
+};
 
 // ============================================================================
-//  ENVIRONMENT SNAPSHOT (UPGRADED — USE PORTAL / POWER / TOUCH IF PRESENT)
+//  ⭐ NEW SECTION — PulseSignalListener
+//  Listens to CSS‑merged top‑layer signals from PulseProofSignal
 // ============================================================================
+
+function startPulseSignalListener() {
+  try {
+    // Poll merged comments (CSS‑merged)
+    setInterval(() => {
+      const comments = PulseProofSignal.comments(1);
+      if (!comments || !comments.length) return;
+      const last = comments[0];
+      PulseSignalState.updateFromSignal(last);
+    }, 50);
+  } catch (err) {
+    console.error("[Understanding v25] Signal listener failed:", err);
+  }
+}
+
+// Start listener immediately
+startPulseSignalListener();
+
+// ============================================================================
+//  ENVIRONMENT SNAPSHOT
+// ============================================================================
+
 function buildEnvironmentSnapshot() {
   if (typeof window === "undefined") {
     return {
@@ -157,25 +168,13 @@ function buildEnvironmentSnapshot() {
     online: window.navigator?.onLine ?? null,
     platform: window.navigator?.platform || null,
     pulseTouch: touchSnapshot,
-    pulsePower: powerSnapshot || PulseSurfacePower || null
+    pulsePower: powerSnapshot || null
   };
 
   if (surfaceEnv) {
     return {
       ...base,
-      runtime: surfaceEnv.runtime ?? base.runtime,
-      userAgent: surfaceEnv.userAgent ?? base.userAgent,
-      language: surfaceEnv.language ?? base.language,
-      online: surfaceEnv.online ?? base.online,
-      platform: surfaceEnv.platform ?? base.platform,
-      screen: surfaceEnv.screen ?? null,
-      device: surfaceEnv.device ?? null,
-      input: surfaceEnv.input ?? null,
-      preferences: surfaceEnv.preferences ?? null,
-      location: surfaceEnv.location ?? null,
-      network: surfaceEnv.network ?? null,
-      referrer: surfaceEnv.referrer ?? null,
-      origin: surfaceEnv.origin ?? null
+      ...surfaceEnv
     };
   }
 
@@ -185,7 +184,7 @@ function buildEnvironmentSnapshot() {
 const PulseEnvironment = buildEnvironmentSnapshot();
 
 // ============================================================================
-//  USER / LOCAL OS CORE (SIDE-EFFECT LOAD)
+//  USER / LOCAL OS CORE
 // ============================================================================
 let PulseWorldCore = null;
 try {
@@ -199,7 +198,7 @@ try {
 }
 
 // ============================================================================
-//  GOVERNOR (symbolic only, via global Pulse if present)
+//  GOVERNOR
 // ============================================================================
 function runThroughGovernor(organName, pulseOrImpulse, fn) {
   const governedRun =
@@ -215,8 +214,9 @@ function runThroughGovernor(organName, pulseOrImpulse, fn) {
 }
 
 // ============================================================================
-//  BINARY-FIRST IDENTITY (HYBRID MODE)
+//  BINARY-FIRST IDENTITY
 // ============================================================================
+
 async function resolveIdentityBinaryFirst(ProxyBin, ProxySymInstance) {
   const shadow =
     typeof window !== "undefined" ? window?.PulseBinary?.meta : null;
@@ -242,7 +242,7 @@ async function resolveIdentityBinaryFirst(ProxyBin, ProxySymInstance) {
 }
 
 // ============================================================================
-//  HYBRID KERNEL RESOLUTION (NO BINARY BOOT HERE)
+//  HYBRID KERNEL RESOLUTION
 // ============================================================================
 async function resolveKernelsBinaryFirst() {
   const BinaryKernel =
@@ -277,7 +277,7 @@ async function resolveKernelsBinaryFirst() {
 }
 
 // ============================================================================
-//–  KERNEL BOOTSTRAP — UNDERSTANDING LAYER (HYBRID UNDER WINDOW, v24++)
+//  KERNEL BOOTSTRAP — UNDERSTANDING LAYER
 // ============================================================================
 async function buildPulseKernel() {
   const { BinaryKernel, SymbolicKernel } = await resolveKernelsBinaryFirst();
@@ -387,7 +387,7 @@ async function buildPulseKernel() {
 
   try {
     SpinalCord?.registerExtension?.("Understanding", "extension", {
-      version: "v24-ImmortalPlus",
+      version: "v25-ImmortalPlus",
       role: "cortical-opener",
       layer: "A3",
       binaryFirst: true,
@@ -458,7 +458,7 @@ async function buildPulseKernel() {
       executionContext: {
         sceneType: "cortical-opener",
         workloadClass: "frontend-boot",
-        dispatchSignature: "Understanding.v24-ImmortalPlus",
+        dispatchSignature: "Understanding.v25-ImmortalPlus",
         shapeSignature: "A3-layer",
         extensionId: "Understanding",
         identityKind: identityResult.kind
@@ -474,7 +474,10 @@ async function buildPulseKernel() {
     ...PULSE_UNDERSTANDING_CONTEXT,
     identity,
     identityKind: identityResult.kind,
-    environment: PulseEnvironment
+    environment: PulseEnvironment,
+
+    // ⭐ NEW: attach signal snapshot to meta
+    signal: () => PulseSignalState.get()
   };
 
   const Pulse = {
@@ -507,6 +510,11 @@ async function buildPulseKernel() {
 
     Governed: {
       run: runThroughGovernor
+    },
+
+    // ⭐ NEW: expose signal snapshot
+    Signal: {
+      get: () => PulseSignalState.get()
     }
   };
 
@@ -516,11 +524,9 @@ async function buildPulseKernel() {
 const PulseKernelPromise = buildPulseKernel();
 
 // ============================================================================
-//  ORGAN BUNDLE — Compiler + Chunker + ACTNOW (v24 Cortical Pipeline)
-//  - PulseChunker v20: 32-lane cache, profiles, route folding, TTL
-//  - ACTNOW v17: packet reflex, immunity/surgeon-general aware
-//  - v24++: multi-profile cache, touch-aware prewarm, advantage hints.
+//  ORGAN BUNDLE — Compiler + Chunker + ACTNOW
 // ============================================================================
+
 let PulseChunker = null;
 let PulseACTNow = null;
 
@@ -533,11 +539,10 @@ async function buildCorticalPipelineOrgans(Brain) {
       Logger: { log, warn, error }
     });
 
-    // v24++: prewarm canonical backend/front profiles
     try {
       PulseChunker.prewarm?.();
     } catch (e) {
-      warn("[Understanding v24] PulseChunker prewarm failed", {
+      warn("[Understanding v25] PulseChunker prewarm failed", {
         error: e?.message
       });
     }
@@ -553,9 +558,9 @@ async function buildCorticalPipelineOrgans(Brain) {
         PulseImmunity,
         PulseSurgeonGeneral
       });
-    } else {
+        } else {
       warn(
-        "[Understanding v24] ACTNow v17 not fully wired (missing Immunity/SurgeonGeneral)"
+        "[Understanding v25] ACTNow v17 not fully wired (missing Immunity/SurgeonGeneral)"
       );
     }
   }
@@ -564,7 +569,7 @@ async function buildCorticalPipelineOrgans(Brain) {
 }
 
 // ============================================================================
-//  CORTICAL PIPELINE — COMPILE → CHUNK → ACTNOW (v24++ lane/profile aware)
+//  CORTICAL PIPELINE — COMPILE → CHUNK → ACTNOW (v25 lane/profile aware)
 // ============================================================================
 async function runCompileChunkActNow({
   entry = "PULSE-INDEX.js",
@@ -587,12 +592,12 @@ async function runCompileChunkActNow({
 
   if (!PulseChunker) {
     warn(
-      "[Understanding v24] runCompileChunkActNow: PulseChunker unavailable, aborting."
+      "[Understanding v25] runCompileChunkActNow: PulseChunker unavailable, aborting."
     );
     return null;
   }
 
-  log("[Understanding v24] Compiler pipeline start", {
+  log("[Understanding v25] Compiler pipeline start", {
     entry,
     backendKind,
     worldBand,
@@ -603,7 +608,7 @@ async function runCompileChunkActNow({
   try {
     compileResult = await PulseWorldCompile();
   } catch (e) {
-    warn("[Understanding v24] Compiler failed", { entry, error: e?.message });
+    warn("[Understanding v25] Compiler failed", { entry, error: e?.message });
     return null;
   }
 
@@ -615,7 +620,6 @@ async function runCompileChunkActNow({
     errors: compileResult?.errors ?? []
   };
 
-  // Chunk the compiled payload (symbolic metadata only, cache-aware)
   const chunkResponse = await PulseChunker.chunkRoute({
     url: null,
     laneId,
@@ -631,7 +635,7 @@ async function runCompileChunkActNow({
   });
 
   if (!chunkResponse?.ok) {
-    warn("[Understanding v24] Chunking failed for compiled payload", {
+    warn("[Understanding v25] Chunking failed for compiled payload", {
       entry,
       error: chunkResponse?.error
     });
@@ -658,7 +662,7 @@ async function runCompileChunkActNow({
     actNowReflex = PulseACTNow.fromActNowPacket(actNowPacket, {
       modeKind: "dual",
       triggerKind: "compile_chunk_actnow",
-      organismState: null,
+      organismState: PulseSignalState.get(),   // ⭐ NEW: signal-aware
       dualBandContext: null
     });
   }
@@ -670,13 +674,13 @@ async function runCompileChunkActNow({
       context: PULSE_UNDERSTANDING_CONTEXT
     });
   } catch (e) {
-    warn("[Understanding v24] Failed to route actnow.packet", {
+    warn("[Understanding v25] Failed to route actnow.packet", {
       error: e?.message
     });
   }
 
   log(
-    "[Understanding v24] Compiler → Chunker → ACTNOW pipeline complete",
+    "[Understanding v25] Compiler → Chunker → ACTNOW pipeline complete",
     {
       entry,
       payloadHash: chunkResponse.payloadHash
@@ -692,7 +696,7 @@ async function runCompileChunkActNow({
 }
 
 // ============================================================================
-//  GLOBAL BROADCAST
+//  GLOBAL BROADCAST (window.Pulse)
 // ============================================================================
 if (typeof window !== "undefined") {
   PulseKernelPromise
@@ -721,22 +725,25 @@ if (typeof window !== "undefined") {
             BinaryShadow: PulseKernel.BinaryShadow,
             UIFlow: PulseKernel.UIFlow,
             SkinReflex: PulseKernel.SkinReflex,
-            Errors: PulseKernel.Errors
+            Errors: PulseKernel.Errors,
+
+            // ⭐ NEW: expose signal snapshot directly on window.Pulse
+            Signal: {
+              get: () => PulseSignalState.get()
+            }
           }
         : PulseKernel;
     })
     .catch((err) => {
       console.error(
-        "[PulseUnderstanding v24-ImmortalPlus] Kernel bootstrap failed:",
+        "[PulseUnderstanding v25-ImmortalPlus] Kernel bootstrap failed:",
         err
       );
     });
 }
 
 // ============================================================================
-//  UNDERSTANDING PREWARM — v24 IMMORTAL++
-//  - Talks to PulsePower, SDN, Router, Mesh, Chunker, and asset prewarm surfaces.
-//  - Touch-aware, profile-aware, and compile+chunk+actnow prewarm.
+//  UNDERSTANDING PREWARM — v25 IMMORTAL++
 // ============================================================================
 export async function prewarmUnderstanding({
   pages = [],
@@ -754,32 +761,22 @@ export async function prewarmUnderstanding({
     const Mesh = PulseKernel?.Mesh;
     const Brain = PulseKernel?.Brain ?? null;
 
-    // 0) Cortical pipeline organs prewarm (Chunker + ACTNOW)
     try {
       await buildCorticalPipelineOrgans(Brain);
     } catch (err) {
       console.error("[PulseUnderstanding] Cortical pipeline prewarm failed:", err);
     }
 
-    // 1) PulsePower prewarm (presentation + asset memory, Touch-aware)
     try {
       if (PulsePowerAPI?.pulsePowerTouch) {
         PulsePowerAPI.pulsePowerTouch({
           pageId: pages[0] || null,
           route: routes[0] || null,
           assets: {
-            images: assets
-              .filter((a) => a.kind === "image")
-              .map((a) => a.href),
-            fonts: assets
-              .filter((a) => a.kind === "font")
-              .map((a) => a.href),
-            scripts: assets
-              .filter((a) => a.kind === "script")
-              .map((a) => a.href),
-            styles: assets
-              .filter((a) => a.kind === "style")
-              .map((a) => a.href)
+            images: assets.filter((a) => a.kind === "image").map((a) => a.href),
+            fonts: assets.filter((a) => a.kind === "font").map((a) => a.href),
+            scripts: assets.filter((a) => a.kind === "script").map((a) => a.href),
+            styles: assets.filter((a) => a.kind === "style").map((a) => a.href)
           },
           touch: window.__PULSE_TOUCH__ || null
         });
@@ -788,7 +785,6 @@ export async function prewarmUnderstanding({
       console.error("[PulseUnderstanding] PulsePower prewarm failed:", err);
     }
 
-    // 2) SDN / Router prewarm (routes / pages)
     try {
       if (SDN?.prewarmRoutes && routes.length) {
         SDN.prewarmRoutes(routes);
@@ -799,7 +795,6 @@ export async function prewarmUnderstanding({
       console.error("[PulseUnderstanding] SDN/Router prewarm failed:", err);
     }
 
-    // 3) Mesh prewarm (if supported)
     try {
       if (Mesh?.prewarm && (pages.length || routes.length)) {
         Mesh.prewarm({ pages, routes });
@@ -808,7 +803,6 @@ export async function prewarmUnderstanding({
       console.error("[PulseUnderstanding] Mesh prewarm failed:", err);
     }
 
-    // 4) Legacy asset prewarm (if still wired)
     try {
       const urls = assets.map((a) => a.href).filter(Boolean);
       if (urls.length && window.prewarmAssets) {
@@ -818,7 +812,6 @@ export async function prewarmUnderstanding({
       console.error("[PulseUnderstanding] legacy prewarmAssets failed:", err);
     }
 
-    // 5) Optional: prewarm compile+chunk+actnow pipeline for a hot entry
     try {
       if (compileEntry) {
         await runCompileChunkActNow({
@@ -857,14 +850,23 @@ export const PulseUnderstanding = {
   IQMap: typeof window !== "undefined" ? window.PulseIQMap : null,
   Kernel: PulseKernelPromise,
   Errors: typeof window !== "undefined" ? window.PulseUIErrors : null,
+
   Identity: () =>
     typeof window !== "undefined" ? window?.Pulse?.Identity ?? null : null,
+
   IdentityKind: () =>
     typeof window !== "undefined" ? window?.Pulse?.IdentityKind ?? null : null,
+
   runThroughGovernor,
   prewarmUnderstanding,
   runCompileChunkActNow,
-  // v24++: expose cortical pipeline organs lazily (for diagnostics / advanced use)
+
+  // ⭐ NEW: expose signal snapshot directly
+  Signal: {
+    get: () => PulseSignalState.get()
+  },
+
+  // v25++: expose cortical pipeline organs lazily
   getCorticalPipelineOrgans: async () => {
     const { BinaryKernel, SymbolicKernel } = await resolveKernelsBinaryFirst();
     const Brain = BinaryKernel?.Brain ?? SymbolicKernel?.Brain ?? null;
@@ -872,6 +874,6 @@ export const PulseUnderstanding = {
   }
 };
 
-export const PulseUnderstandingV24 = PulseUnderstanding;
+export const PulseUnderstandingV25 = PulseUnderstanding;
 
 export default PulseUnderstanding;
