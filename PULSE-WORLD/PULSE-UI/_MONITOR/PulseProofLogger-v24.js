@@ -574,6 +574,11 @@ function mark404(message) {
 //  Full Chrono Logging Across All Levels
 //  Colors preserved exactly as original
 // ============================================================================
+// ============================================================================
+//  PULSE LOGGER v26 — IMMORTAL++
+//  Colors ALWAYS ON — raw mode included
+//  Adds delta/absolute timing to all logs
+// ============================================================================
 
 // ---------------------------------------------------------------------------
 //  UNIFIED CHRONO CORE — v26
@@ -592,14 +597,14 @@ function _chronoLabel(absolute) {
   return label;
 }
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 //  LOG — STANDARD
-// ---------------------------------------------------------------------------
+// ============================================================================
 export function log(...args) {
   const { subsystem, message, rest, raw, absolute } = normalizeArgs(args);
 
-  const meta = resolveFromOrganismMap();
-  const safe = meta?.subsystem || subsystem || "legacy";
+  const meta  = resolveFromOrganismMap();
+  const safe  = meta?.subsystem || subsystem || "legacy";
 
   const version =
     meta?.version ||
@@ -607,24 +612,35 @@ export function log(...args) {
 
   const color = meta?.color || PulseColors[safe] || PulseColorFallback;
   const icon  = meta?.icon  || PulseIcons[safe]  || PulseIconFallback;
-  const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
+  const prefix      = `${icon} ${safe.toUpperCase()} ${version}`;
   const safeMessage = mark404(message);
-  const time = _chronoLabel(absolute);
+  const time        = _chronoLabel(absolute);
 
+  // RAW MODE — SAME COLORS, SAME FORMAT, JUST NO AUTO-PREFIX LOGIC
   if (raw) {
-    _c.log(`${safeMessage} %c${time}`, "color:#999;font-weight:300;", ...rest);
-  } else {
     _c.log(
-      `%c${prefix} — ${safeMessage} %c${time}`,
+      `%c${safeMessage} %c${time}`,
       `color:${color}; font-weight:bold;`,
       "color:#999;font-weight:300;",
       ...rest
     );
+    pulseLog({ level: "log", subsystem: safe, message: safeMessage, rest });
+    return;
   }
+
+  // NORMAL MODE — PREFIX + MESSAGE + TIME
+  _c.log(
+    `%c${prefix}%c — ${safeMessage} %c${time}`,
+    `color:${color}; font-weight:bold;`,   // prefix color
+    `color:${color}; font-weight:bold;`,   // message color
+    "color:#999;font-weight:300;",         // time color
+    ...rest
+  );
 
   pulseLog({ level: "log", subsystem: safe, message: safeMessage, rest });
 }
+
 
 // ---------------------------------------------------------------------------
 //  WARN — YELLOW (UNCHANGED COLOR)
