@@ -513,17 +513,18 @@ export function pulseLog({
 // ============================================================================
 
 function normalizeArgs(args) {
-  let subsystem = "legacy";
   let message = "";
   let rest = [];
   let raw = false;
 
   const first = args[0];
 
+  // Raw CSS logs: log("%c...", ...)
   if (typeof first === "string" && first.startsWith("%c")) {
-    return { subsystem: subsystem || "legacy", message: first, rest: args.slice(1), raw: true };
+    return { subsystem: null, message: first, rest: args.slice(1), raw: true };
   }
 
+  // comment("comment", { ... })
   if (
     args.length === 2 &&
     first === "comment" &&
@@ -531,7 +532,6 @@ function normalizeArgs(args) {
     args[1] !== null
   ) {
     const obj = args[1];
-    subsystem = "signal";
 
     const pretty =
       obj.pretty ||
@@ -541,31 +541,32 @@ function normalizeArgs(args) {
       "signal-comment";
 
     return {
-      subsystem: subsystem || "legacy",
+      subsystem: "signal",
       message: pretty,
       rest: [obj],
       raw: false
     };
   }
 
+  // log("gpu", "message")
   if (args.length >= 2 && typeof first === "string" && typeof args[1] === "string") {
-    return { subsystem: first || "legacy", message: args[1], rest: args.slice(2), raw: false };
+    return { subsystem: first, message: args[1], rest: args.slice(2), raw: false };
   }
 
+  // log({ ... })
   if (typeof first === "object" && first !== null) {
-    const obj = first;
-    if (obj.pulseLayer === "NERVOUS-SYSTEM") subsystem = "band";
-    if (obj.schemaVersion && obj.textures !== undefined) subsystem = "gpu";
-    if (obj.binaryArtery === true) subsystem = "logger";
-    return { subsystem: subsystem || "legacy", message: "", rest: [obj], raw: false };
+    return { subsystem: null, message: "", rest: [first], raw: false };
   }
 
+  // log("message")
   if (args.length === 1) {
-    return { subsystem: subsystem || "legacy", message: first, rest: [], raw: false };
+    return { subsystem: null, message: first, rest: [], raw: false };
   }
 
-  return { subsystem: subsystem || "legacy", message: args.join(" "), rest: [], raw: false };
+  // log("a", "b", "c")
+  return { subsystem: null, message: args.join(" "), rest: [], raw: false };
 }
+
 
 function mark404(message) {
   if (typeof message === "string" && message.trim() === "404") {
