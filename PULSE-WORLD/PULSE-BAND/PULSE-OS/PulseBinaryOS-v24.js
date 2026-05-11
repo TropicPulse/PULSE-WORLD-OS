@@ -268,8 +268,8 @@ if (typeof window !== "undefined") {
         ExpansionMeta: Kernel.ExpansionMeta
       };
 
-      window.PulseBinaryKernel = window.PulseBinaryKernel
-        ? Object.freeze({ ...window.PulseBinaryKernel, ...exposed })
+      window.PulseBinary = window.PulseBinary
+        ? Object.freeze({ ...window.PulseBinary, ...exposed })
         : Object.freeze(exposed);
     })
     .catch((_err) => {

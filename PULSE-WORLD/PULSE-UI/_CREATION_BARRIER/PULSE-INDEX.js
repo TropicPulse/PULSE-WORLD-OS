@@ -88,6 +88,7 @@ if (!window.__PULSE_UI_INIT__) {
       logID("WAITING FOR ENGINES…");
 
       while (
+        !PulseProofMonitor ||
         !window.VitalsMonitor ||
         !window.VitalsMonitor.Vitals ||
         !window.VitalsMonitor.Vitals.generate ||
@@ -103,16 +104,16 @@ if (!window.__PULSE_UI_INIT__) {
 
     async function updatePulseBand() {
       try {
-        if (!window.VitalsMonitor) {
+        if (!PulseProofMonitor) {
           logWarn("VitalsMonitor missing");
           return;
         }
-        if (!window.PulseBinary) {
+        if (!PulseProofMonitor) {
           logWarn("PulseBinary missing");
           return;
         }
 
-        const vitals    = window.VitalsMonitor.Vitals.generate() ?? null;
+        const vitals    = PulseProofMonitor.Vitals.generate() ?? null;
         const binary    = window.PulseBinary ?? null;
         const sentience = binary?.Sentience?.snapshot?.() ?? null;
 
