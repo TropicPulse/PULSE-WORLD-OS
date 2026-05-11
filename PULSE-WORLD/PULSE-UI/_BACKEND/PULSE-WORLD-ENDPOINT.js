@@ -537,23 +537,19 @@ export function prewarmPulseWorldEndpoint() {
  *
  */
 
- window.PulseRemoteEndpoint = PulseWorldEndpoint;
- 
-export const PulseWorldEndpoint = Object.freeze({
+ export const PulseWorldEndpoint = Object.freeze({
   /**
    * Main handler.
-   *
-   * @param {Object} route
-   *   {
-   *     type: string,
-   *     payload?: any,
-   *     cycle?: number
-   *   }
    */
   async handle(route) {
     const start = nowMs();
     const type = route?.type || "Unknown";
     let error = null;
+
+    // ⭐ NON‑BLOCKING PREWARM ON EVERY CALL
+    try {
+      prewarmPulseWorldEndpoint(); // fire-and-forget
+    } catch (_) {}
 
     try {
       let payload = route?.payload ?? null;
@@ -562,7 +558,6 @@ export const PulseWorldEndpoint = Object.freeze({
       if (payload && payload.chunkId) {
         const chunkResult = handleChunkedPayload(payload);
         if (!chunkResult.complete) {
-          // Still assembling; caller can treat this as “in progress”.
           const duration = nowMs() - start;
           recordLatency(type, duration, null);
           return {
@@ -608,7 +603,6 @@ export const PulseWorldEndpoint = Object.freeze({
           return await handlePulseBandMetrics(payload);
 
         default:
-          // Unknown type → echo back for debugging.
           return {
             ok: false,
             type: "UnknownRouteType",
@@ -636,34 +630,25 @@ export const PulseWorldEndpoint = Object.freeze({
     }
   },
 
-  /**
-   * Expose metrics for introspection.
-   */
   getMetrics() {
     return safeJsonClone(endpointMetrics);
   },
 
-  /**
-   * Expose band state snapshot for debugging / tooling.
-   */
   getBandState(bandId) {
     return safeJsonClone(getBandState(bandId));
   },
 
-  /**
-   * Expose current speed boost for a band.
-   */
   getSpeedBoost(bandId) {
     return safeJsonClone(getEffectiveSpeedBoost(bandId));
   }
 });
 
 // ============================================================================
-// OPTIONAL: AUTO-PREWARM ON IMPORT
+// AUTO-PREWARM ON IMPORT (KEEP THIS)
 // ============================================================================
-
 prewarmPulseWorldEndpoint();
 
 // ============================================================================
-// END PulseWorldEndpoint-v24.js
+// EXPOSE ENDPOINT
 // ============================================================================
+window.PulseRemoteEndpoint = PulseWorldEndpoint;
