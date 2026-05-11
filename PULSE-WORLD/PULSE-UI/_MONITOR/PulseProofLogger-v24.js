@@ -444,8 +444,6 @@ function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
 //  IMMORTAL LOGGER — FIXED FOR SIGNAL GROUPING + ORGANISM MAP
 // ============================================================================
 
-import { PulseProofSignal } from "./PulseProofSignal-v24.js";
-
 // ============================================================================
 //  PULSE LOG — FIXED (NO MORE LOGGER → SIGNAL → LOGGER LOOPS)
 // ============================================================================
@@ -503,17 +501,6 @@ export function pulseLog({
   const entry = makeLocalLogEntry(level, safeSubsystem, message, rest, meta);
 
   appendLocalLog(entry);
-
-  // ⭐ CRITICAL FIX:
-  // DO NOT mirror signal logs back into Signal.
-  // This restores grouping and stops infinite loops.
-  if (entry.subsystem === "signal") {
-    return;
-  }
-
-  try {
-    PulseProofSignal.fromLogEntry(entry);
-  } catch (_) {}
 }
 
 // ============================================================================
@@ -826,13 +813,6 @@ export const PulseLoggerStore = {
 
   drainForHeartbeat() {
     const drained = drainLocalLogsForHeartbeat();
-
-    try {
-      for (const entry of drained) {
-        PulseProofSignal.fromLogEntry(entry);
-      }
-    } catch (_) {}
-
     return drained;
   }
 };

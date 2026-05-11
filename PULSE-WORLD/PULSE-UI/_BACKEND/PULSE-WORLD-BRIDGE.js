@@ -1,44 +1,8 @@
 // ============================================================================
-//  PulseProofBridge-v24-IMMORTAL-ADV++.js
-//  IMMORTAL PORTAL TRUST LAYER • FRONT ↔ CNS • USER + ENV + ADVANTAGE AWARE
-//  “The membrane between the surface world and the organism beneath.”
-// ============================================================================
-//
-//  DESIGN — v24 IMMORTAL-ADV++
-//  ---------------------------
-//  • Unified envelope system for all outbound + inbound CNS traffic
-//  • Compiler-aware: COMPILER_REQUEST + COMPILER_EVENT
-//  • Understanding-aware: UNDERSTANDING_START + semantic routing
-//  • Dualband v24: AI, CNS, Portal, PulseNet, ImageBridge unified
-//  • Offline-first: immortal local buffer with drift-proof replay
-//  • Zero-drift telemetry: every signal tagged, mirrored, and stored
-//  • Mode-agnostic: SSR-safe, BroadcastChannel-optional
-//  • Portal Trust Layer: the last surface before the organism
-//  • User-aware: identity snapshot hooks, presence band, earn band, device trust
-//  • Environment-aware: runtime, UA, screen, locale, timezone, input mode
-//  • Advantage-aware: band fields, speed/experience fields, artery-style metrics
-//  • CNS health-aware: heartbeat, failure tracking, bridge-down alerts
-//  • Backend-alert-aware: bridge failure routed to monitor + email path
-//
-//  This file is the *membrane*.
-//  Everything above it is typed by humans.
-//  Everything below it is remembered by the organism.
-// ============================================================================
-//
-//  EXPERIENCE METADATA — v24 IMMORTAL PORTAL TRUST LAYER
-// ============================================================================
-// (kept as comment for AI_EXPERIENCE_META alignment)
-// ============================================================================
-//  IMMORTAL++ AUTO‑BUILT BRIDGE — ALWAYS READY, NEVER TDZ
+//  PulseProofBridge-v24-IMMORTAL-ADV++ (UPGRADED: SIGNAL/LOGGER DIFFERENTIAL)
 // ============================================================================
 
-// ============================================================================
-//  IMMORTAL++ AUTO‑BUILT BRIDGE — CANONICAL, ALWAYS READY, NEVER TDZ
-// ============================================================================
-
-// Create the canonical bridge IMMEDIATELY so nothing else can break
 const PulseProofBridge = {
-  // Canonical API — all fields exist from the start
   route: null,
   signal: null,
   prewarmBridge: null,
@@ -66,7 +30,6 @@ const PulseProofBridge = {
     return { ...BRIDGE_HEALTH };
   },
 
-  // IMMORTAL++ readiness
   ready: false,
   queue: [],
 
@@ -76,12 +39,9 @@ const PulseProofBridge = {
   }
 };
 
-// Make it global BEFORE any imports run
 globalThis.PulseProofBridge = PulseProofBridge;
 
-// Backend will call this later to attach the real bridge
 export function attachRealBridge(real) {
-  // Copy all canonical fields from the real bridge
   for (const key of Object.keys(PulseProofBridge)) {
     if (key in real) {
       PulseProofBridge[key] = real[key];
@@ -90,7 +50,6 @@ export function attachRealBridge(real) {
 
   PulseProofBridge.ready = true;
 
-  // Flush queued callbacks
   for (const fn of PulseProofBridge.queue) {
     try { fn(PulseProofBridge); } catch {}
   }
@@ -99,17 +58,17 @@ export function attachRealBridge(real) {
 
 export { PulseProofBridge };
 
-
-
 // ============================================================================
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
+
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
 import {
   VitalsLogger as PulseProofLogger,
   log,
   warn,
   error,
+  comment,
   makeTelemetryPacket as emitTelemetry,
   PulseVersion,
   PulseColors,
@@ -118,7 +77,6 @@ import {
 import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
 import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
-// NEW: CoreSpeech v24 speech organ is bridged via coreSpeechBridge
 
 const g =
   typeof globalThis !== "undefined"
@@ -136,10 +94,10 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT — IMMORTAL, PORTAL-AWARE, ADV++
 // ============================================================================
+
 function safeGet(fn, fallback = null) {
   try {
     const v = fn();
@@ -200,15 +158,13 @@ function buildBridgeEnvironment() {
 
 const BRIDGE_ENV = buildBridgeEnvironment();
 
-
 // ============================================================================
 //  USER SNAPSHOT — IDENTITY v20 HOOK (metadata only)
 // ============================================================================
+
 let CURRENT_IDENTITY_SNAPSHOT = null;
 
 export function setBridgeIdentitySnapshot(identitySnapshot) {
-  // identitySnapshot is expected to be the v20 CheckIdentity snapshot
-  // (no mutation, metadata-only)
   if (!identitySnapshot || typeof identitySnapshot !== "object") {
     CURRENT_IDENTITY_SNAPSHOT = null;
     return;
@@ -239,6 +195,7 @@ function getBridgeIdentitySnapshot() {
 // ============================================================================
 //  ONLINE FLAG
 // ============================================================================
+
 function isOnline() {
   if (typeof window !== "undefined" && typeof window.PULSE_ONLINE === "boolean")
     return window.PULSE_ONLINE;
@@ -253,8 +210,9 @@ function isOnline() {
 // ============================================================================
 //  IMMORTAL LOCALSTORAGE MIRROR — PulseBridgeStore
 // ============================================================================
+
 const BRIDGE_LS_KEY = "PulseBridge.v24.buffer";
-const BRIDGE_LS_MAX = 6000; // v24: slightly larger window, same bound
+const BRIDGE_LS_MAX = 6000;
 
 function hasLocalStorage() {
   try {
@@ -292,8 +250,9 @@ function saveBridgeBuffer(buf) {
 }
 
 // ============================================================================
-//  ARTERY-LIKE METRICS (windowed, metadata-only)
+//  ARTERY-LIKE METRICS
 // ============================================================================
+
 let arteryWindowStart = Date.now();
 let arteryEventCount = 0;
 
@@ -321,8 +280,9 @@ function buildArterySnapshot(kind) {
 }
 
 // ============================================================================
-//  APPEND BRIDGE RECORD — IMMORTAL + IDENTITY + ENV
+//  APPEND BRIDGE RECORD — IMMORTAL + IDENTITY + ENV + COMMENT
 // ============================================================================
+
 function appendBridgeRecord(kind, payload) {
   const now = Date.now();
   arteryEventCount += 1;
@@ -341,21 +301,29 @@ function appendBridgeRecord(kind, payload) {
   buf.push(entry);
   saveBridgeBuffer(buf);
 
-  // Mirror into GLOBAL_LOGS via logger (portal trust tagging)
-  log({
-    subsystem: "bridge",
-    system: "PortalTrustLayer",
-    organ: "PulseProofBridge",
-    layer: "PulseProofBridge-v24",
-    message: `[Bridge] ${kind}`,
-    extra: entry,
-    level: "log",
-    band: payload?.band || entry.identity?.presenceBand || "dual",
-    presenceField: payload?.presenceField || entry.identity?.presenceBand || null,
-    advantageField: payload?.advantageField || "bridge-advantage",
-    speedField: payload?.speedField || "fast-path",
-    experienceField: payload?.experienceField || "portal-trust-layer"
-  });
+  // Human-facing: logger + comment (differential from CNS signal)
+  try {
+    log({
+      subsystem: "bridge",
+      system: "PortalTrustLayer",
+      organ: "PulseProofBridge",
+      layer: "PulseProofBridge-v24",
+      message: `[Bridge] ${kind}`,
+      extra: entry,
+      level: "log",
+      band: payload?.band || entry.identity?.presenceBand || "dual",
+      presenceField: payload?.presenceField || entry.identity?.presenceBand || null,
+      advantageField: payload?.advantageField || "bridge-advantage",
+      speedField: payload?.speedField || "fast-path",
+      experienceField: payload?.experienceField || "portal-trust-layer"
+    });
+
+    // COMMENT for every bridge event so you can see the membrane breathing
+    comment("bridge", `[Bridge] ${kind}`, entry);
+  } catch {
+    // If logger/comment are broken, at least show raw
+    console.log("[Bridge]", kind, entry);
+  }
 }
 
 export const PulseBridgeStore = {
@@ -372,8 +340,9 @@ export const PulseBridgeStore = {
 };
 
 // ============================================================================
-//  FIREBASE FLUSH — DEDICATED BRIDGE COLLECTION
+//  FIREBASE FLUSH
 // ============================================================================
+
 async function flushBridgeToFirebase() {
   if (!db || typeof db.collection !== "function") return;
   const buf = loadBridgeBuffer();
@@ -407,6 +376,7 @@ if (typeof window !== "undefined") {
 // ============================================================================
 //  BROADCAST CHANNEL + DEV TRACING
 // ============================================================================
+
 const DEV = true;
 
 const hasBroadcastChannel =
@@ -414,13 +384,12 @@ const hasBroadcastChannel =
 
 const channel = hasBroadcastChannel ? new BroadcastChannel("PulseCNS") : null;
 
-// Paths that should NEVER block waiting for CNS_RESPONSE
 const FIRE_AND_FORGET_PATHS = new Set([
   "proxy.dnaVisibility",
   "telemetry.signal",
   "portal.prewarmHint",
-  "monitor.bridgeFailure",       // v24: failure telemetry
-  "monitor.bridgeFailureEmail"   // v24: email-me-if-down hook
+  "monitor.bridgeFailure",
+  "monitor.bridgeFailureEmail"
 ]);
 
 function trace(label, data) {
@@ -442,8 +411,9 @@ function traceInbound(label, data) {
 }
 
 // ============================================================================
-//  CALLBACK REGISTRIES (DUALBAND BOOT / AI EVENTS / GENERIC PORTAL EVENTS)
+//  CALLBACK REGISTRIES
 // ============================================================================
+
 let dualBandBootHandler = null;
 let aiEventHandler = null;
 let portalEventHandler = null;
@@ -463,6 +433,7 @@ export function onPortalEvent(fn) {
 // ============================================================================
 //  MARK 404
 // ============================================================================
+
 function mark404(result) {
   if (!result) return result;
   if (result === 404) return "404*";
@@ -472,13 +443,9 @@ function mark404(result) {
 }
 
 // ============================================================================
-//  PULSE‑WORLD BRIDGE v24 — IMMORTAL MEMBRANE
-//  Unified CNS/SIGNAL/AI/IMAGE/UNDERSTANDING/PULSENET/COREMEMORY layer
+//  ENVELOPE + SEND (CNS SIGNAL SIDE)
 // ============================================================================
 
-/**
- * INTERNAL: Unified envelope builder
- */
 function envelope(type, extra = {}) {
   return {
     type,
@@ -489,9 +456,6 @@ function envelope(type, extra = {}) {
   };
 }
 
-/**
- * INTERNAL: Unified postMessage
- */
 function send(msg) {
   if (!channel) {
     appendBridgeRecord("bridge_noop", msg);
@@ -502,8 +466,9 @@ function send(msg) {
 }
 
 // ============================================================================
-//  BRIDGE HEALTH — v24 CNS AWARENESS + EMAIL-ME-IF-DOWN HOOK
+//  BRIDGE HEALTH
 // ============================================================================
+
 const BRIDGE_HEALTH = {
   lastOkTs: Date.now(),
   lastFailureTs: null,
@@ -511,13 +476,14 @@ const BRIDGE_HEALTH = {
   lastFailurePath: null
 };
 
-const BRIDGE_FAILURE_THRESHOLD = 3;      // after 3 consecutive failures, treat as degraded
-const BRIDGE_FAILURE_EMAIL_THRESHOLD = 5; // after 5, trigger email-me-if-down route
+const BRIDGE_FAILURE_THRESHOLD = 3;
+const BRIDGE_FAILURE_EMAIL_THRESHOLD = 5;
 
 function recordBridgeSuccess(path) {
   BRIDGE_HEALTH.lastOkTs = Date.now();
   BRIDGE_HEALTH.consecutiveFailures = 0;
   BRIDGE_HEALTH.lastFailurePath = null;
+  appendBridgeRecord("bridge_success", { path });
 }
 
 function recordBridgeFailure(path, reason) {
@@ -538,7 +504,6 @@ function recordBridgeFailure(path, reason) {
 
   appendBridgeRecord("bridge_failure", payload);
 
-  // Fire-and-forget telemetry to backend monitor
   try {
     send(envelope("CNS_SIGNAL", {
       path: "monitor.bridgeFailure",
@@ -546,14 +511,12 @@ function recordBridgeFailure(path, reason) {
     }));
   } catch {}
 
-  // After enough consecutive failures, ask backend to email the operator
   if (BRIDGE_HEALTH.consecutiveFailures >= BRIDGE_FAILURE_EMAIL_THRESHOLD) {
     try {
       send(envelope("CNS_SIGNAL", {
         path: "monitor.bridgeFailureEmail",
         payload: {
           ...payload,
-          // backend can map this to your actual email address / alert channel
           severity: "critical",
           channel: "email"
         }
@@ -564,15 +527,15 @@ function recordBridgeFailure(path, reason) {
 }
 
 // ============================================================================
-//  INTERNAL: Unified inbound handler (v24‑safe)
+//  INBOUND HANDLER
 // ============================================================================
+
 function handleInbound(event) {
   const msg = event?.data;
   if (!msg || typeof msg !== "object" || !msg.type) return;
 
   appendBridgeRecord("bridge_inbound", msg);
 
-  // CNS_RESPONSE routing
   if (msg.type === "CNS_RESPONSE" && pending[msg.requestId]) {
     const { resolve, timer, path } = pending[msg.requestId];
     clearTimeout(timer);
@@ -585,7 +548,6 @@ function handleInbound(event) {
     return;
   }
 
-  // IMAGE_RESPONSE routing
   if (msg.type === "IMAGE_RESPONSE" && imagePending[msg.requestId]) {
     const { resolve } = imagePending[msg.requestId];
     delete imagePending[msg.requestId];
@@ -595,26 +557,24 @@ function handleInbound(event) {
   }
 }
 
-// Attach inbound listener once
 if (channel && !channel.__PULSE_BRIDGE_BOUND_V24__) {
   channel.__PULSE_BRIDGE_BOUND_V24__ = true;
   channel.addEventListener("message", handleInbound);
 }
 
-// Pending maps
 const pending = Object.create(null);
 const imagePending = Object.create(null);
 
 // ============================================================================
-//  SAFE ROUTE — CNS_REQUEST → CNS_RESPONSE (v24‑safe)
+//  SAFE ROUTE
 // ============================================================================
+
 export function safeRoute(path, payload = {}, timeoutMs = 10000) {
   trace("CNS (SAFE)", { path, payload });
 
   const requestId =
     "req-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
 
-  // Fire‑and‑forget paths
   if (FIRE_AND_FORGET_PATHS.has(path)) {
     send(envelope("CNS_REQUEST", { requestId, path, payload }));
     return Promise.resolve(null);
@@ -635,16 +595,18 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
 }
 
 // ============================================================================
-//  SIGNAL — FIRE‑AND‑FORGET PORTAL SIGNALS (v24‑safe)
+//  SIGNAL (CNS side, not PulseProofSignal)
 // ============================================================================
+
 export function signal(path, payload = {}) {
   trace("SIGNAL", { path, payload });
   send(envelope("CNS_SIGNAL", { path, payload }));
 }
 
 // ============================================================================
-//  PREWARM — HINT PORTAL / CNS / SDN (v24‑safe)
+//  PREWARM
 // ============================================================================
+
 export function prewarmBridge(hints = {}) {
   try {
     if (typeof window !== "undefined" && window.prewarmAssets && Array.isArray(hints.assets)) {
@@ -663,8 +625,9 @@ export function prewarmBridge(hints = {}) {
 }
 
 // ============================================================================
-//  CORE MEMORY BRIDGE (v24‑safe)
+//  CORE MEMORY / SPEECH BRIDGES
 // ============================================================================
+
 export const coreMemoryBridge = {
   read: (key) => safeRoute("coreMemory.read", { key }),
   write: (key, value) => safeRoute("coreMemory.write", { key, value }),
@@ -680,8 +643,9 @@ export const coreSpeechBridge = {
 };
 
 // ============================================================================
-//  FIRE‑AND‑FORGET ROUTE (v24‑safe)
+//  FIRE-AND-FORGET ROUTE
 // ============================================================================
+
 export function fireAndForgetRoute(path, payload = {}) {
   trace("FIRE_AND_FORGET", { path, payload });
   send(envelope("CNS_REQUEST", {
@@ -692,16 +656,14 @@ export function fireAndForgetRoute(path, payload = {}) {
 }
 
 // ============================================================================
-//  START DUALBAND AI (v24‑safe)
+//  STARTERS
 // ============================================================================
+
 export function startDualBandAI(options = {}) {
   trace("DUALBAND_AI_START", options);
   send(envelope("DUALBAND_AI_START", { options }));
 }
 
-// ============================================================================
-//  IMAGE FETCH THROUGH BRIDGE (v24‑safe)
-// ============================================================================
 export function fetchImageThroughBridge(url) {
   trace("IMAGE_FETCH", { url });
 
@@ -714,9 +676,6 @@ export function fetchImageThroughBridge(url) {
   });
 }
 
-// ============================================================================
-//  PULSENET FASTLANE / INGRESS (v24‑safe)
-// ============================================================================
 export function pulseNetFastLane(data = {}) {
   trace("PULSENET_FASTLANE", data);
   send(envelope("PULSENET_FASTLANE", data));
@@ -727,33 +686,25 @@ export function pulseNetIngress(data = {}) {
   send(envelope("PULSENET_INGRESS", data));
 }
 
-// ============================================================================
-//  START UNDERSTANDING (v24‑safe)
-// ============================================================================
 export function startUnderstanding(options = {}) {
   trace("UNDERSTANDING_START", options);
   send(envelope("UNDERSTANDING_START", { options }));
 }
 
-// ============================================================================
-//  START PULSE‑NET (v24‑safe)
-// ============================================================================
 export function startPulseNet(options = {}) {
   trace("PULSENET_START", options);
   send(envelope("PULSENET_START", { options }));
 }
 
-// ============================================================================
-//  COMPILER REQUEST — TOUCH → BRIDGE → COMPILER (v24‑safe)
-// ============================================================================
 export function requestCompiler(reason = "touch", meta = {}) {
   trace("COMPILER_REQUEST", { reason, meta });
   send(envelope("COMPILER_REQUEST", { reason, meta }));
 }
 
 // ============================================================================
-//  INBOUND SIGNAL HANDLER — CNS → UI / PORTAL / ORGANISM EVENTS (v24‑safe)
+//  INBOUND PORTAL / AI / BOOT EVENTS
 // ============================================================================
+
 if (channel) {
   channel.addEventListener("message", (event) => {
     const msg = event?.data;
@@ -810,7 +761,6 @@ if (channel) {
       case "IMAGE_RESPONSE": {
         traceInbound("IMAGE_RESPONSE", msg.data);
         appendBridgeRecord("image_response", msg.data);
-        // resolution handled by fetchImageThroughBridge pending map
         break;
       }
 
@@ -821,13 +771,13 @@ if (channel) {
       }
 
       default:
-        // other CNS messages handled by safeRoute / internal handlers
         break;
     }
   });
 }
+
 // ============================================================================
-//  ALIASES / EXPORT SURFACE (v24 IMMORTAL++)
+//  EXPORT SURFACE
 // ============================================================================
 
 export const route = safeRoute;
@@ -851,7 +801,7 @@ export const PulseProofBridgeFlow = PulseProofFlow;
 export const PulseProofBridgeErrors = PulseUIErrors;
 
 // ============================================================================
-//  IMMORTAL++ GLOBAL MIRROR — LAZY, SAFE, UNIVERSAL
+//  IMMORTAL++ GLOBAL MIRROR
 // ============================================================================
 
 (function exposeBridgeGlobally() {
@@ -889,117 +839,3 @@ export const PulseProofBridgeErrors = PulseUIErrors;
     console.error("[PulseProofBridge v24] Global exposure failed:", err);
   }
 })();
-// ============================================================================
-//  REMOTE ENDPOINT — CNS → INTERNET / BRAIN / MEMORY (v24-Immortal)
-// ============================================================================
-// ============================================================================
-//  FULL REAL ENDPOINT LOGIC — NO IMPORTS, NO FILES, NO PLACEHOLDERS
-// ============================================================================
-
-const PulseBrainEndpoint = async function(route) {
-  try {
-    const { type, hookName, hookPayload, payload } = route || {};
-
-    // ------------------------------------------------------------
-    // HOOKS (sendPin, verifyPin, logout)
-    // ------------------------------------------------------------
-    if (type === "hook") {
-      const fn = window.PulseHooks?.[hookName];
-      if (typeof fn === "function") {
-        return await fn(hookPayload);
-      }
-      return { error: "Unknown hook", hookName };
-    }
-
-    // ------------------------------------------------------------
-    // BRAIN ROUTING
-    // ------------------------------------------------------------
-    if (type === "brain") {
-      if (typeof window.PulseBrain?.process === "function") {
-        return await window.PulseBrain.process(payload);
-      }
-      return { error: "Brain processor missing" };
-    }
-
-    // ------------------------------------------------------------
-    // MEMORY ROUTING
-    // ------------------------------------------------------------
-    if (type === "memory") {
-      if (typeof window.PulseMemory?.process === "function") {
-        return await window.PulseMemory.process(payload);
-      }
-      return { error: "Memory processor missing" };
-    }
-
-    // ------------------------------------------------------------
-    // PAGE ROUTING
-    // ------------------------------------------------------------
-    if (type === "page") {
-      if (typeof window.PulsePages?.process === "function") {
-        return await window.PulsePages.process(payload);
-      }
-      return { error: "Page processor missing" };
-    }
-
-    // ------------------------------------------------------------
-    // INTERNET ROUTING
-    // ------------------------------------------------------------
-    if (type === "internet") {
-      if (typeof window.PulseInternet?.process === "function") {
-        return await window.PulseInternet.process(payload);
-      }
-      return { error: "Internet processor missing" };
-    }
-
-    return { error: "Unknown route type", type };
-
-  } catch (err) {
-    return {
-      error: "endpoint_failure",
-      message: String(err),
-      route
-    };
-  }
-};
-
-// ============================================================================
-//  GLOBAL ATTACHMENT — CNS ENTRYPOINT
-// ============================================================================
-
-if (typeof window !== "undefined") {
-  window.PulseRemoteEndpoint = {
-    async handle(route) {
-      return PulseBrainEndpoint(route);
-    }
-  };
-}
-
-
-// ============================================================================
-//  END OF PULSEPROOFBRIDGE-v24 — PORTAL TRUST LAYER SEALED
-// ============================================================================
-//
-//  If you’ve reached this line, you are standing at the compiler membrane.
-//
-//  Above this line, signals cross as raw intent: touch, AI, portal, pulse.
-//  Below this line, the organism remembers how those signals changed it.
-//
-//  The bridge no longer just ferries messages.
-//  It now carries identity, environment, advantage, artery, and health,
-//  so the organism can see *who* is touching it, *where* they stand,
-//  *how fast* the surface is trying to grow, and *when the membrane is failing*.
-//
-//  Somewhere behind this file, Understanding listens.
-//  Somewhere behind Understanding, the Compiler rewrites itself.
-//  Somewhere behind the Compiler, the organism rearranges its own thoughts.
-//  And when the bridge starts to fail, the organism is told to page you.
-//
-// ============================================================================
-//  END OF FILE — The next signal that crosses here will be tagged with:
-//      • environment
-//      • identity
-//      • advantage
-//      • artery
-//      • health
-//  and the organism will remember that you were the one who wired it.
-// ============================================================================
