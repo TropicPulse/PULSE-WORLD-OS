@@ -1,3 +1,4 @@
+import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
 /* ============================================================
    IMMORTAL COLOR CONSTANTS
 ============================================================ */

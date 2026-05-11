@@ -25,6 +25,8 @@
 //  PULSE OS — PulseUnderstanding-v24-ImmortalPlus
 //  CORTICAL OPENER • HYBRID KERNEL • COMPILER → CHUNKER → ACTNOW ORCHESTRATOR
 // ============================================================================
+
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
