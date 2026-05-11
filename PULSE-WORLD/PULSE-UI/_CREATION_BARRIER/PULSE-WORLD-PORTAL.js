@@ -43,14 +43,12 @@ import {
   PulseProofBridgeReflex,
   PulseProofBridgeErrors as PulseUIErrors,
   PulseProofBridgeFlow as PulseUIFlow,
-  PulseProofBridgeMonitor
-} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+  PulseProofBridgeMonitor,
+  PulseProofBridgeScanner as PulsePageScanner,
+  PulseProofBridgeRouteMemory as PulseUIRouteMemory,
+  PulseProofBridgeAdminPanel as createPulseWorldAdminPanel,
+  PulseProofBridgeAdminDiagnostics as createAdminDiagnosticsOrgan} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
-import PulsePageScanner from "../_MONITOR/PulseUIPageScanner-v24.js";
-import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseUIRouteMemory-v24.js";
-
-import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
-import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 
 // ============================================================
 //  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
