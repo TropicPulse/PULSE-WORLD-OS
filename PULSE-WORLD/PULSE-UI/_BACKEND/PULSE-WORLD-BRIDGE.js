@@ -855,3 +855,12 @@ export const PulseProofBridgeErrors = PulseUIErrors;
     console.error("[PulseProofBridge v24] Global exposure failed:", err);
   }
 })();
+
+import { PulseWorldEndpoint } from "./PulseWorldEndpoint-v24.js";
+
+// ⭐ THIS IS THE WHOLE POINT OF THIS PAGE
+window.PulseRemoteEndpoint = {
+  async handle(route) {
+    return PulseWorldEndpoint.handle(route);
+  }
+};
