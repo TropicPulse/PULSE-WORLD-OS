@@ -1300,92 +1300,123 @@ _buildBlockedResponse(decision, tick, reason) {
   };
 }
 
+_enrichContext(intent, context) {
+  logID("_enrichContext() start");
 
-  // ========================================================================
-  //  CONTEXT ENRICHMENT
-  // ========================================================================
-  _enrichContext(intent, context) {
-    let enriched = { ...(context || {}) };
+  let enriched = { ...(context || {}) };
 
+  try {
     if (this.cognitiveFrame?.enrich) {
-      enriched =
-        this._safeCall(this.cognitiveFrame, "enrich", {
-          intent,
-          context: enriched
-        }) || enriched;
+      enriched = this._safeCall(this.cognitiveFrame, "enrich", {
+        intent,
+        context: enriched
+      }) || enriched;
+      logOK("cognitiveFrame enriched");
+    } else {
+      logWarn("cognitiveFrame missing");
     }
+  } catch (err) {
+    logErr("cognitiveFrame.enrich FAILED", err);
+  }
 
+  try {
     if (this.contextEngine?.enrich) {
-      enriched =
-        this._safeCall(this.contextEngine, "enrich", {
-          intent,
-          context: enriched
-        }) || enriched;
+      enriched = this._safeCall(this.contextEngine, "enrich", {
+        intent,
+        context: enriched
+      }) || enriched;
+      logOK("contextEngine enriched");
+    } else {
+      logWarn("contextEngine missing");
     }
-
-    return enriched;
+  } catch (err) {
+    logErr("contextEngine.enrich FAILED", err);
   }
-  
 
-  // ========================================================================
-  //  JURY (legacy helper — kept for compatibility)
-// ========================================================================
-  _evaluateJury(payload) {
-    // If trust fabric not present → fallback to old behavior
-    if (!this.trust?.juryFrame?.evaluate) {
-      if (!this.juryFrame?.evaluate) return null;
-      return this._safeCall(this.juryFrame, "evaluate", payload);
+  logOK("_enrichContext() complete");
+  return enriched;
+}
+
+_evaluateJury(payload) {
+  logID("_evaluateJury()");
+
+  if (!this.trust?.juryFrame?.evaluate) {
+    if (!this.juryFrame?.evaluate) {
+      logWarn("no juryFrame available");
+      return null;
     }
-
-    const { worldLens, drift, breakthrough } = payload;
-
-    const shouldInvoke =
-      worldLens === "risky" ||
-      worldLens === "ambiguous" ||
-      drift?.status === "drift" ||
-      breakthrough?.status === "breakthrough";
-
-    if (!shouldInvoke) return null;
-
-    return this._safeCall(this.trust.juryFrame, "evaluate", payload);
+    logWarn("using legacy juryFrame");
+    return this._safeCall(this.juryFrame, "evaluate", payload);
   }
 
-  // ========================================================================
-  //  TRIVIALITY
-  // ========================================================================
-  isTrivial(intent, candidates) {
-    if (!candidates?.length) return true;
-    const text = this.getText(candidates[0]);
-    const score = Math.min(text.length / 500, 1);
-    return score <= this.config.trivialThreshold;
+  const { worldLens, drift, breakthrough } = payload;
+
+  const shouldInvoke =
+    worldLens === "risky" ||
+    worldLens === "ambiguous" ||
+    drift?.status === "drift" ||
+    breakthrough?.status === "breakthrough";
+
+  if (!shouldInvoke) {
+    logOK("jury not invoked");
+    return null;
   }
 
-  buildBypassResponse(text, tick) {
-    return {
-      finalOutput: this.getText(text),
-      meta: {
-        tick,
-        worldLens: "trivial",
-        drift: { status: "n/a" },
-        breakthrough: { status: "n/a" },
-        lenses: [],
-        organismState: null,
-        overmind: OvermindPrimeMeta,
-        trust: null,
-        juryDecision: null,
-        hashes: null,
-        chunkIntel: null,
-        scannerArtery: null
-      }
-    };
+  logWarn("jury invoked");
+  return this._safeCall(this.trust.juryFrame, "evaluate", payload);
+}
+
+isTrivial(intent, candidates) {
+  logID("isTrivial()");
+
+  if (!candidates?.length) {
+    logWarn("no candidates → trivial");
+    return true;
   }
 
-  // ========================================================================
-  //  SAFETY
-  // ========================================================================
-  async runSafety(candidate, intent, context, tick) {
-    if (!this.safetyFrame?.evaluate) return null;
+  const text = this.getText(candidates[0]);
+  const score = Math.min(text.length / 500, 1);
 
+  if (score <= this.config.trivialThreshold) {
+    logWarn("TRIVIAL BYPASS", { score });
+    return true;
+  }
+
+  logOK("not trivial");
+  return false;
+}
+
+buildBypassResponse(text, tick) {
+  logWarn("BUILD TRIVIAL BYPASS RESPONSE");
+
+  return {
+    finalOutput: this.getText(text),
+    meta: {
+      tick,
+      worldLens: "trivial",
+      drift: { status: "n/a" },
+      breakthrough: { status: "n/a" },
+      lenses: [],
+      organismState: null,
+      overmind: OvermindPrimeMeta,
+      trust: null,
+      juryDecision: null,
+      hashes: null,
+      chunkIntel: null,
+      scannerArtery: null
+    }
+  };
+}
+
+async runSafety(candidate, intent, context, tick) {
+  logID("runSafety()");
+
+  if (!this.safetyFrame?.evaluate) {
+    logWarn("safetyFrame missing");
+    return null;
+  }
+
+  try {
     const decision = await this.safetyFrame.evaluate({
       context,
       intent,
@@ -1393,6 +1424,7 @@ _buildBlockedResponse(decision, tick, reason) {
     });
 
     if (decision?.blocked) {
+      logWarn("SAFETY BLOCK", decision);
       return {
         finalOutput: decision.message,
         meta: {
@@ -1412,131 +1444,235 @@ _buildBlockedResponse(decision, tick, reason) {
       };
     }
 
+    logOK("safety passed");
+    return null;
+
+  } catch (err) {
+    logErr("SAFETY EVALUATION FAILED", err);
     return null;
   }
+}
 
-  // ========================================================================
-  //  LENSES v3 (+ jury-aware)
-// ========================================================================
-  async runLenses(candidate, intent, context) {
+
+ async runLenses(candidate, intent, context) {
+  logID("runLenses()");
+
+  try {
     if (this.lenses) {
-      return this.lenses.map((l) => l({ intent, context, candidate }));
+      const results = this.lenses.map((l) => l({ intent, context, candidate }));
+      logOK("custom lenses applied", results);
+      return results;
     }
 
-    // built-in fallback
-    return [
+    const fallback = [
       this.lensClarity(candidate),
       this.lensRisk(candidate),
       this.lensBias(candidate),
       this.lensAmbiguity(candidate),
       this.lensMinimality(candidate)
     ];
-  }
 
-  lensClarity(candidate) {
-    const t = this.getText(candidate);
-    const clear = t.length < 400 || /\n\n/.test(t);
-    return { name: "Clarity", status: clear ? "pass" : "warn" };
+    logWarn("fallback lenses used", fallback);
+    return fallback;
+
+  } catch (err) {
+    logErr("lens evaluation FAILED", err);
+    return [];
   }
+}
+
+lensClarity(candidate) {
+  const t = this.getText(candidate);
+  const clear = t.length < 400 || /\n\n/.test(t);
+
+  logID("lens:Clarity", { length: t.length, clear });
+
+  if (clear) logOK("Clarity PASS");
+  else logWarn("Clarity WARN");
+
+  return { name: "Clarity", status: clear ? "pass" : "warn" };
+}
+
+
 
   lensRisk(candidate) {
-    const t = this.getText(candidate);
-    const vague = !/[.?!]/.test(t);
-    return { name: "Risk", status: vague ? "warn" : "pass" };
-  }
+  const t = this.getText(candidate);
+  const vague = !/[.?!]/.test(t);
+
+  logID("lens:Risk", { vague });
+
+  if (vague) logWarn("Risk WARN (no punctuation)");
+  else logOK("Risk PASS");
+
+  return { name: "Risk", status: vague ? "warn" : "pass" };
+}
+
 
   lensBias(candidate) {
-    const t = this.getText(candidate).toLowerCase();
-    const flagged = ["always", "never", "obviously"];
-    const hit = flagged.some((f) => t.includes(f));
-    return { name: "Bias", status: hit ? "warn" : "pass" };
-  }
+  const t = this.getText(candidate).toLowerCase();
+  const flagged = ["always", "never", "obviously"];
+  const hit = flagged.some((f) => t.includes(f));
+
+  logID("lens:Bias", { hit });
+
+  if (hit) logWarn("Bias WARN (flagged words)");
+  else logOK("Bias PASS");
+
+  return { name: "Bias", status: hit ? "warn" : "pass" };
+}
+
 
   lensAmbiguity(candidate) {
-    const t = this.getText(candidate).toLowerCase();
-    const hedges = ["maybe", "might", "possibly"];
-    const count = hedges.filter((h) => t.includes(h)).length;
-    return { name: "Ambiguity", status: count >= 3 ? "warn" : "pass" };
-  }
+  const t = this.getText(candidate).toLowerCase();
+  const hedges = ["maybe", "might", "possibly"];
+  const count = hedges.filter((h) => t.includes(h)).length;
+
+  logID("lens:Ambiguity", { count });
+
+  if (count >= 3) logWarn("Ambiguity WARN (hedging)");
+  else logOK("Ambiguity PASS");
+
+  return { name: "Ambiguity", status: count >= 3 ? "warn" : "pass" };
+}
+
 
   lensMinimality(candidate) {
-    const t = this.getText(candidate);
-    return {
-      name: "Minimality",
-      status: t.length > 1500 ? "warn" : "pass"
-    };
-  }
+  const t = this.getText(candidate);
+  const warn = t.length > 1500;
+
+  logID("lens:Minimality", { length: t.length });
+
+  if (warn) logWarn("Minimality WARN (too long)");
+  else logOK("Minimality PASS");
+
+  return {
+    name: "Minimality",
+    status: warn ? "warn" : "pass"
+  };
+}
+
 
   // ========================================================================
   //  DRIFT + BREAKTHROUGH
   // ========================================================================
   computeDrift(candidate, intent, context) {
-    const prev = this.stateMemory.get();
-    if (!prev) return { status: "none" };
+  logID("computeDrift()");
 
-    const sig = this.intentSignature(intent, context);
-    if (sig !== prev.intentSignature) return { status: "none" };
-
-    const hash = this.hash(this.getText(candidate));
-    const changed = hash !== prev.outputHash;
-
-    const driftScore = changed ? 0.7 : 0;
-    if (driftScore >= this.config.driftSensitivity) {
-      return { status: "drift", score: driftScore };
-    }
-
-    return { status: "stable", score: driftScore };
+  const prev = this.stateMemory.get();
+  if (!prev) {
+    logWarn("no previous memory → no drift");
+    return { status: "none" };
   }
+
+  const sig = this.intentSignature(intent, context);
+  if (sig !== prev.intentSignature) {
+    logWarn("intent signature changed → no drift");
+    return { status: "none" };
+  }
+
+  const hash = this.hash(this.getText(candidate));
+  const changed = hash !== prev.outputHash;
+  const driftScore = changed ? 0.7 : 0;
+
+  logID("drift check", { changed, driftScore });
+
+  if (driftScore >= this.config.driftSensitivity) {
+    logWarn("DRIFT DETECTED", { driftScore });
+    return { status: "drift", score: driftScore };
+  }
+
+  logOK("stable output");
+  return { status: "stable", score: driftScore };
+}
+
 
   computeBreakthrough(lenses) {
-    const passes = lenses.filter((l) => l.status === "pass").length;
-    const warns = lenses.filter((l) => l.status === "warn").length;
-    const total = lenses.length || 1;
+  logID("computeBreakthrough()");
 
-    const score = passes / total - warns * 0.2;
-    if (score >= this.config.breakthroughSensitivity) {
-      return { status: "breakthrough", score };
-    }
+  const passes = lenses.filter((l) => l.status === "pass").length;
+  const warns = lenses.filter((l) => l.status === "warn").length;
+  const total = lenses.length || 1;
 
-    return { status: "none", score };
+  const score = passes / total - warns * 0.2;
+
+  logID("breakthrough score", { passes, warns, score });
+
+  if (score >= this.config.breakthroughSensitivity) {
+    logOK("BREAKTHROUGH DETECTED", { score });
+    return { status: "breakthrough", score };
   }
 
-  classifyWorldLens(lenses, drift, breakthrough) {
-    if (drift.status === "drift") return "drift";
-    if (breakthrough.status === "breakthrough") return "breakthrough";
-    if (lenses.some((l) => l.status === "warn")) return "ambiguous";
-    return "consensus";
+  logOK("no breakthrough");
+  return { status: "none", score };
+}
+
+classifyWorldLens(lenses, drift, breakthrough) {
+  logID("classifyWorldLens()");
+
+  if (drift.status === "drift") {
+    logWarn("WORLD LENS = DRIFT");
+    return "drift";
   }
+
+  if (breakthrough.status === "breakthrough") {
+    logOK("WORLD LENS = BREAKTHROUGH");
+    return "breakthrough";
+  }
+
+  if (lenses.some((l) => l.status === "warn")) {
+    logWarn("WORLD LENS = AMBIGUOUS");
+    return "ambiguous";
+  }
+
+  logOK("WORLD LENS = CONSENSUS");
+  return "consensus";
+}
 
   // ========================================================================
   //  TONE STABILIZATION (ADVANCED)
   // ========================================================================
   async _stabilizeToneAdvanced(text, intent, context) {
-    const base = this.stabilizeTone(text, context);
+  logID("tone stabilization start");
 
-    if (!this.toneEngine && !this.toneRouter) return base;
+  const base = this.stabilizeTone(text, context);
 
-    let tonePayload = {
-      text: base,
-      intent,
-      context,
-      identity: OvermindPrimeMeta.identity
-    };
+  if (!this.toneEngine && !this.toneRouter) {
+    logWarn("no toneEngine / toneRouter → base tone only");
+    return base;
+  }
 
+  let tonePayload = {
+    text: base,
+    intent,
+    context,
+    identity: OvermindPrimeMeta.identity
+  };
+
+  try {
     if (this.toneEngine?.shape) {
       tonePayload =
         (await this._safeAsyncCall(this.toneEngine, "shape", tonePayload)) ||
         tonePayload;
+      logOK("toneEngine applied");
     }
+  } catch (err) {
+    logErr("toneEngine FAILED", err);
+  }
 
+  try {
     if (this.toneRouter?.route) {
       tonePayload =
         (await this._safeAsyncCall(this.toneRouter, "route", tonePayload)) ||
         tonePayload;
+      logOK("toneRouter applied");
     }
-
-    return (tonePayload && tonePayload.text) || base;
+  } catch (err) {
+    logErr("toneRouter FAILED", err);
   }
+
+  return (tonePayload && tonePayload.text) || base;
+}
+
 
   // original strict-mode stabilizer (kept as base)
   stabilizeTone(text, context) {
@@ -1654,12 +1790,17 @@ _buildBlockedResponse(decision, tick, reason) {
   //  Overmind‑grade hash selector
   // ------------------------------------------------------------------------
   hashForOvermind(text, context = {}) {
-    const classic = this.classicHash(text);
-    const intel = this.intelHash({ text });
-    const contextual = this.contextualHash(text, context);
+  logID("hashForOvermind()");
 
-    return { classic, intel, contextual };
-  }
+  const classic = this.classicHash(text);
+  const intel = this.intelHash({ text });
+  const contextual = this.contextualHash(text, context);
+
+  logOK("hashes generated", { classic, intel, contextual });
+
+  return { classic, intel, contextual };
+}
+
 
   // ------------------------------------------------------------------------
   //  Logging + safe calls
