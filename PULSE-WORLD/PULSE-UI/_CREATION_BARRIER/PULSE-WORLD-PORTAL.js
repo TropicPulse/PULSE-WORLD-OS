@@ -916,6 +916,27 @@ window.addEventListener("load", () => {
   }
 });
 
+// ============================================================================
+// ⭐ NEW: SIGNAL SNAPSHOT EXPORT (v25 IMMORTAL++)
+// Portal exposes the CSS‑merged signal snapshot from PulseProofSignal.
+// Understanding stays backend-only. Portal stays membrane-only.
+// ============================================================================
+function __PulsePortalGetSignalSnapshot() {
+  try {
+    const sig = window.PulseProofSignal;
+    if (!sig || typeof sig.comments !== "function") return null;
+
+    const comments = sig.comments(1);
+    if (!comments || !comments.length) return null;
+
+    // v25 top-layer merged comment contains computed state
+    return comments[0]?.details?.computed || null;
+  } catch {
+    return null;
+  }
+}
+
+
 // ------------------------------------------------------------------------
 // SURFACE META + PORTAL SURFACE PROJECTION
 // ------------------------------------------------------------------------
@@ -929,6 +950,13 @@ window.PulsePortal =
     meta: surfaceMeta,
     env: PulseSurfaceEnvironment,
     logger: PulseProofLogger,
+
+    // ⭐ NEW: v25 Signal Snapshot API
+    getSignal() {
+      return __PulsePortalGetSignalSnapshot();
+    },
+
+    // legacy fields preserved
     vitals: PulseProofMonitor,
     ui: {
       errors: PulseUIErrors,
