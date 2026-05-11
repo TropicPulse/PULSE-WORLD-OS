@@ -556,12 +556,11 @@ if (channel && !channel.__PULSE_BRIDGE_BOUND_V24__) {
 
 const pending = Object.create(null);
 const imagePending = Object.create(null);
-
 // ============================================================================
-//  SAFE ROUTE
+//  SAFE ROUTE — v24 DIRECT ENDPOINT MODE (NO BRIDGE, NO TIMEOUTS)
 // ============================================================================
 export function safeRoute(path, payload = {}, timeoutMs = 10000) {
-  trace("BRIDGE (SAFE)", { path, payload });
+  trace("SAFE_ROUTE", { path, payload });
 
   // 1 — Direct frontend hooks (keep this)
   if (typeof window !== "undefined" &&
@@ -578,26 +577,29 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
     }
   }
 
-  // 2 — DIRECT BRIDGE ROUTE (THIS IS WHAT YOU WANT)
-  return new Promise((resolve) => {
-    const requestId =
-      "req-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+  // 2 — DIRECT ENDPOINT ROUTE (NO BRIDGE, NO CNS, NO TIMEOUT)
+  return new Promise(async (resolve) => {
+    try {
+      if (typeof window !== "undefined" &&
+          window.PulseRemoteEndpoint &&
+          typeof window.PulseRemoteEndpoint.handle === "function") {
 
-    const timer = setTimeout(() => {
-      delete pending[requestId];
-      appendBridgeRecord("safeRoute_timeout", { path, payload });
+        const result = await window.PulseRemoteEndpoint.handle({
+          path,
+          payload
+        });
+
+        appendBridgeRecord("safeRoute_endpoint_call", { path, payload, result });
+        resolve(result);
+        return;
+      }
+
+      appendBridgeRecord("safeRoute_no_endpoint", { path, payload });
       resolve(null);
-    }, timeoutMs);
-
-    pending[requestId] = { resolve, timer, path };
-
-    // THIS IS THE FIX — SEND TO BRIDGE, NOT CNS
-    window.Bridge.send({
-      type: "BRIDGE_ROUTE",
-      requestId,
-      path,
-      payload
-    });
+    } catch (err) {
+      appendBridgeRecord("safeRoute_endpoint_error", { path, payload, err });
+      resolve(null);
+    }
   });
 }
 
