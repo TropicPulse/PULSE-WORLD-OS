@@ -1689,7 +1689,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-
+  hideTPLoader();
   // ============================================================================
   //  SUBSCRIBE TO CNS PULSES — MATCHES INDEX
   // ============================================================================
@@ -1699,14 +1699,13 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     logWarn("PulseProofSignal.subscribe missing — LOGIN UI will not pulse");
   }
-
+  
 
   /* ============================================================
      8. DOM WRAPPER
   ============================================================ */
   (async () => {
     await loginBootstrap();
-    hideTPLoader();
   })();
 
 }); // END DOMContentLoaded
