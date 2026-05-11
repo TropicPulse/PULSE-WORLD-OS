@@ -31,7 +31,7 @@
 // ============================================================================
 
 import {
-  PulseWorldEndpoint,
+  PulseProofWorldEndpoint as PulseWorldEndpoint,
   route as BridgeRoute,
   PulseProofBridgeMonitor as PulseVitalsMonitor,
   PulseProofBridgeLogger as PulseVitalsLogger,
