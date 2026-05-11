@@ -46,7 +46,7 @@ import {
   PulseProofBridgeMonitor,
   PulseProofBridgeScanner as PulsePageScanner,
   PulseProofBridgeRouteMemory as PulseUIRouteMemory,
-  PulseProofBridgeAdminPanel as createPulseWorldAdminPanel,
+  PulseProofBridgeWorldAdminPanel as createPulseWorldAdminPanel,
   PulseProofBridgeAdminDiagnostics as createAdminDiagnosticsOrgan} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 
