@@ -785,29 +785,33 @@ function createPulseTouch(options = {}) {
 
   let hasScannedRoute = false;
 
-  async function scanAndPreloadRouteImages(routeHtml) {
-    if (hasScannedRoute) return; // ONE TIME ONLY
-    hasScannedRoute = true;
+async function scanAndPreloadRouteImages(routeHtml) {
+  if (hasScannedRoute) return; // ONE TIME ONLY
+  hasScannedRoute = true;
 
-    try {
-      const html = await fetch(routeHtml, { cache: "force-cache" }).then(r => r.text());
-      const doc = new DOMParser().parseFromString(html, "text/html");
-      const imgs = [...doc.querySelectorAll("img")].map(i => i.getAttribute("src"));
+  try {
+    const html = await fetch(routeHtml, { cache: "force-cache" }).then(r => r.text());
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const imgs = [...doc.querySelectorAll("img")].map(i => i.getAttribute("src"));
 
-      imgs.forEach(src => {
-        if (!src) return;
-        const img = new Image();
-        img.src = src;
-      });
+    imgs.forEach(src => {
+      if (!src) return;
+      const img = new Image();
+      img.src = src;
+    });
 
-      appendTouchTimeline("route_image_prewarm", {
-        route: routeHtml,
-        count: imgs.length
-      });
-    } catch {
-      appendTouchTimeline("route_image_prewarm_failed", { route: routeHtml });
-    }
+    appendTouchTimeline("route_image_prewarm", {
+      route: routeHtml,
+      count: imgs.length
+    });
+  } catch {
+    appendTouchTimeline("route_image_prewarm_failed", { route: routeHtml });
   }
+}
+
+
+// ⭐ MAKE IT AVAILABLE GLOBALLY
+window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
 
   // CALL IT:
   scanAndPreloadRouteImages(`./${detected.page}.html`);
@@ -1235,15 +1239,20 @@ function applyGateDecision(gateDecision, skin) {
       window.__PULSE_TOUCH_T0__ = t0;
       window.__PULSE_CHRONO_LAST__ = t0;
 
-      // ⭐ TICK 1 — ENGINE WARM (chunk + prewarm)
+      // ⭐ TICK 1 — ROUTE IMAGE SCAN (using global function)
       setTimeout(() => {
-        touch.chunker?.preloadAllChunks?.();
-        touch.advantage?.prewarmAll?.();
+        window.__PULSE_SCAN_ROUTE_IMAGES__(`./${page}.html`);
 
-        // ⭐ TICK 2 — UI WARM (pages + snapshots)
+        // ⭐ TICK 2 — ENGINE WARM (chunk + prewarm)
         setTimeout(() => {
-          touch.preloader?.preloadAllPages?.();
-          touch.memory?.snapshotAll?.();
+          touch.chunker?.preloadAllChunks?.();
+          touch.advantage?.prewarmAll?.();
+
+          // ⭐ TICK 3 — UI WARM (pages + snapshots)
+          setTimeout(() => {
+            touch.preloader?.preloadAllPages?.();
+            touch.memory?.snapshotAll?.();
+          }, 0);
         }, 0);
       }, 0);
 
@@ -1253,7 +1262,6 @@ function applyGateDecision(gateDecision, skin) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
 })();
-
 
 // ============================================================
 //  FOOTER — CONTINUOUS CONTACT LORE
