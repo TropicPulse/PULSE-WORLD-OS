@@ -441,32 +441,6 @@ text-align: center;
 }
 /* ================= PULSEBAND PANEL ONLY (v7 Extract) ================= */
 
-/* Overlay root */
-#pulseband-overlay {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  z-index: 80;
-  pointer-events: none; /* panel/badge will re-enable */
-}
-
-/* Bubble badge */
-#pulseband-badge {
-  width: 52px;
-  height: 52px;
-  border-radius: 999px;
-  background: radial-gradient(circle at 30% 20%, #ffffff 0%, #ffd400 40%, #ff5a5a 100%);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  pointer-events: auto;
-  position: relative;
-  overflow: hidden;
-  border: 2px solid #000;
-}
-
 /* Animated bars inside badge */
 .pb-bars {
   display: flex;
@@ -567,18 +541,6 @@ text-align: center;
   text-align: right;
 }
 
-/* Mobile tweaks */
-@media (max-width: 900px) {
-  #pulseband-overlay {
-    bottom: 12px;
-    right: 12px;
-  }
-
-  .pb-card {
-    width: 260px;
-  }
-}
-
 /* Fullscreen overlay */
 #t-loading {
   position: fixed;
@@ -622,31 +584,6 @@ text-align: center;
     opacity: 0;
     pointer-events: none;
   }
-/* PulseBand overlay root */
-#pulseband-overlay {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  z-index: 80;
-  pointer-events: none; /* panel/badge will re-enable */
-}
-
-/* Bubble badge */
-#pulseband-badge {
-  width: 52px;
-  height: 52px;
-  border-radius: 999px;
-  background: radial-gradient(circle at 30% 20%, #ffffff 0%, #ffd400 40%, #ff5a5a 100%);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  pointer-events: auto;
-  position: relative;
-  overflow: hidden;
-  border: 2px solid #000;
-}
 
 /* Animated bars inside badge */
 .pb-bars {
@@ -947,32 +884,6 @@ text-align: center;
   font-weight: 600;
   color: var(--tp-yellow-strong);
   text-align: right;
-}
-
-/* PulseBand overlay root */
-#pulseband-overlay {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  z-index: 80;
-  pointer-events: none; /* panel/badge will re-enable */
-}
-
-/* Bubble badge */
-#pulseband-badge {
-  width: 52px;
-  height: 52px;
-  border-radius: 999px;
-  background: radial-gradient(circle at 30% 20%, #ffffff 0%, #ffd400 40%, #ff5a5a 100%);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  pointer-events: auto;
-  position: relative;
-  overflow: hidden;
-  border: 2px solid #000;
 }
 
 /* Animated bars inside badge */
