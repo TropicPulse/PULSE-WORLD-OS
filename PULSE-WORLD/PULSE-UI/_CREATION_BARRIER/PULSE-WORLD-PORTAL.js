@@ -1057,61 +1057,71 @@ if (isBrowser()) {
       let binaryKernel = null;
 
       // ----------------------------------------------------------------------
-      // BINARY ORGANISM BOOT — READ-ONLY SHADOW EXPOSED AS PulseBinary
+      // BINARY ORGANISM BOOT — GLOBAL KERNEL + SHARED PulseBinary
       // ----------------------------------------------------------------------
       try {
-        if (!window.__PulseBinaryBooted) {
-          binaryKernel =
-            typeof PulseBinaryOrganismBoot?.boot === "function"
-              ? await PulseBinaryOrganismBoot.boot({ trace: false })
-              : null;
+        // Prefer an existing kernel if something (Touch / Index) already booted it
+        if (window.PulseBinaryKernel) {
+          binaryKernel = window.PulseBinaryKernel;
+        } else if (typeof PulseBinaryOrganismBoot?.boot === "function") {
+          binaryKernel = await PulseBinaryOrganismBoot.boot({ trace: false });
+        }
 
-          if (binaryKernel) {
-            window.__PulseBinaryBooted = true;
+        if (binaryKernel) {
+          // Expose kernel globally for ALL surfaces (Index, Touch, Portal, etc.)
+          window.PulseBinaryKernel = binaryKernel;
+          window.__PulseBinaryBooted = true;
 
-            const safeBinaryView = {
-              meta: PulseBinaryOrganismBoot?.layer
-                ? {
-                    layer: PulseBinaryOrganismBoot.layer,
-                    role: PulseBinaryOrganismBoot.role,
-                    version: PulseBinaryOrganismBoot.version,
-                    lineage: PulseBinaryOrganismBoot.lineage,
-                    evo: PulseBinaryOrganismBoot.evo,
-                    projection: "read-only-binary-shadow"
-                  }
-                : null,
+          const safeBinaryView = {
+            meta: PulseBinaryOrganismBoot?.layer
+              ? {
+                  layer: PulseBinaryOrganismBoot.layer,
+                  role: PulseBinaryOrganismBoot.role,
+                  version: PulseBinaryOrganismBoot.version,
+                  lineage: PulseBinaryOrganismBoot.lineage,
+                  evo: PulseBinaryOrganismBoot.evo,
+                  projection: "read-only-binary-shadow"
+                }
+              : null,
 
-              Vitals: {
-                generate: () =>
-                  binaryKernel?.vitals?.generateVitals
-                    ? binaryKernel.vitals.generateVitals()
-                    : null
-              },
+            Vitals: {
+              generate: () =>
+                binaryKernel?.vitals?.generateVitals
+                  ? binaryKernel.vitals.generateVitals()
+                  : null
+            },
 
-              Consciousness: {
-                latest: () =>
-                  binaryKernel?.consciousness?.generateConsciousnessPacket
-                    ? binaryKernel.consciousness.generateConsciousnessPacket()
-                    : null
-              },
+            Consciousness: {
+              latest: () =>
+                binaryKernel?.consciousness?.generateConsciousnessPacket
+                  ? binaryKernel.consciousness.generateConsciousnessPacket()
+                  : null
+            },
 
-              Sentience: {
-                snapshot:
-                  typeof binaryKernel?.sentience?.snapshot === "function"
-                    ? () => binaryKernel.sentience.snapshot()
-                    : () => null
-              }
-            };
+            Sentience: {
+              snapshot:
+                typeof binaryKernel?.sentience?.snapshot === "function"
+                  ? () => binaryKernel.sentience.snapshot()
+                  : () => null
+            }
+          };
 
-            window.PulseBinary =
-              window.PulseBinary || Object.freeze(safeBinaryView);
+          // Merge with any existing PulseBinary instead of hiding from it
+          window.PulseBinary = window.PulseBinary
+            ? Object.freeze({ ...window.PulseBinary, ...safeBinaryView })
+            : Object.freeze(safeBinaryView);
 
-            console.log(
-              "%c[PulsePortal::Binary] %corganism booted",
-              "color:#00E5FF; font-weight:bold; font-family:monospace;",
-              "color:#00FF9C; font-family:monospace;"
-            );
-          }
+          console.log(
+            "%c[PulsePortal::Binary] %corganism booted + wired",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#00FF9C; font-family:monospace;"
+          );
+        } else {
+          console.error(
+            "%c[PulsePortal::Binary] %cNO KERNEL AVAILABLE",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#FF3B3B; font-weight:bold; font-family:monospace;"
+          );
         }
       } catch (err) {
         console.error(
@@ -1214,6 +1224,7 @@ if (isBrowser()) {
   })();
 }
 
+
 // ============================================================================
 // UI FLOW CONTEXT PROJECTION — OPTIONAL, READ-ONLY SURFACE VIEW
 // ============================================================================
@@ -1251,17 +1262,25 @@ if (isBrowser()) {
     }
   })();
 }
-
 // ============================================================================
 // PULSEBAND BOOT — DUAL-BAND SESSION BRIDGE
 // ============================================================================
 if (isBrowser()) {
   (async () => {
     try {
-      // Attach PulseBand from pre-injected pulseband if present
+      // Attach PulseBand from pre-injected pulseband / PulseBand if present
       try {
-        if (window.pulseband && !window.PulseBand) {
-          window.PulseBand = window.pulseband;
+        const injectedBand = window.PulseBand || window.pulseband || null;
+
+        if (!injectedBand) {
+          console.warn(
+            "%c[PulsePortal::PulseBand] %cno injected PulseBand instance found",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#FFE066; font-family:monospace;"
+          );
+        } else {
+          // Normalize to window.PulseBand
+          window.PulseBand = injectedBand;
 
           console.log(
             "%c[PulsePortal::PulseBand] %cbridge attached",
@@ -1269,119 +1288,128 @@ if (isBrowser()) {
             "color:#00FF9C; font-family:monospace;"
           );
 
-          window.PulseBand.on("request", async (packet) => {
-            let url, method, bodyOrQuery;
+          // Attach proxy handler once
+          if (!window.__PulseBandProxyAttached) {
+            window.__PulseBandProxyAttached = true;
 
-            switch (packet.type) {
-              case "start":
-                url = "/PULSE-PROXY/pulseband/session";
-                method = "POST";
-                bodyOrQuery = packet;
-                break;
+            window.PulseBand.on("request", async (packet) => {
+              let url, method, bodyOrQuery;
 
-              case "next":
-                url = "/PULSE-PROXY/pulseband/next";
-                method = "GET";
-                bodyOrQuery = {
-                  sessionId: packet.sessionId,
-                  userId: packet.userId
-                };
-                break;
+              switch (packet.type) {
+                case "start":
+                  url = "/PULSE-PROXY/pulseband/session";
+                  method = "POST";
+                  bodyOrQuery = packet;
+                  break;
 
-              case "ack":
-                url = "/PULSE-PROXY/pulseband/ack";
-                method = "POST";
-                bodyOrQuery = packet;
-                break;
+                case "next":
+                  url = "/PULSE-PROXY/pulseband/next";
+                  method = "GET";
+                  bodyOrQuery = {
+                    sessionId: packet.sessionId,
+                    userId: packet.userId
+                  };
+                  break;
 
-              case "redownload":
-                url = "/PULSE-PROXY/pulseband/redownload";
-                method = "POST";
-                bodyOrQuery = packet;
-                break;
+                case "ack":
+                  url = "/PULSE-PROXY/pulseband/ack";
+                  method = "POST";
+                  bodyOrQuery = packet;
+                  break;
 
-              default:
-                return;
-            }
+                case "redownload":
+                  url = "/PULSE-PROXY/pulseband/redownload";
+                  method = "POST";
+                  bodyOrQuery = packet;
+                  break;
 
-            const isGet = method === "GET";
+                default:
+                  return;
+              }
 
-            const query = isGet
-              ? "?" + new URLSearchParams(bodyOrQuery).toString()
-              : "";
+              const isGet = method === "GET";
 
-            const opts = isGet
-              ? { method: "GET" }
-              : {
-                  method: "POST",
-                  headers: { "content-type": "application/json" },
-                  body: JSON.stringify(bodyOrQuery)
-                };
+              const query = isGet
+                ? "?" + new URLSearchParams(bodyOrQuery).toString()
+                : "";
 
-            let data = null;
+              const opts = isGet
+                ? { method: "GET" }
+                : {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(bodyOrQuery)
+                  };
 
-            try {
-              const hasLoggerRoute =
-                window.PulseLogger &&
-                typeof window.PulseLogger.route === "function";
+              let data = null;
 
-              if (hasLoggerRoute) {
-                data = await window.PulseLogger.route("fetchProxy", {
-                  url: url + query,
-                  method,
-                  body: bodyOrQuery,
-                  layer: "A1",
-                  reflexOrigin: "PulseBand",
-                  binaryAware: true,
-                  dualBand: true,
-                  presenceAware: true
-                });
+              try {
+                const hasLoggerRoute =
+                  window.PulseLogger &&
+                  typeof window.PulseLogger.route === "function";
 
-                console.log(
-                  "%c[PulsePortal::PulseBand] %cproxy request %c→ %s",
+                if (hasLoggerRoute) {
+                  data = await window.PulseLogger.route("fetchProxy", {
+                    url: url + query,
+                    method,
+                    body: bodyOrQuery,
+                    layer: "A1",
+                    reflexOrigin: "PulseBand",
+                    binaryAware: true,
+                    dualBand: true,
+                    presenceAware: true
+                  });
+
+                  console.log(
+                    "%c[PulsePortal::PulseBand] %cproxy request %c→ %s",
+                    "color:#00E5FF; font-weight:bold; font-family:monospace;",
+                    "color:#00FF9C; font-family:monospace;",
+                    "color:#E8F8FF; font-family:monospace;",
+                    url + query
+                  );
+                } else {
+                  const res = await fetch(url + query, opts);
+                  data = await res.json().catch(() => null);
+
+                  console.log(
+                    "%c[PulsePortal::PulseBand] %cfetch request %c→ %s",
+                    "color:#00E5FF; font-weight:bold; font-family:monospace;",
+                    "color:#00FF9C; font-family:monospace;",
+                    "color:#E8F8FF; font-family:monospace;",
+                    url + query
+                  );
+                }
+              } catch (err) {
+                console.error(
+                  "%c[PulsePortal::PulseBand] %cREQUEST FAILED %c→ %s",
                   "color:#00E5FF; font-weight:bold; font-family:monospace;",
-                  "color:#00FF9C; font-family:monospace;",
-                  "color:#E8F8FF; font-family:monospace;",
-                  url + query
-                );
-              } else {
-                const res = await fetch(url + query, opts);
-                data = await res.json().catch(() => null);
-
-                console.log(
-                  "%c[PulsePortal::PulseBand] %cfetch request %c→ %s",
-                  "color:#00E5FF; font-weight:bold; font-family:monospace;",
-                  "color:#00FF9C; font-family:monospace;",
-                  "color:#E8F8FF; font-family:monospace;",
-                  url + query
+                  "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+                  "color:#FFE066; font-family:monospace;",
+                  String(err)
                 );
               }
-            } catch (err) {
-              console.error(
-                "%c[PulsePortal::PulseBand] %cREQUEST FAILED %c→ %s",
-                "color:#00E5FF; font-weight:bold; font-family:monospace;",
-                "color:#FF3B3B; font-weight:bold; font-family:monospace;",
-                "color:#FFE066; font-family:monospace;",
-                String(err)
-              );
-            }
 
-            try {
-              if (window.PulseBand && data) {
-                window.PulseBand.emit("response:" + packet.sessionId, data);
+              try {
+                if (window.PulseBand && data) {
+                  window.PulseBand.emit("response:" + packet.sessionId, data);
+                }
+              } catch (err) {
+                console.error(
+                  "%c[PulsePortal::PulseBand] %cEMIT FAILED %c→ %s",
+                  "color:#00E5FF; font-weight:bold; font-family:monospace;",
+                  "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+                  "color:#FFE066; font-family:monospace;",
+                  String(err)
+                );
               }
-            } catch (err) {
-              console.error(
-                "%c[PulsePortal::PulseBand] %cEMIT FAILED %c→ %s",
-                "color:#00E5FF; font-weight:bold; font-family:monospace;",
-                "color:#FF3B3B; font-weight:bold; font-family:monospace;",
-                "color:#FFE066; font-family:monospace;",
-                String(err)
-              );
-            }
-          });
+            });
+          }
 
-          window.PulseBandStart = (opts) => window.PulseBand.start(opts);
+          // Always expose a normalized start helper
+          window.PulseBandStart = (opts) =>
+            window.PulseBand && typeof window.PulseBand.start === "function"
+              ? window.PulseBand.start(opts)
+              : null;
         }
       } catch (err) {
         console.error(
@@ -1423,6 +1451,12 @@ if (isBrowser()) {
             "color:#00E5FF; font-weight:bold; font-family:monospace;",
             "color:#00FF9C; font-family:monospace;"
           );
+        } else {
+          console.warn(
+            "%c[PulsePortal::PulseBand] %cno PulseBandStart available — chunk-session skipped",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#FFE066; font-family:monospace;"
+          );
         }
       } catch (err) {
         console.error(
@@ -1444,6 +1478,7 @@ if (isBrowser()) {
     }
   })();
 }
+
 
 // ============================================================================
 // EXPORT — PULSE PORTAL API
