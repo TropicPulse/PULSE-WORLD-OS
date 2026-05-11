@@ -251,31 +251,30 @@ const PulseBinaryOSKernelPromise = buildPulseBinaryOSKernel();
 // ============================================================================
 
 if (typeof window !== "undefined") {
-  PulseBinaryOSKernelPromise
-    .then((Kernel) => {
-      const exposed = {
-        meta: Kernel.meta,
-        SDN: Kernel.SDN,
-        Brain: Kernel.Brain,
-        Evolution: Kernel.Evolution,
-        MemoryCore: Kernel.MemoryCore,
-        BinaryOverlay: Kernel.BinaryOverlay,
-        PresenceField: Kernel.PresenceField,
-        BinaryMeshEnv: Kernel.BinaryMeshEnv,
-        MeshPresenceRelay: Kernel.MeshPresenceRelay,
-        OrganismMeshRoot: Kernel.OrganismMeshRoot,
-        Expansion: Kernel.Expansion,
-        ExpansionMeta: Kernel.ExpansionMeta
-      };
+  PulseBinaryOSKernelPromise.then((Kernel) => {
+  const shadow = {
+    meta: Kernel.meta,
 
-      window.PulseBinary = window.PulseBinary
-        ? Object.freeze({ ...window.PulseBinary, ...exposed })
-        : Object.freeze(exposed);
-    })
-    .catch((_err) => {
-      // Outside organism: optional symbolic logging if desired.
-      // console.error("[PulseBinaryOS-v24-IMMORTAL-SPINE++] Kernel bootstrap failed:", _err);
-    });
+    Vitals: {
+      generate: () => Kernel?.Vitals?.generateVitals?.()
+    },
+
+    Sentience: {
+      snapshot: () => Kernel?.Sentience?.snapshot?.()
+    },
+
+    Consciousness: {
+      latest: () => Kernel?.Consciousness?.generateConsciousnessPacket?.()
+    }
+  };
+
+  window.PulseBinaryKernel = Kernel;
+
+  window.PulseBinary = window.PulseBinary
+    ? Object.freeze({ ...window.PulseBinary, ...shadow })
+    : Object.freeze(shadow);
+});
+
 }
 
 // ============================================================================
