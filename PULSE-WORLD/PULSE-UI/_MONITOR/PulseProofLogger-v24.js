@@ -707,44 +707,39 @@ export function groupEnd() {
 
 function resolveFromOrganismMap() {
   try {
-    // Get caller file URL from stack
     const stack = new Error().stack;
     const match = stack.match(/(file:\/\/[^\s)]+)/);
     if (!match) return null;
 
     const fileUrl = match[1];
-
-    // Extract filename
-    const fileName = fileUrl.split("/").pop(); // e.g. "pulse-pages-v24.js"
+    const parts = fileUrl.split("/");
 
     // ---------------------------------------------
-    // VERSION DETECTION FROM FILENAME
+    // SUBSYSTEM FROM FOLDER NAME
     // ---------------------------------------------
-    let version = "v12.3"; // default fallback
+    const folder = parts[parts.length - 2]; // e.g. "PULSE-MESH"
+    let subsystem = "legacy";
 
-    const versionMatch = fileName.match(/-v(\d+(\.\d+)?)/i);
-    if (versionMatch) {
-      version = `v${versionMatch[1]}`;
+    if (folder.startsWith("PULSE-")) {
+      subsystem = folder.replace("PULSE-", "").toLowerCase();
+    }
+
+    // Special case: PULSE-X → world
+    if (folder === "PULSE-X") {
+      subsystem = "world";
     }
 
     // ---------------------------------------------
-    // SUBSYSTEM DETECTION FROM FILENAME
+    // VERSION FROM FILENAME
     // ---------------------------------------------
-    // pulse-pages-v24.js → "pages"
-    // pulse-vault-v16.js → "vault"
-    // pulse-cns.js       → "cns"
-    let subsystem = "legacy";
+    const fileName = parts[parts.length - 1];
+    let version = "v12.3";
 
-    const subsystemMatch = fileName
-      .replace(/\.js$/i, "")
-      .replace(/-v\d+(\.\d+)?$/i, "") // remove version
-      .replace(/^pulse-/, "");        // remove prefix
+    const vMatch = fileName.match(/-v(\d+(\.\d+)?)/i);
+    if (vMatch) {
+      version = `v${vMatch[1]}`;
+    }
 
-    if (subsystemMatch) subsystem = subsystemMatch.toLowerCase();
-
-    // ---------------------------------------------
-    // RETURN META FOR LOGGER
-    // ---------------------------------------------
     return {
       subsystem,
       version,
@@ -756,6 +751,7 @@ function resolveFromOrganismMap() {
     return null;
   }
 }
+
 
 
 
