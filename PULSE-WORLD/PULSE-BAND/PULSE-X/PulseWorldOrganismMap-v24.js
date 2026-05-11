@@ -31,6 +31,128 @@ let routes = null;
 let schema = null;
 let fetchAPI = null;
 
+// -----------------------------------------------------------------------------
+// Version / roles / colors / icons (metadata only, no behavior)
+// -----------------------------------------------------------------------------
+
+// ============================================================================
+//  DETERMINISTIC VERSION MAP
+//  - All real subsystems are v24
+//  - Legacy is fallback ONLY
+// ============================================================================
+
+export const PulseVersion = {
+  proof: "24.0",
+  logger: "24.0",
+  renderer: "24.0",
+  gpu: "24.0",
+  band: "24.0",
+  vault: "24.0",
+  hooks: "24.0",
+  endpoint: "24.0",
+  router: "24.0",
+  expansion: "24.0",
+  bridge: "24.0",
+  internet: "24.0",
+  memory: "24.0",
+  pages: "24.0",
+  cns: "24.0",
+  world: "24.0",
+  mesh: "24.0",
+  ai: "24.0",
+  signal: "24.0"
+};
+
+// fallback only
+export const PulseVersionFallback = "16.x";
+
+// ============================================================================
+//  DETERMINISTIC ROLE MAP
+// ============================================================================
+
+export const PulseRoles = {
+  proof: "PROOF MONITOR",
+  logger: "PROOF LOGGER",
+  renderer: "RENDERER",
+  gpu: "GPU SUBSYSTEM",
+  band: "NERVOUS SYSTEM",
+  vault: "VAULT SUBSYSTEM",
+  hooks: "HOOK REGISTRY",
+  endpoint: "REMOTE ENDPOINT",
+  router: "ROUTER",
+  expansion: "EXPANSION ENGINE",
+  bridge: "CNS BRIDGE",
+  internet: "INTERNET SUBSYSTEM",
+  memory: "MEMORY SUBSYSTEM",
+  pages: "PAGE SUBSYSTEM",
+  cns: "CNS CORE",
+  world: "WORLD SUBSYSTEM",
+  mesh: "MESH SUBSYSTEM",
+  ai: "AI SUBSYSTEM",
+  signal: "SIGNAL SUBSYSTEM"
+};
+
+// fallback only
+export const PulseRoleFallback = "LEGACY SUBSYSTEM";
+
+// ============================================================================
+//  DETERMINISTIC COLOR MAP
+// ============================================================================
+
+export const PulseColors = {
+  proof: "#4DD0E1",
+  logger: "#FF7043",
+  renderer: "#29B6F6",
+  gpu: "#7E57C2",
+  band: "#66BB6A",
+  vault: "#26C6DA",
+  hooks: "#AB47BC",
+  endpoint: "#FFA726",
+  router: "#42A5F5",
+  expansion: "#26A69A",
+  bridge: "#EC407A",
+  internet: "#8D6E63",
+  memory: "#5C6BC0",
+  pages: "#26C6DA",
+  cns: "#EF5350",
+  world: "#26A69A",
+  mesh: "#7E57C2",
+  ai: "#FFCA28",
+  signal: "#90CAF9"
+};
+
+// fallback only
+export const PulseColorFallback = "#BDBDBD";
+
+// ============================================================================
+//  DETERMINISTIC ICON MAP
+// ============================================================================
+
+export const PulseIcons = {
+  proof: "📜",
+  logger: "🖨️",
+  renderer: "✨",
+  gpu: "🎨",
+  band: "🧠",
+  vault: "🔐",
+  hooks: "🪝",
+  endpoint: "🌐",
+  router: "🛰️",
+  expansion: "🚀",
+  bridge: "🌉",
+  internet: "📡",
+  memory: "💾",
+  pages: "📄",
+  cns: "🧬",
+  world: "🌍",
+  mesh: "🕸️",
+  ai: "🤖",
+  signal: "📡"
+};
+
+// fallback only
+export const PulseIconFallback = "🖥️";
+
 // ============================================================================
 // PREWARM LAYER — Aligns all adapters before organism boot
 // ============================================================================
@@ -457,9 +579,17 @@ function classifySystem(system) {
 // SCAN SYSTEMS — v24.1 IMMORTAL WORLD GENOME++
 // Extract subsystem from folder name + version from FILES
 // ============================================================================
-async function scanPulseSystems() {
-  fs = getFsAPI({ trace: false });
+// ============================================================================
+// IMMORTAL ORGANISM MAP — SCAN ONCE, REUSE FOREVER
+// ============================================================================
 
+export async function scanPulseSystemsOnce() {
+  // If already scanned → return cached map
+  if (window.PulseOrganismMap) {
+    return window.PulseOrganismMap;
+  }
+
+  const fs = getFsAPI({ trace: false });
   const allFiles = await fs.getAllFiles();
 
   // Detect PULSE-* system directories
@@ -471,6 +601,7 @@ async function scanPulseSystems() {
     }));
 
   const systems = {};
+  const fileToMeta = {}; // <-- for logger lookups
 
   for (const system of pulseSystems) {
     const systemFiles = allFiles.filter(f =>
@@ -483,21 +614,19 @@ async function scanPulseSystems() {
       .map(f => f.name.replace(".js", ""));
 
     // ---------------------------------------------
-    // SUBSYSTEM FROM FOLDER NAME (unchanged)
+    // SUBSYSTEM FROM FOLDER NAME
     // ---------------------------------------------
-    const subsystem = system.name
-      .replace(/^PULSE-/, "")
-      .toLowerCase();
+    const subsystem = system.name.replace(/^PULSE-/, "").toLowerCase();
 
     // ---------------------------------------------
-    // VERSION FROM FILES — EXACTLY WHAT YOU ASKED FOR
+    // VERSION FROM FILES
     // ---------------------------------------------
     let detectedVersion = null;
 
     for (const file of systemFiles) {
       const match = file.name.match(/-v(\d+(\.\d+)?)/i);
       if (match) {
-        const v = match[1]; // "24" or "12.3"
+        const v = match[1];
         if (!detectedVersion) detectedVersion = v;
         else {
           const a = parseFloat(detectedVersion);
@@ -507,34 +636,79 @@ async function scanPulseSystems() {
       }
     }
 
-    // If no version found → fallback to 12.3
-    if (!detectedVersion) {
-      detectedVersion = "12.3";
-    }
-
+    if (!detectedVersion) detectedVersion = "12.3";
     const version = `v${detectedVersion}`;
 
     // ---------------------------------------------
-    // CLASSIFICATION (unchanged)
+    // CLASSIFICATION
     // ---------------------------------------------
     const classification = classifySystem(system);
 
     // ---------------------------------------------
-    // STORE SYSTEM WITH REAL VERSION
+    // STORE SYSTEM
     // ---------------------------------------------
-    systems[system.name.toLowerCase()] = {
+    const sysKey = system.name.toLowerCase();
+    systems[sysKey] = {
       root: system.name,
       path: system.path,
       layer: classification.layer,
       kind: classification.kind,
       subsystem,
-      version,   // <-- REAL version from files
+      version,
       organs
     };
+
+    // ---------------------------------------------
+    // MAP FILES → SUBSYSTEM + VERSION (for logger)
+    // ---------------------------------------------
+    for (const file of systemFiles) {
+      fileToMeta[file.path] = {
+        subsystem,
+        version,
+        color: PulseColors[subsystem] || PulseColorFallback,
+        icon: PulseIcons[subsystem] || PulseIconFallback
+      };
+    }
   }
 
-  return systems;
+  // ========================================================================
+  // SAVE IMMORTAL MAP
+  // ========================================================================
+  window.PulseOrganismMap = {
+    systems,
+    fileToMeta,
+
+    // Resolve caller file → subsystem + version
+    resolveCaller(stack) {
+      try {
+        const lines = stack.split("\n");
+        for (const line of lines) {
+          const match = line.match(/(file:\/\/[^\s)]+)/);
+          if (match) {
+            const fileUrl = match[1];
+            const meta = this.lookup(fileUrl);
+            if (meta) return meta;
+          }
+        }
+      } catch {}
+      return this.defaultMeta;
+    },
+
+    lookup(fileUrl) {
+      return this.fileToMeta[fileUrl] || this.defaultMeta;
+    },
+
+    defaultMeta: {
+      subsystem: "legacy",
+      version: "v12.3",
+      color: PulseColorFallback,
+      icon: PulseIconFallback
+    }
+  };
+
+  return window.PulseOrganismMap;
 }
+
 
 
 // ============================================================================
@@ -795,7 +969,7 @@ function buildOrganIdentities(systems) {
 // ============================================================================
 
 export async function buildPulseOrganismMap(baseDir = "/") {
-  const systems = await scanPulseSystems(baseDir);
+  const systems = await scanPulseSystemsOnce(baseDir);
 
   const dbAdapter = getDb({ trace: false });
   const fsAdapter = getFsAPI({ trace: false });

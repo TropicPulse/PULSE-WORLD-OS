@@ -15,21 +15,6 @@
 // 7) AI CONSOLE / PROMPTS ARE REMOVED FROM LOGGER.
 // 8) LOGGER IS SCHEMA-STABLE AND EVOLVABLE.
 // ============================================================================
-// import {
-//   OrganismIdentity,
-//   buildPulseOrganismMap as buildOrganismMap
-// } from "../../PULSE-BAND/PULSE-X/PulseWorldOrganismMap-v24.js";
-// const Identity = OrganismIdentity(import.meta.url);
-
-// // 2 — EXPORT GENOME METADATA
-// // export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
-// export const pulseRole = Identity.pulseRole;
-// export const PulseRole = Identity.pulseRole;
-// export const surfaceMeta = Identity.surfaceMeta;
-// export const pulseLoreContext = Identity.pulseLoreContext;
-// // export const WBC_CONTEXT = Identity.pulseLoreContext;
-// export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-// export const EXPORT_META = Identity.EXPORT_META;
 
 console.log("PulseProofLogger v24-IMMORTAL-EVOLVABLE");
 
@@ -47,6 +32,9 @@ const g =
     : typeof self !== "undefined"
     ? self
     : {};
+
+// Shared recursion guard with Signal (used by Signal side)
+g.__PULSE_SIGNAL_LOGGING = g.__PULSE_SIGNAL_LOGGING || { active: false };
 
 // -----------------------------------------------------------------------------
 // Environment + layer detection (pure, no flags, no network)
@@ -190,6 +178,7 @@ function drainLocalLogsForHeartbeat() {
 // -----------------------------------------------------------------------------
 // Version / roles / colors / icons (metadata only, no behavior)
 // -----------------------------------------------------------------------------
+
 // ============================================================================
 //  DETERMINISTIC VERSION MAP
 //  - All real subsystems are v24
@@ -211,17 +200,18 @@ export const PulseVersion = {
   internet: "24.0",
   memory: "24.0",
   pages: "24.0",
-  cns: "24.0"
+  cns: "24.0",
+  world: "24.0",
+  mesh: "24.0",
+  ai: "24.0",
+  signal: "24.0"
 };
 
 // fallback only
 export const PulseVersionFallback = "16.x";
 
-
 // ============================================================================
 //  DETERMINISTIC ROLE MAP
-//  - No legacy in main list
-//  - Legacy is fallback ONLY
 // ============================================================================
 
 export const PulseRoles = {
@@ -239,17 +229,18 @@ export const PulseRoles = {
   internet: "INTERNET SUBSYSTEM",
   memory: "MEMORY SUBSYSTEM",
   pages: "PAGE SUBSYSTEM",
-  cns: "CNS CORE"
+  cns: "CNS CORE",
+  world: "WORLD SUBSYSTEM",
+  mesh: "MESH SUBSYSTEM",
+  ai: "AI SUBSYSTEM",
+  signal: "SIGNAL SUBSYSTEM"
 };
 
 // fallback only
 export const PulseRoleFallback = "LEGACY SUBSYSTEM";
 
-
 // ============================================================================
 //  DETERMINISTIC COLOR MAP
-//  - No legacy in main list
-//  - Legacy is fallback ONLY
 // ============================================================================
 
 export const PulseColors = {
@@ -268,17 +259,17 @@ export const PulseColors = {
   memory: "#5C6BC0",
   pages: "#26C6DA",
   cns: "#EF5350",
+  world: "#26A69A",
+  mesh: "#7E57C2",
+  ai: "#FFCA28",
   signal: "#90CAF9"
 };
 
 // fallback only
 export const PulseColorFallback = "#BDBDBD";
 
-
 // ============================================================================
 //  DETERMINISTIC ICON MAP
-//  - No legacy in main list
-//  - Legacy is fallback ONLY
 // ============================================================================
 
 export const PulseIcons = {
@@ -297,6 +288,9 @@ export const PulseIcons = {
   memory: "💾",
   pages: "📄",
   cns: "🧬",
+  world: "🌍",
+  mesh: "🕸️",
+  ai: "🤖",
   signal: "📡"
 };
 
@@ -504,6 +498,7 @@ export function pulseLog({
   appendLocalLog(entry);
 
   try {
+    // Signal side has guard to avoid re-signalizing signal subsystem
     PulseProofSignal.fromLogEntry(entry);
   } catch (_) {}
 }
@@ -524,7 +519,7 @@ function normalizeArgs(args) {
     return { subsystem: null, message: first, rest: args.slice(1), raw: true };
   }
 
-  // comment("comment", { ... })
+  // comment("comment", { ... }) — signal top-layer comments
   if (
     args.length === 2 &&
     first === "comment" &&
@@ -548,6 +543,16 @@ function normalizeArgs(args) {
     };
   }
 
+  // log("SkinReflex instance:", { ... }) — keep object as object, not [object Object]
+  if (
+    args.length >= 2 &&
+    typeof first === "string" &&
+    typeof args[1] === "object" &&
+    args[1] !== null
+  ) {
+    return { subsystem: null, message: first, rest: args.slice(1), raw: false };
+  }
+
   // log("gpu", "message")
   if (args.length >= 2 && typeof first === "string" && typeof args[1] === "string") {
     return { subsystem: first, message: args[1], rest: args.slice(2), raw: false };
@@ -567,7 +572,6 @@ function normalizeArgs(args) {
   return { subsystem: null, message: args.join(" "), rest: [], raw: false };
 }
 
-
 function mark404(message) {
   if (typeof message === "string" && message.trim() === "404") {
     return "404*";
@@ -578,15 +582,20 @@ function mark404(message) {
 // ============================================================================
 //  CORE LOGGING FUNCTIONS — DETERMINISTIC
 // ============================================================================
+
 export function log(...args) {
   const { subsystem, message, rest, raw } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
-  const version = meta?.version || "v12.3";
+
+  const version =
+    meta?.version ||
+    (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || PulseColors[safe] || PulseColorFallback;
-  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
+  const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
@@ -596,55 +605,72 @@ export function log(...args) {
     _c.log(`%c${prefix} — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
   }
 
-  pulseLog({ level: "log", subsystem: safe, version, message: safeMessage, rest });
+  pulseLog({ level: "log", subsystem: safe, message: safeMessage, rest });
 }
-
 
 export function warn(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
-  const version = meta?.version || "v12.3";
+
+  const version =
+    meta?.version ||
+    (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || "#FFEE58";
-  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
+  const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
-  _c.warn(`%c${prefix} ⚠️ [WARN] — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
+  _c.warn(
+    `%c${prefix} ⚠️ [WARN] — ${safeMessage}`,
+    `color:${color}; font-weight:bold;`,
+    ...rest
+  );
 
-  pulseLog({ level: "warn", subsystem: safe, version, message: safeMessage, rest });
+  pulseLog({ level: "warn", subsystem: safe, message: safeMessage, rest });
 }
-
 
 export function error(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
-  const version = meta?.version || "v12.3";
+
+  const version =
+    meta?.version ||
+    (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || "#EF5350";
-  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
+  const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
-  _c.error(`%c${prefix} 🟥 [ERROR] — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
+  _c.error(
+    `%c${prefix} 🟥 [ERROR] — ${safeMessage}`,
+    `color:${color}; font-weight:bold;`,
+    ...rest
+  );
 
-  pulseLog({ level: "error", subsystem: safe, version, message: safeMessage, rest });
+  pulseLog({ level: "error", subsystem: safe, message: safeMessage, rest });
 }
-
 
 export function critical(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
-  const version = meta?.version || "v12.3";
+
+  const version =
+    meta?.version ||
+    (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || "#D32F2F";
-  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
+  const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
@@ -655,23 +681,22 @@ export function critical(...args) {
   _c.error(`%c${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
   _c.groupEnd();
 
-  pulseLog({ level: "critical", subsystem: safe, version, message: safeMessage, rest });
+  pulseLog({ level: "critical", subsystem: safe, message: safeMessage, rest });
 }
-
-
-// -----------------------------------------------------------------------------
-//  COMMENT LEVEL — IMMORTAL++
-// -----------------------------------------------------------------------------
 
 export function comment(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "signal";
-  const version = meta?.version || "v12.3";
+
+  const version =
+    meta?.version ||
+    (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || "#90CAF9";
-  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
+  const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
@@ -681,9 +706,8 @@ export function comment(...args) {
     ...rest
   );
 
-  pulseLog({ level: "comment", subsystem: safe, version, message: safeMessage, rest });
+  pulseLog({ level: "comment", subsystem: safe, message: safeMessage, rest });
 }
-
 
 // -----------------------------------------------------------------------------
 //  GROUPING HELPERS — IMMORTAL++
@@ -692,97 +716,49 @@ export function comment(...args) {
 export function group(subsystem, label) {
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
-  const version = meta?.version || "v12.3";
+
+  const version =
+    meta?.version ||
+    (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || PulseColors[safe] || PulseColorFallback;
-  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
+  const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   _c.groupCollapsed(`%c${prefix} — ${label}`, `color:${color}; font-weight:bold;`);
 }
-
 
 export function groupEnd() {
   _c.groupEnd();
 }
 
+// -----------------------------------------------------------------------------
+//  ORGANISM MAP RESOLUTION — FILENAME + FOLDER → SUBSYSTEM + VERSION
+// -----------------------------------------------------------------------------
 function resolveFromOrganismMap() {
   try {
-    const stack = new Error().stack;
-
-    // DEBUG: show raw stack (first 5 lines)
-    console.debug("[LOGGER DEBUG] STACK TOP:", stack.split("\n").slice(0, 5));
-
-    // Find the FIRST non-logger frame
-    const lines = stack.split("\n");
-    let callerLine = null;
-
-    for (const line of lines) {
-      if (!line.includes("PulseProofLogger")) {
-        callerLine = line;
-        break;
-      }
+    // If the global map exists, use it
+    if (window.PulseOrganismMap && typeof window.PulseOrganismMap.resolveCaller === "function") {
+      return window.PulseOrganismMap.resolveCaller();
     }
 
-    if (!callerLine) {
-      console.debug("[LOGGER DEBUG] No caller line found");
-      return null;
-    }
-
-    const match = callerLine.match(/(file:\/\/[^\s)]+)/);
-    if (!match) {
-      console.debug("[LOGGER DEBUG] No file URL match in:", callerLine);
-      return null;
-    }
-
-    const fileUrl = match[1];
-    console.debug("[LOGGER DEBUG] Caller file URL:", fileUrl);
-
-    const parts = fileUrl.split("/");
-
-    // ---------------------------------------------
-    // SUBSYSTEM FROM FOLDER NAME
-    // ---------------------------------------------
-    const folder = parts[parts.length - 2];
-    let subsystem = "legacy";
-
-    if (folder.startsWith("PULSE-")) {
-      subsystem = folder.replace("PULSE-", "").toLowerCase();
-    }
-
-    if (folder === "PULSE-X") {
-      subsystem = "world";
-    }
-
-    console.debug("[LOGGER DEBUG] Folder:", folder, "→ subsystem:", subsystem);
-
-    // ---------------------------------------------
-    // VERSION FROM FILENAME
-    // ---------------------------------------------
-    const fileName = parts[parts.length - 1];
-    let version = "v12.3";
-
-    const vMatch = fileName.match(/-v(\d+(\.\d+)?)/i);
-    if (vMatch) {
-      version = `v${vMatch[1]}`;
-    }
-
-    console.debug("[LOGGER DEBUG] Filename:", fileName, "→ version:", version);
-
+    // If no map exists, fallback to legacy
     return {
-      subsystem,
-      version,
-      color: PulseColors[subsystem] || PulseColorFallback,
-      icon: "🔹"
+      subsystem: "legacy",
+      version: "v12.3",
+      color: PulseColorFallback,
+      icon: PulseIconFallback
     };
 
   } catch (err) {
-    console.debug("[LOGGER DEBUG] Resolver error:", err);
-    return null;
+    return {
+      subsystem: "legacy",
+      version: "v12.3",
+      color: PulseColorFallback,
+      icon: PulseIconFallback
+    };
   }
 }
-
-
-
 
 
 // -----------------------------------------------------------------------------
