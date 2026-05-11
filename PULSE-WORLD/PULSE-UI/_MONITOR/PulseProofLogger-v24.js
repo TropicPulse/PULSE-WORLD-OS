@@ -577,17 +577,15 @@ function mark404(message) {
 // ============================================================================
 //  CORE LOGGING FUNCTIONS — DETERMINISTIC
 // ============================================================================
-
 export function log(...args) {
   const { subsystem, message, rest, raw } = normalizeArgs(args);
 
-  let meta = resolveFromOrganismMap();
-  let safe = subsystem || meta?.subsystem || "legacy";
+  const meta = resolveFromOrganismMap();
+  const safe = meta?.subsystem || subsystem || "legacy";
+  const version = meta?.version || "v12.3";
 
   const color = meta?.color || PulseColors[safe] || PulseColorFallback;
-  const prefix = meta?.icon
-    ? `${meta.icon} ${safe.toUpperCase()} ${meta.version}`
-    : formatPrefix(safe);
+  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
@@ -597,58 +595,55 @@ export function log(...args) {
     _c.log(`%c${prefix} — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
   }
 
-  pulseLog({ level: "log", subsystem: safe, message: safeMessage, rest });
+  pulseLog({ level: "log", subsystem: safe, version, message: safeMessage, rest });
 }
 
 
 export function warn(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
 
-  let meta = resolveFromOrganismMap();
-  let safe = subsystem || meta?.subsystem || "legacy";
+  const meta = resolveFromOrganismMap();
+  const safe = meta?.subsystem || subsystem || "legacy";
+  const version = meta?.version || "v12.3";
 
   const color = meta?.color || "#FFEE58";
-  const prefix = meta?.icon
-    ? `${meta.icon} ${safe.toUpperCase()} ${meta.version}`
-    : formatPrefix(safe);
+  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
   _c.warn(`%c${prefix} ⚠️ [WARN] — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
 
-  pulseLog({ level: "warn", subsystem: safe, message: safeMessage, rest });
+  pulseLog({ level: "warn", subsystem: safe, version, message: safeMessage, rest });
 }
 
 
 export function error(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
 
-  let meta = resolveFromOrganismMap();
-  let safe = subsystem || meta?.subsystem || "legacy";
+  const meta = resolveFromOrganismMap();
+  const safe = meta?.subsystem || subsystem || "legacy";
+  const version = meta?.version || "v12.3";
 
   const color = meta?.color || "#EF5350";
-  const prefix = meta?.icon
-    ? `${meta.icon} ${safe.toUpperCase()} ${meta.version}`
-    : formatPrefix(safe);
+  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
   _c.error(`%c${prefix} 🟥 [ERROR] — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
 
-  pulseLog({ level: "error", subsystem: safe, message: safeMessage, rest });
+  pulseLog({ level: "error", subsystem: safe, version, message: safeMessage, rest });
 }
 
 
 export function critical(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
 
-  let meta = resolveFromOrganismMap();
-  let safe = subsystem || meta?.subsystem || "legacy";
+  const meta = resolveFromOrganismMap();
+  const safe = meta?.subsystem || subsystem || "legacy";
+  const version = meta?.version || "v12.3";
 
   const color = meta?.color || "#D32F2F";
-  const prefix = meta?.icon
-    ? `${meta.icon} ${safe.toUpperCase()} ${meta.version}`
-    : formatPrefix(safe);
+  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
@@ -659,23 +654,23 @@ export function critical(...args) {
   _c.error(`%c${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
   _c.groupEnd();
 
-  pulseLog({ level: "critical", subsystem: safe, message: safeMessage, rest });
+  pulseLog({ level: "critical", subsystem: safe, version, message: safeMessage, rest });
 }
 
+
 // -----------------------------------------------------------------------------
-//  COMMENT LEVEL — IMMORTAL++ (FOR SIGNAL-AUTHORED COMMENT LOGS)
+//  COMMENT LEVEL — IMMORTAL++
 // -----------------------------------------------------------------------------
 
 export function comment(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
 
-  let meta = resolveFromOrganismMap();
-  let safe = subsystem || meta?.subsystem || "signal";
+  const meta = resolveFromOrganismMap();
+  const safe = meta?.subsystem || subsystem || "signal";
+  const version = meta?.version || "v12.3";
 
   const color = meta?.color || "#90CAF9";
-  const prefix = meta?.icon
-    ? `${meta.icon} ${safe.toUpperCase()} ${meta.version}`
-    : formatPrefix(safe);
+  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
 
@@ -685,7 +680,7 @@ export function comment(...args) {
     ...rest
   );
 
-  pulseLog({ level: "comment", subsystem: safe, message: safeMessage, rest });
+  pulseLog({ level: "comment", subsystem: safe, version, message: safeMessage, rest });
 }
 
 
@@ -694,13 +689,12 @@ export function comment(...args) {
 // -----------------------------------------------------------------------------
 
 export function group(subsystem, label) {
-  let meta = resolveFromOrganismMap();
-  let safe = subsystem || meta?.subsystem || "legacy";
+  const meta = resolveFromOrganismMap();
+  const safe = meta?.subsystem || subsystem || "legacy";
+  const version = meta?.version || "v12.3";
 
   const color = meta?.color || PulseColors[safe] || PulseColorFallback;
-  const prefix = meta?.icon
-    ? `${meta.icon} ${safe.toUpperCase()} ${meta.version}`
-    : formatPrefix(safe);
+  const prefix = `${meta?.icon || "🔹"} ${safe.toUpperCase()} ${version}`;
 
   _c.groupCollapsed(`%c${prefix} — ${label}`, `color:${color}; font-weight:bold;`);
 }
@@ -709,6 +703,7 @@ export function group(subsystem, label) {
 export function groupEnd() {
   _c.groupEnd();
 }
+
 
 function resolveFromOrganismMap() {
   try {
