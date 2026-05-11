@@ -1230,30 +1230,22 @@ function applyGateDecision(gateDecision, skin) {
 
       window.__PULSE_TOUCH__ = touch;
 
-      // ⭐ GLOBAL TIMER START — THE TRUE BEGINNING
-      window.__PULSE_TOUCH_T0__ = performance.now();
-      window.__PULSE_CHRONO_LAST__ = window.__PULSE_TOUCH_T0__;
-
+      // ⭐ GLOBAL TIMER ROOT — THE TRUE BEGINNING OF THE SYSTEM
+      const t0 = performance.now();
+      window.__PULSE_TOUCH_T0__ = t0;
+      window.__PULSE_CHRONO_LAST__ = t0;   // logger will pick this up
 
       // 2 — Preload ALL UI pages (HTML/CSS/JS/IMG)
-      if (touch.preloader && typeof touch.preloader.preloadAllPages === "function") {
-        touch.preloader.preloadAllPages();
-      }
+      touch.preloader?.preloadAllPages?.();
 
       // 3 — Preload ALL chunk graphs
-      if (touch.chunker && typeof touch.chunker.preloadAllChunks === "function") {
-        touch.chunker.preloadAllChunks();
-      }
+      touch.chunker?.preloadAllChunks?.();
 
       // 4 — Prewarm ALL pages (hydration + animation + chunk)
-      if (touch.advantage && typeof touch.advantage.prewarmAll === "function") {
-        touch.advantage.prewarmAll();
-      }
+      touch.advantage?.prewarmAll?.();
 
       // 5 — Snapshot ALL pages for instant backward navigation
-      if (touch.memory && typeof touch.memory.snapshotAll === "function") {
-        touch.memory.snapshotAll();
-      }
+      touch.memory?.snapshotAll?.();
 
       console.log("PulseTouch auto‑ignite: FULL UI organism loaded.");
     }
@@ -1261,7 +1253,6 @@ function applyGateDecision(gateDecision, skin) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
 })();
-
 
 
 // ============================================================
