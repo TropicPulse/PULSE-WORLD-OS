@@ -569,34 +569,9 @@ function mark404(message) {
 // ============================================================================
 //  CORE LOGGING FUNCTIONS — unchanged except for using IMMORTAL MAP
 // ============================================================================
-// ============================================================================
-//  PULSE LOGGER v26 — IMMORTAL++
-//  Full Chrono Logging Across All Levels
-//  Colors preserved exactly as original
-// ============================================================================
 
-// ---------------------------------------------------------------------------
-//  UNIFIED CHRONO CORE — v26
-// ---------------------------------------------------------------------------
-let _pulseChronoLast = performance.now();
-
-function _chronoLabel(absolute) {
-  const now = performance.now();
-  const diff = now - _pulseChronoLast;
-
-  const label = absolute
-    ? `@${now.toFixed(1)}ms`
-    : `+${diff.toFixed(1)}ms`;
-
-  _pulseChronoLast = now;
-  return label;
-}
-
-// ---------------------------------------------------------------------------
-//  LOG — STANDARD
-// ---------------------------------------------------------------------------
 export function log(...args) {
-  const { subsystem, message, rest, raw, absolute } = normalizeArgs(args);
+  const { subsystem, message, rest, raw } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
@@ -606,31 +581,22 @@ export function log(...args) {
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || PulseColors[safe] || PulseColorFallback;
-  const icon  = meta?.icon  || PulseIcons[safe]  || PulseIconFallback;
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
-  const time = _chronoLabel(absolute);
 
   if (raw) {
-    _c.log(`${safeMessage} %c${time}`, "color:#999;font-weight:300;", ...rest);
+    _c.log(safeMessage, ...rest);
   } else {
-    _c.log(
-      `%c${prefix} — ${safeMessage} %c${time}`,
-      `color:${color}; font-weight:bold;`,
-      "color:#999;font-weight:300;",
-      ...rest
-    );
+    _c.log(`%c${prefix} — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
   }
 
   pulseLog({ level: "log", subsystem: safe, message: safeMessage, rest });
 }
 
-// ---------------------------------------------------------------------------
-//  WARN — YELLOW (UNCHANGED COLOR)
-// ---------------------------------------------------------------------------
 export function warn(...args) {
-  const { subsystem, message, rest, absolute } = normalizeArgs(args);
+  const { subsystem, message, rest } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
@@ -639,28 +605,23 @@ export function warn(...args) {
     meta?.version ||
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
-  const color = meta?.color || "#FFEE58"; // ORIGINAL COLOR
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const color = meta?.color || "#FFEE58";
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
-  const time = _chronoLabel(absolute);
 
   _c.warn(
-    `%c${prefix} ⚠️ [WARN] — ${safeMessage} %c${time}`,
+    `%c${prefix} ⚠️ [WARN] — ${safeMessage}`,
     `color:${color}; font-weight:bold;`,
-    "color:#999;font-weight:300;",
     ...rest
   );
 
   pulseLog({ level: "warn", subsystem: safe, message: safeMessage, rest });
 }
 
-// ---------------------------------------------------------------------------
-//  ERROR — RED (UNCHANGED COLOR)
-// ---------------------------------------------------------------------------
 export function error(...args) {
-  const { subsystem, message, rest, absolute } = normalizeArgs(args);
+  const { subsystem, message, rest } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
@@ -669,28 +630,23 @@ export function error(...args) {
     meta?.version ||
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
-  const color = meta?.color || "#EF5350"; // ORIGINAL COLOR
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const color = meta?.color || "#EF5350";
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
-  const time = _chronoLabel(absolute);
 
   _c.error(
-    `%c${prefix} 🟥 [ERROR] — ${safeMessage} %c${time}`,
+    `%c${prefix} 🟥 [ERROR] — ${safeMessage}`,
     `color:${color}; font-weight:bold;`,
-    "color:#999;font-weight:300;",
     ...rest
   );
 
   pulseLog({ level: "error", subsystem: safe, message: safeMessage, rest });
 }
 
-// ---------------------------------------------------------------------------
-//  CRITICAL — DARK RED (UNCHANGED COLOR)
-// ---------------------------------------------------------------------------
 export function critical(...args) {
-  const { subsystem, message, rest, absolute } = normalizeArgs(args);
+  const { subsystem, message, rest } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
@@ -699,35 +655,24 @@ export function critical(...args) {
     meta?.version ||
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
-  const color = meta?.color || "#D32F2F"; // ORIGINAL COLOR
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const color = meta?.color || "#D32F2F";
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
-  const time = _chronoLabel(absolute);
 
   _c.groupCollapsed(
-    `%c${prefix} 💀 [CRITICAL] — ${safeMessage} %c${time}`,
-    `color:${color}; font-weight:bold; font-size:14px;`,
-    "color:#999;font-weight:300;"
+    `%c${prefix} 💀 [CRITICAL] — ${safeMessage}`,
+    `color:${color}; font-weight:bold; font-size:14px;`
   );
-
-  _c.error(
-    `%c${safeMessage}`,
-    `color:${color}; font-weight:bold;`,
-    ...rest
-  );
-
+  _c.error(`%c${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
   _c.groupEnd();
 
   pulseLog({ level: "critical", subsystem: safe, message: safeMessage, rest });
 }
 
-// ---------------------------------------------------------------------------
-//  COMMENT — BLUE (UNCHANGED COLOR)
-// ---------------------------------------------------------------------------
 export function comment(...args) {
-  const { subsystem, message, rest, absolute } = normalizeArgs(args);
+  const { subsystem, message, rest } = normalizeArgs(args);
 
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "signal";
@@ -736,27 +681,27 @@ export function comment(...args) {
     meta?.version ||
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
-  const color = meta?.color || "#90CAF9"; // ORIGINAL COLOR
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const color = meta?.color || "#90CAF9";
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
-  const time = _chronoLabel(absolute);
 
   _c.log(
-    `%c${prefix} 📝 [COMMENT] — ${safeMessage} %c${time}`,
+    `%c${prefix} 📝 [COMMENT] — ${safeMessage}`,
     `color:${color}; font-weight:bold;`,
-    "color:#999;font-weight:300;",
     ...rest
   );
 
   pulseLog({ level: "comment", subsystem: safe, message: safeMessage, rest });
 }
 
-// ---------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
 //  GROUPING HELPERS — IMMORTAL++
-// ---------------------------------------------------------------------------
-export function group(subsystem, label, absolute = false) {
+// -----------------------------------------------------------------------------
+
+export function group(subsystem, label) {
   const meta = resolveFromOrganismMap();
   const safe = meta?.subsystem || subsystem || "legacy";
 
@@ -765,22 +710,15 @@ export function group(subsystem, label, absolute = false) {
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || PulseColors[safe] || PulseColorFallback;
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const icon = meta?.icon || PulseIcons[safe] || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
-  const time = _chronoLabel(absolute);
-
-  _c.groupCollapsed(
-    `%c${prefix} — ${label} %c${time}`,
-    `color:${color}; font-weight:bold;`,
-    "color:#999;font-weight:300;"
-  );
+  _c.groupCollapsed(`%c${prefix} — ${label}`, `color:${color}; font-weight:bold;`);
 }
 
 export function groupEnd() {
   _c.groupEnd();
 }
-
 
 
 // ============================================================================
