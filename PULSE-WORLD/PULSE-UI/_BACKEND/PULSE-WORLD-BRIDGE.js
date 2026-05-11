@@ -63,7 +63,7 @@ export { PulseProofBridge };
 // ============================================================================
 
 import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
-import { PulseProofSignal } from "../_MONITOR/PulseProofSignal-v24.js";
+import { PulseProofSignal } from "../_MONITOR/PulseProofSignal-v25.js";
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
 import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons} from "../_MONITOR/PulseProofLogger-v24.js";
 import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
