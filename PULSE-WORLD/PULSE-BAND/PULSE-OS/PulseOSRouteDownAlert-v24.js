@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
-import { PulseWorldEmailAlert } from "../PULSE-X/PulseWorldEmailAlert-v24.js";
+import { PulseWorldEmailAlert } from "../PULSE-X/PulseWorldEmailAlert-v20.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
