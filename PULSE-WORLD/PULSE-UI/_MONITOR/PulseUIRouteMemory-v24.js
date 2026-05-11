@@ -303,22 +303,42 @@ export function createPulseRouteMemory({
   }
 
   function safeLog(stage, details = {}) {
-    try {
-      log(
-        JSON.stringify({
-          pulseLayer: "ROUTE-MEMORY",
-          pulseName: "SkinReflex Route Memory",
-          pulseRole: "Reflex degradation + trace memory",
-          pulseVer: RouteMemoryRole.version,
-          schemaVersion: ROUTE_MEMORY_SCHEMA_VERSION,
-          seq: RouteMemoryState.eventSeq,
-          bucketId,
-          stage,
-          ...details
-        })
+  try {
+    const seq = RouteMemoryState.eventSeq;
+    const tier = details.tier || RouteMemoryState.lastTier || "microDegrade";
+
+    // Monitor color palette
+    const colors = {
+      microDegrade: "#00FF9C",   // neon green
+      softDegrade:  "#FFE066",   // soft yellow
+      midDegrade:   "#00E5FF",   // cyan
+      hardDegrade:  "#FF4FFB",   // magenta
+      criticalDegrade: "#FF3B3B" // red
+    };
+
+    const color = colors[tier] || "#E8F8FF";
+
+    console.log(
+      `%c[RouteMemory v24] %c${stage} %c(seq:${seq})`,
+      "color:#00FF9C; font-weight:bold; font-family:monospace;",
+      `color:${color}; font-weight:bold; font-family:monospace;`,
+      "color:#E8F8FF; font-family:monospace;"
+    );
+
+    // Pretty-print details (optional)
+    if (Object.keys(details).length > 0) {
+      console.log(
+        "%c↳ details:",
+        "color:#00E5FF; font-family:monospace; font-weight:bold;"
       );
-    } catch {}
-  }
+      console.log(
+        "%c" + JSON.stringify(details, null, 2),
+        "color:#E8F8FF; font-family:monospace;"
+      );
+    }
+  } catch {}
+}
+
 
   function makeKey(message, frames) {
     try {
