@@ -29,6 +29,7 @@
 // ============================================================================
 // IMPORTS — PORTAL-ATTACHED ORGANS (SURFACE-SAFE)
 // ============================================================================
+
 import {
   route as BridgeRoute,
   PulseProofBridgeMonitor as PulseVitalsMonitor,
@@ -38,13 +39,13 @@ import {
   BridgeError as error,
   startUnderstanding as PulseUnderstanding,
   PulseBinaryOrganismBoot,
+  PulseProofBridgeLogger,
+  PulseProofBridgeReflex,
+  PulseProofBridgeErrors as PulseUIErrors,
+  PulseProofBridgeFlow as PulseUIFlow,
   PulseProofBridgeMonitor
 } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
 
-import { createPulseSkinReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
-
-import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
-import PulseUIFlow from "../_MONITOR/PulseUIFlow-v24.js";
 import PulsePageScanner from "../_MONITOR/PulseUIPageScanner-v24.js";
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseUIRouteMemory-v24.js";
 
@@ -57,7 +58,7 @@ import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldA
 let PulseSkinReflex = null;
 
 try {
-  PulseSkinReflex = createPulseSkinReflex();
+  PulseSkinReflex = PulseProofBridgeReflex;
 
   console.log(
     "%c[PORTAL::SkinReflex] %cInstance created %c→ OK",
