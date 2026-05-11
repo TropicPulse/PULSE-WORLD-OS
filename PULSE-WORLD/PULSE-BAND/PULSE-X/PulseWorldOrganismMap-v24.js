@@ -515,10 +515,23 @@ function toTitleName(name) {
     .trim()
     .replace(/\b\w/g, c => c.toUpperCase());
 }
+// ============================================================================
+// ORGAN IDENTITY BUILDER — v24.1 IMMORTAL WORLD GENOME++
+// ============================================================================
 
-// ============================================================================
-// ORGAN IDENTITY BUILDER — v24 IMMORTAL WORLD GENOME++
-// ============================================================================
+function extractSubsystem(systemKey) {
+  // pulse-pages-v24 → pages
+  // pulse-vault-v24 → vault
+  // pulse-os → os
+  return systemKey.replace(/^pulse-/, "").replace(/-v\d+$/, "");
+}
+
+function extractVersion(systemKey) {
+  // pulse-pages-v24 → v24
+  const match = systemKey.match(/v(\d+)/);
+  return match ? `v${match[1]}.0` : "v24.0";
+}
+
 function buildOrganIdentity({ systemKey, system, organName }) {
   const organId = `${systemKey}/${organName}`;
   const constName = toConstName(organName);
@@ -526,12 +539,24 @@ function buildOrganIdentity({ systemKey, system, organName }) {
 
   const layer = system.layer || "generic";
   const roleConst = `${constName}_ORGAN`;
-  const version = "v24.0-IMMORTAL-WORLD-GENOME++";
+
+  // NEW: subsystem + version from scan
+  const subsystem = extractSubsystem(systemKey);
+  const version = `${extractVersion(systemKey)}-IMMORTAL-WORLD-GENOME++`;
+
+  // NEW: IDENTITY_META — PURELY FROM SCAN
+  const IDENTITY_META = Object.freeze({
+    subsystem,
+    version,
+    role: `${subsystem.toUpperCase()} SUBSYSTEM`,
+    icon: "🔹",      // generic icon (no external maps)
+    color: "#4DD0E1" // generic color (no external maps)
+  });
 
   // 1) PulseRole — deep biological identity
   const PulseRole = Object.freeze({
     type: "Organ",
-    subsystem: systemKey,
+    subsystem,
     layer,
     version,
     identity: organId,
@@ -551,7 +576,7 @@ function buildOrganIdentity({ systemKey, system, organName }) {
     })
   });
 
-  // 2) OrganMeta — organ meta block
+  // 2) OrganMeta
   const OrganMeta = Object.freeze({
     layer,
     role: roleConst,
@@ -559,6 +584,8 @@ function buildOrganIdentity({ systemKey, system, organName }) {
     identity: organId,
     system: systemKey,
     organ: organName,
+    subsystem,
+    IDENTITY_META,
     evo: Object.freeze({
       deterministic: true,
       driftProof: true,
@@ -589,25 +616,29 @@ function buildOrganIdentity({ systemKey, system, organName }) {
     })
   });
 
-  // 3) pulseRole — CNS routing identity
+  // 3) pulseRole
   const pulseRole = `ai.organism.${organName}`;
 
-  // 4) surfaceMeta — understanding surface identity
+  // 4) surfaceMeta
   const surfaceMeta = Object.freeze({
     id: organId,
     layer,
     role: roleConst.toLowerCase(),
     version,
-    identity: organId
+    identity: organId,
+    subsystem,
+    IDENTITY_META
   });
 
-  // 5) pulseLoreContext — lore / purpose / story
+  // 5) pulseLoreContext
   const pulseLoreContext = Object.freeze({
     page: organId,
     organ: titleName.replace(/\s+/g, ""),
     layer,
     tier: "Immortal-World-Genome-v24",
     description: `Organ ${titleName} in system ${systemKey}, auto-mapped by PulseWorldOrganismMap v24.`,
+    subsystem,
+    IDENTITY_META,
     capabilities: {
       deterministic: true,
       driftProof: true,
@@ -618,12 +649,14 @@ function buildOrganIdentity({ systemKey, system, organName }) {
     }
   });
 
-  // 6) AI_EXPERIENCE_META — public-facing experience meta
+  // 6) AI_EXPERIENCE_META
   const AI_EXPERIENCE_META = Object.freeze({
     identity: organName,
     version,
     layer,
     role: roleConst.toLowerCase(),
+    subsystem,
+    IDENTITY_META,
     lineage: `${organName}-auto-v24-Immortal-World-Genome`,
     evo: Object.freeze({
       deterministic: true,
@@ -644,7 +677,7 @@ function buildOrganIdentity({ systemKey, system, organName }) {
     })
   });
 
-  // 7) EXPORT_META — devtools export meta
+  // 7) EXPORT_META
   const EXPORT_META = Object.freeze({
     file: `${organName}.js`,
     organ: titleName.replace(/\s+/g, ""),
@@ -652,13 +685,17 @@ function buildOrganIdentity({ systemKey, system, organName }) {
     epoch: version,
     layer,
     role: roleConst,
-    version
+    version,
+    subsystem,
+    IDENTITY_META
   });
 
   return Object.freeze({
     id: organId,
     system: systemKey,
     organ: organName,
+    subsystem,
+    IDENTITY_META,
     PulseRole,
     OrganMeta,
     pulseRole,
@@ -668,10 +705,10 @@ function buildOrganIdentity({ systemKey, system, organName }) {
     EXPORT_META
   });
 }
+// ============================================================================
+// BUILD ORGAN IDENTITIES + PATH MAP — v24.1 IMMORTAL WORLD GENOME++
+// ============================================================================
 
-// ============================================================================
-// BUILD ORGAN IDENTITIES + PATH MAP — v24 IMMORTAL WORLD GENOME++
-// ============================================================================
 function buildOrganIdentities(systems) {
   const identities = {};
   const identitiesByPath = {};
@@ -679,13 +716,23 @@ function buildOrganIdentities(systems) {
   for (const systemKey of Object.keys(systems)) {
     const system = systems[systemKey];
 
-    for (const organName of system.organs || []) {
-      const identity = buildOrganIdentity({ systemKey, system, organName });
+    // Extract subsystem + version from folder name
+    const subsystem = extractSubsystem(systemKey);
+    const version = extractVersion(systemKey);
 
-      // Primary key: "pulse-os/aiImmunity"
+    for (const organName of system.organs || []) {
+      const identity = buildOrganIdentity({
+        systemKey,
+        system,
+        organName,
+        subsystem,
+        version
+      });
+
+      // Primary key: "pulse-pages-v24/home"
       identities[identity.id] = identity;
 
-      // Convenience alias: "aiImmunity"
+      // Convenience alias: "home"
       identities[organName] = identity;
 
       // Absolute path → identity
@@ -701,8 +748,9 @@ function buildOrganIdentities(systems) {
 }
 
 // ============================================================================
-// BUILD ORGANISM MAP — v24 IMMORTAL WORLD GENOME++
+// BUILD ORGANISM MAP — v24.1 IMMORTAL WORLD GENOME++
 // ============================================================================
+
 export async function buildPulseOrganismMap(baseDir = "/") {
   const systems = await scanPulseSystems(baseDir);
 
@@ -722,7 +770,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   }
 
   return Object.freeze({
-    version: "24.0‑IMMORTAL‑WORLD‑GENOME++",
+    version: "24.1‑IMMORTAL‑WORLD‑GENOME++",
     generatedAt: new Date().toISOString(),
     systems,
     identities,
@@ -740,10 +788,9 @@ export async function buildPulseOrganismMap(baseDir = "/") {
 }
 
 // ============================================================================
-// EXPORT — IMMORTAL WORLD GENOME v24++
+// EXPORT — IMMORTAL WORLD GENOME v24.1++
 // ============================================================================
 export const PulseOrganismMap = await buildPulseOrganismMap("/");
 
-// OrganismIdentity is a FUNCTION (unchanged API)
 export const OrganismIdentity = (metaUrl) =>
   PulseOrganismMap.resolveIdentity(metaUrl);
