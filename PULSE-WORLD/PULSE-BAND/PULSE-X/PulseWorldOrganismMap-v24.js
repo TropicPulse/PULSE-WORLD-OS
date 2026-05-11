@@ -1011,3 +1011,13 @@ export const PulseOrganismMap = await buildPulseOrganismMap("/");
 
 export const OrganismIdentity = (metaUrl) =>
   PulseOrganismMap.resolveIdentity(metaUrl);
+
+export async function reportMapError(err, context = {}) {
+  try {
+    // Emit a COMMENT instead of a log
+    console.error("OrganismMap error", { err, context });
+  } catch (e) {
+    // If logger is broken, fallback to raw console
+    console.error("[OrganismMap Fallback Error]", err, context);
+  }
+}
