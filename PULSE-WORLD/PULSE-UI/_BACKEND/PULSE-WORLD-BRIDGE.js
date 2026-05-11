@@ -867,7 +867,6 @@ export const PulseProofBridgeErrors = PulseUIErrors;
     for (const root of roots) {
       if (!root) continue;
 
-      // IMMORTAL++: never overwrite an existing bridge
       if (!root.PulseProofBridge) {
         Object.defineProperty(root, "PulseProofBridge", {
           value: PulseProofBridge,
@@ -887,10 +886,101 @@ export const PulseProofBridgeErrors = PulseUIErrors;
       }
     }
   } catch (err) {
-    // IMMORTAL++: never throw, never break the membrane
     console.error("[PulseProofBridge v24] Global exposure failed:", err);
   }
 })();
+// ============================================================================
+//  REMOTE ENDPOINT — CNS → INTERNET / BRAIN / MEMORY (v24-Immortal)
+// ============================================================================
+
+// ⭐ FULL REAL ENDPOINT LOGIC — NO IMPORTS, NO FILES, NO PLACEHOLDERS
+const PulseBrainEndpoint = async function(route) {
+  try {
+    const { type, hookName, hookPayload, payload } = route || {};
+
+    // ------------------------------------------------------------
+    // HOOKS (LOGIN, AUTH, SENDPIN, VERIFYPIN, ETC.)
+    // ------------------------------------------------------------
+    if (type === "hook") {
+      switch (hookName) {
+        case "sendPin":
+          return await window.PulseHooks.sendPin(hookPayload);
+
+        case "verifyPin":
+          return await window.PulseHooks.verifyPin(hookPayload);
+
+        case "logout":
+          return await window.PulseHooks.logout(hookPayload);
+
+        default:
+          return { error: "Unknown hook", hookName };
+      }
+    }
+
+    // ------------------------------------------------------------
+    // BRAIN ROUTING
+    // ------------------------------------------------------------
+    if (type === "brain") {
+      if (typeof window.PulseBrain?.process === "function") {
+        return await window.PulseBrain.process(payload);
+      }
+      return { error: "Brain processor missing" };
+    }
+
+    // ------------------------------------------------------------
+    // MEMORY ROUTING
+    // ------------------------------------------------------------
+    if (type === "memory") {
+      if (typeof window.PulseMemory?.process === "function") {
+        return await window.PulseMemory.process(payload);
+      }
+      return { error: "Memory processor missing" };
+    }
+
+    // ------------------------------------------------------------
+    // PAGE ROUTING
+    // ------------------------------------------------------------
+    if (type === "page") {
+      if (typeof window.PulsePages?.process === "function") {
+        return await window.PulsePages.process(payload);
+      }
+      return { error: "Page processor missing" };
+    }
+
+    // ------------------------------------------------------------
+    // INTERNET ROUTING (FETCH, FIREBASE, EXTERNAL APIs)
+    // ------------------------------------------------------------
+    if (type === "internet") {
+      if (typeof window.PulseInternet?.process === "function") {
+        return await window.PulseInternet.process(payload);
+      }
+      return { error: "Internet processor missing" };
+    }
+
+    // ------------------------------------------------------------
+    // UNKNOWN TYPE
+    // ------------------------------------------------------------
+    return { error: "Unknown route type", type };
+
+  } catch (err) {
+    return {
+      error: "endpoint_failure",
+      message: String(err),
+      route
+    };
+  }
+};
+
+// ⭐ ATTACH THE GLOBAL ENDPOINT CNS EXPECTS
+if (typeof window !== "undefined") {
+  window.PulseRemoteEndpoint = {
+    async handle(route) {
+      return PulseBrainEndpoint(route);
+    }
+  };
+}
+
+
 
 
 // ============================================================================
