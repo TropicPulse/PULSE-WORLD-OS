@@ -1219,7 +1219,7 @@ function applyGateDecision(gateDecision, skin) {
       const page =
         location.pathname.split("/").pop().replace(".html", "") || "index";
 
-      // 1 — Ignite PulseTouch
+      // 1 — Ignite PulseTouch (sync)
       const touch = createPulseTouch({
         page,
         mode: "fast",
@@ -1235,12 +1235,16 @@ function applyGateDecision(gateDecision, skin) {
       window.__PULSE_TOUCH_T0__ = t0;
       window.__PULSE_CHRONO_LAST__ = t0;
 
-      // ⭐ DEFER HEAVY WORK BY ONE TICK
+      // ⭐ TICK 1 — ENGINE WARM (chunk + prewarm)
       setTimeout(() => {
-        touch.preloader?.preloadAllPages?.();
         touch.chunker?.preloadAllChunks?.();
         touch.advantage?.prewarmAll?.();
-        touch.memory?.snapshotAll?.();
+
+        // ⭐ TICK 2 — UI WARM (pages + snapshots)
+        setTimeout(() => {
+          touch.preloader?.preloadAllPages?.();
+          touch.memory?.snapshotAll?.();
+        }, 0);
       }, 0);
 
       console.log("PulseTouch auto‑ignite: FULL UI organism loaded.");
@@ -1249,7 +1253,6 @@ function applyGateDecision(gateDecision, skin) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
 })();
-
 
 
 // ============================================================
