@@ -83,7 +83,7 @@ import { createDualBandOrganism } from "./aiDualBand-v24.js";
 // Non-binary symbolic organs
 import { createDoctorAPI } from "./aiDoctorAssistant-v24.js";
 import { createSurgeonAPI } from "./aiSurgeon-v24.js";
-import { createLawyerAPI } from "./aiLawAssistant.js";
+import { createLawyerAPI } from "./aiLawAssistant-v24.js";
 import { createEntrepreneurAPI } from "./aiEntrepreneur-v24.js";
 import { createVeterinarianAPI } from "./aiVeterinarian-v24.js";
 import { createClinicianAPI } from "./aiClinician-v24.js";
@@ -91,7 +91,7 @@ import { createEvolutionaryAPI } from "./aiEvolutionary-v24.js";
 
 // (Trust / jury / evidence surfaces would be imported here when implemented)
 import { createSafetyFrameOrgan } from "./aiSafetyFrame.js";
-import { createJuryFrame } from "./aiJuryFrame.js";
+import { createJuryFrame } from "./aiJuryFrame-v24.js";
 
 // ============================================================================
 //  INTERNAL HELPERS — Pulse‑Net + Chunker lanes

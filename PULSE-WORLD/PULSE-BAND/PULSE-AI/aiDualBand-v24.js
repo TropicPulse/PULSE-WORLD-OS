@@ -39,7 +39,7 @@ import { AIBinaryVitals } from "./aiVitals.js";
 import { AIBinaryMetabolism } from "./aiMetabolism.js";
 import { AIBinaryHormones } from "./aiHormones-v24.js";
 import { AIBinarySentience } from "./aiSentience.js";
-import { AIBinaryConsciousness } from "./aiConsciousness.js";
+import { AIBinaryConsciousness } from "./aiConsciousness-v24.js";
 import { AIBinaryImmunity } from "./aiImmunity-v24.js";
 import { AIBinaryPipeline } from "./aiPipeline.js";
 import { AIBinaryReflex } from "./aiReflex-v24.js";

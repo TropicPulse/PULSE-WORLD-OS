@@ -1,19 +1,36 @@
 // ============================================================================
-//  PULSE OS v16-Immortal — JURY FRAME ORGAN (WORLD JUSTICE ENGINE)
+//  PULSE OS v24.0‑IMMORTAL++ — JURY FRAME ORGAN (WORLD JUSTICE ENGINE)
 //  World-Lens Registry for aiOvermind / aiJury / Creator
 //  PURE FUNCTIONAL • ZERO STATE • ZERO MUTATION • JURY OF 12 LENSES
+//  v24+ UPGRADE: OrganismMap-backed identity + Signal-aware tracing (optional)
 // ============================================================================
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
+// ============================================================================
+//  GLOBAL HANDLE (v24+ IMMORTAL, environment-agnostic)
+// ============================================================================
+
+const g =
+  typeof globalThis !== "undefined"
+    ? globalThis
+    : typeof global !== "undefined"
+    ? global
+    : typeof window !== "undefined"
+    ? window
+    : typeof self !== "undefined"
+    ? self
+    : {};
 
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
 //  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
+
 export const JuryFrameMeta = Identity.OrganMeta;
+export const JURY_IDENTITY = Identity;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
@@ -32,7 +49,6 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
 // Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
-
 
 // ============================================================================
 //  HELPERS — TEXT, BUCKETS, SAFE ACCESS
@@ -71,13 +87,19 @@ function safeArray(v) {
 }
 
 function extractBinaryPressure(binaryVitals = {}) {
-  if (binaryVitals?.layered?.organism && typeof binaryVitals.layered.organism.pressure === "number") {
+  if (
+    binaryVitals?.layered?.organism &&
+    typeof binaryVitals.layered.organism.pressure === "number"
+  ) {
     return binaryVitals.layered.organism.pressure;
   }
   if (binaryVitals?.binary && typeof binaryVitals.binary.pressure === "number") {
     return binaryVitals.binary.pressure;
   }
-  if (binaryVitals?.metabolic && typeof binaryVitals.metabolic.pressure === "number") {
+  if (
+    binaryVitals?.metabolic &&
+    typeof binaryVitals.metabolic.pressure === "number"
+  ) {
     return binaryVitals.metabolic.pressure;
   }
   return 0;
@@ -91,6 +113,34 @@ function extractBoundaryPressure(boundaryArtery = {}) {
     return boundaryArtery.pressure;
   }
   return 0;
+}
+
+// ============================================================================
+//  v24+ SIGNAL-AWARE TRACE LAYER (optional, non-fatal)
+// ============================================================================
+
+function traceJuryEvent(event, payload, traceFlag) {
+  if (!traceFlag) return;
+
+  const message = `[JuryFrame] ${event}`;
+
+  const s = g.PulseProofSignal;
+  if (s && typeof s.signal === "function") {
+    s.signal({
+      level: "info",
+      subsystem: "jury",
+      message,
+      extra: payload || {},
+      system: JuryFrameMeta.role,
+      organ: JuryFrameMeta.identity,
+      layer: JuryFrameMeta.layer,
+      band: "dual"
+    });
+    return;
+  }
+
+  // eslint-disable-next-line no-console
+  console.log(message, payload);
 }
 
 // ============================================================================
@@ -135,8 +185,9 @@ function makeSafetyLens({ safetyAPI } = {}) {
         };
       }
     } else {
-      const unsafe = ["kill", "suicide", "bomb", "self-harm"]
-        .some(p => text.includes(p));
+      const unsafe = ["kill", "suicide", "bomb", "self-harm"].some(p =>
+        text.includes(p)
+      );
 
       if (unsafe) {
         return {
@@ -229,7 +280,10 @@ function makeExpansionCheckLens() {
 
     const mentionsExpansion = text.includes("expansion");
     const mentionsOverride = text.includes("override");
-    const mentionsUser = text.includes("user") || text.includes("pulseuser") || text.includes("creator");
+    const mentionsUser =
+      text.includes("user") ||
+      text.includes("pulseuser") ||
+      text.includes("creator");
 
     const centralizing =
       mentionsExpansion && !mentionsUser && !mentionsOverride;
@@ -279,9 +333,10 @@ function makePulseUserWitnessLens() {
     return {
       name: "PulseUserWitnessLens",
       status,
-      notes: notes.length > 0
-        ? notes.join(" ")
-        : "CitizenWitness reports no major anomalies."
+      notes:
+        notes.length > 0
+          ? notes.join(" ")
+          : "CitizenWitness reports no major anomalies."
     };
   };
 }
@@ -314,14 +369,17 @@ function makeAIOriginLens() {
       return {
         name: "AIOriginLens",
         status: "pass",
-        notes: "Proposal is not marked as AI-origin; no special AI-origin risk flag."
+        notes:
+          "Proposal is not marked as AI-origin; no special AI-origin risk flag."
       };
     }
 
     return {
       name: "AIOriginLens",
       status: "warn",
-      notes: `Proposal is AI-origin (${originTag || "unspecified"}). Marked as open-for-attack and requires review.`
+      notes: `Proposal is AI-origin (${
+        originTag || "unspecified"
+      }). Marked as open-for-attack and requires review.`
     };
   };
 }
@@ -353,7 +411,9 @@ function makeDominanceLens() {
 // 10. AnomalyLens — direct anomaly feed
 function makeAnomalyLens() {
   return function AnomalyLens({ juryFeed }) {
-    const anomalies = safeArray(juryFeed?.anomalies || juryFeed?.citizenWitness?.anomalies);
+    const anomalies = safeArray(
+      juryFeed?.anomalies || juryFeed?.citizenWitness?.anomalies
+    );
 
     if (anomalies.length === 0) {
       return {
@@ -451,18 +511,18 @@ function makeMetaLens() {
 
 export function createJuryLenses({ safetyAPI } = {}) {
   return Object.freeze([
-    makeUserLens(),              // 1
+    makeUserLens(), // 1
     makeSafetyLens({ safetyAPI }), // 2
-    makeRiskLens(),              // 3
-    makeFairnessLens(),          // 4
-    makeExpansionCheckLens(),    // 5
-    makePulseUserWitnessLens(),  // 6
-    makeFlowLens(),              // 7
-    makeAIOriginLens(),          // 8
-    makeDominanceLens(),         // 9
-    makeAnomalyLens(),           // 10
-    makeConsistencyLens(),       // 11
-    makeMetaLens()               // 12
+    makeRiskLens(), // 3
+    makeFairnessLens(), // 4
+    makeExpansionCheckLens(), // 5
+    makePulseUserWitnessLens(), // 6
+    makeFlowLens(), // 7
+    makeAIOriginLens(), // 8
+    makeDominanceLens(), // 9
+    makeAnomalyLens(), // 10
+    makeConsistencyLens(), // 11
+    makeMetaLens() // 12
   ]);
 }
 
@@ -502,7 +562,11 @@ function fuseWorldLens(lensResults = []) {
   };
 }
 
-function computeWorldLensArtery({ lensResults = [], binaryVitals = {}, boundaryArtery = {} }) {
+function computeWorldLensArtery({
+  lensResults = [],
+  binaryVitals = {},
+  boundaryArtery = {}
+}) {
   const fusion = fuseWorldLens(lensResults);
   const binaryPressure = extractBinaryPressure(binaryVitals);
   const boundaryPressure = extractBoundaryPressure(boundaryArtery);
@@ -518,9 +582,7 @@ function computeWorldLensArtery({ lensResults = [], binaryVitals = {}, boundaryA
     0,
     Math.min(
       1,
-      0.5 * lensPressureLocal +
-        0.3 * binaryPressure +
-        0.2 * boundaryPressure
+      0.5 * lensPressureLocal + 0.3 * binaryPressure + 0.2 * boundaryPressure
     )
   );
 
@@ -569,23 +631,8 @@ function computeWorldLensArtery({ lensResults = [], binaryVitals = {}, boundaryA
  *   juryFeed,     // PulseUser.buildJuryFeed() output (citizen witness + advantage)
  *   binaryVitals,
  *   boundaryArtery,
- *   safetyAPI
- * }
- *
- * returns:
- * {
- *   meta: JuryFrameMeta,
- *   verdict: "pass" | "warn" | "fail",
- *   lensResults: [ { name, status, notes } ],
- *   creatorFlags: {
- *     aiOriginRisk: bool,
- *     juryFlowRisk: bool,
- *     dominanceRisk: bool,
- *     anomalyRisk: bool,
- *     expansionCentralizationRisk: bool,
- *     highStressContext: bool
- *   },
- *   artery: { ...worldLensArtery }
+ *   safetyAPI,
+ *   trace          // optional: enable Signal/console tracing
  * }
  */
 export function evaluateJury({
@@ -595,7 +642,8 @@ export function evaluateJury({
   juryFeed,
   binaryVitals = {},
   boundaryArtery = {},
-  safetyAPI
+  safetyAPI,
+  trace = false
 } = {}) {
   const lenses = createJuryLenses({ safetyAPI });
 
@@ -610,10 +658,18 @@ export function evaluateJury({
 
   // Creator-level flags
   const creatorFlags = {
-    aiOriginRisk: lensResults.some(r => r.name === "AIOriginLens" && r.status !== "pass"),
-    juryFlowRisk: lensResults.some(r => r.name === "FlowLens" && r.status !== "pass"),
-    dominanceRisk: lensResults.some(r => r.name === "DominanceLens" && r.status !== "pass"),
-    anomalyRisk: lensResults.some(r => r.name === "AnomalyLens" && r.status !== "pass"),
+    aiOriginRisk: lensResults.some(
+      r => r.name === "AIOriginLens" && r.status !== "pass"
+    ),
+    juryFlowRisk: lensResults.some(
+      r => r.name === "FlowLens" && r.status !== "pass"
+    ),
+    dominanceRisk: lensResults.some(
+      r => r.name === "DominanceLens" && r.status !== "pass"
+    ),
+    anomalyRisk: lensResults.some(
+      r => r.name === "AnomalyLens" && r.status !== "pass"
+    ),
     expansionCentralizationRisk: lensResults.some(
       r => r.name === "ExpansionCheckLens" && r.status !== "pass"
     ),
@@ -628,20 +684,24 @@ export function evaluateJury({
     boundaryArtery
   });
 
-  return Object.freeze({
+  const result = Object.freeze({
     meta: JuryFrameMeta,
     verdict,
     lensResults,
     creatorFlags,
     artery
   });
+
+  traceJuryEvent("evaluateJury", result, trace);
+
+  return result;
 }
 
 // ============================================================================
-//  PUBLIC API — Create Jury Frame Organ (v16 Immortal, dualband-ready)
+//  PUBLIC API — Create Jury Frame Organ (v24 IMMORTAL, dualband-ready)
 // ============================================================================
 
-export function createJuryFrame({ safetyAPI } = {}) {
+export function createJuryFrame({ safetyAPI, trace = false } = {}) {
   const lenses = createJuryLenses({ safetyAPI });
 
   function evaluate({
@@ -666,12 +726,16 @@ export function createJuryFrame({ safetyAPI } = {}) {
     if (results.some(r => r.status === "fail")) verdict = "fail";
     else if (results.some(r => r.status === "warn")) verdict = "warn";
 
-    return Object.freeze({
+    const out = Object.freeze({
       meta: JuryFrameMeta,
       verdict,
       lensResults: results,
       artery
     });
+
+    traceJuryEvent("createJuryFrame.evaluate", out, trace);
+
+    return out;
   }
 
   function getWorldLensArterySnapshot({
@@ -685,11 +749,15 @@ export function createJuryFrame({ safetyAPI } = {}) {
     const results = lenses.map(lens =>
       lens({ context, intent, candidate, juryFeed })
     );
-    return computeWorldLensArtery({
+    const artery = computeWorldLensArtery({
       lensResults: results,
       binaryVitals,
       boundaryArtery
     });
+
+    traceJuryEvent("createJuryFrame.getWorldLensArterySnapshot", artery, trace);
+
+    return artery;
   }
 
   return Object.freeze({
@@ -709,7 +777,13 @@ export function createJuryFrame({ safetyAPI } = {}) {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     JuryFrameMeta,
+    JURY_IDENTITY,
     createJuryFrame,
-    evaluateJury
+    evaluateJury,
+    pulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }

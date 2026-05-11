@@ -75,7 +75,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-import { JuryFrameMeta, createJuryFrame, evaluateJury} from "../PULSE-AI/aiJuryFrame.js";
+import { JuryFrameMeta, createJuryFrame, evaluateJury} from "../PULSE-AI/aiJuryFrame-v24.js";
 import { admin, db } from "../PULSE-X/PulseWorldFirebaseGenome-v20.js";
 
 export const PulseTrustJuryFrameMeta = Object.freeze({

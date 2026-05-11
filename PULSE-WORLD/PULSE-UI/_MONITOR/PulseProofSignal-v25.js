@@ -5,10 +5,11 @@
 //  CSS-Style Signal Cascade • Top-Layer Merged Comments • Color-Aware Logs
 //  BEAST + UI CONTEXT • EMITS ONLY ON CHANGE
 //  v25+ UPGRADE: SignalPort-style dispatch via OrganismMap (if present)
+//  v25+ UPGRADE: Universal Memory Layer (global/window → localStorage → window)
 // ============================================================================
 
 console.log(
-  "%cPulseProofSignal v25-IMMORTAL-EVOLVABLE (CSS-MERGED, OFFLINE, +SignalPort)",
+  "%cPulseProofSignal v25-IMMORTAL-EVOLVABLE (CSS-MERGED, OFFLINE, +SignalPort, +UniversalMemory)",
   "color:#BA68C8;font-weight:bold;"
 );
 
@@ -29,6 +30,265 @@ const g =
 
 // global guard for Signal↔Logger recursion (kept for safety, though we no longer attach)
 g.__PULSE_SIGNAL_LOGGING = g.__PULSE_SIGNAL_LOGGING || { active: false };
+
+// ============================================================================
+//  v25+ UNIVERSAL MEMORY LAYER
+//  - Treat localStorage as source of truth
+//  - Sync ALL globals (globalThis/window/g) → localStorage
+//  - Mirror localStorage → window/g on frontend
+//  - Beast-safe (no window), browser-safe, offline-safe
+// ============================================================================
+
+const PULSE_MEMORY_PREFIX = "__pulse_global__:";
+
+// Safe localStorage abstraction (works in beast + browser)
+const PulseMemoryStorage = {
+  _ensureInMemory() {
+    if (!g.__PULSE_LOCALSTORAGE) {
+      Object.defineProperty(g, "__PULSE_LOCALSTORAGE", {
+        value: {},
+        writable: false,
+        configurable: false,
+        enumerable: false
+      });
+    }
+  },
+
+  getRaw(key) {
+    try {
+      if (typeof localStorage !== "undefined") {
+        return localStorage.getItem(key);
+      }
+    } catch {
+      // ignore and fall back
+    }
+    this._ensureInMemory();
+    return g.__PULSE_LOCALSTORAGE[key] || null;
+  },
+
+  setRaw(key, value) {
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem(key, value);
+        return;
+      }
+    } catch {
+      // ignore and fall back
+    }
+    this._ensureInMemory();
+    g.__PULSE_LOCALSTORAGE[key] = value;
+  },
+
+  get(key) {
+    const raw = this.getRaw(key);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  },
+
+  set(key, value) {
+    try {
+      const raw = JSON.stringify(value);
+      this.setRaw(key, raw);
+    } catch {
+      // ignore
+    }
+  },
+
+  keys() {
+    const keys = new Set();
+    try {
+      if (typeof localStorage !== "undefined") {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k) keys.add(k);
+        }
+      }
+    } catch {
+      // ignore
+    }
+    if (g.__PULSE_LOCALSTORAGE) {
+      Object.keys(g.__PULSE_LOCALSTORAGE).forEach(k => keys.add(k));
+    }
+    return Array.from(keys);
+  }
+};
+
+// Heuristic skip list so we don't try to serialize built-ins
+const PULSE_GLOBAL_SKIP_KEYS = new Set([
+  "window",
+  "self",
+  "global",
+  "globalThis",
+  "document",
+  "location",
+  "navigator",
+  "console",
+  "frames",
+  "parent",
+  "top",
+  "opener",
+  "performance",
+  "crypto",
+  "indexedDB",
+  "localStorage",
+  "sessionStorage",
+  "Promise",
+  "Array",
+  "Object",
+  "Function",
+  "Number",
+  "String",
+  "Boolean",
+  "Map",
+  "Set",
+  "WeakMap",
+  "WeakSet",
+  "Date",
+  "RegExp",
+  "Error",
+  "TypeError",
+  "SyntaxError",
+  "ReferenceError",
+  "RangeError",
+  "EvalError",
+  "URIError",
+  "JSON",
+  "Math",
+  "Reflect",
+  "Proxy",
+  "Intl",
+  "Atomics",
+  "SharedArrayBuffer",
+  "BigInt",
+  "BigInt64Array",
+  "BigUint64Array",
+  "DataView",
+  "ArrayBuffer",
+  "Uint8Array",
+  "Uint16Array",
+  "Uint32Array",
+  "Int8Array",
+  "Int16Array",
+  "Int32Array",
+  "Float32Array",
+  "Float64Array"
+]);
+
+const PulseUniversalMemory = {
+  prefix: PULSE_MEMORY_PREFIX,
+
+  _isSerializable(value) {
+    if (value === undefined) return false;
+    if (typeof value === "function") return false;
+    if (typeof value === "symbol") return false;
+    try {
+      JSON.stringify(value);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  _syncGlobalsToStorageOnce() {
+    const root = g;
+    const seen = new Set();
+
+    const pushProps = obj => {
+      if (!obj || typeof obj !== "object") return;
+      let names;
+      try {
+        names = Object.getOwnPropertyNames(obj);
+      } catch {
+        return;
+      }
+      for (const key of names) {
+        if (seen.has(key)) continue;
+        seen.add(key);
+        if (PULSE_GLOBAL_SKIP_KEYS.has(key)) continue;
+        if (key.startsWith("__pulse_global__")) continue;
+
+        let desc;
+        try {
+          desc = Object.getOwnPropertyDescriptor(obj, key);
+        } catch {
+          continue;
+        }
+        if (!desc || !("value" in desc)) continue;
+
+        const value = desc.value;
+        if (!this._isSerializable(value)) continue;
+
+        const storageKey = this.prefix + key;
+        PulseMemoryStorage.set(storageKey, value);
+      }
+    };
+
+    // globalThis / g
+    pushProps(root);
+
+    // window / self if present
+    try {
+      if (typeof window !== "undefined") pushProps(window);
+    } catch {
+      // ignore
+    }
+    try {
+      if (typeof self !== "undefined" && self !== window) pushProps(self);
+    } catch {
+      // ignore
+    }
+  },
+
+  _syncStorageToGlobalsOnce() {
+    const keys = PulseMemoryStorage.keys();
+    for (const key of keys) {
+      if (!key.startsWith(this.prefix)) continue;
+      const prop = key.slice(this.prefix.length);
+      const value = PulseMemoryStorage.get(key);
+
+      try {
+        g[prop] = value;
+      } catch {
+        // ignore
+      }
+
+      if (typeof window !== "undefined") {
+        try {
+          window[prop] = value;
+        } catch {
+          // ignore
+        }
+      }
+      if (typeof self !== "undefined") {
+        try {
+          self[prop] = value;
+        } catch {
+          // ignore
+        }
+      }
+    }
+  },
+
+  init() {
+    // First, sync any existing globals into storage
+    this._syncGlobalsToStorageOnce();
+    // Then, mirror storage back into globals/window so frontend sees them
+    this._syncStorageToGlobalsOnce();
+
+    // Optional: expose helper for later manual syncs if needed
+    g.PulseUniversalMemory = g.PulseUniversalMemory || {
+      resyncGlobalsToStorage: () => this._syncGlobalsToStorageOnce(),
+      resyncStorageToGlobals: () => this._syncStorageToGlobalsOnce()
+    };
+  }
+};
+
+// Initialize universal memory immediately (runs as soon as this module loads)
+PulseUniversalMemory.init();
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, signal-scoped, FRONTEND-SAFE
@@ -167,10 +427,9 @@ function buildCommentFromSignalPacket(packet, kind = "direct") {
 }
 
 // ============================================================================
-/*  CSS-STYLE TOP-LAYER MERGE ENGINE — collapse subsignals → 1 comment
- *  + CHANGE DETECTION: emit ONLY when computed state changes
- *  (unchanged core behavior; we only read from it via latest())
- */
+//  CSS-STYLE TOP-LAYER MERGE ENGINE — collapse subsignals → 1 comment
+//  + CHANGE DETECTION: emit ONLY when computed state changes
+//  (unchanged core behavior; we only read from it via latest())
 // ============================================================================
 
 const TopLayerMerge = {
@@ -446,6 +705,7 @@ function normalizeDirectSignal(payload = {}) {
 // ============================================================================
 //  SIGNALPORT-STYLE DISPATCH — USING ORGANISMMAP IF PRESENT
 // ============================================================================
+
 function resolveTargetViaOrganismMap(target) {
   if (!target || !g.OrganismMap) return null;
 
@@ -458,24 +718,18 @@ function resolveTargetViaOrganismMap(target) {
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 
-  // ---------------------------------------------------------------------------
   // 1. Direct alias match → canonical port
-  // ---------------------------------------------------------------------------
   const aliasMatch = aliases[key];
   if (aliasMatch && systems[aliasMatch]) {
     return systems[aliasMatch];
   }
 
-  // ---------------------------------------------------------------------------
   // 2. Direct system match (canonical port name)
-  // ---------------------------------------------------------------------------
   if (systems[key]) {
     return systems[key];
   }
 
-  // ---------------------------------------------------------------------------
   // 3. Match PORT_IDENTITY.portName
-  // ---------------------------------------------------------------------------
   for (const sysKey of Object.keys(systems)) {
     const identity = systems[sysKey];
     const port = identity?.IDENTITY_META?.PORT_IDENTITY?.portName;
@@ -485,9 +739,7 @@ function resolveTargetViaOrganismMap(target) {
     }
   }
 
-  // ---------------------------------------------------------------------------
   // 4. Match PORT_IDENTITY.aliases
-  // ---------------------------------------------------------------------------
   for (const sysKey of Object.keys(systems)) {
     const identity = systems[sysKey];
     const portAliases = identity?.IDENTITY_META?.PORT_IDENTITY?.aliases || [];
@@ -497,18 +749,14 @@ function resolveTargetViaOrganismMap(target) {
     }
   }
 
-  // ---------------------------------------------------------------------------
   // 5. Fuzzy match: startsWith
-  // ---------------------------------------------------------------------------
   for (const sysKey of Object.keys(systems)) {
     if (sysKey.startsWith(key)) {
       return systems[sysKey];
     }
   }
 
-  // ---------------------------------------------------------------------------
   // 6. Fuzzy match: contains
-  // ---------------------------------------------------------------------------
   for (const sysKey of Object.keys(systems)) {
     if (sysKey.includes(key)) {
       return systems[sysKey];
@@ -517,7 +765,6 @@ function resolveTargetViaOrganismMap(target) {
 
   return null;
 }
-
 
 function dispatchSignalToOrganism(target, payload = {}) {
   // 1. Resolve via OrganismMap
@@ -544,9 +791,7 @@ function dispatchSignalToOrganism(target, payload = {}) {
 
   // 3. Pull PORT_IDENTITY from the organ identity
   const portIdentity =
-    resolved.IDENTITY_META?.PORT_IDENTITY ||
-    resolved.PORT_IDENTITY ||
-    null;
+    resolved.IDENTITY_META?.PORT_IDENTITY || resolved.PORT_IDENTITY || null;
 
   if (!portIdentity || typeof portIdentity.handler !== "function") {
     const packet = normalizeDirectSignal({
@@ -611,11 +856,10 @@ function dispatchSignalToOrganism(target, payload = {}) {
   };
 }
 
-
-
 // ============================================================================
 //  PUBLIC API — PulseProofSignal Engine (FRONTEND-SAFE IMMORTAL++)
 //  + SignalPort-style dispatch
+//  + Universal Memory Layer
 // ============================================================================
 
 export const PulseProofSignal = Object.freeze({

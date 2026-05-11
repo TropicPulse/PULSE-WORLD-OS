@@ -133,7 +133,7 @@ import aiToneRouter from "../PULSE-AI/aiToneRouter-v24.js";
 // ============================================================================
 //  4. META‑GOVERNANCE (CROWN LAYER)
 // ============================================================================
-import createJuryFrame from "../PULSE-AI/aiJuryFrame.js";
+import createJuryFrame from "../PULSE-AI/aiJuryFrame-v24.js";
 import createAIBinaryGovernorAdapter from "../PULSE-AI/aiGovernorAdapter-v24.js";
 import {
   PulseTrustMeta,
