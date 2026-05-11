@@ -92,7 +92,7 @@ import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
 
 // Dual-band organism + binary send
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v16.js";
 
 // Proxy context (v16 IMMORTAL ORGANISM)
 import {

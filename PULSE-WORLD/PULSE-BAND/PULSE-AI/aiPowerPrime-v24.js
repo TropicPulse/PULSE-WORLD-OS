@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiPowerPrime.js — PULSE OS Power‑Prime Organ — v24‑IMMORTAL‑PRIME++
+//  aiPowerPrime-v24.js — PULSE OS Power‑Prime Organ — v24‑IMMORTAL‑PRIME++
 //  Crown-Layer Power Intelligence • Artery-Fused • Predictive • Drift-Aware
 //  READ-ONLY • DUALBAND • DETERMINISTIC • IDENTITY-SAFE
 // ============================================================================

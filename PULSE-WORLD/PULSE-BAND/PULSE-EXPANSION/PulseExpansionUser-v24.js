@@ -41,7 +41,7 @@ import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/a
 
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v24.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v16.js";
 
 // PROXY CONTEXT — v24 IMMORTAL ORGANISM
 import {

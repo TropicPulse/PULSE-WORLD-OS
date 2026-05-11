@@ -74,10 +74,10 @@ import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js"
 import pulseAIChunker from "./PulseAIChunker-v20.js";
 import createPulseFileScanner from "./PulseFileScanner-v20.js";
 import { createArchitectAPI } from "./aiArchitect-v24.js";
-import { createTouristAPI, prewarmTourist } from "./aiTourist.js";
+import { createTouristAPI, prewarmTourist } from "./aiTourist-v24.js";
 
 import { createEnvironmentAPI } from "./aiEnvironment-v24.js";
-import { createPowerAPI } from "./aiPowerPrime.js";
+import { createPowerAPI } from "./aiPowerPrime-v24.js";
 import { createEvolutionAPI } from "./aiEvolution-v24.js";
 import { createEarnAPI } from "./aiEarn-v24.js";
 import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";

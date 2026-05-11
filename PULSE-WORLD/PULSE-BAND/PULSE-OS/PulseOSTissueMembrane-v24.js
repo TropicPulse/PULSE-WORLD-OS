@@ -329,7 +329,7 @@ export function getTissueRouteMemorySnapshot() {
 // ============================================================================
 // PUBLIC API (C‑LAYER passthrough — dual‑band + presence aware)
 // ============================================================================
-import { route, Router } from "./PulseOSCNSNervousSystem.js";
+import { route, Router } from "./PulseOSCNSNervousSystem-v24.js";
 
 function attachBand(payload = {}, band) {
   const normalized = normalizeBand(band || payload.__band);

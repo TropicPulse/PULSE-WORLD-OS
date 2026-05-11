@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-WORLD/PulseRegioningPulseRegioningDeploymentPhysics-v16.js
+FILE: /PULSE-WORLD/PulseRegioningDeploymentPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC DEPLOYMENT PHYSICS
 ===============================================================================
 */

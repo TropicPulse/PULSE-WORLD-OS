@@ -65,8 +65,8 @@ import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseExpansionRouter-v24.js"
 // Earn / Band / Send
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./aiDualBand-v24.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
-import createBinaryRouter from "../PULSE-ROUTER/PulseBinaryRouter-v24.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v16.js";
+import createBinaryRouter from "../PULSE-ROUTER/PulseRouterBinary-v24.js";
 import PulseRouter from "../PULSE-ROUTER/PulseRouter-v24.js";
 
 // Runtime / Scheduler (symbolic context only)
@@ -178,7 +178,7 @@ const ArchetypePages = Object.freeze({
   LAWYER: "aiLawAssistant-v24.js",
   POWER: "aiPower.js",
   SURGEON: "aiSurgeon-v24.js",
-  TOURIST: "aiTourist.js",
+  TOURIST: "aiTourist-v24.js",
   VETERINARIAN: "aiVeterinarian-v24.js"
 });
 

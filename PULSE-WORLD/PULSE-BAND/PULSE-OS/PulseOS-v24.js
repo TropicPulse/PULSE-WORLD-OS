@@ -46,9 +46,9 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 
 import { withModuleInitGuard, withOrganGuard } from "./PulseOSGovernor-v24.js";
-import * as PulseOSBrain from "./PulseOSBrain-v16.js";
-import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";
-import * as PulseSpinalCord from "./PulseOSSpinalCord-v16.js";
+import * as PulseOSBrain from "./PulseOSBrain-v24.js";
+import * as PulseOSEvolution from "./PulseOSBrainEvolution-v24.js";
+import * as PulseSpinalCord from "./PulseOSSpinalCord-v24.js";
 
 // Presence / Mesh presence (symbolic/OS side)
 import * as PulseOSPresence from "./PulseOSPresence-V24.js";
@@ -61,7 +61,7 @@ import {
 // IMMORTAL Binary Mesh Environment v16
 import {
   createBinaryMeshEnvironment as createBinaryMeshEnv
-} from "../PULSE-MESH/PulseBinaryMesh-v16.js";
+} from "../PULSE-MESH/PulseMeshBinary-v16.js";
 
 // IMMORTAL OrganismMesh v16
 import { createOrganismMesh } from "../PULSE-MESH/PulseMeshOrganism-v16.js";

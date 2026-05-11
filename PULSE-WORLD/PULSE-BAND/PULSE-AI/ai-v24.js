@@ -43,15 +43,15 @@ import { AIMemory } from "./aiMemory-v24.js";
 
 import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy-v24.js";
 import { AIBinaryGenome } from "./aiGenome-v24.js";
-import { AIBinaryVitals } from "./aiVitals.js";
+import { AIBinaryVitals } from "./aiVitals-v24.js";
 import { AIBinaryMetabolism } from "./aiMetabolism-v24.js";
 import { AIBinaryHormones } from "./aiHormones-v24.js";
-import { AIBinarySentience } from "./aiSentience.js";
+import { AIBinarySentience } from "./aiSentience-v24.js";
 import { AIBinaryConsciousness } from "./aiConsciousness-v24.js";
 import { AIBinaryImmunity } from "./aiImmunity-v24.js";
 import { AIBinaryPipeline } from "./aiPipeline-v24.js";
 import { AIBinaryReflex } from "./aiReflex-v24.js";
-import { AIBinaryScheduler } from "./aiScheduler.js";
+import { AIBinaryScheduler } from "./aiScheduler-v24.js";
 import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
 import { AIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
 

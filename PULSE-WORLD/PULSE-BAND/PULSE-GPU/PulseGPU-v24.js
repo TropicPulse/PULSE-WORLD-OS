@@ -70,7 +70,7 @@ import PulseCoreAIMemoryAdapter          from "../PULSE-CORE/PulseCoreAIMemoryAd
 import PulseCoreGPUMemoryAdapter         from "../PULSE-CORE/PulseCoreGpuMemoryAdapter-v20.js";
 import PulseCoreProxyMemoryAdapter       from "../PULSE-CORE/PulseCoreProxyMemoryAdapter-v20.js";
 import PulseCoreEarnMemoryAdapter        from "../PULSE-CORE/PulseCoreEarnMemoryAdapter-v20.js";
-import PulseBinaryCoreOverlay            from "../PULSE-CORE/PulseBinaryCoreOverlay-v20.js";
+import PulseBinaryCoreOverlay            from "../PULSE-CORE/PulseCoreBinaryOverlay-v20.js";
 
 // CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
 export const CoreMemory = Object.freeze({

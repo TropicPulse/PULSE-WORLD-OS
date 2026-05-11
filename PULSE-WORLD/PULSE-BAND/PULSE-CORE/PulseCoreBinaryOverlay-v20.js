@@ -1,5 +1,5 @@
 // ============================================================================
-//  PulseBinaryCoreOverlay-v20.js — v20-IMMORTAL-BINARY-OVERLAY
+//  PulseCoreBinaryOverlay-v20.js — v20-IMMORTAL-BINARY-OVERLAY
 //  ORGANISM‑WIDE BINARY MEMORY OVERLAY
 // ============================================================================
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";

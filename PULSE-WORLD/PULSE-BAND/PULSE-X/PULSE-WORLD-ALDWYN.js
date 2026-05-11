@@ -90,7 +90,7 @@ import { createPulseSend } from "../PULSE-SEND/PulseSend-v16.js";
 // ============================================================================
 //  BINARY SEND ORGANISM
 // ============================================================================
-import { createBinarySend } from "../PULSE-SEND/PulseBinarySend-v16.js";
+import { createBinarySend } from "../PULSE-SEND/PulseSendBinary-v16.js";
 
 // ============================================================================
 //  MEMORY + STATE

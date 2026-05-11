@@ -32,7 +32,7 @@
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
-import { route, Router } from "./PulseOSCNSNervousSystem.js";
+import { route, Router } from "./PulseOSCNSNervousSystem-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

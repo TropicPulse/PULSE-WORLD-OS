@@ -28,7 +28,7 @@ const MULTI_ORG_SCHEMA_VERSION = "v3";
 
 import SnapshotPhysicsAPI from "./PulseRegioningSnapshotPhysics-v16.js";
 import DeltaEngineAPI from "./PulseRegioningDeltaEngine-v16.js";
-import DeploymentPhysicsAPI from "./PulseRegioningPulseRegioningDeploymentPhysics-v16.js";
+import DeploymentPhysicsAPI from "./PulseRegioningDeploymentPhysics-v16.js";
 import RegionMeshRoutingAPI from "./PulseRegioningMeshRouting-v16.js";
 import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
