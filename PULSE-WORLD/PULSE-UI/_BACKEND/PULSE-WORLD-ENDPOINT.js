@@ -535,8 +535,10 @@ export function prewarmPulseWorldEndpoint() {
  *
  * This is what you wire into:
  *
- *   window.PulseRemoteEndpoint = PulseWorldEndpoint;
  */
+
+ window.PulseRemoteEndpoint = PulseWorldEndpoint;
+ 
 export const PulseWorldEndpoint = Object.freeze({
   /**
    * Main handler.
