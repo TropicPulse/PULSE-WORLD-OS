@@ -111,7 +111,11 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-console.log("Pulse Portal v24-Immortal-Evo+++");
+console.log(
+  "%c[PulsePortal v24‑IMMORTAL‑EVO+++] %cPortal membrane online",
+  "color:#00E5FF; font-weight:bold; font-family:monospace;",   // Portal Cyan
+  "color:#00FF9C; font-family:monospace;"                      // Monitor Neon Green
+);
 
 // ============================================================================
 // BROWSER DETECTION — HARD MEMBRANE
@@ -407,379 +411,582 @@ if (isBrowser()) {
     // ------------------------------------------------------------------------
     // PORTAL-SAFE FETCH HELPERS — IMAGE + CHUNK + PREWARM
     // ------------------------------------------------------------------------
-
     window.fetchImage =
       window.fetchImage ||
       (async function (url) {
         if (!url) return url;
+
         try {
           if (window.PulseChunks?.getImage) {
             return await window.PulseChunks.getImage(url);
           }
         } catch (err) {
-          console.error("[PulsePortal-v24] fetchImage chunk error:", err);
+          console.error(
+            "%c[PulsePortal::fetchImage] %cchunk error %c→ %s",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;", // Portal Cyan
+            "color:#FF3B3B; font-weight:bold; font-family:monospace;", // Monitor Red
+            "color:#FFE066; font-family:monospace;",                   // Monitor Yellow
+            String(err)
+          );
         }
+
         return url;
       });
 
-    window.fetchChunk =
-      window.fetchChunk ||
-      (async function (url) {
-        if (!url) return null;
+window.fetchChunk =
+  window.fetchChunk ||
+  (async function (url) {
+    if (!url) return null;
 
-        try {
-          if (window.PulseChunks?.PulseChunker) {
-            const metaPack = {
-              ...baseMetaPack,
-              route: buildRouteId()
-            };
-            const result = await window.PulseChunks.PulseChunker(
-              url,
-              0,
-              metaPack
-            );
-            if (result && typeof result.chunk !== "undefined") {
-              return result.chunk;
-            }
-          }
-
-          if (window.PulseChunks?.fetchChunk) {
-            return await window.PulseChunks.fetchChunk(url);
-          }
-        } catch (err) {
-          console.error("[PulsePortal-v24] fetchChunk error:", err);
-        }
-        return null;
-      });
-
-    window.prewarmAssets =
-      window.prewarmAssets ||
-      function (urls = []) {
-        try {
-          if (window.PulseChunks?.prewarm) {
-            window.PulseChunks.prewarm(urls);
-          }
-        } catch (err) {
-          console.error("[PulsePortal-v24] prewarmAssets error:", err);
-        }
-      };
-
-    window.PulseRouteCarpet =
-      window.PulseRouteCarpet ||
-      {
-        unfold(routeDescriptor) {
-          try {
-            const routeId = routeDescriptor?.route || buildRouteId();
-            const urls = [
-              ...(routeDescriptor?.imports || []),
-              ...(routeDescriptor?.assets || [])
-            ];
-            if (urls.length && window.prewarmAssets) {
-              window.prewarmAssets(urls);
-            }
-            return { route: routeId, prewarmed: urls.length };
-          } catch (err) {
-            console.error(
-              "[PulsePortal-v24] PulseRouteCarpet.unfold error:",
-              err
-            );
-            return { route: buildRouteId(), prewarmed: 0 };
-          }
-        }
-      };
-
-    // ------------------------------------------------------------------------
-    // <img>.src OVERRIDE — TRANSPARENT IMAGE PIPE THROUGH fetchImage
-    // ------------------------------------------------------------------------
     try {
-      const desc = Object.getOwnPropertyDescriptor(Image.prototype, "src");
-      if (desc && typeof desc.set === "function") {
-        const originalSet = desc.set;
-        Object.defineProperty(Image.prototype, "src", {
-          configurable: true,
-          enumerable: desc.enumerable,
-          get: desc.get,
-          set(url) {
-            if (!url || !window.fetchImage) {
-              return originalSet.call(this, url);
-            }
-            window
-              .fetchImage(url)
-              .then((blobUrl) => originalSet.call(this, blobUrl || url))
-              .catch(() => originalSet.call(this, url));
-          }
-        });
-      }
-    } catch (err) {
-      console.error("[PulsePortal-v24] Image src patch failed:", err);
-    }
-
-    // ------------------------------------------------------------------------
-    // FETCH PATCH — IMAGE SHORTCUT + OPTIONAL LOGGER ROUTE (PORTAL-SAFE)
-    // ------------------------------------------------------------------------
-    try {
-      const originalFetch = window.fetch?.bind(window);
-      if (originalFetch && !window.__PulseFetchPatched_v24) {
-        window.__PulseFetchPatched_v24 = true;
-
-        window.fetch = async function (resource, options) {
-          try {
-            const url =
-              typeof resource === "string" ? resource : resource?.url || null;
-
-            const isImage =
-              typeof url === "string" &&
-              url.match(/\.(png|jpe?g|webp|gif|avif|svg)$/i);
-
-            if (isImage && window.fetchImage) {
-              const blobUrl = await window.fetchImage(url);
-              return originalFetch(blobUrl, options);
-            }
-
-            const hasLoggerRoute =
-              window.PulseLogger &&
-              typeof window.PulseLogger.route === "function";
-
-            if (hasLoggerRoute && typeof url === "string") {
-              const safeOptions = portalSafeFetchOptions(options);
-              const result = await window.PulseLogger.route("fetchProxy", {
-                url,
-                options: safeOptions
-              });
-
-              if (result && result.__fetched) {
-                const blob = new Blob([result.body], {
-                  type: result.contentType
-                });
-                const response = new Response(blob, {
-                  status: result.status,
-                  headers: result.headers
-                });
-                return response;
-              }
-            }
-          } catch (err) {
-            console.error("[PulsePortalFetch-v24] error:", err);
-          }
-
-          return originalFetch(resource, options);
+      if (window.PulseChunks?.PulseChunker) {
+        const metaPack = {
+          ...baseMetaPack,
+          route: buildRouteId()
         };
+
+        const result = await window.PulseChunks.PulseChunker(url, 0, metaPack);
+
+        if (result && typeof result.chunk !== "undefined") {
+          console.log(
+            "%c[PulsePortal::fetchChunk] %cchunk loaded %c→ %s",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#00FF9C; font-family:monospace;",
+            "color:#E8F8FF; font-family:monospace;",
+            url
+          );
+          return result.chunk;
+        }
+      }
+
+      if (window.PulseChunks?.fetchChunk) {
+        const chunk = await window.PulseChunks.fetchChunk(url);
+        console.log(
+          "%c[PulsePortal::fetchChunk] %cfallback chunk loaded %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#00FF9C; font-family:monospace;",
+          "color:#E8F8FF; font-family:monospace;",
+          url
+        );
+        return chunk;
       }
     } catch (err) {
-      console.error("[PulsePortal-v24] fetch patch failed:", err);
+      console.error(
+        "%c[PulsePortal::fetchChunk] %cERROR %c→ %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        String(err)
+      );
     }
 
-    // ------------------------------------------------------------------------
-    // PULSEBAND REQUEST HANDLER (existing)
-    // ------------------------------------------------------------------------
-    if (window.pulseband && !window.PulseBand) {
-      window.PulseBand = window.pulseband;
+    return null;
+  });
 
-      window.PulseBand.on("request", async (packet) => {
-        let url, method, bodyOrQuery;
+window.prewarmAssets =
+  window.prewarmAssets ||
+  function (urls = []) {
+    try {
+      if (window.PulseChunks?.prewarm) {
+        window.PulseChunks.prewarm(urls);
 
-        switch (packet.type) {
-          case "start":
-            url = "/PULSE-PROXY/pulseband/session";
-            method = "POST";
-            bodyOrQuery = packet;
-            break;
-
-          case "next":
-            url = "/PULSE-PROXY/pulseband/next";
-            method = "GET";
-            bodyOrQuery = {
-              sessionId: packet.sessionId,
-              userId: packet.userId
-            };
-            break;
-
-          case "ack":
-            url = "/PULSE-PROXY/pulseband/ack";
-            method = "POST";
-            bodyOrQuery = packet;
-            break;
-
-          case "redownload":
-            url = "/PULSE-PROXY/pulseband/redownload";
-            method = "POST";
-            bodyOrQuery = packet;
-            break;
-
-          default:
-            return;
-        }
-
-        const isGet = method === "GET";
-
-        const query = isGet
-          ? "?" + new URLSearchParams(bodyOrQuery).toString()
-          : "";
-
-        const opts = isGet
-          ? { method: "GET" }
-          : {
-              method: "POST",
-              headers: { "content-type": "application/json" },
-              body: JSON.stringify(bodyOrQuery)
-            };
-
-        let data = null;
-
-        try {
-          const hasLoggerRoute =
-            window.PulseLogger &&
-            typeof window.PulseLogger.route === "function";
-
-          if (hasLoggerRoute) {
-            data = await window.PulseLogger.route("fetchProxy", {
-              url: url + query,
-              method,
-              body: bodyOrQuery,
-              layer: "A1",
-              reflexOrigin: "PulseBand",
-              binaryAware: true,
-              dualBand: true,
-              presenceAware: true
-            });
-          } else {
-            const res = await fetch(url + query, opts);
-            data = await res.json().catch(() => null);
-          }
-        } catch (err) {
-          console.error("[PulsePortal-v24] PulseBand request failed:", err);
-        }
-
-        try {
-          if (window.PulseBand && data) {
-            window.PulseBand.emit("response:" + packet.sessionId, data);
-          }
-        } catch (err) {
-          console.error("[PulsePortal-v24] PulseBand emit failed:", err);
-        }
-      });
-
-      window.PulseBandStart = (opts) => window.PulseBand.start(opts);
+        console.log(
+          "%c[PulsePortal::prewarmAssets] %cprewarmed %c→ %d assets",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#00FF9C; font-family:monospace;",
+          "color:#E8F8FF; font-family:monospace;",
+          urls.length
+        );
+      }
+    } catch (err) {
+      console.error(
+        "%c[PulsePortal::prewarmAssets] %cERROR %c→ %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        String(err)
+      );
     }
+  };
 
-    // ------------------------------------------------------------------------
-    // ⭐ NEW: PULSENET_INGRESS + PULSENET_FASTLANE LISTENERS
-    // ------------------------------------------------------------------------
-
-    if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function") {
-      window.PulsePortalBridge.on("PULSENET_INGRESS", async (payload) => {
-        try {
-          await fetch("/PULSE-PROXY/pulsenet/ingress", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-        } catch (err) {
-          console.error("[PulsePortal-v24] PULSENET_INGRESS failed:", err);
-        }
-      });
-
-      window.PulsePortalBridge.on("PULSENET_FASTLANE", async (payload) => {
-        try {
-          await fetch("/PULSE-PROXY/pulsenet/fastlane", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-        } catch (err) {
-          console.error("[PulsePortal-v24] PULSENET_FASTLANE failed:", err);
-        }
-      });
-    }
-
-    // ------------------------------------------------------------------------
-    // PREWARM VISIBLE ASSETS ON LOAD
-    // ------------------------------------------------------------------------
-    window.addEventListener("load", () => {
+window.PulseRouteCarpet =
+  window.PulseRouteCarpet ||
+  {
+    unfold(routeDescriptor) {
       try {
-        const imgUrls = Array.from(document.querySelectorAll("img"))
-          .map((img) => img.getAttribute("src"))
-          .filter(Boolean);
+        const routeId = routeDescriptor?.route || buildRouteId();
+        const urls = [
+          ...(routeDescriptor?.imports || []),
+          ...(routeDescriptor?.assets || [])
+        ];
 
-        const cssUrls = Array.from(
-          document.querySelectorAll('link[rel="stylesheet"][href]')
-        )
-          .map((link) => link.getAttribute("href"))
-          .filter(Boolean);
-
-        const jsUrls = Array.from(
-          document.querySelectorAll("script[src]")
-        )
-          .map((script) => script.getAttribute("src"))
-          .filter(Boolean);
-
-        const allUrls = [...imgUrls, ...cssUrls, ...jsUrls];
-
-        if (allUrls.length && window.prewarmAssets) {
-          window.prewarmAssets(allUrls);
+        if (urls.length && window.prewarmAssets) {
+          window.prewarmAssets(urls);
         }
+
+        console.log(
+          "%c[PulsePortal::RouteCarpet] %cunfolded %c→ route:%s, assets:%d",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#00FF9C; font-family:monospace;",
+          "color:#E8F8FF; font-family:monospace;",
+          routeId,
+          urls.length
+        );
+
+        return { route: routeId, prewarmed: urls.length };
       } catch (err) {
-        console.error("[PulsePortal-v24] asset prewarm failed:", err);
+        console.error(
+          "%c[PulsePortal::RouteCarpet] %cERROR %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+          "color:#FFE066; font-family:monospace;",
+          String(err)
+        );
+
+        return { route: buildRouteId(), prewarmed: 0 };
+      }
+    }
+  };
+
+
+   // ------------------------------------------------------------------------
+// <img>.src OVERRIDE — TRANSPARENT IMAGE PIPE THROUGH fetchImage
+// ------------------------------------------------------------------------
+try {
+  const desc = Object.getOwnPropertyDescriptor(Image.prototype, "src");
+  if (desc && typeof desc.set === "function") {
+    const originalSet = desc.set;
+
+    Object.defineProperty(Image.prototype, "src", {
+      configurable: true,
+      enumerable: desc.enumerable,
+      get: desc.get,
+      set(url) {
+        if (!url || !window.fetchImage) {
+          return originalSet.call(this, url);
+        }
+
+        window.fetchImage(url)
+          .then((blobUrl) => originalSet.call(this, blobUrl || url))
+          .catch((err) => {
+            console.error(
+              "%c[PulsePortal::ImageSrc] %cERROR %c→ %s",
+              "color:#00E5FF; font-weight:bold; font-family:monospace;",
+              "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+              "color:#FFE066; font-family:monospace;",
+              String(err)
+            );
+            originalSet.call(this, url);
+          });
       }
     });
 
-    // ------------------------------------------------------------------------
-    // SURFACE META + PORTAL SURFACE PROJECTION
-    // ------------------------------------------------------------------------
-    window.PulseSurface = window.PulseSurface
-      ? Object.freeze({ ...window.PulseSurface, ...surfaceMeta })
-      : surfaceMeta;
-
-    window.PulsePortal =
-      window.PulsePortal ||
-      Object.freeze({
-        meta: surfaceMeta,
-        env: PulseSurfaceEnvironment,
-        logger: PulseProofLogger,
-        vitals: PulseProofMonitor,
-        ui: {
-          errors: PulseUIErrors,
-          flow: PulseUIFlow
-        },
-        skinReflex: PulseSkinReflex,
-        pageScanner: PulsePageScanner,
-        routeMemory: PulseUIRouteMemory,
-        bridge: {
-          route: BridgeRoute,
-          PulseProofLogger,
-          log,
-          warn,
-          error,
-          startUnderstanding: PulseUnderstanding,
-          bootBinaryOrganism: PulseBinaryOrganismBoot
-        },
-        admin: {
-          createAdminDiagnosticsOrgan,
-          createPulseWorldAdminPanel
-        },
-        touch:
-          typeof window !== "undefined"
-            ? window.__PULSE_TOUCH__ || null
-            : null,
-        db
-      });
-  } catch (err) {
-    console.error("[PulsePortal-v24] Membrane chunk layer failed:", err);
+    console.log(
+      "%c[PulsePortal::ImageSrc] %cpatch active",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;"
+    );
   }
+} catch (err) {
+  console.error(
+    "%c[PulsePortal::ImageSrc] %cFAILED %c→ %s",
+    "color:#00E5FF; font-weight:bold; font-family:monospace;",
+    "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+    "color:#FFE066; font-family:monospace;",
+    String(err)
+  );
 }
 
+// ------------------------------------------------------------------------
+// FETCH PATCH — IMAGE SHORTCUT + OPTIONAL LOGGER ROUTE (PORTAL-SAFE)
+// ------------------------------------------------------------------------
+try {
+  const originalFetch = window.fetch?.bind(window);
 
+  if (originalFetch && !window.__PulseFetchPatched_v24) {
+    window.__PulseFetchPatched_v24 = true;
+
+    window.fetch = async function (resource, options) {
+      try {
+        const url =
+          typeof resource === "string" ? resource : resource?.url || null;
+
+        const isImage =
+          typeof url === "string" &&
+          url.match(/\.(png|jpe?g|webp|gif|avif|svg)$/i);
+
+        if (isImage && window.fetchImage) {
+          const blobUrl = await window.fetchImage(url);
+
+          console.log(
+            "%c[PulsePortal::Fetch] %cimage shortcut %c→ %s",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#00FF9C; font-family:monospace;",
+            "color:#E8F8FF; font-family:monospace;",
+            url
+          );
+
+          return originalFetch(blobUrl, options);
+        }
+
+        const hasLoggerRoute =
+          window.PulseLogger &&
+          typeof window.PulseLogger.route === "function";
+
+        if (hasLoggerRoute && typeof url === "string") {
+          const safeOptions = portalSafeFetchOptions(options);
+
+          const result = await window.PulseLogger.route("fetchProxy", {
+            url,
+            options: safeOptions
+          });
+
+          if (result && result.__fetched) {
+            console.log(
+              "%c[PulsePortal::Fetch] %cproxy hit %c→ %s",
+              "color:#00E5FF; font-weight:bold; font-family:monospace;",
+              "color:#00FF9C; font-family:monospace;",
+              "color:#E8F8FF; font-family:monospace;",
+              url
+            );
+
+            const blob = new Blob([result.body], {
+              type: result.contentType
+            });
+
+            return new Response(blob, {
+              status: result.status,
+              headers: result.headers
+            });
+          }
+        }
+      } catch (err) {
+        console.error(
+          "%c[PulsePortal::Fetch] %cERROR %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+          "color:#FFE066; font-family:monospace;",
+          String(err)
+        );
+      }
+
+      return originalFetch(resource, options);
+    };
+
+    console.log(
+      "%c[PulsePortal::Fetch] %cpatch active",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;"
+    );
+  }
+} catch (err) {
+  console.error(
+    "%c[PulsePortal::Fetch] %cFAILED %c→ %s",
+    "color:#00E5FF; font-weight:bold; font-family:monospace;",
+    "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+    "color:#FFE066; font-family:monospace;",
+    String(err)
+  );
+}
+
+// ------------------------------------------------------------------------
+// PULSEBAND REQUEST HANDLER
+// ------------------------------------------------------------------------
+if (window.pulseband && !window.PulseBand) {
+  window.PulseBand = window.pulseband;
+
+  console.log(
+    "%c[PulsePortal::PulseBand] %chandler active",
+    "color:#00E5FF; font-weight:bold; font-family:monospace;",
+    "color:#00FF9C; font-family:monospace;"
+  );
+
+  window.PulseBand.on("request", async (packet) => {
+    let url, method, bodyOrQuery;
+
+    switch (packet.type) {
+      case "start":
+        url = "/PULSE-PROXY/pulseband/session";
+        method = "POST";
+        bodyOrQuery = packet;
+        break;
+
+      case "next":
+        url = "/PULSE-PROXY/pulseband/next";
+        method = "GET";
+        bodyOrQuery = {
+          sessionId: packet.sessionId,
+          userId: packet.userId
+        };
+        break;
+
+      case "ack":
+        url = "/PULSE-PROXY/pulseband/ack";
+        method = "POST";
+        bodyOrQuery = packet;
+        break;
+
+      case "redownload":
+        url = "/PULSE-PROXY/pulseband/redownload";
+        method = "POST";
+        bodyOrQuery = packet;
+        break;
+
+      default:
+        return;
+    }
+
+    const isGet = method === "GET";
+
+    const query = isGet
+      ? "?" + new URLSearchParams(bodyOrQuery).toString()
+      : "";
+
+    const opts = isGet
+      ? { method: "GET" }
+      : {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(bodyOrQuery)
+        };
+
+    let data = null;
+
+    try {
+      const hasLoggerRoute =
+        window.PulseLogger &&
+        typeof window.PulseLogger.route === "function";
+
+      if (hasLoggerRoute) {
+        data = await window.PulseLogger.route("fetchProxy", {
+          url: url + query,
+          method,
+          body: bodyOrQuery,
+          layer: "A1",
+          reflexOrigin: "PulseBand",
+          binaryAware: true,
+          dualBand: true,
+          presenceAware: true
+        });
+
+        console.log(
+          "%c[PulsePortal::PulseBand] %cproxy request %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#00FF9C; font-family:monospace;",
+          "color:#E8F8FF; font-family:monospace;",
+          url + query
+        );
+      } else {
+        const res = await fetch(url + query, opts);
+        data = await res.json().catch(() => null);
+
+        console.log(
+          "%c[PulsePortal::PulseBand] %cfetch request %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#00FF9C; font-family:monospace;",
+          "color:#E8F8FF; font-family:monospace;",
+          url + query
+        );
+      }
+    } catch (err) {
+      console.error(
+        "%c[PulsePortal::PulseBand] %cREQUEST FAILED %c→ %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        String(err)
+      );
+    }
+
+    try {
+      if (window.PulseBand && data) {
+        window.PulseBand.emit("response:" + packet.sessionId, data);
+      }
+    } catch (err) {
+      console.error(
+        "%c[PulsePortal::PulseBand] %cEMIT FAILED %c→ %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        String(err)
+      );
+    }
+  });
+
+  window.PulseBandStart = (opts) => window.PulseBand.start(opts);
+}
+
+// ------------------------------------------------------------------------
+// ⭐ NEW: PULSENET_INGRESS + PULSENET_FASTLANE LISTENERS
+// ------------------------------------------------------------------------
+if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function") {
+  window.PulsePortalBridge.on("PULSENET_INGRESS", async (payload) => {
+    try {
+      await fetch("/PULSE-PROXY/pulsenet/ingress", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      console.log(
+        "%c[PulsePortal::PulseNet] %cingress %c→ OK",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#00FF9C; font-family:monospace;",
+        "color:#E8F8FF; font-family:monospace;"
+      );
+    } catch (err) {
+      console.error(
+        "%c[PulsePortal::PulseNet] %cINGRESS FAILED %c→ %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        String(err)
+      );
+    }
+  });
+
+  window.PulsePortalBridge.on("PULSENET_FASTLANE", async (payload) => {
+    try {
+      await fetch("/PULSE-PROXY/pulsenet/fastlane", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      console.log(
+        "%c[PulsePortal::PulseNet] %cfastlane %c→ OK",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#00FF9C; font-family:monospace;",
+        "color:#E8F8FF; font-family:monospace;"
+      );
+    } catch (err) {
+      console.error(
+        "%c[PulsePortal::PulseNet] %cFASTLANE FAILED %c→ %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        String(err)
+      );
+    }
+  });
+}
+
+// ------------------------------------------------------------------------
+// PREWARM VISIBLE ASSETS ON LOAD
+// ------------------------------------------------------------------------
+window.addEventListener("load", () => {
+  try {
+    const imgUrls = Array.from(document.querySelectorAll("img"))
+      .map((img) => img.getAttribute("src"))
+      .filter(Boolean);
+
+    const cssUrls = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"][href]')
+    )
+      .map((link) => link.getAttribute("href"))
+      .filter(Boolean);
+
+    const jsUrls = Array.from(
+      document.querySelectorAll("script[src]")
+    )
+      .map((script) => script.getAttribute("src"))
+      .filter(Boolean);
+
+    const allUrls = [...imgUrls, ...cssUrls, ...jsUrls];
+
+    if (allUrls.length && window.prewarmAssets) {
+      window.prewarmAssets(allUrls);
+
+      console.log(
+        "%c[PulsePortal::Prewarm] %cvisible assets prewarmed %c→ %d",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#00FF9C; font-family:monospace;",
+        "color:#E8F8FF; font-family:monospace;",
+        allUrls.length
+      );
+    }
+  } catch (err) {
+    console.error(
+      "%c[PulsePortal::Prewarm] %cFAILED %c→ %s",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+      "color:#FFE066; font-family:monospace;",
+      String(err)
+    );
+  }
+});
+
+// ------------------------------------------------------------------------
+// SURFACE META + PORTAL SURFACE PROJECTION
+// ------------------------------------------------------------------------
+window.PulseSurface = window.PulseSurface
+  ? Object.freeze({ ...window.PulseSurface, ...surfaceMeta })
+  : surfaceMeta;
+
+window.PulsePortal =
+  window.PulsePortal ||
+  Object.freeze({
+    meta: surfaceMeta,
+    env: PulseSurfaceEnvironment,
+    logger: PulseProofLogger,
+    vitals: PulseProofMonitor,
+    ui: {
+      errors: PulseUIErrors,
+      flow: PulseUIFlow
+    },
+    skinReflex: PulseSkinReflex,
+    pageScanner: PulsePageScanner,
+    routeMemory: PulseUIRouteMemory,
+    bridge: {
+      route: BridgeRoute,
+      PulseProofLogger,
+      log,
+      warn,
+      error,
+      startUnderstanding: PulseUnderstanding,
+      bootBinaryOrganism: PulseBinaryOrganismBoot
+    },
+    admin: {
+      createAdminDiagnosticsOrgan,
+      createPulseWorldAdminPanel
+    },
+    touch:
+      typeof window !== "undefined"
+        ? window.__PULSE_TOUCH__ || null
+        : null,
+    db
+  });
+
+console.log(
+  "%c[PulsePortal::Surface] %cprojection active",
+  "color:#00E5FF; font-weight:bold; font-family:monospace;",
+  "color:#00FF9C; font-family:monospace;"
+);
+
+} catch (err) {
+  console.error(
+    "%c[PulsePortal::Surface] %cFAILED %c→ %s",
+    "color:#00E5FF; font-weight:bold; font-family:monospace;",
+    "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+    "color:#FFE066; font-family:monospace;",
+    String(err)
+  );
+}
+}
 // ============================================================================
 // SURFACE MEMBRANE INITIALIZATION — LOGGER + MONITOR + ERRORS + SKIN REFLEX
 // ============================================================================
-
 try {
   if (
     typeof window !== "undefined" &&
     window.VitalsMonitor &&
     typeof window.VitalsMonitor.PulseRole === "object"
   ) {
-    // no explicit start needed; updateUserMetrics is called by organs
+    console.log(
+      "%c[PulsePortal::Vitals] %cmonitor online",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;"
+    );
   }
 
   if (
@@ -787,38 +994,71 @@ try {
     window.PulseLogger &&
     typeof window.PulseLogger.meta === "object"
   ) {
-    // no explicit init required; logger file already hijacks console
+    console.log(
+      "%c[PulsePortal::Logger] %clogger active",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;"
+    );
   }
 } catch (err) {
-  console.error("[PulsePortal-v24] Vitals/Logger init failed:", err);
+  console.error(
+    "%c[PulsePortal::Vitals/Logger] %cFAILED %c→ %s",
+    "color:#00E5FF; font-weight:bold; font-family:monospace;",
+    "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+    "color:#FFE066; font-family:monospace;",
+    String(err)
+  );
 }
 
 try {
   if (typeof window !== "undefined") {
     window.PulseUIErrors?.init?.();
+    console.log(
+      "%c[PulsePortal::UIErrors] %cspine initialized",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;"
+    );
   }
 } catch (err) {
-  console.error("[PulsePortal-v24] Error spine failed to initialize:", err);
+  console.error(
+    "%c[PulsePortal::UIErrors] %cFAILED %c→ %s",
+    "color:#00E5FF; font-weight:bold; font-family:monospace;",
+    "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+    "color:#FFE066; font-family:monospace;",
+    String(err)
+  );
 }
 
 if (isBrowser() && window.PulseSkinReflex?.membraneAlive) {
   try {
     window.PulseSkinReflex.membraneAlive("Portal-v24");
+    console.log(
+      "%c[PulsePortal::SkinReflex] %cmembrane alive",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;"
+    );
   } catch (err) {
-    console.error("[PulsePortal-v24] SkinReflex membraneAlive failed:", err);
+    console.error(
+      "%c[PulsePortal::SkinReflex] %cFAILED %c→ %s",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+      "color:#FFE066; font-family:monospace;",
+      String(err)
+    );
   }
 }
 
 // ============================================================================
 // BINARY ORGANISM + UNDERSTANDING + UI FLOW BOOT — v24 IMMORTAL PORTAL
 // ============================================================================
-
 if (isBrowser()) {
   (async () => {
     try {
       let binaryKernel = null;
 
+      // ----------------------------------------------------------------------
       // BINARY ORGANISM BOOT — READ-ONLY SHADOW EXPOSED AS PulseBinary
+      // ----------------------------------------------------------------------
       try {
         if (!window.__PulseBinaryBooted) {
           binaryKernel =
@@ -863,18 +1103,28 @@ if (isBrowser()) {
               }
             };
 
-            const frozenBinaryView = Object.freeze(safeBinaryView);
-            window.PulseBinary = window.PulseBinary || frozenBinaryView;
+            window.PulseBinary =
+              window.PulseBinary || Object.freeze(safeBinaryView);
+
+            console.log(
+              "%c[PulsePortal::Binary] %corganism booted",
+              "color:#00E5FF; font-weight:bold; font-family:monospace;",
+              "color:#00FF9C; font-family:monospace;"
+            );
           }
         }
       } catch (err) {
-        console.error("[PulsePortal-v24] Binary organism boot failed:", err);
+        console.error(
+          "%c[PulsePortal::Binary] %cBOOT FAILED %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+          "color:#FFE066; font-family:monospace;",
+          String(err)
+        );
       }
-
 
       // ----------------------------------------------------------------------
       // UNDERSTANDING BOOT — HIGH-LEVEL ORGANISM CONTEXT (CORTEX ENTRY)
-      //  → make the boot packet structured-clone safe
       // ----------------------------------------------------------------------
       function safeMeta(meta) {
         if (!meta || typeof meta !== "object") return {};
@@ -889,8 +1139,6 @@ if (isBrowser()) {
       function safeEnv(env) {
         if (!env || typeof env !== "object") return {};
         const out = { ...env };
-
-        // Strip anything that might be a browser intrinsic or heavy object
         delete out.performance;
         delete out.timing;
         delete out.navigation;
@@ -899,7 +1147,6 @@ if (isBrowser()) {
         delete out.document;
         delete out.location;
         delete out.history;
-
         return out;
       }
 
@@ -912,9 +1159,21 @@ if (isBrowser()) {
           };
 
           await PulseUnderstanding(safeBootPacket);
+
+          console.log(
+            "%c[PulsePortal::Understanding] %cboot complete",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#00FF9C; font-family:monospace;"
+          );
         }
       } catch (err) {
-        console.error("[PulsePortal-v20] Understanding boot failed:", err);
+        console.error(
+          "%c[PulsePortal::Understanding] %cFAILED %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+          "color:#FFE066; font-family:monospace;",
+          String(err)
+        );
       }
 
       // ----------------------------------------------------------------------
@@ -926,12 +1185,31 @@ if (isBrowser()) {
             meta: safeMeta(baseMetaPack),
             env: safeEnv(PulseSurfaceEnvironment)
           });
+
+          console.log(
+            "%c[PulsePortal::UIFlow] %cinitialized",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#00FF9C; font-family:monospace;"
+          );
         }
       } catch (err) {
-        console.error("[PulsePortal-v20] UIFlow init failed:", err);
+        console.error(
+          "%c[PulsePortal::UIFlow] %cFAILED %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+          "color:#FFE066; font-family:monospace;",
+          String(err)
+        );
       }
+
     } catch (err) {
-      console.error("[PulsePortal-v24] Understanding boot failed:", err);
+      console.error(
+        "%c[PulsePortal::Boot] %cFAILED %c→ %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        String(err)
+      );
     }
   })();
 }
@@ -939,22 +1217,37 @@ if (isBrowser()) {
 // ============================================================================
 // UI FLOW CONTEXT PROJECTION — OPTIONAL, READ-ONLY SURFACE VIEW
 // ============================================================================
-
 if (isBrowser()) {
   (async () => {
     try {
       if (typeof window.PulseUIFlow === "function") {
         const flowContext = await window.PulseUIFlow();
+
         window.PulseUI = window.PulseUI
           ? Object.freeze({
               ...window.PulseUI,
               Flow: window.PulseUIFlow,
               context: flowContext
             })
-          : Object.freeze({ Flow: window.PulseUIFlow, context: flowContext });
+          : Object.freeze({
+              Flow: window.PulseUIFlow,
+              context: flowContext
+            });
+
+        console.log(
+          "%c[PulsePortal::UIFlow] %ccontext projected",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#00FF9C; font-family:monospace;"
+        );
       }
     } catch (flowErr) {
-      console.error("[PulsePortal-v20] UIFlow context boot failed:", flowErr);
+      console.error(
+        "%c[PulsePortal::UIFlow] %cCONTEXT FAILED %c→ %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        String(flowErr)
+      );
     }
   })();
 }
@@ -962,7 +1255,6 @@ if (isBrowser()) {
 // ============================================================================
 // PULSEBAND BOOT — DUAL-BAND SESSION BRIDGE
 // ============================================================================
-
 if (isBrowser()) {
   (async () => {
     try {
@@ -970,6 +1262,12 @@ if (isBrowser()) {
       try {
         if (window.pulseband && !window.PulseBand) {
           window.PulseBand = window.pulseband;
+
+          console.log(
+            "%c[PulsePortal::PulseBand] %cbridge attached",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#00FF9C; font-family:monospace;"
+          );
 
           window.PulseBand.on("request", async (packet) => {
             let url, method, bodyOrQuery;
@@ -1038,12 +1336,34 @@ if (isBrowser()) {
                   dualBand: true,
                   presenceAware: true
                 });
+
+                console.log(
+                  "%c[PulsePortal::PulseBand] %cproxy request %c→ %s",
+                  "color:#00E5FF; font-weight:bold; font-family:monospace;",
+                  "color:#00FF9C; font-family:monospace;",
+                  "color:#E8F8FF; font-family:monospace;",
+                  url + query
+                );
               } else {
                 const res = await fetch(url + query, opts);
                 data = await res.json().catch(() => null);
+
+                console.log(
+                  "%c[PulsePortal::PulseBand] %cfetch request %c→ %s",
+                  "color:#00E5FF; font-weight:bold; font-family:monospace;",
+                  "color:#00FF9C; font-family:monospace;",
+                  "color:#E8F8FF; font-family:monospace;",
+                  url + query
+                );
               }
             } catch (err) {
-              console.error("[PulsePortal-v20] PulseBand request failed:", err);
+              console.error(
+                "%c[PulsePortal::PulseBand] %cREQUEST FAILED %c→ %s",
+                "color:#00E5FF; font-weight:bold; font-family:monospace;",
+                "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+                "color:#FFE066; font-family:monospace;",
+                String(err)
+              );
             }
 
             try {
@@ -1051,14 +1371,26 @@ if (isBrowser()) {
                 window.PulseBand.emit("response:" + packet.sessionId, data);
               }
             } catch (err) {
-              console.error("[PulsePortal-v20] PulseBand emit failed:", err);
+              console.error(
+                "%c[PulsePortal::PulseBand] %cEMIT FAILED %c→ %s",
+                "color:#00E5FF; font-weight:bold; font-family:monospace;",
+                "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+                "color:#FFE066; font-family:monospace;",
+                String(err)
+              );
             }
           });
 
           window.PulseBandStart = (opts) => window.PulseBand.start(opts);
         }
       } catch (err) {
-        console.error("[PulsePortal-v20] PulseBand boot failed:", err);
+        console.error(
+          "%c[PulsePortal::PulseBand] %cBOOT FAILED %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+          "color:#FFE066; font-family:monospace;",
+          String(err)
+        );
       }
 
       // local safeEnv for this block so structure stays the same above
@@ -1081,27 +1413,40 @@ if (isBrowser()) {
         if (window.PulseBandStart) {
           window.PulseBandStart({
             type: "chunk-session",
-            surface: "PulsePortal-v20",
+            surface: "PulsePortal-v24",
             environment: safeEnvForBand(PulseSurfaceEnvironment),
-            version: "20.0-Immortal-Evo+++"
+            version: "24.0-Immortal-Evo+++"
           });
+
+          console.log(
+            "%c[PulsePortal::PulseBand] %cchunk-session started",
+            "color:#00E5FF; font-weight:bold; font-family:monospace;",
+            "color:#00FF9C; font-family:monospace;"
+          );
         }
       } catch (err) {
-        console.error("[PulsePortal-v20] Chunk session start failed:", err);
+        console.error(
+          "%c[PulsePortal::PulseBand] %cCHUNK SESSION FAILED %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+          "color:#FFE066; font-family:monospace;",
+          String(err)
+        );
       }
     } catch (err) {
       console.error(
-        "[PulsePortal-v20] Binary organism + UI + PulseBand boot failed:",
-        err
+        "%c[PulsePortal::PulseBand] %cBOOT FAILED %c→ %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        String(err)
       );
     }
   })();
 }
+
 // ============================================================================
 // EXPORT — PULSE PORTAL API
-// ============================================================================
-// ============================================================================
-// SAFE HELPERS (HOISTED SO EXPORT BLOCK CAN USE THEM)
 // ============================================================================
 function safeMeta(meta) {
   if (!meta || typeof meta !== "object") return {};
@@ -1141,12 +1486,17 @@ const PulsePortalAPI = Object.freeze({
   }
 });
 
+console.log(
+  "%c[PulsePortal::API] %cexported",
+  "color:#00E5FF; font-weight:bold; font-family:monospace;",
+  "color:#00FF9C; font-family:monospace;"
+);
+
 export default PulsePortalAPI;
 
 // ============================================================================
 // GLOBAL MIRRORS — OPTIONAL, FOR NODE/SSR/TOOLS
 // ============================================================================
-
 try {
   if (typeof global !== "undefined") {
     global.PulseBand =
@@ -1178,7 +1528,19 @@ try {
         : global.PulseUIErrors || null;
 
     global.PulsePortalAPI = PulsePortalAPI;
+
+    console.log(
+      "%c[PulsePortal::Global] %cmirrors initialized",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;"
+    );
   }
 } catch (err) {
-  console.error("[PulsePortal-v20] Global mirror init failed:", err);
+  console.error(
+    "%c[PulsePortal::Global] %cFAILED %c→ %s",
+    "color:#00E5FF; font-weight:bold; font-family:monospace;",
+    "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+    "color:#FFE066; font-family:monospace;",
+    String(err)
+  );
 }
