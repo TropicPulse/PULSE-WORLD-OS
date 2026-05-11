@@ -706,63 +706,91 @@ function dechunkAll() {
   chunksDegraded = false;
   console.log("[PulseChunks] All chunks cleared, state reset.");
 }
-
 // ============================================================================
-//  OFFLINE IMAGE AUTO-DETECTOR — v24 MULTILANE + CNS FALLBACK
+//  UNIVERSAL FRONTEND AUTO-LOADER — v24.4 IMMORTAL++
+//  (Keeps name for wiring; now preloads ALL visible assets via Chunker)
 // ============================================================================
 async function autoLoadOfflineImages() {
-  if (typeof document === "undefined") return;
+  if (typeof document === "undefined" || typeof window === "undefined") return;
+  if (typeof fetchChunk !== "function") return;
 
-  const imgs = Array.from(
-    document.querySelectorAll("img.offline-img[data-offline]")
-  );
+  // 1 — Collect ALL asset URLs we can see in the current document
+  const assetSelectors = [
+    "link[rel='stylesheet'][href]",
+    "script[src]",
+    "img[src]",
+    "img.offline-img[data-offline]",
+    "[data-chunk]",
+    "[data-preload]",
+    "[data-asset]"
+  ];
 
-  for (const img of imgs) {
-    const url = img.getAttribute("data-offline");
-    if (!url) continue;
+  const urls = new Set();
 
+  for (const selector of assetSelectors) {
+    const nodes = document.querySelectorAll(selector);
+    nodes.forEach(node => {
+      const url =
+        node.getAttribute("href") ||
+        node.getAttribute("src") ||
+        node.getAttribute("data-offline") ||
+        node.getAttribute("data-chunk") ||
+        node.getAttribute("data-preload") ||
+        node.getAttribute("data-asset");
+
+      if (url) urls.add(url);
+    });
+  }
+
+  // 2 — Preload each asset via Chunker + CNS fallback
+  for (const url of urls) {
     try {
       const { value, ok, error, envelope } = await fetchChunk(url);
 
       if (!ok) {
-        console.warn(
-          "[PulseChunks] Offline chunk failed — using CNS fallback:",
-          {
-            url,
-            error,
-            envelope
-          }
-        );
-
-        const fallback = await route("getImages", {
+        console.warn("[PulseChunks] Asset chunk failed — using CNS fallback:", {
           url,
-          layer: "A1",
-          reflexOrigin: "PulseChunks",
-          binaryAware: true,
-          dualBand: true,
-          presenceAware: true,
-          kind: "image-fallback"
+          error,
+          envelope
         });
 
-        if (fallback && fallback.ok && fallback.data) {
-          const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
-          const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
+        if (typeof route === "function") {
+          const fallback = await route("getImages", {
+            url,
+            layer: "A1",
+            reflexOrigin: "PulseChunks",
+            binaryAware: true,
+            dualBand: true,
+            presenceAware: true,
+            kind: "asset-fallback"
+          });
 
-          const src =
-            PulseChunkNormalizer.normalizeImage(binary) ||
-            PulseChunkNormalizer.normalizeChunkValue(binary, "image") ||
-            null;
+          if (fallback && fallback.ok && fallback.data) {
+            const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
+            const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-          if (src) {
-            img.src = src;
+            if (window.PulseChunks) {
+              window.PulseChunks.cache = window.PulseChunks.cache || {};
+              window.PulseChunks.cache[url] = binary;
+            }
+
+            // If this was an offline image, wire src
+            const img = document.querySelector(
+              `img.offline-img[data-offline="${url}"]`
+            );
+            if (img) {
+              const src =
+                PulseChunkNormalizer.normalizeImage(binary) ||
+                PulseChunkNormalizer.normalizeChunkValue(binary, "image") ||
+                null;
+              if (src) img.src = src;
+            }
+
             continue;
           }
         }
 
-        console.warn(
-          "[PulseChunks] CNS fallback failed — leaving image unchanged:",
-          url
-        );
+        console.warn("[PulseChunks] CNS fallback failed — leaving asset as-is:", url);
         continue;
       }
 
@@ -770,99 +798,77 @@ async function autoLoadOfflineImages() {
       const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
       const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-      const src =
-        PulseChunkNormalizer.normalizeImage(binary) ||
-        PulseChunkNormalizer.normalizeChunkValue(binary, "image") ||
-        null;
-
-      if (!src) {
-        console.warn(
-          "[PulseChunks] Normalizer failed — using CNS fallback:",
-          {
-            url,
-            value
-          }
-        );
-
-        const fallback = await route("getImages", {
-          url,
-          layer: "A1",
-          reflexOrigin: "PulseChunks",
-          binaryAware: true,
-          dualBand: true,
-          presenceAware: true,
-          kind: "image-fallback"
-        });
-
-        if (fallback && fallback.ok && fallback.data) {
-          const unwrapped2 = PulseChunkNormalizer.unwrap(fallback.data);
-          const binary2 = PulseChunkNormalizer.normalizeBinary(unwrapped2);
-
-          const src2 =
-            PulseChunkNormalizer.normalizeImage(binary2) ||
-            PulseChunkNormalizer.normalizeChunkValue(binary2, "image") ||
-            null;
-
-          if (src2) {
-            img.src = src2;
-            continue;
-          }
-        }
-
-        console.warn(
-          "[PulseChunks] CNS fallback failed — leaving image unchanged:",
-          url
-        );
-        continue;
+      if (window.PulseChunks) {
+        window.PulseChunks.cache = window.PulseChunks.cache || {};
+        window.PulseChunks.cache[url] = binary;
       }
 
-      img.src = src;
-    } catch (err) {
-      console.warn(
-        "[PulseChunks] Offline image load threw — using CNS fallback:",
-        {
-          url,
-          err
-        }
+      // If this was an offline image, wire src
+      const img = document.querySelector(
+        `img.offline-img[data-offline="${url}"]`
       );
+      if (img) {
+        const src =
+          PulseChunkNormalizer.normalizeImage(binary) ||
+          PulseChunkNormalizer.normalizeChunkValue(binary, "image") ||
+          null;
+        if (src) img.src = src;
+      }
+    } catch (err) {
+      console.warn("[PulseChunks] Asset load threw — using CNS fallback:", {
+        url,
+        err
+      });
 
       try {
-        const fallback = await route("getImages", {
-          url,
-          layer: "A1",
-          reflexOrigin: "PulseChunks",
-          binaryAware: true,
-          dualBand: true,
-          presenceAware: true,
-          kind: "image-fallback"
-        });
+        if (typeof route === "function") {
+          const fallback = await route("getImages", {
+            url,
+            layer: "A1",
+            reflexOrigin: "PulseChunks",
+            binaryAware: true,
+            dualBand: true,
+            presenceAware: true,
+            kind: "asset-fallback"
+          });
 
-        if (fallback && fallback.ok && fallback.data) {
-          const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
-          const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
+          if (fallback && fallback.ok && fallback.data) {
+            const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
+            const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-          const src =
-            PulseChunkNormalizer.normalizeImage(binary) ||
-            PulseChunkNormalizer.normalizeChunkValue(binary, "image") ||
-            null;
+            if (window.PulseChunks) {
+              window.PulseChunks.cache = window.PulseChunks.cache || {};
+              window.PulseChunks.cache[url] = binary;
+            }
 
-          if (src) {
-            img.src = src;
+            const img = document.querySelector(
+              `img.offline-img[data-offline="${url}"]`
+            );
+            if (img) {
+              const src =
+                PulseChunkNormalizer.normalizeImage(binary) ||
+                PulseChunkNormalizer.normalizeChunkValue(binary, "image") ||
+                null;
+              if (src) img.src = src;
+            }
+
             continue;
           }
         }
       } catch (fallbackErr) {
-        console.warn(
-          "[PulseChunks] CNS fallback threw — leaving image unchanged:",
-          {
-            url,
-            fallbackErr
-          }
-        );
+        console.warn("[PulseChunks] CNS fallback threw — leaving asset as-is:", {
+          url,
+          fallbackErr
+        });
       }
     }
   }
+
+  console.log(
+    `[PulseChunks] Universal preload complete — ${urls.size} assets seen + warmed.`
+  );
 }
+
 
 // ============================================================================
 //  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v24 IMMORTAL)
