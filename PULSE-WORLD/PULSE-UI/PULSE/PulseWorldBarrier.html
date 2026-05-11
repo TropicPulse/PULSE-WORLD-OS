@@ -906,7 +906,6 @@ text-align: center;
 
   <!-- 2. LOGIN PAGE LOGIC — SAFE TO RUN AFTER PORTAL -->
   <script type="module">
-
 document.addEventListener("DOMContentLoaded", () => {
 
   /* ============================================================
@@ -986,206 +985,166 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = returnTo || "/PulseWorldInventory.html";
   }
 
-/* ============================================================
-   5. SEND PIN — UPGRADED WITH showLoginUI() + showPinUI()
-============================================================ */
-/* ============================================================
-   5. SEND PIN — FULL DEBUG VERSION
-============================================================ */
-sendBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim().toLowerCase();
-  showTPLoader();
+  /* ============================================================
+     5. SEND PIN — FIXED SIGNATURE
+  ============================================================ */
+  sendBtn.addEventListener("click", async () => {
+    const email = emailInput.value.trim().toLowerCase();
+    showTPLoader();
 
-  if (!email || !email.includes("@")) {
-    hideTPLoader();
-    authMsg.textContent = "Invalid email format.";
-    authMsg.className = "msg error";
-    authMsg.style.display = "block";
-    showLoginUI();
-    emailInput.focus();
-    return;
-  }
-
-  authMsg.style.display = "none";
-
-  try {
-    let data = null;
-
-    // ============================================================
-    // 1. PRIMARY PATH — PulseOS A1 Reflex Hook
-    // ============================================================
-    if (typeof window.getHook === "function") {
-      try {
-        data = await window.getHook("sendPin", { email, purpose: "login" });
-        console.log("[SEND PIN] A1 HOOK RESPONSE:", data);
-      } catch (err) {
-        console.warn("[SEND PIN] A1 hook failed:", err);
-      }
-    }
-
-    // ============================================================
-    // 2. FALLBACK PATH — Firebase HTTPS
-    // ============================================================
-    if (!data || typeof data !== "object") {
-      console.warn("[SEND PIN] Falling back to Firebase HTTPS…");
-
-      try {
-        data = await fetch("/sendPin", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, purpose: "login" })
-        }).then(r => r.json());
-      } catch (err) {
-        console.error("[SEND PIN] HTTPS fallback failed:", err);
-      }
-    }
-
-    hideTPLoader();
-
-    // ============================================================
-    // 3. HANDLE RESPONSE
-    // ============================================================
-    if (!data) {
+    if (!email || !email.includes("@")) {
+      hideTPLoader();
+      authMsg.textContent = "Invalid email format.";
       authMsg.className = "msg error";
-      authMsg.textContent = "ERROR: Backend returned no response.";
       authMsg.style.display = "block";
+      showLoginUI();
+      emailInput.focus();
       return;
     }
 
-    if (data.success) {
-      authMsg.className = "msg success";
-      authMsg.textContent = "PIN Sent! Check your Email!";
+    authMsg.style.display = "none";
+
+    try {
+      if (typeof window.getHook !== "function") {
+        throw new Error("getHook() is NOT defined — your login page cannot talk to backend.");
+      }
+
+      // ⭐ FIXED SIGNATURE
+      const data = await window.getHook("sendPin", { email, purpose: "login" });
+
+      console.log("[SEND PIN] RAW RESPONSE:", data);
+
+      hideTPLoader();
+
+      if (!data) {
+        authMsg.className = "msg error";
+        authMsg.textContent = "ERROR: Backend returned no response.";
+        authMsg.style.display = "block";
+        return;
+      }
+
+      if (typeof data !== "object") {
+        authMsg.className = "msg error";
+        authMsg.textContent = "ERROR: Backend returned invalid data type.";
+        authMsg.style.display = "block";
+        return;
+      }
+
+      if (data.success) {
+        authMsg.className = "msg success";
+        authMsg.textContent = "PIN Sent! Check your Email!";
+        authMsg.style.display = "block";
+        showPinUI();
+        pinInput.focus();
+        return;
+      }
+
+      authMsg.className = "msg error";
+      authMsg.textContent = data.message || "Backend error: Could not send PIN.";
+      authMsg.style.display = "block";
+      showLoginUI();
+      emailInput.focus();
+
+    } catch (err) {
+      console.error("[SEND PIN ERROR]", err);
+
+      hideTPLoader();
+      authMsg.className = "msg error";
+      authMsg.textContent = "EXCEPTION: " + err.message;
+      authMsg.style.display = "block";
+      showLoginUI();
+      emailInput.focus();
+    }
+  });
+
+  /* ============================================================
+     6. VERIFY PIN — FIXED SIGNATURE
+  ============================================================ */
+  verifyBtn.addEventListener("click", async () => {
+    const email = emailInput.value.trim().toLowerCase();
+    const pin   = pinInput.value.trim();
+    showTPLoader();
+
+    if (pin.length !== 6) {
+      hideTPLoader();
+      authMsg.className = "msg error";
+      authMsg.textContent = "PIN must be exactly 6 digits.";
       authMsg.style.display = "block";
       showPinUI();
       pinInput.focus();
       return;
     }
 
-    authMsg.className = "msg error";
-    authMsg.textContent = data.error || data.message || "Backend error: Could not send PIN.";
-    authMsg.style.display = "block";
-    showLoginUI();
-    emailInput.focus();
+    authMsg.style.display = "none";
 
-  } catch (err) {
-    console.error("[SEND PIN ERROR]", err);
-
-    hideTPLoader();
-    authMsg.className = "msg error";
-    authMsg.textContent = "EXCEPTION: " + err.message;
-    authMsg.style.display = "block";
-    showLoginUI();
-    emailInput.focus();
-  }
-});
-
-
-/* ============================================================
-   6. VERIFY PIN — FULL DEBUG VERSION
-============================================================ */
-verifyBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim().toLowerCase();
-  const pin   = pinInput.value.trim();
-  showTPLoader();
-
-  if (pin.length !== 6) {
-    hideTPLoader();
-    authMsg.className = "msg error";
-    authMsg.textContent = "PIN must be exactly 6 digits.";
-    authMsg.style.display = "block";
-    showPinUI();
-    pinInput.focus();
-    return;
-  }
-
-  authMsg.style.display = "none";
-
-  try {
-    let data = null;
-
-    // ============================================================
-    // 1. PRIMARY PATH — PulseOS A1 Reflex Hook
-    // ============================================================
-    if (typeof window.getHook === "function") {
-      try {
-        data = await window.getHook("verifyPin", {
-          email,
-          pin,
-          purpose: "login"
-        });
-        console.log("[VERIFY PIN] A1 HOOK RESPONSE:", data);
-      } catch (err) {
-        console.warn("[VERIFY PIN] A1 hook failed:", err);
+    try {
+      if (typeof window.getHook !== "function") {
+        throw new Error("getHook() is NOT defined — cannot verify PIN.");
       }
-    }
 
-    // ============================================================
-    // 2. FALLBACK PATH — Firebase HTTPS
-    // ============================================================
-    if (!data || typeof data !== "object") {
-      console.warn("[VERIFY PIN] Falling back to Firebase HTTPS…");
+      // ⭐ FIXED SIGNATURE
+      const data = await window.getHook("verifyPin", {
+        email,
+        pin,
+        purpose: "login"
+      });
 
-      try {
-        data = await fetch("/verifyPin", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, pin, purpose: "login" })
-        }).then(r => r.json());
-      } catch (err) {
-        console.error("[VERIFY PIN] HTTPS fallback failed:", err);
+      console.log("[VERIFY PIN] RAW RESPONSE:", data);
+
+      hideTPLoader();
+
+      if (!data) {
+        authMsg.className = "msg error";
+        authMsg.textContent = "ERROR: Backend returned no response.";
+        authMsg.style.display = "block";
+        showPinUI();
+        return;
       }
-    }
 
-    hideTPLoader();
+      if (typeof data !== "object") {
+        authMsg.className = "msg error";
+        authMsg.textContent = "ERROR: Backend returned invalid data type.";
+        authMsg.style.display = "block";
+        showPinUI();
+        return;
+      }
 
-    // ============================================================
-    // 3. HANDLE RESPONSE
-    // ============================================================
-    if (!data) {
+      if (data.success && data.identity) {
+        const canonical = {
+          ...data.identity,
+          trustedDevice: true
+        };
+
+        try {
+          localStorage.setItem("tp_identity_v9", JSON.stringify(canonical));
+          localStorage.setItem("tp_device_token_v9", "1");
+        } catch (err) {
+          console.error("[IDENTITY STORAGE ERROR]", err);
+        }
+
+        window.PulseIdentity = canonical;
+
+        window.location.href = returnTo || "/PulseWorldInventory.html";
+        return;
+      }
+
       authMsg.className = "msg error";
-      authMsg.textContent = "ERROR: Backend returned no response.";
+      authMsg.textContent = data.message || "Invalid PIN. Try again.";
       authMsg.style.display = "block";
       showPinUI();
-      return;
+      pinInput.focus();
+
+    } catch (err) {
+      console.error("[VERIFY PIN ERROR]", err);
+
+      hideTPLoader();
+      authMsg.className = "msg error";
+      authMsg.textContent = "EXCEPTION: " + err.message;
+      authMsg.style.display = "block";
+      showPinUI();
+      pinInput.focus();
     }
-
-    if (data.success && data.identity) {
-      const canonical = {
-        ...data.identity,
-        trustedDevice: true
-      };
-
-      try {
-        localStorage.setItem("tp_identity_v9", JSON.stringify(canonical));
-        localStorage.setItem("tp_device_token_v9", "1");
-      } catch (err) {
-        console.error("[IDENTITY STORAGE ERROR]", err);
-      }
-
-      window.PulseIdentity = canonical;
-
-      window.location.href = returnTo || "/PulseWorldInventory.html";
-      return;
-    }
-
-    authMsg.className = "msg error";
-    authMsg.textContent = data.error || data.message || "Invalid PIN. Try again.";
-    authMsg.style.display = "block";
-    showPinUI();
-    pinInput.focus();
-
-  } catch (err) {
-    console.error("[VERIFY PIN ERROR]", err);
-
-    hideTPLoader();
-    authMsg.className = "msg error";
-    authMsg.textContent = "EXCEPTION: " + err.message;
-    authMsg.style.display = "block";
-    showPinUI();
-    pinInput.focus();
-  }
-});
-
+  });
 
   /* ============================================================
      7. PULSEBAND UI — IMMORTAL++

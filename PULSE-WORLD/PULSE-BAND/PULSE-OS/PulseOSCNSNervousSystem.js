@@ -189,10 +189,9 @@ const Transport = {
     const offlineMode =
       hasWindow && window.PULSE_OFFLINE_MODE === true;
 
-    // OFFLINE BAND — local‑first, no network
+    // OFFLINE BAND — unchanged
     if (offlineMode) {
       logCNS("TRANSPORT_OFFLINE_MODE", { type, band: "offline" });
-
       CNSPageScanner.emit("cns-transport-offline-call", {
         type,
         band: "offline",
@@ -209,12 +208,10 @@ const Transport = {
         try {
           const result = await localEndpoint.handle({ type, payload, CNS_CONTEXT });
           logCNS("TRANSPORT_OFFLINE_RESPONSE", { type, band: "offline" });
-
           CNSPageScanner.emit("cns-transport-offline-response", {
             type,
             band: "offline"
           });
-
           return result;
         } catch (err) {
           const msg = String(err);
@@ -223,28 +220,24 @@ const Transport = {
             band: "offline",
             message: msg
           });
-
           CNSPageScanner.emit("cns-transport-offline-error", {
             type,
             band: "offline",
             message: msg
           });
-
           return { error: "Offline local endpoint failed", details: msg };
         }
       }
 
       logCNS("TRANSPORT_OFFLINE_NO_HANDLER", { type, band: "offline" });
-
       CNSPageScanner.emit("cns-transport-offline-no-handler", {
         type,
         band: "offline"
       });
-
       return { error: "Offline mode: no local endpoint handler registered" };
     }
 
-    // ONLINE BAND — local push to remote endpoint (brain/endpoint owns fetch)
+    // ⭐⭐⭐ ONLINE BAND — UPGRADED ⭐⭐⭐
     logCNS("TRANSPORT_ONLINE_CALL", { type, band: "online" });
 
     CNSPageScanner.emit("cns-transport-online-call", {
@@ -261,19 +254,32 @@ const Transport = {
 
     if (!remoteEndpoint) {
       logCNS("TRANSPORT_ONLINE_NO_REMOTE_ENDPOINT", { type, band: "online" });
-
       CNSPageScanner.emit("cns-transport-online-no-remote", {
         type,
         band: "online"
       });
-
       return { error: "No remote endpoint handler registered for online band" };
     }
 
     try {
-      const json = await remoteEndpoint.handle({ type, payload, context: CNS_CONTEXT });
-      logCNS("TRANSPORT_ONLINE_RESPONSE", { type, band: "online" });
+      // ⭐ NEW: hook‑aware routing
+      if (type === "hook" && payload?.name) {
+        return await remoteEndpoint.handle({
+          type: "hook",
+          hookName: payload.name,
+          hookPayload: payload.payload,
+          context: CNS_CONTEXT
+        });
+      }
 
+      // ⭐ DEFAULT: unchanged
+      const json = await remoteEndpoint.handle({
+        type,
+        payload,
+        context: CNS_CONTEXT
+      });
+
+      logCNS("TRANSPORT_ONLINE_RESPONSE", { type, band: "online" });
       CNSPageScanner.emit("cns-transport-online-response", {
         type,
         band: "online"
@@ -287,13 +293,11 @@ const Transport = {
         band: "online",
         message: msg
       });
-
       CNSPageScanner.emit("cns-transport-online-error", {
         type,
         band: "online",
         message: msg
       });
-
       return { error: "Online remote endpoint failed", details: msg };
     }
   },
