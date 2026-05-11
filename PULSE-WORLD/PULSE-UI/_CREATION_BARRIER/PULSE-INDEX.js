@@ -1,15 +1,10 @@
 // ============================================================================
-//  PULSE-INDEX v25 — IMMORTAL++
+//  PULSE-INDEX v26 — IMMORTAL++
 //  Frontend UI • Portal-Signal Driven • Zero Backend Imports
 //  Reads ONLY from window.PulsePortal.getSignal()
 // ============================================================================
 
-// No backend imports. No Understanding. No Bridge. No PulseBand.
-// Only Portal + DOM + CSS-merged signal snapshot.
-
-// ============================================================
 // IMMORTAL COLOR CONSTANTS
-// ============================================================
 const C_ID   = "color:#00E5FF; font-weight:bold; font-family:monospace;";
 const C_OK   = "color:#00FF9C; font-family:monospace;";
 const C_INFO = "color:#E8F8FF; font-family:monospace;";
@@ -29,9 +24,10 @@ if (!window.__PULSE_UI_INIT__) {
   document.addEventListener("DOMContentLoaded", () => {
     logOK("DOM CONTENT LOADED — INDEX PAGE");
 
+    // ============================================================================
+    //  PULSEBAND PANEL TOGGLE
+    // ============================================================================
     try {
-      logID("INIT PULSEBAND UI");
-
       const pbBadge = document.getElementById("pulseband-badge");
       const pbPanel = document.getElementById("pulseband-panel");
       let pbOpen = false;
@@ -57,6 +53,9 @@ if (!window.__PULSE_UI_INIT__) {
       logErr("PulseBand UI init failed", err);
     }
 
+    // ============================================================================
+    //  PULSEBAND FIELD REFERENCES
+    // ============================================================================
     const pbFields = {
       bars:       document.getElementById("pb-bars-text"),
       phone:      document.getElementById("pb-phonebars-text"),
@@ -72,7 +71,9 @@ if (!window.__PULSE_UI_INIT__) {
       estimated:  document.getElementById("pb-estimated")
     };
 
-    // ⭐ NEW — get signal snapshot from Portal
+    // ============================================================================
+    //  PORTAL SIGNAL SNAPSHOT
+    // ============================================================================
     function getSignalSnapshot() {
       try {
         return window.PulsePortal?.getSignal?.() || null;
@@ -81,7 +82,9 @@ if (!window.__PULSE_UI_INIT__) {
       }
     }
 
-    // ⭐ NEW — engine boot waits for first signal snapshot
+    // ============================================================================
+    //  WAIT FOR ENGINES (Portal signal ready)
+    // ============================================================================
     async function waitForEngines() {
       logID("WAITING FOR ENGINES — PORTAL SIGNAL MODE");
 
@@ -106,7 +109,9 @@ if (!window.__PULSE_UI_INIT__) {
       }
     }
 
-    // ⭐ NEW — PulseBand UI driven by Portal.getSignal()
+    // ============================================================================
+    //  UPDATE PULSEBAND UI FROM PORTAL SIGNAL
+    // ============================================================================
     async function updatePulseBand() {
       try {
         const snap = getSignalSnapshot();
@@ -148,7 +153,9 @@ if (!window.__PULSE_UI_INIT__) {
       }
     }
 
-    // ⭐ NEW — Engine boot + UI loop
+    // ============================================================================
+    //  ENGINE LOOP
+    // ============================================================================
     (async () => {
       try {
         await waitForEngines();
@@ -159,6 +166,9 @@ if (!window.__PULSE_UI_INIT__) {
       }
     })();
 
+    // ============================================================================
+    //  GPU TEST
+    // ============================================================================
     try {
       const testBtn     = document.getElementById("tp-test-button");
       const testFile    = document.getElementById("tp-test-file");
@@ -218,6 +228,9 @@ if (!window.__PULSE_UI_INIT__) {
       logErr("GPU test init failed", err);
     }
 
+    // ============================================================================
+    //  FAQ ACCORDION
+    // ============================================================================
     try {
       document.querySelectorAll("[data-faq]").forEach((item) => {
         const btn = item.querySelector(".faq-question");
