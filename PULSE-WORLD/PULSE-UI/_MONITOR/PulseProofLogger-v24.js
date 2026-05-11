@@ -288,24 +288,29 @@ export const PulseIcons = {
 // fallback only
 export const PulseIconFallback = "🖥️";
 
-
+// ============================================================================
+//  PREFIX FORMATTER — DETERMINISTIC
+// ============================================================================
 
 function formatPrefix(subsystem) {
-  const role = PulseRoles[subsystem] || "SUBSYSTEM";
-  const version = PulseVersion[subsystem] || "24.x";
-  const icon = PulseIcons[subsystem] || PulseIcons.legacy;
+  const safe = subsystem || "legacy";
+  const role = PulseRoles[safe] || PulseRoleFallback;
+  const version = PulseVersion[safe] || PulseVersionFallback;
+  const icon = PulseIcons[safe] || PulseIconFallback;
   return `${icon} ${role} v${version}`;
 }
 
-// -----------------------------------------------------------------------------
-// Telemetry packet formatter (LOCAL-ONLY, NO NETWORK)
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  TELEMETRY PACKET — DETERMINISTIC
+// ============================================================================
 
 export function makeTelemetryPacket(subsystem, event, data = {}) {
+  const safe = subsystem || "legacy";
   const ts = Date.now();
-  const version = PulseVersion[subsystem] || "24.x";
-  const role = PulseRoles[subsystem] || "SUBSYSTEM";
-  const icon = PulseIcons[subsystem] || PulseIcons.legacy;
+
+  const version = PulseVersion[safe] || PulseVersionFallback;
+  const role = PulseRoles[safe] || PulseRoleFallback;
+  const icon = PulseIcons[safe] || PulseIconFallback;
 
   const band = data.band || "dual";
   const presenceField = data.presenceField || null;
@@ -317,6 +322,7 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
     artery: data.binaryArtery || false,
     channel: data.binaryChannel || null
   };
+
   const lineage = {
     id: data.lineageId || null,
     parent: data.lineageParent || null
@@ -328,7 +334,7 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
   return {
     schemaVersion: "24.0",
     ts,
-    subsystem,
+    subsystem: safe,
     event,
     version,
     role,
@@ -341,7 +347,7 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
     meta: {
       layer: "PulseProofLogger",
       version: "24.0-Immortal-META",
-      subsystem,
+      subsystem: safe,
       event,
       band,
       presenceField,
@@ -354,19 +360,21 @@ export function makeTelemetryPacket(subsystem, event, data = {}) {
   };
 }
 
-// -----------------------------------------------------------------------------
-// IMMORTAL LOG ENTRY BUILDER — PURE, SYNC, HEARTBEAT-FRIENDLY
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  IMMORTAL LOG ENTRY BUILDER — DETERMINISTIC
+// ============================================================================
 
 let logIdCounter = Date.now();
 
 function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
+  const safe = subsystem || "legacy";
+
   const layer = detectLayer(meta.layer);
   const us_vs_them = detectUsVsThem(layer);
   const page = meta.page || detectPage();
   const func = meta.func || null;
   const system = meta.system || null;
-  const subsystemName = meta.subsystem || subsystem || null;
+  const subsystemName = meta.subsystem || safe;
   const organ = meta.organ || null;
   const extra = meta.extra || {};
 
@@ -420,15 +428,11 @@ function makeLocalLogEntry(level, subsystem, message, rest, meta = {}) {
   };
 }
 
-// -----------------------------------------------------------------------------
-//  PULSEPROOFLOGGER-v24 IMMORTAL++
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  CORE LOG ENTRY CREATION — IMMORTAL++
+// ============================================================================
 
 import { PulseProofSignal } from "./PulseProofSignal-v24.js";
-
-// -----------------------------------------------------------------------------
-//  CORE LOG ENTRY CREATION — IMMORTAL++
-// -----------------------------------------------------------------------------
 
 export function pulseLog({
   layer = null,
@@ -455,13 +459,14 @@ export function pulseLog({
 } = {}) {
   const detectedLayer = detectLayer(layer);
   const detectedPage = page || detectPage();
+  const safeSubsystem = subsystem || "legacy";
 
   if (typeof func === "function") func = func.name || "anonymous";
 
   const meta = {
     layer: detectedLayer,
     system,
-    subsystem,
+    subsystem: safeSubsystem,
     organ,
     page: detectedPage,
     func,
@@ -479,21 +484,18 @@ export function pulseLog({
     organismVersion
   };
 
-  const entry = makeLocalLogEntry(level, subsystem || "legacy", message, rest, meta);
+  const entry = makeLocalLogEntry(level, safeSubsystem, message, rest, meta);
 
   appendLocalLog(entry);
 
   try {
     PulseProofSignal.fromLogEntry(entry);
-  } catch (_) {
-    // IMMORTAL++: signal must never break logger
-  }
+  } catch (_) {}
 }
 
-// -----------------------------------------------------------------------------
-//  ARG NORMALIZATION — IMMORTAL++
-//  (UPGRADED: understands PulseProofSignal comment packets)
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  ARG NORMALIZATION — DETERMINISTIC
+// ============================================================================
 
 function normalizeArgs(args) {
   let subsystem = "legacy";
@@ -503,12 +505,10 @@ function normalizeArgs(args) {
 
   const first = args[0];
 
-  // 1) CSS console style: "%c..."
   if (typeof first === "string" && first.startsWith("%c")) {
-    return { subsystem, message: first, rest: args.slice(1), raw: true };
+    return { subsystem: subsystem || "legacy", message: first, rest: args.slice(1), raw: true };
   }
 
-  // 2) PulseProofSignal pattern: log("comment", { ...signalComment })
   if (
     args.length === 2 &&
     first === "comment" &&
@@ -525,36 +525,31 @@ function normalizeArgs(args) {
       obj.signalPacketType ||
       "signal-comment";
 
-    // We keep the full object in rest so DevTools can expand it.
     return {
-      subsystem,
+      subsystem: subsystem || "legacy",
       message: pretty,
       rest: [obj],
       raw: false
     };
   }
 
-  // 3) Two-string pattern: "subsystem", "message"
   if (args.length >= 2 && typeof first === "string" && typeof args[1] === "string") {
-    return { subsystem: first, message: args[1], rest: args.slice(2), raw: false };
+    return { subsystem: first || "legacy", message: args[1], rest: args.slice(2), raw: false };
   }
 
-  // 4) Object-first pattern: log({ ... })
   if (typeof first === "object" && first !== null) {
     const obj = first;
     if (obj.pulseLayer === "NERVOUS-SYSTEM") subsystem = "band";
     if (obj.schemaVersion && obj.textures !== undefined) subsystem = "gpu";
     if (obj.binaryArtery === true) subsystem = "logger";
-    return { subsystem, message: "", rest: [obj], raw: false };
+    return { subsystem: subsystem || "legacy", message: "", rest: [obj], raw: false };
   }
 
-  // 5) Single arg
   if (args.length === 1) {
-    return { subsystem, message: first, rest: [], raw: false };
+    return { subsystem: subsystem || "legacy", message: first, rest: [], raw: false };
   }
 
-  // 6) Fallback: join everything
-  return { subsystem, message: args.join(" "), rest: [], raw: false };
+  return { subsystem: subsystem || "legacy", message: args.join(" "), rest: [], raw: false };
 }
 
 function mark404(message) {
@@ -564,60 +559,52 @@ function mark404(message) {
   return message;
 }
 
-// -----------------------------------------------------------------------------
-//  CORE LOGGING FUNCTIONS — IMMORTAL++
-// -----------------------------------------------------------------------------
+// ============================================================================
+//  CORE LOGGING FUNCTIONS — DETERMINISTIC
+// ============================================================================
 
 export function log(...args) {
   const { subsystem, message, rest, raw } = normalizeArgs(args);
-  const color = PulseColors[subsystem] || "#fff";
-  const prefix = formatPrefix(subsystem);
+  const safe = subsystem || "legacy";
+  const color = PulseColors[safe] || PulseColorFallback;
+  const prefix = formatPrefix(safe);
   const safeMessage = mark404(message);
 
   if (raw) {
     _c.log(safeMessage, ...rest);
   } else {
-    _c.log(
-      `%c${prefix} — ${safeMessage}`,
-      `color:${color}; font-weight:bold;`,
-      ...rest
-    );
+    _c.log(`%c${prefix} — ${safeMessage}`, `color:${color}; font-weight:bold;`, ...rest);
   }
 
-  pulseLog({ level: "log", subsystem, message: safeMessage, rest });
+  pulseLog({ level: "log", subsystem: safe, message: safeMessage, rest });
 }
 
 export function warn(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
-  const prefix = formatPrefix(subsystem);
+  const safe = subsystem || "legacy";
+  const prefix = formatPrefix(safe);
   const safeMessage = mark404(message);
 
-  _c.warn(
-    `%c${prefix} ⚠️ [WARN] — ${safeMessage}`,
-    "color:#FFEE58; font-weight:bold;",
-    ...rest
-  );
+  _c.warn(`%c${prefix} ⚠️ [WARN] — ${safeMessage}`, "color:#FFEE58; font-weight:bold;", ...rest);
 
-  pulseLog({ level: "warn", subsystem, message: safeMessage, rest });
+  pulseLog({ level: "warn", subsystem: safe, message: safeMessage, rest });
 }
 
 export function error(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
-  const prefix = formatPrefix(subsystem);
+  const safe = subsystem || "legacy";
+  const prefix = formatPrefix(safe);
   const safeMessage = mark404(message);
 
-  _c.error(
-    `%c${prefix} 🟥 [ERROR] — ${safeMessage}`,
-    "color:#EF5350; font-weight:bold;",
-    ...rest
-  );
+  _c.error(`%c${prefix} 🟥 [ERROR] — ${safeMessage}`, "color:#EF5350; font-weight:bold;", ...rest);
 
-  pulseLog({ level: "error", subsystem, message: safeMessage, rest });
+  pulseLog({ level: "error", subsystem: safe, message: safeMessage, rest });
 }
 
 export function critical(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
-  const prefix = formatPrefix(subsystem);
+  const safe = subsystem || "legacy";
+  const prefix = formatPrefix(safe);
   const safeMessage = mark404(message);
 
   _c.groupCollapsed(
@@ -627,17 +614,16 @@ export function critical(...args) {
   _c.error(`%c${safeMessage}`, "color:#D32F2F; font-weight:bold;", ...rest);
   _c.groupEnd();
 
-  pulseLog({ level: "critical", subsystem, message: safeMessage, rest });
+  pulseLog({ level: "critical", subsystem: safe, message: safeMessage, rest });
 }
-
 // -----------------------------------------------------------------------------
 //  COMMENT LEVEL — IMMORTAL++ (FOR SIGNAL-AUTHORED COMMENT LOGS)
 // -----------------------------------------------------------------------------
 
 export function comment(...args) {
   const { subsystem, message, rest } = normalizeArgs(args);
-  const effectiveSubsystem = subsystem || "signal";
-  const prefix = formatPrefix(effectiveSubsystem);
+  const safe = subsystem || "signal";
+  const prefix = formatPrefix(safe);
   const safeMessage = mark404(message);
 
   _c.log(
@@ -648,7 +634,7 @@ export function comment(...args) {
 
   pulseLog({
     level: "comment",
-    subsystem: effectiveSubsystem,
+    subsystem: safe,
     message: safeMessage,
     rest
   });
@@ -659,8 +645,9 @@ export function comment(...args) {
 // -----------------------------------------------------------------------------
 
 export function group(subsystem, label) {
-  const color = PulseColors[subsystem] || "#fff";
-  const prefix = formatPrefix(subsystem);
+  const safe = subsystem || "legacy";
+  const color = PulseColors[safe] || PulseColorFallback;
+  const prefix = formatPrefix(safe);
   _c.groupCollapsed(`%c${prefix} — ${label}`, `color:${color}; font-weight:bold;`);
 }
 
@@ -779,7 +766,6 @@ console.error = (...args) => error(...args);
         clear: () => PulseLoggerStore.clear()
       };
 
-      // 🔥 expose full logger for Signal / Portal / organs
       window.PulseLogger = {
         log,
         warn,
