@@ -681,6 +681,47 @@ rebalanceGovernance({ imbalance }) {
 }
 
 // ============================================================================
+// INTERNET + BRAIN ROUTING ARTERIES — v24-Immortal
+// ============================================================================
+
+sendInternetRoute(route) {
+  if (!this.pulseNetBridge || !this.pulseNetBridge.sendRoute) {
+    return { ok: false, reason: "no_pulseNetBridge" };
+  }
+
+  return this.pulseNetBridge.sendRoute({
+    type: "internet",
+    payload: route,
+    cycle: this.cycle
+  });
+}
+
+sendBrainRoute(route) {
+  if (!this.pulseNetBridge || !this.pulseNetBridge.sendRoute) {
+    return { ok: false, reason: "no_pulseNetBridge" };
+  }
+
+  return this.pulseNetBridge.sendRoute({
+    type: "brain",
+    payload: route,
+    cycle: this.cycle
+  });
+}
+
+sendMemoryRoute(route) {
+  if (!this.pulseNetBridge || !this.pulseNetBridge.sendRoute) {
+    return { ok: false, reason: "no_pulseNetBridge" };
+  }
+
+  return this.pulseNetBridge.sendRoute({
+    type: "memory",
+    payload: route,
+    cycle: this.cycle
+  });
+}
+
+
+// ============================================================================
 // EVOLUTION PIPE — v24-Immortal++
 // ============================================================================
 

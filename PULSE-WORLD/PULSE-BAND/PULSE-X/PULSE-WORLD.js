@@ -935,6 +935,7 @@ function bridgeRoute(kind, source, payload, detailKind) {
   return { ok: true };
 }
 
+
 export const PulseNetBridge = Object.freeze({
   routeExpansion(payload) {
     return bridgeRoute("expansion", "PulseExpansion", payload, "expansion_plan");
@@ -958,12 +959,22 @@ export const PulseNetBridge = Object.freeze({
   },
   routeBrain(payload) {
     return bridgeRoute("brain", "PulseBrain", payload, "brain_signal");
+  },
+
+  // ⭐ UNIVERSAL ROUTE ARTERY — REQUIRED BY EXPANSION
+  sendRoute({ type, payload, cycle }) {
+    return window.PulseRemoteEndpoint?.handle({
+      type,
+      payload,
+      cycle
+    });
   }
 });
 
 export function createPulseNetBridge() {
   return PulseNetBridge;
 }
+
 
 // ============================================================================
 // PULSE-WORLD v21 ROOT ORGANISM WRAPPER (NON-BREAKING)
