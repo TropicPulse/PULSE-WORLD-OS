@@ -149,7 +149,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // IMPORTS (pure contracts; real system wires concrete implementations)
 // -----------------------------------------------------------------------------
 import { PulseOrganismMap } from "./PulseWorldOrganismMap-v24.js";
-import { createPulseAIChunker } from "../PULSE-AI/PulseAIChunker-v20.js";
+import { createPulseAIChunker } from "../PULSE-AI/PulseAIChunker-v24.js";
 import {
   PulseProofBridgeLogger as logger,
   BridgeLog as log,

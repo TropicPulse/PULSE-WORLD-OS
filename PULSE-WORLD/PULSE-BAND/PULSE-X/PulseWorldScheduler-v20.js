@@ -46,7 +46,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 //  IMPORTS
 // ============================================================================
 
-import { routeAIRequest } from "../PULSE-AI/aiRouter-v16.js";
+import { routeAIRequest } from "../PULSE-AI/aiRouter-v24.js";
 import { createOvermindOrgan } from "./PULSE-WORLD-ALDWYN.js";
 
 // RUNTIME (Touch + prewarm/cache-aware, v17+)

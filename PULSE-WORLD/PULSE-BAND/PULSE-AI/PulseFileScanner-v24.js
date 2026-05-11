@@ -1,44 +1,42 @@
 // ============================================================================
-// FILE: /PULSE-AI/PulseFileScanner-v20-ImmortalPlusPlus.js
-// PULSE OS v20‑IMMORTAL+++ — FILE SCANNER ORGAN
+// FILE: /PULSE-AI/PulseFileScanner-v24-IMMORTAL+++.js
+// PULSE OS v24‑IMMORTAL+++ — FILE SCANNER ORGAN
 // Symbolic Cognition • Structural Analysis • Drift + Lineage + Trust + Advantage
 // PURE SYMBOLIC ENGINE. ZERO EXECUTION. ZERO MUTATION. DUALBAND + PULSE-NET SAFE.
+// Global artery registry • identity / environment aware • chunk-hints aware
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
+
 export const PulseFileScannerMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
 
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
-
 
 // ============================================================================
 // HELPERS — BUCKETS + PRESSURE + TRUST / COMPLEXITY / ADVANTAGE
 // ============================================================================
+
+function _clamp01(v) {
+  const n = typeof v === "number" ? v : 0;
+  if (n <= 0) return 0;
+  if (n >= 1) return 1;
+  return n;
+}
 
 function bucketPressure(v) {
   if (v >= 0.9) return "overload";
@@ -46,6 +44,14 @@ function bucketPressure(v) {
   if (v >= 0.4) return "medium";
   if (v > 0) return "low";
   return "none";
+}
+
+function bucketLevel(v) {
+  if (v >= 0.9) return "elite";
+  if (v >= 0.75) return "high";
+  if (v >= 0.5) return "medium";
+  if (v >= 0.25) return "low";
+  return "critical";
 }
 
 function extractBinaryPressure(binaryVitals = {}) {
@@ -129,7 +135,7 @@ function computeTrustSignals(report, complexity) {
   };
 }
 
-// v20: advantage field — time saved / risk avoided / review priority
+// v24++: advantage field — time saved / risk avoided / review priority
 function computeAdvantageField({ trustSignals, complexity }) {
   const anomaly = trustSignals?.anomalyScore ?? 0;
   const honeypot = trustSignals?.honeypotRisk ?? 0;
@@ -146,7 +152,12 @@ function computeAdvantageField({ trustSignals, complexity }) {
 
   return {
     advantageScore: reviewPriority,
-    advantageBand: reviewPriority >= 0.7 ? "critical" : reviewPriority >= 0.4 ? "elevated" : "normal",
+    advantageBand:
+      reviewPriority >= 0.7
+        ? "critical"
+        : reviewPriority >= 0.4
+        ? "elevated"
+        : "normal",
     cascadeLevel: reviewPriority >= 0.7 ? 3 : reviewPriority >= 0.4 ? 2 : 1,
     field: "file_scanner",
     timeSavedMs,
@@ -173,14 +184,12 @@ function analyzeContent(filePath, content) {
     summary: ""
   };
 
-  // ESM exports
   const esmExportRegex = /export\s+(?:const|function|class)\s+([A-Za-z0-9_]+)/g;
   let match;
   while ((match = esmExportRegex.exec(content)) !== null) {
     report.esmExports.push(match[1]);
   }
 
-  // CJS exports
   const cjsExportRegex = /module\.exports\s*=\s*{([^}]+)}/;
   const cjsMatch = content.match(cjsExportRegex);
 
@@ -193,13 +202,11 @@ function analyzeContent(filePath, content) {
     report.cjsExports.push(...names);
   }
 
-  // Imports
   const importRegex = /import\s+.*?from\s+["'](.+?)["']/g;
   while ((match = importRegex.exec(content)) !== null) {
     report.imports.push(match[1]);
   }
 
-  // Drift detection
   if (report.cjsExports.length > 0 && report.esmExports.length === 0) {
     report.drift.push("CJS_ONLY_ORGAN");
   }
@@ -208,10 +215,8 @@ function analyzeContent(filePath, content) {
     report.drift.push("MIXED_MODULE_SYSTEM");
   }
 
-  // Visibility
   report.visibility = report.esmExports.length > 0 ? "visible" : "invisible";
 
-  // Summary
   report.summary = generateSummary(report);
 
   return report;
@@ -234,6 +239,24 @@ ${r.imports.map((i) => " - " + i).join("\n") || " none"}
 }
 
 // ============================================================================
+// GLOBAL SCANNER ARTERY REGISTRY v5+ (READ-ONLY, METRICS-ONLY)
+// ============================================================================
+
+const _globalScannerArteryRegistry = new Map();
+
+function _registryKey(id) {
+  return id || "default";
+}
+
+export function getGlobalScannerArteries() {
+  const out = {};
+  for (const [k, v] of _globalScannerArteryRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
+// ============================================================================
 // FILE SCANNER ARTERY v5 — Symbolic-only, deterministic, trust + advantage aware
 // ============================================================================
 
@@ -245,7 +268,8 @@ export function getScannerArterySnapshotV5({
   dualBand = null,
   trust = null,
   identitySnapshot = null,
-  environmentSnapshot = null
+  environmentSnapshot = null,
+  scannerId = "PulseFileScanner"
 } = {}) {
   const basePressure = extractBinaryPressure(binaryVitals);
 
@@ -279,6 +303,7 @@ export function getScannerArterySnapshotV5({
   const arterySignature = computeHash(
     [
       "SCANNER_ARTERY_V5",
+      scannerId,
       filePath,
       fusedPressure.toFixed(3),
       driftCount,
@@ -322,7 +347,7 @@ export function getScannerArterySnapshotV5({
     estimatedBytes: complexity?.length || 0
   };
 
-  return Object.freeze({
+  const artery = Object.freeze({
     organism: {
       pressure: fusedPressure,
       pressureBucket: bucketPressure(fusedPressure)
@@ -356,16 +381,22 @@ export function getScannerArterySnapshotV5({
       version: PulseFileScannerMeta.version,
       epoch: PulseFileScannerMeta.evo.epoch,
       identity: PulseFileScannerMeta.identity,
+      scannerId,
       arterySignature
     }
   });
+
+  _globalScannerArteryRegistry.set(_registryKey(scannerId), artery);
+
+  return artery;
 }
 
 // ============================================================================
-// FILE SCANNER FACTORY — v20‑IMMORTAL+++
+// FILE SCANNER FACTORY — v24‑IMMORTAL+++
 // ============================================================================
 
 export function createPulseFileScanner({
+  id = "PulseFileScanner",
   backendMode = false,
   Evolution = null,
   TrustFabric = null,
@@ -387,7 +418,8 @@ export function createPulseFileScanner({
     return {
       ok: true,
       epoch: PulseFileScannerMeta.evo.epoch,
-      identity: PulseFileScannerMeta.identity
+      identity: PulseFileScannerMeta.identity,
+      id
     };
   }
 
@@ -406,7 +438,8 @@ export function createPulseFileScanner({
           dualBand,
           trust: null,
           identitySnapshot,
-          environmentSnapshot
+          environmentSnapshot,
+          scannerId: id
         })
       };
     }
@@ -416,11 +449,13 @@ export function createPulseFileScanner({
     if (!fs.existsSync(fullPath)) {
       Evolution?.recordLineage?.("scanner-file-not-found", {
         filePath,
-        epoch: PulseFileScannerMeta.evo.epoch
+        epoch: PulseFileScannerMeta.evo.epoch,
+        scannerId: id
       });
       TrustFabric?.recordEvidence?.("scanner-file-not-found", {
         filePath,
-        epoch: PulseFileScannerMeta.evo.epoch
+        epoch: PulseFileScannerMeta.evo.epoch,
+        scannerId: id
       });
 
       return {
@@ -436,7 +471,8 @@ export function createPulseFileScanner({
           dualBand,
           trust: null,
           identitySnapshot,
-          environmentSnapshot
+          environmentSnapshot,
+          scannerId: id
         })
       };
     }
@@ -452,7 +488,8 @@ export function createPulseFileScanner({
       epoch: PulseFileScannerMeta.evo.epoch,
       drift: report.drift,
       complexity,
-      advantage
+      advantage,
+      scannerId: id
     });
     Evolution?.scanDrift?.({ scannerReport: report });
 
@@ -461,7 +498,8 @@ export function createPulseFileScanner({
       epoch: PulseFileScannerMeta.evo.epoch,
       trustSignals,
       complexity,
-      advantage
+      advantage,
+      scannerId: id
     });
 
     JuryFrame?.submitScannerEvidence?.({
@@ -470,7 +508,8 @@ export function createPulseFileScanner({
       complexity,
       trustSignals,
       advantage,
-      epoch: PulseFileScannerMeta.evo.epoch
+      epoch: PulseFileScannerMeta.evo.epoch,
+      scannerId: id
     });
 
     const artery = getScannerArterySnapshotV5({
@@ -481,7 +520,8 @@ export function createPulseFileScanner({
       dualBand,
       trust: { complexity, trustSignals, advantage },
       identitySnapshot,
-      environmentSnapshot
+      environmentSnapshot,
+      scannerId: id
     });
 
     return {
@@ -494,21 +534,24 @@ export function createPulseFileScanner({
   }
 
   return Object.freeze({
+    id,
     meta: PulseFileScannerMeta,
     prewarm,
     scanFile,
-    getScannerArterySnapshotV5
+    getScannerArterySnapshotV5,
+    getGlobalScannerArteries
   });
 }
 
 // ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility (v20‑IMMORTAL+++ dualband)
+//  DUAL EXPORT LAYER — CommonJS compatibility (v24‑IMMORTAL+++ dualband)
 // ---------------------------------------------------------------------------
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     PulseFileScannerMeta,
     createPulseFileScanner,
-    getScannerArterySnapshotV5
+    getScannerArterySnapshotV5,
+    getGlobalScannerArteries
   };
 }

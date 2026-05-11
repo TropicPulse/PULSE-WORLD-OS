@@ -58,7 +58,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 
 // ⭐ CNS‑SAFE v16 Chunker (32 lanes, Pulse‑Net aware)
 // (implementation itself can be upgraded to v24 later; interface remains stable)
-import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v20.js";
+import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v24.js";
 
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
@@ -75,7 +75,7 @@ import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";
 import { createPersonaEngine } from "./aiPersonality-v24.js";
 import { createBoundariesEngine } from "./aiBoundaries-v24.js";
 import { createPermissionsEngine } from "./aiPermissions-v24.js";
-import { createRouterEngine } from "./aiRouter-v16.js";
+import { createRouterEngine } from "./aiRouter-v24.js";
 import { createCortex } from "./aiCortex-v24.js";
 
 import { createDualBandOrganism } from "./aiDualBand-v24.js";

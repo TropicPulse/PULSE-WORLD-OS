@@ -95,7 +95,7 @@ import createCognitiveFrame, {
 } from "./aiContext-v24.js";
 
 import { createCortex, prewarmAICortex } from "./aiCortex-v24.js";
-import { createRouterEngine } from "./aiRouter-v16.js";
+import { createRouterEngine } from "./aiRouter-v24.js";
 import { runAI, ExecutionEngineMeta } from "./aiEngine-v24.js";
 
 import aiDeliveryEngine, { prewarmDeliveryEngine } from "./aiDeliveryEngine-v24.js";
@@ -118,7 +118,7 @@ import {
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
-import { createPulseAIChunker } from "./PulseAIChunker-v20.js";
+import { createPulseAIChunker } from "./PulseAIChunker-v24.js";
 
 // ============================================================================
 //  Dualband Organism Bootloader

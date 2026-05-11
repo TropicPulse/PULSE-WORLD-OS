@@ -1,39 +1,25 @@
 // ============================================================================
-//  PulseAIChunker v20.0-IMMORTAL-UNIVERSAL
-//  32-LANE DUALBAND CHUNKER — BINARY + SYMBOLIC + WORLD, ORGANISM-GRADE
-//  Universal Chunk Organ for PulseOS v18+ (Chunker + World + Identity Aware)
+//  PulseAIChunker v24-IMMORTAL++
+//  32-lane dual-band universal chunker (binary + symbolic + world)
+//  Organism-grade, profile-aware, artery-ready, drift-proof
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
+// ---------------------------------------------------------------------------
+//  META / SURFACE EXPORTS
+// ---------------------------------------------------------------------------
 
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
 export const PulseAIChunkerMeta = Identity.OrganMeta;
 
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
-
 
 // ============================================================================
 //  INTERNAL HELPERS
@@ -47,7 +33,7 @@ function _toUint8Array(input) {
   if (input instanceof Uint8Array) return input;
   if (input instanceof ArrayBuffer) return new Uint8Array(input);
   if (Array.isArray(input)) return new Uint8Array(input);
-  throw new TypeError("Unsupported binary input type for PulseAIChunker.");
+  throw new TypeError("PulseAIChunker: unsupported binary input.");
 }
 
 function _safeJSONStringify(value) {
@@ -72,7 +58,7 @@ function _safeString(input) {
   return String(input);
 }
 
-// Simple deterministic hash (non-crypto, pure compute)
+// non-crypto, deterministic hash
 function _hashString(str) {
   let h = 0;
   const s = String(str || "");
@@ -82,7 +68,6 @@ function _hashString(str) {
   return `h${h}`;
 }
 
-// Build a deterministic session id for a payload + identity + profile
 function _buildSessionId({ uid, band, worldBand, backendKind, chunkProfile, payloadHash }) {
   const seed = JSON.stringify({
     uid: uid || null,
@@ -95,22 +80,56 @@ function _buildSessionId({ uid, band, worldBand, backendKind, chunkProfile, payl
   return _hashString(seed);
 }
 
+function _clamp01(v) {
+  const n = typeof v === "number" ? v : 0;
+  if (n <= 0) return 0;
+  if (n >= 1) return 1;
+  return n;
+}
+
+function _bucketLevel(v) {
+  if (v >= 0.9) return "elite";
+  if (v >= 0.75) return "high";
+  if (v >= 0.5) return "medium";
+  if (v >= 0.25) return "low";
+  return "critical";
+}
+
 // ============================================================================
-//  CLASS — 32-LANE DUALBAND UNIVERSAL CHUNKER (ELITE v20)
+//  GLOBAL ARTERY SNAPSHOT (READ-ONLY VIEW)
+// ============================================================================
+
+const _globalChunkerRegistry = new Map();
+
+function _registryKey(id) {
+  return id || "default";
+}
+
+export function getGlobalChunkerArteries() {
+  const out = {};
+  for (const [k, v] of _globalChunkerRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
+// ============================================================================
+//  PulseAIChunker v24++
 // ============================================================================
 
 export class PulseAIChunker {
   constructor(config = {}) {
+    const lanes = PulseAIChunkerMeta.lanes || 32;
+
     this.config = Object.freeze({
-      id: config.id || PulseAIChunkerMeta.id,
+      id: config.id || PulseAIChunkerMeta.id || "PulseAIChunker",
       defaultChunkSize: config.defaultChunkSize || 4096,
       maxChunkSize: config.maxChunkSize || 65536,
-      lanes: PulseAIChunkerMeta.lanes,
+      lanes,
       trace: !!config.trace,
       defaultProfile: config.defaultProfile || "backend-default"
     });
 
-    // Lane stats: purely structural metrics, no content
     this.laneStats = new Array(this.config.lanes).fill(null).map((_, lane) =>
       Object.seal({
         lane,
@@ -120,19 +139,82 @@ export class PulseAIChunker {
       })
     );
 
-    // Prewarmed patterns (label -> pattern)
     this.patterns = new Map();
-
-    // Prewarmed profiles (profileId -> profileConfig)
     this.profiles = new Map();
-
-    // Profile stats (profileId -> stats)
     this.profileStats = new Map();
+
+    this._totalChunks = 0;
+    this._totalBytes = 0;
+    this._windowStart = _now();
+    this._windowChunks = 0;
+    this._windowBytes = 0;
+    this._windowMs = config.windowMs && config.windowMs > 0 ? config.windowMs : 60000;
+
+    this._laneCounter = { value: 0 };
+
+    this._registerGlobal();
   }
 
-  // --------------------------------------------------------------------------
-  //  META
-  // --------------------------------------------------------------------------
+  _registerGlobal() {
+    const key = _registryKey(this.config.id);
+    _globalChunkerRegistry.set(key, this._computeArtery());
+  }
+
+  _rollWindow(now) {
+    if (now - this._windowStart >= this._windowMs) {
+      this._windowStart = now;
+      this._windowChunks = 0;
+      this._windowBytes = 0;
+    }
+  }
+
+  _computeArtery() {
+    const now = _now();
+    this._rollWindow(now);
+
+    const elapsedMs = Math.max(1, now - this._windowStart);
+    const chunksPerSec = (this._windowChunks / elapsedMs) * 1000;
+    const bytesPerSec = (this._windowBytes / elapsedMs) * 1000;
+
+    const throughput = _clamp01(chunksPerSec / 1024);
+    const pressure = _clamp01(bytesPerSec / (64 * 1024 * 1024)); // 64MB/s symbolic ceiling
+    const cost = _clamp01(pressure * (1 - throughput));
+    const budget = _clamp01(throughput - cost);
+
+    const artery = Object.freeze({
+      id: this.config.id,
+      timestamp: now,
+      windowMs: this._windowMs,
+      windowChunks: this._windowChunks,
+      windowBytes: this._windowBytes,
+      totalChunks: this._totalChunks,
+      totalBytes: this._totalBytes,
+      chunksPerSec,
+      bytesPerSec,
+      throughput,
+      pressure,
+      cost,
+      budget,
+      throughputBucket: _bucketLevel(throughput),
+      pressureBucket: _bucketLevel(pressure),
+      costBucket: _bucketLevel(cost),
+      budgetBucket: _bucketLevel(budget)
+    });
+
+    const key = _registryKey(this.config.id);
+    _globalChunkerRegistry.set(key, artery);
+
+    return artery;
+  }
+
+  getChunkerArtery() {
+    return this._computeArtery();
+  }
+
+  // ---------------------------------------------------------------------------
+  //  META / INTROSPECTION
+  // ---------------------------------------------------------------------------
+
   getMeta() {
     return PulseAIChunkerMeta;
   }
@@ -165,9 +247,10 @@ export class PulseAIChunker {
     return out;
   }
 
-  // --------------------------------------------------------------------------
-  //  PREWARM PATTERN (label-based)
-  // --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  //  PREWARM PATTERNS
+  // ---------------------------------------------------------------------------
+
   prewarmPattern(label, pattern = {}) {
     if (!label) return;
     const stored = Object.freeze({
@@ -183,17 +266,20 @@ export class PulseAIChunker {
         presenceBand: pattern.presenceBand || "symbolic",
         worldBand: pattern.worldBand || "backend",
         backendKind: pattern.backendKind || "generic",
-        chunkProfile: pattern.chunkProfile || pattern.profile || this.config.defaultProfile
+        chunkProfile:
+          pattern.chunkProfile ||
+          pattern.profile ||
+          this.config.defaultProfile
       }
     });
     this.patterns.set(label, stored);
     return stored;
   }
 
-  // --------------------------------------------------------------------------
-  //  PREWARM PROFILE (backend/world-aware profiles)
-  //  - profileId: e.g. "backend-plan", "backend-logs", "world-social", "world-state"
-// --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  //  PREWARM PROFILES
+  // ---------------------------------------------------------------------------
+
   prewarmProfile(profileId, profile = {}) {
     if (!profileId) return;
     const stored = Object.freeze({
@@ -206,8 +292,8 @@ export class PulseAIChunker {
         lanes: profile.lanes || this.config.lanes,
         band: profile.band || "dual",
         presenceBand: profile.presenceBand || "symbolic",
-        worldBand: profile.worldBand || "backend", // backend | world | identity | evidence
-        backendKind: profile.backendKind || "generic", // plan | state | logs | frames | world
+        worldBand: profile.worldBand || "backend",
+        backendKind: profile.backendKind || "generic",
         chunkProfile: profile.chunkProfile || profileId
       }
     });
@@ -228,9 +314,6 @@ export class PulseAIChunker {
     return stored;
   }
 
-  // --------------------------------------------------------------------------
-  //  INTERNAL: PROFILE RESOLUTION
-  // --------------------------------------------------------------------------
   _resolveProfile(options = {}) {
     const label = options.label || null;
     const profileId = options.profile || this.config.defaultProfile;
@@ -254,44 +337,44 @@ export class PulseAIChunker {
 
     return {
       defaultChunkSize:
-        options.defaultChunkSize ||
-        fromPattern.defaultChunkSize ||
-        fromProfile.defaultChunkSize ||
+        options.defaultChunkSize ??
+        fromPattern.defaultChunkSize ??
+        fromProfile.defaultChunkSize ??
         base.defaultChunkSize,
       maxChunkSize:
-        options.maxChunkSize ||
-        fromPattern.maxChunkSize ||
-        fromProfile.maxChunkSize ||
+        options.maxChunkSize ??
+        fromPattern.maxChunkSize ??
+        fromProfile.maxChunkSize ??
         base.maxChunkSize,
       lanes:
-        options.lanes ||
-        fromPattern.lanes ||
-        fromProfile.lanes ||
+        options.lanes ??
+        fromPattern.lanes ??
+        fromProfile.lanes ??
         base.lanes,
       band:
-        options.band ||
-        fromPattern.band ||
-        fromProfile.band ||
+        options.band ??
+        fromPattern.band ??
+        fromProfile.band ??
         base.band,
       presenceBand:
-        options.presenceBand ||
-        fromPattern.presenceBand ||
-        fromProfile.presenceBand ||
+        options.presenceBand ??
+        fromPattern.presenceBand ??
+        fromProfile.presenceBand ??
         base.presenceBand,
       worldBand:
-        options.worldBand ||
-        fromPattern.worldBand ||
-        fromProfile.worldBand ||
+        options.worldBand ??
+        fromPattern.worldBand ??
+        fromProfile.worldBand ??
         base.worldBand,
       backendKind:
-        options.backendKind ||
-        fromPattern.backendKind ||
-        fromProfile.backendKind ||
+        options.backendKind ??
+        fromPattern.backendKind ??
+        fromProfile.backendKind ??
         base.backendKind,
       chunkProfile:
-        options.chunkProfile ||
-        fromPattern.chunkProfile ||
-        fromProfile.chunkProfile ||
+        options.chunkProfile ??
+        fromPattern.chunkProfile ??
+        fromProfile.chunkProfile ??
         base.chunkProfile,
       label,
       profileId
@@ -314,19 +397,16 @@ export class PulseAIChunker {
     this.profileStats.set(profileId, stats);
   }
 
-  // --------------------------------------------------------------------------
-  //  LANE ASSIGNMENT (ROUND-ROBIN, DETERMINISTIC PER INSTANCE)
-// --------------------------------------------------------------------------
-  _assignLane(counterRef, lanes) {
-    const lane = counterRef.value % lanes;
-    counterRef.value += 1;
+  _assignLane(lanes) {
+    const lane = this._laneCounter.value % lanes;
+    this._laneCounter.value += 1;
     return lane;
   }
 
-  // --------------------------------------------------------------------------
-  //  BINARY CHUNKING (backend/world-safe)
-//  - options: { band, label, profile, presenceBand, worldBand, backendKind, chunkProfile, uid, lineage, route, organism }
-// --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  //  BINARY CHUNKING
+  // ---------------------------------------------------------------------------
+
   chunkBinary(buffer, options = {}) {
     const ts = _now();
     const profile = this._resolveProfile({
@@ -353,10 +433,9 @@ export class PulseAIChunker {
     });
 
     const chunks = [];
-    const laneCounter = { value: 0 };
 
     for (let offset = 0; offset < totalLength; offset += chunkSize) {
-      const lane = this._assignLane(laneCounter, profile.lanes);
+      const lane = this._assignLane(profile.lanes);
       const end = Math.min(offset + chunkSize, totalLength);
       const slice = bytes.subarray(offset, end);
 
@@ -368,7 +447,7 @@ export class PulseAIChunker {
           type: "binary",
           lane,
           index: chunks.length,
-          total: null, // filled after loop
+          total: null,
           label: profile.label,
           profile: profile.profileId,
           size: slice.length,
@@ -394,6 +473,11 @@ export class PulseAIChunker {
       stat.lastTs = ts;
 
       this._bumpProfileStats(profile.profileId, slice.length, ts);
+
+      this._totalChunks += 1;
+      this._totalBytes += slice.length;
+      this._windowChunks += 1;
+      this._windowBytes += slice.length;
     }
 
     for (const c of chunks) {
@@ -401,7 +485,7 @@ export class PulseAIChunker {
     }
 
     if (this.config.trace) {
-      console.log("[PulseAIChunker v20] chunkBinary", {
+      console.log("[PulseAIChunker v24] chunkBinary", {
         label: profile.label,
         profile: profile.profileId,
         band: profile.band,
@@ -413,12 +497,11 @@ export class PulseAIChunker {
       });
     }
 
+    this._computeArtery();
+
     return Object.freeze(chunks);
   }
 
-  // --------------------------------------------------------------------------
-  //  BINARY REASSEMBLY
-  // --------------------------------------------------------------------------
   reassembleBinary(chunks = []) {
     if (!Array.isArray(chunks) || chunks.length === 0) {
       return new Uint8Array(0);
@@ -445,10 +528,10 @@ export class PulseAIChunker {
     return out;
   }
 
-  // --------------------------------------------------------------------------
-  //  JSON / SYMBOLIC CHUNKING (STRINGIFIED)
-//  - options: { band, label, profile, presenceBand, worldBand, backendKind, chunkProfile, uid, lineage, route, organism }
-// --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  //  JSON / SYMBOLIC CHUNKING
+  // ---------------------------------------------------------------------------
+
   chunkJSON(value, options = {}) {
     const profile = this._resolveProfile({
       ...options,
@@ -484,7 +567,7 @@ export class PulseAIChunker {
     );
 
     if (this.config.trace) {
-      console.log("[PulseAIChunker v20] chunkJSON", {
+      console.log("[PulseAIChunker v24] chunkJSON", {
         label: profile.label,
         profile: profile.profileId,
         band: profile.band,
@@ -498,9 +581,6 @@ export class PulseAIChunker {
     return Object.freeze(jsonChunks);
   }
 
-  // --------------------------------------------------------------------------
-  //  JSON / SYMBOLIC REASSEMBLY
-  // --------------------------------------------------------------------------
   reassembleJSON(chunks = []) {
     const binary = this.reassembleBinary(chunks);
     const decoder = new TextDecoder();
@@ -508,10 +588,10 @@ export class PulseAIChunker {
     return _safeJSONParse(json);
   }
 
-  // --------------------------------------------------------------------------
-  //  TEXT CHUNKING (backend logs / traces / plans)
-//  - line-safe, UTF-8, profile-aware
-  // --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  //  TEXT CHUNKING
+  // ---------------------------------------------------------------------------
+
   chunkText(text, options = {}) {
     const profile = this._resolveProfile({
       ...options,
@@ -552,10 +632,10 @@ export class PulseAIChunker {
     return decoder.decode(binary);
   }
 
-  // --------------------------------------------------------------------------
-  //  LINE-ORIENTED CHUNKING (backend logs)
-//  - preserves line boundaries as much as possible
-  // --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  //  LINE-ORIENTED TEXT CHUNKING
+  // ---------------------------------------------------------------------------
+
   chunkLines(text, options = {}) {
     const profile = this._resolveProfile({
       ...options,
@@ -572,11 +652,10 @@ export class PulseAIChunker {
     const laneCounter = { value: 0 };
 
     let buffer = [];
-    let currentSize = 0;
+    let currentLines = 0;
 
-    const self = this;
-
-    function flushChunk(chunker, lane, index, totalPlaceholder) {
+    const flush = () => {
+      if (buffer.length === 0) return;
       const joined = buffer.join("\n");
       const encoder = new TextEncoder();
       const bytes = encoder.encode(joined);
@@ -591,15 +670,17 @@ export class PulseAIChunker {
         payloadHash
       });
 
+      const lane = this._assignLane(profile.lanes);
+
       const chunk = Object.freeze({
         meta: {
-          chunkerId: chunker.config.id,
+          chunkerId: this.config.id,
           ts,
           band: profile.band,
           type: "text_lines",
           lane,
-          index,
-          total: totalPlaceholder,
+          index: chunks.length,
+          total: null,
           label: profile.label,
           profile: profile.profileId,
           size: bytes.length,
@@ -619,37 +700,38 @@ export class PulseAIChunker {
 
       chunks.push(chunk);
 
-      const stat = chunker.laneStats[lane];
+      const stat = this.laneStats[lane];
       stat.chunks += 1;
       stat.bytes += bytes.length;
       stat.lastTs = ts;
 
-      chunker._bumpProfileStats(profile.profileId, bytes.length, ts);
-    }
+      this._bumpProfileStats(profile.profileId, bytes.length, ts);
+
+      this._totalChunks += 1;
+      this._totalBytes += bytes.length;
+      this._windowChunks += 1;
+      this._windowBytes += bytes.length;
+
+      buffer = [];
+      currentLines = 0;
+    };
 
     for (const line of lines) {
       buffer.push(line);
-      currentSize += 1;
-
-      if (currentSize >= maxLines) {
-        const lane = self._assignLane(laneCounter, profile.lanes);
-        flushChunk(self, lane, chunks.length, null);
-        buffer = [];
-        currentSize = 0;
+      currentLines += 1;
+      if (currentLines >= maxLines) {
+        flush();
       }
     }
 
-    if (buffer.length > 0) {
-      const lane = self._assignLane(laneCounter, profile.lanes);
-      flushChunk(self, lane, chunks.length, null);
-    }
+    flush();
 
     for (const c of chunks) {
       c.meta.total = chunks.length;
     }
 
     if (this.config.trace) {
-      console.log("[PulseAIChunker v20] chunkLines", {
+      console.log("[PulseAIChunker v24] chunkLines", {
         label: profile.label,
         profile: profile.profileId,
         band: profile.band,
@@ -660,6 +742,8 @@ export class PulseAIChunker {
       });
     }
 
+    this._computeArtery();
+
     return Object.freeze(chunks);
   }
 
@@ -668,10 +752,10 @@ export class PulseAIChunker {
     return text.split(/\r?\n/);
   }
 
-  // --------------------------------------------------------------------------
-  //  BACKEND PLAN / STATE HELPERS (semantic wrappers)
-//  - purely structural wrappers around JSON chunking
-  // --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  //  SEMANTIC HELPERS (BACKEND / WORLD / EVIDENCE)
+// ---------------------------------------------------------------------------
+
   chunkBackendPlan(plan, options = {}) {
     return this.chunkJSON(plan, {
       ...options,
@@ -696,10 +780,6 @@ export class PulseAIChunker {
     });
   }
 
-  // --------------------------------------------------------------------------
-  //  WORLD / IDENTITY / EVIDENCE HELPERS — PulseWorld-aligned
-  // --------------------------------------------------------------------------
-  // snapshot: PulseWorldSocialGraph snapshot or world state
   chunkWorldSnapshot(snapshot, options = {}) {
     return this.chunkJSON(snapshot, {
       ...options,
@@ -709,7 +789,6 @@ export class PulseAIChunker {
     });
   }
 
-  // evidence: trust / reputation / logs / identity evidence bundle
   chunkEvidence(evidence, options = {}) {
     return this.chunkJSON(evidence, {
       ...options,
@@ -719,7 +798,6 @@ export class PulseAIChunker {
     });
   }
 
-  // events: ordered timeline of events (identity, presence, jobs, etc.)
   chunkTimeline(events, options = {}) {
     return this.chunkJSON(events, {
       ...options,
@@ -731,13 +809,12 @@ export class PulseAIChunker {
 }
 
 // ============================================================================
-//  FACTORY
+//  FACTORY + DEFAULT SINGLETON
 // ============================================================================
 
 export function createPulseAIChunker(config = {}) {
   const core = new PulseAIChunker(config);
 
-  // Canonical backend profiles
   core.prewarmProfile("backend-default", {
     backendKind: "generic",
     chunkProfile: "backend-default",
@@ -766,7 +843,6 @@ export function createPulseAIChunker(config = {}) {
     worldBand: "backend"
   });
 
-  // World / social / evidence profiles (PulseWorld-aligned)
   core.prewarmProfile("world-state", {
     backendKind: "world",
     chunkProfile: "world-state",
@@ -802,6 +878,7 @@ export function createPulseAIChunker(config = {}) {
     getPatterns: () => core.getPatterns(),
     getProfiles: () => core.getProfiles(),
     getProfileStats: () => core.getProfileStats(),
+    getChunkerArtery: () => core.getChunkerArtery(),
 
     prewarmPattern: (label, pattern) => core.prewarmPattern(label, pattern),
     prewarmProfile: (profileId, profile) =>
@@ -833,12 +910,8 @@ export function createPulseAIChunker(config = {}) {
   });
 }
 
-// ============================================================================
-//  DEFAULT SINGLETON (ELITE UNIVERSAL PROFILE)
-// ============================================================================
-
 export const pulseAIChunker = createPulseAIChunker({
-  id: "PulseAIChunker-Default-v20",
+  id: "PulseAIChunker-Default-v24",
   defaultChunkSize: 4096,
   maxChunkSize: 65536,
   trace: false,
