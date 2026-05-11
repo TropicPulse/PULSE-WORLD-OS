@@ -64,7 +64,7 @@ import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
 
 import { createArchitectAPI } from "./aiArchitect-v24.js";
-import { createTouristAPI, prewarmTourist } from "./aiTourist.js";
+import { createTouristAPI, prewarmTourist } from "./aiTourist-v24.js";
 
 import { createEnvironmentAPI } from "./aiEnvironment-v24.js";
 import { createPowerAPI } from "./aiPowerPrime.js";

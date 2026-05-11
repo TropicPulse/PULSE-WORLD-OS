@@ -42,7 +42,7 @@ import { canPerformDynamic } from "./aiBoundaries-v24.js";
 
 import { createArchitectOrgan as runArchitectMode } from "./aiArchitect-v24.js";
 import { createClinicianOrgan as runObserverMode } from "./aiClinician-v24.js";
-import { createTouristAPI as runTourGuideMode } from "./aiTourist.js";
+import { createTouristAPI as runTourGuideMode } from "./aiTourist-v24.js";
 
 // ============================================================================
 // PACKET EMITTER — deterministic, window-safe

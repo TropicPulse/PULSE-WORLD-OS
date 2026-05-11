@@ -1,47 +1,54 @@
 /* global log,error */
 // ============================================================================
-// FILE: /PulseOS/PULSE-OS/PulseOSTissueMembrane.js
-// PULSE OS — v10.1 → v12.3-Presence
+// FILE: /PulseOS/PULSE-OS/PulseOSTissueMembrane-v24-IMMORTAL++.js
+// PULSE OS — v24.0-IMMORTAL++
 // “THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX”
 // A2 REFLEX LAYER • MID‑LAYER SENTINEL • ZERO TIMING • ZERO STATE
+// DUALBAND-AWARE • PRESENCE-AWARE • ARTERY-AWARE
 // ============================================================================
 //
-// v12.3+ PRESENCE / PREWARM / MULTI-Presence UPGRADE:
-//   ✔ Zero timing (no Date.now → deterministic seq counter)
+// v24.0-IMMORTAL++ UPGRADE:
+//   ✔ Zero timing (no Date.now for logic → deterministic seq counter only)
 //   ✔ Zero global mutation (no PulseOSBrain.* writes)
 //   ✔ Guarded window access (environment‑agnostic)
-//   ✔ Deterministic route memory (now presence‑band aware)
+//   ✔ Deterministic route memory (presence‑band aware, DNA‑tagged)
 //   ✔ Prewarmable route cache (pure, deterministic)
-//   ✔ Chunked route memory snapshot for diagnostics / presence overlays
-//   ✔ Preserve ALL abilities (degradation, DNA, healing, trace)
+//   ✔ Route memory snapshot for diagnostics / presence overlays
+//   ✔ Tissue artery: error density, degradation density, presence density
+//   ✔ Preserve ALL abilities (degradation, DNA, healing, trace, healing)
 //   ✔ No compute, no payload mutation, no scheduling
 //   ✔ Dual‑band + presence awareness via __band tagging
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
+// ============================================================================
+//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+// ============================================================================
+export const TissueMeta = Identity.OrganMeta;
+
+// SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-// LAYER CONSTANTS + DIAGNOSTICS (v12.3‑safe)
+// LAYER CONSTANTS + DIAGNOSTICS (v24‑IMMORTAL++)
 // ============================================================================
 const hasWindow = typeof window !== "undefined";
 
 const LAYER_ID   = "LAYER-REFLEX";
 const LAYER_NAME = "THE TISSUE MEMBRANE";
 const LAYER_ROLE = "MID-LAYER ERROR GUARDIAN & HEALING TRIGGER";
-const LAYER_VER  = "12.3-Presence";
+const LAYER_VER  = "24.0-IMMORTAL++";
 
 const LAYER_DIAGNOSTICS_ENABLED =
   hasWindow &&
@@ -64,7 +71,6 @@ const logLayer = (stage, details = {}) => {
   );
 };
 
-
 // ============================================================================
 // DUAL‑BAND + PRESENCE CONSTANTS
 // ============================================================================
@@ -81,12 +87,110 @@ function normalizeBand(band) {
   return ROUTE_BANDS.SYMBOLIC;
 }
 
+// ============================================================================
+// TISSUE ARTERY v2 — IMMORTAL++ (pure counters, no time)
+// ============================================================================
+const _TISSUE_ARTERY = {
+  totalErrors: 0,
+  totalHeals: 0,
+  totalHealFailures: 0,
+  totalDegradedRoutes: 0,
+  lastErrorBand: null,
+  lastErrorMessage: null
+};
+
+function _clamp01(v) {
+  const n = typeof v === "number" ? v : 0;
+  if (n <= 0) return 0;
+  if (n >= 1) return 1;
+  return n;
+}
+
+function _bucket(v) {
+  if (v >= 0.9) return "elite";
+  if (v >= 0.75) return "high";
+  if (v >= 0.5) return "medium";
+  if (v >= 0.25) return "low";
+  return "critical";
+}
+
+function _bucketPressure(v) {
+  if (v >= 0.9) return "overload";
+  if (v >= 0.7) return "high";
+  if (v >= 0.4) return "medium";
+  if (v > 0) return "low";
+  return "none";
+}
+
+function _bucketCost(v) {
+  if (v >= 0.8) return "heavy";
+  if (v >= 0.5) return "moderate";
+  if (v >= 0.2) return "light";
+  if (v > 0) return "negligible";
+  return "none";
+}
+
+// optional presence hint: window.PULSE_PRESENCE_DENSITY ∈ [0,1]
+function _presenceDensity() {
+  if (!hasWindow) return 0;
+  const v = window.PULSE_PRESENCE_DENSITY;
+  return _clamp01(typeof v === "number" ? v : 0);
+}
+
+function _computeTissueArtery() {
+  const total = _TISSUE_ARTERY.totalErrors;
+  const heals = _TISSUE_ARTERY.totalHeals;
+  const failures = _TISSUE_ARTERY.totalHealFailures;
+  const degraded = _TISSUE_ARTERY.totalDegradedRoutes;
+
+  const errorDensity = total > 0 ? _clamp01(total / 256) : 0;
+  const healRatio = total > 0 ? _clamp01(heals / total) : 0;
+  const failureRatio = total > 0 ? _clamp01(failures / total) : 0;
+  const degradationDensity = total > 0 ? _clamp01(degraded / total) : 0;
+
+  const presence = _presenceDensity();
+
+  const pressure = _clamp01(
+    errorDensity * 0.45 +
+      failureRatio * 0.25 +
+      degradationDensity * 0.15 +
+      presence * 0.15
+  );
+
+  const throughput = _clamp01(1 - pressure);
+  const cost = _clamp01(pressure * (1 - throughput));
+  const budget = _clamp01(throughput - cost);
+
+  return Object.freeze({
+    totalErrors: _TISSUE_ARTERY.totalErrors,
+    totalHeals: _TISSUE_ARTERY.totalHeals,
+    totalHealFailures: _TISSUE_ARTERY.totalHealFailures,
+    totalDegradedRoutes: _TISSUE_ARTERY.totalDegradedRoutes,
+    lastErrorBand: _TISSUE_ARTERY.lastErrorBand,
+    lastErrorMessage: _TISSUE_ARTERY.lastErrorMessage,
+    presenceDensity: presence,
+    errorDensity,
+    healRatio,
+    failureRatio,
+    degradationDensity,
+    pressure,
+    throughput,
+    cost,
+    budget,
+    pressureBucket: _bucketPressure(pressure),
+    throughputBucket: _bucket(throughput),
+    costBucket: _bucketCost(cost),
+    budgetBucket: _bucket(budget)
+  });
+}
+
+export function getTissueArterySnapshot() {
+  return _computeTissueArtery();
+}
 
 // ============================================================================
 // ROUTE MEMORY — deterministic, zero timing, DNA tagging + presence-aware
 // ============================================================================
-
-// deterministic sequence counter (replaces Date.now)
 let tissueSeq = 0;
 
 const LayerRouteMemory = {
@@ -126,6 +230,10 @@ const LayerRouteMemory = {
       ...overrides
     };
 
+    if (this.store[key].degraded) {
+      _TISSUE_ARTERY.totalDegradedRoutes += 1;
+    }
+
     logLayer("ROUTE_MEMORY_SAVED", {
       key,
       frames: frames.length,
@@ -141,6 +249,10 @@ const LayerRouteMemory = {
     const key = this.makeKey(message, frames, band);
     const entry = this.store[key];
     if (!entry) return;
+
+    if (!entry.degraded) {
+      _TISSUE_ARTERY.totalDegradedRoutes += 1;
+    }
 
     entry.degraded = true;
     entry.healthScore = healthScore;
@@ -184,7 +296,6 @@ const LayerRouteMemory = {
   },
 
   snapshot() {
-    // Pure structural snapshot for diagnostics / presence overlays
     const entries = Object.keys(this.store)
       .sort((a, b) => this.store[a].seq - this.store[b].seq)
       .map((key) => {
@@ -202,13 +313,18 @@ const LayerRouteMemory = {
       });
 
     return {
-      version: "12.3-Presence",
+      version: "24.0-IMMORTAL++",
       count: entries.length,
       entries
     };
   }
 };
 
+export function getTissueRouteMemorySnapshot() {
+  const snap = LayerRouteMemory.snapshot();
+  logLayer("TISSUE_ROUTE_MEMORY_SNAPSHOT", { count: snap.count });
+  return snap;
+}
 
 // ============================================================================
 // PUBLIC API (C‑LAYER passthrough — dual‑band + presence aware)
@@ -223,30 +339,61 @@ function attachBand(payload = {}, band) {
 export async function layerAuth(jwtToken, band = ROUTE_BANDS.SYMBOLIC) {
   const b = normalizeBand(band);
   logLayer("LAYER_AUTH", { band: b });
-  return await route("auth", attachBand({ jwtToken, reflexOrigin: "LayerScanner" }, b));
+  return await route(
+    "auth",
+    attachBand(
+      { jwtToken, reflexOrigin: "LayerScanner", layer: "A2" },
+      b
+    )
+  );
 }
 
-export async function layerHook(name, payload = {}, band = payload.__band || ROUTE_BANDS.SYMBOLIC) {
+export async function layerHook(
+  name,
+  payload = {},
+  band = payload.__band || ROUTE_BANDS.SYMBOLIC
+) {
   const b = normalizeBand(band);
   logLayer("LAYER_HOOK", { name, band: b });
-  return await route("hook", attachBand({ name, payload, reflexOrigin: "LayerScanner" }, b));
+  return await route(
+    "hook",
+    attachBand(
+      { name, payload, reflexOrigin: "LayerScanner", layer: "A2" },
+      b
+    )
+  );
 }
 
 export async function layerMap(mapName, band = ROUTE_BANDS.SYMBOLIC) {
   const b = normalizeBand(band);
   logLayer("LAYER_MAP", { mapName, band: b });
-  return await route("map", attachBand({ mapName, reflexOrigin: "LayerScanner" }, b));
+  return await route(
+    "map",
+    attachBand(
+      { mapName, reflexOrigin: "LayerScanner", layer: "A2" },
+      b
+    )
+  );
 }
 
-export async function layerHelper(helperName, payload = {}, band = payload.__band || ROUTE_BANDS.SYMBOLIC) {
+export async function layerHelper(
+  helperName,
+  payload = {},
+  band = payload.__band || ROUTE_BANDS.SYMBOLIC
+) {
   const b = normalizeBand(band);
   logLayer("LAYER_HELPER", { helperName, band: b });
-  return await route("helper", attachBand({ helperName, payload, reflexOrigin: "LayerScanner" }, b));
+  return await route(
+    "helper",
+    attachBand(
+      { helperName, payload, reflexOrigin: "LayerScanner", layer: "A2" },
+      b
+    )
+  );
 }
 
-
 // ============================================================================
-// MID‑LAYER ERROR INTERCEPTOR (A2 → A3) — v12.3 dual‑band + presence
+// MID‑LAYER ERROR INTERCEPTOR (A2 → A3) — v24 IMMORTAL++
 // ============================================================================
 let layerHealing = false;
 
@@ -264,6 +411,10 @@ if (hasWindow && typeof window.addEventListener === "function") {
       if (!stack.includes("/Layer/") && !stack.toLowerCase().includes("layer")) {
         return;
       }
+
+      _TISSUE_ARTERY.totalErrors += 1;
+      _TISSUE_ARTERY.lastErrorBand = band;
+      _TISSUE_ARTERY.lastErrorMessage = msg;
 
       logLayer("LAYER_ERROR_INTERCEPTED", { message: msg, band });
 
@@ -299,7 +450,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
       // ----------------------------------------------------------------------
       // MID‑LAYER CLASSIFICATION → MARK DEGRADATION, NEVER BLOCK
       // ----------------------------------------------------------------------
-      // v10.4+ — Import errors are non-fatal (same rule as SkinReflex)
+      // Import errors are non-fatal (same rule as SkinReflex)
       if (msg.includes("Cannot find module")) {
         logLayer("LAYER_IMPORT_IGNORED", {
           note: "Import errors are non-fatal in v10.4+",
@@ -307,10 +458,6 @@ if (hasWindow && typeof window.addEventListener === "function") {
           band
         });
 
-        // Do NOT classify
-        // Do NOT degrade
-        // Do NOT heal
-        // Do NOT route
         event.preventDefault();
         return;
       }
@@ -349,7 +496,11 @@ if (hasWindow && typeof window.addEventListener === "function") {
       const degraded = memoryEntry?.degraded || false;
       const healthScore = memoryEntry?.healthScore ?? 1.0;
       const tier = memoryEntry?.tier || "microDegrade";
-      const dnaTag = memoryEntry?.dnaTag || (band === ROUTE_BANDS.PRESENCE ? "A2_TISSUE_PRESENCE" : "A2_TISSUE");
+      const dnaTag =
+        memoryEntry?.dnaTag ||
+        (band === ROUTE_BANDS.PRESENCE
+          ? "A2_TISSUE_PRESENCE"
+          : "A2_TISSUE");
 
       // ----------------------------------------------------------------------
       // ALWAYS PIPE ERROR TO BACKEND VIA ROUTER
@@ -371,7 +522,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
 
       // ----------------------------------------------------------------------
       // HEALING LOGIC (A2 reflex → Router)
-      // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
       const parsed = parseMissingField(msg);
       if (!parsed) {
         logLayer("NO_MISSING_FIELD", {
@@ -400,19 +551,21 @@ if (hasWindow && typeof window.addEventListener === "function") {
       layerHealing = true;
 
       try {
-        Router.receiveReflex({
-          reflexOrigin: "LayerScanner",
-          layer: "A2",
-          message: msg,
-          routeTrace,
-          table,
-          field,
-          degraded,
-          healthScore,
-          tier,
-          dnaTag,
-          band
-        });
+        if (Router && typeof Router.receiveReflex === "function") {
+          Router.receiveReflex({
+            reflexOrigin: "LayerScanner",
+            layer: "A2",
+            message: msg,
+            routeTrace,
+            table,
+            field,
+            degraded,
+            healthScore,
+            tier,
+            dnaTag,
+            band
+          });
+        }
 
         await route("fetchField", {
           table,
@@ -428,6 +581,8 @@ if (hasWindow && typeof window.addEventListener === "function") {
           __band: band
         });
 
+        _TISSUE_ARTERY.totalHeals += 1;
+
         logLayer("LAYER_HEALING_SUCCESS", {
           table,
           field,
@@ -438,6 +593,8 @@ if (hasWindow && typeof window.addEventListener === "function") {
           band
         });
       } catch (err) {
+        _TISSUE_ARTERY.totalHealFailures += 1;
+
         logLayer("LAYER_HEALING_FAILED", {
           error: String(err),
           degraded,
@@ -459,9 +616,8 @@ if (hasWindow && typeof window.addEventListener === "function") {
   );
 }
 
-
 // ============================================================================
-// PARSER (same as PageScanner)
+// PARSER (same as PageScanner) — symbolic-only, deterministic
 // ============================================================================
 function parseMissingField(message) {
   logLayer("PARSER_INVOKED", {});
@@ -477,7 +633,6 @@ function parseMissingField(message) {
 
   return null;
 }
-
 
 // ============================================================================
 // PREWARM + SNAPSHOT SURFACE — presence / cache / chunk (pure, deterministic)
@@ -527,16 +682,29 @@ export function prewarmTissueMembrane(routes = []) {
   });
 }
 
-/**
- * Get a deterministic snapshot of tissue route memory for diagnostics /
- * presence overlays / multi-presence dashboards.
- */
-export function getTissueRouteMemorySnapshot() {
-  const snap = LayerRouteMemory.snapshot();
-  logLayer("TISSUE_ROUTE_MEMORY_SNAPSHOT", { count: snap.count });
-  return snap;
+// ============================================================================
+// DUAL‑MODE EXPORTS
+// ============================================================================
+if (typeof module !== "undefined") {
+  module.exports = {
+    TissueMeta,
+    pulseRole,
+    PulseRole,
+    surfaceMeta,
+    pulseLoreContext,
+    AI_EXPERIENCE_META,
+    EXPORT_META,
+    ROUTE_BANDS,
+    getTissueArterySnapshot,
+    getTissueRouteMemorySnapshot,
+    prewarmTissueMembrane,
+    layerAuth,
+    layerHook,
+    layerMap,
+    layerHelper
+  };
 }
 
 // ============================================================================
-// END OF FILE — THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX  [v12.3]
+// END OF FILE — THE TISSUE MEMBRANE / MID‑LAYER EPITHELIAL REFLEX  [v24.0-IMMORTAL++]
 // ============================================================================

@@ -1,5 +1,5 @@
 /**
- * aiScheduler.js — Pulse OS v16‑IMMORTAL‑EVO Organ
+ * aiScheduler-v24-IMMORTAL-PLUS.js — Pulse OS v24++ Organ
  * ---------------------------------------------------------
  * CANONICAL ROLE:
  *   Binary Scheduler of Pulse OS.
@@ -16,45 +16,34 @@
  *     - temporal cost
  *     - temporal budget
  *     - descriptive buckets
- *     - task-density temporal arteries v5 (IMMORTAL‑EVO)
+ *     - task-density temporal arteries v6 (IMMORTAL-PLUS)
  *     - multi-instance harmony + soft spiral warnings (non-blocking)
  *     - task-level prewarm + binary chunk awareness
+ *     - starvation + jitter awareness
  *     - window-safe scheduler snapshot
- *     - lineage-aware drift protection (IMMORTAL‑EVO)
+ *     - lineage-aware drift protection (IMMORTAL-PLUS)
  */
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const SchedulerMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
 // ============================================================================
-//  ARTERY HELPERS — v5 (PURE, STATELESS, IMMORTAL‑EVO)
+//  ARTERY HELPERS — v6 (PURE, STATELESS, IMMORTAL-PLUS)
 // ============================================================================
 
 function bucketLevel(v) {
@@ -81,8 +70,24 @@ function bucketCost(v) {
   return "none";
 }
 
+function bucketStarvation(v) {
+  if (v >= 0.9) return "severe";
+  if (v >= 0.6) return "high";
+  if (v >= 0.3) return "medium";
+  if (v > 0) return "low";
+  return "none";
+}
+
+function bucketJitter(v) {
+  if (v >= 0.8) return "chaotic";
+  if (v >= 0.5) return "unstable";
+  if (v >= 0.2) return "mild";
+  if (v > 0) return "trace";
+  return "none";
+}
+
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v16‑IMMORTAL‑EVO
+//  ORGAN IMPLEMENTATION — v24-IMMORTAL-PLUS
 // ============================================================================
 
 export class AIBinaryScheduler {
@@ -119,6 +124,10 @@ export class AIBinaryScheduler {
         : 4096;
     this._autoPrewarm = !!config.autoPrewarm;
 
+    this._lastTickTime = Date.now();
+    this._jitterSamples = 0;
+    this._jitterAccum = 0;
+
     this.lineage = Object.freeze({
       version: SchedulerMeta.version,
       epoch: SchedulerMeta.evo.epoch,
@@ -133,6 +142,8 @@ export class AIBinaryScheduler {
       lastCost: 0,
       lastBudget: 1,
       lastTaskCount: 0,
+      lastStarvation: 0,
+      lastJitter: 0,
       snapshot: () =>
         Object.freeze({
           version: SchedulerMeta.version,
@@ -143,7 +154,9 @@ export class AIBinaryScheduler {
           pressure: this.schedulerArtery.lastPressure,
           cost: this.schedulerArtery.lastCost,
           budget: this.schedulerArtery.lastBudget,
-          taskCount: this.schedulerArtery.lastTaskCount
+          taskCount: this.schedulerArtery.lastTaskCount,
+          starvation: this.schedulerArtery.lastStarvation,
+          jitter: this.schedulerArtery.lastJitter
         })
     };
   }
@@ -194,8 +207,8 @@ export class AIBinaryScheduler {
   }
 
   // ---------------------------------------------------------
-  //  TEMPORAL ARTERY SNAPSHOT v5 (IMMORTAL‑EVO)
-// ---------------------------------------------------------
+  //  TEMPORAL ARTERY SNAPSHOT v6 (IMMORTAL-PLUS)
+  // ---------------------------------------------------------
 
   _computeTemporalArtery() {
     const tasks = Array.from(this.tasks.values());
@@ -203,15 +216,25 @@ export class AIBinaryScheduler {
 
     let totalInterval = 0;
     let tightIntervals = 0;
+    let starvationScore = 0;
+
+    const now = Date.now();
 
     for (const t of tasks) {
       totalInterval += t.intervalMs;
       if (t.intervalMs < 500) tightIntervals++;
+
+      if (typeof t.lastRun === "number") {
+        const overdue = now - t.lastRun - t.intervalMs;
+        if (overdue > 0) {
+          const ratio = Math.min(1, overdue / (5 * t.intervalMs));
+          starvationScore += ratio;
+        }
+      }
     }
 
     const avgInterval = taskCount > 0 ? totalInterval / taskCount : 0;
 
-    const now = Date.now();
     this._rollWindow(now);
 
     const elapsedMs = Math.max(1, now - this._windowStart);
@@ -237,11 +260,21 @@ export class AIBinaryScheduler {
     const cost = Math.max(0, Math.min(1, pressure * (1 - throughput)));
     const budget = Math.max(0, Math.min(1, throughput - cost));
 
+    const starvation =
+      taskCount > 0 ? Math.min(1, starvationScore / taskCount) : 0;
+
+    const jitter =
+      this._jitterSamples > 0
+        ? Math.max(0, Math.min(1, this._jitterAccum / this._jitterSamples))
+        : 0;
+
     this.schedulerArtery.lastThroughput = throughput;
     this.schedulerArtery.lastPressure = pressure;
     this.schedulerArtery.lastCost = cost;
     this.schedulerArtery.lastBudget = budget;
     this.schedulerArtery.lastTaskCount = taskCount;
+    this.schedulerArtery.lastStarvation = starvation;
+    this.schedulerArtery.lastJitter = jitter;
 
     const artery = {
       instanceIndex: this.instanceIndex,
@@ -263,10 +296,18 @@ export class AIBinaryScheduler {
       cost,
       budget,
 
+      starvation,
+      jitter,
+
       throughputBucket: bucketLevel(throughput),
       pressureBucket: bucketPressure(pressure),
       costBucket: bucketCost(cost),
-      budgetBucket: bucketLevel(budget)
+      budgetBucket: bucketLevel(budget),
+      starvationBucket: bucketStarvation(starvation),
+      jitterBucket: bucketJitter(jitter),
+
+      harmony:
+        instanceCount > 1 && pressure < 0.7 && jitter < 0.5 ? "coherent" : "strained"
     };
 
     return artery;
@@ -300,14 +341,17 @@ export class AIBinaryScheduler {
 
     const chunks = this._chunkBinary(binaryPayload);
 
+    const now = Date.now();
+
     const task = {
       id,
       intervalMs,
-      nextRun: Date.now() + intervalMs,
+      nextRun: now + intervalMs,
       binaryPayload,
       chunks,
       prewarmed: false,
-      action
+      action,
+      lastRun: null
     };
 
     this.tasks.set(id, task);
@@ -416,6 +460,16 @@ export class AIBinaryScheduler {
   _tick() {
     const now = Date.now();
 
+    const delta = now - this._lastTickTime;
+    this._lastTickTime = now;
+
+    const ideal = this._tickInterval;
+    if (ideal > 0) {
+      const deviation = Math.abs(delta - ideal) / ideal;
+      this._jitterSamples += 1;
+      this._jitterAccum += Math.min(1, deviation);
+    }
+
     for (const task of this.tasks.values()) {
       if (now >= task.nextRun) {
         this._executeTask(task, now);
@@ -434,18 +488,25 @@ export class AIBinaryScheduler {
     this._windowExecutions += 1;
     if (task.intervalMs < 500) this._windowTightExecutions += 1;
 
+    task.lastRun = now;
+
     const artery = this._computeTemporalArtery();
 
     if (
       artery.pressureBucket === "overload" ||
-      artery.budgetBucket === "critical"
+      artery.budgetBucket === "critical" ||
+      artery.starvationBucket === "severe"
     ) {
       this._trace("scheduler:spiral-warning", {
         id: task.id,
         pressure: artery.pressure,
         pressureBucket: artery.pressureBucket,
         budget: artery.budget,
-        budgetBucket: artery.budgetBucket
+        budgetBucket: artery.budgetBucket,
+        starvation: artery.starvation,
+        starvationBucket: artery.starvationBucket,
+        jitter: artery.jitter,
+        jitterBucket: artery.jitterBucket
       });
     }
 
@@ -482,7 +543,7 @@ export class AIBinaryScheduler {
 }
 
 // ============================================================================
-//  FACTORY — v16‑IMMORTAL‑EVO
+//  FACTORY — v24-IMMORTAL-PLUS
 // ============================================================================
 
 export function createAIBinaryScheduler(config) {
@@ -492,7 +553,6 @@ export function createAIBinaryScheduler(config) {
 // ============================================================================
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
 // ============================================================================
-
 if (typeof module !== "undefined") {
   module.exports = {
     SchedulerMeta,

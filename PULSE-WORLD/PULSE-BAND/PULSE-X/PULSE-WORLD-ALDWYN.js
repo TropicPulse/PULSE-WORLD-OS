@@ -62,7 +62,7 @@ import { PulseIntentMap } from "./PulseWorldIntentMap-v24.js";
 // ============================================================================
 //  AI ORGANISM (v16 IMMORTAL-INTEL)
 // ============================================================================
-import { aiOrganism } from "../PULSE-AI/aiOrganism-v16.js";
+import { aiOrganism } from "../PULSE-AI/aiOrganism-v24.js";
 
 // ============================================================================
 //  CORE ORGANISM LAYERS
@@ -163,7 +163,7 @@ import createPulseFileScanner from "../PULSE-AI/PulseFileScanner-v20.js";
 //  7. WATCHDOG + VITALS + LOGGING
 // ============================================================================
 import createAIBinaryWatchdog from "../PULSE-AI/aiWatchdog-v24.js";
-import createAIBinaryVitals from "../PULSE-AI/aiVitals.js";
+import createAIBinaryVitals from "../PULSE-AI/aiVitals-v24.js";
 import createAIBinaryLoggerAdapter from "../PULSE-AI/aiLoggerAdapter-v24.js";
 
 // ============================================================================

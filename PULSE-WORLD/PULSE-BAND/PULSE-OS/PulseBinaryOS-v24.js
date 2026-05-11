@@ -49,9 +49,9 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 
 import { withModuleInitGuard, withOrganGuard } from "./PulseOSGovernor-v24.js"; // Supervisor organ
-import * as PulseOSBrain from "./PulseOSBrain-v16.js";                      // CNS brain organ
-import * as PulseOSEvolution from "./PulseOSBrainEvolution.js";             // Evolution organ
-import * as PulseSpinalCord from "./PulseOSSpinalCord-v16.js";              // Wiring organ
+import * as PulseOSBrain from "./PulseOSBrain-v24.js";                      // CNS brain organ
+import * as PulseOSEvolution from "./PulseOSBrainEvolution-v24.js";             // Evolution organ
+import * as PulseSpinalCord from "./PulseOSSpinalCord-v24.js";              // Wiring organ
 
 // Presence / Mesh presence (symbolic/OS side, optional)
 import * as PulseOSPresence from "./PulseOSPresence-V24.js";                // OS Presence Organ (optional)

@@ -1,6 +1,6 @@
 // ============================================================================
-// FILE: /PULSE-OS/PulseSDN-Prewarm-v16.js
-// LAYER: SDN PREWARM ENGINE (Spinal Reflex Ignition, v16 IMMORTAL)
+// FILE: /PULSE-OS/PulseSDN-Prewarm-v24-IMMORTAL++.js
+// LAYER: SDN PREWARM ENGINE (Spinal Reflex Ignition, v24 IMMORTAL++)
 // ============================================================================
 //
 // ROLE:
@@ -11,18 +11,8 @@
 //     GPU/Send/Proxy/Router/Expansion paths, and route-prewarm surfaces.
 //   • NO cognition, NO evolution, NO external mutation.
 //   • Pure, deterministic, CNS warm-up.
-//   • v16: artery-aware, mesh-aware, advantage-aware, organism-mesh-aware,
+//   • v24++: artery-aware, mesh-aware, advantage-aware, organism-mesh-aware,
 //     chunk/cache/route-prewarm-aware, multi-presence-aware.
-//
-// CONTRACT (v16 IMMORTAL):
-//   • MAY touch SDN internal APIs (registerExtension, emitImpulse, etc.).
-//   • MAY simulate impulses with synthetic packets.
-//   • MAY pre-register extensions (Understanding, Mesh, Send, Earn, Presence,
-//     GPU, Proxy, Router, OrganismMesh, Expansion, Diagnostics, WorldLens).
-//   • MUST NOT mutate external systems or persistent state.
-//   • MUST NOT introduce randomness or autonomy.
-//   • MUST NOT depend on real time or clocks.
-//   • All operations are structural, deterministic, and presence/dual-band aware.
 // ============================================================================
 import {
   OrganismIdentity,
@@ -36,7 +26,6 @@ export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
@@ -53,7 +42,7 @@ function emitImpulseSafe(SDN, source, packet) {
   try {
     SDN.emitImpulse(source, packet);
   } catch (err) {
-    console.error("[SDN Prewarm v16] emitImpulse failed:", source, err);
+    console.error("[SDN Prewarm v24++] emitImpulse failed:", source, err);
   }
 }
 
@@ -62,12 +51,12 @@ function registerExtensionSafe(SDN, name, kind, meta) {
   try {
     SDN.registerExtension(name, kind, meta);
   } catch (err) {
-    console.error("[SDN Prewarm v16] registerExtension failed:", name, err);
+    console.error("[SDN Prewarm v24++] registerExtension failed:", name, err);
   }
 }
 
 // ============================================================================
-// PREWARM ENGINE — v16 IMMORTAL
+// PREWARM ENGINE — v24 IMMORTAL++
 // ============================================================================
 
 /**
@@ -80,20 +69,23 @@ function registerExtensionSafe(SDN, name, kind, meta) {
  */
 export function prewarmSDN(SDN) {
   if (!SDN || typeof SDN !== "object") {
-    console.warn("[SDN Prewarm v16] No SDN instance provided.");
+    console.warn("[SDN Prewarm v24++] No SDN instance provided.");
     return false;
   }
 
+  const source = "PrewarmEngine-v24++";
+  const extVersion = "v24-IMMORTAL++";
+
   try {
     // =========================================================================
-    // 1) EXTENSION REGISTRY — v16 IMMORTAL, EVERY ORGANISM ARTERY
+    // 1) EXTENSION REGISTRY — v24 IMMORTAL++, EVERY ORGANISM ARTERY
     // =========================================================================
     const extensionsToPrewarm = [
       {
         name: "Understanding",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "cortical-opener",
           layer: "A3",
           binaryFirst: true,
@@ -107,7 +99,7 @@ export function prewarmSDN(SDN) {
         name: "Mesh",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "network-organ",
           layer: "M1",
           presenceAware: true,
@@ -120,7 +112,7 @@ export function prewarmSDN(SDN) {
         name: "Presence",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "presence-field-organ",
           layer: "P1",
           presenceFieldAware: true,
@@ -132,7 +124,7 @@ export function prewarmSDN(SDN) {
         name: "Send",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "output-organ",
           layer: "O1",
           presenceAware: true,
@@ -144,20 +136,20 @@ export function prewarmSDN(SDN) {
         name: "Earn",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "value-organ",
           layer: "V1",
           presenceAware: true,
           dualBandAware: true,
           advantageFieldAware: true,
-          earnOrganContract: "PulseEarn-v16-Immortal"
+          earnOrganContract: "PulseEarn-v24-IMMORTAL++"
         }
       },
       {
         name: "GPU",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "binary-render-organ",
           layer: "G1",
           binaryAware: true,
@@ -169,7 +161,7 @@ export function prewarmSDN(SDN) {
         name: "Proxy",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "proxy-organ",
           layer: "PX",
           routingAware: true,
@@ -180,7 +172,7 @@ export function prewarmSDN(SDN) {
         name: "Router",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "route-root-organ",
           layer: "R0",
           routeRoot: true,
@@ -191,7 +183,7 @@ export function prewarmSDN(SDN) {
         name: "OrganismMesh",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "organism-mesh-organ",
           layer: "OM",
           organismMeshArteryAware: true,
@@ -202,7 +194,7 @@ export function prewarmSDN(SDN) {
         name: "Expansion",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "world-expansion-organ",
           layer: "EX",
           worldLensAware: true,
@@ -213,7 +205,7 @@ export function prewarmSDN(SDN) {
         name: "Diagnostics",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "diagnostics-organ",
           layer: "DX",
           pressureAware: true,
@@ -224,7 +216,7 @@ export function prewarmSDN(SDN) {
         name: "WorldLens",
         kind: "extension",
         meta: {
-          version: "v16-Immortal",
+          version: extVersion,
           role: "world-lens-organ",
           layer: "WL",
           worldLensAware: true,
@@ -242,13 +234,13 @@ export function prewarmSDN(SDN) {
     // =========================================================================
     const dualBandImpulses = [
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "prewarm",
             workloadClass: "dual-band-core",
-            dispatchSignature: "SDN.dual-band.core",
+            dispatchSignature: "SDN.dual-band.core.v24",
             shapeSignature: "CORE-A1",
             extensionId: "Understanding",
             identityKind: "none"
@@ -261,13 +253,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "mesh-prewarm",
             workloadClass: "mesh-dual-band",
-            dispatchSignature: "SDN.mesh.dual-band",
+            dispatchSignature: "SDN.mesh.dual-band.v24",
             shapeSignature: "MESH-A1",
             extensionId: "Mesh",
             identityKind: "none"
@@ -280,13 +272,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "organism-mesh-prewarm",
             workloadClass: "organism-mesh-dual",
-            dispatchSignature: "SDN.organismMesh.dual-band",
+            dispatchSignature: "SDN.organismMesh.dual-band.v24",
             shapeSignature: "OM-A1",
             extensionId: "OrganismMesh",
             identityKind: "none"
@@ -309,13 +301,13 @@ export function prewarmSDN(SDN) {
     // =========================================================================
     const presenceMeshImpulses = [
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "presence-prewarm",
             workloadClass: "presence-field",
-            dispatchSignature: "SDN.presence.field",
+            dispatchSignature: "SDN.presence.field.v24",
             shapeSignature: "P1",
             extensionId: "Presence",
             identityKind: "none"
@@ -328,13 +320,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "presence-multi-prewarm",
             workloadClass: "multi-presence-field",
-            dispatchSignature: "SDN.presence.multi",
+            dispatchSignature: "SDN.presence.multi.v24",
             shapeSignature: "P1-MULTI",
             extensionId: "Presence",
             identityKind: "none"
@@ -347,13 +339,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "mesh-presence-prewarm",
             workloadClass: "mesh-presence",
-            dispatchSignature: "SDN.mesh.presence",
+            dispatchSignature: "SDN.mesh.presence.v24",
             shapeSignature: "MESH-P1",
             extensionId: "Mesh",
             identityKind: "none"
@@ -376,13 +368,13 @@ export function prewarmSDN(SDN) {
     // =========================================================================
     const advantageImpulses = [
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "advantage-prewarm",
             workloadClass: "advantage-field",
-            dispatchSignature: "SDN.advantage.field",
+            dispatchSignature: "SDN.advantage.field.v24",
             shapeSignature: "ADV1",
             extensionId: "Earn",
             identityKind: "none"
@@ -395,13 +387,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "advantage-cascade",
             workloadClass: "advantage-cascade",
-            dispatchSignature: "SDN.advantage.cascade",
+            dispatchSignature: "SDN.advantage.cascade.v24",
             shapeSignature: "ADV2",
             extensionId: "Earn",
             identityKind: "none"
@@ -414,13 +406,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "value-path-prewarm",
             workloadClass: "value-path",
-            dispatchSignature: "SDN.value.path",
+            dispatchSignature: "SDN.value.path.v24",
             shapeSignature: "VAL1",
             extensionId: "Earn",
             identityKind: "none"
@@ -443,13 +435,13 @@ export function prewarmSDN(SDN) {
     // =========================================================================
     const systemImpulses = [
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "binary",
           executionContext: {
             sceneType: "gpu-prewarm",
             workloadClass: "gpu-path",
-            dispatchSignature: "SDN.gpu.prewarm",
+            dispatchSignature: "SDN.gpu.prewarm.v24",
             shapeSignature: "GPU1",
             extensionId: "GPU",
             identityKind: "none"
@@ -462,13 +454,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "symbolic",
           executionContext: {
             sceneType: "send-prewarm",
             workloadClass: "send-path",
-            dispatchSignature: "SDN.send.prewarm",
+            dispatchSignature: "SDN.send.prewarm.v24",
             shapeSignature: "SEND1",
             extensionId: "Send",
             identityKind: "none"
@@ -481,13 +473,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "router-prewarm",
             workloadClass: "router-path",
-            dispatchSignature: "SDN.router.prewarm",
+            dispatchSignature: "SDN.router.prewarm.v24",
             shapeSignature: "R0",
             extensionId: "Router",
             identityKind: "none"
@@ -500,13 +492,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "proxy-prewarm",
             workloadClass: "proxy-path",
-            dispatchSignature: "SDN.proxy.prewarm",
+            dispatchSignature: "SDN.proxy.prewarm.v24",
             shapeSignature: "PX1",
             extensionId: "Proxy",
             identityKind: "none"
@@ -519,13 +511,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "expansion-prewarm",
             workloadClass: "expansion-path",
-            dispatchSignature: "SDN.expansion.prewarm",
+            dispatchSignature: "SDN.expansion.prewarm.v24",
             shapeSignature: "EX1",
             extensionId: "Expansion",
             identityKind: "none"
@@ -538,13 +530,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "symbolic",
           executionContext: {
             sceneType: "world-lens-prewarm",
             workloadClass: "world-lens-path",
-            dispatchSignature: "SDN.worldLens.prewarm",
+            dispatchSignature: "SDN.worldLens.prewarm.v24",
             shapeSignature: "WL1",
             extensionId: "WorldLens",
             identityKind: "none"
@@ -567,13 +559,13 @@ export function prewarmSDN(SDN) {
     // =========================================================================
     const reflexImpulses = [
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "reflex",
           executionContext: {
             sceneType: "reflex-prewarm",
             workloadClass: "touch-reflex",
-            dispatchSignature: "SDN.reflex.touch",
+            dispatchSignature: "SDN.reflex.touch.v24",
             shapeSignature: "R1",
             extensionId: "Understanding",
             identityKind: "none"
@@ -586,13 +578,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "reflex",
           executionContext: {
             sceneType: "reflex-prewarm",
             workloadClass: "identity-safe-reflex",
-            dispatchSignature: "SDN.reflex.identity-safe",
+            dispatchSignature: "SDN.reflex.identity-safe.v24",
             shapeSignature: "R2",
             extensionId: "Understanding",
             identityKind: "none"
@@ -605,13 +597,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "reflex",
           executionContext: {
             sceneType: "reflex-prewarm",
             workloadClass: "presence-safe-reflex",
-            dispatchSignature: "SDN.reflex.presence-safe",
+            dispatchSignature: "SDN.reflex.presence-safe.v24",
             shapeSignature: "R3",
             extensionId: "Presence",
             identityKind: "none"
@@ -634,13 +626,13 @@ export function prewarmSDN(SDN) {
     // =========================================================================
     const fallbackImpulses = [
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "fallback",
           executionContext: {
             sceneType: "fallback-prewarm",
             workloadClass: "binary-fallback",
-            dispatchSignature: "SDN.fallback.binary",
+            dispatchSignature: "SDN.fallback.binary.v24",
             shapeSignature: "F1",
             extensionId: "Understanding",
             identityKind: "none"
@@ -653,13 +645,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "fallback",
           executionContext: {
             sceneType: "fallback-prewarm",
             workloadClass: "symbolic-fallback",
-            dispatchSignature: "SDN.fallback.symbolic",
+            dispatchSignature: "SDN.fallback.symbolic.v24",
             shapeSignature: "F2",
             extensionId: "Understanding",
             identityKind: "none"
@@ -672,13 +664,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "fallback",
           executionContext: {
             sceneType: "fallback-prewarm",
             workloadClass: "presence-fallback",
-            dispatchSignature: "SDN.fallback.presence",
+            dispatchSignature: "SDN.fallback.presence.v24",
             shapeSignature: "F3",
             extensionId: "Presence",
             identityKind: "none"
@@ -701,13 +693,13 @@ export function prewarmSDN(SDN) {
     // =========================================================================
     const dispatchImpulses = [
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "cortex-boot",
             workloadClass: "cortex-init",
-            dispatchSignature: "Cortex.v16-Immortal",
+            dispatchSignature: "Cortex.v24-IMMORTAL++",
             shapeSignature: "CTX1",
             extensionId: "Understanding",
             identityKind: "none"
@@ -719,13 +711,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "mesh-boot",
             workloadClass: "mesh-boot",
-            dispatchSignature: "Mesh.v16-Immortal",
+            dispatchSignature: "Mesh.v24-IMMORTAL++",
             shapeSignature: "M1-layer",
             extensionId: "Mesh",
             identityKind: "none"
@@ -737,13 +729,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "presence-boot",
             workloadClass: "presence-boot",
-            dispatchSignature: "Presence.v16-Immortal",
+            dispatchSignature: "Presence.v24-IMMORTAL++",
             shapeSignature: "P1-layer",
             extensionId: "Presence",
             identityKind: "none"
@@ -755,13 +747,13 @@ export function prewarmSDN(SDN) {
         }
       },
       {
-        source: "PrewarmEngine-v16",
+        source,
         packet: {
           modeKind: "dual",
           executionContext: {
             sceneType: "earn-boot",
             workloadClass: "earn-boot",
-            dispatchSignature: "Earn.v16-Immortal",
+            dispatchSignature: "Earn.v24-IMMORTAL++",
             shapeSignature: "V1-layer",
             extensionId: "Earn",
             identityKind: "none"
@@ -780,7 +772,7 @@ export function prewarmSDN(SDN) {
 
     return true;
   } catch (err) {
-    console.error("[SDN Prewarm v16] Unexpected failure:", err);
+    console.error("[SDN Prewarm v24++] Unexpected failure:", err);
     return false;
   }
 }

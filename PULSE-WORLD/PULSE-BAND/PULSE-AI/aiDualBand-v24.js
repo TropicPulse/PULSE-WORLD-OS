@@ -35,15 +35,15 @@ import { AIBinaryAgent } from "./aiBinaryAgent-v24.js";
 import { AIMemory } from "./aiMemory-v24.js";
 import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy-v24.js";
 import { AIBinaryGenome } from "./aiGenome-v24.js";
-import { AIBinaryVitals } from "./aiVitals.js";
+import { AIBinaryVitals } from "./aiVitals-v24.js";
 import { AIBinaryMetabolism } from "./aiMetabolism-v24.js";
 import { AIBinaryHormones } from "./aiHormones-v24.js";
-import { AIBinarySentience } from "./aiSentience.js";
+import { AIBinarySentience } from "./aiSentience-v24.js";
 import { AIBinaryConsciousness } from "./aiConsciousness-v24.js";
 import { AIBinaryImmunity } from "./aiImmunity-v24.js";
 import { AIBinaryPipeline } from "./aiPipeline-v24.js";
 import { AIBinaryReflex } from "./aiReflex-v24.js";
-import { AIBinaryScheduler } from "./aiScheduler.js";
+import { AIBinaryScheduler } from "./aiScheduler-v24.js";
 import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
 import { AIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
 
@@ -102,12 +102,12 @@ import aiDeliveryEngine, { prewarmDeliveryEngine } from "./aiDeliveryEngine-v24.
 import aiEmotionEngine, { prewarmEmotionEngine } from "./aiEmotionEngine-v24.js";
 import createEarnAPI, { EarnMeta, prewarmEarnOrgan } from "./aiEarn-v24.js";
 
-import { createTouristAPI } from "./aiTourist.js";
+import { createTouristAPI } from "./aiTourist-v24.js";
 import { createArchitectAPI } from "./aiArchitect-v24.js";
 import { createDoctorOrgan } from "./aiDoctorAssistant-v24.js";
 import { createDoctorArchitectOrgan } from "./aiDoctorArchitect-v24.js";
 
-import { createAIOrganism } from "./aiOrganism-v16.js";
+import { createAIOrganism } from "./aiOrganism-v24.js";
 
 import {
   getProxyContext,

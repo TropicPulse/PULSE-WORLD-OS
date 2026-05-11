@@ -1,10 +1,16 @@
 // ============================================================================
-// FILE: /PULSE-OS/PulseOSCNSNervousSystem-v12.3-Evo-BINARY-MAX.js
-// PULSE OS — v12.3‑EVO‑BINARY‑MAX
+// FILE: /PULSE-OS/PulseOSCNSNervousSystem-v24-Immortal-DualBand.js
+// PULSE OS — v24‑IMMORTAL‑DUALBAND‑PULSEBAND‑ARTERY‑AWARE
 // “THE CENTRAL NERVOUS SYSTEM / COMMUNICATION INTELLIGENCE ORGAN”
-//  • UPGRADED: CNS-level passive/active PageScanner integration (always-on, no timers)
-//  • UPGRADED: v13+ CNS healers (checkBand / checkIdentity / checkRouterMemory)
+//
+//  • v24: PulseBand‑aware, artery‑aware, dualband‑tight, drift‑aware
+//  • v24: CNS-level passive/active PageScanner integration (always-on, no timers)
+//  • v24: CNS healers (checkBand / checkIdentity / checkRouterMemory) with
+//          deterministic health snapshots + band/dna tagging
+//  • v24: Optimized routing path, recursion‑safe, offline/online split preserved
+//  • v24: DualBand AI auto‑boot preserved, but tagged with CNS context
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
@@ -17,7 +23,6 @@ export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
@@ -34,14 +39,13 @@ import checkRouterMemory from "../PULSE-PROXY/PulseProxyMemoryRouter-v20.js";
 
 import { createDualBandOrganism } from "../PULSE-AI/aiDualBand-v24.js";
 
-
 // ============================================================================
 // CNS CONSTANTS + DIAGNOSTICS
 // ============================================================================
 const LAYER_ID   = "CNS-LAYER";
 const LAYER_NAME = "THE CENTRAL NERVOUS SYSTEM";
 const LAYER_ROLE = "COMMUNICATION INTELLIGENCE ORGAN";
-const LAYER_VER  = "12.3";
+const LAYER_VER  = "24-Immortal";
 
 const hasWindow = typeof window !== "undefined";
 
@@ -85,6 +89,42 @@ const logCNS = (stage, details = {}) => {
 
 logCNS("CNS_INIT");
 
+// ============================================================================
+// PULSEBAND HELPERS
+// ============================================================================
+const ROUTE_BANDS = {
+  SYMBOLIC: "symbolic",
+  BINARY: "binary",
+  DUAL: "dual"
+};
+
+function normalizeBand(band) {
+  const b = (band || ROUTE_BANDS.SYMBOLIC).toLowerCase();
+  if (b === ROUTE_BANDS.BINARY) return ROUTE_BANDS.BINARY;
+  if (b === ROUTE_BANDS.DUAL) return ROUTE_BANDS.DUAL;
+  return ROUTE_BANDS.SYMBOLIC;
+}
+
+function resolveBandFromPayload(payload) {
+  const band = payload && typeof payload.__band === "string"
+    ? payload.__band.toLowerCase()
+    : ROUTE_BANDS.SYMBOLIC;
+
+  return normalizeBand(band === ROUTE_BANDS.BINARY ? ROUTE_BANDS.BINARY : ROUTE_BANDS.SYMBOLIC);
+}
+
+function resolveDnaTagFromPayload(payload) {
+  return payload && typeof payload.__dnaTag === "string"
+    ? payload.__dnaTag
+    : null;
+}
+
+function makeErrorSignature(err) {
+  const msg = String(err);
+  const stack = err?.stack || "";
+  const top = stack.split("\n")[1] || "NO_FRAME";
+  return msg + "::" + top.trim();
+}
 
 // ============================================================================
 // CNS‑LEVEL PAGESCANNER BRIDGE — ALWAYS‑ON PASSIVE/ACTIVE SCANNER
@@ -128,15 +168,14 @@ const CNSPageScanner = {
   }
 };
 
-
 // ============================================================================
 // ROUTE FAILURE STATE
 // ============================================================================
 let routeFailureCount = 0;
-
+let routerEventSeq = 0;
 
 // ============================================================================
-// CNS CONTEXT MAP — v12 dual‑band + binary‑aware
+// CNS CONTEXT MAP — v24 dual‑band + binary‑aware + PulseBand
 // ============================================================================
 const CNS_CONTEXT = {
   label: "CNS",
@@ -146,19 +185,25 @@ const CNS_CONTEXT = {
   version: LAYER_VER,
 
   // Dual‑band tagging (symbolic‑primary, binary‑aware)
-  band: "dual",
+  band: ROUTE_BANDS.DUAL,
   symbolicPrimary: true,
   binaryAware: true,
 
   modes: {
     offline: "local-endpoint",
     online: "proxy-spine"
+  },
+
+  pulseBand: {
+    cns: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryOverlay: true
   }
 };
 
-
 // ============================================================================
-// CNS HEALING STATE — v13+
+// CNS HEALING STATE — v24
 // ============================================================================
 const CNS_HEALING = {
   lastBandCheck: null,
@@ -166,7 +211,10 @@ const CNS_HEALING = {
   lastRouterMemoryCheck: null,
   lastHealRequestCount: 0,
   lastHealAppliedCount: 0,
-  lastHealError: null
+  lastHealError: null,
+  lastRouteErrorSignature: null,
+  lastRouteBand: null,
+  lastRouteDnaTag: null
 };
 
 function safeRun(label, fn) {
@@ -178,18 +226,16 @@ function safeRun(label, fn) {
   }
 }
 
-
 // ============================================================================
 // TRANSPORT LAYER — OFFLINE + ONLINE (GUARDED GLOBALS, DUAL‑BAND)
-//  • UPGRADED: every call emits CNSPageScanner events
-//  • UPGRADED: router-memory healing uses local checkRouterMemory before remote
+//  • v24: same contract, more PulseBand context + scanner events
 // ============================================================================
 const Transport = {
   async callEndpoint(type, payload) {
     const offlineMode =
       hasWindow && window.PULSE_OFFLINE_MODE === true;
 
-    // OFFLINE BAND — unchanged
+    // OFFLINE BAND
     if (offlineMode) {
       logCNS("TRANSPORT_OFFLINE_MODE", { type, band: "offline" });
       CNSPageScanner.emit("cns-transport-offline-call", {
@@ -237,7 +283,7 @@ const Transport = {
       return { error: "Offline mode: no local endpoint handler registered" };
     }
 
-    // ⭐⭐⭐ ONLINE BAND — UPGRADED ⭐⭐⭐
+    // ONLINE BAND
     logCNS("TRANSPORT_ONLINE_CALL", { type, band: "online" });
 
     CNSPageScanner.emit("cns-transport-online-call", {
@@ -262,17 +308,24 @@ const Transport = {
     }
 
     try {
-      // ⭐ NEW: hook‑aware routing
+      // hook‑aware routing
       if (type === "hook" && payload?.name) {
-        return await remoteEndpoint.handle({
+        const result = await remoteEndpoint.handle({
           type: "hook",
           hookName: payload.name,
           hookPayload: payload.payload,
           context: CNS_CONTEXT
         });
+
+        logCNS("TRANSPORT_ONLINE_RESPONSE", { type, band: "online" });
+        CNSPageScanner.emit("cns-transport-online-response", {
+          type,
+          band: "online"
+        });
+
+        return result;
       }
 
-      // ⭐ DEFAULT: unchanged
       const json = await remoteEndpoint.handle({
         type,
         payload,
@@ -306,7 +359,7 @@ const Transport = {
     const offlineMode =
       hasWindow && window.PULSE_OFFLINE_MODE === true;
 
-    // v13+: always run local router-memory validator first
+    // always run local router-memory validator first
     CNS_HEALING.lastRouterMemoryCheck = safeRun("checkRouterMemory", () =>
       checkRouterMemory(logs)
     );
@@ -434,40 +487,10 @@ const Transport = {
   }
 };
 
-
 // ============================================================================
-// UNIVERSAL SYS‑CALL FUNCTION — CNS v12.3‑EVO‑BINARY‑MAX Dual‑Band
-//  • UPGRADED: every event runs band + identity healers once per push
+// UNIVERSAL SYS‑CALL FUNCTION — CNS v24‑IMMORTAL Dual‑Band
 // ============================================================================
-const ROUTE_BANDS = {
-  SYMBOLIC: "symbolic",
-  BINARY: "binary"
-};
-
 const routingInProgressBands = new Set();
-
-function resolveBandFromPayload(payload) {
-  const band = payload && typeof payload.__band === "string"
-    ? payload.__band.toLowerCase()
-    : ROUTE_BANDS.SYMBOLIC;
-
-  return band === ROUTE_BANDS.BINARY ? ROUTE_BANDS.BINARY : ROUTE_BANDS.SYMBOLIC;
-}
-
-function resolveDnaTagFromPayload(payload) {
-  return payload && typeof payload.__dnaTag === "string"
-    ? payload.__dnaTag
-    : null;
-}
-
-function makeErrorSignature(err) {
-  const msg = String(err);
-  const stack = err?.stack || "";
-  const top = stack.split("\n")[1] || "NO_FRAME";
-  return msg + "::" + top.trim();
-}
-
-let routerEventSeq = 0;
 
 export async function logEvent(eventType, data) {
   const band = resolveBandFromPayload(data || {});
@@ -480,7 +503,7 @@ export async function logEvent(eventType, data) {
     dnaTag
   });
 
-  // v13+: CNS pre‑validation on every event (band + identity)
+  // pre‑validation on every event (band + identity)
   CNS_HEALING.lastBandCheck = safeRun("checkBand", () => checkBand(band));
   CNS_HEALING.lastIdentityCheck = safeRun("checkIdentity", () =>
     checkIdentity({ phase: "logEvent", eventType, band, dnaTag })
@@ -517,10 +540,8 @@ export async function logEvent(eventType, data) {
   }
 }
 
-
 // ============================================================================
-// ROUTER MEMORY HEALING — v12.3‑EVO‑BINARY‑MAX Dual‑Band Aware
-//  • UPGRADED: tracks heal counts + errors in CNS_HEALING
+// ROUTER MEMORY HEALING — v24 Dual‑Band Aware
 // ============================================================================
 async function healRouterMemoryIfNeeded() {
   if (!RouterMemory || typeof RouterMemory.getAll !== "function") {
@@ -583,13 +604,11 @@ async function healRouterMemoryIfNeeded() {
   }
 }
 
-
 // ============================================================================
-// ROUTE‑DOWN ALERT — v12.3‑EVO‑BINARY‑MAX Continuance‑First
-//  • UPGRADED: records band/identity state at alert time
+// ROUTE‑DOWN ALERT — v24 Continuance‑First
 // ============================================================================
-async function triggerRouteDownAlert(error, type, band = "symbolic") {
-  // v13+: capture band + identity drift at alert time
+async function triggerRouteDownAlert(error, type, band = ROUTE_BANDS.SYMBOLIC) {
+  // capture band + identity drift at alert time
   CNS_HEALING.lastBandCheck = safeRun("checkBand", () => checkBand(band));
   CNS_HEALING.lastIdentityCheck = safeRun("checkIdentity", () =>
     checkIdentity({ phase: "routeDownAlert", type, band, error })
@@ -625,17 +644,14 @@ async function triggerRouteDownAlert(error, type, band = "symbolic") {
   }
 }
 
-
 // ============================================================================
-// ROUTE — CNS v12.3‑EVO‑BINARY‑MAX Dual‑Band
-//  • UPGRADED: CNSPageScanner on call, response, error, retry
-//  • UPGRADED: band + identity healers on route entry
+// ROUTE — CNS v24‑IMMORTAL Dual‑Band
 // ============================================================================
 export async function route(type, payload = {}) {
   const band = resolveBandFromPayload(payload);
   const dnaTag = resolveDnaTagFromPayload(payload);
 
-  // v13+: CNS pre‑validation on route entry
+  // pre‑validation on route entry
   CNS_HEALING.lastBandCheck = safeRun("checkBand", () => checkBand(band));
   CNS_HEALING.lastIdentityCheck = safeRun("checkIdentity", () =>
     checkIdentity({ phase: "route", type, band, dnaTag })
@@ -692,6 +708,9 @@ export async function route(type, payload = {}) {
     const signature = makeErrorSignature(err);
 
     routeFailureCount++;
+    CNS_HEALING.lastRouteErrorSignature = signature;
+    CNS_HEALING.lastRouteBand = band;
+    CNS_HEALING.lastRouteDnaTag = dnaTag;
 
     logCNS("ROUTE_ERROR", {
       type,
@@ -865,10 +884,8 @@ export async function route(type, payload = {}) {
   }
 }
 
-
 // ============================================================================
-// HEALING ENTRY POINT — v12.3‑EVO‑BINARY‑MAX Dual‑Band
-//  • UPGRADED: band + identity healers on heal entry
+// HEALING ENTRY POINT — v24 Dual‑Band
 // ============================================================================
 export async function heal(type, payload) {
   const band = resolveBandFromPayload(payload || {});
@@ -881,7 +898,7 @@ export async function heal(type, payload) {
     dnaTag
   });
 
-  // v13+: CNS pre‑validation on heal entry
+  // pre‑validation on heal entry
   CNS_HEALING.lastBandCheck = safeRun("checkBand", () => checkBand(band));
   CNS_HEALING.lastIdentityCheck = safeRun("checkIdentity", () =>
     checkIdentity({ phase: "heal", type, band, dnaTag })
@@ -900,14 +917,12 @@ export async function heal(type, payload) {
   return result;
 }
 
-
 // ============================================================================
 // CNS NERVOUS SYSTEM DIAGNOSTICS SURFACE
 // ============================================================================
 export function getCNSNervousSystemDiagnostics() {
   return { ...CNS_HEALING };
 }
-
 
 // ============================================================================
 // PUBLIC ORGAN SURFACE
@@ -920,34 +935,37 @@ export const PulseOSCNSNervousSystem = {
   heal,
   getDiagnostics: getCNSNervousSystemDiagnostics
 };
-// ============================================================================
-// ORIGINAL DESIGN RESTORED — CNS auto‑boots DualBand AI
-// ============================================================================
 
+// ============================================================================
+// ORIGINAL DESIGN RESTORED — CNS auto‑boots DualBand AI (v24‑Immortal)
+// ============================================================================
 (async () => {
   try {
-    const ai = await createDualBandOrganism({});
+    const ai = await createDualBandOrganism({
+      cnsContext: CNS_CONTEXT,
+      band: ROUTE_BANDS.DUAL
+    });
 
-    // Forward AI events to UI
     const channel = new BroadcastChannel("PulseCNS");
 
     ai.on("event", (data) => {
       channel.postMessage({
         type: "DUALBAND_AI_EVENT",
-        data
+        data,
+        cnsContext: { band: ROUTE_BANDS.DUAL }
       });
     });
 
     ai.on("boot-organism", (bootOptions) => {
       channel.postMessage({
         type: "DUALBAND_BOOT",
-        bootOptions
+        bootOptions,
+        cnsContext: { band: ROUTE_BANDS.DUAL }
       });
     });
 
-    console.log("[CNS] DualBand AI auto‑booted");
-
+    console.log("[CNS v24] DualBand AI auto‑booted");
   } catch (err) {
-    console.error("[CNS] DualBand AI auto‑boot FAILED:", err);
+    console.error("[CNS v24] DualBand AI auto‑boot FAILED:", err);
   }
 })();

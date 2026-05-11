@@ -1,32 +1,24 @@
 // ============================================================================
-//  PULSE OS v16‑IMMORTAL‑ADV++ — AI SERVICE GATEWAY ORGAN
+//  PULSE OS v24.0‑IMMORTAL‑ADV++ — AI SERVICE GATEWAY ORGAN
 //  Universal Dual‑Band Entry Point • Safe Relay • Deterministic Execution
 //  PURE RELAY. ZERO MUTATION. ZERO RANDOMNESS. ZERO DRIFT.
-//  ORGANISM‑AWARE • ARTERY v5 • OWNER‑SUBORDINATE
+//  ORGANISM‑AWARE • RELAY ARTERY v5 • OWNER‑SUBORDINATE
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const ServiceGatewayMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -39,7 +31,6 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS — Binary Engine + Tools
 // ============================================================================
-
 import { runAI } from "./aiEngine-v24.js";
 import {
   analyzeFirestoreDoc,
@@ -49,10 +40,10 @@ import {
   validatePulseSchema
 } from "./aiTools-v24.js";
 
-// ============================================================================
-//  GLOBAL RELAY ARTERY REGISTRY — v16 IMMORTAL‑ADV++
-// ============================================================================
 
+// ============================================================================
+//  GLOBAL RELAY ARTERY REGISTRY — v24 IMMORTAL‑ADV++
+// ============================================================================
 const _globalRelayArteryRegistry = new Map();
 /**
  * Registry key: `${id}#${instanceIndex}`
@@ -69,10 +60,10 @@ export function getGlobalRelayArteries() {
   return out;
 }
 
+
 // ============================================================================
 //  RELAY ARTERY HELPERS — v5
 // ============================================================================
-
 function relayBucketLevel(v) {
   if (v >= 0.9) return "elite";
   if (v >= 0.75) return "high";
@@ -104,10 +95,10 @@ function clamp01(v) {
   return n;
 }
 
+
 // ============================================================================
 //  RELAY ARTERY v5 — Organism‑Aware Fusion
 // ============================================================================
-
 function computeRelayArteryV5({
   calls,
   errors,
@@ -213,10 +204,10 @@ function computeRelayArteryV5({
   });
 }
 
-// ============================================================================
-//  SERVICE GATEWAY CORE — v16‑IMMORTAL‑ADV++
-// ============================================================================
 
+// ============================================================================
+//  SERVICE GATEWAY CORE — v24.0‑IMMORTAL‑ADV++
+// ============================================================================
 class AiServiceGatewayCore {
   /**
    * CONFIG INTENT:
@@ -234,7 +225,7 @@ class AiServiceGatewayCore {
    *     safetyProvider     → () => { pressure?: number, ... }
    */
   constructor(config = {}) {
-    this.id = config.id || "ai-service-gateway-v16";
+    this.id = config.id || "ai-service-gateway-v24";
     this.trace = !!config.trace;
     this.scribe = config.scribe || null;
 
@@ -271,7 +262,6 @@ class AiServiceGatewayCore {
   // ---------------------------------------------------------
   //  STATIC INSTANCE REGISTRY
   // ---------------------------------------------------------
-
   static _registerInstance() {
     if (typeof AiServiceGatewayCore._instanceCount !== "number") {
       AiServiceGatewayCore._instanceCount = 0;
@@ -290,7 +280,6 @@ class AiServiceGatewayCore {
   // ---------------------------------------------------------
   //  WINDOW ROLLING
   // ---------------------------------------------------------
-
   _rollWindow(now) {
     if (now - this._windowStart >= this.windowMs) {
       this._windowStart = now;
@@ -302,8 +291,7 @@ class AiServiceGatewayCore {
 
   // ---------------------------------------------------------
   //  VITALS READERS (SAFE, READ‑ONLY)
-// ---------------------------------------------------------
-
+  // ---------------------------------------------------------
   _readVitals(provider) {
     if (!provider) return null;
     try {
@@ -316,7 +304,6 @@ class AiServiceGatewayCore {
   // ---------------------------------------------------------
   //  RELAY ARTERY SNAPSHOT
   // ---------------------------------------------------------
-
   _computeRelayArtery() {
     const now = Date.now();
     this._rollWindow(now);
@@ -362,8 +349,7 @@ class AiServiceGatewayCore {
 
   // ---------------------------------------------------------
   //  RELAY WRAPPER (NON-BLOCKING, MONITORED)
-// ---------------------------------------------------------
-
+  // ---------------------------------------------------------
   async relay(intent, flags, operation, request = {}, dualBand = null) {
     const start = Date.now();
 
@@ -468,15 +454,38 @@ class AiServiceGatewayCore {
   }
 }
 
-// ============================================================================
-//  INTERNAL GATEWAY INSTANCE — v16‑IMMORTAL‑ADV++
-// ============================================================================
 
+// ============================================================================
+//  INTERNAL GATEWAY INSTANCE — v24.0‑IMMORTAL‑ADV++
+// ============================================================================
 const _gatewayCore = new AiServiceGatewayCore({ trace: false });
 
 function callAI(intent, flags, operation, request = {}, dualBand = null) {
   return _gatewayCore.relay(intent, flags, operation, request, dualBand);
 }
+
+export function getServiceRelayArtery() {
+  return _gatewayCore.getRelayArtery();
+}
+
+export function prewarmServiceRelay(iterations = 3) {
+  // deterministic prewarm: synth calls that only touch counters/artery
+  const count = Math.max(1, Math.min(10, iterations));
+  const ops = [];
+  for (let i = 0; i < count; i++) {
+    ops.push(
+      callAI(
+        "prewarm",
+        Object.freeze({ prewarm: true }),
+        async () => Object.freeze({ ok: true, i }),
+        {},
+        null
+      ).catch(() => null)
+    );
+  }
+  return Promise.all(ops).then(() => getServiceRelayArtery());
+}
+
 
 // ============================================================================
 //  PUBLIC SERVICE OPERATIONS — API‑COMPATIBLE, INTERNALLY UPGRADED
@@ -681,14 +690,16 @@ export async function runTourGuideQuery(
   );
 }
 
+
 // ============================================================================
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
 // ============================================================================
-
 if (typeof module !== "undefined") {
   module.exports = {
     ServiceGatewayMeta,
     getGlobalRelayArteries,
+    getServiceRelayArtery,
+    prewarmServiceRelay,
     runAnalyzeFirestore,
     runAnalyzeSQL,
     runDetectDrift,

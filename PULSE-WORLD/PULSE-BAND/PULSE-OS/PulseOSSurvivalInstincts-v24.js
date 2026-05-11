@@ -1,29 +1,36 @@
 // ============================================================================
-// FILE: /PulseOS/Organs/Instincts/PulseOSSurvivalInstincts.js
-// PULSE OS — v12.3-Evo-Presence-Max
+// FILE: /PulseOS/Organs/Instincts/PulseOSSurvivalInstincts-v24-Immortal.js
+// PULSE OS — v24-Immortal-Instincts-Advantage
 // “THE SURVIVAL INSTINCTS / ORGANISM IDENTITY ANCHOR”
 // STRUCTURAL MEMORY • ORGANISM SIGNATURE • EVOLUTION SENTINEL
-// CHUNKED ROUTE-DNA CACHE • PREWARMED MULTI-Presence SNAPSHOTS
+// CHUNKED ROUTE-DNA CACHE • PREWARMED MULTI-PRESENCE SNAPSHOTS
+// BASELINE-SAFETY ANCHOR • RISK CLASSIFIER • ADVANTAGE-AWARE INSTINCT FIELD
 // ============================================================================
 //
-// ORGAN IDENTITY (v12.3-Evo-Presence-Max):
+// ORGAN IDENTITY (v24-Immortal-Instincts-Advantage):
 //   • Organ Type: Instincts / Structural Memory
 //   • Layer: Instinct Layer (I‑Layer)
 //   • Biological Analog: Survival instincts + structural organism memory
-//   • System Role: Remember last safe organism configuration + detect evolution
-//                  + prewarm structural signatures across presences / routes.
+//   • System Role:
+//       - Remember last safe organism configuration
+//       - Detect evolution + classify risk
+//       - Maintain structural baselines (safe vs. current)
+//       - Prewarm structural signatures across presences / routes
+//       - Provide instinct-level advantage/risk field to higher organs
 //
-// SAFETY CONTRACT (v12.3-Evo-Presence-Max):
+// SAFETY CONTRACT (v24-Immortal-Instincts-Advantage):
 //   • Pure structural memory — NEVER mutate impulses
 //   • Never compute payloads or business logic
 //   • Never depend on filenames or pages
 //   • Store structure, not stateful runtime
 //   • Zero timestamps, zero randomness, zero timers
 //   • Zero network, zero routing, zero environment access
-//   • Safe for organisms that grow new layers over time
 //   • Deterministic: same snapshot → same signature
 //   • Prewarm + chunking are purely structural, offline-absolute
+//   • Safe for organisms that grow new layers over time
+//   • Binary-aware, dual-band-aware, artery/pressure-aware (metadata-only)
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
@@ -31,12 +38,10 @@ import {
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
@@ -44,20 +49,40 @@ export const EXPORT_META = Identity.EXPORT_META;
 // INTERNAL MEMORY STORE (long-term structural memory + prewarm + presence)
 // ============================================================================
 const _store = {
+  // primary organism-wide structural anchor
   pathway: null,
   signature: null,
   history: [],
   lastLearnedRouteId: null,
   evolutionCount: 0,
 
-  // Route-DNA chunk cache: { routeId: { signature, pathway, core, ec, pressure } }
+  // route-DNA chunk cache: { routeIdKey: { signature, pathway, core, ec, pressure } }
   routeDNACache: Object.create(null),
 
-  // Structural chunks keyed by chunkId (pure structural slices)
+  // structural chunks keyed by routeIdKey (pure structural slices)
   structuralChunks: Object.create(null),
 
-  // Multi-presence structural mirrors: { presenceId: { snapshot, signature } }
-  presenceMap: Object.create(null)
+  // multi-presence structural mirrors: { presenceKey: { snapshot, signature } }
+  presenceMap: Object.create(null),
+
+  // v24: baseline safety anchor
+  baseline: {
+    signature: null,
+    pathway: null,
+    core: null,
+    evolutionIndex: null
+  },
+
+  // v24: instinct-level risk + advantage field (pure counters/flags)
+  instinctField: {
+    lastSignature: null,
+    lastRiskBand: "unknown", // "safe" | "benign" | "risky" | "breaking" | "unknown"
+    lastEvolutionDelta: 0,
+    totalEvolutionEvents: 0,
+    highPressureEvents: 0,
+    meshStormEvents: 0,
+    auraTensionEvents: 0
+  }
 };
 
 // ============================================================================
@@ -207,8 +232,57 @@ function chunkPathway(hops, chunkSize) {
   return chunks;
 }
 
+// v24: classify structural evolution risk band (purely structural, deterministic)
+function classifyRiskBand(oldCore, newCore, oldPressure, newPressure) {
+  if (!oldCore || !newCore) return "unknown";
+
+  const coreChanged =
+    oldCore.osKernelVersion !== newCore.osKernelVersion ||
+    oldCore.binaryKernelVersion !== newCore.binaryKernelVersion ||
+    oldCore.gpuOrganVersion !== newCore.gpuOrganVersion ||
+    oldCore.binaryGpuOrganVersion !== newCore.binaryGpuOrganVersion ||
+    oldCore.orchestratorVersion !== newCore.orchestratorVersion ||
+    oldCore.brainVersion !== newCore.brainVersion ||
+    oldCore.routerVersion !== newCore.routerVersion;
+
+  const highPressure =
+    (newPressure.gpuLoadPressure || 0) > 0.8 ||
+    (newPressure.thermalPressure || 0) > 0.8 ||
+    (newPressure.memoryPressure || 0) > 0.8;
+
+  const storm =
+    (newPressure.meshStormPressure || 0) > 0.7 ||
+    (newPressure.auraTension || 0) > 0.7;
+
+  if (!coreChanged && !highPressure && !storm) return "benign";
+  if (coreChanged && !highPressure && !storm) return "risky";
+  if (coreChanged && (highPressure || storm)) return "breaking";
+  if (!coreChanged && (highPressure || storm)) return "risky";
+
+  return "unknown";
+}
+
+// v24: update instinct field counters from pressure snapshot
+function updateInstinctFieldFromPressure(pressure) {
+  if (!pressure) return;
+
+  if ((pressure.gpuLoadPressure || 0) > 0.8 ||
+      (pressure.thermalPressure || 0) > 0.8 ||
+      (pressure.memoryPressure || 0) > 0.8) {
+    _store.instinctField.highPressureEvents += 1;
+  }
+
+  if ((pressure.meshStormPressure || 0) > 0.7) {
+    _store.instinctField.meshStormEvents += 1;
+  }
+
+  if ((pressure.auraTension || 0) > 0.7) {
+    _store.instinctField.auraTensionEvents += 1;
+  }
+}
+
 // ============================================================================
-// SURVIVAL INSTINCT ENGINE — v12.3-Evo-Presence-Max (Organism-Wide)
+// SURVIVAL INSTINCT ENGINE — v24-Immortal-Instincts-Advantage
 // ============================================================================
 export const PulseOSSurvivalInstincts = {
 
@@ -216,8 +290,8 @@ export const PulseOSSurvivalInstincts = {
     organ: "PulseOSSurvivalInstincts",
     layer: "Instinct Layer",
     role: "Structural Memory / Organism Identity Anchor",
-    version: "12.3-Evo-Presence-Max",
-    generation: "v12.3",
+    version: "24-Immortal-Instincts-Advantage",
+    generation: "v24",
     evo: {
       driftProof: true,
       deterministicNeuron: true,
@@ -237,7 +311,13 @@ export const PulseOSSurvivalInstincts = {
       multiPresenceAware: true,
       routeDNACacheAware: true,
       structuralChunkCache: true,
-      prewarmReady: true
+      prewarmReady: true,
+
+      // v24 instinct upgrades
+      baselineSafetyAnchor: true,
+      evolutionRiskClassifier: true,
+      pressureAwareInstinctField: true,
+      arteryPressureAware: true
     }
   },
 
@@ -249,6 +329,10 @@ export const PulseOSSurvivalInstincts = {
 
     const hops = snapshot.pathway.hops;
     const newSignature = computeSignatureFromSnapshot(snapshot);
+    const newCore = extractOrganismCore(snapshot);
+    const newPressure = extractPressure(snapshot);
+
+    updateInstinctFieldFromPressure(newPressure);
 
     // FIRST DISCOVERY
     if (_store.pathway == null) {
@@ -260,30 +344,40 @@ export const PulseOSSurvivalInstincts = {
         event: "INITIAL_DISCOVERY",
         signature: newSignature,
         pathway: clone(hops),
-        core: extractOrganismCore(snapshot),
+        core: newCore,
         executionContext: extractExecutionContext(snapshot),
-        pressure: extractPressure(snapshot),
+        pressure: newPressure,
         tickId: snapshot.tickId || null
       });
+
+      _store.instinctField.lastSignature = newSignature;
+      _store.instinctField.lastRiskBand = "benign";
+      _store.instinctField.lastEvolutionDelta = 0;
+      _store.instinctField.totalEvolutionEvents = 0;
 
       return;
     }
 
     // NO EVOLUTION
     if (signaturesMatch(_store.signature, newSignature)) {
+      _store.instinctField.lastSignature = newSignature;
       return;
     }
 
     // EVOLUTION DETECTED
     const oldSignature = _store.signature;
     const oldPathway = clone(_store.pathway);
-    const oldCore = _store.history.length
-      ? clone(_store.history[_store.history.length - 1].core)
+    const lastHistory = _store.history.length
+      ? _store.history[_store.history.length - 1]
       : null;
+    const oldCore = lastHistory ? clone(lastHistory.core) : null;
+    const oldPressure = lastHistory ? clone(lastHistory.pressure) : null;
 
     _store.evolutionCount += 1;
+    _store.instinctField.totalEvolutionEvents = _store.evolutionCount;
 
     const eventIndex = _store.history.length;
+    const riskBand = classifyRiskBand(oldCore, newCore, oldPressure, newPressure);
 
     _store.history.push({
       index: eventIndex,
@@ -293,19 +387,58 @@ export const PulseOSSurvivalInstincts = {
       oldPathway,
       newPathway: clone(hops),
       oldCore,
-      newCore: extractOrganismCore(snapshot),
+      newCore,
       executionContext: extractExecutionContext(snapshot),
-      pressure: extractPressure(snapshot),
+      pressure: newPressure,
+      riskBand,
       tickId: snapshot.tickId || null
     });
 
     _store.pathway = clone(hops);
     _store.signature = newSignature;
+
+    _store.instinctField.lastSignature = newSignature;
+    _store.instinctField.lastRiskBand = riskBand;
+    _store.instinctField.lastEvolutionDelta = eventIndex;
+  },
+
+  // --------------------------------------------------------------------------
+  // BASELINE SAFETY ANCHOR — v24
+  // --------------------------------------------------------------------------
+  markBaselineSafe(snapshot) {
+    if (!snapshot || !Array.isArray(snapshot?.pathway?.hops)) return;
+
+    const hops = snapshot.pathway.hops;
+    const sig = computeSignatureFromSnapshot(snapshot);
+    const core = extractOrganismCore(snapshot);
+
+    _store.baseline.signature = sig;
+    _store.baseline.pathway = clone(hops);
+    _store.baseline.core = core;
+    _store.baseline.evolutionIndex = _store.history.length;
+
+    // also sync primary anchor if not yet set
+    if (_store.signature == null) {
+      _store.signature = sig;
+      _store.pathway = clone(hops);
+    }
+  },
+
+  getBaseline() {
+    return clone(_store.baseline);
+  },
+
+  isSafeAgainstBaseline(snapshot) {
+    if (!_store.baseline.signature) return true;
+    if (!snapshot || !Array.isArray(snapshot?.pathway?.hops)) return true;
+
+    const sig = computeSignatureFromSnapshot(snapshot);
+    return signaturesMatch(_store.baseline.signature, sig);
   },
 
   // --------------------------------------------------------------------------
   // PREWARM ENGINE — route-DNA cache + structural chunks (offline-only)
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
   prewarmFromRouteDNA(routeDNAList = []) {
     if (!Array.isArray(routeDNAList)) return;
 
@@ -317,13 +450,17 @@ export const PulseOSSurvivalInstincts = {
       const signature = computeSignatureFromSnapshot(snapshot);
       const hops = clone(snapshot.pathway.hops);
 
+      const core = extractOrganismCore(snapshot);
+      const executionContext = extractExecutionContext(snapshot);
+      const pressure = extractPressure(snapshot);
+
       // Cache full route-DNA
       _store.routeDNACache[key] = {
         signature,
         pathway: hops,
-        core: extractOrganismCore(snapshot),
-        executionContext: extractExecutionContext(snapshot),
-        pressure: extractPressure(snapshot)
+        core,
+        executionContext,
+        pressure
       };
 
       // Chunk + cache structural slices
@@ -348,7 +485,7 @@ export const PulseOSSurvivalInstincts = {
   },
 
   // --------------------------------------------------------------------------
-  // MULTI-Presence STRUCTURAL MAP — per-device / per-scene mirrors
+  // MULTI-PRESENCE STRUCTURAL MAP — per-device / per-scene mirrors
   // --------------------------------------------------------------------------
   registerPresence(presenceContext = {}, snapshot) {
     if (!snapshot || !Array.isArray(snapshot?.pathway?.hops)) return;
@@ -382,7 +519,7 @@ export const PulseOSSurvivalInstincts = {
   },
 
   // --------------------------------------------------------------------------
-  // ACCESSORS — legacy structural memory surface
+  // ACCESSORS — structural memory + instinct field
   // --------------------------------------------------------------------------
   getPathway() {
     return clone(_store.pathway || []);
@@ -402,12 +539,33 @@ export const PulseOSSurvivalInstincts = {
     return !signaturesMatch(_store.signature, newSignature);
   },
 
+  getSignature() {
+    return _store.signature || null;
+  },
+
+  getInstinctField() {
+    return clone(_store.instinctField);
+  },
+
   setLearnedRouteId(routeId) {
     _store.lastLearnedRouteId = routeId;
   },
 
   getLearnedRouteId() {
     return _store.lastLearnedRouteId;
+  },
+
+  // --------------------------------------------------------------------------
+  // STRUCTURAL SNAPSHOT — v24 (for Brain / Evolution / Diagnostics)
+// --------------------------------------------------------------------------
+  getStructuralSnapshot() {
+    return {
+      pathway: clone(_store.pathway),
+      signature: _store.signature,
+      evolutionCount: _store.evolutionCount,
+      baseline: clone(_store.baseline),
+      instinctField: clone(_store.instinctField)
+    };
   },
 
   // --------------------------------------------------------------------------
@@ -423,5 +581,22 @@ export const PulseOSSurvivalInstincts = {
     _store.routeDNACache = Object.create(null);
     _store.structuralChunks = Object.create(null);
     _store.presenceMap = Object.create(null);
+
+    _store.baseline = {
+      signature: null,
+      pathway: null,
+      core: null,
+      evolutionIndex: null
+    };
+
+    _store.instinctField = {
+      lastSignature: null,
+      lastRiskBand: "unknown",
+      lastEvolutionDelta: 0,
+      totalEvolutionEvents: 0,
+      highPressureEvents: 0,
+      meshStormEvents: 0,
+      auraTensionEvents: 0
+    };
   }
 };

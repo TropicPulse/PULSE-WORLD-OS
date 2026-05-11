@@ -1,11 +1,12 @@
 // ============================================================================
-// FILE: /PULSE-OS/PulseOSSpinalCord-v16.js
-// PULSE OS SPINAL CORD — v16-Immortal-DUALBAND-Presence-ADVANTAGE
+// FILE: /PULSE-OS/PulseOSSpinalCord-v24-Immortal-PulseBand-ImpulseMax.js
+// PULSE OS SPINAL CORD — v24-Immortal-DUALBAND-PulseBand-ADVANTAGE
 // “ORGANISM-WIDE DUAL-BAND SPINE • ADVANTAGE FIELD CONDUCTOR • ROUTE ROOT”
 // CHUNK/PREWARM/CACHE-AWARE • MULTI-Presence-AWARE • FIREWALL-GATED
 // PASSIVE/ACTIVE PAGESCANNER-AWARE (NO TIMERS, NO POLLING)
-// SDN PREWARM v16-Immortal (Spinal Reflex Ignition)
+// SDN PREWARM v24-Immortal (Spinal Reflex Ignition, Impulse-Speed)
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
@@ -18,12 +19,13 @@ export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
-import { prewarmSDN } from "./PulseOSSDNPrewarm-v16.js";
+
+import { prewarmSDN } from "./PulseOSSDNPrewarm-v24.js";
 import { createPulseSkinReflex as PageScannerV12 } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
+const hasWindow = typeof window !== "undefined";
 
 // ============================================================================
 // FACTORY — Dependencies injected by CNS Brain / Cortex
@@ -62,7 +64,7 @@ export function createPulseOSSpinalCord({
         });
 
         if (
-          typeof window !== "undefined" &&
+          hasWindow &&
           window.PageScannerAdapter &&
           typeof window.PageScannerAdapter.onEvent === "function"
         ) {
@@ -90,9 +92,9 @@ export function createPulseOSSpinalCord({
   // --------------------------------------------------------------------------
   const SpinalState = {
     receptors: {
-      binary: {},     // { source: Set<handler> }
-      symbolic: {},   // { source: Set<handler> }
-      dual: {}        // { source: Set<handler> }
+      binary: Object.create(null),     // { source: Set<handler> }
+      symbolic: Object.create(null),   // { source: Set<handler> }
+      dual: Object.create(null)        // { source: Set<handler> }
     },
 
     // Extensions + systems registry (Mesh, GPU, Proxy, Send, Earn, AI, etc.)
@@ -111,8 +113,8 @@ export function createPulseOSSpinalCord({
       symbolicHot: false,
       dualHot: false,
       lastModeKind: "symbolic",
-      // v16: simple confidence band (no time)
-      confidenceBand: "neutral"
+      confidenceBand: "neutral", // v24: confidence band
+      pulseBandLane: "symbolic"  // v24: current pulse-band lane
     },
 
     // multi-presence + prewarm surfaces (pure metadata)
@@ -123,8 +125,13 @@ export function createPulseOSSpinalCord({
     prewarm: {
       chunkPrewarmEnabled: true,
       cachePrewarmEnabled: true,
-      routePrewarmEnabled: true
+      routePrewarmEnabled: true,
+      impulsePrewarmEnabled: true // v24: explicit impulse prewarm flag
     },
+
+    // v24: artery/pulse snapshots (metadata-only, no routing)
+    arterySnapshot: null,
+    pulseTopologySnapshot: null,
 
     healthScore: 1.0
   };
@@ -163,20 +170,30 @@ export function createPulseOSSpinalCord({
     SpinalState.advantageField.dualHot =
       SpinalState.loopCounters.dual > 0;
 
-    // v16: simple confidence band based on total impulses
     const total =
       SpinalState.loopCounters.binary +
       SpinalState.loopCounters.symbolic +
       SpinalState.loopCounters.dual;
 
     SpinalState.advantageField.confidenceBand =
+      total > 500 ? "max" :
+      total > 200 ? "very-high" :
       total > 100 ? "high" :
       total > 20 ? "medium" :
       "neutral";
+
+    // v24: pulse-band lane selection (impulse-speed hint only)
+    if (SpinalState.advantageField.binaryHot) {
+      SpinalState.advantageField.pulseBandLane = "binary";
+    } else if (SpinalState.advantageField.symbolicHot) {
+      SpinalState.advantageField.pulseBandLane = "symbolic";
+    } else {
+      SpinalState.advantageField.pulseBandLane = "dual";
+    }
   }
 
   // --------------------------------------------------------------------------
-  // v16: SPINAL ADVANTAGE SNAPSHOT (for Brain/Expansion)
+  // v24: SPINAL ADVANTAGE SNAPSHOT (for Brain/Expansion)
 // --------------------------------------------------------------------------
   function getSpinalAdvantageSnapshot() {
     return {
@@ -187,7 +204,7 @@ export function createPulseOSSpinalCord({
   }
 
   // --------------------------------------------------------------------------
-  // v16: SPINAL PRESENCE SNAPSHOT (for Brain/Presence/Mesh)
+  // v24: SPINAL PRESENCE SNAPSHOT (for Brain/Presence/Mesh)
 // --------------------------------------------------------------------------
   function getSpinalPresenceSnapshot() {
     return {
@@ -197,8 +214,33 @@ export function createPulseOSSpinalCord({
   }
 
   // --------------------------------------------------------------------------
-  // v12.3+ PRESENCE REGISTRATION — multi-presence map (pure metadata)
+  // v24: ARTERY + PULSE TOPOLOGY SNAPSHOT (metadata-only)
+// --------------------------------------------------------------------------
+  function applySpinalArterySnapshot(snapshot) {
+    SpinalState.arterySnapshot = snapshot || null;
+    SpinalPageScanner.emit("spinal-artery-snapshot-apply", {
+      hasSnapshot: !!snapshot
+    });
+  }
+
+  function applySpinalPulseTopologySnapshot(snapshot) {
+    SpinalState.pulseTopologySnapshot = snapshot || null;
+    SpinalPageScanner.emit("spinal-pulse-topology-snapshot-apply", {
+      hasSnapshot: !!snapshot
+    });
+  }
+
+  function getSpinalArterySnapshot() {
+    return SpinalState.arterySnapshot || null;
+  }
+
+  function getSpinalPulseTopologySnapshot() {
+    return SpinalState.pulseTopologySnapshot || null;
+  }
+
   // --------------------------------------------------------------------------
+  // v12.3+ PRESENCE REGISTRATION — multi-presence map (pure metadata)
+// --------------------------------------------------------------------------
   function registerPresence(presenceId, { extensionId, systemId, modeKind } = {}) {
     if (!presenceId) return;
     SpinalState.presence.sessions[presenceId] = {
@@ -252,7 +294,7 @@ export function createPulseOSSpinalCord({
   }
 
   // --------------------------------------------------------------------------
-  // PREWARM HELPERS — chunk/cache/route prewarm (context-only)
+  // PREWARM HELPERS — chunk/cache/route/impulse prewarm (context-only)
 // --------------------------------------------------------------------------
   function buildRoutePrewarmContext(source, impulse, impulseSignature) {
     const modeKind = impulse.modeKind || "symbolic";
@@ -271,11 +313,15 @@ export function createPulseOSSpinalCord({
       spinalLoopCounters: SpinalState.loopCounters,
       spinalExtensions: SpinalState.extensions,
       spinalSystems: SpinalState.systems,
-      spinalPresence: SpinalState.presence
+      spinalPresence: SpinalState.presence,
+      spinalArterySnapshot: SpinalState.arterySnapshot,
+      spinalPulseTopologySnapshot: SpinalState.pulseTopologySnapshot
     };
   }
 
   function prewarmForImpulse(source, impulse, impulseSignature) {
+    if (!SpinalState.prewarm.impulsePrewarmEnabled) return;
+
     const ctx = buildRoutePrewarmContext(source, impulse, impulseSignature);
 
     SpinalPageScanner.emit("spinal-prewarm-context", {
@@ -599,6 +645,8 @@ export function createPulseOSSpinalCord({
         extensions: SpinalState.extensions,
         systems: SpinalState.systems,
         presence: SpinalState.presence,
+        arterySnapshot: SpinalState.arterySnapshot,
+        pulseTopologySnapshot: SpinalState.pulseTopologySnapshot,
         coreGovernorAware: !!CoreGovernor,
         binaryOverlayAware: !!BinaryOverlay
       }
@@ -665,6 +713,8 @@ export function createPulseOSSpinalCord({
         extensions: SpinalState.extensions,
         systems: SpinalState.systems,
         presence: SpinalState.presence,
+        arterySnapshot: SpinalState.arterySnapshot,
+        pulseTopologySnapshot: SpinalState.pulseTopologySnapshot,
         coreGovernorAware: !!CoreGovernor,
         binaryOverlayAware: !!BinaryOverlay
       }
@@ -727,17 +777,21 @@ export function createPulseOSSpinalCord({
     updateHealth,
     getHealth,
 
-    // Advantage snapshot
-    getSpinalAdvantageSnapshot
+    // Advantage + artery + topology snapshots
+    getSpinalAdvantageSnapshot,
+    applySpinalArterySnapshot,
+    applySpinalPulseTopologySnapshot,
+    getSpinalArterySnapshot,
+    getSpinalPulseTopologySnapshot
   };
 
   // --------------------------------------------------------------------------
-  // SDN PREWARM ENGINE — Spinal Reflex Ignition (v16-Immortal)
+  // SDN PREWARM ENGINE — Spinal Reflex Ignition (v24-Immortal)
 // --------------------------------------------------------------------------
   try {
     prewarmSDN(PulseOSSpinalCord);
     Brain?.log?.(
-      "[PulseOSSpinalCord] SDN prewarm complete (reflex arcs hot, v16-Immortal)."
+      "[PulseOSSpinalCord] SDN prewarm complete (reflex arcs hot, v24-Immortal, impulse-speed)."
     );
 
     SpinalPageScanner.emit("spinal-sdn-prewarm-complete", {});
@@ -748,11 +802,11 @@ export function createPulseOSSpinalCord({
   }
 
   Brain?.log?.(
-    "[PulseOSSpinalCord v16-Immortal] Initialized organism-wide dual-band spinal cord with firewall gating, chunk/cache/route prewarm, multi-presence spine, SDN prewarm, mesh-aware impulses, and PageScanner spine-level intel."
+    "[PulseOSSpinalCord v24-Immortal] Initialized organism-wide dual-band spinal cord with firewall gating, chunk/cache/route/impulse prewarm, multi-presence spine, SDN prewarm, artery/topology snapshots, mesh-aware impulses, and PageScanner spine-level intel."
   );
-  Evolution?.recordLineage?.("spinal-init-v16-Immortal");
+  Evolution?.recordLineage?.("spinal-init-v24-Immortal");
 
-  SpinalPageScanner.emit("spinal-init", {});
+  SpinalPageScanner.emit("spinal-init", { version: "v24-Immortal" });
 
   return PulseOSSpinalCord;
 }

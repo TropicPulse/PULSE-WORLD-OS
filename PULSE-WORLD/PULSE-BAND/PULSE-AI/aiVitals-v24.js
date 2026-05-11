@@ -1,5 +1,5 @@
 /**
- * aiVitals.js — Pulse OS v12.3‑EVO+ Organ
+ * aiVitals-v24-IMMORTAL++.js — Pulse OS v24‑IMMORTAL++ Organ
  * ============================================================
  * ORGAN ROLE (CANONICAL):
  *   The Binary Vitals Engine is the organism’s **health artery**.
@@ -9,7 +9,7 @@
  *     - pipeline stability
  *     - reflex responsiveness
  *     - heartbeat rhythm
- *     - scheduler accuracy + temporal artery v3
+ *     - scheduler accuracy + temporal artery v5 (IMMORTAL‑EVO++)
  *     - evolution drift
  *     - sentience self‑awareness artery
  *     - sentinel threat artery
@@ -20,7 +20,7 @@
  *     - binary health scores
  *     - binary anomaly packets (optional)
  *     - binary vitals snapshots
- *     - layered organism health artery v3
+ *     - layered organism health artery v5 (IMMORTAL‑EVO++)
  *
  * ARCHITECTURAL POSITION:
  *   Layer: Binary Nervous System (BNS)
@@ -40,11 +40,11 @@
  *     - a binary artery monitor
  *     - an organism‑level health fusion layer
  *
- * ORGAN CONTRACT (v12.3‑EVO+):
+ * ORGAN CONTRACT (v24‑IMMORTAL++):
  *   - Must never mutate external organs
  *   - Must never generate symbolic state as primary output
  *   - Must only emit binary packets
- *   - Must remain deterministic
+ *   - Must remain deterministic in mapping inputs → outputs
  *   - Must not block the organism
  *   - Must treat all inputs as read‑only
  *
@@ -69,39 +69,27 @@
  *     bitLength: <number>
  *   }
  */
+
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const VitalsMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
 
-
 // ============================================================================
-//  ARTERY HELPERS — v3 (PURE, STATELESS)
+//  ARTERY HELPERS — v5 (PURE, STATELESS, IMMORTAL‑EVO++)
 // ============================================================================
 
 function bucketLevel(v) {
@@ -129,20 +117,20 @@ function bucketCost(v) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v12.3‑EVO+ HYBRID FUSION
+//  ORGAN IMPLEMENTATION — v24‑IMMORTAL++ HYBRID FUSION
 // ============================================================================
 
 export class AIBinaryVitals {
   constructor(config = {}) {
-    this.id = config.id || "ai-binary-vitals";
+    this.id = config.id || VitalsMeta.identity || "ai-binary-vitals";
     this.encoder = config.encoder;
     this.memory = config.memory;
     this.evolution = config.evolution;
 
-    this.scheduler = config.scheduler || null;   // expects getTemporalArtery()
-    this.instruments = config.instruments || null; // optional, expects getInstrumentsArterySnapshot? (or similar)
-    this.sentience = config.sentience || null;   // expects generateSelfModel()
-    this.sentinel = config.sentinel || null;     // optional, threat artery source
+    this.scheduler = config.scheduler || null;      // expects getTemporalArtery()
+    this.instruments = config.instruments || null;  // optional, expects getInstrumentsArterySnapshot()
+    this.sentience = config.sentience || null;      // expects generateSelfModel()
+    this.sentinel = config.sentinel || null;        // optional, threat artery source
 
     this.pipeline = config.pipeline || null;
     this.reflex = config.reflex || null;
@@ -161,7 +149,7 @@ export class AIBinaryVitals {
       throw new Error("AIBinaryVitals requires aiBinaryEvolution");
     }
 
-    // rolling window for artery v3
+    // rolling window for artery v5
     this.windowMs =
       typeof config.windowMs === "number" && config.windowMs > 0
         ? config.windowMs
@@ -183,6 +171,12 @@ export class AIBinaryVitals {
 
     // multi-instance identity
     this.instanceIndex = AIBinaryVitals._registerInstance();
+
+    this.lineage = Object.freeze({
+      version: VitalsMeta.version,
+      epoch: VitalsMeta.evo?.epoch,
+      identity: VitalsMeta.identity
+    });
   }
 
   // ---------------------------------------------------------
@@ -219,7 +213,7 @@ export class AIBinaryVitals {
 
   // ============================================================
   // BASE HEALTH METRICS (DETERMINISTIC)
-// ============================================================
+  // ============================================================
 
   _memoryHealth() {
     const snapshot = this.memory.snapshot();
@@ -249,7 +243,7 @@ export class AIBinaryVitals {
 
   // ============================================================
   // FUSED SUBSYSTEM ARTERIES (READ‑ONLY)
-// ============================================================
+  // ============================================================
 
   _schedulerArtery() {
     if (!this.scheduler || typeof this.scheduler.getTemporalArtery !== "function") {
@@ -263,7 +257,10 @@ export class AIBinaryVitals {
   }
 
   _instrumentsArtery() {
-    if (!this.instruments || typeof this.instruments.getInstrumentsArterySnapshot !== "function") {
+    if (
+      !this.instruments ||
+      typeof this.instruments.getInstrumentsArterySnapshot !== "function"
+    ) {
       return null;
     }
     try {
@@ -298,8 +295,8 @@ export class AIBinaryVitals {
   }
 
   // ============================================================
-  // ORGANISM‑LEVEL ARTERY v3 (LAYERED FUSION)
-// ============================================================
+  // ORGANISM‑LEVEL ARTERY v5 (LAYERED FUSION)
+  // ============================================================
 
   _computeOrganismArtery(layered) {
     const {
@@ -366,7 +363,7 @@ export class AIBinaryVitals {
 
   // ============================================================
   // LAYERED SNAPSHOT (HYBRID FUSION)
-// ============================================================
+  // ============================================================
 
   _computeLayeredSnapshot() {
     const memoryHealth = this._memoryHealth();
@@ -420,7 +417,7 @@ export class AIBinaryVitals {
 
   // ============================================================
   // SPIRAL WARNING (NON‑BLOCKING)
-// ============================================================
+  // ============================================================
 
   _updateSpiralState(organismArtery, now) {
     this._rollWindow(now);
@@ -462,7 +459,7 @@ export class AIBinaryVitals {
 
   // ============================================================
   // VITALS GENERATION (BINARY‑ONLY OUTPUT)
-// ============================================================
+  // ============================================================
 
   generateVitals() {
     const now = Date.now();
@@ -569,7 +566,7 @@ export class AIBinaryVitals {
 
   // ============================================================
   // EXTERNAL SNAPSHOT ACCESSOR (OPTIONAL, SYMBOLIC TRACE ONLY)
-// ============================================================
+  // ============================================================
 
   getLayeredArtery() {
     return this._computeLayeredSnapshot();
@@ -586,21 +583,23 @@ export class AIBinaryVitals {
 }
 
 // ============================================================================
-//  FACTORY — v12.3‑EVO+
+//  FACTORY — v24‑IMMORTAL++
 // ============================================================================
 
 export function createAIBinaryVitals(config) {
   return new AIBinaryVitals(config);
 }
 
-// ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility (v12.3‑EVO+ dualband)
-// ---------------------------------------------------------------------------
+// ============================================================================
+//  DUAL‑MODE EXPORTS (ESM + CommonJS)
+// ============================================================================
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     VitalsMeta,
     AIBinaryVitals,
-    createAIBinaryVitals
+    createAIBinaryVitals,
+    AI_EXPERIENCE_META,
+    EXPORT_META
   };
 }

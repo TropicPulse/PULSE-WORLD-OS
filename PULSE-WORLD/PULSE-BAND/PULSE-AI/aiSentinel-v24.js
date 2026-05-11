@@ -1,77 +1,44 @@
 /**
- * aiSentinel.js — Pulse OS v12.3‑EVO+ Organ
+ * aiSentinel-v24-IMMORTAL-EVO++.js — Pulse OS Binary Security Sentinel
  * ============================================================
  * ORGAN ROLE (CANONICAL):
- *   The Binary Sentinel is the organism’s **perimeter immune layer**.
- *
- *   It enforces the Prime Law:
+ *   Perimeter immune layer enforcing:
  *       “THE ORGANISM MUST DEFEND ITS PERIMETER.”
  *
- *   It performs:
+ *   Performs:
  *     - external threat detection
  *     - environmental anomaly scanning
  *     - hostile pattern recognition
  *     - perimeter-level packet filtering
  *     - early-warning alerts
- *     - binary immune artery metrics v3 (throughput, pressure, cost, budget)
+ *     - binary immune artery metrics v6 (throughput, pressure, cost, budget)
  *     - multi-instance harmony + spiral warnings (non-blocking)
  *
- * ARCHITECTURAL POSITION:
- *   Layer: Binary Immune System (BIS)
- *   Band: Binary (primary), Symbolic (optional trace)
- *   Mode: Read‑only scanning + binary anomaly emission
- *
- *   This organ is NOT:
- *     - internal immunity
- *     - a reflex engine
- *     - a pipeline
- *     - a cortex
- *
- *   This organ IS:
- *     - a perimeter scanner
- *     - a threat detector
- *     - a hostile-pattern filter
- *     - a binary sentinel
- *     - an immune artery pressure source
- *
- * ORGAN CONTRACT (v12.3‑EVO+):
- *   - Must never mutate external organs
- *   - Must never generate symbolic state
- *   - Must only emit binary packets
- *   - Must remain deterministic
- *   - Must treat all inputs as untrusted
- *   - Must not block the organism
- */
+ * CONTRACT:
+ *   - Never mutate external organs.
+ *   - Never generate symbolic state.
+ *   - Only emit binary packets.
+ *   - Deterministic, treats all inputs as untrusted.
+ *   - Must not block the organism.
+//  IMMORTAL‑EVO++
+// */
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const SentinelMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
-
 
 // ============================================================================
 //  SECURITY ARTERY HELPERS — v6 (IMMORTAL‑EVO++)
@@ -156,11 +123,11 @@ function computeSecurityArteryV6({
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v16‑IMMORTAL‑EVO++
+//  ORGAN IMPLEMENTATION — v24‑IMMORTAL‑EVO++
 // ============================================================================
 export class AISecuritySentinel {
   constructor(config = {}) {
-    this.id = config.id || "ai-security-sentinel";
+    this.id = config.id || SentinelMeta.identity || "ai-security-sentinel";
     this.encoder = config.encoder;
     this.immunity = config.immunity;
 
@@ -168,13 +135,10 @@ export class AISecuritySentinel {
     this.pipeline = config.pipeline || null;
     this.reflex = config.reflex || null;
 
-    // hooks: organism decides what to do with pulseHalt
-    this.onPulseHalt = typeof config.onPulseHalt === "function"
-      ? config.onPulseHalt
-      : null;
-    this.onIsolation = typeof config.onIsolation === "function"
-      ? config.onIsolation
-      : null;
+    this.onPulseHalt =
+      typeof config.onPulseHalt === "function" ? config.onPulseHalt : null;
+    this.onIsolation =
+      typeof config.onIsolation === "function" ? config.onIsolation : null;
 
     this.trace = !!config.trace;
 
@@ -197,6 +161,12 @@ export class AISecuritySentinel {
     this._totalPulseHalts = 0;
 
     this.instanceIndex = AISecuritySentinel._registerInstance();
+
+    this.lineage = Object.freeze({
+      version: SentinelMeta.version,
+      epoch: SentinelMeta.evo?.epoch,
+      identity: SentinelMeta.identity
+    });
   }
 
   // STATIC INSTANCE REGISTRY
@@ -295,23 +265,18 @@ export class AISecuritySentinel {
       return { threat: "entropy-anomaly", severity: 0.65, trust: 0.25 };
     }
 
-    // default: low risk, high trust
     return { threat: null, severity: 0.0, trust: 0.9 };
   }
 
   _decideAction({ severity, trust }) {
-    // deterministic policy:
-    // severity high OR trust very low → pulse halt + isolation
     if (severity >= 0.85 || trust <= 0.1) {
       return { action: "pulse_halt", isolation: true };
     }
 
-    // medium severity → isolation only
     if (severity >= 0.5 || trust <= 0.4) {
       return { action: "isolate", isolation: true };
     }
 
-    // low severity, high trust → allow
     return { action: "allow", isolation: false };
   }
 
@@ -329,7 +294,8 @@ export class AISecuritySentinel {
       trust,
       action,
       isolation,
-      artery
+      artery,
+      lineage: this.lineage
     };
 
     const json = JSON.stringify(payload);
@@ -360,7 +326,7 @@ export class AISecuritySentinel {
 
   // ========================================================================
   //  EVALUATE (pure decision, no side effects)
-// ========================================================================
+  // ========================================================================
   evaluate(binary) {
     const now = Date.now();
     this._rollWindow(now);
@@ -425,7 +391,6 @@ export class AISecuritySentinel {
   enforce(binary) {
     const decision = this.evaluate(binary);
 
-    // emit binary packet to pipeline/reflex/logger
     if (decision.packet) {
       const bits = decision.packet.bits;
       if (this.pipeline) this.pipeline.run(bits);
@@ -438,7 +403,6 @@ export class AISecuritySentinel {
         });
     }
 
-    // isolation path
     if (decision.isolation && this.onIsolation) {
       try {
         this.onIsolation({ binary, decision });
@@ -447,7 +411,6 @@ export class AISecuritySentinel {
       }
     }
 
-    // pulse halt path — organism decides what "stop pulse" means
     if (decision.action === "pulse_halt" && this.onPulseHalt) {
       try {
         this.onPulseHalt({ binary, decision });
@@ -456,7 +419,6 @@ export class AISecuritySentinel {
       }
     }
 
-    // immunity sanitization for any non-allow
     if (decision.action !== "allow") {
       this.immunity.sanitize(binary);
     }
@@ -482,7 +444,7 @@ export class AISecuritySentinel {
 }
 
 // ============================================================================
-//  FACTORY — v16‑IMMORTAL‑EVO++
+//  FACTORY — v24‑IMMORTAL‑EVO++
 // ============================================================================
 export function createAISecuritySentinel(config) {
   return new AISecuritySentinel(config);

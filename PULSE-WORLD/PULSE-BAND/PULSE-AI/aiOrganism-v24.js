@@ -1,13 +1,14 @@
 // ============================================================================
-//  aiOrganism-v16-Immortal++.js — Pulse OS v16-Immortal++ Organism
-//  Dualband Organism Bootloader • Canonical Assembly • Trust/Artery Aware
+//  aiOrganism-v24-Immortal+++ .js — Pulse OS v24-Immortal+++ Organism
+//  Dualband Organism Bootloader • Canonical Assembly • Trust/Artery/CNS/Spine Aware
 // ============================================================================
 //
-// ROLE (v16-Immortal-Organism++):
+// ROLE (v24-Immortal-Organism+++):
 //   • Canonically assemble the binary + symbolic organism (organs, registry, conductor).
 //   • Provide a deterministic, dualband-ready organism surface.
 //   • Expose a stable organismSnapshot + organismArtery for higher layers.
-//   • Integrate with diagnostics, deps, trust fabric, dualband, and Pulse-Net.
+//   • Integrate with diagnostics, deps, trust fabric, dualband, Pulse-Net,
+//     CNS Nervous System, Spinal Cord, and Survival Instincts.
 //   • Never perform user routing, UI, or external network access directly.
 //   • Never mutate external config or DB; pure assembly + internal wiring.
 //
@@ -15,17 +16,16 @@
 //   • Deterministic, drift-proof, read-only outward surface.
 //   • No random, no timestamps, no external mutation.
 //   • No direct internet / HTTP / DNS / WebSocket.
+//   • CNS / Spine / Instincts are attached as pure internal organs / surfaces.
 // ============================================================================
 
 import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  (backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 export const OrganismMeta = Identity.OrganMeta;
 
@@ -36,9 +36,7 @@ export const OrganismMeta = Identity.OrganMeta;
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -48,7 +46,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-//  IMPORTS — binary organs (v11.3‑EVO lineage)
+//  IMPORTS — binary organs (v24 lineage)
 // ============================================================================
 import { createAIBinaryAgent } from "./aiBinaryAgent-v24.js";
 import { createAIMemory } from "./aiMemory-v24.js";
@@ -153,7 +151,16 @@ import depsSurface, {
 import { runAI, ExecutionEngineMeta } from "./aiEngine-v24.js";
 
 // ============================================================================
-//  ORGANISM ARTERY — v16 IMMORTAL++
+//  EXTERNAL ORGANS (CNS / SPINAL / INSTINCTS) — injected surfaces
+//  NOTE: these are expected to be passed in via config, not imported here,
+//        to keep aiOrganism purely assembly-only and environment-agnostic.
+//  config.cns                → PulseOSCNSNervousSystem surface
+//  config.spinalCord         → PulseOSSpinalCord surface
+//  config.survivalInstincts  → PulseOSSurvivalInstincts surface
+// ============================================================================
+
+// ============================================================================
+//  ORGANISM ARTERY — v24 IMMORTAL+++
 // ============================================================================
 function computeOrganismArtery(self) {
   const registryCount = self.registry?.count?.() ?? 0;
@@ -161,20 +168,33 @@ function computeOrganismArtery(self) {
   const metabolicLoad = self.metabolism?.getLoad?.() ?? null;
   const immunityState = self.immunity?.getState?.() ?? null;
 
+  const cnsDiagnostics = self.cns?.getDiagnostics?.() ?? null;
+  const spinalAdvantage = self.spinalCord?.getSpinalAdvantageSnapshot?.() ?? null;
+  const spinalPresence = self.spinalCord?.getSpinalPresenceSnapshot?.() ?? null;
+  const spinalHealth = self.spinalCord?.getHealth?.() ?? null;
+
+  const survivalMeta = self.survivalInstincts?.meta ?? null;
+  const survivalEvolutionCount =
+    self.survivalInstincts?.getEvolutionCount?.() ?? null;
+
   const buckets = {
-    registry: registryCount > 64 ? "high" : registryCount > 0 ? "medium" : "none",
+    registry: registryCount > 128 ? "ultra" : registryCount > 64 ? "high" : registryCount > 0 ? "medium" : "none",
     metabolic:
       metabolicPressure != null
-        ? metabolicPressure >= 0.9
+        ? metabolicPressure >= 0.95
           ? "critical"
-          : metabolicPressure >= 0.7
+          : metabolicPressure >= 0.8
           ? "high"
-          : metabolicPressure >= 0.4
+          : metabolicPressure >= 0.5
           ? "medium"
           : metabolicPressure > 0
           ? "low"
           : "none"
-        : "none"
+        : "none",
+    nervous:
+      immunityState && immunityState.alertLevel
+        ? immunityState.alertLevel
+        : "unknown"
   };
 
   return Object.freeze({
@@ -188,12 +208,20 @@ function computeOrganismArtery(self) {
     metabolicPressure,
     metabolicLoad,
     immunityState,
-    buckets
+    buckets,
+
+    // v24+++: CNS / Spine / Instincts artery branches
+    cnsDiagnostics,
+    spinalAdvantage,
+    spinalPresence,
+    spinalHealth,
+    survivalMeta,
+    survivalEvolutionCount
   });
 }
 
 // ============================================================================
-//  ORGANISM IMPLEMENTATION — v16 IMMORTAL++
+//  ORGANISM IMPLEMENTATION — v24 IMMORTAL+++
 // ============================================================================
 export class AIOrganism {
   constructor(config = {}) {
@@ -406,6 +434,14 @@ export class AIOrganism {
     });
 
     // ---------------------------------------------------------
+    //  EXTERNAL ORGANS ATTACHMENT — CNS / SPINAL / INSTINCTS
+    //  (injected via config, no hard dependency)
+// ---------------------------------------------------------
+    this.cns = config.cns || config.CNS || null;
+    this.spinalCord = config.spinalCord || config.spine || null;
+    this.survivalInstincts = config.survivalInstincts || null;
+
+    // ---------------------------------------------------------
     //  META SURFACES / ENGINE HANDLE
     // ---------------------------------------------------------
     this.meta = {
@@ -547,7 +583,7 @@ export class AIOrganism {
     }
 
     // ---------------------------------------------------------
-    //  PREWARM — symbolic + cognitive + diagnostics
+    //  PREWARM — symbolic + cognitive + diagnostics + deps
     // ---------------------------------------------------------
     prewarmCognitiveFrame(this.cognitiveFrame);
     prewarmContextEngine(this.contextEngine);
@@ -559,6 +595,20 @@ export class AIOrganism {
     prewarmDiagnosticsOrgan(this.diagnostics);
     prewarmDiagnosticsWriteOrgan(this.diagnosticsWrite);
     prewarmDepsLayer(this.deps);
+
+    // v24+++: allow external organs to prewarm if they expose prewarm surfaces
+    if (this.cns?.getCNSNervousSystemDiagnostics) {
+      // touch diagnostics once to “wake” CNS without side effects
+      this.cns.getDiagnostics?.();
+    }
+
+    if (this.spinalCord?.getSpinalAdvantageSnapshot) {
+      this.spinalCord.getSpinalAdvantageSnapshot();
+    }
+
+    if (this.survivalInstincts?.getEvolutionCount) {
+      this.survivalInstincts.getEvolutionCount();
+    }
 
     // ---------------------------------------------------------
     //  OPTIONAL SELF-RUNNING ENGINE
@@ -584,7 +634,21 @@ export class AIOrganism {
   //  PUBLIC API
   // ---------------------------------------------------------
   sense(event) {
+    // Binary PageScanner path
     this.pageScannerAdapter._handleScannerEvent(event);
+
+    // v24+++: forward to CNS if present (pure event, no routing)
+    if (this.cns?.logEvent) {
+      try {
+        this.cns.logEvent("aiOrganismSense", {
+          event,
+          __band: "symbolic",
+          __dnaTag: "ai-organism-sense"
+        });
+      } catch {
+        // CNS must never break organism
+      }
+    }
   }
 
   compute(value) {
@@ -661,7 +725,7 @@ export class AIOrganism {
 }
 
 // ============================================================================
-//  PREWARM WRAPPER — v16 IMMORTAL++
+//  PREWARM WRAPPER — v24 IMMORTAL+++
 // ============================================================================
 export function prewarmAIOrganism({ trace = false } = {}) {
   try {
@@ -683,7 +747,7 @@ export function prewarmAIOrganism({ trace = false } = {}) {
 
     return true;
   } catch (err) {
-    console.error("[AIOrganism Prewarm v16++] Failed:", err);
+    console.error("[AIOrganism Prewarm v24+++] Failed:", err);
     return false;
   }
 }

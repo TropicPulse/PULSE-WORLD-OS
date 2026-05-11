@@ -1,8 +1,9 @@
 // ============================================================================
 // FILE: /PulseOS/Organs/Immune/PulseOSThymus.js
-// PULSE OS — v12.3-Evo-Max-Immune
+// PULSE OS — v24.0-IMMORTAL++
 // “THE THYMUS / IMMUNE COMMAND ORGAN”
 // DUAL‑BAND IMMUNE NUCLEUS • PREWARM PLAN • CHUNK/PRESENCE AWARE
+// PURE METADATA • ZERO TIMERS • ZERO I/O • ZERO AI
 // ============================================================================
 import {
   OrganismIdentity,
@@ -29,19 +30,19 @@ export const OS_EVENTS_COLLECTION     = "OSEvents";
 export const OS_HEARTBEAT_INTERVAL_MS      = 30_000;
 export const FUNCTION_LOG_SCAN_INTERVAL_MS = 60_000;
 
-// ⭐ Version + Generation + Organ Identity (v12.3-Evo-Max aligned)
-export const PULSE_OS_ID         = "PulseOS-v12.3-Evo-Max";
+// ⭐ Version + Generation + Organ Identity (v24.0-IMMORTAL++ aligned)
+export const PULSE_OS_ID         = "PulseOS-v24.0-IMMORTAL++";
 export const PULSE_OS_ROLE       = "immune_command_organ";
-export const PULSE_OS_GENERATION = "v12.3";
+export const PULSE_OS_GENERATION = "v24.0";
 export const PULSE_OS_ORGAN      = "Thymus";
 
-// ⭐ Thymus identity block (v12.3-Evo-Max organism identity)
+// ⭐ Thymus identity block (v24.0-IMMORTAL++ organism identity)
 export const THYMUS_CONTEXT = {
   osId: PULSE_OS_ID,
   role: PULSE_OS_ROLE,
   organ: PULSE_OS_ORGAN,
   generation: PULSE_OS_GENERATION,
-  version: "12.3-Evo-Max-Immune",
+  version: "24.0-IMMORTAL++-Immune",
   evo: {
     // Core immune nucleus traits
     dualMode: true,
@@ -60,14 +61,14 @@ export const THYMUS_CONTEXT = {
     gpuDispatchAware: true,
     gpuMemoryAware: true,
 
-    // v12.3+ nervous-system alignment
+    // v24.0+ nervous-system alignment
     spinalAligned: true,
     spinalFirewallAware: true,
     survivalInstinctsAligned: true,
     shortTermMemoryAligned: true,
     sensoryCortexAligned: true,
 
-    // v12.3+ chunk / cache / prewarm / presence
+    // v24.0+ chunk / cache / prewarm / presence
     chunkAware: true,
     cacheAware: true,
     prewarmAware: true,
@@ -75,17 +76,17 @@ export const THYMUS_CONTEXT = {
     dualBandPresenceAware: true,
 
     // Conceptual compatibility (no logic impact)
-    routingContract: "PulseSend-v12.3",
-    osOrganContract: "PulseOS-v12.3-Evo-Max",
-    earnCompatibility: "PulseEarn-v12.3"
+    routingContract: "PulseSend-v24.0",
+    osOrganContract: "PulseOS-v24.0-IMMORTAL++",
+    earnCompatibility: "PulseEarn-v24.0"
   }
 };
 
 export const PulseOSThymusMeta = Object.freeze({
   layer: "PulseOSThymus",
   role: "IMMUNE_COMMAND_ORGAN",
-  version: "v12.3-Evo-BINARY-MAX-IMMUNE",
-  identity: "PulseOSThymus-v12.3-Evo-BINARY-MAX-IMMUNE",
+  version: "v24.0-IMMORTAL++-Immune",
+  identity: "PulseOSThymus-v24.0-IMMORTAL++-Immune",
 
   guarantees: Object.freeze({
     deterministic: true,
@@ -101,14 +102,14 @@ export const PulseOSThymusMeta = Object.freeze({
     immuneLineageKeeper: true,
     rootHealingAuthority: true,
 
-    // v12.3+ nervous-system alignment
+    // v24.0+ nervous-system alignment
     spinalAligned: true,
     spinalFirewallAware: true,
     survivalInstinctsAligned: true,
     shortTermMemoryAligned: true,
     sensoryCortexAligned: true,
 
-    // v12.3+ prewarm / chunk / cache / presence
+    // v24.0+ prewarm / chunk / cache / presence
     immunePrewarmPlanner: true,
     immuneChunkSignatureBuilder: true,
     immunePresenceMapper: true,
@@ -170,8 +171,8 @@ export const PulseOSThymusMeta = Object.freeze({
   }),
 
   lineage: Object.freeze({
-    root: "PulseOS-v12.3-Evo",
-    parent: "PulseOS-v12.3-Evo-MAX",
+    root: "PulseOS-v24.0-IMMORTAL++",
+    parent: "PulseOS-v24.0-IMMORTAL++",
     ancestry: [
       "PulseOSThymus-v7",
       "PulseOSThymus-v8",
@@ -180,7 +181,8 @@ export const PulseOSThymusMeta = Object.freeze({
       "PulseOSThymus-v11",
       "PulseOSThymus-v11-Evo",
       "PulseOSThymus-v11-Evo-Prime",
-      "PulseOSThymus-v12.3-Evo-Max-Immune"
+      "PulseOSThymus-v12.3-Evo-Max-Immune",
+      "PulseOSThymus-v24.0-IMMORTAL++-Immune"
     ]
   }),
 
@@ -299,7 +301,7 @@ function buildSubsystemSnapshot(subsystem, entry = {}) {
 }
 
 // ============================================================================
-//  v12.3+ IMMUNE PREWARM / CHUNK / PRESENCE BUILDERS — PURE METADATA
+//  v24.0+ IMMUNE PREWARM / CHUNK / PRESENCE BUILDERS — PURE METADATA
 // ============================================================================
 
 // buildImmunePrewarmPlan() — how the organism should prewarm nervous system
@@ -388,7 +390,7 @@ function buildImmunePresenceMap(presenceContext = {}) {
 }
 
 // ============================================================================
-//  PUBLIC IMMUNE NUCLEUS API — PURE BUILDERS (NO LOOPS, NO I/O)
+/*  PUBLIC IMMUNE NUCLEUS API — PURE BUILDERS (NO LOOPS, NO I/O) */
 // ============================================================================
 
 export const PulseOSThymus = {
@@ -401,7 +403,7 @@ export const PulseOSThymus = {
   buildFunctionLogIngestEvent,
   buildSubsystemSnapshot,
 
-  // v12.3+ immune nervous-system overlays
+  // v24.0+ immune nervous-system overlays
   buildImmunePrewarmPlan,
   buildImmuneChunkSignatures,
   buildImmunePresenceMap
@@ -462,6 +464,6 @@ export default function startPulseOS() {
     meta: THYMUS_CONTEXT,
     organ: "Thymus",
     generation: PULSE_OS_GENERATION,
-    version: "12.3-Evo-Max-Immune"
+    version: "24.0-IMMORTAL++-Immune"
   };
 }
