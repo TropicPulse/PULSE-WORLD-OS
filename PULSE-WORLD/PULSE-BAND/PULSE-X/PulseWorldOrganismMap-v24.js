@@ -453,19 +453,20 @@ function classifySystem(system) {
   // DEFAULT
   return { layer: "generic", kind: "system" };
 }
-
 // ============================================================================
-// SCAN SYSTEMS — Pure FS API, v24‑IMMORTAL‑WORLD
+// SCAN SYSTEMS — v24.1 IMMORTAL WORLD GENOME++
+// Extracts subsystem + version directly from folder names
 // ============================================================================
 async function scanPulseSystems() {
   fs = getFsAPI({ trace: false });
 
   const allFiles = await fs.getAllFiles();
 
+  // Detect PULSE-* system directories
   const pulseSystems = allFiles
     .filter(f => f.type === "dir" && f.name.startsWith("PULSE-"))
     .map(f => ({
-      name: f.name,
+      name: f.name,   // e.g. "PULSE-PAGES-v24"
       path: f.path
     }));
 
@@ -476,23 +477,38 @@ async function scanPulseSystems() {
       f.path.startsWith(system.path)
     );
 
+    // Extract organ names
     const organs = systemFiles
       .filter(f => f.type === "file" && f.name.endsWith(".js"))
       .map(f => f.name.replace(".js", ""));
 
+    // NEW: Extract subsystem + version from folder name
+    const subsystem = system.name
+      .replace(/^PULSE-/, "")      // remove PULSE-
+      .replace(/-v\d+$/i, "")      // remove -v24
+      .toLowerCase();              // normalize
+
+    const versionMatch = system.name.match(/v(\d+)/i);
+    const version = versionMatch ? `v${versionMatch[1]}.0` : "v24.0";
+
+    // Existing classification logic
     const classification = classifySystem(system);
 
+    // NEW: Store subsystem + version in system object
     systems[system.name.toLowerCase()] = {
       root: system.name,
       path: system.path,
       layer: classification.layer,
       kind: classification.kind,
+      subsystem,   // e.g. "pages"
+      version,     // e.g. "v24.0"
       organs
     };
   }
 
   return systems;
 }
+
 
 // ============================================================================
 // IDENTITY GENERATION ENGINE — v24‑IMMORTAL‑WORLD‑GENOME++
