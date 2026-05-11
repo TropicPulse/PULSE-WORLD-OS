@@ -782,32 +782,74 @@ function createPulseTouch(options = {}) {
   // ============================================================
   // ONE-TIME ROUTE SCAN + IMAGE PRELOAD (IMMORTAL++ SAFE)
   // ============================================================
-
-  let hasScannedRoute = false;
+let hasScannedRoute = false;
 
 async function scanAndPreloadRouteImages(routeHtml) {
-  if (hasScannedRoute) return; // ONE TIME ONLY
+  if (hasScannedRoute) return;
   hasScannedRoute = true;
 
   try {
     const html = await fetch(routeHtml, { cache: "force-cache" }).then(r => r.text());
     const doc = new DOMParser().parseFromString(html, "text/html");
-    const imgs = [...doc.querySelectorAll("img")].map(i => i.getAttribute("src"));
 
-    imgs.forEach(src => {
-      if (!src) return;
+    // Extract all image URLs
+    const allImgs = [...doc.querySelectorAll("img")]
+      .map(i => i.getAttribute("src"))
+      .filter(Boolean);
+
+    // ⭐ 1 — CRITICAL IMAGES (first 8 or first viewport)
+    const critical = allImgs.slice(0, 8);
+
+    critical.forEach(src => {
       const img = new Image();
+      img.loading = "eager"; // force decode
       img.src = src;
+    });
+
+    // ⭐ 2 — NON-CRITICAL IMAGES (lazy warm)
+    const nonCritical = allImgs.slice(8);
+
+    // Lazy warm using IntersectionObserver
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        const src = entry.target.dataset.src;
+        if (!src) return;
+
+        // warm cache
+        const warm = new Image();
+        warm.src = src;
+
+        // remove observer
+        io.unobserve(entry.target);
+      });
+    }, { rootMargin: "300px" });
+
+    // Create invisible lazy warmers
+    nonCritical.forEach(src => {
+      const probe = document.createElement("div");
+      probe.dataset.src = src;
+      probe.style.position = "absolute";
+      probe.style.top = "999999px"; // offscreen
+      probe.style.width = "1px";
+      probe.style.height = "1px";
+      document.body.appendChild(probe);
+      io.observe(probe);
     });
 
     appendTouchTimeline("route_image_prewarm", {
       route: routeHtml,
-      count: imgs.length
+      count: allImgs.length,
+      critical: critical.length,
+      lazy: nonCritical.length
     });
-  } catch {
+
+  } catch (err) {
     appendTouchTimeline("route_image_prewarm_failed", { route: routeHtml });
   }
 }
+
 
 
 // ⭐ MAKE IT AVAILABLE GLOBALLY
