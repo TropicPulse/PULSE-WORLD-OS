@@ -61,19 +61,11 @@ export { PulseProofBridge };
 // ============================================================================
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
+
+import { PulseWorldEndpoint } from "./PulseWorldEndpoint-v24.js";
 import { PulseProofSignal } from "../_MONITOR/PulseProofSignal-v24.js";
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
-import {
-  VitalsLogger as PulseProofLogger,
-  log,
-  warn,
-  error,
-  comment,
-  makeTelemetryPacket as emitTelemetry,
-  PulseVersion,
-  PulseColors,
-  PulseIcons
-} from "../_MONITOR/PulseProofLogger-v24.js";
+import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons} from "../_MONITOR/PulseProofLogger-v24.js";
 import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
 import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
@@ -855,8 +847,6 @@ export const PulseProofBridgeErrors = PulseUIErrors;
     console.error("[PulseProofBridge v24] Global exposure failed:", err);
   }
 })();
-
-import { PulseWorldEndpoint } from "./PulseWorldEndpoint-v24.js";
 
 // ⭐ THIS IS THE WHOLE POINT OF THIS PAGE
 window.PulseRemoteEndpoint = {
