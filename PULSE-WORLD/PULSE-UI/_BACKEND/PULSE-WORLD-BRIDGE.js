@@ -561,9 +561,9 @@ const imagePending = Object.create(null);
 //  SAFE ROUTE
 // ============================================================================
 export function safeRoute(path, payload = {}, timeoutMs = 10000) {
-  trace("CNS (SAFE)", { path, payload });
+  trace("BRIDGE (SAFE)", { path, payload });
 
-  // 1. If PulseHooks has the function → USE IT DIRECTLY
+  // 1 — Direct frontend hooks (keep this)
   if (typeof window !== "undefined" &&
       window.PulseHooks &&
       typeof window.PulseHooks[path] === "function") {
@@ -578,29 +578,29 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
     }
   }
 
-  // 2. Fire-and-forget CNS pulses
-  const requestId =
-    "req-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
-
-  if (FIRE_AND_FORGET_PATHS.has(path)) {
-    send(envelope("CNS_REQUEST", { requestId, path, payload }));
-    return Promise.resolve(null);
-  }
-
-  // 3. CNS route with response (fallback)
+  // 2 — DIRECT BRIDGE ROUTE (THIS IS WHAT YOU WANT)
   return new Promise((resolve) => {
+    const requestId =
+      "req-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+
     const timer = setTimeout(() => {
       delete pending[requestId];
       appendBridgeRecord("safeRoute_timeout", { path, payload });
-      recordBridgeFailure(path, "timeout");
       resolve(null);
     }, timeoutMs);
 
     pending[requestId] = { resolve, timer, path };
 
-    send(envelope("CNS_REQUEST", { requestId, path, payload }));
+    // THIS IS THE FIX — SEND TO BRIDGE, NOT CNS
+    window.Bridge.send({
+      type: "BRIDGE_ROUTE",
+      requestId,
+      path,
+      payload
+    });
   });
 }
+
 
 // ============================================================================
 //  SIGNAL (CNS side, not PulseProofSignal)

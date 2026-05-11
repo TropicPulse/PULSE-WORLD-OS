@@ -641,6 +641,23 @@ export function projectWorldBandForUser({
 }
 
 // ============================================================================
+//  CHECKBAND SIGNAL PROVIDER — backend PulseBand signal expert (no routing)
+//  • Direct, deterministic band signal surfaces for bridge / CNS / OSKernel
+// ============================================================================
+
+export function getCheckBandSignalForUserFromScores(userId, userScoresDoc) {
+  return projectWorldBandForUser({
+    userId,
+    data: userScoresDoc,
+    orchestratorMode: ORCHESTRATOR_MODES.NORMAL
+  });
+}
+
+export function getCheckBandGlobalSignal() {
+  return getCheckBandStateSnapshot();
+}
+
+// ============================================================================
 //  MAIN ORCHESTRATOR LOOP — v24‑IMMORTAL++‑WORLDBAND‑PRESENCE‑ADVANTAGE
 //  • Reads presence/pulse fields if present, otherwise safe defaults
 //  • Worse pulses/presence → lower band, never higher
@@ -867,5 +884,7 @@ export default {
   runInstanceOrchestrator,
   getCheckBandStateSnapshot,
   getCheckBandDiagnostics,
-  projectWorldBandForUser
+  projectWorldBandForUser,
+  getCheckBandSignalForUserFromScores,
+  getCheckBandGlobalSignal
 };
