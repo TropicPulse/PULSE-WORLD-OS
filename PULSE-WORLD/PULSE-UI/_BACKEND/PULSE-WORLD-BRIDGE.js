@@ -568,10 +568,25 @@ const imagePending = Object.create(null);
 // ============================================================================
 //  SAFE ROUTE
 // ============================================================================
-
 export function safeRoute(path, payload = {}, timeoutMs = 10000) {
   trace("CNS (SAFE)", { path, payload });
 
+  // 1. If PulseHooks has the function → USE IT DIRECTLY
+  if (typeof window !== "undefined" &&
+      window.PulseHooks &&
+      typeof window.PulseHooks[path] === "function") {
+
+    appendBridgeRecord("safeRoute_direct_call", { path, payload });
+
+    try {
+      return Promise.resolve(window.PulseHooks[path](payload));
+    } catch (err) {
+      appendBridgeRecord("safeRoute_direct_error", { path, payload, err });
+      return Promise.resolve(null);
+    }
+  }
+
+  // 2. Fire-and-forget CNS pulses
   const requestId =
     "req-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
 
@@ -580,6 +595,7 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
     return Promise.resolve(null);
   }
 
+  // 3. CNS route with response (fallback)
   return new Promise((resolve) => {
     const timer = setTimeout(() => {
       delete pending[requestId];
