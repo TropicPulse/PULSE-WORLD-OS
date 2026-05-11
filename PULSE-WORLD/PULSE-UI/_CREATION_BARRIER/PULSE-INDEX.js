@@ -1,4 +1,4 @@
-import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
+
 /* ============================================================
    IMMORTAL COLOR CONSTANTS
 ============================================================ */
@@ -83,37 +83,118 @@ if (!window.__PULSE_UI_INIT__) {
       advantage:  document.getElementById("pb-advantage"),
       estimated:  document.getElementById("pb-estimated")
     };
+    
+async function waitForEngines() {
+  logID("WAITING FOR ENGINES — HARD‑WIRE MODE");
 
-    async function waitForEngines() {
-      logID("WAITING FOR ENGINES…");
+  // Try to attach to kernel if Pulse‑Touch booted it
+  async function tryWireKernel() {
+    let Kernel =
+      window.PulseBinaryKernel ||
+      window.PulseBinaryOSv24Immortal?.Kernel ||
+      null;
 
-      while (
-        !PulseProofMonitor ||
-        !window.VitalsMonitor ||
-        !window.VitalsMonitor.Vitals ||
-        !window.VitalsMonitor.Vitals.generate ||
-        !window.PulseBinary ||
-        !window.PulseBinary.Sentience
-      ) {
-        logWarn("Engines not ready yet…");
-        await new Promise(res => setTimeout(res, 100));
-      }
-
-      logOK("ENGINES READY");
+    if (Kernel && typeof Kernel.then === "function") {
+      Kernel = await Kernel;
     }
+
+    if (!Kernel) {
+      logWarn("Kernel not found yet — waiting for Pulse‑Touch or OS boot…");
+      return;
+    }
+
+    // Expose kernel globally
+    window.PulseBinaryKernel = Kernel;
+
+    // Build PulseBinary shadow if missing
+    if (!window.PulseBinary) {
+      const vitalsImpl =
+        Kernel?.Vitals?.generateVitals ||
+        Kernel?.Vitals?.generate ||
+        null;
+
+      const sentienceImpl = Kernel?.Sentience?.snapshot || null;
+      const consciousnessImpl =
+        Kernel?.Consciousness?.generateConsciousnessPacket ||
+        Kernel?.Consciousness?.latest ||
+        null;
+
+      window.PulseBinary = Object.freeze({
+        meta: Kernel.meta || null,
+        Vitals: {
+          generate: () => (vitalsImpl ? vitalsImpl() : null)
+        },
+        Sentience: {
+          snapshot: () => (sentienceImpl ? sentienceImpl() : null)
+        },
+        Consciousness: {
+          latest: () => (consciousnessImpl ? consciousnessImpl() : null)
+        }
+      });
+
+      logOK("PulseBinary shadow created on index page");
+    }
+
+    // Build VitalsMonitor if missing
+    if (!window.VitalsMonitor) {
+      logWarn("VitalsMonitor missing — creating inline monitor");
+      window.VitalsMonitor = {
+        Vitals: {
+          generate() {
+            try {
+              return window.PulseBinary?.Vitals?.generate?.() ?? null;
+            } catch (err) {
+              logErr("VitalsMonitor.Vitals.generate failed", err);
+              return null;
+            }
+          }
+        }
+      };
+    }
+  }
+
+  // HARD‑WIRE LOOP
+  let spins = 0;
+  while (
+    !window.VitalsMonitor ||
+    !window.VitalsMonitor.Vitals ||
+    !window.VitalsMonitor.Vitals.generate ||
+    !window.PulseBinary ||
+    !window.PulseBinary.Sentience
+  ) {
+    spins++;
+
+    // Try to wire kernel + PulseBand every 10 spins
+    if (spins % 10 === 0) {
+      await tryWireKernel();
+    }
+
+    logWarn("Engines not ready yet…", {
+      spin: spins,
+      hasVitalsMonitor: !!window.VitalsMonitor,
+      hasPulseBinary: !!window.PulseBinary,
+      hasKernel: !!window.PulseBinaryKernel
+    });
+
+    await new Promise((res) => setTimeout(res, 100));
+  }
+
+  logOK("ENGINES READY — PulseBand fully embedded");
+}
+
 
     async function updatePulseBand() {
       try {
-        if (!PulseProofMonitor) {
+        if (!window.VitalsMonitor) {
           logWarn("VitalsMonitor missing");
           return;
         }
-        if (!PulseProofMonitor) {
+        if (!window.PulseBinary) {
           logWarn("PulseBinary missing");
           return;
         }
 
-        const vitals    = PulseProofMonitor.Vitals.generate() ?? null;
+        const vitals    = window.VitalsMonitor.Vitals.generate() ?? null;
         const binary    = window.PulseBinary ?? null;
         const sentience = binary?.Sentience?.snapshot?.() ?? null;
 
