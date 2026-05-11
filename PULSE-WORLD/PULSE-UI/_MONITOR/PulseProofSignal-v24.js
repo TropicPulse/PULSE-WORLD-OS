@@ -25,9 +25,6 @@ const g =
     ? self
     : {};
 
-// global guard for Signal↔Logger recursion
-g.__PULSE_SIGNAL_LOGGING = g.__PULSE_SIGNAL_LOGGING || { active: false };
-
 // ============================================================================
 //  PACKET EMITTER — deterministic, signal-scoped, FRONTEND-SAFE
 //  No OrganismMap, No Meta, No EXPORT_META, No evo.epoch
@@ -262,14 +259,6 @@ const TopLayerMerge = {
   },
 
   _emitToLogger(comment) {
-    // hard guard: never allow Signal → Logger → Signal recursion
-    if (g.__PULSE_SIGNAL_LOGGING.active) {
-      try {
-        _c.log("[PulseProofSignal:FALLBACK]", comment);
-      } catch {}
-      return;
-    }
-
     const logger =
       (g.PulseLogger && typeof g.PulseLogger.log === "function"
         ? g.PulseLogger
@@ -278,22 +267,12 @@ const TopLayerMerge = {
         ? g.PulseProofLogger
         : null);
 
-    if (!logger) {
-      try {
-        _c.log("[PulseProofSignal:COMMENT]", comment);
-      } catch {}
-      return;
-    }
+    if (!logger) return;
 
     try {
-      g.__PULSE_SIGNAL_LOGGING.active = true;
       logger.log("comment", comment);
     } catch {
-      try {
-        _c.log("[PulseProofSignal:LOGGER-ERROR]", comment);
-      } catch {}
-    } finally {
-      g.__PULSE_SIGNAL_LOGGING.active = false;
+      // Never throw into caller
     }
   }
 };
@@ -483,13 +462,7 @@ function normalizeDirectSignal(payload = {}) {
 function safeWrap(fn, wrapper) {
   if (typeof fn !== "function") return fn;
   const original = fn;
-
   const wrapped = function wrappedLoggerFn(...args) {
-    // If we're already in a Signal→Logger path, don't re-signal
-    if (g.__PULSE_SIGNAL_LOGGING && g.__PULSE_SIGNAL_LOGGING.active) {
-      return original.apply(this, args);
-    }
-
     let result;
     try {
       result = original.apply(this, args);
@@ -505,17 +478,13 @@ function safeWrap(fn, wrapper) {
     }
 
     try {
-      // Do NOT re-signal comment logs; they are already Signal-authored
-      if (!(typeof args[0] === "string" && args[0] === "comment")) {
-        wrapper({ args, result, fnName: original.name || "anonymous" });
-      }
+      wrapper({ args, result, fnName: original.name || "anonymous" });
     } catch {
       // Signal wrapper must never throw into logger
     }
 
     return result;
   };
-
   return wrapped;
 }
 
@@ -553,7 +522,7 @@ function attachToLogger(logger) {
           payload
         });
         SignalBuffer.push(packet);
-        // no comment here to avoid extra logger traffic
+        emitCommentLogForPacket(packet, "log-pulse");
       } catch {
         // ignore
       }
