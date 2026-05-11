@@ -1,4 +1,5 @@
-
+// ⭐ NEW: Import upgraded CSS‑merged signal engine
+import { PulseProofSignal } from "../_MONITOR/PulseProofSignal-v25.js";
 /* ============================================================
    IMMORTAL COLOR CONSTANTS
 ============================================================ */
@@ -86,123 +87,28 @@ if (!window.__PULSE_UI_INIT__) {
     };
     
 async function waitForEngines() {
-  logID("WAITING FOR ENGINES — HARD‑WIRE MODE + PULSEBAND SUPPORT");
-
-  async function tryWireKernel() {
-    let Kernel =
-      window.PulseBinaryKernel ||
-      window.PulseBinaryOSv24Immortal?.Kernel ||
-      null;
-
-    if (Kernel && typeof Kernel.then === "function") {
-      Kernel = await Kernel;
-    }
-
-    if (Kernel) {
-      window.PulseBinaryKernel = Kernel;
-
-      if (!window.PulseBinary) {
-        const vitalsImpl =
-          Kernel?.Vitals?.generateVitals ||
-          Kernel?.Vitals?.generate ||
-          null;
-
-        const sentienceImpl = Kernel?.Sentience?.snapshot || null;
-        const consciousnessImpl =
-          Kernel?.Consciousness?.generateConsciousnessPacket ||
-          Kernel?.Consciousness?.latest ||
-          null;
-
-        window.PulseBinary = Object.freeze({
-          meta: Kernel.meta || null,
-          Vitals: {
-            generate: () => (vitalsImpl ? vitalsImpl() : null)
-          },
-          Sentience: {
-            snapshot: () => (sentienceImpl ? sentienceImpl() : null)
-          },
-          Consciousness: {
-            latest: () => (consciousnessImpl ? consciousnessImpl() : null)
-          }
-        });
-
-        logOK("PulseBinary shadow created on index page");
-      }
-
-      if (!window.VitalsMonitor) {
-        logWarn("VitalsMonitor missing — creating inline monitor");
-        window.VitalsMonitor = {
-          Vitals: {
-            generate() {
-              try {
-                return window.PulseBinary?.Vitals?.generate?.() ?? null;
-              } catch (err) {
-                logErr("VitalsMonitor.Vitals.generate failed", err);
-                return null;
-              }
-            }
-          }
-        };
-      }
-    }
-  }
-
-  // NEW: Try to wire PulseBand FIRST
-  function tryWirePulseBand() {
-    if (window.pulseband && !window.PulseBand) {
-      window.PulseBand = window.pulseband;
-      logOK("PulseBand detected via window.pulseband");
-    }
-
-    if (window.PulseBand) {
-      // PulseBand is a session engine, not a vitals engine
-      // but we expose it so updatePulseBand() can use it if needed
-      return true;
-    }
-
-    return false;
-  }
+  logID("WAITING FOR ENGINES — SIGNAL MODE");
 
   let spins = 0;
 
   while (true) {
     spins++;
 
-    // 1. Prefer PulseBand if present
-    if (tryWirePulseBand()) {
-      logOK("PulseBand available — engines ready");
-      return;
-    }
-
-    // 2. Try to wire PulseBinaryKernel every 10 spins
-    if (spins % 10 === 0) {
-      await tryWireKernel();
-    }
-
-    // 3. If PulseBinary + VitalsMonitor exist → ready
-    if (
-      window.VitalsMonitor &&
-      window.VitalsMonitor.Vitals &&
-      window.VitalsMonitor.Vitals.generate &&
-      window.PulseBinary &&
-      window.PulseBinary.Sentience
-    ) {
-      logOK("PulseBinary engines ready");
+    const comments = PulseProofSignal.comments(1);
+    if (comments && comments.length) {
+      logOK("ENGINES READY — Signal engine online");
       return;
     }
 
     logWarn("Engines not ready yet…", {
       spin: spins,
-      hasPulseBand: !!window.PulseBand,
-      hasPulseBinary: !!window.PulseBinary,
-      hasVitalsMonitor: !!window.VitalsMonitor,
-      hasKernel: !!window.PulseBinaryKernel
+      hasSignal: comments && comments.length
     });
 
     await new Promise((res) => setTimeout(res, 100));
   }
-  logOK("ENGINES READY — PulseBand fully embedded");
 }
+
 
 async function updatePulseBand() {
   try {
