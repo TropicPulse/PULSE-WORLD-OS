@@ -779,6 +779,40 @@ function createPulseTouch(options = {}) {
   // 9) Optionally act on gate decision (e.g., hard refresh)
   applyGateDecision(gateDecision, detected);
 
+  // ============================================================
+  // ONE-TIME ROUTE SCAN + IMAGE PRELOAD (IMMORTAL++ SAFE)
+  // ============================================================
+
+  let hasScannedRoute = false;
+
+  async function scanAndPreloadRouteImages(routeHtml) {
+    if (hasScannedRoute) return; // ONE TIME ONLY
+    hasScannedRoute = true;
+
+    try {
+      const html = await fetch(routeHtml, { cache: "force-cache" }).then(r => r.text());
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const imgs = [...doc.querySelectorAll("img")].map(i => i.getAttribute("src"));
+
+      imgs.forEach(src => {
+        if (!src) return;
+        const img = new Image();
+        img.src = src;
+      });
+
+      appendTouchTimeline("route_image_prewarm", {
+        route: routeHtml,
+        count: imgs.length
+      });
+    } catch {
+      appendTouchTimeline("route_image_prewarm_failed", { route: routeHtml });
+    }
+  }
+
+  // CALL IT:
+  scanAndPreloadRouteImages(`./${detected.page}.html`);
+
+
   // 10) Ignite PulseNet (local immortal loop) — idempotent, portal-safe
   try {
     window.startPulseNet?.({
@@ -1175,6 +1209,28 @@ function applyGateDecision(gateDecision, skin) {
     }
   }
 }
+
+// ============================================================
+// AUTO‑IGNITION — TOUCH MUST RUN ITSELF (v24 IMMORTAL++)
+// ============================================================
+
+(function autoIgnitePulseTouch() {
+  try {
+    if (!window.__PULSE_TOUCH__) {
+      const page = location.pathname.split("/").pop().replace(".html", "") || "index";
+
+      createPulseTouch({
+        page,
+        mode: "fast",
+        presence: "active",
+        chunkProfile: "default",
+        band: "symbolic"
+      });
+    }
+  } catch (err) {
+    console.warn("PulseTouch auto‑ignite failed", err);
+  }
+})();
 
 
 // ============================================================
