@@ -536,8 +536,14 @@ export function prewarmPulseWorldEndpoint() {
  * This is what you wire into:
  *
  */
+// COLOR CONSTANTS — IMMORTAL PORTAL PATTERN
+const C_ID   = "color:#00E5FF; font-weight:bold; font-family:monospace;"; // Cyan
+const C_OK   = "color:#00FF9C; font-family:monospace;";                   // Neon Green
+const C_INFO = "color:#E8F8FF; font-family:monospace;";                   // White
+const C_WARN = "color:#FFE066; font-family:monospace;";                   // Yellow
+const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;"; // Red
 
- export const PulseWorldEndpoint = Object.freeze({
+export const PulseWorldEndpoint = Object.freeze({
   /**
    * Main handler.
    */
@@ -546,20 +552,40 @@ export function prewarmPulseWorldEndpoint() {
     const type = route?.type || "Unknown";
     let error = null;
 
+    console.log(
+      "%c[PulseWorldEndpoint] %chandle() %c→ %s",
+      C_ID, C_INFO, C_OK, type
+    );
+
     // ⭐ NON‑BLOCKING PREWARM ON EVERY CALL
     try {
-      prewarmPulseWorldEndpoint(); // fire-and-forget
-    } catch (_) {}
+      prewarmPulseWorldEndpoint();
+      console.log("%c[PulseWorldEndpoint] %cprewarm fired", C_ID, C_OK);
+    } catch (_) {
+      console.log("%c[PulseWorldEndpoint] %cprewarm skipped", C_ID, C_WARN);
+    }
 
     try {
       let payload = route?.payload ?? null;
 
-      // If payload is chunked, assemble it first.
+      // ⭐ CHUNK ASSEMBLY
       if (payload && payload.chunkId) {
+        console.log(
+          "%c[PulseWorldEndpoint] %cchunk assembly %c→ chunkId:%s",
+          C_ID, C_WARN, C_INFO, payload.chunkId
+        );
+
         const chunkResult = handleChunkedPayload(payload);
+
         if (!chunkResult.complete) {
           const duration = nowMs() - start;
           recordLatency(type, duration, null);
+
+          console.log(
+            "%c[PulseWorldEndpoint] %cchunk incomplete %c→ waiting",
+            C_ID, C_WARN, C_INFO
+          );
+
           return {
             ok: true,
             type: "ChunkInProgress",
@@ -570,15 +596,24 @@ export function prewarmPulseWorldEndpoint() {
             }
           };
         }
+
+        console.log("%c[PulseWorldEndpoint] %cchunk complete", C_ID, C_OK);
         payload = chunkResult.payload;
       }
 
-      // Route by type.
+      // ⭐ ROUTE DISPATCH
+      console.log(
+        "%c[PulseWorldEndpoint] %cdispatch %c→ %s",
+        C_ID, C_INFO, C_OK, type
+      );
+
       switch (type) {
         case "CheckBand":
+          console.log("%c[PulseWorldEndpoint] %cCheckBand", C_ID, C_OK);
           return await handleCheckBand(payload);
 
         case "VitalsSample":
+          console.log("%c[PulseWorldEndpoint] %cVitalsSample", C_ID, C_OK);
           return await handleVitalsSample(payload);
 
         case "PulseNetRoute":
@@ -591,18 +626,29 @@ export function prewarmPulseWorldEndpoint() {
         case "PulseNetBrain":
         case "PulseNetHeartbeat":
         case "PulseNetFastLane":
+          console.log(
+            "%c[PulseWorldEndpoint] %cPulseNet route %c→ %s",
+            C_ID, C_OK, C_INFO, type
+          );
           return await handlePulseNetRoute(payload);
 
         case "CheckRouterMemory":
+          console.log("%c[PulseWorldEndpoint] %cCheckRouterMemory", C_ID, C_OK);
           return await handleCheckRouterMemory(payload);
 
         case "RouteDownAlert":
+          console.log("%c[PulseWorldEndpoint] %cRouteDownAlert", C_ID, C_WARN);
           return await handleRouteDownAlert(payload);
 
         case "PulseBandMetrics":
+          console.log("%c[PulseWorldEndpoint] %cPulseBandMetrics", C_ID, C_OK);
           return await handlePulseBandMetrics(payload);
 
         default:
+          console.log(
+            "%c[PulseWorldEndpoint] %cUnknown route %c→ %s",
+            C_ID, C_WARN, C_INFO, type
+          );
           return {
             ok: false,
             type: "UnknownRouteType",
@@ -615,6 +661,12 @@ export function prewarmPulseWorldEndpoint() {
       }
     } catch (err) {
       error = err;
+
+      console.error(
+        "%c[PulseWorldEndpoint] %cERROR %c→ %s",
+        C_ID, C_ERR, C_WARN, String(err)
+      );
+
       return {
         ok: false,
         type: "PulseWorldEndpointError",
@@ -626,29 +678,57 @@ export function prewarmPulseWorldEndpoint() {
       };
     } finally {
       const duration = nowMs() - start;
+
+      console.log(
+        "%c[PulseWorldEndpoint] %clatency %c→ %dms",
+        C_ID, C_INFO, C_OK, duration
+      );
+
       recordLatency(type, duration, error);
     }
   },
 
   getMetrics() {
+    console.log(
+      "%c[PulseWorldEndpoint] %cgetMetrics()",
+      C_ID, C_INFO
+    );
     return safeJsonClone(endpointMetrics);
   },
 
   getBandState(bandId) {
+    console.log(
+      "%c[PulseWorldEndpoint] %cgetBandState() %c→ %s",
+      C_ID, C_INFO, C_OK, bandId
+    );
     return safeJsonClone(getBandState(bandId));
   },
 
   getSpeedBoost(bandId) {
+    console.log(
+      "%c[PulseWorldEndpoint] %cgetSpeedBoost() %c→ %s",
+      C_ID, C_INFO, C_OK, bandId
+    );
     return safeJsonClone(getEffectiveSpeedBoost(bandId));
   }
 });
 
 // ============================================================================
-// AUTO-PREWARM ON IMPORT (KEEP THIS)
+// AUTO-PREWARM ON IMPORT
 // ============================================================================
+console.log(
+  "%c[PulseWorldEndpoint] %cauto-prewarm on import",
+  C_ID, C_OK
+);
+
 prewarmPulseWorldEndpoint();
 
 // ============================================================================
 // EXPOSE ENDPOINT
 // ============================================================================
+console.log(
+  "%c[PulseWorldEndpoint] %cexposed to window",
+  C_ID, C_OK
+);
+
 window.PulseRemoteEndpoint = PulseWorldEndpoint;

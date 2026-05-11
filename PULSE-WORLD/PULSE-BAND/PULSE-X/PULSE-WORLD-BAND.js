@@ -664,8 +664,34 @@ export function getCheckBandGlobalSignal() {
 //  • Emits global band state snapshot for CNS / OS‑Healer / Pulse‑World
 //  • v24++: Touch hint passthrough, advantage score, drift flags, cache
 // ============================================================================
+// IMMORTAL COLOR CONSTANTS
+const C_ID   = "color:#00E5FF; font-weight:bold; font-family:monospace;";
+const C_OK   = "color:#00FF9C; font-family:monospace;";
+const C_INFO = "color:#E8F8FF; font-family:monospace;";
+const C_WARN = "color:#FFE066; font-family:monospace;";
+const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;";
 
+function logID(msg, ...rest)   { console.log(`%c[CheckBand] %c${msg}`, C_ID, C_INFO, ...rest); }
+function logOK(msg, ...rest)   { console.log(`%c[CheckBand] %c${msg}`, C_ID, C_OK, ...rest); }
+function logWarn(msg, ...rest) { console.log(`%c[CheckBand] %c${msg}`, C_ID, C_WARN, ...rest); }
+function logErr(msg, ...rest)  { console.error(`%c[CheckBand] %c${msg}`, C_ID, C_ERR, ...rest); }
+
+
+// ============================================================================
+// IMMORTAL ORCHESTRATOR — WITH FULL LOGGING + ERROR VISIBILITY
+// ============================================================================
 export async function runInstanceOrchestrator(pulse) {
+  logID("orchestrator tick start", pulse);
+
+  let snap;
+  try {
+    snap = await db.collection("UserScores").get();
+    logOK("UserScores fetched", snap.size);
+  } catch (err) {
+    logErr("FAILED to fetch UserScores", err);
+    return false;
+  }
+
   const orchestratorMode =
     pulse?.mode && Object.values(ORCHESTRATOR_MODES).includes(pulse.mode)
       ? pulse.mode
@@ -674,90 +700,94 @@ export async function runInstanceOrchestrator(pulse) {
   const touchHint =
     pulse?.touchHint ||
     pulse?.pulseTouch ||
-    null; // symbolic-only hint from Pulse‑Touch / Pulse‑World if provided
+    null;
 
-  logger.log("adrenal", "tick_start", {
-    ...ADRENAL_CONTEXT,
-    pulseId: pulse?.jobId || pulse?.id || null,
-    mode: orchestratorMode
-  });
-
-  const snap = await db.collection("UserScores").get();
   const usersState = [];
 
   for (const doc of snap.docs) {
     const userId = doc.id;
-    const data = doc.data() || {};
 
-    const baseInstances = data.instances ?? 1;
-    const deviceTier = data.deviceTier ?? "normal";
-    const earnMode = data.earnMode ?? false;
-    const testEarnActive = data.testEarnActive ?? false;
+    logID("processing user", userId);
 
-    // Presence / pulse quality inputs (optional, safe defaults)
-    const pulseQuality = data.pulseQuality || PULSE_QUALITY.UNKNOWN;
-    const presenceTier = data.presenceTier || PRESENCE_TIER.UNKNOWN;
-    const bluetoothPresence = !!data.bluetoothPresence; // symbolic only
+    let data;
+    try {
+      data = doc.data() || {};
+    } catch (err) {
+      logErr("FAILED to read Firestore doc for user", userId, err);
+      continue;
+    }
 
-    const {
-      finalInstances,
-      maxAllowed,
-      degradeFactor,
-      driftFlags
-    } = computeFinalInstances(
-      baseInstances,
-      deviceTier,
-      earnMode,
-      testEarnActive,
-      orchestratorMode,
-      pulseQuality,
-      presenceTier
-    );
+    const baseInstances   = data.instances ?? 1;
+    const deviceTier      = data.deviceTier ?? "normal";
+    const earnMode        = data.earnMode ?? false;
+    const testEarnActive  = data.testEarnActive ?? false;
+
+    const pulseQuality      = data.pulseQuality || PULSE_QUALITY.UNKNOWN;
+    const presenceTier      = data.presenceTier || PRESENCE_TIER.UNKNOWN;
+    const bluetoothPresence = !!data.bluetoothPresence;
+
+    // COMPUTE FINAL INSTANCES
+    let finalInstances, maxAllowed, degradeFactor, driftFlags;
+    try {
+      ({
+        finalInstances,
+        maxAllowed,
+        degradeFactor,
+        driftFlags
+      } = computeFinalInstances(
+        baseInstances,
+        deviceTier,
+        earnMode,
+        testEarnActive,
+        orchestratorMode,
+        pulseQuality,
+        presenceTier
+      ));
+
+      logOK("computed final instances", {
+        userId,
+        finalInstances,
+        maxAllowed,
+        degradeFactor,
+        driftFlags
+      });
+
+    } catch (err) {
+      logErr("FAILED computeFinalInstances", userId, err);
+      continue;
+    }
 
     if (!activeWorkers.has(userId)) {
       activeWorkers.set(userId, []);
+      logWarn("activeWorkers missing, creating new entry", userId);
     }
 
     const currentWorkers = activeWorkers.get(userId);
-
-    logger.log("adrenal", "state", {
-      userId,
-      baseInstances,
-      deviceTier,
-      earnMode,
-      testEarnActive,
-      current: currentWorkers.length,
-      final: finalInstances,
-      maxAllowed,
-      driftFlags,
-      mode: orchestratorMode,
-      pulseQuality,
-      presenceTier,
-      bluetoothPresence,
-      degradeFactor
-    });
 
     // SCALE UP
     if (currentWorkers.length < finalInstances) {
       const needed = finalInstances - currentWorkers.length;
 
-      logger.log("adrenal", "scale_up", {
+      logWarn("scaling UP", {
         userId,
         needed,
         from: currentWorkers.length,
-        to: finalInstances,
-        mode: orchestratorMode
+        to: finalInstances
       });
 
       for (let i = 0; i < needed; i++) {
-        const workerIndex = currentWorkers.length;
-        const worker = launchWorker(
-          userId,
-          workerIndex,
-          orchestratorMode,
-          deviceTier
-        );
-        currentWorkers.push(worker);
+        try {
+          const workerIndex = currentWorkers.length;
+          const worker = launchWorker(
+            userId,
+            workerIndex,
+            orchestratorMode,
+            deviceTier
+          );
+          currentWorkers.push(worker);
+        } catch (err) {
+          logErr("FAILED to launch worker", { userId, err });
+        }
       }
     }
 
@@ -765,114 +795,171 @@ export async function runInstanceOrchestrator(pulse) {
     if (currentWorkers.length > finalInstances) {
       const extra = currentWorkers.length - finalInstances;
 
-      logger.log("adrenal", "scale_down", {
+      logWarn("scaling DOWN", {
         userId,
         extra,
         from: currentWorkers.length,
-        to: finalInstances,
-        mode: orchestratorMode
+        to: finalInstances
       });
 
       for (let i = 0; i < extra; i++) {
-        const worker = currentWorkers.pop();
-        killWorker(worker);
+        try {
+          const worker = currentWorkers.pop();
+          killWorker(worker);
+        } catch (err) {
+          logErr("FAILED to kill worker", { userId, err });
+        }
       }
     }
 
-    // BINARY BAND SIGNATURE — compress entire band for this user
-    const bandSeed =
-      `${userId}|${currentWorkers.length}|` +
-      `${deviceTier}|${orchestratorMode}|${adrenalSeq}|` +
-      `${pulseQuality}|${presenceTier}`;
-    let bandHash = 0;
-    for (let i = 0; i < bandSeed.length; i++) {
-      bandHash = (bandHash * 31 + bandSeed.charCodeAt(i)) >>> 0;
+    // BINARY BAND SIGNATURE
+    let binaryBandSignature = "BAND-STATE-ERR";
+    try {
+      const bandSeed =
+        `${userId}|${currentWorkers.length}|` +
+        `${deviceTier}|${orchestratorMode}|${adrenalSeq}|` +
+        `${pulseQuality}|${presenceTier}`;
+
+      let bandHash = 0;
+      for (let i = 0; i < bandSeed.length; i++) {
+        bandHash = (bandHash * 31 + bandSeed.charCodeAt(i)) >>> 0;
+      }
+
+      binaryBandSignature =
+        "BAND-STATE-" + bandHash.toString(16).padStart(8, "0");
+
+      logOK("band signature", binaryBandSignature);
+
+    } catch (err) {
+      logErr("FAILED to compute band signature", err);
     }
-    const binaryBandSignature =
-      "BAND-STATE-" + bandHash.toString(16).padStart(8, "0");
 
-    // WORLD-BAND PROJECTION — world-lens view for Pulse-World routing
-    const worldBandProjection = computeWorldBandProjection({
-      finalInstances,
-      pulseQuality,
-      presenceTier,
-      bluetoothPresence
-    });
+    // WORLD-BAND PROJECTION
+    let worldBandProjection = null;
+    try {
+      worldBandProjection = computeWorldBandProjection({
+        finalInstances,
+        pulseQuality,
+        presenceTier,
+        bluetoothPresence
+      });
+      logOK("worldBandProjection", worldBandProjection);
+    } catch (err) {
+      logErr("FAILED computeWorldBandProjection", err);
+    }
 
-    const bandAdvantageScore = computeBandAdvantageScore({
-      pulseQuality,
-      presenceTier,
-      bluetoothPresence,
-      finalInstances
-    });
+    // ADVANTAGE SCORE
+    let bandAdvantageScore = null;
+    try {
+      bandAdvantageScore = computeBandAdvantageScore({
+        pulseQuality,
+        presenceTier,
+        bluetoothPresence,
+        finalInstances
+      });
+      logOK("bandAdvantageScore", bandAdvantageScore);
+    } catch (err) {
+      logErr("FAILED computeBandAdvantageScore", err);
+    }
 
-    const presenceDriftFlags = computePresenceDriftFlags({
-      pulseQuality,
-      presenceTier,
-      bluetoothPresence
-    });
+    // PRESENCE DRIFT FLAGS
+    let presenceDriftFlags = null;
+    try {
+      presenceDriftFlags = computePresenceDriftFlags({
+        pulseQuality,
+        presenceTier,
+        bluetoothPresence
+      });
+      logOK("presenceDriftFlags", presenceDriftFlags);
+    } catch (err) {
+      logErr("FAILED computePresenceDriftFlags", err);
+    }
 
-    const userBandState = buildUserBandState({
-      userId,
-      baseInstances,
-      finalInstances,
-      deviceTier,
-      earnMode,
-      testEarnActive,
-      currentWorkers: currentWorkers.length,
-      maxAllowed,
-      mode: orchestratorMode,
-      pulseQuality,
-      presenceTier,
-      bluetoothPresence,
-      degradeFactor,
-      binaryBandSignature,
-      driftFlags,
-      worldBandProjection,
-      bandAdvantageScore,
-      presenceDriftFlags,
-      touchHint
-    });
+    // BUILD USER BAND STATE
+    let userBandState;
+    try {
+      userBandState = buildUserBandState({
+        userId,
+        baseInstances,
+        finalInstances,
+        deviceTier,
+        earnMode,
+        testEarnActive,
+        currentWorkers: currentWorkers.length,
+        maxAllowed,
+        mode: orchestratorMode,
+        pulseQuality,
+        presenceTier,
+        bluetoothPresence,
+        degradeFactor,
+        binaryBandSignature,
+        driftFlags,
+        worldBandProjection,
+        bandAdvantageScore,
+        presenceDriftFlags,
+        touchHint
+      });
+
+      logOK("userBandState built", userBandState);
+
+    } catch (err) {
+      logErr("FAILED buildUserBandState", err);
+      continue;
+    }
 
     usersState.push(userBandState);
     userBandCache.set(userId, userBandState);
 
-    // SNAPSHOT — Immune-safe Logging (deterministic, presence/pulse/world aware)
-    await logUserInstanceSnapshot(userId, {
-      baseInstances,
-      finalInstances,
-      deviceTier,
-      earnMode,
-      testEarnActive,
-      currentWorkers: currentWorkers.length,
-      maxAllowed,
-      seq: adrenalSeq,
-      mode: orchestratorMode,
-      pulseQuality,
-      presenceTier,
-      bluetoothPresence,
-      degradeFactor,
-      binaryBandSignature,
-      binaryBandDriftFlags: driftFlags,
-      worldBandProjection,
-      bandAdvantageScore,
-      presenceDriftFlags
-    });
+    // SNAPSHOT LOGGING
+    try {
+      await logUserInstanceSnapshot(userId, {
+        baseInstances,
+        finalInstances,
+        deviceTier,
+        earnMode,
+        testEarnActive,
+        currentWorkers: currentWorkers.length,
+        maxAllowed,
+        seq: adrenalSeq,
+        mode: orchestratorMode,
+        pulseQuality,
+        presenceTier,
+        bluetoothPresence,
+        degradeFactor,
+        binaryBandSignature,
+        binaryBandDriftFlags: driftFlags,
+        worldBandProjection,
+        bandAdvantageScore,
+        presenceDriftFlags
+      });
+
+      logOK("snapshot logged", userId);
+
+    } catch (err) {
+      logErr("FAILED logUserInstanceSnapshot", err);
+    }
   }
 
-  lastBandStateSnapshot = buildGlobalBandSnapshot({
-    mode: orchestratorMode,
-    users: usersState
-  });
+  // GLOBAL SNAPSHOT
+  try {
+    lastBandStateSnapshot = buildGlobalBandSnapshot({
+      mode: orchestratorMode,
+      users: usersState
+    });
 
-  logger.log("adrenal", "tick_complete", {
-    mode: orchestratorMode,
-    users: usersState.length,
-    seq: adrenalSeq
-  });
+    logOK("global band snapshot built", {
+      users: usersState.length,
+      mode: orchestratorMode
+    });
 
+  } catch (err) {
+    logErr("FAILED buildGlobalBandSnapshot", err);
+  }
+
+  logOK("orchestrator tick complete", { users: usersState.length });
   return true;
 }
+
 
 // ============================================================================
 //  DEFAULT EXPORT — IMMORTAL++ PULSE‑WORLD‑BAND ORGAN (v24)

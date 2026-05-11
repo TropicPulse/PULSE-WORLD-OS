@@ -174,6 +174,16 @@ import getBoundariesForPersona from "../PULSE-AI/aiBoundaries-v24.js";
 import getPermissionsForPersona from "../PULSE-AI/aiPermissions.js";
 import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v24.js";
 
+const C_ID   = "color:#00E5FF; font-weight:bold; font-family:monospace;"; // Cyan
+const C_OK   = "color:#00FF9C; font-family:monospace;";                   // Green
+const C_INFO = "color:#E8F8FF; font-family:monospace;";                   // White
+const C_WARN = "color:#FFE066; font-family:monospace;";                   // Yellow
+const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;"; // Red
+
+function logID(msg, ...rest)   { console.log(`%c[Overmind] %c${msg}`, C_ID, C_INFO, ...rest); }
+function logOK(msg, ...rest)   { console.log(`%c[Overmind] %c${msg}`, C_ID, C_OK, ...rest); }
+function logWarn(msg, ...rest) { console.log(`%c[Overmind] %c${msg}`, C_ID, C_WARN, ...rest); }
+function logErr(msg, ...rest)  { console.error(`%c[Overmind] %c${msg}`, C_ID, C_ERR, ...rest); }
 
 // ============================================================================
 //  CLOCK + META MEMORY (deterministic, read-only outward)
@@ -719,105 +729,149 @@ export class AiOvermindPrime {
       creatorFlagsSnapshot
     });
   }
-
+  
   // ========================================================================
-  //  MAIN ENTRY POINT (v20 IMMORTAL++ SUPEREGO)
-  // ========================================================================
-  async process({ intent, context, candidates }) {
-    const tick = this.clock.next();
+//  MAIN ENTRY POINT (v24 IMMORTAL++ SUPEREGO) — WITH FULL COLOR LOGGING
+// ========================================================================
+async process({ intent, context, candidates }) {
+  const tick = this.clock.next();
 
-    // Trust / witness placeholders (can be wired to real sources later)
-    const citizenWitness = context?.citizenWitness || {};
-    const advantageContext = context?.advantageContext || {};
-    const expansionActions = context?.expansionActions || [];
-    const juryEvents = context?.juryEvents || [];
-    const juryDecisionsHistory = context?.juryDecisionsHistory || [];
-    
-    // 0. watchdog + vitals pre-snapshot
+  logID("process() start", { tick, intent });
+
+  // Trust / witness placeholders
+  const citizenWitness      = context?.citizenWitness || {};
+  const advantageContext    = context?.advantageContext || {};
+  const expansionActions    = context?.expansionActions || [];
+  const juryEvents          = context?.juryEvents || [];
+  const juryDecisionsHistory = context?.juryDecisionsHistory || [];
+
+  // 0. watchdog + vitals pre-snapshot
+  try {
     this._safeCall(this.aiVitals, "beforeCycle", { tick, intent, context });
     this._safeCall(this.aiWatchdog, "beforeCycle", { tick, intent, context });
+    logOK("Vitals + Watchdog pre-cycle");
+  } catch (err) {
+    logErr("Vitals/Watchdog pre-cycle failed", err);
+  }
 
-    // 1. boundaries + permissions pre-check
+  // 1. boundaries + permissions pre-check
+  try {
     const boundaryDecision = this._evaluateBoundaries(intent, context);
     if (boundaryDecision?.blocked) {
-      const bypass = this._buildBlockedResponse(
-        boundaryDecision,
-        tick,
-        "boundary_block"
-      );
-      this._log("overmind:boundary-block", { tick, intent, context });
+      logWarn("Boundary BLOCK", boundaryDecision);
+      const bypass = this._buildBlockedResponse(boundaryDecision, tick, "boundary_block");
       this._safeCall(this.aiWatchdog, "afterCycle", {
-        tick,
-        intent,
-        context,
-        status: "boundary_block"
+        tick, intent, context, status: "boundary_block"
       });
       return bypass;
     }
+    logOK("Boundary check passed");
+  } catch (err) {
+    logErr("Boundary evaluation FAILED", err);
+  }
 
+  try {
     const permissionDecision = this._evaluatePermissions(intent, context);
     if (permissionDecision?.blocked) {
-      const bypass = this._buildBlockedResponse(
-        permissionDecision,
-        tick,
-        "permission_block"
-      );
-      this._log("overmind:permission-block", { tick, intent, context });
+      logWarn("Permission BLOCK", permissionDecision);
+      const bypass = this._buildBlockedResponse(permissionDecision, tick, "permission_block");
       this._safeCall(this.aiWatchdog, "afterCycle", {
-        tick,
-        intent,
-        context,
-        status: "permission_block"
+        tick, intent, context, status: "permission_block"
       });
       return bypass;
     }
+    logOK("Permission check passed");
+  } catch (err) {
+    logErr("Permission evaluation FAILED", err);
+  }
 
-    // 2. trivial bypass
+  // 2. trivial bypass
+  try {
     if (this.isTrivial(intent, candidates)) {
+      logOK("Trivial bypass");
       const bypass = this.buildBypassResponse(candidates?.[0], tick);
-      this._log("overmind:trivial", { tick, intent, context });
       this._safeCall(this.aiWatchdog, "afterCycle", {
-        tick,
-        intent,
-        context,
-        status: "trivial"
+        tick, intent, context, status: "trivial"
       });
       return bypass;
     }
+  } catch (err) {
+    logErr("Trivial bypass check FAILED", err);
+  }
 
-    // 3. context enrichment (cognitive frame + context engine)
-    const enrichedContext = this._enrichContext(intent, context);
+  // 3. context enrichment
+  let enrichedContext = context;
+  try {
+    enrichedContext = this._enrichContext(intent, context);
+    logOK("Context enriched");
+  } catch (err) {
+    logErr("Context enrichment FAILED", err);
+  }
 
-    // 4. safety pre-check
+  // 4. safety pre-check
+  let safety = null;
+  try {
     const primary = candidates?.[0];
-    const safety = await this.runSafety(primary, intent, enrichedContext, tick);
+    safety = await this.runSafety(primary, intent, enrichedContext, tick);
     if (safety) {
-      this._log("overmind:safety-block", {
-        tick,
-        intent,
-        context: enrichedContext
-      });
+      logWarn("SAFETY BLOCK", safety);
       this._safeCall(this.aiWatchdog, "afterCycle", {
-        tick,
-        intent,
-        context: enrichedContext,
-        status: "safety_block"
+        tick, intent, context: enrichedContext, status: "safety_block"
       });
       return safety;
     }
+    logOK("Safety check passed");
+  } catch (err) {
+    logErr("Safety check FAILED", err);
+  }
 
-    // 5. world-lens v4 (with lenses if present)
-    const lensResults = await this.runLenses(primary, intent, enrichedContext);
+  // 5. world-lens v4
+  let lensResults = [];
+  try {
+    lensResults = await this.runLenses(candidates?.[0], intent, enrichedContext);
+    logOK("Lenses evaluated", lensResults);
+  } catch (err) {
+    logErr("Lens evaluation FAILED", err);
+  }
 
-    // 6. fuse with organism state
-    const organismState = this.getOrganismState();
+  // 6. organism state
+  let organismState = {};
+  try {
+    organismState = this.getOrganismState();
+    logOK("Organism state loaded");
+  } catch (err) {
+    logErr("Organism state FAILED", err);
+  }
 
-    // 7. drift + breakthrough
-    const drift = this.computeDrift(primary, intent, enrichedContext);
-    const breakthrough = this.computeBreakthrough(lensResults);
+  // 7. drift + breakthrough
+  let drift = null;
+  let breakthrough = null;
+  try {
+    drift = this.computeDrift(candidates?.[0], intent, enrichedContext);
+    breakthrough = this.computeBreakthrough(lensResults);
 
-    const baseWorldLens = this.classifyWorldLens(lensResults, drift, breakthrough);
-        // 8. CROWN‑REVIVE DECISION (symbolic only)
+    logID("Drift score", drift);
+    logID("Breakthrough score", breakthrough);
+  } catch (err) {
+    logErr("Drift/Breakthrough FAILED", err);
+  }
+
+  // classify world lens
+  let baseWorldLens = "unknown";
+  try {
+    baseWorldLens = this.classifyWorldLens(lensResults, drift, breakthrough);
+
+    if (baseWorldLens === "risky")       logWarn("WorldLens = RISKY");
+    else if (baseWorldLens === "variance") logWarn("WorldLens = VARIANCE");
+    else if (baseWorldLens === "ambiguous") logWarn("WorldLens = AMBIGUOUS");
+    else logOK("WorldLens = " + baseWorldLens);
+
+  } catch (err) {
+    logErr("WorldLens classification FAILED", err);
+  }
+
+  // 8. Crown-Revive decision
+  try {
     const crownReviveDecision = this.shouldRequestCrownRevive({
       worldLens: baseWorldLens,
       drift,
@@ -826,6 +880,7 @@ export class AiOvermindPrime {
     });
 
     if (crownReviveDecision.should) {
+      logWarn("CROWN REVIVE TRIGGERED", crownReviveDecision);
       this.emitCrownReviveIntent({
         intent,
         context,
@@ -835,22 +890,29 @@ export class AiOvermindPrime {
         breakthrough,
         organismState
       });
+    } else {
+      logOK("Crown revive not needed");
     }
+  } catch (err) {
+    logErr("Crown revive decision FAILED", err);
+  }
 
-    // 8. TRUST FABRIC — build trust context + conditional jury
-    let trustSnapshot = null;
-    let juryDecision = null;
-    let effectiveWorldLens = baseWorldLens;
+  // 8. TRUST FABRIC + JURY
+  let trustSnapshot = null;
+  let juryDecision = null;
+  let effectiveWorldLens = baseWorldLens;
 
+  try {
     const shouldInvokeJury =
       this.config.enableTrustJury &&
       (baseWorldLens === "risky" ||
-        baseWorldLens === "ambiguous" ||
-        drift?.score >= this.config.driftSensitivity ||
-        breakthrough?.score >= this.config.breakthroughSensitivity);
+       baseWorldLens === "ambiguous" ||
+       drift?.score >= this.config.driftSensitivity ||
+       breakthrough?.score >= this.config.breakthroughSensitivity);
 
-    if (this.trust?.juryFrame && shouldInvokeJury) {
-      // Build trust context (juryFeed, boxCamera, council, creatorFlags, expansion)
+    if (shouldInvokeJury && this.trust?.juryFrame) {
+      logWarn("JURY INVOKED");
+
       trustSnapshot = this.buildTrustContext({
         citizenWitness,
         advantageContext,
@@ -863,26 +925,18 @@ export class AiOvermindPrime {
       juryDecision = this.trust.juryFrame.evaluate({
         intent,
         context: enrichedContext,
-        candidate: primary,
+        candidate: candidates?.[0],
         juryFeed: trustSnapshot.juryFeed,
         binaryVitals: organismState?.vitals || {},
         boundaryArtery: organismState?.nervous || {}
       });
 
       if (juryDecision?.override) {
-        this._log("overmind:jury-override", {
-          tick,
-          intent,
-          context: enrichedContext,
-          baseWorldLens,
-          drift,
-          breakthrough
-        });
+        logWarn("JURY OVERRIDE", juryDecision);
       }
 
       effectiveWorldLens = juryDecision?.worldLens || baseWorldLens;
 
-      // Optionally recompute trustSnapshot with juryResult included
       trustSnapshot = this.buildTrustContext({
         citizenWitness,
         advantageContext,
@@ -891,9 +945,17 @@ export class AiOvermindPrime {
         expansionActions,
         juryResult: juryDecision
       });
-    }
 
-    // 9. optional: nudge organism engine (self-running crown supervision)
+      logOK("Trust fabric updated");
+    } else {
+      logOK("Jury not invoked");
+    }
+  } catch (err) {
+    logErr("Trust/Jury FAILED", err);
+  }
+
+  // 9. organism engine nudge
+  try {
     if (this.organism?.startEngine) {
       this._safeCall(this.organism, "startEngine", {
         mode: "overmind",
@@ -904,162 +966,237 @@ export class AiOvermindPrime {
         drift,
         breakthrough
       });
+      logOK("Organism engine nudged");
     }
+  } catch (err) {
+    logErr("Organism engine FAILED", err);
+  }
+// 4. safety pre-check
+const primary = candidates?.[0];
 
-    // 10. personal shaping
-    let finalOutput = this.getText(primary);
-    if (this.personalFrame?.shapeOutput) {
-      try {
-        const shaped = await this.personalFrame.shapeOutput({
-          context: enrichedContext,
-          text: finalOutput
-        });
-        if (shaped?.text) finalOutput = shaped.text;
-      } catch {
-        // ignore shaping failures
-      }
-    }
+// 10. personal shaping
+let finalOutput = this.getText(primary);
+logID("personal shaping start");
 
-    // 11. tone stabilization (via tone engine + router if present)
-    finalOutput = await this._stabilizeToneAdvanced(
-      finalOutput,
-      intent,
-      enrichedContext
-    );
-
-    // 12. update memory + evo window + hashes
-    const intentSig = this.intentSignature(intent, enrichedContext);
-    const outputHashClassic = this.hash(finalOutput);
-    const outputHashes = this.hashForOvermind(finalOutput, {
-      band: enrichedContext?.band || "symbolic",
-      presenceTier: enrichedContext?.presenceTier || "idle",
-      cycle: tick
+if (this.personalFrame?.shapeOutput) {
+  try {
+    const shaped = await this.personalFrame.shapeOutput({
+      context: enrichedContext,
+      text: finalOutput
     });
-    const intentHashes = this.dualHash(
-      "intentSignature",
-      { intent, context: enrichedContext },
-      intentSig
-    );
 
-    this.stateMemory.set({
-      intentSignature: intentSig,
-      outputHash: outputHashClassic,
+    if (shaped?.text) {
+      finalOutput = shaped.text;
+      logOK("personal shaping applied");
+    } else {
+      logWarn("personal shaping returned no text");
+    }
+  } catch (err) {
+    logErr("personal shaping FAILED", err);
+  }
+} else {
+  logWarn("personalFrame.shapeOutput missing");
+}
+
+// 11. tone stabilization
+logID("tone stabilization start");
+
+try {
+  finalOutput = await this._stabilizeToneAdvanced(
+    finalOutput,
+    intent,
+    enrichedContext
+  );
+  logOK("tone stabilized");
+} catch (err) {
+  logErr("tone stabilization FAILED", err);
+}
+
+// 12. memory + evo window + hashes
+logID("memory + evo window update start");
+
+let intentSig, outputHashClassic, outputHashes, intentHashes;
+
+try {
+  intentSig = this.intentSignature(intent, enrichedContext);
+  outputHashClassic = this.hash(finalOutput);
+  outputHashes = this.hashForOvermind(finalOutput, {
+    band: enrichedContext?.band || "symbolic",
+    presenceTier: enrichedContext?.presenceTier || "idle",
+    cycle: tick
+  });
+  intentHashes = this.dualHash(
+    "intentSignature",
+    { intent, context: enrichedContext },
+    intentSig
+  );
+
+  this.stateMemory.set({
+    intentSignature: intentSig,
+    outputHash: outputHashClassic,
+    worldLens: effectiveWorldLens
+  });
+
+  logOK("memory updated");
+} catch (err) {
+  logErr("memory update FAILED", err);
+}
+
+try {
+  this._safeCall(this.aiMemory, "record", {
+    tick,
+    intent,
+    context: enrichedContext,
+    worldLens: effectiveWorldLens,
+    drift,
+    breakthrough
+  });
+  logOK("aiMemory recorded");
+} catch (err) {
+  logErr("aiMemory record FAILED", err);
+}
+
+try {
+  this._safeCall(this.aiExperience, "record", {
+    tick,
+    intent,
+    context: enrichedContext,
+    worldLens: effectiveWorldLens,
+    drift,
+    breakthrough
+  });
+  logOK("aiExperience recorded");
+} catch (err) {
+  logErr("aiExperience record FAILED", err);
+}
+
+try {
+  this.evoWindow?.record?.({
+    tick,
+    intentSignature: intentSig,
+    worldLens: effectiveWorldLens,
+    drift,
+    breakthrough,
+    hashes: {
+      output: outputHashes,
+      intent: intentHashes
+    }
+  });
+  logOK("evoWindow recorded");
+} catch (err) {
+  logErr("evoWindow record FAILED", err);
+}
+
+// 13. organism debug snapshot
+logID("organism debug snapshot start");
+
+let organismDebug = null;
+if (this.organism?.debugReport) {
+  try {
+    organismDebug = this.organism.debugReport({
+      tick,
+      intent,
+      context: enrichedContext,
       worldLens: effectiveWorldLens
     });
+    logOK("organism debug snapshot created");
+  } catch (err) {
+    logErr("organism debug snapshot FAILED", err);
+  }
+} else {
+  logWarn("organism.debugReport missing");
+}
 
-    this._safeCall(this.aiMemory, "record", {
-      tick,
-      intent,
-      context: enrichedContext,
-      worldLens: effectiveWorldLens,
-      drift,
-      breakthrough
+// 14. watchdog + vitals post-snapshot
+logID("watchdog + vitals post-cycle");
+
+try {
+  this._safeCall(this.aiVitals, "afterCycle", {
+    tick,
+    intent,
+    context: enrichedContext,
+    worldLens: effectiveWorldLens
+  });
+  logOK("aiVitals afterCycle");
+} catch (err) {
+  logErr("aiVitals afterCycle FAILED", err);
+}
+
+try {
+  this._safeCall(this.aiWatchdog, "afterCycle", {
+    tick,
+    intent,
+    context: enrichedContext,
+    worldLens: effectiveWorldLens,
+    status: "ok"
+  });
+  logOK("aiWatchdog afterCycle");
+} catch (err) {
+  logErr("aiWatchdog afterCycle FAILED", err);
+}
+
+// 15. chunking intel
+logID("chunking intel start");
+
+let chunkIntel = null;
+if (this.config.enableChunkingIntel && this.aiChunker?.chunkRoute) {
+  try {
+    chunkIntel = await this._safeAsyncCall(this.aiChunker, "chunkRoute", {
+      url: null,
+      laneId: 0,
+      envelopeId: `overmind-${tick}`,
+      userId: "overmind",
+      baseVersion: OvermindPrimeMeta.version,
+      sizeOnly: true,
+      payload: {
+        intent,
+        context: enrichedContext,
+        finalOutput,
+        worldLens: effectiveWorldLens
+      },
+      routeDescriptor: null,
+      backendKind: "overmind-meta",
+      worldBand: enrichedContext?.band || "symbolic",
+      chunkProfile: "overmind-meta-v20"
     });
+    logOK("chunking intel generated");
+  } catch (err) {
+    logErr("chunking intel FAILED", err);
+  }
+} else {
+  logWarn("chunking intel disabled or aiChunker missing");
+}
 
-    this._safeCall(this.aiExperience, "record", {
-      tick,
-      intent,
-      context: enrichedContext,
-      worldLens: effectiveWorldLens,
-      drift,
-      breakthrough
+// 16. scanner artery snapshot
+logID("scanner artery snapshot start");
+
+let scannerArtery = null;
+try {
+  if (this.config.enableScannerArtery && this.fileScanner?.getScannerArterySnapshot) {
+    scannerArtery = this.fileScanner.getScannerArterySnapshot({
+      ok: true,
+      filePath: "",
+      report: null,
+      binaryVitals: organismState?.vitals || {},
+      dualBand: null,
+      trust: null
     });
+    logOK("scanner artery snapshot created");
+  } else {
+    logWarn("scanner artery disabled or missing");
+  }
+} catch (err) {
+  logErr("scanner artery snapshot FAILED", err);
+}
 
-    try {
-      this.evoWindow?.record?.({
-        tick,
-        intentSignature: intentSig,
-        worldLens: effectiveWorldLens,
-        drift,
-        breakthrough,
-        hashes: {
-          output: outputHashes,
-          intent: intentHashes
-        }
-      });
-    } catch {
-      // non-fatal
-    }
+// 17. final log + packet
+logID("final overmind packet", {
+  tick,
+  worldLens: effectiveWorldLens,
+  drift,
+  breakthrough
+});
 
-    // 13. optional organism debug snapshot
-    let organismDebug = null;
-    if (this.organism?.debugReport) {
-      try {
-        organismDebug = this.organism.debugReport({
-          tick,
-          intent,
-          context: enrichedContext,
-          worldLens: effectiveWorldLens
-        });
-      } catch {
-        organismDebug = null;
-      }
-    }
-
-    // 14. watchdog + vitals post-snapshot
-    this._safeCall(this.aiVitals, "afterCycle", {
-      tick,
-      intent,
-      context: enrichedContext,
-      worldLens: effectiveWorldLens
-    });
-    this._safeCall(this.aiWatchdog, "afterCycle", {
-      tick,
-      intent,
-      context: enrichedContext,
-      worldLens: effectiveWorldLens,
-      status: "ok"
-    });
-
-    // 15. optional: chunking intel (symbolic-only)
-    let chunkIntel = null;
-    if (this.config.enableChunkingIntel && this.aiChunker?.chunkRoute) {
-      chunkIntel = await this._safeAsyncCall(this.aiChunker, "chunkRoute", {
-        url: null,
-        laneId: 0,
-        envelopeId: `overmind-${tick}`,
-        userId: "overmind",
-        baseVersion: OvermindPrimeMeta.version,
-        sizeOnly: true,
-        payload: {
-          intent,
-          context: enrichedContext,
-          finalOutput,
-          worldLens: effectiveWorldLens
-        },
-        routeDescriptor: null,
-        backendKind: "overmind-meta",
-        worldBand: enrichedContext?.band || "symbolic",
-        chunkProfile: "overmind-meta-v20"
-      });
-    }
-
-    // 16. optional: scanner artery snapshot (binary pressure fusion)
-    const scannerArtery =
-      this.config.enableScannerArtery && this.fileScanner?.getScannerArterySnapshot
-        ? this.fileScanner.getScannerArterySnapshot({
-            ok: true,
-            filePath: "",
-            report: null,
-            binaryVitals: organismState?.vitals || {},
-            dualBand: null,
-            trust: null
-          })
-        : null;
-
-    // 17. log + final packet
-    this._log("overmind:process", {
-      tick,
-      intent,
-      context: enrichedContext,
-      worldLens: effectiveWorldLens,
-      drift,
-      breakthrough,
-      hashes: {
-        output: outputHashes,
-        intent: intentHashes
-      }
-    });
 
     return {
       finalOutput,
@@ -1088,50 +1225,81 @@ export class AiOvermindPrime {
   //  BOUNDARIES + PERMISSIONS
   // ========================================================================
   _evaluateBoundaries(intent, context) {
-    if (!this.boundariesEngine?.evaluate) return null;
+    logID("_evaluateBoundaries()");
+    if (!this.boundariesEngine?.evaluate) {
+      logWarn("boundariesEngine missing");
+      return null;
+    }
 
-    return this._safeCall(this.boundariesEngine, "evaluate", {
+    try {
+      const result = this._safeCall(this.boundariesEngine, "evaluate", {
+        intent,
+        context,
+        identity: OvermindPrimeMeta.identity,
+        meta: OvermindPrimeMeta
+      });
+
+      if (result?.blocked) logWarn("BOUNDARY BLOCK", result);
+      else logOK("boundaries passed");
+
+      return result;
+    } catch (err) {
+      logErr("BOUNDARY EVALUATION FAILED", err);
+      return null;
+    }
+  }
+
+_evaluatePermissions(intent, context) {
+  logID("_evaluatePermissions()");
+  if (!this.permissionsEngine?.evaluate) {
+    logWarn("permissionsEngine missing");
+    return null;
+  }
+
+  try {
+    const result = this._safeCall(this.permissionsEngine, "evaluate", {
       intent,
       context,
       identity: OvermindPrimeMeta.identity,
       meta: OvermindPrimeMeta
     });
+
+    if (result?.blocked) logWarn("PERMISSION BLOCK", result);
+    else logOK("permissions passed");
+
+    return result;
+  } catch (err) {
+    logErr("PERMISSION EVALUATION FAILED", err);
+    return null;
   }
+}
 
-  _evaluatePermissions(intent, context) {
-    if (!this.permissionsEngine?.evaluate) return null;
+_buildBlockedResponse(decision, tick, reason) {
+  logWarn("BUILD BLOCKED RESPONSE", { reason, decision });
 
-    return this._safeCall(this.permissionsEngine, "evaluate", {
-      intent,
-      context,
-      identity: OvermindPrimeMeta.identity,
-      meta: OvermindPrimeMeta
-    });
-  }
+  const message =
+    decision?.message ||
+    `OvermindPrime blocked this request due to ${reason || "policy"}.`;
 
-  _buildBlockedResponse(decision, tick, reason) {
-    const message =
-      decision?.message ||
-      `OvermindPrime blocked this request due to ${reason || "policy"}.`;
+  return {
+    finalOutput: message,
+    meta: {
+      tick,
+      worldLens: reason || "blocked",
+      drift: { status: "n/a" },
+      breakthrough: { status: "n/a" },
+      lenses: [],
+      organismState: null,
+      overmind: OvermindPrimeMeta,
+      trust: null,
+      juryDecision: null,
+      hashes: null,
+      chunkIntel: null,
+      scannerArtery: null
+    }
+  };
+}
 
-    return {
-      finalOutput: message,
-      meta: {
-        tick,
-        worldLens: reason || "blocked",
-        drift: { status: "n/a" },
-        breakthrough: { status: "n/a" },
-        lenses: [],
-        organismState: null,
-        overmind: OvermindPrimeMeta,
-        trust: null,
-        juryDecision: null,
-        hashes: null,
-        chunkIntel: null,
-        scannerArtery: null
-      }
-    };
-  }
 
   // ========================================================================
   //  CONTEXT ENRICHMENT
