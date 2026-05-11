@@ -360,6 +360,9 @@ function unwrapImmortalDNA(value) {
 // ============================================================================
 //  UNIVERSAL CHUNK FETCHER — v24 MULTILANE IMMORTAL
 // ============================================================================
+// ============================================================================
+//  CORE CHUNK FETCHER — v24 MULTILANE IMMORTAL, CACHE + PRESENCE AWARE
+// ============================================================================
 async function fetchChunk(url) {
   try {
     fireAndForgetRoute("proxy.dnaVisibility", {
@@ -373,11 +376,12 @@ async function fetchChunk(url) {
     console.warn("[PulseDNA] Network visibility logging failed:", err);
   }
 
-  // ⭐ SKIP LOGIC GOES HERE — BEFORE ANYTHING ELSE
+  // ⭐ SKIP LOGIC — BEFORE ANYTHING ELSE
   if (shouldSkipChunk(url)) {
     return {
       ok: false,
       value: url,
+      chunk: url,
       envelope: buildChunkPresenceEnvelope({
         url,
         fromCache: false,
@@ -391,6 +395,7 @@ async function fetchChunk(url) {
     return {
       ok: false,
       value: url,
+      chunk: url,
       envelope: buildChunkPresenceEnvelope({
         url,
         fromCache: false,
@@ -400,10 +405,12 @@ async function fetchChunk(url) {
     };
   }
 
+  // ⭐ GLOBAL DEGRADATION — NEVER ATTEMPT NETWORK
   if (chunksDegraded) {
     return {
       ok: false,
       value: url,
+      chunk: url,
       envelope: buildChunkPresenceEnvelope({
         url,
         fromCache: false,
@@ -413,12 +420,14 @@ async function fetchChunk(url) {
     };
   }
 
+  // ⭐ CACHE FIRST — TTL AWARE
   const cachedEntry = chunkCache.get(url);
   if (cachedEntry && !isExpired(cachedEntry)) {
     const { value, kind, presence } = cachedEntry;
     return {
       ok: true,
       value,
+      chunk: value,
       envelope:
         presence ||
         buildChunkPresenceEnvelope({
@@ -432,6 +441,7 @@ async function fetchChunk(url) {
     chunkCache.delete(url);
   }
 
+  // ⭐ MULTILANE ROUTING
   const laneIndex = pickLaneIndex(url);
   const lane = lanes[laneIndex];
 
@@ -443,17 +453,26 @@ async function fetchChunk(url) {
       throw new Error(routed?.error || `Chunk route failed for ${url}`);
     }
 
-    const dna = routed.data ?? routed.result ?? url;
-    const unwrapped = unwrapImmortalDNA(dna);
+    // v24: prefer explicit dna/chunk fields, then fall back
+    const dna =
+      routed.dna ??
+      routed.chunk ??
+      routed.data ??
+      routed.result ??
+      routed.value ??
+      url;
+
+    // IMPORTANT: do NOT unwrap here; keep raw DNA in cache.
     const kind =
       routed.kind ||
-      (typeof unwrapped === "string" ? "text-or-url" : "object");
+      (typeof dna === "string" ? "text-or-url" : "object");
 
     const envelope = buildChunkPresenceEnvelope({
       url,
       fromCache: false,
       degraded: false,
-      kind
+      kind,
+      laneIndex
     });
 
     chunkCache.set(url, {
@@ -466,6 +485,7 @@ async function fetchChunk(url) {
     return {
       ok: true,
       value: dna,
+      chunk: dna,
       envelope
     };
   } catch (err) {
@@ -474,6 +494,7 @@ async function fetchChunk(url) {
     return {
       ok: false,
       value: url,
+      chunk: url,
       error: String(err),
       envelope: buildChunkPresenceEnvelope({
         url,
@@ -549,8 +570,15 @@ export function getImageSync(url) {
 function attachLore(chunk, metaPack) {
   const lore = generateLoreHeader(metaPack);
 
+  // Avoid double-lore on strings
   if (typeof chunk === "string") {
+    if (chunk.startsWith(lore)) return chunk;
     return lore + "\n" + chunk;
+  }
+
+  // Avoid double-lore on objects
+  if (chunk && typeof chunk === "object" && chunk.__lore) {
+    return chunk;
   }
 
   return {
@@ -613,17 +641,27 @@ export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
 
   console.log("[PulseChunks] DNA allowed:", filePath);
 
-  const { value: dna, envelope } = await fetchChunk(filePath);
+  const { value: dna, envelope, ok, error } = await fetchChunk(filePath);
 
-  if (!metaPack || chunksDegraded) {
+  // If fetch failed or chunks are globally degraded, just surface raw DNA/url
+  if (!ok || chunksDegraded || !metaPack) {
+    if (!ok) {
+      console.warn("[PulseChunks] PulseChunker fallback — fetch failed:", {
+        filePath,
+        error,
+        envelope
+      });
+    }
+
     return {
       dna,
-      dnaEncoded: !chunksDegraded,
-      safe: true,
+      dnaEncoded: ok && !chunksDegraded,
+      safe: ok,
       presence: envelope
     };
   }
 
+  // v24: unwrap ONE layer, attach lore once, keep DNA sealed for frontend
   const dnaCore = unwrapImmortalDNA(dna);
   const dnaWithLore = attachLore(dnaCore, metaPack);
 
@@ -647,7 +685,6 @@ export function prewarm(urls = []) {
     }
   });
 }
-
 // ============================================================================
 //  PULSEBAND INTEGRATION — v24-Evo
 // ============================================================================
@@ -666,16 +703,20 @@ function handlePulseBandPacket(packet) {
       if (packet.url && packet.data && !chunksDegraded) {
         const kind =
           typeof packet.data === "string" ? "text-or-url" : "object";
+
+        const envelope = buildChunkPresenceEnvelope({
+          url: packet.url,
+          fromCache: false,
+          degraded: false,
+          kind,
+          laneIndex: packet.laneIndex
+        });
+
         chunkCache.set(packet.url, {
           value: packet.data,
           ts: Date.now(),
           kind,
-          presence: buildChunkPresenceEnvelope({
-            url: packet.url,
-            fromCache: false,
-            degraded: false,
-            kind
-          })
+          presence: envelope
         });
       }
       break;
@@ -684,16 +725,20 @@ function handlePulseBandPacket(packet) {
       if (packet.url && packet.chunk && !chunksDegraded) {
         const kind =
           typeof packet.chunk === "string" ? "text-or-url" : "object";
+
+        const envelope = buildChunkPresenceEnvelope({
+          url: packet.url,
+          fromCache: false,
+          degraded: false,
+          kind,
+          laneIndex: packet.laneIndex
+        });
+
         chunkCache.set(packet.url, {
           value: packet.chunk,
           ts: Date.now(),
           kind,
-          presence: buildChunkPresenceEnvelope({
-            url: packet.url,
-            fromCache: false,
-            degraded: false,
-            kind
-          })
+          presence: envelope
         });
       }
       break;
@@ -701,6 +746,7 @@ function handlePulseBandPacket(packet) {
     case "chunk-invalidate":
       if (packet.url) {
         chunkCache.delete(packet.url);
+        chunkFailures.delete(packet.url);
       }
       break;
 
@@ -722,8 +768,16 @@ function dechunkAll() {
   chunkFailures.clear();
   globalFailures = 0;
   chunksDegraded = false;
+
+  if (typeof window !== "undefined" && window.PulseChunks) {
+    if (window.PulseChunks.cache) {
+      window.PulseChunks.cache = {};
+    }
+  }
+
   console.log("[PulseChunks] All chunks cleared, state reset.");
 }
+
 // ============================================================================
 //  UNIVERSAL FRONTEND AUTO-LOADER — v24.4 IMMORTAL++
 //  (Keeps name for wiring; now preloads ALL visible assets via Chunker)
@@ -747,7 +801,7 @@ async function autoLoadOfflineImages() {
 
   for (const selector of assetSelectors) {
     const nodes = document.querySelectorAll(selector);
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       const url =
         node.getAttribute("href") ||
         node.getAttribute("src") ||
@@ -766,11 +820,14 @@ async function autoLoadOfflineImages() {
       const { value, ok, error, envelope } = await fetchChunk(url);
 
       if (!ok) {
-        console.warn("[PulseChunks] Asset chunk failed — using CNS fallback:", {
-          url,
-          error,
-          envelope
-        });
+        console.warn(
+          "[PulseChunks] Asset chunk failed — using CNS fallback:",
+          {
+            url,
+            error,
+            envelope
+          }
+        );
 
         if (typeof route === "function") {
           const fallback = await route("getImages", {
@@ -792,7 +849,6 @@ async function autoLoadOfflineImages() {
               window.PulseChunks.cache[url] = binary;
             }
 
-            // If this was an offline image, wire src
             const img = document.querySelector(
               `img.offline-img[data-offline="${url}"]`
             );
@@ -808,7 +864,10 @@ async function autoLoadOfflineImages() {
           }
         }
 
-        console.warn("[PulseChunks] CNS fallback failed — leaving asset as-is:", url);
+        console.warn(
+          "[PulseChunks] CNS fallback failed — leaving asset as-is:",
+          url
+        );
         continue;
       }
 
@@ -821,7 +880,6 @@ async function autoLoadOfflineImages() {
         window.PulseChunks.cache[url] = binary;
       }
 
-      // If this was an offline image, wire src
       const img = document.querySelector(
         `img.offline-img[data-offline="${url}"]`
       );
@@ -874,10 +932,13 @@ async function autoLoadOfflineImages() {
           }
         }
       } catch (fallbackErr) {
-        console.warn("[PulseChunks] CNS fallback threw — leaving asset as-is:", {
-          url,
-          fallbackErr
-        });
+        console.warn(
+          "[PulseChunks] CNS fallback threw — leaving asset as-is:",
+          {
+            url,
+            fallbackErr
+          }
+        );
       }
     }
   }
@@ -886,7 +947,6 @@ async function autoLoadOfflineImages() {
     `[PulseChunks] Universal preload complete — ${urls.size} assets seen + warmed.`
   );
 }
-
 
 // ============================================================================
 //  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v24 IMMORTAL)
@@ -946,19 +1006,25 @@ console.log(
 
 try {
   if (typeof global !== "undefined") {
-    global.PulseBand = typeof window !== "undefined" ? window.PulseBand : undefined;
-    global.PulseChunks = typeof window !== "undefined" ? window.PulseChunks : undefined;
+    global.PulseBand =
+      typeof window !== "undefined" ? window.PulseBand : undefined;
+    global.PulseChunks =
+      typeof window !== "undefined" ? window.PulseChunks : undefined;
   }
   if (typeof globalThis !== "undefined") {
     globalThis.PulseBand =
       typeof window !== "undefined" ? window.PulseBand : globalThis.PulseBand;
     globalThis.PulseChunks =
-      typeof window !== "undefined" ? window.PulseChunks : globalThis.PulseChunks;
+      typeof window !== "undefined"
+        ? window.PulseChunks
+        : globalThis.PulseChunks;
   }
 
   if (typeof g !== "undefined") {
-    g.PulseBand = typeof window !== "undefined" ? window.PulseBand : g.PulseBand;
-    g.PulseChunks = typeof window !== "undefined" ? window.PulseChunks : g.PulseChunks;
+    g.PulseBand =
+      typeof window !== "undefined" ? window.PulseBand : g.PulseBand;
+    g.PulseChunks =
+      typeof window !== "undefined" ? window.PulseChunks : g.PulseChunks;
   }
 } catch {
   // never throw
