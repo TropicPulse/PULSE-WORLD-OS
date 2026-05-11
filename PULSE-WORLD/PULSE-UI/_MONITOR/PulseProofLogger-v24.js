@@ -175,6 +175,11 @@ function drainLocalLogsForHeartbeat() {
 // -----------------------------------------------------------------------------
 // Version / roles / colors / icons (metadata only, no behavior)
 // -----------------------------------------------------------------------------
+// ============================================================================
+//  DETERMINISTIC VERSION MAP
+//  - All real subsystems are v24
+//  - Legacy is fallback ONLY
+// ============================================================================
 
 export const PulseVersion = {
   proof: "24.0",
@@ -182,8 +187,27 @@ export const PulseVersion = {
   renderer: "24.0",
   gpu: "24.0",
   band: "24.0",
-  legacy: "16.x"
+  vault: "24.0",
+  hooks: "24.0",
+  endpoint: "24.0",
+  router: "24.0",
+  expansion: "24.0",
+  bridge: "24.0",
+  internet: "24.0",
+  memory: "24.0",
+  pages: "24.0",
+  cns: "24.0"
 };
+
+// fallback only
+export const PulseVersionFallback = "16.x";
+
+
+// ============================================================================
+//  DETERMINISTIC ROLE MAP
+//  - No legacy in main list
+//  - Legacy is fallback ONLY
+// ============================================================================
 
 export const PulseRoles = {
   proof: "PROOF MONITOR",
@@ -191,8 +215,27 @@ export const PulseRoles = {
   renderer: "RENDERER",
   gpu: "GPU SUBSYSTEM",
   band: "NERVOUS SYSTEM",
-  legacy: "LEGACY SUBSYSTEM"
+  vault: "VAULT SUBSYSTEM",
+  hooks: "HOOK REGISTRY",
+  endpoint: "REMOTE ENDPOINT",
+  router: "ROUTER",
+  expansion: "EXPANSION ENGINE",
+  bridge: "CNS BRIDGE",
+  internet: "INTERNET SUBSYSTEM",
+  memory: "MEMORY SUBSYSTEM",
+  pages: "PAGE SUBSYSTEM",
+  cns: "CNS CORE"
 };
+
+// fallback only
+export const PulseRoleFallback = "LEGACY SUBSYSTEM";
+
+
+// ============================================================================
+//  DETERMINISTIC COLOR MAP
+//  - No legacy in main list
+//  - Legacy is fallback ONLY
+// ============================================================================
 
 export const PulseColors = {
   proof: "#4DD0E1",
@@ -200,9 +243,28 @@ export const PulseColors = {
   renderer: "#29B6F6",
   gpu: "#7E57C2",
   band: "#66BB6A",
-  legacy: "#BDBDBD",
+  vault: "#26C6DA",
+  hooks: "#AB47BC",
+  endpoint: "#FFA726",
+  router: "#42A5F5",
+  expansion: "#26A69A",
+  bridge: "#EC407A",
+  internet: "#8D6E63",
+  memory: "#5C6BC0",
+  pages: "#26C6DA",
+  cns: "#EF5350",
   signal: "#90CAF9"
 };
+
+// fallback only
+export const PulseColorFallback = "#BDBDBD";
+
+
+// ============================================================================
+//  DETERMINISTIC ICON MAP
+//  - No legacy in main list
+//  - Legacy is fallback ONLY
+// ============================================================================
 
 export const PulseIcons = {
   proof: "📜",
@@ -210,9 +272,23 @@ export const PulseIcons = {
   renderer: "✨",
   gpu: "🎨",
   band: "🧠",
-  legacy: "🖥️",
+  vault: "🔐",
+  hooks: "🪝",
+  endpoint: "🌐",
+  router: "🛰️",
+  expansion: "🚀",
+  bridge: "🌉",
+  internet: "📡",
+  memory: "💾",
+  pages: "📄",
+  cns: "🧬",
   signal: "📡"
 };
+
+// fallback only
+export const PulseIconFallback = "🖥️";
+
+
 
 function formatPrefix(subsystem) {
   const role = PulseRoles[subsystem] || "SUBSYSTEM";
