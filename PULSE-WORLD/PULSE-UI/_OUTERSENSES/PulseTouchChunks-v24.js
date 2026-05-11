@@ -180,6 +180,7 @@ function shouldSkipChunk(filePath = "", fileSize = 0) {
 
   if (
     filePath.includes("PulseChunker") ||
+    filePath.includes("Chunk") ||
     filePath.includes("Portal") ||
     filePath.includes("Index") ||
     filePath.includes("User") ||
