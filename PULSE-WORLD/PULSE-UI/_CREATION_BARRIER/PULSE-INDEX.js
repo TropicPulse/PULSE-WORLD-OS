@@ -11,10 +11,76 @@ const C_INFO = "color:#E8F8FF; font-family:monospace;";
 const C_WARN = "color:#FFE066; font-family:monospace;";
 const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;";
 
-function logID(msg, ...rest)  { console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_INFO, ...rest); }
-function logOK(msg, ...rest)  { console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_OK, ...rest); }
-function logWarn(msg, ...rest){ console.log(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_WARN, ...rest); }
-function logErr(msg, ...rest) { console.error(`%c[PULSE-INDEX] %c${msg}`, C_ID, C_ERR, ...rest); }
+// ---------------------------------------------------------------------------
+//  PULSE-CHRONO v26 — Unified Timing Core
+// ---------------------------------------------------------------------------
+let _pulseChronoLast = performance.now();
+
+function _pulseChronoLabel(absolute) {
+  const now = performance.now();
+  const diff = now - _pulseChronoLast;
+
+  const label = absolute
+    ? `@${now.toFixed(1)}ms`
+    : `+${diff.toFixed(1)}ms`;
+
+  _pulseChronoLast = now;
+  return label;
+}
+
+// ---------------------------------------------------------------------------
+//  LOGGERS — All Upgraded to Chrono v26
+// ---------------------------------------------------------------------------
+function logID(msg, absolute = false, ...rest) {
+  const time = _pulseChronoLabel(absolute);
+  console.log(
+    `%c[PULSE-INDEX] %c${msg} %c${time}`,
+    C_ID,
+    C_INFO,
+    "color:#999;font-weight:300;",
+    ...rest
+  );
+}
+
+function logOK(msg, absolute = false, ...rest) {
+  const time = _pulseChronoLabel(absolute);
+  console.log(
+    `%c[PULSE-INDEX] %c${msg} %c${time}`,
+    C_ID,
+    C_OK,
+    "color:#999;font-weight:300;",
+    ...rest
+  );
+}
+
+function logWarn(msg, absolute = false, ...rest) {
+  const time = _pulseChronoLabel(absolute);
+  console.warn(
+    `%c[PULSE-INDEX] %c${msg} %c${time}`,
+    C_ID,
+    C_WARN,
+    "color:#999;font-weight:300;",
+    ...rest
+  );
+}
+
+function logErr(msg, absolute = false, ...rest) {
+  const time = _pulseChronoLabel(absolute);
+  console.error(
+    `%c[PULSE-INDEX] %c${msg} %c${time}`,
+    C_ID,
+    C_ERR,
+    "color:#999;font-weight:300;",
+    ...rest
+  );
+}
+
+// Optional: manual reset
+logID.reset = () => {
+  _pulseChronoLast = performance.now();
+  console.log(`%c[PULSE-INDEX] %cTimer reset`, C_ID, C_WARN);
+};
+
 
 logID("BOOT MEMBRANE START");
 
