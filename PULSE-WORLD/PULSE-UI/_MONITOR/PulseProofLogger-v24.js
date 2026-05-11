@@ -705,30 +705,55 @@ export function groupEnd() {
   _c.groupEnd();
 }
 
-
 function resolveFromOrganismMap() {
   try {
     const stack = new Error().stack;
-    const match = stack.match(/(file:\/\/[^\s)]+)/);
-    if (!match) return null;
+
+    // DEBUG: show raw stack (first 5 lines)
+    console.debug("[LOGGER DEBUG] STACK TOP:", stack.split("\n").slice(0, 5));
+
+    // Find the FIRST non-logger frame
+    const lines = stack.split("\n");
+    let callerLine = null;
+
+    for (const line of lines) {
+      if (!line.includes("PulseProofLogger")) {
+        callerLine = line;
+        break;
+      }
+    }
+
+    if (!callerLine) {
+      console.debug("[LOGGER DEBUG] No caller line found");
+      return null;
+    }
+
+    const match = callerLine.match(/(file:\/\/[^\s)]+)/);
+    if (!match) {
+      console.debug("[LOGGER DEBUG] No file URL match in:", callerLine);
+      return null;
+    }
 
     const fileUrl = match[1];
+    console.debug("[LOGGER DEBUG] Caller file URL:", fileUrl);
+
     const parts = fileUrl.split("/");
 
     // ---------------------------------------------
     // SUBSYSTEM FROM FOLDER NAME
     // ---------------------------------------------
-    const folder = parts[parts.length - 2]; // e.g. "PULSE-MESH"
+    const folder = parts[parts.length - 2];
     let subsystem = "legacy";
 
     if (folder.startsWith("PULSE-")) {
       subsystem = folder.replace("PULSE-", "").toLowerCase();
     }
 
-    // Special case: PULSE-X → world
     if (folder === "PULSE-X") {
       subsystem = "world";
     }
+
+    console.debug("[LOGGER DEBUG] Folder:", folder, "→ subsystem:", subsystem);
 
     // ---------------------------------------------
     // VERSION FROM FILENAME
@@ -741,6 +766,8 @@ function resolveFromOrganismMap() {
       version = `v${vMatch[1]}`;
     }
 
+    console.debug("[LOGGER DEBUG] Filename:", fileName, "→ version:", version);
+
     return {
       subsystem,
       version,
@@ -748,10 +775,12 @@ function resolveFromOrganismMap() {
       icon: "🔹"
     };
 
-  } catch {
+  } catch (err) {
+    console.debug("[LOGGER DEBUG] Resolver error:", err);
     return null;
   }
 }
+
 
 
 
