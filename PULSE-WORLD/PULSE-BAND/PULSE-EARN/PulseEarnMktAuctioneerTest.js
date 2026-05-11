@@ -20,7 +20,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 import {
   PulseEarnMktAuctioneer,
   getPulseEarnMktAuctioneerHealingState
-} from "./PulseEarnMktAuctioneer.js";
+} from "./PulseEarnMktAuctioneer-v24.js";
 
 // Deterministic local device profile (GPU + bandwidth + stability)
 const deviceProfile = {
