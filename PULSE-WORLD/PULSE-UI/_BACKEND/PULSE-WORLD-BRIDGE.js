@@ -68,6 +68,12 @@ import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTeleme
 import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
 import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
+
+import PulsePageScanner from "../_MONITOR/PulseUIPageScanner-v24.js";
+import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseUIRouteMemory-v24.js";
+
+import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
+import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
 
 
@@ -845,6 +851,10 @@ export const PulseProofBridgeMonitor = PulseProofMonitor;
 export const PulseProofBridgeTelemetry = emitTelemetry;
 export const PulseProofBridgeFlow = PulseProofFlow;
 export const PulseProofBridgeErrors = PulseUIErrors;
+export const PulseProofBridgeScanner = PulsePageScanner;
+export const PulseProofBridgeRouteMemory = PulseUIRouteMemory;
+export const PulseProofBridgeWorldAdminPanel = createPulseWorldAdminPanel;
+export const PulseProofBridgeAdminDiagnostics = createAdminDiagnosticsOrgan;
 
 // ============================================================================
 //  IMMORTAL++ GLOBAL MIRROR
