@@ -1219,49 +1219,71 @@ function applyGateDecision(gateDecision, skin) {
 // ============================================================
 (function autoIgnitePulseTouch() {
   try {
-    if (!window.__PULSE_TOUCH__) {
-      const page =
-        location.pathname.split("/").pop().replace(".html", "") || "index";
+    if (window.__PULSE_TOUCH__) return;
 
-      // 1 — Ignite PulseTouch (sync)
-      const touch = createPulseTouch({
-        page,
-        mode: "fast",
-        presence: "active",
-        chunkProfile: "default",
-        band: "symbolic"
-      });
+    const page =
+      location.pathname.split("/").pop().replace(".html", "") || "index";
 
-      window.__PULSE_TOUCH__ = touch;
+    // 1 — Ignite PulseTouch (sync)
+    const touch = createPulseTouch({
+      page,
+      mode: "fast",
+      presence: "active",
+      chunkProfile: "default",
+      band: "symbolic"
+    });
 
-      // ⭐ GLOBAL TIMER ROOT
-      const t0 = performance.now();
-      window.__PULSE_TOUCH_T0__ = t0;
-      window.__PULSE_CHRONO_LAST__ = t0;
+    window.__PULSE_TOUCH__ = touch;
 
-      // ⭐ TICK 1 — ROUTE IMAGE SCAN (using global function)
-      setTimeout(() => {
-        window.__PULSE_SCAN_ROUTE_IMAGES__(`./${page}.html`);
+    // ⭐ GLOBAL TIMER ROOT
+    const t0 = performance.now();
+    window.__PULSE_TOUCH_T0__ = t0;
+    window.__PULSE_CHRONO_LAST__ = t0;
 
-        // ⭐ TICK 2 — ENGINE WARM (chunk + prewarm)
-        setTimeout(() => {
-          touch.chunker?.preloadAllChunks?.();
-          touch.advantage?.prewarmAll?.();
+    // Helper: schedule a microtask (or fallback)
+    const schedule = (fn) => {
+      if (window.queueMicrotask) {
+        queueMicrotask(fn);
+      } else {
+        Promise.resolve().then(fn);
+      }
+    };
 
-          // ⭐ TICK 3 — UI WARM (pages + snapshots)
-          setTimeout(() => {
-            touch.preloader?.preloadAllPages?.();
-            touch.memory?.snapshotAll?.();
-          }, 0);
-        }, 0);
-      }, 0);
+    // ⭐ WARM 1 — ROUTE IMAGE SCAN (non‑blocking, parallel)
+    schedule(() => {
+      try {
+        window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
+      } catch (err) {
+        console.warn("PulseTouch route image scan failed", err);
+      }
+    });
 
-      console.log("PulseTouch auto‑ignite: FULL UI organism loaded.");
-    }
+    // ⭐ WARM 2 — ENGINE (chunk + prewarm) — parallel
+    schedule(() => {
+      try {
+        touch.chunker?.preloadAllChunks?.();
+        touch.advantage?.prewarmAll?.();
+      } catch (err) {
+        console.warn("PulseTouch engine warm failed", err);
+      }
+    });
+
+    // ⭐ WARM 3 — UI (pages + snapshots) — parallel
+    schedule(() => {
+      try {
+        touch.preloader?.preloadAllPages?.();
+        touch.memory?.snapshotAll?.();
+      } catch (err) {
+        console.warn("PulseTouch UI warm failed", err);
+      }
+    });
+
+    console.log("PulseTouch auto‑ignite: FULL UI organism loaded (parallel warm).");
   } catch (err) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
 })();
+
 
 // ============================================================
 //  FOOTER — CONTINUOUS CONTACT LORE
