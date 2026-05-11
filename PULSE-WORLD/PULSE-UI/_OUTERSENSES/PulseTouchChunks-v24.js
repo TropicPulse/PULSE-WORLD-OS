@@ -373,6 +373,20 @@ async function fetchChunk(url) {
     console.warn("[PulseDNA] Network visibility logging failed:", err);
   }
 
+  // ⭐ SKIP LOGIC GOES HERE — BEFORE ANYTHING ELSE
+  if (shouldSkipChunk(url)) {
+    return {
+      ok: false,
+      value: url,
+      envelope: buildChunkPresenceEnvelope({
+        url,
+        fromCache: false,
+        degraded: false,
+        kind: "skipped"
+      })
+    };
+  }
+
   if (!url) {
     return {
       ok: false,
