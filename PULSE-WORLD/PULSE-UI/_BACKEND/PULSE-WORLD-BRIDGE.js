@@ -714,7 +714,6 @@ export function requestCompiler(reason = "touch", meta = {}) {
 // ============================================================================
 //  INBOUND PORTAL / AI / BOOT EVENTS
 // ============================================================================
-
 if (channel) {
   channel.addEventListener("message", (event) => {
     const msg = event?.data;
@@ -727,64 +726,100 @@ if (channel) {
       try {
         fn(payload);
       } catch (err) {
-        console.error("bridge", `${label} failed`, { error: String(err) });
+        console.error(
+          "%c[BRIDGE::ERROR] %c%s %c→ %s",
+          "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+          "color:#FFE066; font-family:monospace;",
+          label,
+          "color:#FF3B3B; font-family:monospace;",
+          String(err)
+        );
         appendBridgeRecord(`${label}_error`, { error: String(err) });
+      }
+    };
+
+    const logInbound = (type, payload) => {
+      console.log(
+        "%c[BRIDGE::INBOUND] %c%s %c→",
+        "color:#7C4DFF; font-weight:bold; font-family:monospace;",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        type,
+        "color:#E8F8FF; font-family:monospace;"
+      );
+
+      if (payload !== undefined) {
+        console.log(
+          "%c↳ payload:",
+          "color:#00E5FF; font-family:monospace; font-weight:bold;"
+        );
+        console.log(
+          "%c" + JSON.stringify(payload, null, 2),
+          "color:#E8F8FF; font-family:monospace;"
+        );
       }
     };
 
     switch (msg.type) {
       case "DUALBAND_AI_EVENT": {
-        traceInbound("DUALBAND_AI_EVENT", msg.data);
+        logInbound("DUALBAND_AI_EVENT", msg.data);
         appendBridgeRecord("dualband_ai_event", msg.data);
         safeCall("aiEventHandler", aiEventHandler, msg.data);
         break;
       }
 
       case "AI_EVENT": {
-        traceInbound("AI_EVENT", msg);
+        logInbound("AI_EVENT", msg);
         appendBridgeRecord("ai_event", msg);
         safeCall("aiEventHandler", aiEventHandler, msg);
         break;
       }
 
       case "PORTAL_EVENT": {
-        traceInbound("PORTAL_EVENT", msg);
+        logInbound("PORTAL_EVENT", msg);
         appendBridgeRecord("portal_event", msg);
         safeCall("portalEventHandler", portalEventHandler, msg);
         break;
       }
 
       case "DUALBAND_BOOT": {
-        traceInbound("DUALBAND_BOOT", msg.bootOptions);
+        logInbound("DUALBAND_BOOT", msg.bootOptions);
         appendBridgeRecord("dualband_boot", msg.bootOptions);
         safeCall("dualBandBootHandler", dualBandBootHandler, msg.bootOptions);
         break;
       }
 
       case "CNS_BOOT": {
-        traceInbound("CNS_BOOT", msg);
+        logInbound("CNS_BOOT", msg);
         appendBridgeRecord("cns_boot", msg);
         safeCall("dualBandBootHandler", dualBandBootHandler, msg);
         break;
       }
 
       case "IMAGE_RESPONSE": {
-        traceInbound("IMAGE_RESPONSE", msg.data);
+        logInbound("IMAGE_RESPONSE", msg.data);
         appendBridgeRecord("image_response", msg.data);
         break;
       }
 
       case "COMPILER_EVENT": {
-        traceInbound("COMPILER_EVENT", msg);
+        logInbound("COMPILER_EVENT", msg);
         appendBridgeRecord("compiler_event", msg);
         break;
       }
 
-      default:
+      default: {
+        console.log(
+          "%c[BRIDGE::UNKNOWN] %c%s",
+          "color:#7C4DFF; font-weight:bold; font-family:monospace;",
+          "color:#FFE066; font-family:monospace;",
+          msg.type
+        );
         break;
+      }
     }
   });
 }
+
 
 // ============================================================================
 //  EXPORT SURFACE
