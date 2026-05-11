@@ -960,6 +960,42 @@ export async function runInstanceOrchestrator(pulse) {
   return true;
 }
 
+// ============================================================================
+//  BROWSER INJECTION — EXPOSE PulseBand ENGINE
+// ============================================================================
+if (typeof window !== "undefined") {
+  try {
+    // Build PulseBand engine from CheckBand organ
+    const PulseBandEngine = {
+      start: (opts) => runInstanceOrchestrator(opts),
+      next: (userId) => projectWorldBandForUser(userId),
+      snapshot: () => getCheckBandStateSnapshot(),
+      diagnostics: () => getCheckBandDiagnostics(),
+      signal: (userId) => getCheckBandSignalForUserFromScores(userId),
+      global: () => getCheckBandGlobalSignal()
+    };
+
+    // Expose as lowercase (Portal expects this)
+    window.pulseband = PulseBandEngine;
+
+    // Expose as uppercase (Index + Touch expect this)
+    window.PulseBand = PulseBandEngine;
+
+    console.log(
+      "%c[CheckBand] %cPulseBand engine injected into window",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;"
+    );
+  } catch (err) {
+    console.error(
+      "%c[CheckBand] %cFAILED TO INJECT PulseBand %c→ %s",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+      "color:#FFE066; font-family:monospace;",
+      String(err)
+    );
+  }
+}
 
 // ============================================================================
 //  DEFAULT EXPORT — IMMORTAL++ PULSE‑WORLD‑BAND ORGAN (v24)
