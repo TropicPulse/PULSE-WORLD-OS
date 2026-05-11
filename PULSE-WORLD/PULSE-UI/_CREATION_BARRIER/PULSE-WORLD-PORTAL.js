@@ -915,9 +915,8 @@ window.addEventListener("load", () => {
     );
   }
 });
-
 // ============================================================================
-// ⭐ NEW: SIGNAL SNAPSHOT EXPORT (v25 IMMORTAL++)
+// ⭐ SIGNAL SNAPSHOT EXPORT (v26 IMMORTAL++)
 // Portal exposes the CSS‑merged signal snapshot from PulseProofSignal.
 // Understanding stays backend-only. Portal stays membrane-only.
 // ============================================================================
@@ -929,7 +928,7 @@ function __PulsePortalGetSignalSnapshot() {
     const comments = sig.comments(1);
     if (!comments || !comments.length) return null;
 
-    // v25 top-layer merged comment contains computed state
+    // v26: top-layer merged comment contains computed state
     return comments[0]?.details?.computed || null;
   } catch {
     return null;
@@ -937,26 +936,38 @@ function __PulsePortalGetSignalSnapshot() {
 }
 
 
-// ------------------------------------------------------------------------
-// SURFACE META + PORTAL SURFACE PROJECTION
-// ------------------------------------------------------------------------
+// ============================================================================
+// ⭐ SURFACE META + PORTAL SURFACE PROJECTION
+// ============================================================================
 window.PulseSurface = window.PulseSurface
   ? Object.freeze({ ...window.PulseSurface, ...surfaceMeta })
   : surfaceMeta;
 
+
+// ============================================================================
+// ⭐ PULSEPORTAL v26 — IMMORTAL++
+// Upgrade ONLY. Do NOT remove legacy fields.
+// ============================================================================
 window.PulsePortal =
   window.PulsePortal ||
   Object.freeze({
+    // ------------------------------------------------------------------------
+    // CORE META + ENVIRONMENT
+    // ------------------------------------------------------------------------
     meta: surfaceMeta,
     env: PulseSurfaceEnvironment,
     logger: PulseProofLogger,
 
-    // ⭐ NEW: v25 Signal Snapshot API
+    // ------------------------------------------------------------------------
+    // ⭐ NEW: v26 Signal Snapshot API
+    // ------------------------------------------------------------------------
     getSignal() {
       return __PulsePortalGetSignalSnapshot();
     },
 
-    // legacy fields preserved
+    // ------------------------------------------------------------------------
+    // LEGACY FIELDS — PRESERVED EXACTLY AS YOU SAID
+    // ------------------------------------------------------------------------
     vitals: PulseProofMonitor,
     ui: {
       errors: PulseUIErrors,
@@ -965,6 +976,7 @@ window.PulsePortal =
     skinReflex: PulseSkinReflex,
     pageScanner: PulsePageScanner,
     routeMemory: PulseUIRouteMemory,
+
     bridge: {
       route: BridgeRoute,
       PulseProofLogger,
@@ -974,22 +986,26 @@ window.PulsePortal =
       startUnderstanding: PulseUnderstanding,
       bootBinaryOrganism: PulseBinaryOrganismBoot
     },
+
     admin: {
       createAdminDiagnosticsOrgan,
       createPulseWorldAdminPanel
     },
+
     touch:
       typeof window !== "undefined"
         ? window.__PULSE_TOUCH__ || null
         : null,
+
     db
   });
 
 console.log(
-  "%c[PulsePortal::Surface] %cprojection active",
+  "%c[PulsePortal::Surface] %cprojection active (v26 IMMORTAL++)",
   "color:#00E5FF; font-weight:bold; font-family:monospace;",
   "color:#00FF9C; font-family:monospace;"
 );
+
 
 } catch (err) {
   console.error(
