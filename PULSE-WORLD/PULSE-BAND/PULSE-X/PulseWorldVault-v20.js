@@ -8831,3 +8831,40 @@ function normalizeCountry(input) {
 
   return map[cleaned] || "BZ";
 }
+// ============================================================================
+//  VAULT HOOKS — FRONTEND → BACKEND (sendPin, verifyPin)
+// ============================================================================
+
+if (typeof window !== "undefined") {
+  window.PulseHooks = {
+    async sendPin(payload) {
+      console.log("[VAULT] sendPin → backend", payload);
+
+      const res = await fetch("/sendPin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const json = await res.json();
+      console.log("[VAULT] sendPin ← backend response", json);
+
+      return json;
+    },
+
+    async verifyPin(payload) {
+      console.log("[VAULT] verifyPin → backend", payload);
+
+      const res = await fetch("/verifyPin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const json = await res.json();
+      console.log("[VAULT] verifyPin ← backend response", json);
+
+      return json;
+    }
+  };
+}

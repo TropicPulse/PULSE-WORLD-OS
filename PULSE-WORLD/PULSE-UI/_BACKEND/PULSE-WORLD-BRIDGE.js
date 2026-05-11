@@ -892,29 +892,23 @@ export const PulseProofBridgeErrors = PulseUIErrors;
 // ============================================================================
 //  REMOTE ENDPOINT — CNS → INTERNET / BRAIN / MEMORY (v24-Immortal)
 // ============================================================================
+// ============================================================================
+//  FULL REAL ENDPOINT LOGIC — NO IMPORTS, NO FILES, NO PLACEHOLDERS
+// ============================================================================
 
-// ⭐ FULL REAL ENDPOINT LOGIC — NO IMPORTS, NO FILES, NO PLACEHOLDERS
 const PulseBrainEndpoint = async function(route) {
   try {
     const { type, hookName, hookPayload, payload } = route || {};
 
     // ------------------------------------------------------------
-    // HOOKS (LOGIN, AUTH, SENDPIN, VERIFYPIN, ETC.)
+    // HOOKS (sendPin, verifyPin, logout)
     // ------------------------------------------------------------
     if (type === "hook") {
-      switch (hookName) {
-        case "sendPin":
-          return await window.PulseHooks.sendPin(hookPayload);
-
-        case "verifyPin":
-          return await window.PulseHooks.verifyPin(hookPayload);
-
-        case "logout":
-          return await window.PulseHooks.logout(hookPayload);
-
-        default:
-          return { error: "Unknown hook", hookName };
+      const fn = window.PulseHooks?.[hookName];
+      if (typeof fn === "function") {
+        return await fn(hookPayload);
       }
+      return { error: "Unknown hook", hookName };
     }
 
     // ------------------------------------------------------------
@@ -948,7 +942,7 @@ const PulseBrainEndpoint = async function(route) {
     }
 
     // ------------------------------------------------------------
-    // INTERNET ROUTING (FETCH, FIREBASE, EXTERNAL APIs)
+    // INTERNET ROUTING
     // ------------------------------------------------------------
     if (type === "internet") {
       if (typeof window.PulseInternet?.process === "function") {
@@ -957,9 +951,6 @@ const PulseBrainEndpoint = async function(route) {
       return { error: "Internet processor missing" };
     }
 
-    // ------------------------------------------------------------
-    // UNKNOWN TYPE
-    // ------------------------------------------------------------
     return { error: "Unknown route type", type };
 
   } catch (err) {
@@ -971,7 +962,10 @@ const PulseBrainEndpoint = async function(route) {
   }
 };
 
-// ⭐ ATTACH THE GLOBAL ENDPOINT CNS EXPECTS
+// ============================================================================
+//  GLOBAL ATTACHMENT — CNS ENTRYPOINT
+// ============================================================================
+
 if (typeof window !== "undefined") {
   window.PulseRemoteEndpoint = {
     async handle(route) {
@@ -979,8 +973,6 @@ if (typeof window !== "undefined") {
     }
   };
 }
-
-
 
 
 // ============================================================================
