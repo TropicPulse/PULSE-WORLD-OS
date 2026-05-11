@@ -71,7 +71,7 @@ import createPulseMesh, {
 } from "../PULSE-MESH/PulseMesh-v16.js";
 import createBinaryMesh, {
   BinaryMeshMeta
-} from "../PULSE-MESH/PulseBinaryMesh-v16.js";
+} from "../PULSE-MESH/PulseMeshBinary-v16.js";
 
 // Beacon engine + membrane
 import PulseBeaconEngine from "./PulseExpansionBeaconEngine-v20.js";

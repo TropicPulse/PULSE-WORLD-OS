@@ -37,7 +37,7 @@ export * from "./PulseGPUAstralMuscleSystem-v24.js";
 // GPU SYMBOLIC / BINARY DISPATCH ORGANS (v24-Immortal++)
 // ============================================================================
 export * from "./PulseGPU-v24.js";
-export * from "./PulseBinaryGPU-v24.js";
+export * from "./PulseGPUBinary-v24.js";
 
 // ============================================================================
 // GPU SPINE / GENETIC MEMORY (v24-Immortal++)

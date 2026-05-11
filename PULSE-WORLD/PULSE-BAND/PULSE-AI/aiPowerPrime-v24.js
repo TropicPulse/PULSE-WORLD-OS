@@ -1,5 +1,5 @@
 // ============================================================================
-//  aiPowerPrime.js — PULSE OS Power‑Prime Organ — v15‑IMMORTAL‑EVO++
+//  aiPowerPrime.js — PULSE OS Power‑Prime Organ — v24‑IMMORTAL‑PRIME++
 //  Crown-Layer Power Intelligence • Artery-Fused • Predictive • Drift-Aware
 //  READ-ONLY • DUALBAND • DETERMINISTIC • IDENTITY-SAFE
 // ============================================================================
@@ -34,13 +34,11 @@ import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
 //  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
 //  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
- export const PowerMeta = Identity.OrganMeta;
+export const PowerMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
@@ -49,9 +47,7 @@ const Identity = OrganismIdentity(import.meta.url);
 
 // Required 3 for every “surface” in the organism graph
 export const pulseRole = Identity.pulseRole;
-
 export const surfaceMeta = Identity.surfaceMeta;
-
 export const pulseLoreContext = Identity.pulseLoreContext;
 
 // Optional: richer experience meta for AI / tooling
@@ -59,7 +55,6 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 
 // Optional: export meta for tooling / dev panels
 export const EXPORT_META = Identity.EXPORT_META;
-
 
 // ---------------------------------------------------------------------------
 //  DEPENDENCIES
@@ -142,16 +137,157 @@ function buildFusedArteries(organismSnapshot) {
 }
 
 // ---------------------------------------------------------------------------
+//  HISTORY / CONTINUANCE DIAGNOSTIC HELPERS — v24++
+// ---------------------------------------------------------------------------
+
+function _safeNumber(v, fallback = 0) {
+  return typeof v === "number" && !Number.isNaN(v) ? v : fallback;
+}
+
+function _deriveHistoryStats(history = []) {
+  if (!Array.isArray(history) || history.length === 0) {
+    return Object.freeze({
+      totalEvents: 0,
+      outageEvents: 0,
+      fluctuationEvents: 0,
+      maxOutageMinutes: 0,
+      recentOutageMinutes: 0,
+      lastOutageAt: null,
+      volatilityIndex: 0
+    });
+  }
+
+  let totalEvents = 0;
+  let outageEvents = 0;
+  let fluctuationEvents = 0;
+  let maxOutageMinutes = 0;
+  let recentOutageMinutes = 0;
+  let lastOutageAt = null;
+
+  const now = Date.now();
+  const oneDayMs = 24 * 60 * 60 * 1000;
+
+  for (const ev of history) {
+    if (!ev || typeof ev !== "object") continue;
+    totalEvents += 1;
+
+    const status = String(ev.status || ev.state || "").toLowerCase();
+    const reason = String(ev.reason || ev.cause || "").toLowerCase();
+    const duration = _safeNumber(ev.durationMinutes || ev.duration || 0, 0);
+    const ts =
+      typeof ev.timestamp === "number"
+        ? ev.timestamp
+        : typeof ev.timestamp === "string"
+        ? Date.parse(ev.timestamp)
+        : null;
+
+    const looksOutage =
+      status.includes("outage") ||
+      status.includes("down") ||
+      status.includes("offline") ||
+      reason.includes("outage") ||
+      reason.includes("fault") ||
+      reason.includes("trip");
+
+    const looksFluctuation =
+      status.includes("fluctuation") ||
+      status.includes("unstable") ||
+      status.includes("low voltage") ||
+      status.includes("high voltage") ||
+      reason.includes("voltage") ||
+      reason.includes("frequency");
+
+    if (looksOutage) {
+      outageEvents += 1;
+      if (duration > maxOutageMinutes) maxOutageMinutes = duration;
+      if (ts && now - ts <= oneDayMs) {
+        recentOutageMinutes += duration;
+        if (!lastOutageAt || ts > lastOutageAt) lastOutageAt = ts;
+      }
+    }
+
+    if (looksFluctuation) {
+      fluctuationEvents += 1;
+    }
+  }
+
+  const volatilityIndex = Math.min(
+    1,
+    (outageEvents * 0.6 + fluctuationEvents * 0.4) / Math.max(1, totalEvents)
+  );
+
+  return Object.freeze({
+    totalEvents,
+    outageEvents,
+    fluctuationEvents,
+    maxOutageMinutes,
+    recentOutageMinutes,
+    lastOutageAt,
+    volatilityIndex
+  });
+}
+
+function _deriveRiskDiagnostics(continuance, riskSummary, historyStats) {
+  const c = continuance || {};
+  const r = riskSummary || {};
+  const h = historyStats || {};
+
+  const continuanceScore = _safeNumber(c.continuanceScore, 0);
+  const windowMinutes = _safeNumber(c.continuanceWindowMinutes, 0);
+  const riskLevel = r.level || "unknown";
+
+  let riskScore = 0.5;
+  if (typeof r.score === "number") {
+    riskScore = r.score;
+  } else {
+    if (riskLevel === "low") riskScore = 0.2;
+    else if (riskLevel === "medium") riskScore = 0.5;
+    else if (riskLevel === "high") riskScore = 0.8;
+    else if (riskLevel === "critical") riskScore = 0.95;
+  }
+
+  const volatility = _safeNumber(h.volatilityIndex, 0);
+  const outageEvents = _safeNumber(h.outageEvents, 0);
+  const recentOutageMinutes = _safeNumber(h.recentOutageMinutes, 0);
+
+  const outageProbabilityEstimate = Math.min(
+    1,
+    riskScore * 0.5 +
+      volatility * 0.3 +
+      (outageEvents > 0 ? 0.1 : 0) +
+      (recentOutageMinutes > 0 ? 0.1 : 0)
+  );
+
+  let continuityClass = "unknown";
+  if (continuanceScore >= 0.85) continuityClass = "strong";
+  else if (continuanceScore >= 0.65) continuityClass = "stable";
+  else if (continuanceScore >= 0.4) continuityClass = "fragile";
+  else continuityClass = "weak";
+
+  return Object.freeze({
+    riskScore,
+    riskLevel,
+    outageProbabilityEstimate,
+    continuityClass,
+    continuanceScore,
+    continuanceWindowMinutes: windowMinutes,
+    volatilityIndex: volatility,
+    outageEvents,
+    recentOutageMinutes
+  });
+}
+
+// ---------------------------------------------------------------------------
 //  INTERNAL HELPER — BEL POWER INFO POINTER (no route, no I/O)
 // ---------------------------------------------------------------------------
 
 function _belPowerPointer({ topic = "" } = {}) {
   const sources = {
     bel_updates: "https://www.bel.com.bz/PowerUpdates/?q=",
-    bel_news:    "https://www.bel.com.bz/News/?q=",
-    bel_docs:    "https://www.bel.com.bz/Documents/?q=",
-    gov_energy:  "https://www.energy.gov.bz/?s=",
-    pucs:        "https://www.puc.bz/?s="
+    bel_news: "https://www.bel.com.bz/News/?q=",
+    bel_docs: "https://www.bel.com.bz/Documents/?q=",
+    gov_energy: "https://www.energy.gov.bz/?s=",
+    pucs: "https://www.puc.bz/?s="
   };
 
   const base = sources.bel_updates;
@@ -281,7 +417,7 @@ export function powerPointer({ topic = "", source = "auto" } = {}) {
 }
 
 // ---------------------------------------------------------------------------
-//  BEL POWER READER v1 — interpret routed BEL power text
+//  BEL POWER READER v2 — richer pattern detection
 // ---------------------------------------------------------------------------
 
 function belPowerReader(info = {}, binaryVitals = {}) {
@@ -306,23 +442,53 @@ function belPowerReader(info = {}, binaryVitals = {}) {
   }
 
   if (text.includes("outage") || text.includes("interruption")) {
-    notes.push("Outage-related content detected — may indicate feeder faults, maintenance, or grid instability.");
+    notes.push(
+      "Outage-related content detected — may indicate feeder faults, maintenance, or grid instability."
+    );
+  }
+
+  if (text.includes("load shedding") || text.includes("load-shedding")) {
+    notes.push(
+      "Load shedding detected — suggests capacity constraints or grid protection actions."
+    );
   }
 
   if (text.includes("scheduled") && text.includes("maintenance")) {
-    notes.push("Scheduled maintenance detected — suggests planned downtime windows.");
+    notes.push(
+      "Scheduled maintenance detected — suggests planned downtime windows."
+    );
   }
 
   if (text.includes("fault") || text.includes("trip")) {
-    notes.push("Fault or trip event detected — often linked to line issues or protective shutdowns.");
+    notes.push(
+      "Fault or trip event detected — often linked to line issues or protective shutdowns."
+    );
+  }
+
+  if (
+    text.includes("transformer") ||
+    text.includes("substation") ||
+    text.includes("feeder")
+  ) {
+    notes.push(
+      "Equipment-level reference detected (transformer/substation/feeder) — may localize risk to specific infrastructure."
+    );
+  }
+
+  if (text.includes("storm") || text.includes("lightning")) {
+    notes.push(
+      "Weather-related risk detected — storms or lightning may increase outage probability."
+    );
   }
 
   if (text.includes("restored") || text.includes("normal")) {
-    notes.push("Restoration indicators detected — suggests service normalization or recovery.");
+    notes.push(
+      "Restoration indicators detected — suggests service normalization or recovery."
+    );
   }
 
   notes.push(
-    "A Power‑Prime assistant would map these BEL signals into risk, continuance, and fluctuation patterns. This is informational only — not a control interface."
+    "A Power‑Prime assistant mapped these BEL signals into risk, continuance, and fluctuation patterns. This is informational only — not a control interface."
   );
 
   return {
@@ -334,7 +500,7 @@ function belPowerReader(info = {}, binaryVitals = {}) {
 }
 
 // ---------------------------------------------------------------------------
-//  UNIFIED POWER READER — internal + BEL + external
+//  UNIFIED POWER READER — internal + BEL + external (v24++)
 // ---------------------------------------------------------------------------
 
 function powerReader({ source, payload = {}, binaryVitals = {} } = {}) {
@@ -343,28 +509,53 @@ function powerReader({ source, payload = {}, binaryVitals = {} } = {}) {
   }
 
   if (source === "internal") {
-    // Expect payload to contain internal summaries
     const notes = [];
-    const { continuance, risk, beacons } = payload || {};
+    const { continuance, risk, beacons, historyStats, diagnostics } =
+      payload || {};
 
     if (continuance) {
+      const score =
+        continuance.continuanceScore &&
+        continuance.continuanceScore.toFixed
+          ? continuance.continuanceScore.toFixed(2)
+          : "n/a";
       notes.push(
-        `Internal continuance window: ${continuance.continuanceWindowMinutes} minutes, score=${continuance.continuanceScore?.toFixed?.(
-          2
-        ) ?? "n/a"}.`
+        `Internal continuance window: ${continuance.continuanceWindowMinutes} minutes, score=${score}.`
       );
     }
 
     if (risk) {
       notes.push(`Internal risk level: ${risk.level || "unknown"}.`);
+      if (typeof risk.score === "number") {
+        notes.push(`Internal risk score: ${risk.score.toFixed(2)}.`);
+      }
+    }
+
+    if (historyStats) {
+      notes.push(
+        `History: ${historyStats.outageEvents} outage event(s), ${historyStats.fluctuationEvents} fluctuation event(s), max outage ${historyStats.maxOutageMinutes} minutes.`
+      );
+      notes.push(
+        `Volatility index: ${historyStats.volatilityIndex.toFixed(2)} (0=stable, 1=highly volatile).`
+      );
+    }
+
+    if (diagnostics) {
+      notes.push(
+        `Estimated outage probability: ${(diagnostics.outageProbabilityEstimate * 100).toFixed(
+          1
+        )}%, continuity class: ${diagnostics.continuityClass}.`
+      );
     }
 
     if (beacons && Array.isArray(beacons.signals)) {
-      notes.push(`Beacon signals detected: ${beacons.signals.length} pattern(s).`);
+      notes.push(
+        `Beacon signals detected: ${beacons.signals.length} pattern(s).`
+      );
     }
 
     notes.push(
-      "Internal power data was interpreted into continuance and risk patterns. This is informational only and does not control power."
+      "Internal power data was interpreted into continuance, risk, and volatility patterns. This is informational only and does not control power."
     );
 
     return {
@@ -386,11 +577,25 @@ function powerReader({ source, payload = {}, binaryVitals = {} } = {}) {
   }
 
   if (text.includes("grid") || text.includes("stability")) {
-    notes.push("External grid stability content detected — may relate to regional reliability or capacity.");
+    notes.push(
+      "External grid stability content detected — may relate to regional reliability or capacity."
+    );
   }
 
-  if (text.includes("renewable") || text.includes("solar") || text.includes("wind")) {
-    notes.push("External renewable energy content detected — may affect long-term power mix and risk profile.");
+  if (
+    text.includes("renewable") ||
+    text.includes("solar") ||
+    text.includes("wind")
+  ) {
+    notes.push(
+      "External renewable energy content detected — may affect long-term power mix and risk profile."
+    );
+  }
+
+  if (text.includes("blackout") || text.includes("brownout")) {
+    notes.push(
+      "Blackout/brownout references detected — may indicate severe or widespread power instability."
+    );
   }
 
   notes.push(
@@ -406,7 +611,7 @@ function powerReader({ source, payload = {}, binaryVitals = {} } = {}) {
 }
 
 // ---------------------------------------------------------------------------
-//  FACTORY — Power‑Prime API (v15‑IMMORTAL‑EVO++)
+//  FACTORY — Power‑Prime API (v24‑IMMORTAL‑PRIME++)
 // ---------------------------------------------------------------------------
 
 export function createPowerAPI(db, evolutionAPI, dualBand = null) {
@@ -414,7 +619,7 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
     meta: PowerMeta,
 
     // ----------------------------------------------------------------------
-    // TOURIST‑SAFE SNAPSHOT + CONTINUANCE + RISK SUMMARY
+    // TOURIST‑SAFE SNAPSHOT + CONTINUANCE + RISK SUMMARY + DIAGNOSTICS
     // ----------------------------------------------------------------------
     async getPublicPowerSnapshot(context) {
       context.logStep?.("aiPowerPrime: building public power snapshot");
@@ -446,10 +651,19 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         continuance
       });
 
+      const historyStats = _deriveHistoryStats(history);
+      const diagnostics = _deriveRiskDiagnostics(
+        continuance,
+        riskSummary,
+        historyStats
+      );
+
       context.logStep?.(
         `aiPowerPrime: continuanceScore=${continuance.continuanceScore.toFixed(
           2
-        )}, window=${continuance.continuanceWindowMinutes}min, risk=${riskSummary.level}`
+        )}, window=${continuance.continuanceWindowMinutes}min, risk=${riskSummary.level}, outageProb≈${(
+          diagnostics.outageProbabilityEstimate * 100
+        ).toFixed(1)}%`
       );
 
       return Object.freeze({
@@ -457,12 +671,15 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         history,
         continuance,
         risk: riskSummary,
+        historyStats,
+        diagnostics,
+        fusedArteries,
         organismSnapshot
       });
     },
 
     // ----------------------------------------------------------------------
-    // OWNER‑ONLY — FULL GRID DIAGNOSTICS + CONTINUANCE + RISK
+    // OWNER‑ONLY — FULL GRID DIAGNOSTICS + CONTINUANCE + RISK + BEACONS
     // ----------------------------------------------------------------------
     async getOwnerPowerDiagnostics(context) {
       if (!context.userIsOwner) return null;
@@ -506,6 +723,13 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         fusedArteries
       });
 
+      const historyStats = _deriveHistoryStats(history);
+      const diagnostics = _deriveRiskDiagnostics(
+        continuance,
+        riskSummary,
+        historyStats
+      );
+
       return Object.freeze({
         power,
         history,
@@ -514,6 +738,9 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         continuance,
         risk: riskSummary,
         beacons,
+        historyStats,
+        diagnostics,
+        fusedArteries,
         organismSnapshot
       });
     },
@@ -566,6 +793,13 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         fusedArteries
       });
 
+      const historyStats = _deriveHistoryStats(history);
+      const diagnostics = _deriveRiskDiagnostics(
+        continuance,
+        riskSummary,
+        historyStats
+      );
+
       return Object.freeze({
         fluctuations,
         outages,
@@ -573,12 +807,15 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         continuance,
         risk: riskSummary,
         beacons,
+        historyStats,
+        diagnostics,
+        fusedArteries,
         organismSnapshot
       });
     },
 
     // ----------------------------------------------------------------------
-    // OWNER‑ONLY — RISK‑ONLY VIEW (NO RAW DATA)
+    // OWNER‑ONLY — RISK‑ONLY VIEW (NO RAW DATA) + DIAGNOSTICS
     // ----------------------------------------------------------------------
     async getPowerRiskOverview(context) {
       if (!context.userIsOwner) return null;
@@ -622,10 +859,20 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         fusedArteries
       });
 
+      const historyStats = _deriveHistoryStats(history);
+      const diagnostics = _deriveRiskDiagnostics(
+        continuance,
+        riskSummary,
+        historyStats
+      );
+
       return Object.freeze({
         risk: riskSummary,
         beacons,
         continuance,
+        historyStats,
+        diagnostics,
+        fusedArteries,
         organismSnapshot
       });
     },
@@ -670,8 +917,16 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         continuance: null
       });
 
+      const historyStats = _deriveHistoryStats([]);
+      const diagnostics = _deriveRiskDiagnostics(
+        null,
+        riskSummary,
+        historyStats
+      );
+
       return Object.freeze({
         risk: riskSummary,
+        diagnostics,
         fusedArteries
       });
     },
@@ -699,11 +954,14 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
     } = {}) {
       const pointer = powerPointer({ topic, source });
       const effectiveSource =
-        pointer.source || (source === "auto" ? autoDetectPowerSource(topic) : source);
+        pointer.source ||
+        (source === "auto" ? autoDetectPowerSource(topic) : source);
 
       const effectiveMode =
         mode === "auto"
-          ? (typeof route === "function" ? "route" : "pointer")
+          ? typeof route === "function"
+            ? "route"
+            : "pointer"
           : mode;
 
       // POINTER‑ONLY MODE
@@ -724,9 +982,7 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
           context.userIsOwner
             ? fetchOwner(context, db, "powerSettings", { limit: 1 })
             : fetchTourist(context, db, "powerSettings", { limit: 1 }),
-          context.userIsOwner
-            ? fetchOwner(context, db, "powerData")
-            : []
+          context.userIsOwner ? fetchOwner(context, db, "powerData") : []
         ]);
 
         const settings = settingsArr[0] || {};
@@ -760,6 +1016,13 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
           fusedArteries
         });
 
+        const historyStats = _deriveHistoryStats(history);
+        const diagnostics = _deriveRiskDiagnostics(
+          continuance,
+          riskSummary,
+          historyStats
+        );
+
         const payload = {
           power,
           history,
@@ -767,7 +1030,9 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
           data,
           continuance,
           risk: riskSummary,
-          beacons
+          beacons,
+          historyStats,
+          diagnostics
         };
 
         const readerView = powerReader({

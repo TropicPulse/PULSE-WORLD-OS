@@ -91,10 +91,10 @@ import { createEarn as PulseEarnSym } from "../PULSE-EARN/PulseEarn-v24.js";
 // ============================================================================
 //  IMPORTS — BINARY SHADOW
 // ============================================================================
-import { createBinaryProxy } from "../PULSE-PROXY/PulseBinaryProxy-v20.js";
+import { createBinaryProxy } from "../PULSE-PROXY/PulseProxyBinary-v20.js";
 import { createBinaryRouter as PulseRouterBin } from "../PULSE-ROUTER/PulseBinaryRouter-v24.js";
 import { PulseBinaryGPU as PulseGPUBin } from "../PULSE-GPU/PulseBinaryGPU-v24.js";
-import { createBinaryMesh as PulseMeshBin } from "../PULSE-MESH/PulseBinaryMesh-v16.js";
+import { createBinaryMesh as PulseMeshBin } from "../PULSE-MESH/PulseMeshBinary-v16.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseBinarySend-v16.js";
 
 // ============================================================================

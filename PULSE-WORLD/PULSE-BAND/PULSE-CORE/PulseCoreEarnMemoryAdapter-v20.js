@@ -25,7 +25,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  FACTORY — v20 IMMORTAL
 // ============================================================================
-import { createPulseBinaryOverlay } from "./PulseBinaryCoreOverlay-v20.js";
+import { createPulseBinaryOverlay } from "./PulseCoreBinaryOverlay-v20.js";
 
 // deterministic epoch for Earn adapter events
 let EARNMEM_EPOCH = 0;

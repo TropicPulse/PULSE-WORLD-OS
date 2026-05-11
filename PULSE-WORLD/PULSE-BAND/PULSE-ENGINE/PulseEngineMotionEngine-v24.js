@@ -23,7 +23,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-import { createShifterPulse as ShifterPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v16.js";
+import { createShifterPulse as ShifterPulse } from "../PULSE-SHIFTER/PulseShifterBinaryEvolutionaryPulse-v16.js";
 
 // Keys preserved for compatibility
 const FORWARD_JOB_QUEUE_KEY  = "evo:forward:jobs";

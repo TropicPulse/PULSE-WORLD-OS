@@ -36,7 +36,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 import { createPulseV2 as createPulseV2Shifter } from "../PULSE-SHIFTER/PulseShifterEvolutionaryPulse-v16.js";
 
 // Binary Shifter Evolutionary Pulse front-end
-import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/PulseBinaryShifterEvolutionaryPulse-v16.js";
+import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/PulseShifterBinaryEvolutionaryPulse-v16.js";
 
 // v1 Legacy Pulse surface (PULSE-SEND)
 import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSendLegacyPulse-v16.js";

@@ -32,7 +32,7 @@ function nextSendEpoch() {
 // ============================================================================
 //  FACTORY — v20 IMMORTAL
 // ============================================================================
-import { createPulseBinaryOverlay } from "./PulseBinaryCoreOverlay-v20.js";
+import { createPulseBinaryOverlay } from "./PulseCoreBinaryOverlay-v20.js";
 
 export function createPulseSendMemoryAdapter({
   overlay = createPulseBinaryOverlay(),

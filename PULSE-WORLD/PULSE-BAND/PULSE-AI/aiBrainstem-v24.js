@@ -67,7 +67,7 @@ import { createArchitectAPI } from "./aiArchitect-v24.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist-v24.js";
 
 import { createEnvironmentAPI } from "./aiEnvironment-v24.js";
-import { createPowerAPI } from "./aiPowerPrime.js";
+import { createPowerAPI } from "./aiPowerPrime-v24.js";
 import { createEvolutionAPI } from "./aiEvolution-v24.js";
 import { createEarnAPI } from "./aiEarn-v24.js";
 import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";

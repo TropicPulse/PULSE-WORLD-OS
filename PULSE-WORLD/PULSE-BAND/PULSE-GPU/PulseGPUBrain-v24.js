@@ -25,7 +25,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ---------------------------------------------------------------------------
 
 import * as PulseGPU                   from "./PulseGPU-v24.js";
-import * as PulseBinaryGPU             from "./PulseBinaryGPU-v24.js";
+import * as PulseBinaryGPU             from "./PulseGPUBinary-v24.js";
 
 import * as PulseGPUDrive              from "./PulseGPUDrive-v24.js";
 import * as PulseGPUDriveCenter        from "./PulseGPUDriveCenter-v24.js";

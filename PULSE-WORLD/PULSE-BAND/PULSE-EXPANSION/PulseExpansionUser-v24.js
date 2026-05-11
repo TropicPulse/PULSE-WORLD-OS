@@ -27,7 +27,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 
 
 // Primary OS / Binary OS (OSBrain + runtimes)
-import * as PulseBinaryOS from "../PULSE-OS/PulseBinaryOS-v24.js";
+import * as PulseBinaryOS from "../PULSE-OS/PulseOSBinary-v24.js";
 
 // Mesh + BeaconMesh meta
 import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v16.js";

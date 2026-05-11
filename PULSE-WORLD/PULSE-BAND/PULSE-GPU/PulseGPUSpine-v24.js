@@ -56,7 +56,7 @@ import { PulseEarnBridge } from "../PULSE-EARN/PulseEarn-v24.js";
 import { PulseGPUChunkPlanner } from "./PulseGPUChunkPlanner-v24.js";
 import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache-v24.js";
 import { createPulseGPUImmortal } from "./PulseGPU-v24.js";
-import { createPulseBinaryGPUImmortal } from "./PulseBinaryGPU-v24.js";
+import { createPulseBinaryGPUImmortal } from "./PulseGPUBinary-v24.js";
 
 
 // ============================================================================

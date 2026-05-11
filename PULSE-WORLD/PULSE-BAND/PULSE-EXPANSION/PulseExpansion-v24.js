@@ -60,7 +60,7 @@ import {
 
 // v16 mesh + binary mesh metas
 import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v16.js";
-import { BinaryMeshMeta } from "../PULSE-MESH/PulseBinaryMesh-v16.js";
+import { BinaryMeshMeta } from "../PULSE-MESH/PulseMeshBinary-v16.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";

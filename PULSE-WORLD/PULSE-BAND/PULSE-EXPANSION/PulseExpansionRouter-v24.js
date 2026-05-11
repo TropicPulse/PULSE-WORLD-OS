@@ -51,7 +51,7 @@ import {
 // Mesh (symbolic + binary) — v24 IMMORTAL ORGANISM
 import createBinaryMesh, {
   BinaryMeshMeta
-} from "../PULSE-MESH/PulseBinaryMesh-v16.js";
+} from "../PULSE-MESH/PulseMeshBinary-v16.js";
 
 import createPulseMesh, {
   PulseMeshMeta

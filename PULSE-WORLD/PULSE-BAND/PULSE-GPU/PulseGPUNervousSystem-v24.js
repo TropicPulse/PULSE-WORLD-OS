@@ -18,7 +18,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 const TRACER_CONTEXT = Identity.pulseLoreContext;
 import PulseGPU from "./PulseGPU-v24.js";
-import PulseBinaryGPU from "./PulseBinaryGPU-v24.js";
+import PulseBinaryGPU from "./PulseGPUBinary-v24.js";
 import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
 import { PulseGPUHealer } from "./PulseGPULymphNodes-v24.js";
 

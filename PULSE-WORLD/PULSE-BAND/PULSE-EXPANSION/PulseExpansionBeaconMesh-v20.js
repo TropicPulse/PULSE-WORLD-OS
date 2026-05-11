@@ -114,7 +114,7 @@ import createPulseMesh, {
 } from "../PULSE-MESH/PulseMesh-v16.js";
 import createBinaryMesh, {
   BinaryMeshMeta
-} from "../PULSE-MESH/PulseBinaryMesh-v16.js";
+} from "../PULSE-MESH/PulseMeshBinary-v16.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
