@@ -56,10 +56,22 @@ import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldA
 //  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
 // ============================================================
 let PulseSkinReflex = null;
+
 try {
   PulseSkinReflex = createPulseSkinReflex();
 
-  console.log("[PORTAL] SkinReflex instance:", PulseSkinReflex);
+  console.log(
+    "%c[PORTAL::SkinReflex] %cInstance created %c→ OK",
+    "color:#00E5FF; font-weight:bold; font-family:monospace;",   // cyan tag
+    "color:#00FF9C; font-family:monospace;",                     // neon green message
+    "color:#E8F8FF; font-family:monospace;"                      // soft white arrow
+  );
+
+  console.log(
+    "%c↳ Methods wired to window: %cgetHook, getAuth, getMap, callHelper",
+    "color:#00E5FF; font-family:monospace; font-weight:bold;",
+    "color:#E8F8FF; font-family:monospace;"
+  );
 
   window.getHook    = PulseSkinReflex.getHook;
   window.getAuth    = PulseSkinReflex.getAuth;
@@ -67,8 +79,18 @@ try {
   window.callHelper = PulseSkinReflex.callHelper;
 
 } catch (err) {
-  console.error("[PORTAL] SkinReflex Error:", err);
+  console.error(
+    "%c[PORTAL::SkinReflex] %cERROR",
+    "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+    "color:#FFE066; font-family:monospace;"
+  );
+  console.error(
+    "%c↳ %s",
+    "color:#FF3B3B; font-family:monospace;",
+    err
+  );
 }
+
 
 const g =
   typeof globalThis !== "undefined"
