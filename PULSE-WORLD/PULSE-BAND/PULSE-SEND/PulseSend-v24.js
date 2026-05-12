@@ -37,7 +37,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // v24++: binary-first shifter (SymPulse v16-IMMORTAL-INTEL upgraded usage)
 import {
   createSymPulseV2 as PulseV2SymShifter
-} from "./PulseShifterEvolutionaryPulse-v24.js";
+} from "../PULSE-SHIFTER/PulseShifterEvolutionaryPulse-v24.js";
 
 // keep v3 / legacy stack for compatibility
 import { createPulseV3 as PulseV3UnifiedOrganism }  from "./PulseSendV3UnifiedOrganism-v24.js";
@@ -64,7 +64,7 @@ import { createPulseSendSystem as PulseSendSystem } from "./PulseSendSystem.js";
 // --- Mesh Factoring (awareness only, optional) -----------------------------
 import {
   applyMeshSignalFactoring
-} from "./PulseMeshSignalFactoring-v24.js";
+} from "../PULSE-MESH/PulseMeshSignalFactoring-v24.js";
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, pure
