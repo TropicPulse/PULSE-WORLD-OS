@@ -1103,22 +1103,22 @@ if (isBrowser() && window.PulseSkinReflex?.membraneAlive) {
 if (isBrowser()) {
   (async () => {
     try {
-      let binaryKernel = null;
+      let binary = null;
 
       // ----------------------------------------------------------------------
-      // BINARY ORGANISM BOOT — GLOBAL KERNEL + SHARED PulseBinary
+      // BINARY ORGANISM BOOT — GLOBAL PulseBinary (NO Kernel)
       // ----------------------------------------------------------------------
       try {
-        // Prefer an existing kernel if something (Touch / Index) already booted it
-        if (window.PulseBinaryKernel) {
-          binaryKernel = window.PulseBinaryKernel;
+        // Prefer existing organism if Touch/Index already booted it
+        if (window.PulseBinary) {
+          binary = window.PulseBinary;
         } else if (typeof PulseBinaryOrganismBoot?.boot === "function") {
-          binaryKernel = await PulseBinaryOrganismBoot.boot({ trace: false });
+          binary = await PulseBinaryOrganismBoot.boot({ trace: false });
         }
 
-        if (binaryKernel) {
-          // Expose kernel globally for ALL surfaces (Index, Touch, Portal, etc.)
-          window.PulseBinaryKernel = binaryKernel;
+        if (binary) {
+          // Expose organism globally for ALL surfaces (Index, Touch, Portal)
+          window.PulseBinary = binary;
           window.__PulseBinaryBooted = true;
 
           const safeBinaryView = {
@@ -1135,30 +1135,31 @@ if (isBrowser()) {
 
             Vitals: {
               generate: () =>
-                binaryKernel?.vitals?.generateVitals
-                  ? binaryKernel.vitals.generateVitals()
+                binary?.vitals?.generateVitals
+                  ? binary.vitals.generateVitals()
                   : null
             },
 
             Consciousness: {
               latest: () =>
-                binaryKernel?.consciousness?.generateConsciousnessPacket
-                  ? binaryKernel.consciousness.generateConsciousnessPacket()
+                binary?.consciousness?.generateConsciousnessPacket
+                  ? binary.consciousness.generateConsciousnessPacket()
                   : null
             },
 
             Sentience: {
               snapshot:
-                typeof binaryKernel?.sentience?.snapshot === "function"
-                  ? () => binaryKernel.sentience.snapshot()
+                typeof binary?.sentience?.snapshot === "function"
+                  ? () => binary.sentience.snapshot()
                   : () => null
             }
           };
 
-          // Merge with any existing PulseBinary instead of hiding from it
-          window.PulseBinary = window.PulseBinary
-            ? Object.freeze({ ...window.PulseBinary, ...safeBinaryView })
-            : Object.freeze(safeBinaryView);
+          // Merge with any existing PulseBinary shadow
+          window.PulseBinary = Object.freeze({
+            ...safeBinaryView,
+            ...window.PulseBinary
+          });
 
           console.log(
             "%c[PulsePortal::Binary] %corganism booted + wired",
@@ -1167,7 +1168,7 @@ if (isBrowser()) {
           );
         } else {
           console.error(
-            "%c[PulsePortal::Binary] %cNO KERNEL AVAILABLE",
+            "%c[PulsePortal::Binary] %cNO ORGANISM AVAILABLE",
             "color:#00E5FF; font-weight:bold; font-family:monospace;",
             "color:#FF3B3B; font-weight:bold; font-family:monospace;"
           );
@@ -1272,6 +1273,7 @@ if (isBrowser()) {
     }
   })();
 }
+
 
 
 // ============================================================================
