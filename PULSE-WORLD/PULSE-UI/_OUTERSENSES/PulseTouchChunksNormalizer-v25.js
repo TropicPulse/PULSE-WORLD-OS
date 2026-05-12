@@ -1,18 +1,19 @@
 // ============================================================================
-//  PulsePresenceNormalizer-SMART v2.4 (v24 IMMORTAL UPGRADE)
+//  PulsePresenceNormalizer-SMART v2.5++ (v25 IMMORTAL UPGRADE)
 //  Contract-driven bridge: A → Z
 //  No guessing. No heuristics. No fallback decoding.
-//  Fully aligned with PulseChunks-v24-MULTILANE-Immortal
-//  v24 IMMORTAL: LocalStorage mirroring of ALL normalization events
+//  Fully aligned with PulseChunks-v25++-MULTILANE-Immortal
+//  v25 IMMORTAL++: LocalStorage + in-memory mesh of ALL normalization events
+//  + Session-aware, replay-aware, route-aware, organ-aware
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulsePresenceNormalizer",
-  version: "v24-Immortal-SMART-HYBRID",
+  version: "v25-Immortal-SMART-HYBRID++",
   layer: "frontend",
   role: "chunk_normalizer",
-  lineage: "PulseOS-v24",
+  lineage: "PulseOS-v25++",
 
   evo: {
     binaryAware: true,
@@ -23,13 +24,17 @@ AI_EXPERIENCE_META = {
     smartNormalizer: true,
     unwrapOneLayer: true,
 
-    // IMMORTAL
+    // IMMORTAL++
     offlineFirst: true,
     localStoreMirrored: true,
     replayAware: true,
     modeAgnostic: true,
     dnaAware: true,
-    meshMemoryAligned: true
+    meshMemoryAligned: true,
+    sessionAware: true,
+    routeAware: true,
+    organAware: true,
+    crossTabSynced: true
   },
 
   contract: {
@@ -71,11 +76,36 @@ const db =
   null;
 
 // ============================================================================
-// IMMORTAL LOCALSTORAGE MIRROR — PulsePresenceNormalizerStore v24
+//  IMMORTAL LOCALSTORAGE + MEMORY MESH — v25++
+//  PulsePresenceNormalizerStore v25++
 // ============================================================================
 
-const PN_LS_KEY = "PulsePresenceNormalizer.v24.buffer";
-const PN_LS_MAX = 2000;
+const PN_LS_KEY = "PulsePresenceNormalizer.v25.buffer";
+const PN_LS_POINTER = "PulsePresenceNormalizer.v25.pointer";
+const PN_LS_MAX = 4000; // bigger, but still bounded
+const PN_MEM_MAX = 1000; // in-memory tail for fast access
+
+// In-memory ring buffer (per tab)
+let pnMemBuffer = [];
+
+// Session + route tagging
+const PN_SESSION_ID = (() => {
+  try {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+  } catch {}
+  return "sess-" + Math.random().toString(36).slice(2);
+})();
+
+function getCurrentRouteTag() {
+  try {
+    if (g.PulseRoute && typeof g.PulseRoute === "string") return g.PulseRoute;
+    if (typeof window !== "undefined" && window.PulseRoute) return window.PulseRoute;
+    if (typeof location !== "undefined" && location.pathname) return location.pathname;
+  } catch {}
+  return null;
+}
 
 function hasLocalStorage() {
   try {
@@ -89,7 +119,7 @@ function hasLocalStorage() {
   }
 }
 
-function loadPNBuffer() {
+function loadPNBufferFromLS() {
   if (!hasLocalStorage()) return [];
   try {
     const raw = window.localStorage.getItem(PN_LS_KEY);
@@ -101,65 +131,144 @@ function loadPNBuffer() {
   }
 }
 
-function savePNBuffer(buf) {
+function savePNBufferToLS(buf) {
   if (!hasLocalStorage()) return;
   try {
     const trimmed =
       buf.length > PN_LS_MAX ? buf.slice(buf.length - PN_LS_MAX) : buf;
     window.localStorage.setItem(PN_LS_KEY, JSON.stringify(trimmed));
+    window.localStorage.setItem(PN_LS_POINTER, "__active__");
   } catch {
     // never throw
   }
+}
+
+function syncMemFromLS() {
+  const fromLS = loadPNBufferFromLS();
+  pnMemBuffer = fromLS.length > PN_MEM_MAX
+    ? fromLS.slice(fromLS.length - PN_MEM_MAX)
+    : fromLS;
+}
+
+// Initial load
+try {
+  syncMemFromLS();
+} catch {}
+
+// Cross-tab sync
+if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== PN_LS_KEY || !e.newValue) return;
+    try {
+      const parsed = JSON.parse(e.newValue);
+      if (!Array.isArray(parsed)) return;
+      pnMemBuffer = parsed.length > PN_MEM_MAX
+        ? parsed.slice(parsed.length - PN_MEM_MAX)
+        : parsed;
+    } catch {
+      // ignore
+    }
+  });
 }
 
 function appendPresenceRecord(kind, payload) {
   const entry = {
     ts: Date.now(),
     kind,
-    payload
+    payload,
+    sessionId: PN_SESSION_ID,
+    route: getCurrentRouteTag(),
+    organ: "PulsePresenceNormalizer",
+    version: "v25++"
   };
-  const buf = loadPNBuffer();
-  buf.push(entry);
-  savePNBuffer(buf);
+
+  // In-memory
+  pnMemBuffer.push(entry);
+  if (pnMemBuffer.length > PN_MEM_MAX) {
+    pnMemBuffer = pnMemBuffer.slice(pnMemBuffer.length - PN_MEM_MAX);
+  }
+
+  // LocalStorage
+  const lsBuf = loadPNBufferFromLS();
+  lsBuf.push(entry);
+  savePNBufferToLS(lsBuf);
+
+  // Optional external db logging (if present)
+  try {
+    if (db && typeof db.log === "function") {
+      db.log("PulsePresenceNormalizer", entry);
+    }
+  } catch {
+    // never throw
+  }
 }
 
 export const PulsePresenceNormalizerStore = {
   getAll() {
-    return loadPNBuffer();
+    // merge LS + mem, but mem is already tail of LS
+    return loadPNBufferFromLS();
   },
   tail(n = 200) {
-    const buf = loadPNBuffer();
+    const buf = pnMemBuffer.length ? pnMemBuffer : loadPNBufferFromLS();
     return buf.slice(Math.max(0, buf.length - n));
   },
   clear() {
-    savePNBuffer([]);
+    pnMemBuffer = [];
+    savePNBufferToLS([]);
+  },
+  sessionId() {
+    return PN_SESSION_ID;
   }
 };
 
 // ============================================================================
-// SMART: unwrap ONLY ONE LAYER.
-// Backend must declare the shape. No recursive peeling.
+//  TYPE INTROSPECTION HELPERS
 // ============================================================================
-function unwrap(value) {
-  appendPresenceRecord("unwrap", { value });
-
-  if (!value || typeof value !== "object") return value;
-
-  if (value.__dna !== undefined) return value.__dna;
-  if (value.__chunk !== undefined) return value.__chunk;
-
-  if (value.data !== undefined) return value.data;
-  if (value.chunk !== undefined) return value.chunk;
-  if (value.value !== undefined) return value.value;
-
-  return value;
+function describeValueType(value) {
+  if (value === null) return "null";
+  const t = typeof value;
+  if (t !== "object") return t;
+  if (value instanceof Uint8Array) return "Uint8Array";
+  if (value instanceof ArrayBuffer) return "ArrayBuffer";
+  if (value instanceof Blob) return "Blob";
+  if (Array.isArray(value)) return "array";
+  return "object";
 }
 
 // ============================================================================
-// SMART IMAGE CONSTRUCTOR — A → Z (image)
+//  SMART: unwrap ONLY ONE LAYER.
+//  Backend must declare the shape. No recursive peeling.
+// ============================================================================
+function unwrap(value) {
+  appendPresenceRecord("unwrap_in", {
+    type: describeValueType(value)
+  });
+
+  if (!value || typeof value !== "object") {
+    appendPresenceRecord("unwrap_out", { type: describeValueType(value) });
+    return value;
+  }
+
+  let out = value;
+
+  if (value.__dna !== undefined) out = value.__dna;
+  else if (value.__chunk !== undefined) out = value.__chunk;
+  else if (value.data !== undefined) out = value.data;
+  else if (value.chunk !== undefined) out = value.chunk;
+  else if (value.value !== undefined) out = value.value;
+
+  appendPresenceRecord("unwrap_out", { type: describeValueType(out) });
+  return out;
+}
+
+// ============================================================================
+//  SMART IMAGE CONSTRUCTOR — A → Z (image)
 // ============================================================================
 export function normalizeImage(value, mime = "image/png") {
-  appendPresenceRecord("normalizeImage_in", { value, mime });
+  appendPresenceRecord("normalizeImage_in", {
+    type: describeValueType(value),
+    mime
+  });
 
   value = unwrap(value);
 
@@ -179,41 +288,55 @@ export function normalizeImage(value, mime = "image/png") {
     out = value.url;
   }
 
-  appendPresenceRecord("normalizeImage_out", { out });
+  appendPresenceRecord("normalizeImage_out", {
+    outType: describeValueType(out),
+    out
+  });
   return out;
 }
 
 // ============================================================================
-// SMART TEXT / HTML / CSS / JS
+//  SMART TEXT / HTML / CSS / JS
 // ============================================================================
 function normalizeText(value) {
-  appendPresenceRecord("normalizeText_in", { value });
+  appendPresenceRecord("normalizeText_in", {
+    type: describeValueType(value)
+  });
 
   value = unwrap(value);
   const out = typeof value === "string" ? value : null;
 
-  appendPresenceRecord("normalizeText_out", { out });
+  appendPresenceRecord("normalizeText_out", {
+    outType: describeValueType(out)
+  });
   return out;
 }
 
 // ============================================================================
-// SMART JSON
+//  SMART JSON
 // ============================================================================
 function normalizeJSON(value) {
-  appendPresenceRecord("normalizeJSON_in", { value });
+  appendPresenceRecord("normalizeJSON_in", {
+    type: describeValueType(value)
+  });
 
   value = unwrap(value);
   const out = typeof value === "object" && value !== null ? value : null;
 
-  appendPresenceRecord("normalizeJSON_out", { out });
+  appendPresenceRecord("normalizeJSON_out", {
+    outType: describeValueType(out)
+  });
   return out;
 }
 
 // ============================================================================
-// SMART BINARY
+//  SMART BINARY
 // ============================================================================
 function normalizeBinary(value, mime = "application/octet-stream") {
-  appendPresenceRecord("normalizeBinary_in", { value, mime });
+  appendPresenceRecord("normalizeBinary_in", {
+    type: describeValueType(value),
+    mime
+  });
 
   value = unwrap(value);
 
@@ -227,15 +350,21 @@ function normalizeBinary(value, mime = "application/octet-stream") {
     out = value;
   }
 
-  appendPresenceRecord("normalizeBinary_out", { out });
+  appendPresenceRecord("normalizeBinary_out", {
+    outType: describeValueType(out)
+  });
   return out;
 }
 
 // ============================================================================
-// SMART UNIVERSAL NORMALIZER
+//  SMART UNIVERSAL NORMALIZER
 // ============================================================================
 export function normalizeChunkValue(value, typeHint = null, options = {}) {
-  appendPresenceRecord("normalizeChunkValue_in", { value, typeHint, options });
+  appendPresenceRecord("normalizeChunkValue_in", {
+    type: describeValueType(value),
+    typeHint,
+    options
+  });
 
   const mime = options.mime || "application/octet-stream";
   let out = null;
@@ -264,12 +393,14 @@ export function normalizeChunkValue(value, typeHint = null, options = {}) {
       break;
   }
 
-  appendPresenceRecord("normalizeChunkValue_out", { out });
+  appendPresenceRecord("normalizeChunkValue_out", {
+    outType: describeValueType(out)
+  });
   return out;
 }
 
 // ============================================================================
-// EXPORTS
+//  EXPORTS
 // ============================================================================
 export const PulseChunkNormalizer = {
   normalizeChunkValue,
@@ -285,7 +416,7 @@ export const PulseChunkNormalizer = {
 export default PulseChunkNormalizer;
 
 // ============================================================================
-// GLOBAL EXPOSURE OF IMMORTAL STORE
+//  GLOBAL EXPOSURE OF IMMORTAL STORE + NORMALIZER
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
