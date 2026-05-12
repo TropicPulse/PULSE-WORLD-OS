@@ -78,7 +78,7 @@ import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseCoreBinaryOverlay
 
 
 // Optional: GPU chunker identity (no instantiation here, brain stays pure)
-import * as PulseEarnChunker             from "./PulseEarnChunker-v24.js";
+import PulseEarnChunker             from "./PulseEarnChunker-v24.js";
 
 // CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
 export const CoreMemory = Object.freeze({
