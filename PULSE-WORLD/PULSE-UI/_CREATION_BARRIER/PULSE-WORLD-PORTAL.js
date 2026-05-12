@@ -868,50 +868,12 @@ if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function
   });
 }
 
-// ------------------------------------------------------------------------
-// PREWARM VISIBLE ASSETS ON LOAD
-// ------------------------------------------------------------------------
 window.addEventListener("load", () => {
-  try {
-    const imgUrls = Array.from(document.querySelectorAll("img"))
-      .map((img) => img.getAttribute("src"))
-      .filter(Boolean);
-
-    const cssUrls = Array.from(
-      document.querySelectorAll('link[rel="stylesheet"][href]')
-    )
-      .map((link) => link.getAttribute("href"))
-      .filter(Boolean);
-
-    const jsUrls = Array.from(
-      document.querySelectorAll("script[src]")
-    )
-      .map((script) => script.getAttribute("src"))
-      .filter(Boolean);
-
-    const allUrls = [...imgUrls, ...cssUrls, ...jsUrls];
-
-    if (allUrls.length && window.prewarmAssets) {
-      window.prewarmAssets(allUrls);
-
-      console.log(
-        "%c[PulsePortal::Prewarm] %cvisible assets prewarmed %c→ %d",
-        "color:#00E5FF; font-weight:bold; font-family:monospace;",
-        "color:#00FF9C; font-family:monospace;",
-        "color:#E8F8FF; font-family:monospace;",
-        allUrls.length
-      );
-    }
-  } catch (err) {
-    console.error(
-      "%c[PulsePortal::Prewarm] %cFAILED %c→ %s",
-      "color:#00E5FF; font-weight:bold; font-family:monospace;",
-      "color:#FF3B3B; font-weight:bold; font-family:monospace;",
-      "color:#FFE066; font-family:monospace;",
-      String(err)
-    );
-  }
+  const page = location.pathname.split("/").pop().replace(".html", "") || "index";
+  const next = window.__PULSE_TOUCH__?.router?.predictNext?.(page);
+  if (next) window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
 });
+
 // ============================================================================
 // ⭐ SIGNAL SNAPSHOT EXPORT (v26 IMMORTAL++)
 // Portal exposes the CSS‑merged signal snapshot from PulseProofSignal.
