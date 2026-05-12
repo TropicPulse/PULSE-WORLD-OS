@@ -679,9 +679,15 @@ export function fireAndForgetRoute(path, payload = {}) {
 // ============================================================================
 
 export function startDualBandAI(options = {}) {
+  // Signal 1 — Start DualBand AI
   trace("DUALBAND_AI_START", options);
   send(envelope("DUALBAND_AI_START", { options }));
+
+  // Signal 2 — Start BinaryOS (completely separate)
+  trace("BINARY_OS_BOOT", options);
+  send(envelope("BINARY_OS_BOOT", { options }));
 }
+
 
 export function fetchImageThroughBridge(url) {
   trace("IMAGE_FETCH", { url });
