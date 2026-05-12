@@ -25,26 +25,11 @@
 // They are designed for browser use.
 //
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-import {
-  getDatabase,
-  ref,
-  set as rtdbSet,
-  get as rtdbGet
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, set as rtdbSet, get as rtdbGet} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-import {
-  getStorage,
-  ref as storageRef,
-  uploadString
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getStorage, ref as storageRef, uploadString} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 
 //
@@ -166,6 +151,55 @@ export const PulseWorldFirebaseShadow = Object.freeze({
       console.error("[FirebaseShadow] FAILED logEvent →", err);
     }
   },
+
+    //
+  // ⭐ Save per-system organism snapshot (hourly)
+  //
+  async saveSystemSnapshot(systemName, snapshot) {
+    try {
+      const epoch = Date.now();
+      const hourKey = new Date().toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
+
+      const systemPath = `ORGANISM/SYSTEMS/${systemName}`;
+
+      // 1 — Load existing latest snapshot
+      const latestRef = doc(db, systemPath, "latest");
+      const latestSnap = await getDoc(latestRef);
+
+      // 2 — If a previous snapshot exists → archive it
+      if (latestSnap.exists()) {
+        const historyRef = doc(db, `${systemPath}/history`, String(latestSnap.data().epoch));
+        await setDoc(historyRef, latestSnap.data());
+      }
+
+      // 3 — Save new snapshot as latest
+      await setDoc(latestRef, {
+        epoch,
+        hour: hourKey,
+        snapshot
+      });
+
+      console.log(`[FirebaseShadow] Saved system snapshot → ${systemName}`);
+
+    } catch (err) {
+      console.error("[FirebaseShadow] FAILED saveSystemSnapshot →", err);
+    }
+  },
+
+
+  //
+  // ⭐ Load latest system snapshot
+  //
+  async loadSystemSnapshot(systemName) {
+    try {
+      const snap = await getDoc(doc(db, `ORGANISM/SYSTEMS/${systemName}`, "latest"));
+      return snap.exists() ? snap.data() : null;
+    } catch (err) {
+      console.error("[FirebaseShadow] FAILED loadSystemSnapshot →", err);
+      return null;
+    }
+  },
+
 
   //
   // ⭐ Save JSON to Storage (optional)

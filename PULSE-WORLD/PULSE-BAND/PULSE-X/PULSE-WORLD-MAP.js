@@ -624,8 +624,28 @@ export async function scanPulseSystemsOnce() {
 export async function buildPulseOrganismSnapshotV26() {
   const fs = getFsAPI({ trace: false });
 
+  async function findPulseWorldRoot(fs) {
+    let cwd = await fs.cwd(); // e.g. "/PULSE-WORLD/PULSE-BAND/PULSE-X"
+
+    // Split into parts
+    const parts = cwd.split("/").filter(Boolean);
+
+    // Walk upward until we find "PULSE-WORLD"
+    while (parts.length > 0) {
+      if (parts[parts.length - 1] === "PULSE-WORLD") {
+        return "/" + parts.join("/");
+      }
+      parts.pop();
+    }
+
+    // Fallback (should never happen)
+    return "/PULSE-WORLD";
+  }
+
   // ⭐ Scan entire PULSE-WORLD (two levels up)
-  const allFiles = await fs.getAllFiles("/PULSE-WORLD");
+  const root = await findPulseWorldRoot(fs);
+  const allFiles = await fs.getAllFiles(root);
+
 
   const systems = {};
   const fileToMeta = {};
@@ -693,19 +713,80 @@ export async function buildPulseOrganismSnapshotV26() {
     jsRoutes[file.name.replace(".js", "")] = extractRoutesFromJS(js);
   }
 
-  // ⭐ Build final snapshot
+  // ⭐ Build final organism snapshot
   const snapshot = {
     epoch: Date.now(),
-    version: "v26.0-GENOME",
+    hour: new Date().toISOString().slice(0, 13),
+    version: "v26.5-GENOME",
     systems,
     fileToMeta,
     htmlRoutes,
     jsRoutes
   };
 
+  // ⭐ Save global
   window.__PULSE_ORGANISM_SNAPSHOT__ = snapshot;
+
+  // ⭐ Save full organism snapshot to Firebase
+  if (globalThis.PulseWorldFirebaseShadow) {
+    await globalThis.PulseWorldFirebaseShadow.saveOrganismSnapshot(snapshot);
+  }
+
+  // ⭐ Save per-system snapshots (hourly)
+  await savePerSystemSnapshots(snapshot);
+
   return snapshot;
 }
+
+async function savePerSystemSnapshots(snapshot) {
+  const shadow = globalThis.PulseWorldFirebaseShadow;
+  if (!shadow) return;
+
+  const { systems, fileToMeta, htmlRoutes, jsRoutes } = snapshot;
+
+  for (const sysKey of Object.keys(systems)) {
+    const sys = systems[sysKey];
+
+    // Extract only this system’s files
+    const filteredFiles = {};
+    for (const [path, meta] of Object.entries(fileToMeta)) {
+      if (meta.subsystem === sys.subsystem) {
+        filteredFiles[path] = meta;
+      }
+    }
+
+    // Extract only this system’s routes
+    const filteredHTML = {};
+    const filteredJS = {};
+
+    for (const [page, routes] of Object.entries(htmlRoutes)) {
+      if (page.toLowerCase().includes(sys.subsystem)) {
+        filteredHTML[page] = routes;
+      }
+    }
+
+    for (const [page, routes] of Object.entries(jsRoutes)) {
+      if (page.toLowerCase().includes(sys.subsystem)) {
+        filteredJS[page] = routes;
+      }
+    }
+
+    // Build per-system snapshot
+    const sysSnapshot = {
+      epoch: Date.now(),
+      hour: new Date().toISOString().slice(0, 13),
+      system: sysKey,
+      meta: sys,
+      files: filteredFiles,
+      htmlRoutes: filteredHTML,
+      jsRoutes: filteredJS
+    };
+
+    // Save to Firebase
+    await shadow.saveSystemSnapshot(sysKey, sysSnapshot);
+  }
+}
+
 function extractRoutesFromHTML(html) {
   const routes = new Set();
 
