@@ -322,13 +322,16 @@ export function getSchemaAPI({ trace = false } = {}) {
 // ============================================================================
 // FETCH API — ROUTE‑AWARE, IMMORTAL v25
 // ============================================================================
+// ============================================================================
+// FETCH API — ROUTE‑AWARE, IMMORTAL v25.2
+// ============================================================================
 export function getFetchAPI({ trace = false, routes } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:fetch] ${msg}`, data);
 
-  const meta = {
+  const meta = Object.freeze({
     layer: "PulseFetchAPI",
     role: "NETWORK_ADAPTER",
-    version: "25.0-IMMORTAL-WORLD",
+    version: "25.2-IMMORTAL-WORLD",
     evo: {
       deterministicField: true,
       unifiedAdvantageField: true,
@@ -345,15 +348,32 @@ export function getFetchAPI({ trace = false, routes } = {}) {
       zeroRoutingInfluence: true,
       safeRouteFree: true
     }
-  };
+  });
 
   async function fetchViaRoute(url, options = {}) {
     log("fetchViaRoute", { url, options });
 
-    const route = await routes.resolve(url);
-    const result = await routes.fetchThroughRoute(route, options);
+    try {
+      // Resolve route deterministically
+      const route = await routes.resolve(url);
 
-    return { ...result, meta };
+      // Clone options to avoid mutation
+      const opts = {
+        method: options.method || "GET",
+        headers: Object.assign({}, options.headers || {}),
+        body: options.body || null
+      };
+
+      const result = await routes.fetchThroughRoute(route, opts);
+      return Object.freeze({ ...result, meta });
+
+    } catch (err) {
+      return Object.freeze({
+        ok: false,
+        error: err?.message || "fetch_via_route_failed",
+        meta
+      });
+    }
   }
 
   return Object.freeze({
@@ -362,8 +382,12 @@ export function getFetchAPI({ trace = false, routes } = {}) {
   });
 }
 
+
 // ============================================================================
 // CACHESTORAGE ORGAN — v25.0‑IMMORTAL‑WORLD
+// ============================================================================
+// ============================================================================
+// CACHESTORAGE ORGAN — v25.2‑IMMORTAL‑WORLD
 // ============================================================================
 export function getCacheStorageOrgan({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:cache] ${msg}`, data);
@@ -414,19 +438,23 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
       return;
     }
 
-    const allFiles = await fsAPI.getAllFiles();
-    const cache = await caches.open("pulse-immortal-v25");
+    try {
+      const allFiles = await fsAPI.getAllFiles();
+      const cache = await caches.open("pulse-immortal-v25");
 
-    for (const file of allFiles) {
-      if (file.type !== "file") continue;
-      if (!shouldCache(file.path)) continue;
+      for (const file of allFiles) {
+        if (file.type !== "file") continue;
+        if (!shouldCache(file.path)) continue;
 
-      try {
-        await cache.add(file.path);
-        log("cached", file.path);
-      } catch (err) {
-        log("cache_failed", { file: file.path, err });
+        try {
+          await cache.add(file.path);
+          log("cached", file.path);
+        } catch (err) {
+          log("cache_failed", { file: file.path, err });
+        }
       }
+    } catch (err) {
+      log("autoCacheFiles_failed", err);
     }
   }
 
@@ -436,7 +464,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     meta: {
       layer: "PulseCacheStorageOrgan",
       role: "FIRST_FRAME_FREEZER",
-      version: "25.0-IMMORTAL-WORLD",
+      version: "25.2-IMMORTAL-WORLD",
       evo: {
         patternDriven: true,
         driftProof: true,
@@ -450,180 +478,115 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
   });
 }
 
+
 // ============================================================================
 // SYSTEM CLASSIFIER — v25 (WORLD / UI / BAND / OS / ROUTER / PROXY / CORE / GPU / AI / EARN / TECH / etc.)
+// ============================================================================
+// ============================================================================
+// SYSTEM CLASSIFIER — v25.2 IMMORTAL (no behavior changes, just hardened)
 // ============================================================================
 function classifySystem(system) {
   const name = system.name.toLowerCase();
 
-  // AI
-  if (name === "pulse-ai")
-    return { layer: "ai", kind: "ai" };
+  const MAP = Object.freeze({
+    "pulse-ai":          { layer: "ai",            kind: "ai" },
+    "pulse-band":        { layer: "backend",       kind: "band" },
+    "pulse-code":        { layer: "specs",         kind: "code" },
+    "pulse-core":        { layer: "core",          kind: "core" },
+    "pulse-design":      { layer: "design",        kind: "design" },
+    "pulse-earn":        { layer: "earn",          kind: "earn" },
+    "pulse-engine":      { layer: "engine",        kind: "engine" },
+    "pulse-expansion":   { layer: "expansion",     kind: "expansion" },
+    "pulse-finality":    { layer: "finality",      kind: "finality" },
+    "pulse-gpu":         { layer: "gpu",           kind: "gpu" },
+    "pulse-grid":        { layer: "grid",          kind: "grid" },
+    "pulse-mesh":        { layer: "mesh",          kind: "mesh" },
+    "pulse-os":          { layer: "os",            kind: "os" },
+    "pulse-proxy":       { layer: "proxy",         kind: "boundary" },
+    "pulse-regioning":   { layer: "regioning",     kind: "regioning" },
+    "pulse-router":      { layer: "router",        kind: "router" },
+    "pulse-send":        { layer: "send",          kind: "send" },
+    "pulse-specs":       { layer: "specs",         kind: "specs" },
+    "pulse-shifter":     { layer: "shifter",       kind: "shifter" },
+    "pulse-tech":        { layer: "tech",          kind: "tech" },
+    "pulse-tools":       { layer: "tools",         kind: "tools" },
+    "pulse-translator":  { layer: "translator",    kind: "translator" },
+    "pulse-trust":       { layer: "trust",         kind: "trust" },
+    "pulse-ui":          { layer: "frontend",      kind: "ui" },
+    "pulse-world":       { layer: "world_root",    kind: "world" },
+    "pulse-x":           { layer: "core_engine",   kind: "engine" },
+    "pulse":             { layer: "security_ui",   kind: "pulse" },
+    "pulseadmin":        { layer: "admin_ui",      kind: "admin" },
+    "pulsedelivery":     { layer: "delivery_ui",   kind: "delivery" },
+    "pulsedirectory":    { layer: "directory_ui",  kind: "directory" },
+    "pulserewards":      { layer: "rewards_ui",    kind: "rewards" },
+    "netlify":           { layer: "backup",        kind: "backup" }
+  });
 
-  // BAND
-  if (name === "pulse-band")
-    return { layer: "backend", kind: "band" };
-
-  // CODE (specifications / schema / definitions)
-  if (name === "pulse-code")
-    return { layer: "specs", kind: "code" };
-
-  // CORE (foundational logic)
-  if (name === "pulse-core")
-    return { layer: "core", kind: "core" };
-
-  // DESIGN SYSTEM
-  if (name === "pulse-design")
-    return { layer: "design", kind: "design" };
-
-  // EARN (economic engine)
-  if (name === "pulse-earn")
-    return { layer: "earn", kind: "earn" };
-
-  // ENGINE (compute engine)
-  if (name === "pulse-engine")
-    return { layer: "engine", kind: "engine" };
-
-  // EXPANSION (feature expansion layer)
-  if (name === "pulse-expansion")
-    return { layer: "expansion", kind: "expansion" };
-
-  // FINALITY (transaction finalization)
-  if (name === "pulse-finality")
-    return { layer: "finality", kind: "finality" };
-
-  // GPU (compute acceleration)
-  if (name === "pulse-gpu")
-    return { layer: "gpu", kind: "gpu" };
-
-  // GRID (distributed compute grid)
-  if (name === "pulse-grid")
-    return { layer: "grid", kind: "grid" };
-
-  // MESH (mesh networking)
-  if (name === "pulse-mesh")
-    return { layer: "mesh", kind: "mesh" };
-
-  // OS (device OS layer)
-  if (name === "pulse-os")
-    return { layer: "os", kind: "os" };
-
-  // PROXY (boundary layer)
-  if (name === "pulse-proxy")
-    return { layer: "proxy", kind: "boundary" };
-
-  // REGIONING (geo/region logic)
-  if (name === "pulse-regioning")
-    return { layer: "regioning", kind: "regioning" };
-
-  // ROUTER (network routing)
-  if (name === "pulse-router")
-    return { layer: "router", kind: "router" };
-
-  // SEND (send engine)
-  if (name === "pulse-send")
-    return { layer: "send", kind: "send" };
-
-  // SPECS (schema/specification layer)
-  if (name === "pulse-specs")
-    return { layer: "specs", kind: "specs" };
-
-  // SHIFTER (data transformation)
-  if (name === "pulse-shifter")
-    return { layer: "shifter", kind: "shifter" };
-
-  // TECH (device tech layer)
-  if (name === "pulse-tech")
-    return { layer: "tech", kind: "tech" };
-
-  // TOOLS (developer tools)
-  if (name === "pulse-tools")
-    return { layer: "tools", kind: "tools" };
-
-  // TRANSLATOR (language engine)
-  if (name === "pulse-translator")
-    return { layer: "translator", kind: "translator" };
-
-  // TRUST (identity/auth)
-  if (name === "pulse-trust")
-    return { layer: "trust", kind: "trust" };
-
-  // UI (frontend)
-  if (name === "pulse-ui")
-    return { layer: "frontend", kind: "ui" };
-
-  // WORLD ROOT (organism root)
-  if (name === "pulse-world")
-    return { layer: "world_root", kind: "world" };
-
-  // X (core engine)
-  if (name === "pulse-x")
-    return { layer: "core_engine", kind: "engine" };
-
-  // SECURITY LAYER ENTRANCE UI
-  if (name === "pulse")
-    return { layer: "security_ui", kind: "pulse" };
-
-  // ADMIN UI
-  if (name === "pulseadmin")
-    return { layer: "admin_ui", kind: "admin" };
-
-  // DELIVERY UI
-  if (name === "pulsedelivery")
-    return { layer: "delivery_ui", kind: "delivery" };
-
-  // DIRECTORY UI
-  if (name === "pulsedirectory")
-    return { layer: "directory_ui", kind: "directory" };
-
-  // REWARDS UI
-  if (name === "pulserewards")
-    return { layer: "rewards_ui", kind: "rewards" };
-
-  // NETLIFY (deployment/backup)
-  if (name === "netlify")
-    return { layer: "backup", kind: "backup" };
-
-  // DEFAULT
-  return { layer: "generic", kind: "system" };
+  return MAP[name] || { layer: "generic", kind: "system" };
 }
+
 
 // ============================================================================
 // SCAN SYSTEMS — v25.1 IMMORTAL WORLD GENOME++
 // Extract subsystem from folder name + version from FILES
 // ============================================================================
 // ============================================================================
-// IMMORTAL ORGANISM MAP — SCAN ONCE, REUSE FOREVER (v24-compatible)
+// IMMORTAL ORGANISM MAP — SCAN ONCE, HYDRATE RUNTIME, REUSE FOREVER
 // ============================================================================
-
 export async function scanPulseSystemsOnce() {
-  // If already loaded in memory → return
-  if (window.PulseOrganismMap) {
-    return window.PulseOrganismMap;
-  }
+  // Already in memory → return hydrated map
+  if (window.PulseOrganismMap) return window.PulseOrganismMap;
 
   const today = new Date().toISOString().slice(0, 10);
 
-  // Try Firebase snapshot
-  const fb = await firebase.get("pulse_organism_snapshot_v26");
-  if (fb && fb.date === today) {
-    window.PulseOrganismMap = fb.snapshot;
-    return fb.snapshot;
-  }
+  // 1 — Try localStorage (fastest, offline)
+  try {
+    const raw = localStorage.getItem("PulseOrganismMap_v25");
+    if (raw) {
+      const snapshot = JSON.parse(raw);
+      const hydrated = attachOrganismMapRuntime(snapshot);
+      window.PulseOrganismMap = hydrated;
+      return hydrated;
+    }
+  } catch {}
 
-  // Rebuild genome (JS + HTML + systems)
+  // 2 — Try Firebase snapshot
+  try {
+    const fb = await firebase.get("pulse_organism_snapshot_v26");
+    if (fb && fb.date === today) {
+      const snapshot = fb.snapshot;
+      const hydrated = attachOrganismMapRuntime(snapshot);
+
+      window.PulseOrganismMap = hydrated;
+      localStorage.setItem("PulseOrganismMap_v25", JSON.stringify(snapshot));
+
+      return hydrated;
+    }
+  } catch {}
+
+  // 3 — Build fresh snapshot (full genome scan)
   const snapshot = await buildPulseOrganismSnapshotV26();
+  const hydrated = attachOrganismMapRuntime(snapshot);
 
   // Save to Firebase
-  await firebase.set("pulse_organism_snapshot_v26", {
-    date: today,
-    snapshot
-  });
+  try {
+    await firebase.set("pulse_organism_snapshot_v26", {
+      date: today,
+      snapshot
+    });
+  } catch {}
+
+  // Save to localStorage
+  try {
+    localStorage.setItem("PulseOrganismMap_v25", JSON.stringify(snapshot));
+  } catch {}
 
   // Save globally
-  window.PulseOrganismMap = snapshot;
-  return snapshot;
+  window.PulseOrganismMap = hydrated;
+  return hydrated;
 }
+
 
 
 // ============================================================================
@@ -634,12 +597,9 @@ export async function buildPulseOrganismSnapshotV26() {
   const fs = getFsAPI({ trace: false });
 
   async function findPulseWorldRoot(fs) {
-    let cwd = await fs.cwd(); // e.g. "/PULSE-WORLD/PULSE-BAND/PULSE-X"
-
-    // Split into parts
+    let cwd = await fs.cwd();
     const parts = cwd.split("/").filter(Boolean);
 
-    // Walk upward until we find "PULSE-WORLD"
     while (parts.length > 0) {
       if (parts[parts.length - 1] === "PULSE-WORLD") {
         return "/" + parts.join("/");
@@ -647,45 +607,32 @@ export async function buildPulseOrganismSnapshotV26() {
       parts.pop();
     }
 
-    // Fallback (should never happen)
     return "/PULSE-WORLD";
   }
 
-  // ⭐ Scan entire PULSE-WORLD (two levels up)
   const root = await findPulseWorldRoot(fs);
   const allFiles = await fs.getAllFiles(root);
-
 
   const systems = {};
   const fileToMeta = {};
   const htmlRoutes = {};
   const jsRoutes = {};
 
-  // Detect PULSE-* systems
-  const pulseSystems = allFiles.filter(f =>
-    f.type === "dir" && f.name.startsWith("PULSE-")
+  const pulseSystems = allFiles.filter(
+    f => f.type === "dir" && f.name.startsWith("PULSE-")
   );
 
   for (const system of pulseSystems) {
-    const systemFiles = allFiles.filter(f =>
-      f.path.startsWith(system.path)
-    );
+    const systemFiles = allFiles.filter(f => f.path.startsWith(system.path));
 
-    // Extract organs (JS files)
     const organs = systemFiles
       .filter(f => f.type === "file" && f.name.endsWith(".js"))
       .map(f => f.name.replace(".js", ""));
 
-    // Subsystem name
     const subsystem = system.name.replace(/^PULSE-/, "").toLowerCase();
-
-    // Detect version
     const version = detectVersionFromFiles(systemFiles);
-
-    // Classification
     const classification = classifySystem(system);
 
-    // Store system
     const sysKey = system.name.toLowerCase();
     systems[sysKey] = {
       root: system.name,
@@ -697,7 +644,6 @@ export async function buildPulseOrganismSnapshotV26() {
       organs
     };
 
-    // Map file metadata
     for (const file of systemFiles) {
       fileToMeta[file.path] = {
         subsystem,
@@ -708,22 +654,19 @@ export async function buildPulseOrganismSnapshotV26() {
     }
   }
 
-  // ⭐ Scan HTML files for routes
   const htmlFiles = allFiles.filter(f => f.name.endsWith(".html"));
   for (const file of htmlFiles) {
     const html = await fs.readFile(file.path);
     htmlRoutes[file.name.replace(".html", "")] = extractRoutesFromHTML(html);
   }
 
-  // ⭐ Scan JS files for route definitions
   const jsFiles = allFiles.filter(f => f.name.endsWith(".js"));
   for (const file of jsFiles) {
     const js = await fs.readFile(file.path);
     jsRoutes[file.name.replace(".js", "")] = extractRoutesFromJS(js);
   }
 
-  // ⭐ Build final organism snapshot
-  const snapshot = {
+  return {
     epoch: Date.now(),
     hour: new Date().toISOString().slice(0, 13),
     version: "v26.5-GENOME",
@@ -732,20 +675,91 @@ export async function buildPulseOrganismSnapshotV26() {
     htmlRoutes,
     jsRoutes
   };
-
-  // ⭐ Save global
-  window.__PULSE_ORGANISM_SNAPSHOT__ = snapshot;
-
-  // ⭐ Save full organism snapshot to Firebase
-  if (globalThis.PulseWorldFirebaseShadow) {
-    await globalThis.PulseWorldFirebaseShadow.saveOrganismSnapshot(snapshot);
-  }
-
-  // ⭐ Save per-system snapshots (hourly)
-  await savePerSystemSnapshots(snapshot);
-
-  return snapshot;
 }
+// ============================================================================
+// ATTACH RUNTIME — v25.2 IMMORTAL
+// Turns a pure JSON snapshot into a living OrganismMap
+// ============================================================================
+export function attachOrganismMapRuntime(snapshot) {
+  // Clone snapshot so we can attach runtime methods
+  const map = Object.assign({}, snapshot);
+
+  // ------------------------------------------------------------
+  // SIGNAL BUS — Touch → OrganismMap
+  // ------------------------------------------------------------
+  map.signal = function (evt) {
+    if (!evt || typeof evt !== "object") return;
+
+    switch (evt.type) {
+      case "touch_prewarm":
+        this.handleTouchPrewarm(evt);
+        break;
+    }
+  };
+
+  // ------------------------------------------------------------
+  // TOUCH PREWARM HANDLER
+  // ------------------------------------------------------------
+  map.handleTouchPrewarm = function (evt) {
+    try {
+      this.prewarm(evt.page, evt.region, evt.mode);
+    } catch {}
+  };
+
+  // ------------------------------------------------------------
+  // PREWARM LOGIC — backend/offline warmup
+  // ------------------------------------------------------------
+  map.prewarm = function (page, region, mode) {
+    try {
+      // Warm identity
+      this._lastIdentity =
+        this.identitiesByPath?.[`/PULSE/${page}.html`] || null;
+
+      // Warm UI page
+      this._lastUI = this.systems?.ui?.pages?.[page] ||
+                     this.systems?.pulse_ui?.pages?.[page] ||
+                     null;
+
+      // Warm port routing
+      const identity = this._lastIdentity;
+      if (identity?.IDENTITY_META?.PORT_IDENTITY) {
+        const port = identity.IDENTITY_META.PORT_IDENTITY.portName;
+        this._lastPort = this.portSystems?.[port] || null;
+      }
+
+      // Warm advantage hints
+      this._lastAdvantage = { page, region, mode };
+
+    } catch {}
+  };
+
+  // ------------------------------------------------------------
+  // EXPORT SNAPSHOT TO LOCALSTORAGE
+  // ------------------------------------------------------------
+  map.exportToLocalStorage = function () {
+    try {
+      localStorage.setItem(
+        "PulseOrganismMap_v25",
+        JSON.stringify(snapshot)
+      );
+    } catch {}
+  };
+
+  // ------------------------------------------------------------
+  // IDENTITY RESOLVER (runtime)
+  // ------------------------------------------------------------
+  map.resolveIdentity = function (metaUrl) {
+    try {
+      const normalized = metaUrl.replace("file://", "").split("?")[0];
+      return this.identitiesByPath?.[normalized] || null;
+    } catch {
+      return null;
+    }
+  };
+
+  return map;
+}
+
 
 async function savePerSystemSnapshots(snapshot) {
   const shadow = globalThis.PulseWorldFirebaseShadow;
@@ -756,31 +770,23 @@ async function savePerSystemSnapshots(snapshot) {
   for (const sysKey of Object.keys(systems)) {
     const sys = systems[sysKey];
 
-    // Extract only this system’s files
     const filteredFiles = {};
     for (const [path, meta] of Object.entries(fileToMeta)) {
-      if (meta.subsystem === sys.subsystem) {
-        filteredFiles[path] = meta;
-      }
+      if (meta.subsystem === sys.subsystem) filteredFiles[path] = meta;
     }
 
-    // Extract only this system’s routes
     const filteredHTML = {};
-    const filteredJS = {};
-
     for (const [page, routes] of Object.entries(htmlRoutes)) {
-      if (page.toLowerCase().includes(sys.subsystem)) {
+      if (page.toLowerCase().includes(sys.subsystem))
         filteredHTML[page] = routes;
-      }
     }
 
+    const filteredJS = {};
     for (const [page, routes] of Object.entries(jsRoutes)) {
-      if (page.toLowerCase().includes(sys.subsystem)) {
+      if (page.toLowerCase().includes(sys.subsystem))
         filteredJS[page] = routes;
-      }
     }
 
-    // Build per-system snapshot
     const sysSnapshot = {
       epoch: Date.now(),
       hour: new Date().toISOString().slice(0, 13),
@@ -791,38 +797,49 @@ async function savePerSystemSnapshots(snapshot) {
       jsRoutes: filteredJS
     };
 
-    // Save to Firebase
-    await shadow.saveSystemSnapshot(sysKey, sysSnapshot);
+    try {
+      await shadow.saveSystemSnapshot(sysKey, sysSnapshot);
+    } catch {}
   }
 }
+
 
 function extractRoutesFromHTML(html) {
   const routes = new Set();
 
-  html.replace(/href="([^"]+\.html)"/g, (_, href) => {
-    routes.add(href.replace(".html", ""));
-  });
+  html.replace(/href="([^"]+\.html)"/gi, (_, href) =>
+    routes.add(href.replace(".html", ""))
+  );
 
-  html.replace(/data-route="([^"]+)"/g, (_, r) => routes.add(r));
-  html.replace(/route="([^"]+)"/g, (_, r) => routes.add(r));
+  html.replace(/href='([^']+\.html)'/gi, (_, href) =>
+    routes.add(href.replace(".html", ""))
+  );
+
+  html.replace(/data-route="([^"]+)"/gi, (_, r) => routes.add(r));
+  html.replace(/route="([^"]+)"/gi, (_, r) => routes.add(r));
+  html.replace(/router-link="([^"]+)"/gi, (_, r) => routes.add(r));
 
   return Array.from(routes);
 }
+
 
 function extractRoutesFromJS(js) {
   const routes = new Set();
 
-  js.replace(/route:\s*"([^"]+)"/g, (_, r) => routes.add(r));
-  js.replace(/navigate\("([^"]+)"\)/g, (_, r) => routes.add(r));
+  js.replace(/route:\s*["']([^"']+)["']/gi, (_, r) => routes.add(r));
+  js.replace(/navigate\(\s*["']([^"']+)["']\s*\)/gi, (_, r) => routes.add(r));
+  js.replace(/router\.push\(\s*["']([^"']+)["']\s*\)/gi, (_, r) => routes.add(r));
+  js.replace(/goTo\(\s*["']([^"']+)["']\s*\)/gi, (_, r) => routes.add(r));
 
   return Array.from(routes);
 }
+
 
 function detectVersionFromFiles(files) {
   let detected = null;
 
   for (const file of files) {
-    const match = file.name.match(/-v(\d+(\.\d+)?)/i);
+    const match = file.name.match(/v(\d+(\.\d+)?)/i);
     if (match) {
       const v = parseFloat(match[1]);
       if (!detected || v > detected) detected = v;
@@ -831,6 +848,7 @@ function detectVersionFromFiles(files) {
 
   return detected ? `v${detected}` : "v16";
 }
+
 
 
 // ============================================================================
@@ -842,7 +860,7 @@ export function getPulseOrganismMapV25() {
 
   const snapshot = window.__PULSE_ORGANISM_SNAPSHOT__;
   if (!snapshot) {
-    console.error("[OrganismMap:v25++] Missing organism snapshot. Run buildPulseOrganismSnapshotV26() at prewarm/build.");
+    console.error("[OrganismMap:v25++] Missing organism snapshot.");
     throw new Error("PulseOrganismSnapshotMissing");
   }
 
@@ -861,11 +879,7 @@ export function getPulseOrganismMapV25() {
         const lines = stack.split("\n");
         for (const line of lines) {
           const match = line.match(/(file:\/\/[^\s)]+)/);
-          if (match) {
-            const fileUrl = match[1];
-            const meta = this.lookup(fileUrl);
-            if (meta) return meta;
-          }
+          if (match) return this.lookup(match[1]);
         }
       } catch {}
       return this.defaultMeta;
@@ -883,6 +897,7 @@ export function getPulseOrganismMapV25() {
   return map;
 }
 
+
 // ============================================================================
 // v25++ PAGE DELTA ENGINE — ONLY WHAT THIS PAGE NEEDS
 // ============================================================================
@@ -891,12 +906,13 @@ export function getPageOrganismDeltaV25(pageId) {
   const organism = getPulseOrganismMapV25();
   const id = String(pageId || "").toLowerCase();
 
-  const systems = Object.values(organism.systems).filter(sys => {
-    return id.includes(sys.subsystem) || id.includes(sys.root.toLowerCase());
-  });
+  const systems = Object.values(organism.systems).filter(sys =>
+    id.includes(sys.subsystem) || id.includes(sys.root.toLowerCase())
+  );
 
   return { systems };
 }
+
 
 // ============================================================================
 // v25++ SIGNAL BUS — NORMALIZED, WORLD-AWARE
@@ -962,37 +978,55 @@ export function buildOrganismListenersV25() {
   const organism = getPulseOrganismMapV25();
   const bus = window.PulseSignalBus;
 
+  // Reset listeners safely
   bus.clearAll?.();
+
+  const registered = new Set();
 
   Object.entries(organism.systems).forEach(([systemKey, system]) => {
     system.organs.forEach(organName => {
-      const bootSignal = normalizeSignalName(`${system.subsystem}_${organName}_BOOT`);
+      const bootSignal = normalizeSignalName(
+        `${system.subsystem}_${organName}_BOOT`
+      );
+
+      if (registered.has(bootSignal)) return;
+      registered.add(bootSignal);
 
       bus.on(bootSignal, () => {
-        const module =
+        let module =
           window[organName] ||
           window[systemKey] ||
-          window[organName.replace(/[^a-zA-Z0-9]/g, "")];
+          window[organName.replace(/[^a-zA-Z0-9]/g, "")] ||
+          null;
 
-        if (module && typeof module.boot === "function") {
-          module.boot();
-        } else {
-          bus.emit("UNKNOWN_ORGAN_BOOT", {
+        try {
+          if (module?.boot) {
+            module.boot();
+          } else {
+            bus.emit("UNKNOWN_ORGAN_BOOT", {
+              systemKey,
+              organName,
+              signal: bootSignal
+            });
+          }
+        } catch (err) {
+          bus.emit("ORGAN_BOOT_ERROR", {
             systemKey,
             organName,
-            signal: bootSignal
+            signal: bootSignal,
+            error: err?.message || "boot_failed"
           });
         }
       });
     });
   });
 
+  // Wildcard listener — hardened
   bus.on("*", ({ name }) => {
     const n = String(name || "").toUpperCase();
+
     const known = Object.values(organism.systems).some(sys =>
-      sys.organs.some(organ =>
-        n.includes(organ.toUpperCase())
-      )
+      sys.organs.some(organ => n.includes(organ.toUpperCase()))
     );
 
     if (!known && window.FrontendArchitect?.handleUnknownSignal) {
@@ -1000,6 +1034,7 @@ export function buildOrganismListenersV25() {
     }
   });
 }
+
 
 // ============================================================================
 // v25++ ARCHITECT LAYER — SELF-DIAGNOSTIC ORGANISM
@@ -1016,18 +1051,33 @@ window.FrontendArchitect = window.FrontendArchitect || {
 
   handleGenomeDrift(snapshot) {
     console.warn("⚠️ [Architect] Genome drift detected:", snapshot?.epoch);
+  },
+
+  handleOrganError({ systemKey, organName, error }) {
+    console.error(
+      `❌ [Architect] Organ boot error in ${systemKey}/${organName}: ${error}`
+    );
   }
 };
+
 
 // ============================================================================
 // v25++ BOOT ENTRYPOINT — CALL THIS ON FIRST PAGE
 // ============================================================================
 
 export async function bootOrganismGenomeV25() {
-  await buildPulseOrganismSnapshotV26(); // ONE real scan (prewarm / first load)
-  getPulseOrganismMapV25();              // hydrate sync map
-  buildOrganismListenersV25();           // wire signals → organs
+  const snapshot = await buildPulseOrganismSnapshotV26();
+
+  // Save snapshot globally for sync access
+  window.__PULSE_ORGANISM_SNAPSHOT__ = snapshot;
+
+  // Hydrate runtime map
+  getPulseOrganismMapV25();
+
+  // Wire signals → organs
+  buildOrganismListenersV25();
 }
+
 
 // ============================================================================
 // IDENTITY GENERATION ENGINE — v25‑IMMORTAL‑WORLD‑GENOME++
@@ -1051,21 +1101,20 @@ function toTitleName(name) {
     .replace(/\b\w/g, c => c.toUpperCase());
 }
 
+
 // ============================================================================
 // ORGAN IDENTITY BUILDER — v25.1 IMMORTAL WORLD GENOME++
 // ============================================================================
 
 function extractSubsystem(systemKey) {
-  // pulse-pages-v24 → pages
-  // pulse-vault-v24 → vault
-  // pulse-os → os
-  return systemKey.replace(/^pulse-/, "").replace(/-v\d+$/, "");
+  return systemKey
+    .replace(/^pulse-/, "")
+    .replace(/-v\d+(\.\d+)?$/, "");
 }
 
 function extractVersion(systemKey) {
-  // pulse-pages-v24 → v24
-  const match = systemKey.match(/v(\d+)/);
-  return match ? `v${match[1]}.0` : "v25.0";
+  const match = systemKey.match(/v(\d+(\.\d+)?)/);
+  return match ? `v${match[1]}` : "v25.0";
 }
 
 function buildOrganIdentity({ systemKey, system, organName, portName, handler }) {
@@ -1077,47 +1126,45 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
   const roleConst = `${constName}_ORGAN`;
 
   const subsystem = system.subsystem;
-  const version = `${system.version}-IMMORTAL-WORLD-GENOME++`;
+  const rawVersion = system.version;
+  const version = `${rawVersion}-IMMORTAL-WORLD-GENOME++`;
 
   // ---------------------------------------------------------------------------
-  //  PORT IDENTITY v26 — TRUE SIGNALPORT ROUTING SOURCE OF TRUTH
+  // PORT IDENTITY — v26 IMMORTAL SIGNALPORT
   // ---------------------------------------------------------------------------
-  const canonicalPort =
-    (portName || subsystem || systemKey || organName)
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "");
+  const canonicalPort = (
+    portName ||
+    organName ||
+    subsystem ||
+    systemKey
+  )
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+  const aliasSet = new Set(
+    [
+      canonicalPort,
+      portName,
+      subsystem,
+      systemKey,
+      organName,
+      organName?.toLowerCase(),
+      systemKey?.replace(/^pulse-/, "")
+    ]
+      .filter(Boolean)
+      .map(a => a.toLowerCase().replace(/[^a-z0-9]/g, ""))
+  );
 
   const PORT_IDENTITY = Object.freeze({
-    // canonical port name this organ answers to
     portName: canonicalPort,
-
-    // auto-aliasing: subsystem, systemKey, organName, raw portName
-    aliases: Object.freeze(
-      [
-        canonicalPort,
-        portName,
-        subsystem,
-        systemKey,
-        organName,
-        organName.toLowerCase(),
-        systemKey.replace("pulse-", "")
-      ]
-        .filter(Boolean)
-        .map(a => a.toLowerCase().replace(/[^a-z0-9]/g, ""))
-    ),
-
-    // handler function reference (wired at organ boot)
-    handler: handler || null,
-
-    // routing metadata
+    aliases: Object.freeze([...aliasSet]),
+    handler: null, // runtime only — NEVER stored in snapshot
     route: Object.freeze({
       subsystem,
       systemKey,
       organName,
       canonicalPort
     }),
-
-    // port capabilities
     capabilities: Object.freeze({
       deterministic: true,
       driftProof: true,
@@ -1128,8 +1175,6 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
       worldAware: true,
       bandAware: true
     }),
-
-    // port contract
     contract: Object.freeze({
       purpose: `Port for organ ${organName} in subsystem ${subsystem}.`,
       never: Object.freeze([
@@ -1148,7 +1193,7 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
   });
 
   // ---------------------------------------------------------------------------
-  //  IDENTITY META
+  // IDENTITY META
   // ---------------------------------------------------------------------------
   const IDENTITY_META = Object.freeze({
     subsystem,
@@ -1160,13 +1205,13 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
   });
 
   // ---------------------------------------------------------------------------
-  // 1) PulseRole — deep biological identity
+  // 1) PulseRole
   // ---------------------------------------------------------------------------
   const PulseRole = Object.freeze({
     type: "Organ",
     subsystem,
     layer,
-    version,
+    version: rawVersion,
     identity: organId,
     evo: Object.freeze({
       driftProof: true,
@@ -1269,7 +1314,7 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
   // 6) AI_EXPERIENCE_META
   // ---------------------------------------------------------------------------
   const AI_EXPERIENCE_META = Object.freeze({
-    identity: organName,
+    identity: organId,
     version,
     layer,
     role: roleConst.toLowerCase(),
@@ -1302,7 +1347,7 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     file: `${organName}.js`,
     organ: titleName.replace(/\s+/g, ""),
     identity: organId,
-    epoch: version,
+    epoch: Date.now(), // FIXED: must be numeric
     layer,
     role: roleConst,
     version,
@@ -1329,10 +1374,13 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
   });
 }
 
+
 // ============================================================================
 // BUILD ORGAN IDENTITIES + PATH MAP — v25.1 IMMORTAL WORLD GENOME++
 // ============================================================================
-
+// ============================================================================
+// BUILD ORGAN IDENTITIES + PATH MAP — v25.3 IMMORTAL WORLD GENOME++
+// ============================================================================
 function buildOrganIdentities(systems) {
   const identities = {};
   const identitiesByPath = {};
@@ -1340,20 +1388,19 @@ function buildOrganIdentities(systems) {
   for (const systemKey of Object.keys(systems)) {
     const system = systems[systemKey];
 
-    // Extract subsystem + version from folder name
-    const subsystem = extractSubsystem(systemKey);
-    const version = extractVersion(systemKey);
+    const subsystem = system.subsystem;     // FIXED: use system metadata
+    const version = system.version;         // FIXED: use system metadata
 
     for (const organName of system.organs || []) {
       const identity = buildOrganIdentity({
         systemKey,
         system,
         organName,
-        subsystem,
-        version
+        portName: null,
+        handler: null
       });
 
-      // Primary key: "pulse-pages-v24/home"
+      // Primary key: "pulse-pages/home"
       identities[identity.id] = identity;
 
       // Convenience alias: "home"
@@ -1372,12 +1419,14 @@ function buildOrganIdentities(systems) {
 }
 
 // ============================================================================
-// BUILD ORGANISM MAP — v25.1 IMMORTAL WORLD GENOME++
+// BUILD ORGANISM MAP — v25.3 IMMORTAL WORLD GENOME++
 // ============================================================================
-
 export async function buildPulseOrganismMap(baseDir = "/") {
-  const systems = await scanPulseSystemsOnce(baseDir);
+  // ⭐ Load full organism snapshot (v26 genome)
+  const snapshot = await scanPulseSystemsOnce(baseDir);
+  const systems = snapshot.systems;
 
+  // Adapters
   const dbAdapter = getDb({ trace: false });
   const fsAdapter = getFsAPI({ trace: false });
   const routesAdapter = getRouteAPI({ trace: false });
@@ -1385,10 +1434,11 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   const schemaAdapter = getSchemaAPI({ trace: false });
   const cacheOrgan = getCacheStorageOrgan({ trace: false });
 
+  // Build identities
   const { identities, identitiesByPath } = buildOrganIdentities(systems);
 
   // ============================================================
-  // PORT‑BASED ROUTING TABLES (Signal v25++)
+  // PORT‑BASED ROUTING TABLES
   // ============================================================
   const portSystems = Object.create(null);
   const portAliases = Object.create(null);
@@ -1413,8 +1463,12 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   // IDENTITY RESOLVER
   // ============================================================
   function resolveIdentity(metaUrl) {
-    const normalized = metaUrl.replace("file://", "").split("?")[0];
-    return identitiesByPath[normalized] || null;
+    try {
+      const normalized = metaUrl.replace("file://", "").split("?")[0];
+      return identitiesByPath[normalized] || null;
+    } catch {
+      return null;
+    }
   }
 
   // ============================================================
@@ -1435,80 +1489,62 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   // ============================================================
   function handleTouchPrewarm(evt) {
     try {
-      prewarm(evt.page, evt.region, evt.mode);
-    } catch {
-      // IMMORTAL: fail‑open
-    }
+      organismMap.prewarm(evt.page, evt.region, evt.mode);
+    } catch {}
   }
 
   // ============================================================
   // PREWARM LOGIC (backend/offline)
   // ============================================================
   function prewarm(page, region, mode) {
-  try {
-    // 1 — Warm route identity
-    const identity = this.resolveIdentity(`/PULSE/${page}.html`);
-    this._lastIdentity = identity;
+    try {
+      // 1 — Warm identity
+      const identity = resolveIdentity(`/PULSE/${page}.html`);
+      organismMap._lastIdentity = identity;
 
-    // 2 — Warm UI clusters
-    const ui = this.systems?.UI?.pages?.[page];
-    this._lastUI = ui;
+      // 2 — Warm UI clusters
+      const ui =
+        systems?.ui?.pages?.[page] ||
+        systems?.pulse_ui?.pages?.[page] ||
+        null;
 
-    // 3 — Warm port routing
-    if (identity?.IDENTITY_META?.PORT_IDENTITY) {
-      const port = identity.IDENTITY_META.PORT_IDENTITY.portName;
-      this._lastPort = this.portSystems[port];
-    }
+      organismMap._lastUI = ui;
 
-    // 4 — Warm page → component → organ graph
-    this._lastGraph = ui?.GRAPH || null;
+      // 3 — Warm port routing
+      if (identity?.IDENTITY_META?.PORT_IDENTITY) {
+        const port = identity.IDENTITY_META.PORT_IDENTITY.portName;
+        organismMap._lastPort = portSystems[port];
+      }
 
-    // 5 — Warm advantage routing hints
-    this._lastAdvantage = {
-      page,
-      region,
-      mode,
-      identity,
-      ui
-    };
+      // 4 — Warm graph
+      organismMap._lastGraph = ui?.GRAPH || null;
 
-    // 6 — Warm chunk manifests (if present)
-    this._lastChunks = ui?.CHUNKS || null;
+      // 5 — Warm advantage hints
+      organismMap._lastAdvantage = { page, region, mode, identity, ui };
 
-  } catch {
-    // IMMORTAL: fail-open
+      // 6 — Warm chunks
+      organismMap._lastChunks = ui?.CHUNKS || null;
+
+    } catch {}
   }
-}
-
 
   // ============================================================
-  // EXPORT SNAPSHOT TO LOCALSTORAGE (optional)
+  // EXPORT SNAPSHOT TO LOCALSTORAGE
   // ============================================================
   function exportToLocalStorage() {
     try {
-      const snapshot = {
-        systems,
-        identities,
-        identitiesByPath,
-        portSystems,
-        portAliases,
-        meta: {
-          version: "25.1‑IMMORTAL‑WORLD‑GENOME++",
-          generatedAt: new Date().toISOString()
-        }
-      };
-
-      localStorage.setItem("PulseOrganismMap_v25", JSON.stringify(snapshot));
-    } catch {
-      // fail‑open
-    }
+      localStorage.setItem(
+        "PulseOrganismMap_v25",
+        JSON.stringify(snapshot)
+      );
+    } catch {}
   }
 
   // ============================================================
   // FINAL IMMORTAL ORGANISMMAP OBJECT
   // ============================================================
   const organismMap = {
-    version: "25.1‑IMMORTAL‑WORLD‑GENOME++",
+    version: "25.3‑IMMORTAL‑WORLD‑GENOME++",
     generatedAt: new Date().toISOString(),
 
     systems,
@@ -1536,9 +1572,8 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   return Object.freeze(organismMap);
 }
 
-
 // ============================================================================
-// EXPORT — IMMORTAL WORLD GENOME v25.1++
+// EXPORT — IMMORTAL WORLD GENOME v25.3++
 // ============================================================================
 export const PulseOrganismMap = await buildPulseOrganismMap("/");
 
