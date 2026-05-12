@@ -1159,13 +1159,18 @@ function dechunkAll() {
   console.log("[PulseChunks] All chunks cleared, state reset.");
   persistPulseChunksToStorage();
 }
+// ============================================================================
+//  UNIVERSAL FRONTEND AUTO-LOADER — v27 IMMORTAL++ (Upgraded)
+// ============================================================================
 
-// ============================================================================
-//  UNIVERSAL FRONTEND AUTO-LOADER — v27 IMMORTAL++
-// ============================================================================
 async function autoLoadOfflineImages() {
   if (typeof document === "undefined" || typeof window === "undefined") return;
   if (typeof fetchChunk !== "function") return;
+
+  // Global handled set to prevent infinite loops
+  window.PulseChunks = window.PulseChunks || {};
+  window.PulseChunks.cache = window.PulseChunks.cache || {};
+  window.PulseChunks.handled = window.PulseChunks.handled || new Set();
 
   const assetSelectors = [
     "link[rel='stylesheet'][href]",
@@ -1179,6 +1184,7 @@ async function autoLoadOfflineImages() {
 
   const urls = new Set();
 
+  // Collect all asset URLs
   for (const selector of assetSelectors) {
     const nodes = document.querySelectorAll(selector);
     nodes.forEach((node) => {
@@ -1194,23 +1200,32 @@ async function autoLoadOfflineImages() {
     });
   }
 
+  // Process each URL once
   for (const url of urls) {
-  try {
-    // ⭐ ADD THIS
-    if (shouldSkipChunk(url)) {
-      console.log("[PulseChunks] Skipping asset:", url);
-      continue;
-    }
+    try {
+      // Already handled? Skip.
+      if (window.PulseChunks.handled.has(url)) {
+        continue;
+      }
 
-    const { value, ok, error, envelope } = await fetchChunk(url);
+      // Skip logic
+      if (typeof shouldSkipChunk === "function" && shouldSkipChunk(url)) {
+        console.log("[PulseChunks] Skipping asset:", url);
+        window.PulseChunks.handled.add(url);
+        continue;
+      }
 
+      // Try chunk load
+      const { value, ok, error, envelope } = await fetchChunk(url);
 
       if (!ok) {
-        console.warn(
-          "[PulseChunks] Asset chunk failed — using CNS fallback:",
-          { url, error, envelope }
-        );
+        console.warn("[PulseChunks] Asset chunk failed — using CNS fallback:", {
+          url,
+          error,
+          envelope
+        });
 
+        // CNS fallback
         if (typeof route === "function") {
           const fallback = await route("getImages", {
             url,
@@ -1226,10 +1241,7 @@ async function autoLoadOfflineImages() {
             const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
             const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-            if (window.PulseChunks) {
-              window.PulseChunks.cache = window.PulseChunks.cache || {};
-              window.PulseChunks.cache[url] = binary;
-            }
+            window.PulseChunks.cache[url] = binary;
 
             const img = document.querySelector(
               `img.offline-img[data-offline="${url}"]`
@@ -1242,25 +1254,23 @@ async function autoLoadOfflineImages() {
               if (src) img.src = src;
             }
 
+            // ⭐ Mark fallback as success
+            window.PulseChunks.handled.add(url);
             continue;
           }
         }
 
-        console.warn(
-          "[PulseChunks] CNS fallback failed — leaving asset as-is:",
-          url
-        );
+        console.warn("[PulseChunks] CNS fallback failed — leaving asset as-is:", url);
+        window.PulseChunks.handled.add(url);
         continue;
       }
 
+      // Chunk success
       const dnaUnwrapped = unwrapImmortalDNA(value);
       const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
       const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-      if (window.PulseChunks) {
-        window.PulseChunks.cache = window.PulseChunks.cache || {};
-        window.PulseChunks.cache[url] = binary;
-      }
+      window.PulseChunks.cache[url] = binary;
 
       const img = document.querySelector(
         `img.offline-img[data-offline="${url}"]`
@@ -1272,6 +1282,10 @@ async function autoLoadOfflineImages() {
           null;
         if (src) img.src = src;
       }
+
+      // ⭐ Mark chunk as success
+      window.PulseChunks.handled.add(url);
+
     } catch (err) {
       console.warn("[PulseChunks] Asset load threw — using CNS fallback:", {
         url,
@@ -1294,10 +1308,7 @@ async function autoLoadOfflineImages() {
             const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
             const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-            if (window.PulseChunks) {
-              window.PulseChunks.cache = window.PulseChunks.cache || {};
-              window.PulseChunks.cache[url] = binary;
-            }
+            window.PulseChunks.cache[url] = binary;
 
             const img = document.querySelector(
               `img.offline-img[data-offline="${url}"]`
@@ -1310,15 +1321,20 @@ async function autoLoadOfflineImages() {
               if (src) img.src = src;
             }
 
+            // ⭐ Mark fallback as success
+            window.PulseChunks.handled.add(url);
             continue;
           }
         }
       } catch (fallbackErr) {
-        console.warn(
-          "[PulseChunks] CNS fallback threw — leaving asset as-is:",
-          { url, fallbackErr }
-        );
+        console.warn("[PulseChunks] CNS fallback threw — leaving asset as-is:", {
+          url,
+          fallbackErr
+        });
       }
+
+      // ⭐ Even if everything fails, mark as handled so we don't loop forever
+      window.PulseChunks.handled.add(url);
     }
   }
 
@@ -1326,6 +1342,7 @@ async function autoLoadOfflineImages() {
     `[PulseChunks] Universal preload complete — ${urls.size} assets seen + warmed.`
   );
 }
+
 
 // ============================================================================
 //  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v27 IMMORTAL++)
