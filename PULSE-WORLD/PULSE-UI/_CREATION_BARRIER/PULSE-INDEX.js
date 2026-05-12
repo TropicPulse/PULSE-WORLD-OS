@@ -255,34 +255,59 @@ if (!window.__PULSE_UI_INIT__) {
       logErr("Beast boot sequence failed", err);
     }
 
-    // -------------------------------------------------------------------------
-    // Subscribe to PulseSignal bus + storage events
-    // -------------------------------------------------------------------------
-    try {
-      if (globalThis.PulseSignal && typeof globalThis.PulseSignal.subscribe === "function") {
-        globalThis.PulseSignal.subscribe(function (packet) {
-          window.__PULSE_LAST_SIGNAL__ = packet && (packet.state || packet);
-          onPulse();
-        });
-        logOK("Subscribed to PulseSignal (localStorage-backed)");
-      } else {
-        logWarn("PulseSignal not found — relying on self pulses only");
-      }
+   // -------------------------------------------------------------------------
+// PULSE SIGNAL SUBSCRIBE (IMMORTAL++ LOCALSTORAGE BUS)
+// -------------------------------------------------------------------------
+try {
+  const PS = globalThis.PulseSignal;
 
-      window.addEventListener("storage", function (e) {
-        if (e.key === "__pulse_signal__") {
-          try {
-            var packet = e.newValue ? JSON.parse(e.newValue) : null;
-            window.__PULSE_LAST_SIGNAL__ = packet && (packet.state || packet);
-            onPulse();
-          } catch {
-            // ignore
-          }
-        }
-      });
-    } catch (err) {
-      logErr("PulseSignal subscription failed", err);
+  // ⭐ 1 — Subscribe to live PulseSignal engine (if available)
+  if (PS && typeof PS.subscribe === "function") {
+    PS.subscribe(function (packet) {
+      const state = packet && (packet.state || packet);
+
+      // Save last signal in memory
+      window.__PULSE_LAST_SIGNAL__ = state;
+
+      // ⭐ IMMORTAL++ broadcast to localStorage
+      try {
+        localStorage.setItem("__pulse_signal__", JSON.stringify(state));
+      } catch {}
+
+      onPulse();
+    });
+
+    logOK("Subscribed to PulseSignal (IMMORTAL++ localStorage-backed)");
+  } else {
+    logWarn("PulseSignal not found — relying on storage bus only");
+  }
+
+  // ⭐ 2 — Listen for localStorage events (cross-tab, cross-window)
+  window.addEventListener("storage", function (e) {
+    if (e.key === "__pulse_signal__") {
+      try {
+        const packet = e.newValue ? JSON.parse(e.newValue) : null;
+        window.__PULSE_LAST_SIGNAL__ = packet;
+        onPulse();
+      } catch {
+        // ignore
+      }
     }
+  });
+
+  // ⭐ 3 — Restore last signal on boot (IMMORTAL++)
+  try {
+    const last = localStorage.getItem("__pulse_signal__");
+    if (last) {
+      window.__PULSE_LAST_SIGNAL__ = JSON.parse(last);
+      onPulse();
+    }
+  } catch {}
+
+} catch (err) {
+  logErr("PulseSignal subscription failed", err);
+}
+
 
     // -------------------------------------------------------------------------
     // REAL Pulse Engine v27 (no async, just timers + RAF)
