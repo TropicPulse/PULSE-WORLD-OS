@@ -58,7 +58,7 @@ try {
   PulseSkinReflex = PulseProofBridgeReflex;
 
   console.log(
-    "%c[PORTAL::SkinReflex] %cInstance created %c→ OK",
+    "%c[PulsePortal::SkinReflex] %cInstance created %c→ OK",
     "color:#26A69A; font-weight:bold; font-family:monospace;",   // cyan tag
     "color:#00FF9C; font-family:monospace;",                     // neon green message
     "color:#E8F8FF; font-family:monospace;"                      // soft white arrow
@@ -77,7 +77,7 @@ try {
 
 } catch (err) {
   console.error(
-    "%c[PORTAL::SkinReflex] %cERROR",
+    "%c[PulsePortal::SkinReflex] %cERROR",
     "color:#FF3B3B; font-weight:bold; font-family:monospace;",
     "color:#FFE066; font-family:monospace;"
   );
