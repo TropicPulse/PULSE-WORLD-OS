@@ -787,7 +787,7 @@ let hasScannedRoute = false;
 async function scanAndPreloadRouteImages(routeHtml) {
   if (hasScannedRoute) return;
   hasScannedRoute = true;
-
+  
   try {
     // Instead of fetching the whole HTML, fetch ONLY the image list
     const res = await fetch(routeHtml + "?imgmap=1", { cache: "force-cache" });
@@ -1273,7 +1273,7 @@ function applyGateDecision(gateDecision, skin) {
       ]);
 
       // ⭐ Scan the REAL file path (absolute)
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(location.pathname);
+      window.__PULSE_SCAN_ROUTE_IMAGES__?.(page);
 
       // ⭐ Log into Touch timeline
       appendTouchTimeline("portal_prewarm", {
