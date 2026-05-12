@@ -5,8 +5,11 @@
 //  PURE PACING. ZERO MUTATION. ZERO RANDOMNESS. WINDOW‑SAFE.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 import {
   AI_HEARTBEAT_META,
   startAiHeartbeat,

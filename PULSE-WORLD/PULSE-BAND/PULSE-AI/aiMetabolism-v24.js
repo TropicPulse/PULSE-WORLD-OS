@@ -25,8 +25,11 @@
 //      • binary energy artery source
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 // ============================================================================
 //  GLOBAL HANDLE (v24 IMMORTAL, environment-agnostic)

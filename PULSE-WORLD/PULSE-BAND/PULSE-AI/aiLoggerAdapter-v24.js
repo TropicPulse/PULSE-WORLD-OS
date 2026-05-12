@@ -5,8 +5,11 @@
 //  v24+ UPGRADE: OrganismMap identity + Signal-aware tracing + global handle
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 // ============================================================================
 //  GLOBAL HANDLE (v24 IMMORTAL, environment-agnostic)

@@ -4,8 +4,11 @@
 //  PURE FLOW ENGINE. ZERO RANDOMNESS. ZERO EXTERNAL MUTATION.
 //  DUALBAND‑AWARE • GPU‑FRIENDLY • OVERMIND‑AWARE
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

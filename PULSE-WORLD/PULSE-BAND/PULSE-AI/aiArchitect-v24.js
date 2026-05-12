@@ -8,8 +8,11 @@
   (You can keep this AI_EXPERIENCE_META block as documentation;
    runtime identity now comes from the Organism Map.)
 */
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 // or: const Identity = OrganismIdentity["pulse-ai/ai-v24.1-IMMORTAL-EVO++"] if that's the key you chose

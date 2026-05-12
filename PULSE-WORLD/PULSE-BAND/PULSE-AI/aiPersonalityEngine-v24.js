@@ -5,8 +5,11 @@
 //  WINDOW‑SAFE • ARTERY‑AWARE • OVERMIND‑PRIME‑AWARE • DRIFT‑PROOF
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

@@ -4,8 +4,11 @@
 //  PURE CONSTRAINTS. ZERO RANDOMNESS. ZERO INTERNET.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 // or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose

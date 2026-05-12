@@ -3,8 +3,11 @@
 //  Pure‑Binary Reflex Engine • Reflex Artery v5 • IMMORTAL++ Metrics
 //  PURE BINARY ARC. ZERO SYMBOLIC. ZERO COGNITION. ZERO RANDOMNESS.
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

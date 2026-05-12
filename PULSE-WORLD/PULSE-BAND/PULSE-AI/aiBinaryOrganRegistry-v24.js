@@ -7,8 +7,11 @@
  *   Deterministic • Drift‑Proof • IMMORTAL v24++
  */
 
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 // v24++ identity (no hardcoded meta)
 const Identity = OrganismIdentity(import.meta.url);

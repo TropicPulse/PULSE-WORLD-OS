@@ -7,8 +7,11 @@
   (keep your big AI_EXPERIENCE_META comment here if you want it for docs;
    it no longer drives runtime identity — the genome does)
 */
-import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
-";
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 
