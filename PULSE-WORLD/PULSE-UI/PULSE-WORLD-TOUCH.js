@@ -1282,15 +1282,14 @@ function applyGateDecision(gateDecision, skin) {
     window.__PULSE_TOUCH_T0__ = t0;
     window.__PULSE_CHRONO_LAST__ = t0;
 
-    // Helpers
-    const micro = fn => queueMicrotask(fn);
-    const idle  = fn =>
+    // Idle helper (safe, non-blocking)
+    const idle = fn =>
       (window.requestIdleCallback
-        ? requestIdleCallback(fn, { timeout: 50 })
+        ? requestIdleCallback(fn, { timeout: 60 })
         : setTimeout(fn, 0));
 
-    // ⭐ WARM 1 — SCAN IMAGES FOR CURRENT PAGE (micro)
-    micro(() => {
+    // ⭐ WARM 1 — SCAN IMAGES FOR CURRENT PAGE (idle)
+    idle(() => {
       try {
         window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
       } catch (err) {
@@ -1311,10 +1310,9 @@ function applyGateDecision(gateDecision, skin) {
       }
     });
 
-    // ⭐ WARM 3 — LIGHT ENGINE WARM (idle, minimal)
+    // ⭐ WARM 3 — LIGHT ENGINE WARM (idle)
     idle(() => {
       try {
-        // Only warm what helps next-page navigation
         touch.chunker?.preloadChunksForPage?.(page);
         touch.advantage?.prewarmLight?.();
       } catch (err) {
@@ -1322,7 +1320,7 @@ function applyGateDecision(gateDecision, skin) {
       }
     });
 
-    console.log("PulseTouch auto‑ignite v24++: next-page warm only.");
+    console.log("PulseTouch auto‑ignite v24++: next-page warm only, zero microtasks.");
   } catch (err) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
