@@ -161,10 +161,43 @@ function writeFsFile(path, content) {
   window.dispatchEvent(new CustomEvent("firebase_fs_delta_out", {
     detail: { path, content }
   }));
-}
+}// ============================================================================
+// SHADOW ORGAN API (LIMITED + FIRST-RUN CLEAR)
+// ============================================================================
+
+// ⭐ FIRST-RUN CLEAR (Shadow-only)
+(function shadowFirstRunClear() {
+  const FLAG = "__SHADOW_CLEARED_V25__";
+
+  // Already cleared once → skip
+  if (localStorage.getItem(FLAG)) return;
+
+  const shadowPrefixes = [
+    "FS_JSON_",
+    "PAGE_ROUTES_",
+    "ORGANISM_SNAPSHOT_",
+    "SYS_",
+    "LOG_"
+  ];
+
+  const keys = Object.keys(localStorage);
+
+  for (const key of keys) {
+    if (shadowPrefixes.some(prefix => key.startsWith(prefix))) {
+      localStorage.removeItem(key);
+      console.log("🧹 [Shadow] Cleared key →", key);
+    }
+  }
+
+  // Mark as cleared so it never clears again
+  localStorage.setItem(FLAG, "1");
+
+  console.log("🔥 [Shadow] First-run storage clear complete");
+})();
+
 
 // ============================================================================
-// SHADOW ORGAN API (MAP-DRIVEN, NO FIREBASE SDK, LOCALSTORAGE-BASED)
+// SHADOW ORGAN (LIMITED MODE)
 // ============================================================================
 export const PulseWorldFirebaseShadow = Object.freeze({
 
@@ -216,10 +249,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
 
   // ⭐ Log event — DISABLED (NO QUOTA WASTE)
   async logEvent(type, payload) {
-    try {
-      // NO LOGGING — QUOTA SAVED
-      // console.log("[Shadow LIMITED] logEvent skipped →", type);
-    } catch {}
+    // Logging disabled to prevent quota spam
   },
 
   // ⭐ Save per-system snapshot — MINIMAL (NO HISTORY)
@@ -259,6 +289,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
     }
   }
 });
+
 
 
 // ============================================================================
