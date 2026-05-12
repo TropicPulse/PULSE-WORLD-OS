@@ -55,7 +55,7 @@ import { AIBinaryScheduler } from "./aiScheduler-v24.js";
 import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
 import { AIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
 
-import { createPulseAIChunker } from "./PulseAIChunker-v20.js";
+import { createPulseAIChunker } from "./PulseAIChunker-v24.js";
 
 // ============================================================================
 //  ORGANISM BOOTLOADER — PURE BEHAVIOR (NO META IN THIS FILE ANYMORE)

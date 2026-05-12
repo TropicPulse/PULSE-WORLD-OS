@@ -59,7 +59,7 @@ import * as PulseEarnReflexRouter    from "./PulseEarnReflexRouter-v24.js";
 import * as PulseEarnSurvivalInstincts from "./PulseEarnSurvivalInstincts-v24.js";
 
 // --- MARKET EARN ORGANS ----------------------------------------------------
-import PulseEarnMktConsulate     from "./PulseEarnMktConsulate.js";
+import PulseEarnMktConsulate     from "./PulseEarnMktConsulate-v24.js";
 
 import {
   PulseNetBoot,

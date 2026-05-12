@@ -67,12 +67,12 @@ const g =
 // ============================================================================
 
 // ⭐ CNS‑SAFE v16 Chunker (32 lanes, Pulse‑Net aware)
-import { createPulseChunker } from "./PulseAIChunker-v20.js";
+import { createPulseChunker } from "./PulseAIChunker-v24.js";
 
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
-import pulseAIChunker from "./PulseAIChunker-v20.js";
-import createPulseFileScanner from "./PulseFileScanner-v20.js";
+import pulseAIChunker from "./PulseAIChunker-v24.js";
+import createPulseFileScanner from "./PulseFileScanner-v24.js";
 import { createArchitectAPI } from "./aiArchitect-v24.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist-v24.js";
 
@@ -85,7 +85,7 @@ import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";
 import { createPersonaEngine } from "./aiPersonality-v24.js";
 import { createBoundariesEngine } from "./aiBoundaries-v24.js";
 import { createPermissionsEngine } from "./aiPermissions-v24.js";
-import { createRouterEngine } from "./aiRouter-v16.js";
+import { createRouterEngine } from "./aiRouter-v24.js";
 import { createCortex } from "./aiCortex-v24.js";
 
 import { createDualBandOrganism } from "./aiDualBand-v24.js";

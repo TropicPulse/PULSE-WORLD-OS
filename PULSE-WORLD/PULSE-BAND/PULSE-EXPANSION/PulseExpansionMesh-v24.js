@@ -62,7 +62,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // IMPORTS — v24 ORGANISM CONTEXT
 // ============================================================================
 
-import { PulseExpansionMeta, createPulseExpansion } from "./PulseExpansion-v24.js";
+import { PulseExpansionMeta, createPulseExpansion } from "./PULSE-EXPANSION-INTERNET.js";
 import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
 import { PulseServerMeta, createPulseServer } from "./PulseExpansionServer-v24.js";
 import { PulseRouterMeta, createPulseRouter } from "./PulseExpansionRouter-v24.js";
