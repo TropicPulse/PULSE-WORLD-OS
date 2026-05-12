@@ -287,6 +287,7 @@ function buildRouteId() {
   try {
     // 1 — Load OrganismMap (global or localStorage)
     let map = globalThis.PulseOrganismMap;
+
     if (!map) {
       const raw = localStorage.getItem("PulseOrganismMap_v25");
       if (raw) {
@@ -298,6 +299,27 @@ function buildRouteId() {
 
     const path = window.location?.pathname || "/";
 
+    // ⭐ HARD GUARDS — prevent crashes
+    if (!map || typeof map !== "object") {
+      console.warn("[RouteCarpet] No OrganismMap → fallback PulseWorldBarrier");
+      return "PulseWorldBarrier";
+    }
+
+    if (!map.systems) {
+      console.warn("[RouteCarpet] OrganismMap missing systems → fallback PulseWorldBarrier");
+      return "PulseWorldBarrier";
+    }
+
+    if (!map.systems.UI) {
+      console.warn("[RouteCarpet] OrganismMap missing UI → fallback PulseWorldBarrier");
+      return "PulseWorldBarrier";
+    }
+
+    if (!map.systems.UI.pages) {
+      console.warn("[RouteCarpet] OrganismMap missing UI.pages → fallback PulseWorldBarrier");
+      return "PulseWorldBarrier";
+    }
+
     const pages = map.systems.UI.pages;
 
     // 3 — Try to match pathname to a page key
@@ -305,13 +327,8 @@ function buildRouteId() {
       const page = pages[key];
       const meta = page?.IDENTITY_META || {};
 
-      // Match by ROUTE
       if (meta.ROUTE === path) return meta.ROUTE;
-
-      // Match by ALIAS
       if (meta.ALIAS === path) return meta.ROUTE || key;
-
-      // Match by key ("/home" → "home")
       if ("/" + key === path) return meta.ROUTE || key;
     }
 
@@ -324,6 +341,7 @@ function buildRouteId() {
     return "PulseWorldBarrier";
   }
 }
+
 
 
 const surfaceMeta = Object.freeze({
