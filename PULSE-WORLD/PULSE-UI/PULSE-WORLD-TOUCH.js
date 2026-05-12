@@ -1225,6 +1225,80 @@ function applyGateDecision(gateDecision, skin) {
     const prefix = page === "index" ? "./" : "../";
 
     // ============================================================
+    // 0 — LOCALSTORAGE-FIRST MAP + SHADOW + CHUNKS + NORMALIZER
+    // ============================================================
+    try {
+      // LOCALSTORAGE FIRST. ALWAYS.
+      const rawMap = localStorage.getItem("PulseOrganismMap_v25");
+      if (rawMap) {
+        window.PulseOrganismMap = JSON.parse(rawMap);
+        console.log("[PulseTouch] Map hydrated from localStorage");
+      } else {
+        console.warn("[PulseTouch] No OrganismMap in localStorage");
+      }
+
+      // SHADOW READY (sync presence check / safe fallback)
+      if (!window.PulseWorldFirebaseShadow) {
+        console.warn("[PulseTouch] Shadow missing → creating safe no-op Shadow");
+        window.PulseWorldFirebaseShadow = {
+          db: null,
+          fetch: null,
+          storage: null,
+          prewarm: function () {},
+          ready: true
+        };
+      } else {
+        // mark as ready if not marked
+        if (!window.PulseWorldFirebaseShadow.ready) {
+          window.PulseWorldFirebaseShadow.ready = true;
+        }
+      }
+      // Shadow prewarm hook (if real implementation exposes it)
+      if (typeof window.PulseWorldFirebaseShadow.prewarm === "function") {
+        window.PulseWorldFirebaseShadow.prewarm();
+      }
+
+      // CHUNKS READY (sync)
+      if (!window.PulseChunks) {
+        console.warn("[PulseTouch] PulseChunks missing → creating safe no-op");
+        window.PulseChunks = {
+          prewarm: function () {},
+          ready: true
+        };
+      } else {
+        if (!window.PulseChunks.ready) {
+          window.PulseChunks.ready = true;
+        }
+      }
+
+      // CHUNKS NORMALIZER READY (sync)
+      if (!window.PulseChunksNormalizer) {
+        console.warn("[PulseTouch] PulseChunksNormalizer missing → identity normalizer");
+        window.PulseChunksNormalizer = {
+          normalize: x => x,
+          prewarm: function () {},
+          ready: true
+        };
+      } else {
+        if (!window.PulseChunksNormalizer.normalize) {
+          window.PulseChunksNormalizer.normalize = x => x;
+        }
+        if (!window.PulseChunksNormalizer.prewarm) {
+          window.PulseChunksNormalizer.prewarm = function () {};
+        }
+        if (!window.PulseChunksNormalizer.ready) {
+          window.PulseChunksNormalizer.ready = true;
+        }
+      }
+      // Normalizer prewarm hook
+      if (typeof window.PulseChunksNormalizer.prewarm === "function") {
+        window.PulseChunksNormalizer.prewarm();
+      }
+    } catch (err) {
+      console.error("[PulseTouch] SYNC BOOT BLOCK FAILED →", err);
+    }
+
+    // ============================================================
     // 1 — IGNITE TOUCH (SYNC ONLY)
     // ============================================================
     const touch = createPulseTouch({
@@ -1264,16 +1338,16 @@ function applyGateDecision(gateDecision, skin) {
 
       appendTouchTimeline("touch_page_warm", { page });
 
-      // ⭐ Prewarm Portal chunks
-      window.PulseChunks?.prewarm?.([
+      // ⭐ Prewarm Portal chunks (sync call)
+      window.PulseChunks.prewarm([
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.js`,
         `${prefix}_CREATION_BARRIER/PULSE-INDEX.js`,
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.chunk.js`,
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.assets.json`
       ]);
 
-      // ⭐ Route image scan (OrganismMap‑aware)
-      const map = globalThis.PulseOrganismMap;
+      // ⭐ Route image scan (OrganismMap‑aware, using LOCALSTORAGE-FIRST hydrate)
+      const map = window.PulseOrganismMap;
       if (map && map.systems?.UI?.pages?.[page]) {
         const route = map.systems.UI.pages[page].IDENTITY_META.ROUTE;
         window.__PULSE_SCAN_ROUTE_IMAGES__?.(route);
@@ -1299,7 +1373,7 @@ function applyGateDecision(gateDecision, skin) {
     // 3 — PREWARM TOUCH CORTEX (v25++ IMMORTAL)
     // ============================================================
     try {
-      window.PulseChunks?.prewarm?.([
+      window.PulseChunks.prewarm([
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-WARMUP.js`,
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-SECURITY.js`,
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-GATE.js`,
@@ -1315,25 +1389,9 @@ function applyGateDecision(gateDecision, skin) {
     }
 
     // ============================================================
-    // 4 — HYDRATE + SIGNAL ORGANISMMAP (from localStorage)
+    // 4 — ORGANISMMAP SIGNAL (from localStorage-hydrated map)
     // ============================================================
     try {
-      // 4.1 — Hydrate window.PulseOrganismMap from localStorage (if present)
-      if (typeof window !== "undefined") {
-        try {
-          const rawMap = localStorage.getItem("PulseOrganismMap_v25");
-
-          // ⭐ MOST IMPORTANT PART:
-          // window.PulseOrganismMap becomes EXACTLY the object stored in localStorage
-          if (rawMap) {
-            window.PulseOrganismMap = JSON.parse(rawMap);
-          }
-        } catch {
-          // fail-open by IMMORTAL contract
-        }
-      }
-
-      // 4.2 — If the hydrated map exposes a signal function, send a touch_prewarm signal
       const hasMapSignal =
         typeof window !== "undefined" &&
         window.PulseOrganismMap &&
@@ -1369,7 +1427,6 @@ function applyGateDecision(gateDecision, skin) {
     console.error("PulseTouch auto‑ignite failed", err);
   }
 })();
-
 
 
 // ============================================================
