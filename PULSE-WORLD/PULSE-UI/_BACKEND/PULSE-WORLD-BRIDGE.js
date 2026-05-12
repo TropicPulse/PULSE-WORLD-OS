@@ -74,7 +74,7 @@ import { createPulseSkinReflex as PulseProofReflex } from "../_COMPONENTS_EVOLUT
 
 
 import PulsePageScanner from "../_COMPONENTS_EVOLUTION/PulseUIPageScanner-v24.js";
-import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseUIRouteMemory-v24.js";
+import { createPulseRouteMemory as PulseUIRouteMemory } from "../_COMPONENTS_EVOLUTION/PulseUIRouteMemory-v24.js";
 
 import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
 import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
