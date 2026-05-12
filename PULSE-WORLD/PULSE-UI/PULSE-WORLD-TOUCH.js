@@ -1267,12 +1267,14 @@ function applyGateDecision(gateDecision, skin) {
         "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.assets.json"
       ]);
 
-      // ⭐ Scan CURRENT PAGE images
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./PULSE/${page}.html`);
-
-      // ⭐ Scan INDEX images (UI builder)
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.("./index.html");
-
+      if (page === "index" ) {
+        // ⭐ Scan INDEX images (UI builder)
+        window.__PULSE_SCAN_ROUTE_IMAGES__?.("./index.html");
+      } else {
+        // ⭐ Scan CURRENT PAGE images
+        window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./PULSE/${page}.html`);
+      }
+     
 
       // ⭐ Log into Touch timeline
       appendTouchTimeline("portal_prewarm", {
