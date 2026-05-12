@@ -15,6 +15,7 @@
 // 7) AI CONSOLE / PROMPTS ARE REMOVED FROM LOGGER.
 // 8) LOGGER IS SCHEMA-STABLE AND EVOLVABLE.
 // ============================================================================
+import { PulseProofSignal, PulseColors, PulseIcons, PulseColorFallback, PulseIconFallback, PulseRoleFallback, PulseRoles,PulseVersion,PulseVersionFallback } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-SIGNAL.js";
 
     console.log(
       "%c[PulseProofLogger v24-IMMORTAL-EVOLVABLE] %c Initializing PulseProofLogger %c",
@@ -178,128 +179,6 @@ function drainLocalLogsForHeartbeat() {
   persistLocalLogs(localLogBuffer);
   return copy;
 }
-
-// -----------------------------------------------------------------------------
-// Version / roles / colors / icons (metadata only, no behavior)
-// -----------------------------------------------------------------------------
-
-// ============================================================================
-//  DETERMINISTIC VERSION MAP
-//  - All real subsystems are v24
-//  - Legacy is fallback ONLY
-// ============================================================================
-
-export const PulseVersion = {
-  proof: "24.0",
-  logger: "24.0",
-  renderer: "24.0",
-  gpu: "24.0",
-  band: "24.0",
-  vault: "24.0",
-  hooks: "24.0",
-  endpoint: "24.0",
-  router: "24.0",
-  expansion: "24.0",
-  bridge: "24.0",
-  internet: "24.0",
-  memory: "24.0",
-  pages: "24.0",
-  cns: "24.0",
-  world: "24.0",
-  mesh: "24.0",
-  ai: "24.0",
-  signal: "24.0"
-};
-
-// fallback only
-export const PulseVersionFallback = "16.x";
-
-// ============================================================================
-//  DETERMINISTIC ROLE MAP
-// ============================================================================
-
-export const PulseRoles = {
-  proof: "PROOF MONITOR",
-  logger: "PROOF LOGGER",
-  renderer: "RENDERER",
-  gpu: "GPU SUBSYSTEM",
-  band: "NERVOUS SYSTEM",
-  vault: "VAULT SUBSYSTEM",
-  hooks: "HOOK REGISTRY",
-  endpoint: "REMOTE ENDPOINT",
-  router: "ROUTER",
-  expansion: "EXPANSION ENGINE",
-  bridge: "CNS BRIDGE",
-  internet: "INTERNET SUBSYSTEM",
-  memory: "MEMORY SUBSYSTEM",
-  pages: "PAGE SUBSYSTEM",
-  cns: "CNS CORE",
-  world: "WORLD SUBSYSTEM",
-  mesh: "MESH SUBSYSTEM",
-  ai: "AI SUBSYSTEM",
-  signal: "SIGNAL SUBSYSTEM"
-};
-
-// fallback only
-export const PulseRoleFallback = "LEGACY SUBSYSTEM";
-
-// ============================================================================
-//  DETERMINISTIC COLOR MAP
-// ============================================================================
-
-export const PulseColors = {
-  proof: "#4DD0E1",
-  logger: "#FF7043",
-  renderer: "#29B6F6",
-  gpu: "#7E57C2",
-  band: "#66BB6A",
-  vault: "#26C6DA",
-  ui: "#AB47BC",
-  endpoint: "#FFA726",
-  router: "#42A5F5",
-  expansion: "#26A69A",
-  bridge: "#EC407A",
-  internet: "#8D6E63",
-  memory: "#5C6BC0",
-  pages: "#26C6DA",
-  cns: "#EF5350",
-  world: "#26A69A",
-  mesh: "#7E57C2",
-  ai: "#FFCA28",
-  signal: "#90CAF9"
-};
-
-// fallback only
-export const PulseColorFallback = "#BDBDBD";
-
-// ============================================================================
-//  DETERMINISTIC ICON MAP
-// ============================================================================
-
-export const PulseIcons = {
-  proof: "📜",
-  logger: "🖨️",
-  renderer: "✨",
-  gpu: "🎨",
-  band: "🧠",
-  vault: "🔐",
-  hooks: "🪝",
-  endpoint: "🌐",
-  router: "🛰️",
-  expansion: "🚀",
-  bridge: "🌉",
-  internet: "📡",
-  memory: "💾",
-  pages: "📄",
-  cns: "🧬",
-  world: "🌍",
-  mesh: "🕸️",
-  ai: "🤖",
-  signal: "📡"
-};
-
-// fallback only
-export const PulseIconFallback = "🖥️";
 
 // ============================================================================
 //  PREFIX FORMATTER — DETERMINISTIC

@@ -25,9 +25,12 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+import {db as firebase} from "./PulseWorldFirebaseGenome-v20.js"
+// ⭐ NEW: Import upgraded CSS‑merged signal engine
+import { PulseProofSignal, PulseColors, PulseIcons, PulseColorFallback, PulseIconFallback, PulseRoleFallback, PulseRoles,PulseVersion,PulseVersionFallback } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-SIGNAL.js";
+
 
 let fs = null;
-import {db as firebase} from "./PulseWorldFirebaseGenome-v20.js"
 let routes = null;
 let schema = null;
 let fetchAPI = null;
@@ -51,118 +54,6 @@ console.log(
 //  - All real subsystems are v25
 //  - Legacy is fallback ONLY
 // ============================================================================
-
-export const PulseVersion = {
-  proof: "25.0",
-  logger: "25.0",
-  renderer: "25.0",
-  gpu: "25.0",
-  band: "25.0",
-  vault: "25.0",
-  hooks: "25.0",
-  endpoint: "25.0",
-  router: "25.0",
-  expansion: "25.0",
-  bridge: "25.0",
-  internet: "25.0",
-  memory: "25.0",
-  pages: "25.0",
-  cns: "25.0",
-  world: "25.0",
-  mesh: "25.0",
-  ai: "25.0",
-  signal: "25.0"
-};
-
-// fallback only
-export const PulseVersionFallback = "16.x";
-
-// ============================================================================
-//  DETERMINISTIC ROLE MAP
-// ============================================================================
-
-export const PulseRoles = {
-  proof: "PROOF MONITOR",
-  logger: "PROOF LOGGER",
-  renderer: "RENDERER",
-  gpu: "GPU SUBSYSTEM",
-  band: "NERVOUS SYSTEM",
-  vault: "VAULT SUBSYSTEM",
-  hooks: "HOOK REGISTRY",
-  endpoint: "REMOTE ENDPOINT",
-  router: "ROUTER",
-  expansion: "EXPANSION ENGINE",
-  bridge: "CNS BRIDGE",
-  internet: "INTERNET SUBSYSTEM",
-  memory: "MEMORY SUBSYSTEM",
-  pages: "PAGE SUBSYSTEM",
-  cns: "CNS CORE",
-  world: "WORLD SUBSYSTEM",
-  mesh: "MESH SUBSYSTEM",
-  ai: "AI SUBSYSTEM",
-  signal: "SIGNAL SUBSYSTEM"
-};
-
-// fallback only
-export const PulseRoleFallback = "LEGACY SUBSYSTEM";
-
-// ============================================================================
-//  DETERMINISTIC COLOR MAP
-// ============================================================================
-
-export const PulseColors = {
-  proof: "#4DD0E1",
-  logger: "#FF7043",
-  renderer: "#29B6F6",
-  gpu: "#7E57C2",
-  band: "#66BB6A",
-  vault: "#26C6DA",
-  ui: "#AB47BC",
-  endpoint: "#FFA726",
-  router: "#42A5F5",
-  expansion: "#26A69A",
-  bridge: "#EC407A",
-  internet: "#8D6E63",
-  memory: "#5C6BC0",
-  pages: "#26C6DA",
-  cns: "#EF5350",
-  world: "#26A69A",
-  mesh: "#7E57C2",
-  ai: "#FFCA28",
-  signal: "#90CAF9"
-};
-
-// fallback only
-export const PulseColorFallback = "#BDBDBD";
-
-// ============================================================================
-//  DETERMINISTIC ICON MAP
-// ============================================================================
-
-export const PulseIcons = {
-  proof: "📜",
-  logger: "🖨️",
-  renderer: "✨",
-  gpu: "🎨",
-  band: "🧠",
-  vault: "🔐",
-  hooks: "🪝",
-  endpoint: "🌐",
-  router: "🛰️",
-  expansion: "🚀",
-  bridge: "🌉",
-  internet: "📡",
-  memory: "💾",
-  pages: "📄",
-  cns: "🧬",
-  world: "🌍",
-  mesh: "🕸️",
-  ai: "🤖",
-  signal: "📡"
-};
-
-// fallback only
-export const PulseIconFallback = "🖥️";
 
 // ============================================================================
 // PREWARM LAYER — Aligns all adapters before organism boot
