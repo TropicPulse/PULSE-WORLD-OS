@@ -250,15 +250,61 @@ if (!window.__PULSE_UI_INIT__) {
       }, { passive: true });
     });
 
-    // 6 — Portal-driven pulse (if Portal exposes a subscription)
-    if (window.PulsePortal?.subscribe) {
-      window.PulsePortal.subscribe(() => {
-        logOK("Portal-driven pulse");
-        try { onPulse(); } catch {}
-      });
-    } else {
-      logWarn("PulsePortal.subscribe missing — using self pulses only");
+    // ============================================================================
+    //  PULSEBAND AUTO-START (v27)
+    // ============================================================================
+    try {
+      if (window.PulseBand?.emit) {
+        logOK("PulseBand detected — starting session");
+
+        // Start PulseBand session immediately
+        window.PulseBand.emit("request", { type: "start" });
+
+        // Listen for PulseBand packets
+        window.PulseBand.on("signal", (packet) => {
+          try {
+            // Save last PulseBand signal
+            window.__PULSE_LAST_SIGNAL__ = packet;
+
+            // Trigger UI pulse
+            onPulse(packet);
+
+          } catch (err) {
+            logErr("PulseBand signal handling failed", err);
+          }
+        });
+
+        // Handle PulseBand requests (bridge to proxy)
+        window.PulseBand.on("request", async (packet) => {
+          try {
+            let url = "/PULSE-PROXY/pulseband/session";
+            let method = "POST";
+
+            const res = await fetch(url, {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(packet)
+            });
+
+            const json = await res.json();
+
+            // Feed response back to PulseBand
+            window.PulseBand.emit("response", json);
+
+          } catch (err) {
+            logErr("PulseBand request bridge failed", err);
+          }
+        });
+
+        logOK("PulseBand session initialized");
+
+      } else {
+        logWarn("PulseBand not found — skipping PulseBand auto-start");
+      }
+    } catch (err) {
+      logErr("PulseBand auto-start failed", err);
     }
+
 
     logOK("REAL Pulse Engine v27 initialized");
 
