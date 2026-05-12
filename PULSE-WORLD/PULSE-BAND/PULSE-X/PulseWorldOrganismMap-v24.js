@@ -1,8 +1,8 @@
 // ============================================================================
-// PulseWorldOrganismMap-v24.js — v24.0‑IMMORTAL‑WORLD‑GENOME++
+// PulseWorldOrganismMap-v25.js — v25.0‑IMMORTAL‑WORLD‑GENOME++
 // THE JEWEL OF THE ORGANISM — THE GENOME
 // ----------------------------------------------------------------------------
-// LAWS OF THE ORGANISM (v24):
+// LAWS OF THE ORGANISM (v25):
 //   • Any folder starting with "PULSE-" is a SYSTEM.
 //   • Any .js file inside that folder is an ORGAN.
 //   • Any nested PULSE-* folder is a SUBSYSTEM.
@@ -15,7 +15,8 @@
 //   • Patterns > versions. Naming discipline IS evolution.
 //   • World-aware: detects PulseWorld, PulseWorldBand, PulseWorldOS, etc.
 //   • Evolves automatically as new PULSE-* folders appear.
-//   • v24++: organism‑wide, band‑aware, artery‑aware, multi‑instance, drift‑proof.
+//   • v25++: organism‑wide, band‑aware, artery‑aware, multi‑instance, drift‑proof,
+//            snapshot‑driven, delta‑per‑page, signal‑wired, architect‑aware.
 // ----------------------------------------------------------------------------
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
@@ -37,30 +38,30 @@ let fetchAPI = null;
 
 // ============================================================================
 //  DETERMINISTIC VERSION MAP
-//  - All real subsystems are v24
+//  - All real subsystems are v25
 //  - Legacy is fallback ONLY
 // ============================================================================
 
 export const PulseVersion = {
-  proof: "24.0",
-  logger: "24.0",
-  renderer: "24.0",
-  gpu: "24.0",
-  band: "24.0",
-  vault: "24.0",
-  hooks: "24.0",
-  endpoint: "24.0",
-  router: "24.0",
-  expansion: "24.0",
-  bridge: "24.0",
-  internet: "24.0",
-  memory: "24.0",
-  pages: "24.0",
-  cns: "24.0",
-  world: "24.0",
-  mesh: "24.0",
-  ai: "24.0",
-  signal: "24.0"
+  proof: "25.0",
+  logger: "25.0",
+  renderer: "25.0",
+  gpu: "25.0",
+  band: "25.0",
+  vault: "25.0",
+  hooks: "25.0",
+  endpoint: "25.0",
+  router: "25.0",
+  expansion: "25.0",
+  bridge: "25.0",
+  internet: "25.0",
+  memory: "25.0",
+  pages: "25.0",
+  cns: "25.0",
+  world: "25.0",
+  mesh: "25.0",
+  ai: "25.0",
+  signal: "25.0"
 };
 
 // fallback only
@@ -219,7 +220,7 @@ export function getFsAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// ROUTE API — FETCH‑AWARE (IMMORTAL v24)
+// ROUTE API — FETCH‑AWARE (IMMORTAL v25)
 // ============================================================================
 export function getRouteAPI({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:routes] ${msg}`, data);
@@ -245,7 +246,7 @@ export function getRouteAPI({ trace = false } = {}) {
         meta: {
           layer: "PulseRouteAPI",
           role: "ROUTE_RESOLUTION",
-          version: "24.0-IMMORTAL-WORLD",
+          version: "25.0-IMMORTAL-WORLD",
           evo: {
             worldAware: true,
             bandAware: true,
@@ -298,6 +299,7 @@ export function getSchemaAPI({ trace = false } = {}) {
     async getAllSchemas() {
       log("getAllSchemas");
       return [];
+
     },
 
     async getSchema(name) {
@@ -308,7 +310,7 @@ export function getSchemaAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-// FETCH API — ROUTE‑AWARE, IMMORTAL v24
+// FETCH API — ROUTE‑AWARE, IMMORTAL v25
 // ============================================================================
 export function getFetchAPI({ trace = false, routes } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:fetch] ${msg}`, data);
@@ -316,7 +318,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
   const meta = {
     layer: "PulseFetchAPI",
     role: "NETWORK_ADAPTER",
-    version: "24.0-IMMORTAL-WORLD",
+    version: "25.0-IMMORTAL-WORLD",
     evo: {
       deterministicField: true,
       unifiedAdvantageField: true,
@@ -351,7 +353,7 @@ export function getFetchAPI({ trace = false, routes } = {}) {
 }
 
 // ============================================================================
-// CACHESTORAGE ORGAN — v24.0‑IMMORTAL‑WORLD
+// CACHESTORAGE ORGAN — v25.0‑IMMORTAL‑WORLD
 // ============================================================================
 export function getCacheStorageOrgan({ trace = false } = {}) {
   const log = (msg, data) => trace && console.log(`[aiDeps:cache] ${msg}`, data);
@@ -403,7 +405,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     }
 
     const allFiles = await fsAPI.getAllFiles();
-    const cache = await caches.open("pulse-immortal-v24");
+    const cache = await caches.open("pulse-immortal-v25");
 
     for (const file of allFiles) {
       if (file.type !== "file") continue;
@@ -424,7 +426,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
     meta: {
       layer: "PulseCacheStorageOrgan",
       role: "FIRST_FRAME_FREEZER",
-      version: "24.0-IMMORTAL-WORLD",
+      version: "25.0-IMMORTAL-WORLD",
       evo: {
         patternDriven: true,
         driftProof: true,
@@ -439,7 +441,7 @@ export function getCacheStorageOrgan({ trace = false } = {}) {
 }
 
 // ============================================================================
-// SYSTEM CLASSIFIER — v24 (WORLD / UI / BAND / OS / ROUTER / PROXY / CORE / GPU / AI / EARN / TECH / etc.)
+// SYSTEM CLASSIFIER — v25 (WORLD / UI / BAND / OS / ROUTER / PROXY / CORE / GPU / AI / EARN / TECH / etc.)
 // ============================================================================
 function classifySystem(system) {
   const name = system.name.toLowerCase();
@@ -575,12 +577,13 @@ function classifySystem(system) {
   // DEFAULT
   return { layer: "generic", kind: "system" };
 }
+
 // ============================================================================
-// SCAN SYSTEMS — v24.1 IMMORTAL WORLD GENOME++
+// SCAN SYSTEMS — v25.1 IMMORTAL WORLD GENOME++
 // Extract subsystem from folder name + version from FILES
 // ============================================================================
 // ============================================================================
-// IMMORTAL ORGANISM MAP — SCAN ONCE, REUSE FOREVER
+// IMMORTAL ORGANISM MAP — SCAN ONCE, REUSE FOREVER (v24-compatible)
 // ============================================================================
 
 export async function scanPulseSystemsOnce() {
@@ -709,10 +712,226 @@ export async function scanPulseSystemsOnce() {
   return window.PulseOrganismMap;
 }
 
+// ============================================================================
+// v25++ GENOME SNAPSHOT — ONE REAL SCAN, REUSED FOREVER
+// ============================================================================
 
+export async function buildPulseOrganismSnapshotV25() {
+  if (window.__PULSE_ORGANISM_SNAPSHOT__) {
+    return window.__PULSE_ORGANISM_SNAPSHOT__;
+  }
+
+  const map = await scanPulseSystemsOnce();
+
+  const snapshot = {
+    epoch: Date.now(),
+    version: "v25.0-NETWORK",
+    systems: map.systems,
+    fileToMeta: map.fileToMeta
+  };
+
+  window.__PULSE_ORGANISM_SNAPSHOT__ = snapshot;
+  return snapshot;
+}
 
 // ============================================================================
-// IDENTITY GENERATION ENGINE — v24‑IMMORTAL‑WORLD‑GENOME++
+// v25++ RUNTIME GENOME ACCESSOR — SYNC ONLY, EVERY PAGE
+// ============================================================================
+
+export function getPulseOrganismMapV25() {
+  if (window.PulseOrganismMapV25) return window.PulseOrganismMapV25;
+
+  const snapshot = window.__PULSE_ORGANISM_SNAPSHOT__;
+  if (!snapshot) {
+    console.error("[OrganismMap:v25++] Missing organism snapshot. Run buildPulseOrganismSnapshotV25() at prewarm/build.");
+    throw new Error("PulseOrganismSnapshotMissing");
+  }
+
+  const { systems, fileToMeta } = snapshot;
+
+  const map = {
+    systems,
+    fileToMeta,
+
+    lookup(fileUrl) {
+      return this.fileToMeta[fileUrl] || this.defaultMeta;
+    },
+
+    resolveCaller(stack) {
+      try {
+        const lines = stack.split("\n");
+        for (const line of lines) {
+          const match = line.match(/(file:\/\/[^\s)]+)/);
+          if (match) {
+            const fileUrl = match[1];
+            const meta = this.lookup(fileUrl);
+            if (meta) return meta;
+          }
+        }
+      } catch {}
+      return this.defaultMeta;
+    },
+
+    defaultMeta: {
+      subsystem: "legacy",
+      version: "v24.0",
+      color: PulseColorFallback,
+      icon: PulseIconFallback
+    }
+  };
+
+  window.PulseOrganismMapV25 = map;
+  return map;
+}
+
+// ============================================================================
+// v25++ PAGE DELTA ENGINE — ONLY WHAT THIS PAGE NEEDS
+// ============================================================================
+
+export function getPageOrganismDeltaV25(pageId) {
+  const organism = getPulseOrganismMapV25();
+  const id = String(pageId || "").toLowerCase();
+
+  const systems = Object.values(organism.systems).filter(sys => {
+    return id.includes(sys.subsystem) || id.includes(sys.root.toLowerCase());
+  });
+
+  return { systems };
+}
+
+// ============================================================================
+// v25++ SIGNAL BUS — NORMALIZED, WORLD-AWARE
+// ============================================================================
+
+function normalizeSignalName(name) {
+  return String(name || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9_]/g, "_");
+}
+
+export function createPulseSignalBusV25() {
+  const listeners = new Map();
+
+  function on(signalName, handler) {
+    const name = normalizeSignalName(signalName);
+    if (!name || typeof handler !== "function") return;
+
+    if (!listeners.has(name)) listeners.set(name, new Set());
+    listeners.get(name).add(handler);
+  }
+
+  function emit(signalName, payload) {
+    const name = normalizeSignalName(signalName);
+    const set = listeners.get(name);
+    if (set) {
+      for (const fn of set) {
+        try {
+          fn(payload || { name, payload: null });
+        } catch (err) {
+          console.error("[PulseSignalBus:v25] handler error", name, err);
+        }
+      }
+    }
+
+    const wildcard = listeners.get("*");
+    if (wildcard) {
+      for (const fn of wildcard) {
+        try {
+          fn({ name, payload });
+        } catch (err) {
+          console.error("[PulseSignalBus:v25] wildcard handler error", name, err);
+        }
+      }
+    }
+  }
+
+  function clearAll() {
+    listeners.clear();
+  }
+
+  return { on, emit, clearAll };
+}
+
+window.PulseSignalBus = window.PulseSignalBus || createPulseSignalBusV25();
+
+// ============================================================================
+// v25++ LISTENER ENGINE — AUTO WIRES ORGANS FROM GENOME
+// ============================================================================
+
+export function buildOrganismListenersV25() {
+  const organism = getPulseOrganismMapV25();
+  const bus = window.PulseSignalBus;
+
+  bus.clearAll?.();
+
+  Object.entries(organism.systems).forEach(([systemKey, system]) => {
+    system.organs.forEach(organName => {
+      const bootSignal = normalizeSignalName(`${system.subsystem}_${organName}_BOOT`);
+
+      bus.on(bootSignal, () => {
+        const module =
+          window[organName] ||
+          window[systemKey] ||
+          window[organName.replace(/[^a-zA-Z0-9]/g, "")];
+
+        if (module && typeof module.boot === "function") {
+          module.boot();
+        } else {
+          bus.emit("UNKNOWN_ORGAN_BOOT", {
+            systemKey,
+            organName,
+            signal: bootSignal
+          });
+        }
+      });
+    });
+  });
+
+  bus.on("*", ({ name }) => {
+    const n = String(name || "").toUpperCase();
+    const known = Object.values(organism.systems).some(sys =>
+      sys.organs.some(organ =>
+        n.includes(organ.toUpperCase())
+      )
+    );
+
+    if (!known && window.FrontendArchitect?.handleUnknownSignal) {
+      window.FrontendArchitect.handleUnknownSignal({ signal: n });
+    }
+  });
+}
+
+// ============================================================================
+// v25++ ARCHITECT LAYER — SELF-DIAGNOSTIC ORGANISM
+// ============================================================================
+
+window.FrontendArchitect = window.FrontendArchitect || {
+  handleUnknownSignal({ signal }) {
+    console.warn(`⚠️ [Architect] Unknown signal not in genome: ${signal}`);
+  },
+
+  handleMissingPage(pageId) {
+    console.warn(`⚠️ [Architect] Page missing from genome: ${pageId}`);
+  },
+
+  handleGenomeDrift(snapshot) {
+    console.warn("⚠️ [Architect] Genome drift detected:", snapshot?.epoch);
+  }
+};
+
+// ============================================================================
+// v25++ BOOT ENTRYPOINT — CALL THIS ON FIRST PAGE
+// ============================================================================
+
+export async function bootOrganismGenomeV25() {
+  await buildPulseOrganismSnapshotV25(); // ONE real scan (prewarm / first load)
+  getPulseOrganismMapV25();              // hydrate sync map
+  buildOrganismListenersV25();           // wire signals → organs
+}
+
+// ============================================================================
+// IDENTITY GENERATION ENGINE — v25‑IMMORTAL‑WORLD‑GENOME++
 // ----------------------------------------------------------------------------
 // Same 7 layers, upgraded version/epoch + evo flags.
 // ============================================================================
@@ -732,8 +951,9 @@ function toTitleName(name) {
     .trim()
     .replace(/\b\w/g, c => c.toUpperCase());
 }
+
 // ============================================================================
-// ORGAN IDENTITY BUILDER — v24.1 IMMORTAL WORLD GENOME++
+// ORGAN IDENTITY BUILDER — v25.1 IMMORTAL WORLD GENOME++
 // ============================================================================
 
 function extractSubsystem(systemKey) {
@@ -746,7 +966,7 @@ function extractSubsystem(systemKey) {
 function extractVersion(systemKey) {
   // pulse-pages-v24 → v24
   const match = systemKey.match(/v(\d+)/);
-  return match ? `v${match[1]}.0` : "v24.0";
+  return match ? `v${match[1]}.0` : "v25.0";
 }
 
 function buildOrganIdentity({ systemKey, system, organName, portName, handler }) {
@@ -932,8 +1152,8 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     page: organId,
     organ: titleName.replace(/\s+/g, ""),
     layer,
-    tier: "Immortal-World-Genome-v24",
-    description: `Organ ${titleName} in system ${systemKey}, auto-mapped by PulseWorldOrganismMap v24.`,
+    tier: "Immortal-World-Genome-v25",
+    description: `Organ ${titleName} in system ${systemKey}, auto-mapped by PulseWorldOrganismMap v25.`,
     subsystem,
     IDENTITY_META,
     capabilities: {
@@ -956,7 +1176,7 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
     role: roleConst.toLowerCase(),
     subsystem,
     IDENTITY_META,
-    lineage: `${organName}-auto-v24-Immortal-World-Genome`,
+    lineage: `${organName}-auto-v25-Immortal-World-Genome`,
     evo: Object.freeze({
       deterministic: true,
       driftProof: true,
@@ -1011,7 +1231,7 @@ function buildOrganIdentity({ systemKey, system, organName, portName, handler })
 }
 
 // ============================================================================
-// BUILD ORGAN IDENTITIES + PATH MAP — v24.1 IMMORTAL WORLD GENOME++
+// BUILD ORGAN IDENTITIES + PATH MAP — v25.1 IMMORTAL WORLD GENOME++
 // ============================================================================
 
 function buildOrganIdentities(systems) {
@@ -1053,7 +1273,7 @@ function buildOrganIdentities(systems) {
 }
 
 // ============================================================================
-// BUILD ORGANISM MAP — v24.1 IMMORTAL WORLD GENOME++
+// BUILD ORGANISM MAP — v25.1 IMMORTAL WORLD GENOME++
 // ============================================================================
 
 export async function buildPulseOrganismMap(baseDir = "/") {
@@ -1068,7 +1288,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
 
   const { identities, identitiesByPath } = buildOrganIdentities(systems);
 
-  // ⭐ NEW: Build port-based routing tables for Signal
+  // ⭐ port-based routing tables for Signal
   const portSystems = Object.create(null);
   const portAliases = Object.create(null);
 
@@ -1097,7 +1317,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   }
 
   return Object.freeze({
-    version: "24.1‑IMMORTAL‑WORLD‑GENOME++",
+    version: "25.1‑IMMORTAL‑WORLD‑GENOME++",
     generatedAt: new Date().toISOString(),
 
     // raw scan output
@@ -1105,7 +1325,7 @@ export async function buildPulseOrganismMap(baseDir = "/") {
     identities,
     identitiesByPath,
 
-    // ⭐ NEW: port routing tables for Signal
+    // port routing tables for Signal
     portSystems,
     portAliases,
 
@@ -1122,9 +1342,8 @@ export async function buildPulseOrganismMap(baseDir = "/") {
   });
 }
 
-
 // ============================================================================
-// EXPORT — IMMORTAL WORLD GENOME v24.1++
+// EXPORT — IMMORTAL WORLD GENOME v25.1++
 // ============================================================================
 export const PulseOrganismMap = await buildPulseOrganismMap("/");
 
@@ -1133,10 +1352,8 @@ export const OrganismIdentity = (metaUrl) =>
 
 export async function reportMapError(err, context = {}) {
   try {
-    // Emit a COMMENT instead of a log
     console.error("OrganismMap error", { err, context });
   } catch (e) {
-    // If logger is broken, fallback to raw console
     console.error("[OrganismMap Fallback Error]", err, context);
   }
 }
