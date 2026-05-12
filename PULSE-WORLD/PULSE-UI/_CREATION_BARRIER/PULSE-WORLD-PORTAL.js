@@ -285,16 +285,18 @@ function buildRouteId() {
   if (typeof window === "undefined") return "PulseWorldBarrier";
 
   try {
-    // 1 — Load OrganismMap (global or localStorage)
-    let map = globalThis.PulseOrganismMap;
+    // ⭐ ALWAYS load from localStorage FIRST
+    let raw = localStorage.getItem("PulseOrganismMap_v25");
+    let map = null;
 
-    if (!map) {
-      const raw = localStorage.getItem("PulseOrganismMap_v25");
-      if (raw) {
-        map = JSON.parse(raw);
-        globalThis.PulseOrganismMap = map;
-        console.log("[RouteCarpet] buildRouteId() loaded OrganismMap from localStorage");
-      }
+    if (raw) {
+      map = JSON.parse(raw);
+      globalThis.PulseOrganismMap = map; // update global cache
+      console.log("[RouteCarpet] Loaded OrganismMap from localStorage");
+    } else {
+      // ⭐ Only use global cache if localStorage is missing
+      map = globalThis.PulseOrganismMap || null;
+      console.warn("[RouteCarpet] No localStorage map → using global cache");
     }
 
     const path = window.location?.pathname || "/";
@@ -322,7 +324,7 @@ function buildRouteId() {
 
     const pages = map.systems.UI.pages;
 
-    // 3 — Try to match pathname to a page key
+    // ⭐ MATCH PATH
     for (const key of Object.keys(pages)) {
       const page = pages[key];
       const meta = page?.IDENTITY_META || {};
@@ -332,7 +334,7 @@ function buildRouteId() {
       if ("/" + key === path) return meta.ROUTE || key;
     }
 
-    // 4 — Fallback: ALWAYS go to barrier
+    // ⭐ Fallback
     console.warn("[RouteCarpet] No page matched path:", path, "→ fallback PulseWorldBarrier");
     return "PulseWorldBarrier";
 
@@ -341,7 +343,6 @@ function buildRouteId() {
     return "PulseWorldBarrier";
   }
 }
-
 
 
 const surfaceMeta = Object.freeze({
