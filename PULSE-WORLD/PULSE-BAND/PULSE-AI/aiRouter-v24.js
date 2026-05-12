@@ -17,8 +17,8 @@ import Overmind from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 import NodeAdmin from "../PULSE-TOOLS/PulseToolsNodeAdmin-v20.js";
 
 // World / Expansion / Mesh / Server / Router / Earn / Band / Send / Router
-import { PulseWorldCoreMeta, createPulseWorldCore } from "../PULSE-EXPANSION/PulseExpansionUser-v24.js";
-import { PulseCastleMeta } from "../PULSE-EXPANSION/PulseExpansionCastle-v24.js";
+import { PulseWorldCoreMeta, createPulseWorldCore } from "../PULSE-EXPANSION/PULSE-EXPANSION-USER.js";
+import { PulseCastleMeta } from "../PULSE-EXPANSION/PULSE-EXPANSION-CASTLE.js";
 import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v24.js";
 import PulseBeaconMesh, { PulseBeaconMeshMeta } from "../PULSE-EXPANSION/PulseExpansionBeaconMesh-v20.js";
 import PulseBeaconEngine from "../PULSE-EXPANSION/PulseExpansionBeaconEngine-v20.js";

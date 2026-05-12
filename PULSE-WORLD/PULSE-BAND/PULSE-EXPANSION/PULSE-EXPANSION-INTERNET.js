@@ -30,12 +30,12 @@ import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-
 import {
   PulseCastleMeta,
   summarizeCastlePresence
-} from "./PulseExpansionCastle-v24.js";
+} from "./PULSE-EXPANSION-CASTLE.js";
 
 import {
   PulseWorldCoreMeta,
   createPulseWorldCore
-} from "./PulseExpansionUser-v24.js"; // world core stays v16 but referenced as OS meta
+} from "./PULSE-EXPANSION-USER.js"; // world core stays v16 but referenced as OS meta
 
 // v16 server/router
 import {

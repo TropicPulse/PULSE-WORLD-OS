@@ -82,7 +82,7 @@ import {
   PulseCastleMeta,
   createPulseCastle,
   getPulseCastleContext
-} from "./PulseExpansionCastle-v24.js";
+} from "./PULSE-EXPANSION-CASTLE.js";
 import {
   PulseServerMeta,
   createPulseServer,
@@ -94,7 +94,7 @@ import {
 } from "../PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 
 // User lanes
-import { getPulseUserContext } from "./PulseExpansionUser-v24.js";
+import { getPulseUserContext } from "./PULSE-EXPANSION-USER.js";
 
 // WorldCore (AI mirror)
 import {

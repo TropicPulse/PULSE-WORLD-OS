@@ -64,7 +64,7 @@ import {
 import {
   PulseWorldCoreMeta, PulseUserMeta,
   createPulseWorldCore
-} from "./PulseExpansionUser-v24.js";
+} from "./PULSE-EXPANSION-USER.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {

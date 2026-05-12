@@ -34,7 +34,7 @@ import * as PulseBinaryOS from "../PULSE-OS/PulseOSBinary-v24.js";
 import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v24.js";
 import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseExpansionBeaconMesh-v20.js";
 
-import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
+import { PulseCastleMeta, createPulseCastle } from "./PULSE-EXPANSION-CASTLE.js";
 import { PulseServerMeta, createPulseServer } from "./PULSE-EXPANSION-SERVER.js";
 import { PulseRouterMeta, createPulseRouter } from "../PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 import { PulseExpansionMeta, createPulseExpansion } from "./PULSE-EXPANSION-INTERNET.js";

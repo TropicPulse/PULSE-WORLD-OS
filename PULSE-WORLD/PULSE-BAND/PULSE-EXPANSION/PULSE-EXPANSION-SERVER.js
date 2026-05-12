@@ -46,7 +46,7 @@ import {
 import {
   PulseCastleMeta,
   computeCastlePresence
-} from "./PulseExpansionCastle-v24.js";
+} from "./PULSE-EXPANSION-CASTLE.js";
 
 // Router v24
 import {
@@ -58,7 +58,7 @@ import {
 import {
   getPulseUserContext,
   createPulseWorldCore
-} from "./PulseExpansionUser-v24.js";
+} from "./PULSE-EXPANSION-USER.js";
 
 // Adrenal (compute starter / circulation governor)
 import {

@@ -39,7 +39,7 @@ import {
   getPulseExpansionContext
 } from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET.js";
 
-import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseExpansionCastle-v24.js";
+import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PULSE-EXPANSION-CASTLE.js";
 import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PULSE-EXPANSION-SERVER.js";
 
 // User lanes + world core
@@ -48,7 +48,7 @@ import {
   createPulseWorldCore,
   pulseUser,
   PulseUserMeta
-} from "../PULSE-EXPANSION/PulseExpansionUser-v24.js";
+} from "../PULSE-EXPANSION/PULSE-EXPANSION-USER.js";
 
 // Mesh (symbolic + binary) — v24 IMMORTAL ORGANISM
 import createBinaryMesh, {

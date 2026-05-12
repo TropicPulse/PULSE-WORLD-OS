@@ -64,11 +64,11 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 
 import { PulseExpansionMeta, createPulseExpansion } from "./PULSE-EXPANSION-INTERNET.js";
-import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
+import { PulseCastleMeta, createPulseCastle } from "./PULSE-EXPANSION-CASTLE.js";
 import { PulseServerMeta, createPulseServer } from "./PULSE-EXPANSION-SERVER.js";
 import { PulseRouterMeta, createPulseRouter } from "./PulseExpansionRouter-v24.js";
 
-import { getPulseUserContext, createPulseWorldCore } from "./PulseExpansionUser-v24.js";
+import { getPulseUserContext, createPulseWorldCore } from "./PULSE-EXPANSION-USER.js";
 
 import { getBeaconEngineContext } from "./PulseExpansionBeaconEngine-v20.js";
 import { getConsoleContext } from "./PulseExpansionBeaconConsole-v20.js";
