@@ -285,30 +285,31 @@ function buildRouteId() {
     // ⭐ 1. Primary route = current page
     const path = window.location?.pathname || "/";
 
-    // ⭐ 2. If we have a route history, use the last known route as fallback
-    const routeHistory = JSON.parse(localStorage.getItem("pulse_route_history") || "[]");
-    const lastRoute = routeHistory.length > 0 ? routeHistory[routeHistory.length - 1] : null;
+    // ⭐ 2. Load deduped history (already cleaned elsewhere)
+    const history = JSON.parse(localStorage.getItem("pulse_route_history") || "[]");
+    const lastRoute = history.length > 0 ? history[history.length - 1] : null;
 
-    // ⭐ 3. Try to load the old map (optional)
-    const raw = localStorage.getItem("PulseOrganismMap_v25");
-    let map = null;
-
-    if (raw) {
-      try {
-        map = JSON.parse(raw);
-      } catch (err) {
-        console.warn("[RouteCarpet] Map parse failed → ignoring map");
-        map = null;
-      }
+    // ⭐ 3. CSS-style merge: if same as last route → return immediately
+    if (path === lastRoute) {
+      return lastRoute;
     }
 
-    // ⭐ 4. If map exists, try to match path
+    // ⭐ 4. Load map snapshot (single object, never duplicated)
+    let map = null;
+    try {
+      const raw = localStorage.getItem("PulseOrganismMap_v25");
+      if (raw) map = JSON.parse(raw);
+    } catch {
+      console.warn("[RouteCarpet] Map parse failed → ignoring map");
+      map = null;
+    }
+
+    // ⭐ 5. Try to match path in map
     if (map?.systems?.UI?.pages) {
       const pages = map.systems.UI.pages;
 
       for (const key of Object.keys(pages)) {
-        const page = pages[key];
-        const meta = page?.IDENTITY_META || {};
+        const meta = pages[key]?.IDENTITY_META || {};
 
         if (meta.ROUTE === path) return meta.ROUTE;
         if (meta.ALIAS === path) return meta.ROUTE || key;
@@ -316,13 +317,13 @@ function buildRouteId() {
       }
     }
 
-    // ⭐ 5. Fallback to last known route
+    // ⭐ 6. Fallback to last known route (clean, deduped)
     if (lastRoute) {
       console.warn("[RouteCarpet] Using last known route:", lastRoute);
       return lastRoute;
     }
 
-    // ⭐ 6. Final fallback
+    // ⭐ 7. Final fallback
     console.warn("[RouteCarpet] No route matched → PulseWorldBarrier");
     return "PulseWorldBarrier";
 
@@ -331,6 +332,7 @@ function buildRouteId() {
     return "PulseWorldBarrier";
   }
 }
+
 
 
 const surfaceMeta = Object.freeze({

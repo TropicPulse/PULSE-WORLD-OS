@@ -11,27 +11,33 @@
 //  - continuity comes from localStorage
 //  - route history is tracked
 // ============================================================================
-
 (function PulseWindowBootstrap() {
-  // 1. Ensure window is the global surface
   window.global = window;
 
-  // 2. Load continuity hint from last page
   const hint = localStorage.getItem("pulse_continuity") || null;
 
-  // 3. Rebuild organism state container
   window.__PULSE__ = window.__PULSE__ || {};
   window.__PULSE__.continuity = hint;
 
-  // 4. Track route history
-  const routeHistory = JSON.parse(localStorage.getItem("pulse_route_history") || "[]");
-  routeHistory.push(window.location.pathname);
-  localStorage.setItem("pulse_route_history", JSON.stringify(routeHistory));
+  // ⭐ Load existing history
+  let history = JSON.parse(localStorage.getItem("pulse_route_history") || "[]");
 
-  // 5. (Optional) Clear continuity so next page sets a new one
-  // localStorage.removeItem("pulse_continuity");
+  const current = window.location.pathname;
+  const last = history[history.length - 1] || null;
 
+  // ⭐ CSS-style merge: only add if different
+  if (current !== last) {
+    history.push(current);
+  }
+
+  // ⭐ Optional: limit history to last 100 transitions
+  if (history.length > 100) {
+    history = history.slice(history.length - 100);
+  }
+
+  localStorage.setItem("pulse_route_history", JSON.stringify(history));
 })();
+
 
 import { PulseProofBridgeFlow as initUIFlow, PulseProofBridgeErrors as PulseUIErrors, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
