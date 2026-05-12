@@ -1235,6 +1235,12 @@ function applyGateDecision(gateDecision, skin) {
       band: "symbolic"
     });
 
+    console.log(
+      "%c[PulseTouch v24-IMMORTAL-EVOLVABLE] %c Initializing PULSE-WORLD-TOUCH %c",
+      "color:#90CAF9; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;",
+      "color:#E8F8FF; font-family:monospace;");
+
     window.__PULSE_TOUCH__ = touch;
 
     // ============================================================
