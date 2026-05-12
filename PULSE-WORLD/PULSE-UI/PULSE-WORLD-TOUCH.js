@@ -169,32 +169,6 @@
 //   window.PulseProofLogger
 //   window.PulseBridgeRoute
 // ============================================================
-(function PulseWindowBootstrap() {
-  window.global = window;
-
-  const hint = localStorage.getItem("pulse_continuity") || null;
-
-  window.__PULSE__ = window.__PULSE__ || {};
-  window.__PULSE__.continuity = hint;
-
-  // ⭐ Load existing history
-  let history = JSON.parse(localStorage.getItem("pulse_route_history") || "[]");
-
-  const current = window.location.pathname;
-  const last = history[history.length - 1] || null;
-
-  // ⭐ CSS-style merge: only add if different
-  if (current !== last) {
-    history.push(current);
-  }
-
-  // ⭐ Optional: limit history to last 100 transitions
-  if (history.length > 100) {
-    history = history.slice(history.length - 100);
-  }
-
-  localStorage.setItem("pulse_route_history", JSON.stringify(history));
-})();
 
 
 // ============================================================

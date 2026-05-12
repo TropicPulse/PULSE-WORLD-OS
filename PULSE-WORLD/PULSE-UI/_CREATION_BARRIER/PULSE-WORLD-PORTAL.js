@@ -280,14 +280,56 @@ const PulseSurfaceEnvironment = buildSurfaceEnvironment();
 // ============================================================================
 // MEMBRANE META — PULSE PORTAL CONTEXT
 // ============================================================================
-function buildRouteId() {
+// ============================================================================
+// PulseDB — getLastRouteFromIndexedDB (v25++)
+// ============================================================================
+
+const PULSE_DB = "PulseDB_v25";
+const ROUTE_STORE = "route_history";
+
+function openPulseDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(PULSE_DB, 1);
+
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(ROUTE_STORE)) {
+        db.createObjectStore(ROUTE_STORE, { keyPath: "id", autoIncrement: true });
+      }
+    };
+
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getLastRouteFromIndexedDB() {
+  const db = await openPulseDB();
+
+  return new Promise((resolve) => {
+    const tx = db.transaction(ROUTE_STORE, "readonly");
+    const store = tx.objectStore(ROUTE_STORE);
+
+    // ⭐ "prev" cursor = last inserted entry
+    const req = store.openCursor(null, "prev");
+
+    req.onsuccess = (e) => {
+      const cursor = e.target.result;
+      resolve(cursor ? cursor.value.route : null);
+    };
+
+    req.onerror = () => resolve(null);
+  });
+}
+
+
+export async function buildRouteId() {
   try {
     // ⭐ 1. Primary route = current page
     const path = window.location?.pathname || "/";
 
-    // ⭐ 2. Load deduped history (already cleaned elsewhere)
-    const history = JSON.parse(localStorage.getItem("pulse_route_history") || "[]");
-    const lastRoute = history.length > 0 ? history[history.length - 1] : null;
+    // ⭐ 2. Load last route from IndexedDB
+    const lastRoute = await getLastRouteFromIndexedDB();
 
     // ⭐ 3. CSS-style merge: if same as last route → return immediately
     if (path === lastRoute) {
@@ -332,6 +374,7 @@ function buildRouteId() {
     return "PulseWorldBarrier";
   }
 }
+
 
 
 
