@@ -130,58 +130,83 @@ function parseInterval(str) {
 // INTERNAL HELPERS — deterministic, pure, zero randomness
 // ============================================================================
 
-function computeHash(str) {
-  let h = 0;
+function computeIntelHash(str) {
   const s = String(str || "");
+  let h1 = 0x9e3779b1; // golden ratio constant
+  let h2 = 0x85ebca77; // avalanche constant
+
   for (let i = 0; i < s.length; i++) {
-    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+    const c = s.charCodeAt(i);
+    h1 = (h1 ^ (c * (i + 1))) >>> 0;
+    h2 = (h2 + (c << (i % 5))) >>> 0;
+
+    // avalanche mixing
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 0x85ebca6b);
+    h2 = Math.imul(h2 ^ (h2 >>> 13), 0xc2b2ae35);
   }
-  return `h${h}`;
+
+  const final = ((h1 ^ h2) >>> 0).toString(16);
+  return `intel-${final}`;
 }
 
+
 function buildBinaryField() {
-  const patternLen = 14;
-  const density = 14 + 28;
+  const patternLen = 14 + (Date.now() % 7);
+  const density = 42 + (patternLen % 13);
   const surface = density + patternLen;
 
+  const parity = surface & 1;
+  const shiftDepth = Math.max(1, Math.floor(Math.log2(surface)));
+
+  const binarySurface = { patternLen, density, surface };
+
   return {
-    binaryPhenotypeSignature: `hb-binary-pheno-${surface % 99991}`,
-    binarySurfaceSignature: `hb-binary-surface-${(surface * 7) % 99991}`,
-    binarySurface: { patternLen, density, surface },
-    parity: surface % 2 === 0 ? 0 : 1,
-    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
+    binaryPhenotypeSignature: computeIntelHash(
+      `BINARY_PHENO::${patternLen}::${density}::${surface}`
+    ),
+    binarySurfaceSignature: computeIntelHash(
+      `BINARY_SURFACE::${surface}::${shiftDepth}`
+    ),
+    binarySurface,
+    parity,
+    shiftDepth
   };
 }
 
+
 function buildWaveField() {
-  const amplitude = 12;
-  const wavelength = amplitude + 4;
-  const phase = amplitude % 16;
+  const amplitude = 8 + (Date.now() % 5);
+  const wavelength = amplitude * 2 + 3;
+  const phase = (amplitude * wavelength) % 32;
 
   return {
     amplitude,
     wavelength,
     phase,
-    band: "symbolic-root",
-    mode: "symbolic-wave"
+    band: "immortal-root",
+    mode: "immortal-wave",
+    waveSignature: computeIntelHash(
+      `WAVE_SURFACE::${amplitude}::${wavelength}::${phase}`
+    )
   };
 }
 
+
 // IMMORTAL advantage field: cycle surfaces → advantageScore
 function buildAdvantageField(binaryField, waveField, cycleKind) {
-  const density = binaryField.binarySurface.density || 42;
+  const density = binaryField.binarySurface.density;
   const amplitude = waveField.amplitude;
   const wavelength = waveField.wavelength;
 
-  const efficiency = (amplitude + 1) / (wavelength + 1);
+  const efficiency = (amplitude + 1) / (wavelength + 2);
   const stress = Math.min(1, density / 64);
-  const baseScore = efficiency * (1 + stress);
 
-  let kindBoost = 1;
+  let kindBoost = 1.0;
   if (cycleKind === "logout") kindBoost = 1.0;
-  else if (cycleKind === "security") kindBoost = 1.1;
+  else if (cycleKind === "security") kindBoost = 1.12;
+  else if (cycleKind === "nudge") kindBoost = 1.08;
 
-  const advantageScore = Math.min(1, baseScore * kindBoost);
+  const advantageScore = Math.min(1, efficiency * (1 + stress) * kindBoost);
 
   return {
     density,
@@ -191,54 +216,105 @@ function buildAdvantageField(binaryField, waveField, cycleKind) {
     stress,
     cycleKind,
     advantageScore,
-    advantageSignature: computeHash(
-      `HEARTBEAT_ADVANTAGE::${density}::${amplitude}::${wavelength}::${cycleKind}::${advantageScore}`
+    advantageSignature: computeIntelHash(
+      `IMMORTAL_ADVANTAGE::${density}::${amplitude}::${wavelength}::${cycleKind}::${advantageScore}`
     )
   };
 }
 
+
 function buildHeartbeatCycleSignature(cycle, kind) {
-  return computeHash(`HEARTBEAT_CYCLE::${kind || "generic"}::${cycle}`);
+  return computeIntelHash(
+    `HEARTBEAT_CYCLE::${kind || "generic"}::${cycle}::${Date.now() % 9999}`
+  );
 }
 
-// v20: chunk / cache / presence hints for timer prewarm
-function buildChunkingHints(cycleKind) {
-  let suggestedChunkSizeKB = 64;
-  let suggestedPrewarm = true;
 
-  if (cycleKind === "logout") {
-    suggestedChunkSizeKB = 96;
-    suggestedPrewarm = true;
-  } else if (cycleKind === "security") {
-    suggestedChunkSizeKB = 128;
-    suggestedPrewarm = true;
+function buildChunkingHints(cycleKind = "generic") {
+  // Base defaults
+  let baseSize = 64;
+  let prewarm = true;
+
+  // Dynamic entropy (adds variability)
+  const entropy = Math.floor(Math.random() * 16); // 0–15 KB
+
+  // Adjust based on cycle kind
+  switch (cycleKind) {
+    case "logout":
+      baseSize = 96;
+      break;
+
+    case "nudge":
+      baseSize = 128;
+      break;
+
+    case "security":
+      baseSize = 128;
+      break;
+
+    default:
+      baseSize = 64;
   }
+
+  // Final computed size
+  const suggestedChunkSizeKB = baseSize + entropy;
 
   return {
     suggestedChunkSizeKB,
-    suggestedPrewarm,
-    timerKind: cycleKind
+    suggestedPrewarm: prewarm,
+    entropy,
+    timerKind: cycleKind,
+    prewarmWindowMs: 1500, // v25++ hint for prewarm timing
+    confidence: 0.92        // v25++ hint for adaptive chunking
   };
 }
 
-function buildPresenceHints(cycleKind) {
-  let recommendedPresenceWindowMs = 5 * 60 * 1000;
-  let suggestedPollIntervalMs = 60 * 1000;
+function buildPresenceHints(cycleKind = "generic") {
+  // Base defaults
+  let windowMs = 5 * 60 * 1000;      // 5 minutes
+  let pollMs = 60 * 1000;            // 1 minute
 
-  if (cycleKind === "logout") {
-    recommendedPresenceWindowMs = 5 * 60 * 1000;
-    suggestedPollIntervalMs = 60 * 1000;
-  } else if (cycleKind === "security") {
-    recommendedPresenceWindowMs = 24 * 60 * 60 * 1000;
-    suggestedPollIntervalMs = 60 * 60 * 1000;
+  // Dynamic entropy (prevents stale presence windows)
+  const entropy = (Date.now() % 777); // 0–776 ms
+
+  // Adjust based on cycle kind
+  switch (cycleKind) {
+    case "logout":
+      windowMs = 5 * 60 * 1000;
+      pollMs = 60 * 1000;
+      break;
+
+    case "security":
+      windowMs = 24 * 60 * 60 * 1000;
+      pollMs = 60 * 60 * 1000;
+      break;
+
+    case "nudge":
+      windowMs = 10 * 60 * 1000;     // nudges widen the window
+      pollMs = 2 * 60 * 1000;        // poll slightly slower
+      break;
+
+    default:
+      windowMs = 5 * 60 * 1000;
+      pollMs = 60 * 1000;
   }
+
+  // Final computed values
+  const recommendedPresenceWindowMs = windowMs + entropy;
+  const suggestedPollIntervalMs = pollMs;
 
   return {
     recommendedPresenceWindowMs,
     suggestedPollIntervalMs,
-    timerKind: cycleKind
+    entropy,
+    timerKind: cycleKind,
+    confidence: 0.94, // v25++ presence confidence
+    presenceSignature: computeIntelHash(
+      `PRESENCE_HINTS::${cycleKind}::${recommendedPresenceWindowMs}::${suggestedPollIntervalMs}`
+    )
   };
 }
+
 
 // ============================================================================
 // HEARTBEAT HEALING STATE — pacemaker rhythm log (v20-ImmortalPlus)
@@ -301,6 +377,80 @@ function getSeasonFromSettings(settings) {
     seasonalMultiplier: 1
   };
 }
+
+
+// ------------------------------------------------------------
+// PULSEWORLD FIELD BUILDERS (MINIMAL V25++ VERSION)
+// ------------------------------------------------------------
+function buildPulseSignature(cycle) {
+  return `PULSE_NUDGE::${cycle}::${Date.now()}`;
+}
+
+// ------------------------------------------------------------
+// MAIN HANDLER — MANUAL NUDGE
+// ------------------------------------------------------------
+export const handler = async (event, context) => {
+  HEARTBEAT_CYCLE++;
+
+  const signature = buildPulseSignature(HEARTBEAT_CYCLE);
+  const binaryField = buildBinaryField();
+  const waveField = buildWaveField();
+  const advantageField = buildAdvantageField(binaryField, waveField);
+  const chunkingHints = buildChunkingHints();
+  const presenceHints = buildPresenceHints();
+
+  const pulsePacket = {
+    ok: true,
+    pulse: true,
+    cycle: HEARTBEAT_CYCLE,
+    signature,
+    binaryField,
+    waveField,
+    advantageField,
+    chunkingHints,
+    presenceHints,
+    ts: Date.now()
+  };
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(pulsePacket)
+  };
+};
+
+// ------------------------------------------------------------
+// OPTIONAL: SCHEDULED NUDGE (EVERY 15 MINUTES)
+// ------------------------------------------------------------
+export const scheduled = onSchedule("*/15 * * * *", async () => {
+  HEARTBEAT_CYCLE++;
+
+  const signature = buildPulseSignature(HEARTBEAT_CYCLE);
+  const binaryField = buildBinaryField();
+  const waveField = buildWaveField();
+  const advantageField = buildAdvantageField(binaryField, waveField);
+  const chunkingHints = buildChunkingHints();
+  const presenceHints = buildPresenceHints();
+
+  const pulsePacket = {
+    ok: true,
+    scheduled: true,
+    pulse: true,
+    cycle: HEARTBEAT_CYCLE,
+    signature,
+    binaryField,
+    waveField,
+    advantageField,
+    chunkingHints,
+    presenceHints,
+    ts: Date.now()
+  };
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(pulsePacket)
+  };
+});
+
 
 // ============================================================================
 //  TIMER: LOGOUT + HISTORY REPAIR (v20‑ImmortalPlus envelope)
@@ -597,7 +747,7 @@ export const securitySweep = onSchedule("every 24 hours", async () => {
 
   heartbeatHealing.lastTimerKind = "security";
 
-  const securitySweepSignature = computeHash(
+  const securitySweepSignature = computeIntelHash(
     `SECURITY_SWEEP_CYCLE::${SECURITY_SWEEP_CYCLE}`
   );
   const binaryField = buildBinaryField();

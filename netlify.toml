@@ -2,5 +2,5 @@
   publish = "PULSE-UI"
   functions = "PULSE-WORLD/PULSE-BAND/PULSE-X"
 
-[functions."PULSE-WORLD"]
+[functions."PULSE-WORLD-SERVER"]
   schedule = "* * * * *"
