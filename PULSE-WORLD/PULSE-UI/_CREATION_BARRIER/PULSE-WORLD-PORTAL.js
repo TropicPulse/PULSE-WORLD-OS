@@ -868,41 +868,57 @@ if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function
   });
 }
 
-window.addEventListener("load", () => {
+// ---------------------------------------------------------
+// PULSEPORTAL v25 — NEXT-PAGE WARM (ZERO BLOCKING)
+// ---------------------------------------------------------
+
+function runPortalWarm() {
   try {
+    const touch = window.__PULSE_TOUCH__;
+    if (!touch) return;
+
     const page =
       location.pathname.split("/").pop().replace(".html", "") || "index";
 
-    const next = window.__PULSE_TOUCH__?.router?.predictNext?.(page);
-
-    if (next) {
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`../${next}.html`);
-
-      console.log(
-        "%c[PulsePortal::Prewarm] %cnext-page assets prewarmed %c→ %s",
-        "color:#00E5FF; font-weight:bold; font-family:monospace;",
-        "color:#00FF9C; font-family:monospace;",
-        "color:#E8F8FF; font-family:monospace;",
-        next
-      );
-    } else {
-      console.log(
-        "%c[PulsePortal::Prewarm] %cno next page predicted",
-        "color:#00E5FF; font-weight:bold; font-family:monospace;",
-        "color:#FFE066; font-family:monospace;"
-      );
+    const next = touch.router?.predictNext?.(page);
+    if (!next) {
+      console.log("[PortalWarm] no next page predicted");
+      return;
     }
-  } catch (err) {
-    console.error(
-      "%c[PulsePortal::Prewarm] %cFAILED %c→ %s",
-      "color:#00E5FF; font-weight:bold; font-family:monospace;",
-      "color:#FF3B3B; font-weight:bold; font-family:monospace;",
-      "color:#FFE066; font-family:monospace;",
-      String(err)
-    );
-  }
-});
 
+    // ⭐ WARM 1 — Preload NEXT PAGE HTML
+    touch.preloader?.preloadPage?.(next);
+
+    // ⭐ WARM 2 — Preload NEXT PAGE IMAGES
+    window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
+
+    // ⭐ WARM 3 — Preload CHUNKS for NEXT PAGE
+    touch.chunker?.preloadChunksForPage?.(next);
+
+    // ⭐ WARM 4 — Light ADVANTAGE warm
+    touch.advantage?.prewarmLight?.();
+
+    console.log(
+      "%c[PulsePortal::Warm] %cv25 next-page warm complete %c→ %s",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;",
+      "color:#E8F8FF; font-family:monospace;",
+      next
+    );
+  } catch (err) {
+    console.error("[PulsePortal::Warm] FAILED →", err);
+  }
+}
+
+// ---------------------------------------------------------
+// WAIT FOR TOUCH TO BE READY
+// ---------------------------------------------------------
+const waitForTouch = setInterval(() => {
+  if (window.__PULSE_TOUCH__?.ready) {
+    clearInterval(waitForTouch);
+    runPortalWarm();
+  }
+}, 10);
 
 // ============================================================================
 // ⭐ SIGNAL SNAPSHOT EXPORT (v26 IMMORTAL++)

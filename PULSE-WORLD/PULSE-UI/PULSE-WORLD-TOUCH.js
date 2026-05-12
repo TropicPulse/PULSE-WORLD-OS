@@ -1239,21 +1239,6 @@ function applyGateDecision(gateDecision, skin) {
       window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
     });
 
-    // ⭐ WARM 2 — Preload NEXT page only
-    idle(() => {
-      const next = touch.router?.predictNext?.(page);
-      if (next) {
-        touch.preloader?.preloadPage?.(next);
-        window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
-      }
-    });
-
-    // ⭐ WARM 3 — Light engine warm
-    idle(() => {
-      touch.chunker?.preloadChunksForPage?.(page);
-      touch.advantage?.prewarmLight?.();
-    });
-
     console.log("PulseTouch v24++ ignition: next-page warm only, zero microtasks.");
   } catch (err) {
     console.warn("PulseTouch auto‑ignite failed", err);
