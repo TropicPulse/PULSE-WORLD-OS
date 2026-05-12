@@ -622,7 +622,6 @@ export async function scanPulseSystemsOnce() {
 
   // Save globally
   window.PulseOrganismMap = snapshot;
-
   return snapshot;
 }
 
