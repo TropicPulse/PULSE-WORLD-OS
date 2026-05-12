@@ -18,7 +18,7 @@
 //   • Presence/advantage/chunk are metadata-only.
 //   • Dual‑hash INTEL signatures (INTEL + classic fallback).
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

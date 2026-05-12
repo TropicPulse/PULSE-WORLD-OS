@@ -30,7 +30,6 @@
 //  • Deterministic: same impulses → same cognition patterns
 //  • Presence-aware, band-aware, bluetooth-aware only via metadata
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

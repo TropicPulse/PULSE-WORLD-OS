@@ -19,7 +19,6 @@
 //  Unified Router Organ Import Surface (Binary + Evolutionary + Mesh + Earn)
 //  PURE IMPORT LAYER — NO LOGIC, NO STATE, NO EXECUTION
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

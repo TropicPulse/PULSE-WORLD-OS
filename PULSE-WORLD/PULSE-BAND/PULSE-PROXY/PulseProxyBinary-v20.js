@@ -23,7 +23,6 @@
 //    - All envelopes are deterministic, replayable, cache/prewarm aware.
 //    - Proxy Mode is ADDON-ONLY: tap-only, no routing, no OS logic here.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -25,7 +25,6 @@
 //   • Repair band/wave/advantage/experience surfaces are descriptive‑only
 //   • Drift‑envelope + repair‑pressure overlays are meta‑only
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

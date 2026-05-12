@@ -69,7 +69,6 @@ AI_EXPERIENCE_META:
     - "Always metadata-only, zero side-effects."
     - "Always ER‑ready and CNS‑aware."
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

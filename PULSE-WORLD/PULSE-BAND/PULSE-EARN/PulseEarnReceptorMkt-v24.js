@@ -15,7 +15,7 @@
 //   • Dual‑hash signatures: classic + intel for core surfaces.
 //   • 24++: receptorComputeProfile + receptorPressureProfile + Tri‑Heart overlays.
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

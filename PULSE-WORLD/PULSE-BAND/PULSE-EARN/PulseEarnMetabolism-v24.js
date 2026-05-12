@@ -26,7 +26,7 @@
 //   • NO speed, NO baseline, NO governor, NO performance assumptions.
 //   • NO timestamps, NO randomness, NO nondeterministic behavior.
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

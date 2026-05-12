@@ -4,7 +4,6 @@
 //  Binary-aware • Symbolic-aware • Dispatch-aware • Memory-aware • CI-aware
 //  Earn-aware • Game-aware • GPU-Advantage-aware
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

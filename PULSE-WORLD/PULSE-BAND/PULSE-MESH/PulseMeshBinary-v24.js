@@ -29,7 +29,6 @@
 //   • Bluetooth-aware only via control metadata (bluetoothPresence).
 //   • Artery metrics are local, read-only, advisory-only.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

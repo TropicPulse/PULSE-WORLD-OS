@@ -28,7 +28,6 @@
 //   • Evolvable via Memory Engine / Mode Engine
 //   • Zero side effects (except CoreMemory.setPersona)
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

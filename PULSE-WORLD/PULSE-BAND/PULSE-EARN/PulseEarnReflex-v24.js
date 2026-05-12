@@ -4,7 +4,7 @@
 //  Pure deterministic reflex builder (zero routing, zero sending, zero compute)
 //  Binary-first A-B-A + DualHash + Presence/Advantage/Chunk surfaces (metadata-only) + 24++ Reflex Profiles
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

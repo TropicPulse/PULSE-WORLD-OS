@@ -4,7 +4,6 @@
 //  Afferent Nervous System • Deterministic Perception Layer • Pure Recording
 //  GeneticMemory‑v24 + Healer‑v24 + Earn‑v24‑GPU aware
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

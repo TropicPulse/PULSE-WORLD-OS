@@ -13,7 +13,6 @@
 //    • Mesh/Factoring-ready: compatible with v20++ MeshSignalFactoring + advantage fields
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

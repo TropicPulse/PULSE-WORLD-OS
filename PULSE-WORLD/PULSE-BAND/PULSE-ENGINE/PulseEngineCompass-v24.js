@@ -8,7 +8,6 @@
 //  • Future lanes can be added without touching EngineBlock
 //  • Evidence-aware, diagnostics-aware, session-aware, dual-band
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

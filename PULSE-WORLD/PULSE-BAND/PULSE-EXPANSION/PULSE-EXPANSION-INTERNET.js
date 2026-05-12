@@ -7,7 +7,6 @@
  *  Federal Strategist for capacity, stress, governance, treasury, mesh, routes.
  * ============================================================================
  */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

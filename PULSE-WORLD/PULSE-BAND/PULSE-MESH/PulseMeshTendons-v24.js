@@ -21,7 +21,6 @@
 // • Unified-advantage-field aligned, coordinator-free.
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

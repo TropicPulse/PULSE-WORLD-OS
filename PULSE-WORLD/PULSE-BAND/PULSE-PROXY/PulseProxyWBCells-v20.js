@@ -5,7 +5,6 @@
 //  PURE DETECTION. NO AI. NO BUSINESS MUTATION.
 //  BINARY CORE + SYMBOLIC WRAPPER + PRESENCE / ADVANTAGE / CHUNK‑CACHE OVERLAYS
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

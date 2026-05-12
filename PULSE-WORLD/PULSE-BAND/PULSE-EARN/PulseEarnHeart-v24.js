@@ -4,7 +4,7 @@
 // TRIPLE HEART 24++ — MOM + DAD + SELF-BEAT + HEARTBEAT-INTEL (DETERMINISTIC, NO TIME)
 // EarnHeart v24++ fully integrates EarnHeartbeat surfaces + richer cardiac intelligence.
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

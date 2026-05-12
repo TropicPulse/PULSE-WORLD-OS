@@ -103,7 +103,6 @@
 //
 // DO NOT REMOVE.
 //
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

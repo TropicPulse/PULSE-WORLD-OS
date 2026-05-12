@@ -25,7 +25,6 @@
 //  • No mutation of external state (beyond allowed heart globals).
 //  • Deterministic, drift-proof, multi-instance safe.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

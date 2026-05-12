@@ -12,7 +12,6 @@ This organ requires FULL IMMORTAL++ metadata on every upgrade:
 - Full healing surfaces + diagnostics
 Always include ALL layers, ALL overlays, ALL IMMORTAL++ structures.
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

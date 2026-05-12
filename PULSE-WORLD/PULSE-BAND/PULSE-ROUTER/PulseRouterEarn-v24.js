@@ -14,7 +14,6 @@
 //   • Deterministic‑field: identical input → identical routing decision.
 //   • Zero eval, zero dynamic imports, zero user code.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -8,7 +8,6 @@
 //  PNS repair/purifier‑aware (symbolic only), drift‑proof, organism‑aware,
 //  chunk/cache/prewarm‑aware, speed‑aware, world‑lens‑aware (metadata only).
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

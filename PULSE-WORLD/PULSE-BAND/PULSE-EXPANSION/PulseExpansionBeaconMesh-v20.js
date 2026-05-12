@@ -49,7 +49,6 @@
  *      - Always deterministic.
  *      - Pure membrane surface (symbolic composition only).
  */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

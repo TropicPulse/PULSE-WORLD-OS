@@ -18,7 +18,7 @@
 //   • Deterministic‑field: identical input → identical output.
 //   • Drift‑proof across versions, multi‑instance safe.
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

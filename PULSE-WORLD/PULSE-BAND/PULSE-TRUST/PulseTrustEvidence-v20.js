@@ -91,7 +91,6 @@ AI_EXPERIENCE_META:
     deterministic: true
     constitutional: true
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -34,7 +34,6 @@
 //    - Always output explicit, reversible plans.
 //    - Attach presence/fallback/chunk/cache/prewarm/world hints as pure metadata.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

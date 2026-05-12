@@ -16,7 +16,6 @@
  *   - Adds host trend hints (symbolic “getting hotter/colder”).
  *   - Still: pure compute, no IO, no randomness, no host mutation.
  */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

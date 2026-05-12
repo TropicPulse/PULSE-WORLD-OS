@@ -66,7 +66,6 @@
 //      - "No interference with JuryFrame verdicts."
 //
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

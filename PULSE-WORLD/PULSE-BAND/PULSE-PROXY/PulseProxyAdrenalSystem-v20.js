@@ -16,7 +16,6 @@
 //    - Max‑dominant fusion: finalStress = max(cortex, somatic, sensory).
 //    - Backend‑only core logic (no timers/Date.now), but accepts external stress.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

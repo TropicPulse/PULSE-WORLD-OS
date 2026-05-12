@@ -30,7 +30,7 @@
 // ============================================================================
 // Imports — subsystem vitals (healing state providers)
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

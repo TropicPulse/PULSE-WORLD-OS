@@ -12,7 +12,6 @@
  *    - Suggests better routes and corridor protection (never auto-applies).
  *    - Pure symbolic planner: no network, no filesystem, no AI execution.
  */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

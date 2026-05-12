@@ -74,7 +74,6 @@ AI_EXPERIENCE_META:
       - "fetchViaCNS"
       - "directCandidateEvaluation"
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

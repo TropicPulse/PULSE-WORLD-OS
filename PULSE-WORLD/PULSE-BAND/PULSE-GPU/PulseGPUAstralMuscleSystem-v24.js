@@ -20,7 +20,6 @@
 //    • GPU chunker-aware: can emit chunked engine evidence.
 //    • Warm-path-aware + session-trace-aware hooks via metadata.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

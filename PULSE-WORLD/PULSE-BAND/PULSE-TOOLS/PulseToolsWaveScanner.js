@@ -14,7 +14,6 @@
 //   - Advantage View: emits ALL wave modes + symbolic hints in one packet.
 //   - Pairs with BinaryPulse‑v16‑IMMORTAL + LoopScanner‑v16‑IMMORTAL.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

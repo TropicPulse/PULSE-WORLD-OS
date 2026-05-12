@@ -19,7 +19,6 @@
 //  • Deterministic: same inputs → same evolutionary memory
 //  • Legacy-safe: v10.4/v11/v12.3/v16 callers still behave identically
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

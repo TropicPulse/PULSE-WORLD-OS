@@ -9,7 +9,6 @@
 //    • No randomness in binary. No autonomous routing. No business logic.
 //    • IMMORTAL+++ synapse: band/wave/binary/presence/advantage fields at symbolic layer.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

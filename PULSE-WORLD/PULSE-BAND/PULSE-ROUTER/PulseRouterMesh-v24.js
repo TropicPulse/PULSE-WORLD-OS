@@ -4,7 +4,6 @@
 //  IntelDualHash + TriHash • Deterministic Mesh Path Selection
 //  Pattern/Lineage/Page/Binary/Presence/Cache/Cosmos-Aware • Drift-Proof
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -24,7 +24,7 @@
 //   • Dual-band + binary + wave + presence metadata are structural-only.
 //   • Heartbeat is metadata-only, no external side effects beyond globals.
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

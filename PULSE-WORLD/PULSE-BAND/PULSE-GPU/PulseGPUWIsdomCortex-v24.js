@@ -5,7 +5,6 @@
 //  COGNITIVE-FRAME AWARE • COMPUTER-INTELLIGENCE AWARE • EARN-v24-GPU AWARE
 //  GENETIC-MEMORY-LINKED • NERVOUS-SYSTEM-LINKED • WARM-PATH-AWARE • HEALER-AWARE
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

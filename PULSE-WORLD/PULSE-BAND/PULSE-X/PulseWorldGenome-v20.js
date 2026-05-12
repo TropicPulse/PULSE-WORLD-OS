@@ -13,7 +13,6 @@
 //    - Deterministic, drift-proof, dual-band, cache-aware.
 //    - No direct raw fetch except via routed world engine.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

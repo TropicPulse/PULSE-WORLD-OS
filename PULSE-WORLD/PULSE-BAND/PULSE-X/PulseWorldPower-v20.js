@@ -15,7 +15,6 @@
 //   - Deterministic, symbolic, no randomness, no network fetch logic.
 //   - v20: AIConsole-aware, ACTNow-aware, dual-band world prewarm.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -6,7 +6,6 @@
 //        instance allocation → Writes UserScores.
 //  v20‑IMMORTALPLUS+++ FULL ORGANISM FUSION EDITION
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

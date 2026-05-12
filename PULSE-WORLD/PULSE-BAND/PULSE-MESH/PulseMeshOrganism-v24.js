@@ -5,7 +5,6 @@
 // v24++ IMMORTAL-PLUS: dual-mesh, presence-aware, advantage-aware, organism‑level artery + consciousness
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

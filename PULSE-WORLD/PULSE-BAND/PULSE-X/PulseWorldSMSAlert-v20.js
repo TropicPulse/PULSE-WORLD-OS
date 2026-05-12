@@ -95,7 +95,6 @@
 //
 // DO NOT REMOVE THIS BLOCK.
 //
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

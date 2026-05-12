@@ -45,7 +45,6 @@
 //  • No randomness in math; timestamps only for telemetry, not decision math.
 //  • No execution of binary/GPU surfaces; metrics-only.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

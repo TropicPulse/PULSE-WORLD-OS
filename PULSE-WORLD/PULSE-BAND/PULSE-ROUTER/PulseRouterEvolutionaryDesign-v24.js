@@ -14,7 +14,6 @@
 //   • No mutation of caller payloads; only internal store state.
 //   • Zero eval, zero dynamic imports, zero user code.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

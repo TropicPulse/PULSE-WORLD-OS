@@ -18,7 +18,6 @@
 //  • No mutation outside returned objects.
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

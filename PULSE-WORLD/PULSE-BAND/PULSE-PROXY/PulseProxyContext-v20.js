@@ -6,7 +6,6 @@
 //  ROLE: Circulatory signal → Organism Context Bridge
 //  LAYER: Organism / Context / Circulation
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

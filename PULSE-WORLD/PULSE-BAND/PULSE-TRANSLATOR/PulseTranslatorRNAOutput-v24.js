@@ -35,7 +35,6 @@ FILE: /pulse-translator/PulseTranslatorRNAOutput-v24.js
 LAYER: THE RNA OUTPUT TRANSLATOR (Pulse → Firestore) — v24 IMMORTAL EVO+++
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -6,7 +6,6 @@
 //  • Drift-proof, deterministic, zero-compute, zero-mutation
 //  • v24 schema discipline + trust-fabric tagging
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -4,7 +4,6 @@ FILE: /PULSE-WORLD/LineageEngine-v16.js
 LAYER: PULSE-WORLD / PULSE-LINEAGE + CORE MEMORY + MULTIVERSE COSMOS
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

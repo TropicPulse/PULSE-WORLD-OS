@@ -4,7 +4,6 @@
 // “ADVANTAGE‑AWARE SPEED POLICY ENGINE / DRIFT‑ENVELOPE GOVERNOR / BURST SAFETY”
 // Pure Backend Organ • Deterministic • Drift‑Proof • Zero Network • Zero IO
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -11,7 +11,6 @@
 //  • v24: DualBand AI auto‑boot preserved, but tagged with CNS context
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

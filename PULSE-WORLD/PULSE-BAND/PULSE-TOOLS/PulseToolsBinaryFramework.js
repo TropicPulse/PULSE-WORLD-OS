@@ -25,7 +25,6 @@
 //   - Surface shape is kept v11-compatible: { layers, energyTint, flags }.
 //   - All extra fields are per-layer or via snapshotSurface().
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

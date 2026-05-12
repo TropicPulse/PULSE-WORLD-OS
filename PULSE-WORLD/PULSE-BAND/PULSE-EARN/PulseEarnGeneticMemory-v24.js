@@ -25,7 +25,7 @@
 //   • All intelligence surfaces are metadata-only for higher organs.
 //   • Core memory integration via PulseProofBridge (no external IO).
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

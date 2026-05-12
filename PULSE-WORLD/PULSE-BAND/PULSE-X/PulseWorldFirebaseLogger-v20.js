@@ -11,7 +11,6 @@
 //    • Adds world-layer metadata, region/host identity, pulseTouch, advantage,
 //      chunkProfile, page, presence, and intellHash when applicable
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

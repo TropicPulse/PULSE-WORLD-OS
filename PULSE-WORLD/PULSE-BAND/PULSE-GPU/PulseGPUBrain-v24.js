@@ -6,7 +6,6 @@
 //  SYMBOLIC + BINARY AWARE • DISPATCH-AWARE • MEMORY-AWARE • PRESENCE-AWARE
 //  PREWARM + CHUNK + CACHE-AWARE • IMMORTAL++ SURFACE • v24 CONTRACTS
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

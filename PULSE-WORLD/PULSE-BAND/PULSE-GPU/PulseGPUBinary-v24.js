@@ -5,7 +5,6 @@
 //  Chunker-Aware • GPU Chunk Planner-Aware
 //  “PLAN ONCE. REUSE FOREVER. NEVER DRIFT.”
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -5,7 +5,6 @@
 // Zero-Compute (heuristics only) • Zero-Mutation • Zero-Routing-Influence
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

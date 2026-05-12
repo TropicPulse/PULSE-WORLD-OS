@@ -9,7 +9,6 @@
 //  Placement: PULSE-WORLD / PULSE-X
 //  Role: WORLD_DATA_GENOME
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -5,7 +5,6 @@
 // CoreMemory-integrated • Immortal Drift/Lineage • Cache/Prewarm/Artery-aware
 // Chunk/Presence/Advantage/Topology-aware • v24 SDN/OrganismMesh aligned
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

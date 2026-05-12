@@ -11,7 +11,6 @@
 //   - Balanced adaptive mode: stable unless meaningful change detected.
 //   - Advantage/artery-aware: can surface “where to look” without IO.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

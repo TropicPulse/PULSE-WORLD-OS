@@ -14,7 +14,6 @@
 // No payload data, only relationship metadata.
 // Graph is symbolic‑primary, binary‑aware, prewarm‑aware, chunk‑aware, advantage‑aware.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

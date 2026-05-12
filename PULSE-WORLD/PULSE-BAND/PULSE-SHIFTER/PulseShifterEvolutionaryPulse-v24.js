@@ -14,7 +14,6 @@
 //    • Deterministic, drift-proof, zero IO, zero randomness
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

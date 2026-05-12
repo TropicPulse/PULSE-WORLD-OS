@@ -4,7 +4,6 @@ FILE: /PULSE-WORLD/RegionMeshRouting-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — REGION MESH ROUTING PHYSICS
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

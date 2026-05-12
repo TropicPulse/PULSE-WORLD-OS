@@ -18,7 +18,6 @@
 //    • Pure reasoning organ — NO external mutation.
 //
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

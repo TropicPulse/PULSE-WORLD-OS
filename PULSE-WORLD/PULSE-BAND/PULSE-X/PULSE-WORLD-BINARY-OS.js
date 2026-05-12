@@ -35,7 +35,6 @@
 //   • Drift-proof across versions, multi-instance safe.
 //   • Binary surfaces are descriptive, not imperative (no direct hardware calls).
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

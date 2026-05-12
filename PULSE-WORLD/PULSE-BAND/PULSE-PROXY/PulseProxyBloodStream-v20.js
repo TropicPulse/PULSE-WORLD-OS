@@ -10,7 +10,6 @@
 //    • Mesh‑pulse aware (hops/distance bounded)
 //    • Read‑only experience meta for Overmind/World
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

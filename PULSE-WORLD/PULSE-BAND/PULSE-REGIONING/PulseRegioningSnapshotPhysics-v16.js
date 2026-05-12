@@ -4,7 +4,6 @@ FILE: /PULSE-WORLD/SnapshotPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC SNAPSHOT PHYSICS
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

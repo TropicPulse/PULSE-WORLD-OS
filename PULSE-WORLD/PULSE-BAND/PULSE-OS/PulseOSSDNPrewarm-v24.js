@@ -14,7 +14,6 @@
 //   • v24++: artery-aware, mesh-aware, advantage-aware, organism-mesh-aware,
 //     chunk/cache/route-prewarm-aware, multi-presence-aware.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -24,7 +24,7 @@
 //   • NO speed, NO baseline, NO governor, NO performance assumptions.
 //   • computeHashIntelligence is primary; computeHash is deterministic fallback.
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

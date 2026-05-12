@@ -33,7 +33,6 @@
 //   • Logger now only records; Rhythm now only flushes.
 //
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

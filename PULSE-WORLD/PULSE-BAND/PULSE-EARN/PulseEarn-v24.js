@@ -28,7 +28,7 @@
 // ============================================================================
 
 // 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -119,7 +119,6 @@ AI_EXPERIENCE_META:
       - "networkDependentTrust"
 */
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

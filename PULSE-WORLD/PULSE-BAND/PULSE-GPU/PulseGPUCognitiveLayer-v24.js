@@ -22,7 +22,6 @@
 //   • CognitiveFrame-aware: can emit GPU “thought frames” for each plan
 //   • ComputerIntelligence-aware: can emit CI frames for Earn mode
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

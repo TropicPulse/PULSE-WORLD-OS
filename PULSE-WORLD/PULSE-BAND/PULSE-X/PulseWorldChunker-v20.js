@@ -9,7 +9,6 @@
 //  - Compiler/ACTNOW-aware envelopes (front chunk lanes ready)
 //  - Identity/World/Bridge-aware: chunkProfile hints, presence tags, world bands
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

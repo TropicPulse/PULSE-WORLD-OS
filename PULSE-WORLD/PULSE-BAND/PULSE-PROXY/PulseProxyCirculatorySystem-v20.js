@@ -9,7 +9,6 @@
 //    • Tri-env + Proxy-Mode + Pulse-Pal stress awareness
 //    • Read-only experience meta for AI/agents/Overmind
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

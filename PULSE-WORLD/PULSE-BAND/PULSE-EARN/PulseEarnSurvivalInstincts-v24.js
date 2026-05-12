@@ -5,7 +5,7 @@
 //  DualBand + DualHash-INTEL + Presence/Advantage/Chunk/Cache/Prewarm Surfaces
 //  Zero async, zero network, zero filesystem, zero AI, zero user code
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

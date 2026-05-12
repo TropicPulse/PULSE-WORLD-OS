@@ -15,7 +15,6 @@
 //  They represent the BEST POSSIBLE SQL SERVER SETUP for Pulse OS.
 //
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

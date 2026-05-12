@@ -6,7 +6,6 @@
 //  “PLAN ONCE. REUSE FOREVER. NEVER DRIFT.”
 //  • Metadata-only, zero GPU calls, zero side effects
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

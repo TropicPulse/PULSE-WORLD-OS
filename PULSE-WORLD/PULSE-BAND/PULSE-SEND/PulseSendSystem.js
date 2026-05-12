@@ -29,7 +29,6 @@
 //    • Deterministic bit → pattern/mode/payload mapping
 //    • No randomness, no timestamps
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -4,7 +4,7 @@
 //        v24 IMMORTAL++ + INTEL + DualHash + Presence + Advantage-C + Chunk
 //        + A-B-A Binary/Wave Surfaces + GPU-Aware Normalization
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

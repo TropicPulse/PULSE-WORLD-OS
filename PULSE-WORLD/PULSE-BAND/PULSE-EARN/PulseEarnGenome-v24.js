@@ -24,7 +24,7 @@
 //   • Presence/advantage/chunk/computeProfile/pulseIntelligence DO NOT change the schema.
 //   • NO async, NO network, NO randomness, NO filesystem.
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

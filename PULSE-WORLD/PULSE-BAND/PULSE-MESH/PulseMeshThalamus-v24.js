@@ -19,7 +19,6 @@
 // • No pressure gating, no route-mode logic, no factoring logic.
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -19,7 +19,6 @@
 //   • Drift-proof: stable across versions.
 //   • CNS-aware + advantage-aware, but never controlling them.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

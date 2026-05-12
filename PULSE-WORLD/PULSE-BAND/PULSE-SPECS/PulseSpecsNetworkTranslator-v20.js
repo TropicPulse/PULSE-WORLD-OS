@@ -139,7 +139,6 @@
 // ============================================================================
 // PUBLIC ENTRYPOINT
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

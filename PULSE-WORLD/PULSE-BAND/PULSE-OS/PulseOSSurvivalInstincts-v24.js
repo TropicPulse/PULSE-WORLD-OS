@@ -31,7 +31,6 @@
 //   • Binary-aware, dual-band-aware, artery/pressure-aware (metadata-only)
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

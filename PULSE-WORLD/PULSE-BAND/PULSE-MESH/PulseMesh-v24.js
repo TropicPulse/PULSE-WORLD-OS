@@ -57,7 +57,6 @@
 //   • Fallback path is delegated to injected fallbackProxy.
 //   • Mesh artery is observational only — never used to mutate routing.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -10,7 +10,6 @@
 //    • Chunk/presence hints surfaced as advantage metadata
 //    • Experience meta for AI/agents (read‑only, descriptive)
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

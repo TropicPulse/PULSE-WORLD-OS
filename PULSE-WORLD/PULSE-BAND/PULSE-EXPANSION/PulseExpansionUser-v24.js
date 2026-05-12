@@ -8,7 +8,6 @@
 // ============================================================================
 // IMPORTS — OS / Mesh / Castle / Server / Router / Expansion / Band
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

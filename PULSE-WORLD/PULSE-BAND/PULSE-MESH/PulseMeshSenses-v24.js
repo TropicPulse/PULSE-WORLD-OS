@@ -33,7 +33,6 @@
 // • Binary-aware, dual-mode-ready, mesh-aware, presence-aware, drift-proof.
 // • Organism-aware, artery-aware, consciousness-aware, presence-relay-aware.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

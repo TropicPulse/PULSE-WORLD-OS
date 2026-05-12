@@ -18,7 +18,6 @@
 //  • CognitiveFrame-aware + ComputerIntelligence-aware (metadata only).
 //  • WarmPath-aware, NervousSystem-aware, Synapse-aware, GeneticMemory-aware.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

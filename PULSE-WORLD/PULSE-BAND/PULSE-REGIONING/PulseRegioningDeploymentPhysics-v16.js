@@ -4,7 +4,6 @@ FILE: /PULSE-WORLD/PulseRegioningDeploymentPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC DEPLOYMENT PHYSICS
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

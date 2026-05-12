@@ -4,7 +4,7 @@
 //  Deterministic Capability Engine + Phenotype Passport + Intel Dual-Hash Surfaces
 //  A‑B‑A Band/Binary/Wave + Presence + Advantage + Compatibility (24++ IMMORTAL)
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -56,7 +56,6 @@
 //   • Drift-proof: all frames carry self-describing frameProfile + signatures.
 //   • No direct hardware calls; deviceProfile is metadata-only.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

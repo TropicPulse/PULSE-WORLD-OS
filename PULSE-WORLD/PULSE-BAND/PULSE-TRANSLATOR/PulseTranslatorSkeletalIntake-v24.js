@@ -28,7 +28,6 @@ EXPORT_META = {
 FILE: /pulse-translator/PulseTranslatorSkeletalIntake-v24.js
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

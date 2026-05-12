@@ -4,7 +4,6 @@
 //  PURE FACADE. NO LOGIC. NO STATE. NO SIDE‑EFFECTS.
 //  DUAL‑BAND + PRESENCE + ADVANTAGE + WORLD‑LENS PROJECTION.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

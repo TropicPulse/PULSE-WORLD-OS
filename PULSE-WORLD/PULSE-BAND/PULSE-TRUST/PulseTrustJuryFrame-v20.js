@@ -59,7 +59,6 @@ AI_EXPERIENCE_META:
     categories: ["RAW_AI"]
     erReady: true
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

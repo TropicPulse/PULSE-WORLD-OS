@@ -4,7 +4,6 @@
 //  Presence • Advantage • Fallback Bands • Chunk/Cache/Prewarm Hints
 //  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS. ZERO I/O.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

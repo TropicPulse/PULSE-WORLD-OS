@@ -14,7 +14,6 @@
 //    • Pure memory organ — NO routing, NO compute, NO mutation outside instance.
 //
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

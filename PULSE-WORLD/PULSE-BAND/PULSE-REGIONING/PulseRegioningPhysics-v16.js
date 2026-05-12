@@ -4,7 +4,6 @@ FILE: /PULSE-WORLD/RegioningPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — REGIONING PHYSICS
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

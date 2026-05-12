@@ -19,7 +19,6 @@
 //   • Public API unchanged: marketplaces[], getHealingState().
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

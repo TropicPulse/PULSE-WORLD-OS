@@ -19,7 +19,6 @@
 //  • Deterministic compute loop only.
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

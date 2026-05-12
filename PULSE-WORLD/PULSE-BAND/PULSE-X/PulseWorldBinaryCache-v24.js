@@ -50,7 +50,6 @@
 //   • Drift-proof across versions, multi-instance safe.
 //   • Cache is purely in-memory metadata (no real binary payloads).
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

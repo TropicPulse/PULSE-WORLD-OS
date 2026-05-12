@@ -4,7 +4,6 @@ FILE: /PULSE-WORLD/MultiOrganismSupport-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — MULTI-ORGANISM COORDINATION
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

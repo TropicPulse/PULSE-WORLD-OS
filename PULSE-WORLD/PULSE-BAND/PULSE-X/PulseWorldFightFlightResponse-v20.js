@@ -5,7 +5,6 @@
 //  PURE REFLEX. ZERO COGNITION. ZERO NETWORK. ZERO BACKEND.
 //  NO TIMERS. NO AUTONOMY. CNS / PORTAL‑TRIGGERED ONLY.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

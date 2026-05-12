@@ -5,7 +5,6 @@
 //  • Append-only, drift-proof, zero compute, zero mutation
 //  • Session-aware, band-aware, evidence-aware, diagnostics-aware
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -3,7 +3,6 @@
 // v24-IMMORTAL++-RootOrganism-FastLane (SUPER INSTANCE MODE)
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

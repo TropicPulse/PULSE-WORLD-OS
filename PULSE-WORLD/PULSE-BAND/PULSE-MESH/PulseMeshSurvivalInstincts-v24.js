@@ -19,7 +19,6 @@
 // • Unified-advantage-field compliant (tags only, no side effects).
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

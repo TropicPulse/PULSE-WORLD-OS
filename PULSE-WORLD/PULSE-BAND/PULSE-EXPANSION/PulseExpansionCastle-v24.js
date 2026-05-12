@@ -19,7 +19,6 @@
 //    - v24++: snapshot‑aware, artery‑aware, chunk/cache/prewarm aware,
 //      engine‑local tick space, governance‑aware, treasury‑pressure aware.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

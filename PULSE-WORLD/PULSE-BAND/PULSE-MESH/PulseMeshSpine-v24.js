@@ -32,7 +32,6 @@
 // • Multi-instance-ready, zero randomness, zero timestamps.
 // • Metadata-only: all effects via flags + MeshMemory surfaces.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

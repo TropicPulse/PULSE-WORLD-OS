@@ -25,7 +25,6 @@
  *   - v16+: expose presence/continuance/CI/binary-delta overlays as symbolic only.
  *   - v20+: expose world/region/tenant/index hints as metadata only.
  */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

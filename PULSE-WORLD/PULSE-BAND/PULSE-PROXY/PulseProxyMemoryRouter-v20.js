@@ -19,7 +19,6 @@
 //   • Mode-aware: A→B→A compatible, binary-first nervous system, replay-safe, lineage-safe.
 //   • Internet / world-lens / advantage are metadata-only: no fetch, no network from this organ.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

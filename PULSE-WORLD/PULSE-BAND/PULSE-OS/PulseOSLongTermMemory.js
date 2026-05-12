@@ -100,7 +100,6 @@
 //  This file preserves that history — the exponential era — as part of the
 //  system’s long‑term memory and architectural lineage.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

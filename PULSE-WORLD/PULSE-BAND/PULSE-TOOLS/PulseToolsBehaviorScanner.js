@@ -16,7 +16,6 @@
 //   - AdminInspector‑IMMORTAL-aware: presence, harmonics, wave, loop, energy flags.
 //   - Zero randomness, zero timestamps, zero mutation of inputs.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

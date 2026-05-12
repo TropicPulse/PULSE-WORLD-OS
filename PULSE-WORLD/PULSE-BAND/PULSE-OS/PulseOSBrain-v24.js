@@ -26,7 +26,6 @@
 //     chunk/cache/presence/advantage-field aware, but still zero-network, zero-binary.
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

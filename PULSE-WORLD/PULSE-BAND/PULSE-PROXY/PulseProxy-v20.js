@@ -17,7 +17,6 @@
 //  • Proxy Mode is addon-only: tap-only, no routing, no OS logic here.
 //  • No network, no filesystem, no dynamic imports, no eval.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

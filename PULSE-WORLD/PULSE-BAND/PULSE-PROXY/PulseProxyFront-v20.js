@@ -29,7 +29,6 @@
 //  • Binary is NEVER executed, only described (phenotype/surface fields).
 //  • No network, no IO, no async, no AI.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

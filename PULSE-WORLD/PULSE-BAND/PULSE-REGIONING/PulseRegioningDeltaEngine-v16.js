@@ -4,7 +4,6 @@ FILE: /PULSE-WORLD/PulseRegioningDeltaEngine-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC DELTA ENGINE
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

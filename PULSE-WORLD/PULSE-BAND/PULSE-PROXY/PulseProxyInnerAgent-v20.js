@@ -6,7 +6,6 @@
 //  PURE BACKEND ORGAN — NO INTERNET FETCH, NO MARKETPLACE, NO BUSINESS LOGIC.
 //  INTERNET IS ALWAYS BEAMED VIA EXPANSION / OUTER AGENT, NEVER FROM HERE.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

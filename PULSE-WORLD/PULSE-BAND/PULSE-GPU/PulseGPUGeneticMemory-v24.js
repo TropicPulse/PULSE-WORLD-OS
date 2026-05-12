@@ -28,7 +28,6 @@
 //  • Self-repair-ready: entries include OS metadata
 //  • Deterministic: same inputs → same genetic memory
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

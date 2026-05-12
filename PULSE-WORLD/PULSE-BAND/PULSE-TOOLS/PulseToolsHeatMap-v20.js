@@ -16,7 +16,6 @@
 //   - Shifter-aware: visually distinct, static-like overlays for shifter pulses.
 //   - Advantage-aware: exposes advantageView surfaces for higher-level organs.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

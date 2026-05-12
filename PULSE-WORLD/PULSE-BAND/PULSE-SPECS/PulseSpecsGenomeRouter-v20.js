@@ -46,7 +46,6 @@
 // ============================================================================
 // AI EXPERIENCE META — IMMORTAL ORGAN BLOCK
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

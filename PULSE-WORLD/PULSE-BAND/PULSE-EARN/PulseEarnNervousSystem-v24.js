@@ -5,7 +5,7 @@
 //  Dual-Band + Dual-Hash + Binary + Wave + Presence + Chunk/Prewarm (IMMORTAL)
 //  + NervousComputeProfile + NervousPressureProfile + Tri-Heart Overlays (24++)
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

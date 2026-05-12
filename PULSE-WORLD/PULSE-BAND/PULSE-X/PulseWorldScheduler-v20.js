@@ -27,7 +27,6 @@
  *    - Pure orchestration over symbolic + binary layers.
  * ============================================================
  */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

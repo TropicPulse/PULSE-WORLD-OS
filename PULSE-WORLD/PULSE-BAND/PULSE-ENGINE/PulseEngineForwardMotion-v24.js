@@ -5,7 +5,6 @@
 //  • Lane-specific intent: expansion, prediction, forward motion
 //  • Evidence-aware, diagnostics-aware, multi-band, session-aware
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

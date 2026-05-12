@@ -32,7 +32,6 @@
 //   - Always remain deterministic, synthetic, and drift-proof in its logic.
 //   - This organ is the ONLY Bluetooth membrane in the organism.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -14,7 +14,6 @@
 //    - v16+ / v24: Castle-aware, Expansion-aware, can act as Castle-General fallback
 //      when Castle is absent or degraded (server-as-central-castle).
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

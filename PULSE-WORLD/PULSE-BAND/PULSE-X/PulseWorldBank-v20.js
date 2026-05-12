@@ -29,7 +29,6 @@
 // • Never create multiple Stripe instances
 // • Never change API version without explicit approval
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

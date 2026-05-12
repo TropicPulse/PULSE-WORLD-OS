@@ -45,7 +45,6 @@
 //   - Always deterministic.
 //   - Pure symbolic Overmind surface.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

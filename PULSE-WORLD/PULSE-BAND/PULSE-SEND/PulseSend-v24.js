@@ -19,7 +19,6 @@
 //  • Zero mutation outside instance.
 //  • Metadata-only intelligence + factoring surfaces.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

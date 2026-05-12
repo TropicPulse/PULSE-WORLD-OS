@@ -4,7 +4,6 @@ FILE: /PULSE-WORLD/ExecutionPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC EXECUTION PHYSICS
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

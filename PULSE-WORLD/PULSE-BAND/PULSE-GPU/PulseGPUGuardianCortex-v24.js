@@ -25,7 +25,6 @@
 //  • No mutation outside instance.
 //  • Deterministic: same inputs → same decision.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

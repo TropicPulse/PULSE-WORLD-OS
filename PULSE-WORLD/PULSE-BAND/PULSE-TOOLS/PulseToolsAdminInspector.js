@@ -20,7 +20,6 @@
 //   - Tier‑aware escalation (Proxy → Mesh → NodeAdmin‑EVO → PresenceCore).
 //   - ZERO randomness. ZERO mutation of inputs. PURE symbolic inspection.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

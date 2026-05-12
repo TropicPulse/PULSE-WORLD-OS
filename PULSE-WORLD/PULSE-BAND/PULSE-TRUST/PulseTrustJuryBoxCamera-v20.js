@@ -74,7 +74,6 @@ AI_EXPERIENCE_META:
       - "AIWriteAccess"
 */
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

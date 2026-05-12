@@ -3,7 +3,6 @@
 //  32-LANE GPU CHUNKER — BINARY + SYMBOLIC + GPU-ORGANISM GRADE
 //  GPU Chunk Organ for PulseGPU v24+ (steps, traces, pressure, warm-path, CI)
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

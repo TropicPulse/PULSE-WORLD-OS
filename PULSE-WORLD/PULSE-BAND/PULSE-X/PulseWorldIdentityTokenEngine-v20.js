@@ -12,7 +12,6 @@
 //    • World-layer aware: region, host, pulseTouch, band
 //    • IMMORTAL envelope output
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

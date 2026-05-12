@@ -42,7 +42,6 @@
  *    - Must never perform network or filesystem operations.
  *    - Must never depend on real time or randomness.
  */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

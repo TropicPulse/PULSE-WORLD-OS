@@ -3,7 +3,6 @@
 // Pulse‑Earn v24‑IMMORTAL++
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

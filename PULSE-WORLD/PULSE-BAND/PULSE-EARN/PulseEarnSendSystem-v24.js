@@ -3,7 +3,7 @@
 //  Earn → Pulse → Send Conductor (v24++ IMMORTAL-INTEL)
 //  Deterministic, Governed Single-Pass, DualBand + DualHash + Presence/Advantage/Chunk
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

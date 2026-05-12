@@ -39,7 +39,6 @@
 //       "If the computer needs something, can we have it ready ONCE,
 //        instead of converting it a million times?"
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

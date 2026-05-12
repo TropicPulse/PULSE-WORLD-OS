@@ -7,7 +7,6 @@
 // SDN PREWARM v24-Immortal (Spinal Reflex Ignition, Impulse-Speed)
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

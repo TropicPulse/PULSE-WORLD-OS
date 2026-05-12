@@ -24,7 +24,6 @@
 //    • It does NOT compare or validate; it only records AI's view.
 //    • TrustEvidence / Truth engines are the checkers, not WorldCore.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

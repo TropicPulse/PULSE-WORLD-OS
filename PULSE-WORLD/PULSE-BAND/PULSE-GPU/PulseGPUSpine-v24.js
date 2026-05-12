@@ -25,7 +25,6 @@
 //  • Deterministic: same input → same output
 //  • Fail-open: invalid input → safe empty results
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

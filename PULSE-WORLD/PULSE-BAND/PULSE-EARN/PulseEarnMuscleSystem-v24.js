@@ -6,7 +6,7 @@
 //  IMMORTAL: presence/advantage/plan are descriptive-only, no hidden governors.
 //  24++: MuscleComputeProfile + MusclePressureProfile + Tri-Heart overlays
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

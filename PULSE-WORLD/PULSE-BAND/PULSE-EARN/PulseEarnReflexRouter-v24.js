@@ -4,7 +4,7 @@
 //  Deterministic, Zero-Async, Zero-Routing, Zero-Sending
 //  Pure Reflex → Earn Handoff with DualBand + DualHash + Presence/Advantage surfaces
 // ============================================================================
-PULSE-WORLD-MAP.js
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

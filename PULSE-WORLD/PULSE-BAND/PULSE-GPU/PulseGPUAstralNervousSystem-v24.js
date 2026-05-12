@@ -5,7 +5,6 @@
 // Snapshot / Trust-Evidence Boundary • Prewarm/Chunk/Warm-Path-Aware Surface
 // ============================================================================
 
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

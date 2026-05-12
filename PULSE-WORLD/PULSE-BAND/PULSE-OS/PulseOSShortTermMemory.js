@@ -5,7 +5,6 @@
 // DUAL‑BAND NEURAL MEMORY • PREWARM + CHUNK • MULTI‑PRESENCE SNAPSHOTS
 // OFFLINE‑ABSOLUTE • ZERO MUTATION AFTER INSERTION
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

@@ -14,7 +14,6 @@
 //    - v24: INTEL+ADVANTAGE surface + ER-ready binarySendMeta profile.
 //    - Fallback-safe: deterministic fallback to proxy.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

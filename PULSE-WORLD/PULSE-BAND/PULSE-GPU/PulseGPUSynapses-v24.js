@@ -19,7 +19,6 @@
 //  • PulseSend‑v24‑ready: impulses routable by compute router.
 //  • Earn‑v24‑GPU‑ready.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

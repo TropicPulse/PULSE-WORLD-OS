@@ -3,7 +3,6 @@
 //  Continuance v3 • Fluctuations v3 • Outages v3 • Presence • Advantage • Proxy
 //  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS. ZERO I/O.
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

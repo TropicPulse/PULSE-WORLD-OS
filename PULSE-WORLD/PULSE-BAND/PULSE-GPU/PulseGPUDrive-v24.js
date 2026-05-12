@@ -20,7 +20,6 @@
 // ============================================================================
 // AI_EXPERIENCE_META — v24 IMMORTAL++
 // ============================================================================
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap

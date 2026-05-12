@@ -35,7 +35,6 @@ LAYER: THE RNA INTAKE TRANSLATOR (Firestore → Pulse)
 SCHEMA: RNA_INTAKE_SCHEMA_VERSION = "v4"
 ===============================================================================
 */
-PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap
