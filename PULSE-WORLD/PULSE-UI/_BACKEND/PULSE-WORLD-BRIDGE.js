@@ -63,15 +63,15 @@ export { PulseProofBridge };
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
 import { firestore as db, SetDoc as setdoc, GetDoc as getdoc, Doc as doc } from "../_BACKEND/PULSE-WORLD-SHADOW.js"
-import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons} from "../_MONITOR/PulseProofLogger-v24.js";
-import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
+import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons} from "../_MONITOR/PULSE-PROOF-LOGGER.js";
+import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PULSE-PROOF-MONITOR.js";
 
 import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
 
 
 import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
-import { initUIFlow as PulseProofFlow } from "../_MONITOR/PulseUIFlow-v24.js";
-import PulseUIErrors from "../_MONITOR/PulseUIErrors-v24.js";
+import { initUIFlow as PulseProofFlow } from "../_MONITOR/PULSE-PROOF-FLOW.js";
+import PulseUIErrors from "../_MONITOR/PULSE-PROOF-ERRORS.js";
 
 import PulsePageScanner from "../_MONITOR/PulseUIPageScanner-v24.js";
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseUIRouteMemory-v24.js";

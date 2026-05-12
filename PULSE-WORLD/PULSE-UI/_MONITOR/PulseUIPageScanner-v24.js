@@ -33,7 +33,7 @@ EXPORT_META = {
 }
 */
 
-import PulseUIErrors from "./PulseUIErrors-v24.js"; // keep only if you actually call it
+import PulseUIErrors from "./PULSE-PROOF-ERRORS.js"; // keep only if you actually call it
 
 // ============================================================================
 //  IMMORTAL++: NO DIRECT BRIDGE IMPORT — ALWAYS USE GLOBAL BRIDGE

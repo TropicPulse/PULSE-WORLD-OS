@@ -13,7 +13,7 @@ console.log(
 );
 
 
-import { pulseLog, log, warn, error } from "./PulseProofLogger-v24.js";
+import { pulseLog, log, warn, error } from "./PULSE-PROOF-LOGGER.js";
 
 // ============================================================================
 //  GLOBAL + DB
