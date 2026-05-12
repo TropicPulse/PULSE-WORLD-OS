@@ -36,7 +36,7 @@ import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseExpansionBeaconMesh
 
 import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
 import { PulseServerMeta, createPulseServer } from "./PULSE-EXPANSION-SERVER.js";
-import { PulseRouterMeta, createPulseRouter } from "./PulseExpansionRouter-v24.js";
+import { PulseRouterMeta, createPulseRouter } from "./PULSE-EXPANSION-INTERNET-ROUTER.js";
 import { PulseExpansionMeta, createPulseExpansion } from "./PULSE-EXPANSION-INTERNET.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 

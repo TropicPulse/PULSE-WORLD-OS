@@ -7,7 +7,7 @@ import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
@@ -31,7 +31,7 @@ const g =
     : typeof g !== "undefined"
     ? g
     : {};
-import { PulseProofBridgeFlow as initUIFlow, PulseProofBridgeErrors as PulseUIErrors, route, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeFlow as initUIFlow, PulseProofBridgeErrors as PulseUIErrors, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { db, admin } from "./PulseWorldGenome-v20.js";
 import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
 import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v24.js";
@@ -227,107 +227,154 @@ function pruneTemporalCache() {
 // ============================================================================
 // NETWORK ORGAN — THE ONLY INTERNET EDGE
 // ============================================================================
+// ============================================================================
+// NetworkOrgan-v25++
+// IMMORTAL ORGANISM ROUTER
+// ============================================================================
+//  • Sends organ-level signals into the organism mesh
+//  • Deterministic packet shape
+//  • Cycle-aware, band-aware, internet-edge aware
+//  • Compatible with PulseNetBridge-v25++
+//  • Compatible with PulseWorldEndpoint-v25++
+//  • Supports: normal, heartbeat, fastlane, burst
+//  • NEVER throws, NEVER loops, ALWAYS stable
+// ============================================================================
+
 const NetworkOrgan = {
+  // --------------------------------------------------------------------------
+  // CHANNEL MAP — v25++
+  // --------------------------------------------------------------------------
   channels: {
     expansion: "pulseNet.server.expansion",
-    castle: "pulseNet.server.castle",
-    server: "pulseNet.server.server",
-    user: "pulseNet.server.user",
-    brain: "pulseNet.server.brain",
-    soldier: "pulseNet.server.soldier",
-    mesh: "pulseNet.server.mesh",
+    castle:    "pulseNet.server.castle",
+    server:    "pulseNet.server.server",
+    user:      "pulseNet.server.user",
+    brain:     "pulseNet.server.brain",
+    soldier:   "pulseNet.server.soldier",
+    mesh:      "pulseNet.server.mesh",
+
     heartbeat: "pulseNet.heartbeat",
-    fastlane: "pulseNet.fastlane"
+    fastlane:  "pulseNet.fastlane"
   },
 
+  // --------------------------------------------------------------------------
+  // UNIVERSAL PACKET BUILDER — v25++
+  // --------------------------------------------------------------------------
+  buildPacket(kind, payload, extra = {}) {
+    return {
+      // CORE ROUTING
+      kind,                     // high-level organ channel
+      payload,                  // raw payload
+      ts: Date.now(),           // deterministic timestamp
+      layer: "PulseNet",        // organ layer
+
+      // BAND / NETWORK AWARENESS
+      binaryAware: true,
+      dualBand: true,
+      singleInternetEdge: true,
+      band: payload?.band || payload?.network?.band || "dual",
+
+      // ROUTING FIELDS
+      advantageField:  extra.advantageField  || payload?.advantageField  || "pulsenet-edge",
+      speedField:      extra.speedField      || payload?.speedField      || "world-loop",
+      experienceField: extra.experienceField || payload?.experienceField || "pulse-world",
+
+      // v25++ FLAGS
+      heartbeat: extra.heartbeat || false,
+      fastLane:  extra.fastLane  || false,
+      burst:     extra.burst     || false,
+      priority:  extra.priority  || 1,
+      reason:    extra.reason    || null
+    };
+  },
+
+  // --------------------------------------------------------------------------
+  // UNIVERSAL SEND — v25++
+  // --------------------------------------------------------------------------
   async send(kind, payload) {
-  const channel = this.channels[kind];
-  if (!channel) return;
+    const channel = this.channels[kind];
+    if (!channel) return;
 
-  try {
-    await route(channel, {
-      kind,
-      payload,
-      ts: Date.now(),
-      layer: "PulseNet",
-      binaryAware: true,
-      dualBand: true,
-      singleInternetEdge: true,
-      band: payload?.band || "dual",
-      advantageField: payload?.advantageField || "pulsenet-edge",
-      speedField: payload?.speedField || "world-loop",
-      experienceField: payload?.experienceField || "pulse-world"
-    }).catch(() => {});
-  } catch {
-    // swallow; ErrorSpine will be handled by caller
-  }
-},
+    const packet = this.buildPacket(kind, payload);
 
+    try {
+      await route(channel, packet).catch(() => {});
+    } catch {
+      // swallow — ErrorSpine handled upstream
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // HEARTBEAT — v25++
+  // --------------------------------------------------------------------------
   async sendHeartbeat(instanceId, organism, result) {
-  try {
-    const pulseTouch = PulseTouchOrgan.snapshot();
+    try {
+      const pulseTouch = PulseTouchOrgan.snapshot();
 
-    await route(this.channels.heartbeat, {
-      instanceId,
-      organism,
-      result,
-      pulseTouch,
-      layer: "PulseNet",
-      binaryAware: true,
-      dualBand: true,
-      singleInternetEdge: true,
-      band: pulseTouch?.band || "dual",
-      advantageField: "pulsenet-heartbeat",
-      speedField: "world-heart",
-      experienceField: "pulse-world-heartbeat"
-    }).catch(() => {});
-  } catch {
-    // swallow; ErrorSpine will be handled by caller
-  }
-},
+      const packet = this.buildPacket(
+        "heartbeat",
+        { instanceId, organism, result, pulseTouch },
+        {
+          heartbeat: true,
+          advantageField: "pulsenet-heartbeat",
+          speedField: "world-heart",
+          experienceField: "pulse-world-heartbeat"
+        }
+      );
 
+      await route(this.channels.heartbeat, packet).catch(() => {});
+    } catch {
+      // swallow
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // FASTLANE — v25++
+  // --------------------------------------------------------------------------
   async sendFastLane(intent) {
-  try {
-    await route(this.channels.fastlane, {
-      intent,
-      ts: Date.now(),
-      layer: "PulseNet",
-      binaryAware: true,
-      dualBand: true,
-      singleInternetEdge: true,
-      fastLane: true,
-      band: intent?.skin?.band || "dual",
-      advantageField: "pulsenet-fastlane",
-      speedField: "fast-path",
-      experienceField: "pulse-world-fastlane"
-    }).catch(() => {});
-  } catch {
-    // swallow
-  }
-},
+    try {
+      const packet = this.buildPacket(
+        "fastlane",
+        intent,
+        {
+          fastLane: true,
+          advantageField: "pulsenet-fastlane",
+          speedField: "fast-path",
+          experienceField: "pulse-world-fastlane"
+        }
+      );
 
+      await route(this.channels.fastlane, packet).catch(() => {});
+    } catch {
+      // swallow
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // BURST — v25++
+  // --------------------------------------------------------------------------
   async sendBurst(kind, payload, priority = 1, reason = "manual") {
     const channel = this.channels[kind];
     if (!channel) return;
 
     try {
-      await route(channel, {
+      const packet = this.buildPacket(
         kind,
         payload,
-        priority,
-        reason,
-        ts: Date.now(),
-        layer: "PulseNet",
-        binaryAware: true,
-        dualBand: true,
-        singleInternetEdge: true,
-        burst: true
-      }).catch(() => {});
+        {
+          burst: true,
+          priority,
+          reason
+        }
+      );
+
+      await route(channel, packet).catch(() => {});
     } catch {
       // swallow
     }
   }
 };
+
 
 // ============================================================================
 // ENGINE FACTORIES (multi-instance safe)
@@ -922,55 +969,129 @@ const PulseTouchOrgan = {
   }
 };
 
+// ============================================================================
+// PulseNetBridge-v25++
+// IMMORTAL ORGANISM ⇄ BRAINSTEM ROUTING ARTERY
+// ============================================================================
+//  • Local organism routes → enqueueIngress + NetworkOrgan.send
+//  • Universal sendRoute → PulseWorldEndpoint-v25++
+//  • v25++: deterministic, cycle-aware, channel-aware, safe, chunk-ready
+// ============================================================================
 
-// ============================================================================
-// PULSE-NET BRIDGE — symbolic adapter for Expansion/Castle/Server/User/Brain
-// ============================================================================
 function bridgeRoute(kind, source, payload, detailKind) {
   const packet = {
-    source,
-    kind: detailKind,
+    source,          // e.g. "PulseExpansion", "PulseCastle"
+    channel: kind,   // high-level organ channel
+    kind: detailKind, // semantic detail
     payload,
     ts: Date.now()
   };
+
   enqueueIngress(kind, packet);
   NetworkOrgan.send(kind, packet);
-  return { ok: true };
+
+  return {
+    ok: true,
+    channel: kind,
+    detail: detailKind,
+    ts: packet.ts
+  };
 }
 
-
 export const PulseNetBridge = Object.freeze({
+  // --------------------------------------------------------------------------
+  // LOCAL ORGANISM ROUTES (NO INTERNET)
+  // --------------------------------------------------------------------------
   routeExpansion(payload) {
-    return bridgeRoute("expansion", "PulseExpansion", payload, "expansion_plan");
+    return bridgeRoute(
+      "expansion",
+      "PulseExpansion",
+      payload,
+      "expansion_plan"
+    );
   },
+
   routeSoldiers(payload) {
-    return bridgeRoute("soldier", "PulseExpansion", payload, "soldier_delegation");
+    return bridgeRoute(
+      "soldier",
+      "PulseExpansion",
+      payload,
+      "soldier_delegation"
+    );
   },
+
   routeMesh(payload) {
-    return bridgeRoute("mesh", "PulseExpansion", payload, "mesh_rebalance");
+    return bridgeRoute(
+      "mesh",
+      "PulseExpansion",
+      payload,
+      "mesh_rebalance"
+    );
   },
 
   routeCastle(payload) {
-    return bridgeRoute("castle", "PulseCastle", payload, "castle_signal");
+    return bridgeRoute(
+      "castle",
+      "PulseCastle",
+      payload,
+      "castle_signal"
+    );
   },
 
   routeServer(payload) {
-    return bridgeRoute("server", "PulseServer", payload, "server_signal");
-  },
-  routeUser(payload) {
-    return bridgeRoute("user", "PulseUser", payload, "user_signal");
-  },
-  routeBrain(payload) {
-    return bridgeRoute("brain", "PulseBrain", payload, "brain_signal");
+    return bridgeRoute(
+      "server",
+      "PulseServer",
+      payload,
+      "server_signal"
+    );
   },
 
-  // ⭐ UNIVERSAL ROUTE ARTERY — REQUIRED BY EXPANSION
-  sendRoute({ type, payload, cycle }) {
-    return window.PulseRemoteEndpoint?.handle({
-      type,
+  routeUser(payload) {
+    return bridgeRoute(
+      "user",
+      "PulseUser",
       payload,
-      cycle
-    });
+      "user_signal"
+    );
+  },
+
+  routeBrain(payload) {
+    return bridgeRoute(
+      "brain",
+      "PulseBrain",
+      payload,
+      "brain_signal"
+    );
+  },
+
+  // --------------------------------------------------------------------------
+  // UNIVERSAL ARTERY — INTERNET / EXPANSION / PULSE-WORLD
+  // --------------------------------------------------------------------------
+  // v25++:
+  //  • Accepts type OR path
+  //  • Normalizes into PulseWorldEndpoint-v25++ format
+  //  • Adds ts + origin + safe cycle
+  //  • Never loops back into organism
+  //  • Deterministic, safe, chunk-ready
+  // --------------------------------------------------------------------------
+  sendRoute(route) {
+    if (!window.PulseRemoteEndpoint || !window.PulseRemoteEndpoint.handle) {
+      return Promise.resolve({
+        ok: false,
+        reason: "no_PulseRemoteEndpoint"
+      });
+    }
+
+    const normalized = {
+      type: route.type || route.path || "Unknown",
+      payload: route.payload ?? null,
+      cycle: route.cycle ?? null,
+      ts: Date.now(),
+      origin: "PulseNetBridge"
+    };
+
+    return window.PulseRemoteEndpoint.handle(normalized);
   }
 });
 
@@ -978,6 +1099,58 @@ export function createPulseNetBridge() {
   return PulseNetBridge;
 }
 
+
+
+export function pulseWorldHealthSnapshot() {
+  const now = Date.now();
+
+  // Organism + net instances (multi-instance safe)
+  const instances = PulseNetInstances();
+  const organisms = instances.organisms || {};
+  const nets = instances.nets || {};
+
+  const organismList = Object.keys(organisms).map((id) => {
+    const o = organisms[id] || {};
+    return {
+      id,
+      forwardTicks: o.forwardTicks || 0,
+      backwardTicks: o.backwardTicks || 0,
+      lastHeartbeat: o.lastHeartbeat || null,
+      lastAIHeartbeat: o.lastAIHeartbeat || null,
+      lastBeatSource: o.lastBeatSource || "none"
+    };
+  });
+
+  const netList = Object.keys(nets).map((id) => {
+    const n = nets[id] || {};
+    return {
+      id,
+      started: !!n.started,
+      lastTick: n.lastTick || null
+    };
+  });
+
+  const temporalCacheSize =
+    globalThis.__PULSE_NET_TEMPORAL_CACHE__?.size ?? 0;
+
+  return {
+    status: "ok",
+    ts: now,
+    version: "v21-Immortal-RootOrganism",
+    identity: "PulseWorld-v21-RootOrganism",
+    organisms: organismList,
+    nets: netList,
+    worldAdvantage: {
+      impulseQueueSize: WORLD_ADVANTAGE_STATE.impulseQueue.length,
+      signalBurstQueueSize: WORLD_ADVANTAGE_STATE.signalBursts.length,
+      speedBoostActiveUntil: WORLD_ADVANTAGE_STATE.speedBoostUntil || 0
+    },
+    temporalCache: {
+      size: temporalCacheSize,
+      max: 512
+    }
+  };
+}
 
 // ============================================================================
 // PULSE-WORLD v21 ROOT ORGANISM WRAPPER (NON-BREAKING)
@@ -1090,54 +1263,3 @@ global.db = db;
 //  • Pure, deterministic, no network
 //  • To be exposed by HTTP edge as /health
 // ============================================================================
-
-export function pulseWorldHealthSnapshot() {
-  const now = Date.now();
-
-  // Organism + net instances (multi-instance safe)
-  const instances = PulseNetInstances();
-  const organisms = instances.organisms || {};
-  const nets = instances.nets || {};
-
-  const organismList = Object.keys(organisms).map((id) => {
-    const o = organisms[id] || {};
-    return {
-      id,
-      forwardTicks: o.forwardTicks || 0,
-      backwardTicks: o.backwardTicks || 0,
-      lastHeartbeat: o.lastHeartbeat || null,
-      lastAIHeartbeat: o.lastAIHeartbeat || null,
-      lastBeatSource: o.lastBeatSource || "none"
-    };
-  });
-
-  const netList = Object.keys(nets).map((id) => {
-    const n = nets[id] || {};
-    return {
-      id,
-      started: !!n.started,
-      lastTick: n.lastTick || null
-    };
-  });
-
-  const temporalCacheSize =
-    globalThis.__PULSE_NET_TEMPORAL_CACHE__?.size ?? 0;
-
-  return {
-    status: "ok",
-    ts: now,
-    version: "v21-Immortal-RootOrganism",
-    identity: "PulseWorld-v21-RootOrganism",
-    organisms: organismList,
-    nets: netList,
-    worldAdvantage: {
-      impulseQueueSize: WORLD_ADVANTAGE_STATE.impulseQueue.length,
-      signalBurstQueueSize: WORLD_ADVANTAGE_STATE.signalBursts.length,
-      speedBoostActiveUntil: WORLD_ADVANTAGE_STATE.speedBoostUntil || 0
-    },
-    temporalCache: {
-      size: temporalCacheSize,
-      max: 512
-    }
-  };
-}

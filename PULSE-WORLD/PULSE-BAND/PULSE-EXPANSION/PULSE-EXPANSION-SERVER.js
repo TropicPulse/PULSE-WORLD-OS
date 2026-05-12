@@ -52,7 +52,7 @@ import {
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PulseExpansionRouter-v24.js";
+} from "./PULSE-EXPANSION-INTERNET-ROUTER.js";
 
 // User lanes / WorldCore
 import {
@@ -67,7 +67,7 @@ import {
 } from "../PULSE-PROXY/PulseProxyAdrenalSystem-v20.js";
 
 // PulseNet bridge (symbolic adapter to PULSE-NET)
-import { createPulseNetBridge } from "../PULSE-X/PULSE-WORLD.js";
+import { createPulseNetBridge } from "../PULSE-X/PULSE-WORLD-SERVER.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";

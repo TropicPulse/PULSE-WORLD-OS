@@ -74,7 +74,7 @@ import { BeaconEngine } from "../PULSE-EXPANSION/PulseExpansionBeaconEngine-v20.
 // ============================================================================
 //  ROUTING + MESH (Presence-Aware)
 // ============================================================================
-import { PulseRouter } from "../PULSE-EXPANSION/PulseExpansionRouter-v24.js";
+import { PulseRouter } from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET-ROUTER.js";
 import { PulseRouterMesh } from "../PULSE-ROUTER/PulseRouterMesh-v24.js";
 import { PulseRouterEarn } from "../PULSE-ROUTER/PulseRouterEarn-v24.js";
 

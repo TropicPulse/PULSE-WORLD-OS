@@ -46,7 +46,7 @@ import {
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PulseExpansionRouter-v24.js";
+} from "./PULSE-EXPANSION-INTERNET-ROUTER.js";
 
 // Beacon mesh / engine
 import {
@@ -680,9 +680,28 @@ rebalanceGovernance({ imbalance }) {
     severity: imbalance.severity
   };
 }
-
 // ============================================================================
-// INTERNET + BRAIN ROUTING ARTERIES — v24-Immortal
+// INTERNET + BRAIN + MEMORY ROUTING ARTERIES — v25++ IMMORTAL
+// ============================================================================
+//
+// These arteries send OUTWARD from the user's Expansion organ
+// into Pulse‑World via PulseNetBridge.sendRoute().
+//
+// They MUST use the PulseNet envelope:
+//      type: "PulseNetExpansion"
+//      payload: { channel, route, cycle }
+//
+// Because PulseWorldEndpoint-v25 understands:
+//      PulseNetExpansion
+//      PulseNetRoute
+//      ExpansionRoute
+//      InternetRoute
+//
+// And it extracts:
+//      payload.channel
+//      payload.route
+//      payload.cycle
+//
 // ============================================================================
 
 sendInternetRoute(route) {
@@ -691,9 +710,12 @@ sendInternetRoute(route) {
   }
 
   return this.pulseNetBridge.sendRoute({
-    type: "internet",
-    payload: route,
-    cycle: this.cycle
+    type: "PulseNetExpansion",
+    payload: {
+      channel: "internet",
+      route,
+      cycle: this.cycle
+    }
   });
 }
 
@@ -703,9 +725,12 @@ sendBrainRoute(route) {
   }
 
   return this.pulseNetBridge.sendRoute({
-    type: "brain",
-    payload: route,
-    cycle: this.cycle
+    type: "PulseNetExpansion",
+    payload: {
+      channel: "brain",
+      route,
+      cycle: this.cycle
+    }
   });
 }
 
@@ -715,12 +740,14 @@ sendMemoryRoute(route) {
   }
 
   return this.pulseNetBridge.sendRoute({
-    type: "memory",
-    payload: route,
-    cycle: this.cycle
+    type: "PulseNetExpansion",
+    payload: {
+      channel: "memory",
+      route,
+      cycle: this.cycle
+    }
   });
 }
-
 
 // ============================================================================
 // EVOLUTION PIPE — v24-Immortal++

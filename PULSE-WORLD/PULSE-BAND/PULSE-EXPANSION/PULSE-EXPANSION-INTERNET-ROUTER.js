@@ -1,7 +1,7 @@
 /**
  * ============================================================================
- *  PULSE OS v24‑IMMORTAL-ORGANISM — PULSE ROUTER (TRAFFIC BRAIN / ORGANISM-AWARE)
- *  PulseRouter-v24.js
+ *  PULSE OS v25++ IMMORTAL-ORGANISM — PULSE ROUTER (TRAFFIC BRAIN / ORGANISM-AWARE)
+ *  PulseRouter-v25.js
  * ============================================================================
  *
  *  ROLE:
@@ -10,8 +10,9 @@
  *    - Reads Castle, Mesh (symbolic + binary), Expansion, Beacon, User, WorldCore,
  *      Runtime, Scheduler, Overmind, Earn, Proxy.
  *    - Suggests better routes and corridor protection (never auto-applies).
- *    - Pure symbolic planner: no network, no filesystem, no AI execution.
+ *    - Pure symbolic planner + v25++ internet routing orchestrator.
  */
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
@@ -24,9 +25,9 @@ export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // ============================================================================
 //  IMPORTS (backend-safe, organism-aware)
 // ============================================================================
@@ -136,8 +137,6 @@ function buildBandSignature(band, proxyMeta) {
 // ============================================================================
 //  ORGANISM CONTEXT (for meta + introspection)
 // ============================================================================
-
-// Lightweight, synthetic singletons (no IO, no routing)
 const _expansionSingleton =
   (typeof createPulseExpansion === "function"
     ? createPulseExpansion({})
@@ -210,7 +209,6 @@ function buildOrganismContext() {
   };
 }
 
-// Optional local beacon engine singleton (symbolic only)
 let _beaconEngineInstance = null;
 function getLocalBeaconEngine() {
   if (_beaconEngineInstance) return _beaconEngineInstance;
@@ -226,7 +224,7 @@ function getLocalBeaconEngine() {
 }
 
 // ============================================================================
-// FACTORY: createPulseRouter — v24-Immortal-ORGANISM
+// FACTORY: createPulseRouter — v25++ Immortal Organism
 // ============================================================================
 export function createPulseRouter({
   routerID = null,
@@ -234,46 +232,34 @@ export function createPulseRouter({
   trace = false,
   globalHints = null
 } = {}) {
-  // --------------------------------------------------------------------------
-  // 1. Identity & Scope
-  // --------------------------------------------------------------------------
   const Identity = Object.freeze({
     routerID,
     regionID,
     createdBy: "PulseWorldCore",
-    version: "v24-Immortal-ORGANISM"
+    version: "v25++-Immortal-ORGANISM"
   });
 
   function log(...args) {
-    if (trace) console.log("[PulseRouter v24]", ...args);
+    if (trace) console.log("[PulseRouter v25++]", ...args);
   }
 
-  log("PulseRouter v24 created:", { routerID, regionID });
+  log("PulseRouter v25++ created:", { routerID, regionID });
 
-  // A-B-A cycle + last fields
   let cycle = 0;
   let lastBinaryField = null;
   let lastWaveField = null;
   let lastBandSignature = null;
 
-  // --------------------------------------------------------------------------
-  // 2. Inputs (What the Router Can See)
-  // --------------------------------------------------------------------------
-  // Dual mesh: symbolic + binary
-  let meshSnapshotSymbolic = null; // from PulseMesh.getSnapshot()
-  let meshSnapshotBinary = null;   // from PulseBinaryMesh.getSnapshot()
+  // Inputs
+  let meshSnapshotSymbolic = null;
+  let meshSnapshotBinary = null;
+  let castleSnapshot = null;
+  let expansionSnapshot = null;
+  let beaconSnapshot = null;
+  let userSnapshot = null;
+  let worldCoreSnapshot = null;
+  let brainSnapshot = null;
 
-  // Castle / Expansion / Beacon
-  let castleSnapshot = null;       // from PulseCastle presence + state
-  let expansionSnapshot = null;    // from PulseExpansion.buildExpansionPlan() + routeField
-  let beaconSnapshot = null;       // from PulseBeaconEngine (optional)
-
-  // User / WorldCore / Brain
-  let userSnapshot = null;         // from PulseUser / local user context
-  let worldCoreSnapshot = null;    // from PulseWorldCore.getSnapshot()
-  let brainSnapshot = null;        // from runtime.getRuntimeStateV2() or OS brain view
-
-  // Attachments
   function attachMeshSymbolic(snapshot) {
     meshSnapshotSymbolic = snapshot || null;
     return { ok: true };
@@ -284,7 +270,6 @@ export function createPulseRouter({
     return { ok: true };
   }
 
-  // Backward-compatible alias: attachMesh → symbolic mesh
   function attachMesh(snapshot) {
     return attachMeshSymbolic(snapshot);
   }
@@ -319,9 +304,7 @@ export function createPulseRouter({
     return { ok: true };
   }
 
-  // --------------------------------------------------------------------------
-  // 3. Global Hints (presence/advantage/fallback)
-// --------------------------------------------------------------------------
+  // Global hints
   let lastGlobalHints = globalHints || null;
 
   function setGlobalHints(hints) {
@@ -403,9 +386,7 @@ export function createPulseRouter({
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 4. Routing Policy
-  // --------------------------------------------------------------------------
+  // Policy
   const Policy = {
     A_baseline: {
       preferLocalCastle: true,
@@ -427,9 +408,7 @@ export function createPulseRouter({
     }
   };
 
-  // --------------------------------------------------------------------------
-  // 5. Helpers: Read Signals
-  // --------------------------------------------------------------------------
+  // Signals
   function getMeshSignals() {
     const dhSym = meshSnapshotSymbolic?.densityHealth?.A_metrics || {};
     const dhBin = meshSnapshotBinary?.densityHealth?.A_metrics || {};
@@ -521,9 +500,7 @@ export function createPulseRouter({
     };
   }
 
-  // --------------------------------------------------------------------------
-  // 6. Decision Engine (Routing Decisions)
-// --------------------------------------------------------------------------
+  // Decision engine
   function routeTo(target, reason, context = {}) {
     return Object.freeze({
       target,
@@ -580,7 +557,7 @@ export function createPulseRouter({
 
     const osBrainStatus = userSignals.osBrainStatus;
 
-    // Proxy-aware bias: if proxy is in hard fallback, prefer cloud
+    // Proxy-aware bias
     if (proxyMeta.proxyFallback || proxyMeta.proxyMode === "fallback") {
       return routeTo("cloud", "proxyFallbackActive", {
         mesh,
@@ -593,7 +570,6 @@ export function createPulseRouter({
       });
     }
 
-    // Proxy pressure: if high, prefer mesh (distributed) over castle
     if (proxyMeta.proxyPressure > 0.8 && meshStrength !== "weak") {
       return routeTo("mesh", "proxyPressureHighPreferMesh", {
         mesh,
@@ -606,7 +582,6 @@ export function createPulseRouter({
       });
     }
 
-    // Proxy boost: if boost and castle not critical, bias to castle
     if (proxyMeta.proxyBoost > 0.5 && castleLoad !== "critical") {
       return routeTo("castle", "proxyBoostPreferCastle", {
         mesh,
@@ -619,7 +594,7 @@ export function createPulseRouter({
       });
     }
 
-    // 0. If OS brain is unhealthy or fallback band is high, bias toward cloud
+    // OS brain / fallback
     if (osBrainStatus !== "healthy" || fallbackBandLevel >= 3) {
       return routeTo("cloud", "osBrainUnhealthyOrHighFallback", {
         mesh,
@@ -632,7 +607,7 @@ export function createPulseRouter({
       });
     }
 
-    // 1. Prefer Castle if healthy and not overloaded, and user stress not critical
+    // Castle preferred
     const castleHealthy =
       castleLoad === "low" ||
       castleLoad === "normal" ||
@@ -654,7 +629,7 @@ export function createPulseRouter({
       });
     }
 
-    // 2. Prefer Mesh if castle is high/critical but mesh is not weak
+    // Mesh for castle relief
     if (
       (castleLoad === "high" || castleLoad === "critical") &&
       meshStrength !== "weak" &&
@@ -671,7 +646,7 @@ export function createPulseRouter({
       });
     }
 
-    // 3. If mesh is strong and pressure is moderate, use mesh
+    // Strong mesh
     if (
       meshStrength === "strong" &&
       meshPressure < 80 &&
@@ -688,7 +663,7 @@ export function createPulseRouter({
       });
     }
 
-    // 4. If user stress is very high, prefer mesh (distributed) over castle
+    // User stress high → mesh
     if (
       userStress >= 80 &&
       meshStrength !== "weak" &&
@@ -705,7 +680,7 @@ export function createPulseRouter({
       });
     }
 
-    // 5. Cloud fallback when both castle + mesh are weak/overloaded
+    // Cloud fallback
     return routeTo("cloud", "fallback", {
       mesh,
       castle,
@@ -717,9 +692,7 @@ export function createPulseRouter({
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 7. Route Suggestion Engine (Every-Advantage)
-// --------------------------------------------------------------------------
+  // Suggestions
   function suggestBetterRoutes() {
     if (!meshSnapshotSymbolic && !meshSnapshotBinary) {
       return { ok: false, reason: "missing-mesh" };
@@ -735,7 +708,6 @@ export function createPulseRouter({
 
     const suggestions = [];
 
-    // Reinforce weak segments
     if (
       Array.isArray(routeField.weakSegments) &&
       routeField.weakSegments.length > 0
@@ -748,7 +720,6 @@ export function createPulseRouter({
       });
     }
 
-    // Alternate paths on high mesh pressure
     if (mesh.meshPressureIndex >= 75) {
       suggestions.push({
         type: "alternate-path",
@@ -758,7 +729,6 @@ export function createPulseRouter({
       });
     }
 
-    // Castle relief when load is high
     if (castle.loadLevel === "high" || castle.loadLevel === "critical") {
       suggestions.push({
         type: "castle-relief",
@@ -768,7 +738,6 @@ export function createPulseRouter({
       });
     }
 
-    // User stress-based suggestions
     if (userSignals.stressIndex >= 80) {
       suggestions.push({
         type: "user-stress-relief",
@@ -784,9 +753,6 @@ export function createPulseRouter({
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 8. Corridor Protection Engine
-  // --------------------------------------------------------------------------
   function suggestCorridorProtection() {
     if (!expansionSnapshot) return { ok: false, reason: "no-expansion" };
 
@@ -807,9 +773,6 @@ export function createPulseRouter({
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 9. NodeAdmin Suggestion Surface
-  // --------------------------------------------------------------------------
   function buildNodeAdminIntent() {
     const routeSuggestions = suggestBetterRoutes();
     const corridorSuggestions = suggestCorridorProtection();
@@ -827,9 +790,7 @@ export function createPulseRouter({
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 10. Telemetry
-  // --------------------------------------------------------------------------
+  // Telemetry
   const Telemetry = {
     metrics: {
       routedRequests: 0,
@@ -858,9 +819,6 @@ export function createPulseRouter({
     }
   }
 
-  // --------------------------------------------------------------------------
-  // 11. Snapshot
-  // --------------------------------------------------------------------------
   function getSnapshot() {
     return Object.freeze({
       organId: PulseRouterMeta.organId,
@@ -888,17 +846,92 @@ export function createPulseRouter({
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 12. Public API
-  // --------------------------------------------------------------------------
+  // ==========================================================================
+  // v25++ INTERNET ROUTING ORCHESTRATOR
+  // ==========================================================================
+  /**
+   * executors: {
+   *   castle: async (request, routeDecision) => { ... },
+   *   mesh:   async (request, routeDecision) => { ... },
+   *   cloud:  async (request, routeDecision) => { ... } // can use fetch, safeRoute, etc.
+   * }
+   *
+   * Strategy:
+   *   1. decideRoute(request) → primary target
+   *   2. try primary target
+   *   3. if fails, try alternates (mesh, castle, cloud) in safe order
+   *   4. return first ok result or final error
+   */
+  async function routeInternet(request, executors = {}) {
+    const start = Date.now();
+    const decision = decideRoute(request);
+    const primary = decision.target;
+
+    const order = buildFallbackOrder(primary);
+    log("routeInternet decision:", { primary, order, reason: decision.reason });
+
+    let lastError = null;
+
+    for (const target of order) {
+      const exec = executors[target];
+      if (typeof exec !== "function") continue;
+
+      try {
+        const result = await exec(request, decision);
+        if (result && result.ok) {
+          recordRoute(decision, Date.now() - start);
+          return {
+            ok: true,
+            target,
+            decision,
+            result
+          };
+        }
+        lastError = result || { ok: false, reason: "unknown_failure" };
+      } catch (err) {
+        lastError = { ok: false, reason: "executor_error", error: String(err), target };
+      }
+    }
+
+    recordRoute(decision, Date.now() - start);
+
+    return {
+      ok: false,
+      target: null,
+      decision,
+      error: lastError || { ok: false, reason: "no_executor_succeeded" }
+    };
+  }
+
+  function buildFallbackOrder(primary) {
+    // v25++ fallback logic:
+    //   castle → [castle, mesh, cloud]
+    //   mesh   → [mesh, castle, cloud]
+    //   cloud  → [cloud, mesh, castle]
+    //   default→ [castle, mesh, cloud]
+    switch (primary) {
+      case "castle":
+        return ["castle", "mesh", "cloud"];
+      case "mesh":
+        return ["mesh", "castle", "cloud"];
+      case "cloud":
+        return ["cloud", "mesh", "castle"];
+      default:
+        return ["castle", "mesh", "cloud"];
+    }
+  }
+
+  // ==========================================================================
+  // PUBLIC API
+  // ==========================================================================
   return Object.freeze({
     meta: PulseRouterMeta,
     identity: Identity,
 
     // attachments
-    attachMesh,            // symbolic (back-compat)
-    attachMeshSymbolic,    // explicit symbolic
-    attachMeshBinary,      // explicit binary
+    attachMesh,
+    attachMeshSymbolic,
+    attachMeshBinary,
     attachCastle,
     attachExpansion,
     attachBeacon,
@@ -915,6 +948,7 @@ export function createPulseRouter({
     // routing
     decideRoute,
     recordRoute,
+    routeInternet,   // ⭐ v25++ internet routing orchestrator
 
     // suggestions
     suggestBetterRoutes,
