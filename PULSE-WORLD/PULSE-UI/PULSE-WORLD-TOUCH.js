@@ -792,71 +792,40 @@ async function scanAndPreloadRouteImages(routeHtml) {
     const html = await fetch(routeHtml, { cache: "force-cache" }).then(r => r.text());
     const doc = new DOMParser().parseFromString(html, "text/html");
 
-    // Extract all image URLs
-    const allImgs = [...doc.querySelectorAll("img")]
+    // ⭐ Only scan REAL page content — not headers, not footers, not templates
+    const root =
+      doc.querySelector("main") ||
+      doc.querySelector("#app") ||
+      doc.body;
+
+    // ⭐ Only preload actual content images
+    const imgs = [...root.querySelectorAll("img")]
       .map(i => i.getAttribute("src"))
-      .filter(Boolean);
+      .filter(src =>
+        src &&
+        !src.includes("icon") &&
+        !src.includes("logo") &&
+        !src.includes("sprite") &&
+        !src.includes("placeholder")
+      );
 
-    // ⭐ 1 — CRITICAL IMAGES (first 8 or first viewport)
-    const critical = allImgs.slice(0, 8);
-
-    critical.forEach(src => {
+    for (const src of imgs) {
       const img = new Image();
-      img.loading = "eager"; // force decode
+      img.loading = "eager"; // force immediate decode
       img.src = src;
-    });
-
-    // ⭐ 2 — NON-CRITICAL IMAGES (lazy warm)
-    const nonCritical = allImgs.slice(8);
-
-    // Lazy warm using IntersectionObserver
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-
-        const src = entry.target.dataset.src;
-        if (!src) return;
-
-        // warm cache
-        const warm = new Image();
-        warm.src = src;
-
-        // remove observer
-        io.unobserve(entry.target);
-      });
-    }, { rootMargin: "300px" });
-
-    // Create invisible lazy warmers
-    nonCritical.forEach(src => {
-      const probe = document.createElement("div");
-      probe.dataset.src = src;
-      probe.style.position = "absolute";
-      probe.style.top = "999999px"; // offscreen
-      probe.style.width = "1px";
-      probe.style.height = "1px";
-      document.body.appendChild(probe);
-      io.observe(probe);
-    });
+    }
 
     appendTouchTimeline("route_image_prewarm", {
       route: routeHtml,
-      count: allImgs.length,
-      critical: critical.length,
-      lazy: nonCritical.length
+      count: imgs.length
     });
-
   } catch (err) {
     appendTouchTimeline("route_image_prewarm_failed", { route: routeHtml });
   }
 }
 
-
-
-// ⭐ MAKE IT AVAILABLE GLOBALLY
 window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
 
-  // CALL IT:
-  scanAndPreloadRouteImages(`./${detected.page}.html`);
 
 
   // 10) Ignite PulseNet (local immortal loop) — idempotent, portal-safe
@@ -1266,7 +1235,6 @@ function applyGateDecision(gateDecision, skin) {
     const page =
       location.pathname.split("/").pop().replace(".html", "") || "index";
 
-    // 1 — Ignite PulseTouch (sync)
     const touch = createPulseTouch({
       page,
       mode: "fast",
@@ -1277,50 +1245,32 @@ function applyGateDecision(gateDecision, skin) {
 
     window.__PULSE_TOUCH__ = touch;
 
-    // GLOBAL TIMER ROOT
-    const t0 = performance.now();
-    window.__PULSE_TOUCH_T0__ = t0;
-    window.__PULSE_CHRONO_LAST__ = t0;
-
-    // Idle helper (safe, non-blocking)
     const idle = fn =>
       (window.requestIdleCallback
         ? requestIdleCallback(fn, { timeout: 60 })
         : setTimeout(fn, 0));
 
-    // ⭐ WARM 1 — SCAN IMAGES FOR CURRENT PAGE (idle)
+    // ⭐ WARM 1 — Scan images for THIS page only
     idle(() => {
-      try {
-        window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
-      } catch (err) {
-        console.warn("PulseTouch route image scan failed", err);
+      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
+    });
+
+    // ⭐ WARM 2 — Preload NEXT page only
+    idle(() => {
+      const next = touch.router?.predictNext?.(page);
+      if (next) {
+        touch.preloader?.preloadPage?.(next);
+        window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
       }
     });
 
-    // ⭐ WARM 2 — PRELOAD NEXT PAGE ONLY (idle)
+    // ⭐ WARM 3 — Light engine warm
     idle(() => {
-      try {
-        const next = touch.router?.predictNext?.(page);
-        if (next) {
-          touch.preloader?.preloadPage?.(next);
-          window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
-        }
-      } catch (err) {
-        console.warn("PulseTouch next-page preload failed", err);
-      }
+      touch.chunker?.preloadChunksForPage?.(page);
+      touch.advantage?.prewarmLight?.();
     });
 
-    // ⭐ WARM 3 — LIGHT ENGINE WARM (idle)
-    idle(() => {
-      try {
-        touch.chunker?.preloadChunksForPage?.(page);
-        touch.advantage?.prewarmLight?.();
-      } catch (err) {
-        console.warn("PulseTouch engine warm failed", err);
-      }
-    });
-
-    console.log("PulseTouch auto‑ignite v24++: next-page warm only, zero microtasks.");
+    console.log("PulseTouch v24++ ignition: next-page warm only, zero microtasks.");
   } catch (err) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
