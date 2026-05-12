@@ -68,10 +68,10 @@ import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PULSE-PROOF-MONI
 
 import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
 
-
-import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PULSE-PROOF-FLOW.js";
 import PulseUIErrors from "../_MONITOR/PULSE-PROOF-ERRORS.js";
+import { createPulseSkinReflex as PulseProofReflex } from "../_MONITOR/PulseUISkinReflex-v24.js";
+
 
 import PulsePageScanner from "../_MONITOR/PulseUIPageScanner-v24.js";
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../_MONITOR/PulseUIRouteMemory-v24.js";
