@@ -1357,3 +1357,13 @@ export async function reportMapError(err, context = {}) {
     console.error("[OrganismMap Fallback Error]", err, context);
   }
 }
+
+try {
+  localStorage.setItem(
+    "PulseOrganismMap_v25",
+    JSON.stringify(PulseOrganismMap)
+  );
+  console.log("[OrganismMap] stored in localStorage");
+} catch (err) {
+  console.warn("[OrganismMap] failed to store in localStorage", err);
+}

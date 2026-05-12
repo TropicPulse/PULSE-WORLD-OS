@@ -890,7 +890,7 @@ function runPortalWarm() {
     touch.preloader?.preloadPage?.(next);
 
     // ⭐ WARM 2 — Preload NEXT PAGE IMAGES
-    window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
+    window.__PULSE_SCAN_ROUTE_IMAGES__?.(`../PULSE/${next}.html`);
 
     // ⭐ WARM 3 — Preload CHUNKS for NEXT PAGE
     touch.chunker?.preloadChunksForPage?.(next);

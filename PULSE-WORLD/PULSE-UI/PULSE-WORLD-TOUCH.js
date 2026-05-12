@@ -1217,8 +1217,9 @@ function applyGateDecision(gateDecision, skin) {
     if (window.__PULSE_TOUCH__) return;
 
        //ALREADY PREWARMING PAGE BELOW
+    const page =
+      location.pathname.split("/").pop().replace(".html", "") || "index";
 
-  const page = "index.html";
     // ⭐ 1 — Ignite PulseTouch (SYNC ONLY)
     const touch = createPulseTouch({
       page,
@@ -1228,6 +1229,7 @@ function applyGateDecision(gateDecision, skin) {
       band: "symbolic"
     });
     
+  
     // ⭐ 2 — Expose globally
     window.__PULSE_TOUCH__ = touch;
 
