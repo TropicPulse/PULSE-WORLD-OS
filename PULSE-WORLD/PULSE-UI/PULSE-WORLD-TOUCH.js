@@ -1210,7 +1210,7 @@ function applyGateDecision(gateDecision, skin) {
 }
 
 // ============================================================
-// AUTO‑IGNITION — TOUCH MUST RUN ITSELF (v24 IMMORTAL++)
+// PULSETOUCH v25 — PURE SYNC IGNITION (NO ASYNC, NO WARM)
 // ============================================================
 (function autoIgnitePulseTouch() {
   try {
@@ -1219,6 +1219,7 @@ function applyGateDecision(gateDecision, skin) {
     const page =
       location.pathname.split("/").pop().replace(".html", "") || "index";
 
+    // 1 — Ignite PulseTouch (SYNC ONLY)
     const touch = createPulseTouch({
       page,
       mode: "fast",
@@ -1227,23 +1228,16 @@ function applyGateDecision(gateDecision, skin) {
       band: "symbolic"
     });
 
+    // 2 — Expose globally
     window.__PULSE_TOUCH__ = touch;
 
-    const idle = fn =>
-      (window.requestIdleCallback
-        ? requestIdleCallback(fn, { timeout: 60 })
-        : setTimeout(fn, 0));
-
-    // ⭐ WARM 1 — Scan images for THIS page only
-    idle(() => {
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
-    });
-
-    console.log("PulseTouch v24++ ignition: next-page warm only, zero microtasks.");
+    // 3 — NO async, NO idle, NO scanning, NO warm
+    console.log("PulseTouch v25 ignition: pure sync, zero warm.");
   } catch (err) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
 })();
+
 
 
 // ============================================================
