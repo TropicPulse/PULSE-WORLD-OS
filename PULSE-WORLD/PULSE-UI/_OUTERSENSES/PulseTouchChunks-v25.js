@@ -773,50 +773,91 @@ export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
 
   const { value: dna, envelope, ok, error } = await fetchChunk(filePath);
 
-  // If fetch failed or chunks are globally degraded, just surface raw DNA/url
-  if (!ok || chunksDegraded || !metaPack) {
-    if (!ok) {
-      console.warn("[PulseChunks] PulseChunker fallback — fetch failed:", {
-        filePath,
-        error,
-        envelope
-      });
-    }
-
+  // If fetch failed or degraded, return raw
+  if (!ok || chunksDegraded) {
     return {
-      dna,
-      dnaEncoded: ok && !chunksDegraded,
+      chunk: dna,
+      normalized: null,
+      lore: null,
       safe: ok,
       presence: envelope
     };
   }
 
-  // v25++: unwrap ONE layer, attach lore once, keep DNA sealed for frontend
+  // 1 — unwrap ONE layer
   const dnaCore = unwrapImmortalDNA(dna);
-  const dnaWithLore = attachLore(dnaCore, metaPack);
 
+  // 2 — normalize (pure data)
+  const normalized = PulseChunkNormalizer.normalizeChunkValue(dnaCore);
+
+  // 3 — ⭐ add lore AFTER normalization (correct)
+  const lore = metaPack ? generateLoreHeader(metaPack) : null;
+
+  // 4 — return clean data + lore as metadata
   return {
-    dna: dnaWithLore,
-    dnaEncoded: true,
+    chunk: normalized,
+    lore,
     safe: true,
     presence: envelope
   };
 }
 
+
 // ============================================================================
 //  PREWARM ENGINE — NON-BLOCKING, ROUTED, TTL-AWARE + PERSISTENT
 // ============================================================================
-export function prewarm(urls = []) {
+export function prewarm(urls = [], metaPack = null) {
   urls.forEach((url) => {
     if (!url) return;
+
     const entry = chunkCache.get(url);
-    if ((!entry || isExpired(entry)) && !chunksDegraded) {
-      fetchChunk(url).then(() => {
-        // fetchChunk already persists; nothing extra needed
-      });
+
+    // Already cached and fresh
+    if (entry && !isExpired(entry) && !chunksDegraded) {
+      return;
     }
+
+    // Fetch + persist + normalize + lore
+    fetchChunk(url).then(async ({ value: dna, ok, envelope }) => {
+      if (!ok) return;
+
+      // unwrap
+      const dnaCore = unwrapImmortalDNA(dna);
+
+      // normalize
+      const normalized = PulseChunkNormalizer.normalizeChunkValue(dnaCore);
+
+      // lore AFTER normalization
+      const lore = metaPack ? generateLoreHeader(metaPack) : null;
+
+      // store in cache
+      chunkCache.set(url, {
+        value: normalized,
+        ts: Date.now(),
+        kind: typeof normalized === "string" ? "text-or-url" : "object",
+        presence: envelope,
+        lore
+      });
+
+      // persist to localStorage mesh
+      persistPulseChunksToStorage();
+
+      // Touch/Portal future hook
+      if (typeof window !== "undefined" && window.PulseTouchWarmup) {
+        try {
+          window.PulseTouchWarmup.onPrewarm(url, normalized, lore);
+        } catch {}
+      }
+
+      if (typeof window !== "undefined" && window.PulsePortalWarmup) {
+        try {
+          window.PulsePortalWarmup.onPrewarm(url, normalized, lore);
+        } catch {}
+      }
+    });
   });
 }
+
 
 // ============================================================================
 //  PULSEBAND INTEGRATION — v25++-Evo

@@ -171,6 +171,12 @@ export const IMMORTAL_OVERLAYS_PulseTouchWarmup = {
 // All tasks are safe no‑ops by default, but return task ids so
 // downstream organs can introspect what was warmed.
 // ============================================================================
+// ============================================================================
+// PULSE-TOUCH WARMUP — v25++ IMMORTAL METABOLIC ENGINE
+// Fully integrated with PulseChunks v25++, PulsePresenceNormalizer v25++,
+// PulseBand, PulseSignal, PulseRoute, and Portal warmup surfaces.
+// ============================================================================
+
 export async function warmupOrganism(pulseTouch) {
   const {
     page,
@@ -187,90 +193,157 @@ export async function warmupOrganism(pulseTouch) {
 
   const tasks = [];
 
+  // ============================================================
+  // 1. PREWARM CHUNKS (REAL)
+  // ============================================================
+  if (window.PulseChunks && typeof window.PulseChunks.prewarm === "function") {
+    const urls = collectVisibleAssets();
+    window.PulseChunks.prewarm(urls, {
+      meta: {
+        identity: "PulseTouchWarmup",
+        version: "v25++",
+        layer: "metabolic"
+      },
+      context: { page, region, mode }
+    });
+    tasks.push("prechunk_assets");
+  }
+
+  // ============================================================
+  // 2. PREWARM NEXT PAGE (Portal)
+  // ============================================================
+  if (window.PulsePortalWarmup && typeof window.PulsePortalWarmup.prewarm === "function") {
+    try {
+      window.PulsePortalWarmup.prewarm(page, chunkProfile);
+      tasks.push("portal_nextpage_prewarm");
+    } catch {}
+  }
+
+  // ============================================================
+  // 3. PREWARM SIGNALS (PulseSignal / PulseProofSignal / PulseSignalPort)
+  // ============================================================
+  try {
+    const pulse = localStorage.getItem("PulseSignal_v27");
+    const proof = localStorage.getItem("PulseProofSignal_v27");
+    const port = localStorage.getItem("PulseSignalPort_v27");
+
+    if (pulse || proof || port) {
+      tasks.push("signal_prewarm");
+    }
+  } catch {}
+
+  // ============================================================
+  // 4. PREWARM PRESENCE NORMALIZER (v25++)
+  // ============================================================
+  if (window.PulsePresenceNormalizerStore) {
+    try {
+      window.PulsePresenceNormalizerStore.tail(50);
+      tasks.push("presence_normalizer_prewarm");
+    } catch {}
+  }
+
+  // ============================================================
+  // 5. PREWARM PULSEBAND (chunk manifests)
+  // ============================================================
+  if (window.PulseBand && typeof window.PulseBand.emit === "function") {
+    try {
+      window.PulseBand.emit("warmup", { page, region, mode });
+      tasks.push("pulseband_prewarm");
+    } catch {}
+  }
+
+  // ============================================================
+  // 6. PREWARM ROUTE (PulseRoute)
+  // ============================================================
+  try {
+    const route = window.PulseRoute || location.pathname;
+    if (route) tasks.push("route_prewarm");
+  } catch {}
+
+  // ============================================================
+  // 7. PREWARM ORGANISM MAP (if present)
+  // ============================================================
+  if (window.PulseOrganismMap && typeof window.PulseOrganismMap.prewarm === "function") {
+    try {
+      window.PulseOrganismMap.prewarm(page, region, mode);
+      tasks.push("organism_map_prewarm");
+    } catch {}
+  }
+
+  // ============================================================
+  // 8. ORIGINAL METABOLIC TASKS (kept for compatibility)
+  // ============================================================
   await Promise.all([
-    (async () => {
-      await prechunkPage(page, chunkProfile);
-      tasks.push("prechunk_page");
-    })(),
-    (async () => {
-      await prehydrateIdentity(identity);
-      tasks.push("prehydrate_identity");
-    })(),
-    (async () => {
-      await prehydratePresence(presence);
-      tasks.push("prehydrate_presence");
-    })(),
-    (async () => {
-      await preloadCluster(region);
-      tasks.push("region_cluster_warmup");
-    })(),
-    (async () => {
-      await preloadEarn(identity);
-      tasks.push("earn_warmup");
-    })(),
-    (async () => {
-      await preflightChunkSanity(chunkProfile);
-      tasks.push("chunk_sanity");
-    })(),
-    (async () => {
-      await preflightPagePrep(page);
-      tasks.push("page_prep");
-    })(),
-
-    // v24 FASTLANE / CONTINUOUS PULSE WARMUP
-    (async () => {
-      await warmupPulseStream(pulseStream);
-      tasks.push("pulse_stream_warmup");
-    })(),
-    (async () => {
-      await warmupFastLane(fastLane);
-      tasks.push("fastlane_warmup");
-    })(),
-    (async () => {
-      await warmupTemporalHints(pulseTouch);
-      tasks.push("temporal_warmup");
-    })(),
-    (async () => {
-      await warmupHydrationTier(hydration);
-      tasks.push("hydration_tier_warmup");
-    })(),
-    (async () => {
-      await warmupAnimationTier(animation);
-      tasks.push("animation_tier_warmup");
-    })(),
-    (async () => {
-      await warmupModeTier(mode);
-      tasks.push("mode_tier_warmup");
-    })(),
-    (async () => {
-      await warmupPresenceIntensity(presence);
-      tasks.push("presence_intensity_warmup");
-    })(),
-    (async () => {
-      await warmupRegionCluster(region);
-      tasks.push("region_cluster_warmup");
-    })()
+    (async () => { await prechunkPage(page, chunkProfile); tasks.push("prechunk_page"); })(),
+    (async () => { await prehydrateIdentity(identity); tasks.push("prehydrate_identity"); })(),
+    (async () => { await prehydratePresence(presence); tasks.push("prehydrate_presence"); })(),
+    (async () => { await preloadCluster(region); tasks.push("region_cluster_warmup"); })(),
+    (async () => { await preloadEarn(identity); tasks.push("earn_warmup"); })(),
+    (async () => { await preflightChunkSanity(chunkProfile); tasks.push("chunk_sanity"); })(),
+    (async () => { await preflightPagePrep(page); tasks.push("page_prep"); })(),
+    (async () => { await warmupPulseStream(pulseStream); tasks.push("pulse_stream_warmup"); })(),
+    (async () => { await warmupFastLane(fastLane); tasks.push("fastlane_warmup"); })(),
+    (async () => { await warmupTemporalHints(pulseTouch); tasks.push("temporal_warmup"); })(),
+    (async () => { await warmupHydrationTier(hydration); tasks.push("hydration_tier_warmup"); })(),
+    (async () => { await warmupAnimationTier(animation); tasks.push("animation_tier_warmup"); })(),
+    (async () => { await warmupModeTier(mode); tasks.push("mode_tier_warmup"); })(),
+    (async () => { await warmupPresenceIntensity(presence); tasks.push("presence_intensity_warmup"); })(),
+    (async () => { await warmupRegionCluster(region); tasks.push("region_cluster_warmup"); })()
   ]);
-
-  const advantageWarmup = {
-    page,
-    chunkProfile,
-    region,
-    presence,
-    mode,
-    pulseStream,
-    fastLane,
-    hydration,
-    animation,
-    identity
-  };
 
   return {
     warmed: true,
     tasks,
-    advantageWarmup
+    advantageWarmup: {
+      page,
+      chunkProfile,
+      region,
+      presence,
+      mode,
+      pulseStream,
+      fastLane,
+      hydration,
+      animation,
+      identity
+    }
   };
 }
+
+// ============================================================================
+// COLLECT VISIBLE ASSETS FOR PREWARM
+// ============================================================================
+function collectVisibleAssets() {
+  if (typeof document === "undefined") return [];
+
+  const selectors = [
+    "img[src]",
+    "img[data-offline]",
+    "script[src]",
+    "link[rel='stylesheet'][href]",
+    "[data-chunk]",
+    "[data-preload]",
+    "[data-asset]"
+  ];
+
+  const urls = new Set();
+
+  selectors.forEach((sel) => {
+    document.querySelectorAll(sel).forEach((node) => {
+      const url =
+        node.getAttribute("src") ||
+        node.getAttribute("href") ||
+        node.getAttribute("data-offline") ||
+        node.getAttribute("data-chunk") ||
+        node.getAttribute("data-preload") ||
+        node.getAttribute("data-asset");
+
+      if (url) urls.add(url);
+    });
+  });
+
+  return [...urls];
+}
+
 
 // ============================================================================
 // TASK IMPLEMENTATIONS — ALL SAFE NO‑OPS (IMMORTAL++)
