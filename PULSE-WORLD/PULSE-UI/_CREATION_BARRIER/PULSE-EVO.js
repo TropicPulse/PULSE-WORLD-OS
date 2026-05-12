@@ -32,7 +32,7 @@ root.innerHTML = String.raw`
 
       <div class="pb-header">
         <img id="pb-mini-badge" class="pb-mini-badge offline-img"
-             src="./_PICTURES/PulseBand.png"
+             src="../_PICTURES/PulseBand.png"
              alt="PulseBand Badge">
       </div>
 
@@ -107,7 +107,7 @@ root.innerHTML = String.raw`
       <div class="mobile-menu-header">
         <div class="tp-logo-wrapper">
           <img class="tp-logo-circle-mobile offline-img"
-               src="./_PICTURES/ToucanLogo-Mini.png"
+               src="../_PICTURES/ToucanLogo-Mini.png"
                alt="Tropic Pulse Logo">
         </div>
         <h1 class="tp-header-mobile">Tropic Pulse</h1>
@@ -139,7 +139,7 @@ root.innerHTML = String.raw`
     <div class="header-inner">
       <div class="tp-logo-wrapper">
         <img class="tp-logo-circle offline-img"
-             src="./_PICTURES/ToucanLogo-Mini.png"
+             src="../_PICTURES/ToucanLogo-Mini.png"
              alt="Tropic Pulse Logo">
       </div>
 
@@ -200,7 +200,7 @@ root.innerHTML = String.raw`
           <div class="phone-frame">
             <div class="phone-inner">
               <img class="phone-screen-img offline-img"
-                   src="./_PICTURES/Phone1.png"
+                   src="../_PICTURES/Phone1.png"
                    alt="OS Preview">
             </div>
           </div>
@@ -278,7 +278,7 @@ root.innerHTML = String.raw`
 
         <div class="feature-card">
           <img class="offline-img"
-               src="./_PICTURES/PulseBackbone.png"
+               src="../_PICTURES/PulseBackbone.png"
                alt="Pulse Backbone" />
           <div class="feature-card-overlay">
             <div class="feature-card-title">Pulse Backbone</div>
@@ -292,7 +292,7 @@ root.innerHTML = String.raw`
 
         <div class="feature-card">
           <img class="offline-img"
-               src="./_PICTURES/LocalNetworks.png"
+               src="../_PICTURES/LocalNetworks.png"
                alt="Local Networks" />
           <div class="feature-card-overlay">
             <div class="feature-card-title">Local Networks</div>
@@ -304,7 +304,7 @@ root.innerHTML = String.raw`
 
         <div class="feature-card">
           <img class="offline-img"
-               src="./_PICTURES/PulseEarn.png"
+               src="../_PICTURES/PulseEarn.png"
                alt="Pulse Earn" />
           <div class="feature-card-overlay">
             <div class="feature-card-title">Pulse Earn</div>
@@ -317,7 +317,7 @@ root.innerHTML = String.raw`
 
         <div class="feature-card">
           <img class="offline-img"
-               src="./_PICTURES/PulseGPU.png"
+               src="../_PICTURES/PulseGPU.png"
                alt="PULSE-GPU" />
           <div class="feature-card-overlay">
             <div class="feature-card-title">Pulse‑GPU</div>
@@ -331,7 +331,7 @@ root.innerHTML = String.raw`
 
         <div class="feature-card">
           <img class="offline-img"
-               src="./_PICTURES/PulseLoyalty.png"
+               src="../_PICTURES/PulseLoyalty.png"
                alt="Loyalty & Identity" />
           <div class="feature-card-overlay">
             <div class="feature-card-title">Identity & Loyalty</div>
@@ -344,7 +344,7 @@ root.innerHTML = String.raw`
 
         <div class="feature-card">
           <img class="offline-img"
-               src="./_PICTURES/AdminPanels.png"
+               src="../_PICTURES/AdminPanels.png"
                alt="Admin Dashboards" />
           <div class="feature-card-overlay">
             <div class="feature-card-title">Admin Dashboards</div>
