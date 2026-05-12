@@ -1,5 +1,5 @@
 // ============================================================================
-//  PULSE OS v20-ImmortalPlus — HEARTBEAT PACEMAKER TIMER ORGAN
+//  PULSE OS v24-ImmortalPlus — HEARTBEAT PACEMAKER TIMER ORGAN
 //  PulseProxyHeartbeat — Central Timer / Logout / PulseHistory Repair
 //  Backend-only • Deterministic surfaces • A‑B‑A band + advantage + chunk/presence
 //  ROLE: Pacemaker Timer Sensor (Logout + PulseHistory Repair + Security Sweep)
@@ -737,7 +737,7 @@ let SECURITY_SWEEP_CYCLE = 0;
 export const SECURITY_SWEEP_CONTEXT = {
   layer: "HeartBeat",
   role: "PACEMAKER_SECURITY_SWEEP",
-  version: "20-ImmortalPlus",
+  version: "24-ImmortalPlus",
   evo: PulseRole.evo,
   experienceMeta: PulseHeartbeatExperienceMeta
 };
