@@ -1371,7 +1371,7 @@ async function updateMarketplacePanel() {
 }
 
 // ---------- Boot ----------
-global.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => {
     logEarnTrace("Booting Pulse Earn dashboard engine v1 (demo snapshot mode).");
     setInterval(updateMarketplacePanel, 3000);
     generateEarnSnapshot().then(applyEarnSnapshot);

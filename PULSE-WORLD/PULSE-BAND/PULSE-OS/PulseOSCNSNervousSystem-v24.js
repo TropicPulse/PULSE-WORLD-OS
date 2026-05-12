@@ -54,26 +54,26 @@ const hasWindow = typeof window !== "undefined";
 const RouterMemory =
   (PulseOSShortTermMemory && PulseOSShortTermMemory.RouterMemory) ||
   PulseOSShortTermMemory ||
-  (hasWindow && global.PulseRouterMemory) ||
+  (hasWindow && window.PulseRouterMemory) ||
   null;
 
 const GateHeartbeat =
   (PulseOSShortTermMemory && PulseOSShortTermMemory.GateHeartbeat) ||
-  (hasWindow && global.GateHeartbeat) ||
+  (hasWindow && window.GateHeartbeat) ||
   null;
 
 // Base logger (diagnostics only, non-contract)
 const baseLog =
-  (hasWindow && typeof global.PulseLog === "function")
-    ? global.PulseLog
+  (hasWindow && typeof window.PulseLog === "function")
+    ? window.PulseLog
     : (typeof console !== "undefined" && typeof console.log === "function"
         ? console.log
         : () => {});
 
 const CNS_DIAGNOSTICS_ENABLED =
   hasWindow &&
-  (global.PULSE_CNS_DIAGNOSTICS === "true" ||
-    global.PULSE_DIAGNOSTICS === "true");
+  (window.PULSE_CNS_DIAGNOSTICS === "true" ||
+    window.PULSE_DIAGNOSTICS === "true");
 
 const logCNS = (stage, details = {}) => {
   if (!CNS_DIAGNOSTICS_ENABLED) return;
@@ -150,10 +150,10 @@ const CNSPageScanner = {
 
       if (
         hasWindow &&
-        global.PageScannerAdapter &&
-        typeof global.PageScannerAdapter.onEvent === "function"
+        window.PageScannerAdapter &&
+        typeof window.PageScannerAdapter.onEvent === "function"
       ) {
-        global.PageScannerAdapter.onEvent(packet);
+        window.PageScannerAdapter.onEvent(packet);
       }
 
       if (typeof packet.severity === "number") {
@@ -234,7 +234,7 @@ function safeRun(label, fn) {
 const Transport = {
   async callEndpoint(type, payload) {
     const offlineMode =
-      hasWindow && global.PULSE_OFFLINE_MODE === true;
+      hasWindow && window.PULSE_OFFLINE_MODE === true;
 
     // OFFLINE BAND
     if (offlineMode) {
@@ -246,9 +246,9 @@ const Transport = {
       });
 
       const localEndpoint =
-        hasWindow && global.PulseLocalEndpoint &&
-        typeof global.PulseLocalEndpoint.handle === "function"
-          ? global.PulseLocalEndpoint
+        hasWindow && window.PulseLocalEndpoint &&
+        typeof window.PulseLocalEndpoint.handle === "function"
+          ? window.PulseLocalEndpoint
           : null;
 
       if (localEndpoint) {
@@ -294,9 +294,9 @@ const Transport = {
     });
 
     const remoteEndpoint =
-      hasWindow && global.PulseRemoteEndpoint &&
-      typeof global.PulseRemoteEndpoint.handle === "function"
-        ? global.PulseRemoteEndpoint
+      hasWindow && window.PulseRemoteEndpoint &&
+      typeof window.PulseRemoteEndpoint.handle === "function"
+        ? window.PulseRemoteEndpoint
         : null;
 
     if (!remoteEndpoint) {
@@ -358,7 +358,7 @@ const Transport = {
 
   async callCheckRouterMemory(logs) {
     const offlineMode =
-      hasWindow && global.PULSE_OFFLINE_MODE === true;
+      hasWindow && window.PULSE_OFFLINE_MODE === true;
 
     // always run local router-memory validator first
     CNS_HEALING.lastRouterMemoryCheck = safeRun("checkRouterMemory", () =>
@@ -377,9 +377,9 @@ const Transport = {
     }
 
     const remoteEndpoint =
-      hasWindow && global.PulseRemoteEndpoint &&
-      typeof global.PulseRemoteEndpoint.handle === "function"
-        ? global.PulseRemoteEndpoint
+      hasWindow && window.PulseRemoteEndpoint &&
+      typeof window.PulseRemoteEndpoint.handle === "function"
+        ? window.PulseRemoteEndpoint
         : null;
 
     if (!remoteEndpoint) {
@@ -426,7 +426,7 @@ const Transport = {
 
   async callRouteDownAlert(error, type) {
     const offlineMode =
-      hasWindow && global.PULSE_OFFLINE_MODE === true;
+      hasWindow && window.PULSE_OFFLINE_MODE === true;
 
     if (offlineMode) {
       logCNS("ALERT_SKIP_OFFLINE", { error, type, band: "offline" });
@@ -441,9 +441,9 @@ const Transport = {
     }
 
     const remoteEndpoint =
-      hasWindow && global.PulseRemoteEndpoint &&
-      typeof global.PulseRemoteEndpoint.handle === "function"
-        ? global.PulseRemoteEndpoint
+      hasWindow && window.PulseRemoteEndpoint &&
+      typeof window.PulseRemoteEndpoint.handle === "function"
+        ? window.PulseRemoteEndpoint
         : null;
 
     if (!remoteEndpoint) {
@@ -511,8 +511,8 @@ export async function logEvent(eventType, data) {
   );
 
   const page =
-    hasWindow && global.location
-      ? global.location.pathname
+    hasWindow && window.location
+      ? window.location.pathname
       : null;
 
   if (RouterMemory && typeof RouterMemory.push === "function") {
@@ -761,7 +761,7 @@ export async function route(type, payload = {}) {
       if (RouterMemory && typeof RouterMemory.push === "function") {
         RouterMemory.push({
           eventType: "frontendEnvMismatch",
-          repairHint: "Replace process.env.* with global.PULSE_*",
+          repairHint: "Replace process.env.* with window.PULSE_*",
           timestamp: ++routerEventSeq,
           signature,
           band,
@@ -800,7 +800,7 @@ export async function route(type, payload = {}) {
     }
 
     const offlineMode =
-      hasWindow && global.PULSE_OFFLINE_MODE === true;
+      hasWindow && window.PULSE_OFFLINE_MODE === true;
 
     if (!offlineMode && routeFailureCount === 1) {
       logCNS("ROUTE_RETRY", { type, band, dnaTag });

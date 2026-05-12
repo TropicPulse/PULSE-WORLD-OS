@@ -72,7 +72,7 @@
 //
 // FORBIDDEN IMPORTS
 // -----------------
-// • global.*, document.*, DOM APIs
+// • window.*, document.*, DOM APIs
 // • UI modules
 // • Any dynamic import
 //
@@ -138,10 +138,10 @@ export const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const STRIPE_PASSWORD = process.env.STRIPE_SECRET_KEY;
 const JWT_SECRET = process.env.JWT_SECRET;
 // CLOUD RUN ENVIRONMENTS
-const TP_API_KEY = global.TP_API_KEY;
-const BASE_PAYMENT_URL = global.BASE_PAYMENT_URL;
-const GOOGLE_MAPS_KEY = global.GOOGLE_MAPS_KEY;
-const PLACEHOLDER_IMAGE_URL = global.PLACEHOLDER_IMAGE_URL;
+const TP_API_KEY = window.TP_API_KEY;
+const BASE_PAYMENT_URL = window.BASE_PAYMENT_URL;
+const GOOGLE_MAPS_KEY = window.GOOGLE_MAPS_KEY;
+const PLACEHOLDER_IMAGE_URL = window.PLACEHOLDER_IMAGE_URL;
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_SECRET_WEBHOOK;
 const MESSAGING_SERVICE_SID = process.env.MESSAGING_SERVICE_SID;
@@ -662,7 +662,7 @@ export const generateMap = onRequest(
     }
 
     try {
-      const mapsKey = global.GOOGLE_MAPS_KEY;
+      const mapsKey = window.GOOGLE_MAPS_KEY;
       if (!mapsKey) {
         return res.status(500).json({ success: false, error: "Missing mapsKey env var" });
       }
@@ -8837,7 +8837,7 @@ function normalizeCountry(input) {
 // ============================================================================
 
 if (typeof window !== "undefined") {
-  global.PulseHooks = {
+  window.PulseHooks = {
     async sendPin(payload) {
       console.log("[VAULT] sendPin → backend", payload);
 

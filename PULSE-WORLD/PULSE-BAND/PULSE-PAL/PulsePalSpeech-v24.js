@@ -138,10 +138,10 @@ export function PulsePalSpeech({ Router, Icons, Media }) {
           <input id="pulsepal-input"
                  class="evo-input"
                  placeholder="Say something…"
-                 onkeydown="if(event.key==='Enter'){ global.PulsePalSendMessage(); }" />
+                 onkeydown="if(event.key==='Enter'){ window.PulsePalSendMessage(); }" />
 
           <button class="evo-button"
-                  onclick="global.PulsePalSendMessage()">
+                  onclick="window.PulsePalSendMessage()">
             <img src="\${Icons.resolve('send')}" class="evo-icon" />
             Send
           </button>
@@ -153,7 +153,7 @@ export function PulsePalSpeech({ Router, Icons, Media }) {
 
     <!-- SCRIPT: MESSAGE HANDLING -------------------------------------------->
     <script>
-      global.PulsePalSendMessage = function() {
+      window.PulsePalSendMessage = function() {
         const input  = document.getElementById('pulsepal-input');
         const stream = document.getElementById('pulsepal-stream');
         const typing = document.getElementById('pulsepal-typing');

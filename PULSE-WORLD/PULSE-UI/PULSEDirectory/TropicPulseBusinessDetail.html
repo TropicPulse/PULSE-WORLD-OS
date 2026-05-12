@@ -1040,7 +1040,7 @@ body::before {
 
   let currentUserLocation = null;
 
-  const params = new URLSearchParams(global.location.search);
+  const params = new URLSearchParams(window.location.search);
   const businessID = params.get("id");
   // const auth = firebase.auth();    // ❌ remove this line
   function el(id){ return document.getElementById(id) || null; }
@@ -1108,12 +1108,12 @@ body::before {
   // No identity or not trusted → go to login
   if (!id || !id.trustedDevice) {
     const here = encodeURIComponent(location.pathname + location.search);
-    global.location.href = `/CheckEmail.html?returnTo=${here}`;
+    window.location.href = `/CheckEmail.html?returnTo=${here}`;
     return null;
   }
 
   // Expose canonical identity for the rest of the page
-  global.PulseIdentity = id;
+  window.PulseIdentity = id;
   return id;
 }
 
@@ -1121,8 +1121,8 @@ body::before {
    * CAROUSEL OVERLAYS (UNCHANGED)
    ************************************************************/
   function initializeOverlays() {
-    if (global.__tp_carousel_handlers_bound) return;
-    global.__tp_carousel_handlers_bound = true;
+    if (window.__tp_carousel_handlers_bound) return;
+    window.__tp_carousel_handlers_bound = true;
 
     const leftArrow  = el('leftArrow');
     const rightArrow = el('rightArrow');
@@ -1170,8 +1170,8 @@ body::before {
 /* -------------------------------------------------
    4. GLOBAL CLICK HANDLER (idempotent)
 -------------------------------------------------- */
-if (!global.__tp_global_click_installed) {
-  global.__tp_global_click_installed = true;
+if (!window.__tp_global_click_installed) {
+  window.__tp_global_click_installed = true;
 
   document.addEventListener("click", (e) => {
     document.querySelectorAll(".calendar-menu").forEach(menu => {
@@ -1196,32 +1196,32 @@ if (!document.__loyaltyVisibilityBound) {
 // -----------------------------------------
 // ⭐ PREVENT DUPLICATE LISTENERS
 // -----------------------------------------
-if (!global.__pulsebandListenersAttached) {
-  global.__pulsebandListenersAttached = true;
+if (!window.__pulsebandListenersAttached) {
+  window.__pulsebandListenersAttached = true;
 
   // ⭐ 1. Restore state on load (runs ONCE)
-  global.addEventListener("load", () => {
+  window.addEventListener("load", () => {
     const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-    const disabled = (global.isIdle === true && inactiveFlag === true);
+    const disabled = (window.isIdle === true && inactiveFlag === true);
 
     if (disabled) {
-      global.isIdle = true;
+      window.isIdle = true;
     } else {
-      global.isIdle = false;
+      window.isIdle = false;
     }
   });
 
   // ⭐ 2. Badge toggle listener
   document.getElementById("pb-mini-badge").addEventListener("click", () => {
     const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-    const disabled = (global.isIdle === true && inactiveFlag === true);
+    const disabled = (window.isIdle === true && inactiveFlag === true);
 
     if (disabled) {
       localStorage.removeItem("pulseband_disabled");
-      global.isIdle = false;
+      window.isIdle = false;
     } else {
       localStorage.setItem("pulseband_disabled", "1");
-      global.isIdle = true;
+      window.isIdle = true;
     }
   });
 }
@@ -1611,7 +1611,7 @@ function updateMassEmailBadge(total) {
 -------------------------------------------------- */
 async function fetchUserCredits(email) {
   // v9.3 — credits come from sessionCheck() identity snapshot
-  const notif = global.tpNotifications || {};
+  const notif = window.tpNotifications || {};
 
   return {
     freeRemaining: Math.max(
@@ -1629,7 +1629,7 @@ async function fetchUserCredits(email) {
 async function loadBusiness() {
   try {
     // v9.3 — NO CACHE MANAGER, NO FIRESTORE, NO BACKEND
-    const b = global.__pulseBusiness || null;
+    const b = window.__pulseBusiness || null;
 
     if (!b) {
       error("loadBusiness error: business not preloaded");
@@ -1991,7 +1991,7 @@ async function renderBusiness(biz) {
     badge.className = "edit-badge-detail";
     badge.innerHTML = "✏️ Edit";
     badge.onclick = () => {
-      global.location.href =
+      window.location.href =
         `/EditBusiness.html?id=${encodeURIComponent(biz.id)}`;
     };
     carousel.appendChild(badge);
@@ -2181,7 +2181,7 @@ if (confirmYes && !confirmYes._tp_handler) {
 
       if (status === "no_credits" && paymentLink) {
         showToast("You're Out of Credits. Redirecting...");
-        setTimeout(() => global.location.replace(paymentLink), 800);
+        setTimeout(() => window.location.replace(paymentLink), 800);
         return;
       }
 
@@ -2335,7 +2335,7 @@ let __tp_overlay_resize_timeout = null;
 
 function applyTropicOverlay(name, iconUrl = null) {
   // Remove any previous resize handler (idempotent)
-  global.removeEventListener("resize", global.__tp_overlay_resize_handler);
+  window.removeEventListener("resize", window.__tp_overlay_resize_handler);
 
   const overlay   = document.getElementById("tpOverlay");
   const dot       = document.getElementById("tpDot");
@@ -2370,14 +2370,14 @@ function applyTropicOverlay(name, iconUrl = null) {
   overlay.style.display = "block";
 
   // Install new resize handler
-  global.__tp_overlay_resize_handler = () => {
+  window.__tp_overlay_resize_handler = () => {
     clearTimeout(__tp_overlay_resize_timeout);
     __tp_overlay_resize_timeout = setTimeout(() => {
       applyTropicOverlay(labelText.textContent, icon.src || null);
     }, 150);
   };
 
-  global.addEventListener("resize", global.__tp_overlay_resize_handler);
+  window.addEventListener("resize", window.__tp_overlay_resize_handler);
 }
 // -----------------------------
 // BUSINESS PAGE BOOTSTRAP — v11 CLEAN

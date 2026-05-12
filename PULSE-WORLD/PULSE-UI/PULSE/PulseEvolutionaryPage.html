@@ -68,7 +68,7 @@
         return {
           lineage: "v16-evo-immortal",
           stable: true,
-          page: global.location.pathname
+          page: window.location.pathname
         };
       },
       recordPageLineage(model) {
@@ -81,8 +81,8 @@
     // ============================================================================
     function capturePageState() {
       return {
-        scrollX: global.scrollX,
-        scrollY: global.scrollY,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
         anchor:
           document.activeElement &&
           (document.activeElement.id ||
@@ -94,8 +94,8 @@
     function actNowRestore(state) {
       if (!state) return;
       try {
-        if (typeof global.scrollTo === "function") {
-          global.scrollTo(state.scrollX || 0, state.scrollY || 0);
+        if (typeof window.scrollTo === "function") {
+          window.scrollTo(state.scrollX || 0, state.scrollY || 0);
         }
         if (state.anchor) {
           const el =
@@ -143,7 +143,7 @@
     // ============================================================================
     // INSTANTIATE UI ORGANS — v16-EVO-IMMORTAL wiring order
     // ============================================================================
-    const routeId = global.location.pathname || "PulseEvolutionaryPage";
+    const routeId = window.location.pathname || "PulseEvolutionaryPage";
 
     // 1) Long‑term memory (route‑aware)
     const MemoryOrgan = createPulseEvolutionaryMemory({
@@ -254,7 +254,7 @@
 
       await prewarmEvolutionaryMembrane();
 
-      const PulseSkinReflex = global.PulseSkinReflex || {};
+      const PulseSkinReflex = window.PulseSkinReflex || {};
       const trust =
         typeof PulseSkinReflex.checkTrust === "function"
           ? await PulseSkinReflex.checkTrust()
@@ -273,7 +273,7 @@
         });
 
         // OUTSIDE mode: minimal interface, no internal routing
-        global.PulseEvolutionaryPage = {
+        window.PulseEvolutionaryPage = {
           evolve: async (payload) => {
             const pre = capturePageState();
 
@@ -316,7 +316,7 @@
       }
 
       // INSIDE mode: full internal interface
-      global.PulseEvolutionaryPage = {
+      window.PulseEvolutionaryPage = {
         evolve: async (payload) => {
           const pre = capturePageState();
 

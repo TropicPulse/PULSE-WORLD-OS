@@ -822,7 +822,7 @@ async function loadHistory(uid) {
 // • Source of truth = TPLoyalty.pointsBalance (never trust client)
 // • Minimum redemption = 500 points
 // • Redemptions must be in increments of 500
-// • Seasonal multipliers live in TPSettings/global.seasonalPeriods
+// • Seasonal multipliers live in TPSettings/window.seasonalPeriods
 //
 // ⭐ EVOLUTION IDEAS ⭐
 // --------------------

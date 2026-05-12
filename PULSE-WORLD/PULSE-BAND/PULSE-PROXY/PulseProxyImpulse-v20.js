@@ -328,7 +328,7 @@ function buildImpulseWorldLensField(impulse) {
 
 function impulseLog(event, data) {
   if (typeof window === "undefined") return;
-  if (!global.PULSE_IMPULSE_DIAGNOSTICS) return;
+  if (!window.PULSE_IMPULSE_DIAGNOSTICS) return;
   if (typeof console?.log !== "function") return;
   console.log("[ImpulseEngine-v20-Immortal]", event, { ...data, ctx: IMPULSE_CONTEXT });
 }
@@ -938,14 +938,14 @@ export const Impulse = {
 
     persistReturnSurface("return", impulse, snap);
 
-    if (typeof window !== "undefined" && global.PulseBand?.receiveImpulseReturn) {
-      global.PulseBand.receiveImpulseReturn(impulse, snap);
+    if (typeof window !== "undefined" && window.PulseBand?.receiveImpulseReturn) {
+      window.PulseBand.receiveImpulseReturn(impulse, snap);
     }
-    if (typeof window !== "undefined" && global.NerveMap?.ingestImpulse) {
-      global.NerveMap.ingestImpulse(snap);
+    if (typeof window !== "undefined" && window.NerveMap?.ingestImpulse) {
+      window.NerveMap.ingestImpulse(snap);
     }
-    if (typeof window !== "undefined" && global.PathwayMemory?.recordImpulse) {
-      global.PathwayMemory.recordImpulse(snap);
+    if (typeof window !== "undefined" && window.PathwayMemory?.recordImpulse) {
+      window.PathwayMemory.recordImpulse(snap);
     }
   },
 

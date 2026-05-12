@@ -29,8 +29,8 @@ export const CLEANUP_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-const admin = global.db;
-const db    = global.db;
+const admin = window.db;
+const db    = window.db;
 
 const CLEANUP_DIAGNOSTICS_ENABLED =
   process.env.PULSE_BAND_CLEANUP_DIAGNOSTICS === "true" ||

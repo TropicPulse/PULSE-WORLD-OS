@@ -28,7 +28,7 @@
  *    • PROXY MODE AWARENESS (symbolic-only, meta-level).
  *    • WORLD-OS UPGRADE HINTS.
  *    • SNAPSHOT ENRICHMENT (proxySummary + upgradeSummary).
- *    • ADDON HOOKS (global.PulseDaemonProxyTap).
+ *    • ADDON HOOKS (window.PulseDaemonProxyTap).
  *
  *  v24-PAL-HELPER ADDITIONS:
  *    • PULSE-PAL AWARENESS:
@@ -43,7 +43,7 @@
  *        - Adds palHelperSuggestions for dashboards / humans.
  *        - Adds palHistory + palPersona surfaces when available.
  *    • ADDON HOOKS:
- *        - global.PulseDaemonPalTap for higher-level OS to observe pal state.
+ *        - window.PulseDaemonPalTap for higher-level OS to observe pal state.
  *
  *  STILL ONE-FILE, ZERO-DEPENDENCY, AUTO-ORGANISM DAEMON
  *  NOW UPGRADED TO v24-IMMORTAL-WORLD-OS-PAL-PROXY-HELPER.
@@ -961,8 +961,8 @@ class PulseBandDaemon {
     // v24: optional world-binary / substrate view injected by main OS
     // This is *read-only*, daemon never routes or mutates it.
     const worldBinaryView =
-      (global.PulseWorldBinarySnapshot && typeof global.PulseWorldBinarySnapshot === "object")
-        ? global.PulseWorldBinarySnapshot
+      (window.PulseWorldBinarySnapshot && typeof window.PulseWorldBinarySnapshot === "object")
+        ? window.PulseWorldBinarySnapshot
         : null;
 
     // Per-organ tick is now substrate-aware (if worldBinaryView is present)
@@ -984,10 +984,10 @@ class PulseBandDaemon {
     let palPersona = this.palPersona;
     try {
       if (
-        global.PulsePalPersonaEngine &&
-        typeof global.PulsePalPersonaEngine.compute === "function"
+        window.PulsePalPersonaEngine &&
+        typeof window.PulsePalPersonaEngine.compute === "function"
       ) {
-        palPersona = global.PulsePalPersonaEngine.compute({
+        palPersona = window.PulsePalPersonaEngine.compute({
           daemonSnapshot: this.lastSnapshot,
           palSummary: this.palSummary,
           palHistory: palHistory,
@@ -1065,15 +1065,15 @@ class PulseBandDaemon {
       }
     }
 
-    if (global.PulseDaemonProxyTap) {
+    if (window.PulseDaemonProxyTap) {
       try {
-        global.PulseDaemonProxyTap(this.lastSnapshot);
+        window.PulseDaemonProxyTap(this.lastSnapshot);
       } catch {}
     }
 
-    if (global.PulseDaemonPalTap) {
+    if (window.PulseDaemonPalTap) {
       try {
-        global.PulseDaemonPalTap({
+        window.PulseDaemonPalTap({
           palSummary: this.palSummary,
           palHistory: this.palHistory,
           palPersona: this.palPersona,

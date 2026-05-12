@@ -69,8 +69,8 @@ const hasWindow = typeof window !== "undefined";
 
 const MESH_DIAGNOSTICS_ENABLED =
   hasWindow &&
-  (global.PULSE_MESH_DIAGNOSTICS === "true" ||
-    global.PULSE_DIAGNOSTICS === "true");
+  (window.PULSE_MESH_DIAGNOSTICS === "true" ||
+    window.PULSE_DIAGNOSTICS === "true");
 
 const logMesh = (stage, details = {}) => {
   if (!MESH_DIAGNOSTICS_ENABLED) return;
@@ -133,10 +133,10 @@ function _clamp01(v) {
   return n;
 }
 
-// optional presence hint: global.PULSE_PRESENCE_DENSITY ∈ [0,1]
+// optional presence hint: window.PULSE_PRESENCE_DENSITY ∈ [0,1]
 function _presenceDensity() {
   if (!hasWindow) return 0;
-  const v = global.PULSE_PRESENCE_DENSITY;
+  const v = window.PULSE_PRESENCE_DENSITY;
   return _clamp01(typeof v === "number" ? v : 0);
 }
 
@@ -286,8 +286,8 @@ export async function meshHelper(helperName, payload = {}) {
 // ============================================================================
 let meshHealing = false;
 
-if (hasWindow && typeof global.addEventListener === "function") {
-  global.addEventListener(
+if (hasWindow && typeof window.addEventListener === "function") {
+  window.addEventListener(
     "error",
     async (event) => {
       if (meshHealing) return;
@@ -328,7 +328,7 @@ if (hasWindow && typeof global.addEventListener === "function") {
 
         logMesh("MESH_ENV_MISMATCH", {
           error: "meshEnvMismatch",
-          hint: "Replace process.env.* with global.PULSE_*"
+          hint: "Replace process.env.* with window.PULSE_*"
         });
         return;
       }

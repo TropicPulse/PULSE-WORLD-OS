@@ -176,12 +176,12 @@ export function detectOutagesV3(history, config = {}, context = {}) {
   for (let i = 0; i <= h.length - outageWindow; i++) {
     const window = h.slice(i, i + outageWindow);
     const allZero =
-      global.length > 0 && global.every((entry) => entry.value === 0);
+      window.length > 0 && window.every((entry) => entry.value === 0);
 
     if (allZero) {
       outages.push({
         start: window[0].timestamp,
-        end: window[global.length - 1].timestamp
+        end: window[window.length - 1].timestamp
       });
 
       context.logStep?.(

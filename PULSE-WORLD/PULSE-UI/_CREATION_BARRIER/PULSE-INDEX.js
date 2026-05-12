@@ -1,7 +1,7 @@
 // ============================================================================
 //  PULSE-INDEX v27 — IMMORTAL++ REAL PULSE
 //  Frontend UI • Portal-Signal Driven (when present) • Self-Pulsing Fallback
-//  Reads from global.PulsePortal.getSignal() but DOES NOT depend on old signals
+//  Reads from window.PulsePortal.getSignal() but DOES NOT depend on old signals
 // ============================================================================
 
 // IMMORTAL COLOR CONSTANTS
@@ -92,8 +92,8 @@ let __DOM_START = performance.now();
 logID("DOM START", true);
 
 
-if (!global.__PULSE_UI_INIT__) {
-  global.__PULSE_UI_INIT__ = true;
+if (!window.__PULSE_UI_INIT__) {
+  window.__PULSE_UI_INIT__ = true;
 
   document.addEventListener("DOMContentLoaded", () => {
     // End DOM timing
@@ -155,29 +155,29 @@ if (!global.__PULSE_UI_INIT__) {
     function getSignalSnapshot() {
       try {
         // Primary: PulseSignal bus (backed by localStorage)
-        if (global.PulseSignal && typeof global.PulseSignal.getState === "function") {
-          const state = global.PulseSignal.getState();
+        if (window.PulseSignal && typeof window.PulseSignal.getState === "function") {
+          const state = window.PulseSignal.getState();
           if (state) return state;
         }
 
         // Fallback: PulseProofSignal.latest (merged top-layer)
-        if (global.PulseProofSignal && typeof global.PulseProofSignal.latest === "function") {
-          const latest = global.PulseProofSignal.latest();
+        if (window.PulseProofSignal && typeof window.PulseProofSignal.latest === "function") {
+          const latest = window.PulseProofSignal.latest();
           if (latest) return latest;
         }
 
         // Legacy: Portal signal
-        if (global.PulsePortal && typeof global.PulsePortal.getSignal === "function") {
-          return global.PulsePortal.getSignal();
+        if (window.PulsePortal && typeof window.PulsePortal.getSignal === "function") {
+          return window.PulsePortal.getSignal();
         }
 
         // Legacy: PulseBand signal
-        if (global.PulseBand && typeof global.PulseBand.getSignal === "function") {
-          return global.PulseBand.getSignal();
+        if (window.PulseBand && typeof window.PulseBand.getSignal === "function") {
+          return window.PulseBand.getSignal();
         }
 
         // Last resort: cached snapshot
-        return global.__PULSE_LAST_SIGNAL__ || null;
+        return window.__PULSE_LAST_SIGNAL__ || null;
       } catch {
         return null;
       }
@@ -191,7 +191,7 @@ if (!global.__PULSE_UI_INIT__) {
         const snap = getSignalSnapshot();
         if (!snap) return;
 
-        global.__PULSE_LAST_SIGNAL__ = snap;
+        window.__PULSE_LAST_SIGNAL__ = snap;
 
         const signalBars  = snap && snap.network && snap.network.bars != null ? snap.network.bars : "—";
         const phoneBars   = snap && snap.device && snap.device.bars != null ? snap.device.bars : signalBars;
@@ -228,13 +228,13 @@ if (!global.__PULSE_UI_INIT__) {
     // Boot core beasts: PulseBand, BinaryOS, DualBandAI (if present)
     // -------------------------------------------------------------------------
     try {
-      if (global.PulseBand && typeof global.PulseBand.emit === "function") {
+      if (window.PulseBand && typeof window.PulseBand.emit === "function") {
         logOK("PulseBand detected — starting session");
-        global.PulseBand.emit("request", { type: "start" });
+        window.PulseBand.emit("request", { type: "start" });
 
-        if (typeof global.PulseBand.on === "function") {
-          global.PulseBand.on("signal", function (packet) {
-            global.__PULSE_LAST_SIGNAL__ = packet && (packet.state || packet);
+        if (typeof window.PulseBand.on === "function") {
+          window.PulseBand.on("signal", function (packet) {
+            window.__PULSE_LAST_SIGNAL__ = packet && (packet.state || packet);
             onPulse();
           });
         }
@@ -242,13 +242,13 @@ if (!global.__PULSE_UI_INIT__) {
         logWarn("PulseBand not found — skipping PulseBand auto-start");
       }
 
-      if (global.BinaryOS && typeof global.BinaryOS.boot === "function") {
-        global.BinaryOS.boot();
+      if (window.BinaryOS && typeof window.BinaryOS.boot === "function") {
+        window.BinaryOS.boot();
         logOK("BinaryOS booted");
       }
 
-      if (global.DualBandAI && typeof global.DualBandAI.boot === "function") {
-        global.DualBandAI.boot();
+      if (window.DualBandAI && typeof window.DualBandAI.boot === "function") {
+        window.DualBandAI.boot();
         logOK("DualBandAI booted");
       }
     } catch (err) {
@@ -259,7 +259,7 @@ if (!global.__PULSE_UI_INIT__) {
 // PULSE SIGNAL SUBSCRIBE (IMMORTAL++ LOCALSTORAGE BUS)
 // -------------------------------------------------------------------------
 try {
-  const PS = global.PulseSignal;
+  const PS = window.PulseSignal;
 
   // ⭐ 1 — Subscribe to live PulseSignal engine (if available)
   if (PS && typeof PS.subscribe === "function") {
@@ -267,7 +267,7 @@ try {
       const state = packet && (packet.state || packet);
 
       // Save last signal in memory
-      global.__PULSE_LAST_SIGNAL__ = state;
+      window.__PULSE_LAST_SIGNAL__ = state;
 
       // ⭐ IMMORTAL++ broadcast to localStorage
       try {
@@ -283,11 +283,11 @@ try {
   }
 
   // ⭐ 2 — Listen for localStorage events (cross-tab, cross-window)
-  global.addEventListener("storage", function (e) {
+  window.addEventListener("storage", function (e) {
     if (e.key === "__pulse_signal__") {
       try {
         const packet = e.newValue ? JSON.parse(e.newValue) : null;
-        global.__PULSE_LAST_SIGNAL__ = packet;
+        window.__PULSE_LAST_SIGNAL__ = packet;
         onPulse();
       } catch {
         // ignore
@@ -299,7 +299,7 @@ try {
   try {
     const last = localStorage.getItem("__pulse_signal__");
     if (last) {
-      global.__PULSE_LAST_SIGNAL__ = JSON.parse(last);
+      window.__PULSE_LAST_SIGNAL__ = JSON.parse(last);
       onPulse();
     }
   } catch {}
@@ -335,12 +335,12 @@ try {
     });
 
     // 4 — Network pulse
-    global.addEventListener("online",  function () { logOK("Network online pulse");  onPulse(); });
-    global.addEventListener("offline", function () { logWarn("Network offline pulse"); onPulse(); });
+    window.addEventListener("online",  function () { logOK("Network online pulse");  onPulse(); });
+    window.addEventListener("offline", function () { logWarn("Network offline pulse"); onPulse(); });
 
     // 5 — User interaction pulse
     ["click", "keydown", "mousemove", "touchstart"].forEach(function (evt) {
-      global.addEventListener(evt, function () {
+      window.addEventListener(evt, function () {
         try { onPulse(); } catch {}
       }, { passive: true });
     });

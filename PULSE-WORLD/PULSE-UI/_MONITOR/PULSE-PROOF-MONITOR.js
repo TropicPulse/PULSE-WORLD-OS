@@ -73,12 +73,12 @@ const fetchFn =
 //  ONLINE FLAG
 // ============================================================================
 function isOnline() {
-  if (typeof window !== "undefined" && typeof global.PULSE_ONLINE === "boolean")
-    return global.PULSE_ONLINE;
-  if (typeof globalThis !== "undefined" && typeof global.PULSE_ONLINE === "boolean")
-    return global.PULSE_ONLINE;
-  if (typeof global !== "undefined" && typeof global.PULSE_ONLINE === "boolean")
-    return global.PULSE_ONLINE;
+  if (typeof window !== "undefined" && typeof window.PULSE_ONLINE === "boolean")
+    return window.PULSE_ONLINE;
+  if (typeof globalThis !== "undefined" && typeof window.PULSE_ONLINE === "boolean")
+    return window.PULSE_ONLINE;
+  if (typeof global !== "undefined" && typeof window.PULSE_ONLINE === "boolean")
+    return window.PULSE_ONLINE;
   if (typeof g.PULSE_ONLINE === "boolean") return g.PULSE_ONLINE;
   return false;
 }
@@ -204,9 +204,9 @@ const VITALS_LS_MAX = 4000;
 
 function hasLocalStorage() {
   try {
-    if (typeof window === "undefined" || !global.localStorage) return false;
-    global.localStorage.setItem("__pulse_vitals_test__", "1");
-    global.localStorage.removeItem("__pulse_vitals_test__");
+    if (typeof window === "undefined" || !window.localStorage) return false;
+    window.localStorage.setItem("__pulse_vitals_test__", "1");
+    window.localStorage.removeItem("__pulse_vitals_test__");
     return true;
   } catch {
     return false;
@@ -216,7 +216,7 @@ function hasLocalStorage() {
 function loadVitalsBuffer() {
   if (!hasLocalStorage()) return [];
   try {
-    const raw = global.localStorage.getItem(VITALS_LS_KEY);
+    const raw = window.localStorage.getItem(VITALS_LS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -230,7 +230,7 @@ function saveVitalsBuffer(buf) {
   try {
     const trimmed =
       buf.length > VITALS_LS_MAX ? buf.slice(buf.length - VITALS_LS_MAX) : buf;
-    global.localStorage.setItem(VITALS_LS_KEY, JSON.stringify(trimmed));
+    window.localStorage.setItem(VITALS_LS_KEY, JSON.stringify(trimmed));
   } catch {
     // never throw
   }
@@ -302,7 +302,7 @@ async function flushVitalsToFirebase() {
 
 if (typeof window !== "undefined") {
   if (isOnline()) flushVitalsToFirebase().catch(() => {});
-  global.addEventListener("online", () => flushVitalsToFirebase().catch(() => {}));
+  window.addEventListener("online", () => flushVitalsToFirebase().catch(() => {}));
 }
 
 // ============================================================================
@@ -732,8 +732,8 @@ export function attachVitalsMonitor({
   }
 
   // Frontend global error hook
-  if (typeof window !== "undefined" && typeof global.addEventListener === "function") {
-    global.addEventListener("error", (event) => {
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("error", (event) => {
       VitalsState.lastErrorSeq += 1;
       markPulse("windowError", {
         seq: VitalsState.lastErrorSeq,
@@ -812,16 +812,16 @@ export const VitalsMonitor = {
 // ============================================================================
 try {
   if (typeof global !== "undefined") {
-    global.PulseVitalsStore = PulseVitalsStore;
-    global.VitalsMonitor = VitalsMonitor;
+    window.PulseVitalsStore = PulseVitalsStore;
+    window.VitalsMonitor = VitalsMonitor;
   }
   if (typeof globalThis !== "undefined") {
-    global.PulseVitalsStore = PulseVitalsStore;
-    global.VitalsMonitor = VitalsMonitor;
+    window.PulseVitalsStore = PulseVitalsStore;
+    window.VitalsMonitor = VitalsMonitor;
   }
   if (typeof window !== "undefined") {
-    global.PulseVitalsStore = PulseVitalsStore;
-    global.VitalsMonitor = VitalsMonitor;
+    window.PulseVitalsStore = PulseVitalsStore;
+    window.VitalsMonitor = VitalsMonitor;
   }
   if (typeof g !== "undefined") {
     g.PulseVitalsStore = PulseVitalsStore;

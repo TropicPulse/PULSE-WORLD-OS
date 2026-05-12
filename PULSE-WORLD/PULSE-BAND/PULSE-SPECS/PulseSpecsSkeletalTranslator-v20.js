@@ -489,7 +489,7 @@ function resolvePrimaryContainer(root, primaryRegion) {
  * @returns {boolean}
  */
 function isVisible(el) {
-  const style = global.getComputedStyle(el);
+  const style = window.getComputedStyle(el);
   if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") {
     return false;
   }
@@ -505,7 +505,7 @@ function isVisible(el) {
  * @returns {boolean}
  */
 function isBlockLevel(el) {
-  const style = global.getComputedStyle(el);
+  const style = window.getComputedStyle(el);
   return style.display === "block" || style.display === "flex" || style.display === "grid";
 }
 
@@ -557,7 +557,7 @@ function getActiveElementInfo(root) {
 function getSelectionInfo(root) {
   try {
     const doc = root.ownerDocument || root;
-    const sel = doc.getSelection ? doc.getSelection() : global.getSelection();
+    const sel = doc.getSelection ? doc.getSelection() : window.getSelection();
     if (!sel || sel.rangeCount === 0) {
       return { text: null };
     }
@@ -586,7 +586,7 @@ function getScrollInfo(root) {
     return {
       scrollTop: scrollingElement.scrollTop || 0,
       scrollHeight: scrollingElement.scrollHeight || 0,
-      viewportHeight: global.innerHeight || 0,
+      viewportHeight: window.innerHeight || 0,
     };
   } catch {
     return {

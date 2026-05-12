@@ -1251,7 +1251,7 @@ text-align: center;
       </div>
       <label class="remember-row"><input type="checkbox" id="staySignedIn"></input><b>Stay Signed On This Device</b></label>
       <div id="rememberSection" class="remember-section" style="display:block;">
-        <div class="signup-link" onclick="global.location.href = `/PulseWorldSkills.html`">Create an Account</div>
+        <div class="signup-link" onclick="window.location.href = `/PulseWorldSkills.html`">Create an Account</div>
       </div>
     </div>
   </div>
@@ -1392,7 +1392,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const sendBtn         = document.getElementById("sendBtn");
   const verifyBtn       = document.getElementById("verifyBtn");
 
-  const params   = new URLSearchParams(global.location.search);
+  const params   = new URLSearchParams(window.location.search);
   const returnTo = params.get("returnTo");
 
   /* ============================================================
@@ -1418,7 +1418,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loginBootstrap() {
     showTPLoader();
 
-    const id = global.PulseIdentity || null;
+    const id = window.PulseIdentity || null;
 
     if (!id) {
       hideTPLoader();
@@ -1427,7 +1427,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     hideTPLoader();
-    global.location.href = returnTo || "/PulseWorldInventory.html";
+    window.location.href = returnTo || "/PulseWorldInventory.html";
   }
 
   /* ============================================================
@@ -1450,11 +1450,11 @@ document.addEventListener("DOMContentLoaded", () => {
     authMsg.style.display = "none";
 
     try {
-      if (typeof global.getHook !== "function") {
+      if (typeof window.getHook !== "function") {
         throw new Error("getHook() is NOT defined — your login page cannot talk to backend.");
       }
 
-      const data = await global.getHook("sendPin", { email, purpose: "login" });
+      const data = await window.getHook("sendPin", { email, purpose: "login" });
 
       console.log("[SEND PIN] RAW RESPONSE:", data);
 
@@ -1522,11 +1522,11 @@ document.addEventListener("DOMContentLoaded", () => {
     authMsg.style.display = "none";
 
     try {
-      if (typeof global.getHook !== "function") {
+      if (typeof window.getHook !== "function") {
         throw new Error("getHook() is NOT defined — cannot verify PIN.");
       }
 
-      const data = await global.getHook("verifyPin", {
+      const data = await window.getHook("verifyPin", {
         email,
         pin,
         purpose: "login"
@@ -1565,9 +1565,9 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error("[IDENTITY STORAGE ERROR]", err);
         }
 
-        global.PulseIdentity = canonical;
+        window.PulseIdentity = canonical;
 
-        global.location.href = returnTo || "/PulseWorldInventory.html";
+        window.location.href = returnTo || "/PulseWorldInventory.html";
         return;
       }
 
@@ -1644,7 +1644,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================================
   function getSignalSnapshot() {
     try {
-      return global.PulsePortal?.getSignal?.() || null;
+      return window.PulsePortal?.getSignal?.() || null;
     } catch {
       return null;
     }
@@ -1694,8 +1694,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================================
   //  SUBSCRIBE TO CNS PULSES — MATCHES INDEX
   // ============================================================================
-  if (global.PulseProofSignal?.subscribe) {
-    global.PulseProofSignal.subscribe(onPulse);
+  if (window.PulseProofSignal?.subscribe) {
+    window.PulseProofSignal.subscribe(onPulse);
     logOK("Pulse-driven UI subscribed to engine (LOGIN)");
   } else {
     logWarn("PulseProofSignal.subscribe missing — LOGIN UI will not pulse");

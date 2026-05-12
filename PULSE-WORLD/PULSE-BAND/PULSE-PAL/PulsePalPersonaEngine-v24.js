@@ -29,7 +29,7 @@
 //   • Zero side effects (except cached lastSnapshot)
 //
 //   Daemon contract (Node side):
-//     global.PulsePalPersonaEngine.compute({
+//     window.PulsePalPersonaEngine.compute({
 //       daemonSnapshot?,   // optional
 //       palSummary?,       // optional
 //       palHistory?        // optional
@@ -331,10 +331,10 @@ export const PulsePalPersonaEngine = {
 // ============================================================================
 try {
   if (typeof globalThis !== "undefined") {
-    global.PulsePalPersonaEngine = PulsePalPersonaEngine;
+    window.PulsePalPersonaEngine = PulsePalPersonaEngine;
   }
   if (typeof window !== "undefined") {
-    global.PulsePalPersonaEngine = PulsePalPersonaEngine;
+    window.PulsePalPersonaEngine = PulsePalPersonaEngine;
   }
 } catch {
   // never throw

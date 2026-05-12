@@ -108,7 +108,7 @@ export function prewarmCognitiveFrame() {
     frame.repair.next?.();
     frame.repair.next?.();
 
-    frame.global.explainSafe?.("prewarm");
+    frame.window.explainSafe?.("prewarm");
 
     frame.frustration.soothe?.();
 

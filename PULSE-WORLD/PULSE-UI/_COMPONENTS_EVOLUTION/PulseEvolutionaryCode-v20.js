@@ -508,13 +508,13 @@ export function createPulseEvolutionaryCode({
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
-    global.PulseEvolutionaryCode = createPulseEvolutionaryCode;
+    window.PulseEvolutionaryCode = createPulseEvolutionaryCode;
   }
   if (typeof globalThis !== "undefined") {
-    global.PulseEvolutionaryCode = createPulseEvolutionaryCode;
+    window.PulseEvolutionaryCode = createPulseEvolutionaryCode;
   }
   if (typeof global !== "undefined") {
-    global.PulseEvolutionaryCode = createPulseEvolutionaryCode;
+    window.PulseEvolutionaryCode = createPulseEvolutionaryCode;
   }
   if (typeof g !== "undefined") {
     g.PulseEvolutionaryCode = createPulseEvolutionaryCode;

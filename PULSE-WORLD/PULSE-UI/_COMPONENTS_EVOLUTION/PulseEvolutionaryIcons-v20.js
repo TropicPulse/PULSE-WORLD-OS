@@ -226,9 +226,9 @@ export function createPulseEvolutionaryIcons({
 // ---------------------------------------------------------------------------
 try {
   if (typeof window !== "undefined") {
-    global.PulseEvolutionaryIcons = createPulseEvolutionaryIcons;
+    window.PulseEvolutionaryIcons = createPulseEvolutionaryIcons;
   }
   if (typeof globalThis !== "undefined") {
-    global.PulseEvolutionaryIcons = createPulseEvolutionaryIcons;
+    window.PulseEvolutionaryIcons = createPulseEvolutionaryIcons;
   }
 } catch {}

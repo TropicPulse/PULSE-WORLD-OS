@@ -42,8 +42,8 @@ const SUBSYSTEM = "circulation";
 
 const DIAG_ENABLED =
   typeof window !== "undefined" &&
-  (global.PULSE_CIRCULATION_DIAGNOSTICS === true ||
-    global.PULSE_DIAGNOSTICS === true);
+  (window.PULSE_CIRCULATION_DIAGNOSTICS === true ||
+    window.PULSE_DIAGNOSTICS === true);
 
 function diag(stage, details = {}) {
   if (!DIAG_ENABLED) return;

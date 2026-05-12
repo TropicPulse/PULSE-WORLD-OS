@@ -347,7 +347,7 @@ export function createPulseWorldRhythm({
   // ---------------------------------------------------------------------------
   //
   // This is the ONLY interval this organ owns.
-  // No hidden timers, no global.online listeners, no boot-time flushes.
+  // No hidden timers, no window.online listeners, no boot-time flushes.
   //
 
   const intervalId = setInterval(() => {

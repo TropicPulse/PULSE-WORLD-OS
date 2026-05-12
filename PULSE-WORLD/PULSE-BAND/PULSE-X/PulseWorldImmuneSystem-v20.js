@@ -311,13 +311,13 @@ export function createPulseWorldImmuneSystem({
 // ---------------------------------------------------------------------------
 try {
   if (typeof window !== "undefined") {
-    global.PulseWorldImmuneSystem = createPulseWorldImmuneSystem;
+    window.PulseWorldImmuneSystem = createPulseWorldImmuneSystem;
   }
   if (typeof globalThis !== "undefined") {
-    global.PulseWorldImmuneSystem = createPulseWorldImmuneSystem;
+    window.PulseWorldImmuneSystem = createPulseWorldImmuneSystem;
   }
   if (typeof global !== "undefined") {
-    global.PulseWorldImmuneSystem = createPulseWorldImmuneSystem;
+    window.PulseWorldImmuneSystem = createPulseWorldImmuneSystem;
   }
 } catch {
   // never throw

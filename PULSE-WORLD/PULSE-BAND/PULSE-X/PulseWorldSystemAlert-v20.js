@@ -60,7 +60,7 @@
 //
 // FORBIDDEN IMPORTS
 // -----------------
-// • global.*, document.*, DOM APIs
+// • window.*, document.*, DOM APIs
 // • UI modules
 // • Any new dependency without INTENT update
 //

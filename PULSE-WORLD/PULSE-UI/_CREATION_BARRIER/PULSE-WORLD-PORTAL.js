@@ -83,10 +83,10 @@ try {
     "color:#E8F8FF; font-family:monospace;"
   );
 
-  global.getHook    = PulseSkinReflex.getHook;
-  global.getAuth    = PulseSkinReflex.getAuth;
-  global.getMap     = PulseSkinReflex.getMap;
-  global.callHelper = PulseSkinReflex.callHelper;
+  window.getHook    = PulseSkinReflex.getHook;
+  window.getAuth    = PulseSkinReflex.getAuth;
+  window.getMap     = PulseSkinReflex.getMap;
+  window.callHelper = PulseSkinReflex.callHelper;
 
 } catch (err) {
   console.error(
@@ -122,10 +122,10 @@ function isBrowser() {
     typeof window !== "undefined" &&
     typeof document !== "undefined" &&
     typeof navigator !== "undefined" &&
-    window === global.window &&
+    window === window.window &&
     document.nodeType === 9 &&
-    typeof global.requestAnimationFrame === "function" &&
-    !global.process &&
+    typeof window.requestAnimationFrame === "function" &&
+    !window.process &&
     !navigator.userAgent.includes("Node")
   );
 }
@@ -156,8 +156,8 @@ function buildSurfaceEnvironment() {
     });
   }
 
-  const nav = global.navigator || {};
-  const scr = global.screen || {};
+  const nav = window.navigator || {};
+  const scr = window.screen || {};
 
   const device = {
     hardwareConcurrency:
@@ -175,8 +175,8 @@ function buildSurfaceEnvironment() {
     availHeight: typeof scr.availHeight === "number" ? scr.availHeight : null,
     colorDepth: typeof scr.colorDepth === "number" ? scr.colorDepth : null,
     pixelRatio:
-      typeof global.devicePixelRatio === "number"
-        ? global.devicePixelRatio
+      typeof window.devicePixelRatio === "number"
+        ? window.devicePixelRatio
         : null
   };
 
@@ -189,7 +189,7 @@ function buildSurfaceEnvironment() {
 
   let prefersReducedMotion = null;
   let prefersDarkMode = null;
-  if (typeof global.matchMedia === "function") {
+  if (typeof window.matchMedia === "function") {
     try {
       prefersReducedMotion = window
         .matchMedia("(prefers-reduced-motion: reduce)")
@@ -212,13 +212,13 @@ function buildSurfaceEnvironment() {
   };
 
   const location = {
-    href: global.location?.href || null,
-    pathname: global.location?.pathname || null,
-    search: global.location?.search || null
+    href: window.location?.href || null,
+    pathname: window.location?.pathname || null,
+    search: window.location?.search || null
   };
 
   const referrer = document?.referrer || null;
-  const origin = global.location?.origin || null;
+  const origin = window.location?.origin || null;
 
   const network = {
     online: typeof nav.onLine === "boolean" ? nav.onLine : null
@@ -230,7 +230,7 @@ function buildSurfaceEnvironment() {
       : null;
 
   // 🔥 v24: structured-clone-safe performance snapshot (NO PerformanceTiming objects)
-  const perf = global.performance || null;
+  const perf = window.performance || null;
   const performanceSnapshot = perf
     ? {
         timeOrigin:
@@ -300,7 +300,7 @@ function buildRouteId() {
       return "PulseWorldBarrier";
     }
 
-    const path = global.location?.pathname || "/";
+    const path = window.location?.pathname || "/";
 
     // ⭐ HARD GUARDS — prevent crashes
     if (!map?.systems?.UI?.pages) {
@@ -447,7 +447,7 @@ if (isBrowser()) {
     }
 
     const waitForTouch = setInterval(() => {
-      if (global.__PULSE_TOUCH__) {
+      if (window.__PULSE_TOUCH__) {
         clearInterval(waitForTouch);
         runPortalWarm();
       }
@@ -456,14 +456,14 @@ if (isBrowser()) {
     // ------------------------------------------------------------------------
     // PORTAL-SAFE FETCH HELPERS — IMAGE + CHUNK + PREWARM
     // ------------------------------------------------------------------------
-    global.fetchImage =
-      global.fetchImage ||
+    window.fetchImage =
+      window.fetchImage ||
       (async function (url) {
         if (!url) return url;
 
         try {
-          if (global.PulseChunks?.getImage) {
-            return await global.PulseChunks.getImage(url);
+          if (window.PulseChunks?.getImage) {
+            return await window.PulseChunks.getImage(url);
           }
         } catch (err) {
           console.error(
@@ -478,19 +478,19 @@ if (isBrowser()) {
         return url;
       });
 
-      global.fetchChunk =
-        global.fetchChunk ||
+      window.fetchChunk =
+        window.fetchChunk ||
         (async function (url) {
           if (!url) return null;
 
           try {
-            if (global.PulseChunks?.PulseChunker) {
+            if (window.PulseChunks?.PulseChunker) {
               const metaPack = {
                 ...baseMetaPack,
                 route: buildRouteId()
               };
 
-              const result = await global.PulseChunks.PulseChunker(url, 0, metaPack);
+              const result = await window.PulseChunks.PulseChunker(url, 0, metaPack);
 
               if (result && typeof result.chunk !== "undefined") {
                 console.log(
@@ -504,8 +504,8 @@ if (isBrowser()) {
               }
             }
 
-      if (global.PulseChunks?.fetchChunk) {
-        const chunk = await global.PulseChunks.fetchChunk(url);
+      if (window.PulseChunks?.fetchChunk) {
+        const chunk = await window.PulseChunks.fetchChunk(url);
         console.log(
           "%c[PulsePortal::fetchChunk] %cfallback chunk loaded %c→ %s",
           "color:#7E57C2; font-weight:bold; font-family:monospace;",
@@ -528,12 +528,12 @@ if (isBrowser()) {
     return null;
   });
 
-global.prewarmAssets =
-  global.prewarmAssets ||
+window.prewarmAssets =
+  window.prewarmAssets ||
   function (urls = []) {
     try {
-      if (global.PulseChunks?.prewarm) {
-        global.PulseChunks.prewarm(urls);
+      if (window.PulseChunks?.prewarm) {
+        window.PulseChunks.prewarm(urls);
 
         console.log(
           "%c[PulsePortal::prewarmAssets] %cprewarmed %c→ %d assets",
@@ -558,8 +558,8 @@ global.prewarmAssets =
 // PULSEPORTAL v30 — ROUTE CARPET (Pure OrganismMap + LocalStorage)
 // ============================================================================
 
-global.PulseRouteCarpet =
-  global.PulseRouteCarpet ||
+window.PulseRouteCarpet =
+  window.PulseRouteCarpet ||
   {
     // ------------------------------------------------------------------------
     // ⭐ Load OrganismMap from localStorage if global is missing
@@ -567,14 +567,14 @@ global.PulseRouteCarpet =
     loadOrganismMap() {
       try {
         // Already loaded globally
-        if (global.PulseOrganismMap) return global.PulseOrganismMap;
+        if (window.PulseOrganismMap) return window.PulseOrganismMap;
 
         // Load from localStorage
         const raw = localStorage.getItem("PulseOrganismMap_v25");
         if (!raw) return null;
 
         const parsed = JSON.parse(raw);
-        global.PulseOrganismMap = parsed;
+        window.PulseOrganismMap = parsed;
 
         console.log("[RouteCarpet] Loaded OrganismMap from localStorage");
         return parsed;
@@ -655,8 +655,8 @@ global.PulseRouteCarpet =
           ...(routeDescriptor?.assets || [])
         ];
 
-        if (urls.length && global.prewarmAssets) {
-          global.prewarmAssets(urls);
+        if (urls.length && window.prewarmAssets) {
+          window.prewarmAssets(urls);
         }
 
         console.log(
@@ -697,11 +697,11 @@ try {
       enumerable: desc.enumerable,
       get: desc.get,
       set(url) {
-        if (!url || !global.fetchImage) {
+        if (!url || !window.fetchImage) {
           return originalSet.call(this, url);
         }
 
-        global.fetchImage(url)
+        window.fetchImage(url)
           .then((blobUrl) => originalSet.call(this, blobUrl || url))
           .catch((err) => {
             console.error(
@@ -736,12 +736,12 @@ try {
 // FETCH PATCH — IMAGE SHORTCUT + OPTIONAL LOGGER ROUTE (PORTAL-SAFE)
 // ------------------------------------------------------------------------
 try {
-  const originalFetch = global.fetch?.bind(window);
+  const originalFetch = window.fetch?.bind(window);
 
-  if (originalFetch && !global.__PulseFetchPatched_v24) {
-    global.__PulseFetchPatched_v24 = true;
+  if (originalFetch && !window.__PulseFetchPatched_v24) {
+    window.__PulseFetchPatched_v24 = true;
 
-    global.fetch = async function (resource, options) {
+    window.fetch = async function (resource, options) {
       try {
         const url =
           typeof resource === "string" ? resource : resource?.url || null;
@@ -750,8 +750,8 @@ try {
           typeof url === "string" &&
           url.match(/\.(png|jpe?g|webp|gif|avif|svg)$/i);
 
-        if (isImage && global.fetchImage) {
-          const blobUrl = await global.fetchImage(url);
+        if (isImage && window.fetchImage) {
+          const blobUrl = await window.fetchImage(url);
 
           console.log(
             "%c[PulsePortal::Fetch] %cimage shortcut %c→ %s",
@@ -765,13 +765,13 @@ try {
         }
 
         const hasLoggerRoute =
-          global.PulseLogger &&
-          typeof global.PulseLogger.route === "function";
+          window.PulseLogger &&
+          typeof window.PulseLogger.route === "function";
 
         if (hasLoggerRoute && typeof url === "string") {
           const safeOptions = portalSafeFetchOptions(options);
 
-          const result = await global.PulseLogger.route("fetchProxy", {
+          const result = await window.PulseLogger.route("fetchProxy", {
             url,
             options: safeOptions
           });
@@ -827,8 +827,8 @@ try {
 // ------------------------------------------------------------------------
 // PULSEBAND REQUEST HANDLER
 // ------------------------------------------------------------------------
-if (global.pulseband && !global.PulseBand) {
-  global.PulseBand = global.pulseband;
+if (window.pulseband && !window.PulseBand) {
+  window.PulseBand = window.pulseband;
 
   console.log(
     "%c[PulsePortal::PulseBand] %chandler active",
@@ -836,7 +836,7 @@ if (global.pulseband && !global.PulseBand) {
     "color:#00FF9C; font-family:monospace;"
   );
 
-  global.PulseBand.on("request", async (packet) => {
+  window.PulseBand.on("request", async (packet) => {
     let url, method, bodyOrQuery;
 
     switch (packet.type) {
@@ -889,11 +889,11 @@ if (global.pulseband && !global.PulseBand) {
 
     try {
       const hasLoggerRoute =
-        global.PulseLogger &&
-        typeof global.PulseLogger.route === "function";
+        window.PulseLogger &&
+        typeof window.PulseLogger.route === "function";
 
       if (hasLoggerRoute) {
-        data = await global.PulseLogger.route("fetchProxy", {
+        data = await window.PulseLogger.route("fetchProxy", {
           url: url + query,
           method,
           body: bodyOrQuery,
@@ -934,8 +934,8 @@ if (global.pulseband && !global.PulseBand) {
     }
 
     try {
-      if (global.PulseBand && data) {
-        global.PulseBand.emit("response:" + packet.sessionId, data);
+      if (window.PulseBand && data) {
+        window.PulseBand.emit("response:" + packet.sessionId, data);
       }
     } catch (err) {
       console.error(
@@ -948,14 +948,14 @@ if (global.pulseband && !global.PulseBand) {
     }
   });
 
-  global.PulseBandStart = (opts) => global.PulseBand.start(opts);
+  window.PulseBandStart = (opts) => window.PulseBand.start(opts);
 }
 
 // ------------------------------------------------------------------------
 // ⭐ NEW: PULSENET_INGRESS + PULSENET_FASTLANE LISTENERS
 // ------------------------------------------------------------------------
-if (global.PulsePortalBridge && typeof global.PulsePortalBridge.on === "function") {
-  global.PulsePortalBridge.on("PULSENET_INGRESS", async (payload) => {
+if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function") {
+  window.PulsePortalBridge.on("PULSENET_INGRESS", async (payload) => {
     try {
       await fetch("/PULSE-PROXY/pulsenet/ingress", {
         method: "POST",
@@ -980,7 +980,7 @@ if (global.PulsePortalBridge && typeof global.PulsePortalBridge.on === "function
     }
   });
 
-  global.PulsePortalBridge.on("PULSENET_FASTLANE", async (payload) => {
+  window.PulsePortalBridge.on("PULSENET_FASTLANE", async (payload) => {
     try {
       await fetch("/PULSE-PROXY/pulsenet/fastlane", {
         method: "POST",
@@ -1036,7 +1036,7 @@ function savePageRoutesDaily(page, routes) {
     const today = new Date().toISOString().slice(0, 10);
 
     // Load existing snapshot
-    const snap = global.PulsePageRouteSnapshot || {};
+    const snap = window.PulsePageRouteSnapshot || {};
 
     // If already saved today → skip
     if (snap.date === today && snap.routes?.[page]) return;
@@ -1047,7 +1047,7 @@ function savePageRoutesDaily(page, routes) {
     snap.routes[page] = routes;
 
     // Save globally
-    global.PulsePageRouteSnapshot = snap;
+    window.PulsePageRouteSnapshot = snap;
 
    setdoc(doc(db, "pulse_page_routes_v26", "daily"), snap);
 
@@ -1062,7 +1062,7 @@ function savePageRoutesDaily(page, routes) {
 // ============================================================================
 function runPortalWarm() {
   try {
-    const touch = global.__PULSE_TOUCH__;
+    const touch = window.__PULSE_TOUCH__;
     if (!touch) {
       console.warn("[PortalWarm] Touch not ready — skipping warm");
       return;
@@ -1078,8 +1078,8 @@ function runPortalWarm() {
     const routes = detectRoutesOnPageSync();
 
     // ⭐ Save to global memory
-    global.PulsePageRoutes = global.PulsePageRoutes || {};
-    global.PulsePageRoutes[page] = routes;
+    window.PulsePageRoutes = window.PulsePageRoutes || {};
+    window.PulsePageRoutes[page] = routes;
 
     // ⭐ Save to Firebase (sync wrapper)
     savePageRoutesDaily(page, routes);
@@ -1087,10 +1087,10 @@ function runPortalWarm() {
     // ========================================================================
     // ⭐ USE PORTAL ROUTER (NOT TOUCH)
     // ========================================================================
-    const next = global.PulseRouteCarpet?.predictNext?.(page);
+    const next = window.PulseRouteCarpet?.predictNext?.(page);
 
     // ⭐ Prewarm assets via RouteCarpet
-    global.PulseRouteCarpet?.unfold?.({
+    window.PulseRouteCarpet?.unfold?.({
       route: next,
       imports: [`./${next}.js`],
       assets: [`./${next}.assets.json`]
@@ -1112,7 +1112,7 @@ function runPortalWarm() {
     // ========================================================================
     let nextRouteHtml = null;
 
-    const map = global.PulseOrganismMap;
+    const map = window.PulseOrganismMap;
     if (map && map.systems?.UI?.pages?.[next]) {
       // ⭐ Use the REAL route from the organism genome
       nextRouteHtml = map.systems.UI.pages[next].IDENTITY_META.ROUTE;
@@ -1126,19 +1126,19 @@ function runPortalWarm() {
     // ========================================================================
 
     // ⭐ 1 — Preload NEXT PAGE HTML
-    global.PulsePortalPreloader?.preloadPage?.(next);
+    window.PulsePortalPreloader?.preloadPage?.(next);
 
     // ⭐ 2 — Preload NEXT PAGE IMAGES (OrganismMap-aware)
-    global.__PULSE_SCAN_ROUTE_IMAGES__?.(nextRouteHtml);
+    window.__PULSE_SCAN_ROUTE_IMAGES__?.(nextRouteHtml);
 
     // ⭐ 3 — Preload NEXT PAGE CHUNKS
-    global.PulsePortalChunker?.preloadChunksForPage?.(next);
+    window.PulsePortalChunker?.preloadChunksForPage?.(next);
 
     // ⭐ 4 — Light ADVANTAGE warm (Portal’s warm engine)
-    global.PulsePortalWarmup?.prewarmLight?.(next);
+    window.PulsePortalWarmup?.prewarmLight?.(next);
 
     // ⭐ 6 — Log warm event into Touch timeline
-    global.TouchTimeline("portalWarm", { page, next });
+    window.TouchTimeline("portalWarm", { page, next });
 
     console.log(
       "%c[PulsePortal::Warm] %cv27 next-page warm complete %c→ %s",
@@ -1161,7 +1161,7 @@ function runPortalWarm() {
 // ============================================================================
 function __PulsePortalGetSignalSnapshot() {
   try {
-    const sig = global.PulseProofSignal;
+    const sig = window.PulseProofSignal;
     if (!sig || typeof sig.comments !== "function") return null;
 
     const comments = sig.comments(1);
@@ -1178,8 +1178,8 @@ function __PulsePortalGetSignalSnapshot() {
 // ============================================================================
 // ⭐ SURFACE META + PORTAL SURFACE PROJECTION
 // ============================================================================
-global.PulseSurface = global.PulseSurface
-  ? Object.freeze({ ...global.PulseSurface, ...surfaceMeta })
+window.PulseSurface = window.PulseSurface
+  ? Object.freeze({ ...window.PulseSurface, ...surfaceMeta })
   : surfaceMeta;
 
 
@@ -1187,8 +1187,8 @@ global.PulseSurface = global.PulseSurface
 // ⭐ PULSEPORTAL v26 — IMMORTAL++
 // Upgrade ONLY. Do NOT remove legacy fields.
 // ============================================================================
-global.PulsePortal =
-  global.PulsePortal ||
+window.PulsePortal =
+  window.PulsePortal ||
   Object.freeze({
     // ------------------------------------------------------------------------
     // CORE META + ENVIRONMENT
@@ -1233,7 +1233,7 @@ global.PulsePortal =
 
     touch:
       typeof window !== "undefined"
-        ? global.__PULSE_TOUCH__ || null
+        ? window.__PULSE_TOUCH__ || null
         : null,
 
     db
@@ -1262,8 +1262,8 @@ console.log(
 try {
   if (
     typeof window !== "undefined" &&
-    global.VitalsMonitor &&
-    typeof global.VitalsMonitor.PulseRole === "object"
+    window.VitalsMonitor &&
+    typeof window.VitalsMonitor.PulseRole === "object"
   ) {
     console.log(
       "%c[PulsePortal::Vitals] %cmonitor online",
@@ -1274,8 +1274,8 @@ try {
 
   if (
     typeof window !== "undefined" &&
-    global.PulseLogger &&
-    typeof global.PulseLogger.meta === "object"
+    window.PulseLogger &&
+    typeof window.PulseLogger.meta === "object"
   ) {
     console.log(
       "%c[PulsePortal::Logger] %clogger active",
@@ -1295,7 +1295,7 @@ try {
 
 try {
   if (typeof window !== "undefined") {
-    global.PulseUIErrors?.init?.();
+    window.PulseUIErrors?.init?.();
     console.log(
       "%c[PulsePortal::UIErrors] %cspine initialized",
       "color:#7E57C2; font-weight:bold; font-family:monospace;",
@@ -1312,9 +1312,9 @@ try {
   );
 }
 
-if (isBrowser() && global.PulseSkinReflex?.membraneAlive) {
+if (isBrowser() && window.PulseSkinReflex?.membraneAlive) {
   try {
-    global.PulseSkinReflex.membraneAlive("Portal-v24");
+    window.PulseSkinReflex.membraneAlive("Portal-v24");
     console.log(
       "%c[PulsePortal::SkinReflex] %cmembrane alive",
       "color:#7E57C2; font-weight:bold; font-family:monospace;",
@@ -1344,16 +1344,16 @@ if (isBrowser()) {
       // ----------------------------------------------------------------------
       try {
         // Prefer existing organism if Touch/Index already booted it
-        if (global.PulseBinary) {
-          binary = global.PulseBinary;
+        if (window.PulseBinary) {
+          binary = window.PulseBinary;
         } else if (typeof PulseBinaryOrganismBoot?.boot === "function") {
           binary = await PulseBinaryOrganismBoot.boot({ trace: false });
         }
 
         if (binary) {
           // Expose organism globally for ALL surfaces (Index, Touch, Portal)
-          global.PulseBinary = binary;
-          global.__PulseBinaryBooted = true;
+          window.PulseBinary = binary;
+          window.__PulseBinaryBooted = true;
 
           const safeBinaryView = {
             meta: PulseBinaryOrganismBoot?.layer
@@ -1390,9 +1390,9 @@ if (isBrowser()) {
           };
 
           // Merge with any existing PulseBinary shadow
-          global.PulseBinary = Object.freeze({
+          window.PulseBinary = Object.freeze({
             ...safeBinaryView,
-            ...global.PulseBinary
+            ...window.PulseBinary
           });
 
           console.log(
@@ -1449,7 +1449,7 @@ if (isBrowser()) {
           const safeBootPacket = {
             meta: safeMeta(baseMetaPack),
             env: safeEnv(PulseSurfaceEnvironment),
-            binary: global.PulseBinary || null
+            binary: window.PulseBinary || null
           };
 
           await PulseUnderstanding(safeBootPacket);
@@ -1516,17 +1516,17 @@ if (isBrowser()) {
 if (isBrowser()) {
   (async () => {
     try {
-      if (typeof global.PulseUIFlow === "function") {
-        const flowContext = await global.PulseUIFlow();
+      if (typeof window.PulseUIFlow === "function") {
+        const flowContext = await window.PulseUIFlow();
 
-        global.PulseUI = global.PulseUI
+        window.PulseUI = window.PulseUI
           ? Object.freeze({
-              ...global.PulseUI,
-              Flow: global.PulseUIFlow,
+              ...window.PulseUI,
+              Flow: window.PulseUIFlow,
               context: flowContext
             })
           : Object.freeze({
-              Flow: global.PulseUIFlow,
+              Flow: window.PulseUIFlow,
               context: flowContext
             });
 
@@ -1555,7 +1555,7 @@ if (isBrowser()) {
     try {
       // Attach PulseBand from pre-injected pulseband / PulseBand if present
       try {
-        const injectedBand = global.PulseBand || global.pulseband || null;
+        const injectedBand = window.PulseBand || window.pulseband || null;
 
         if (!injectedBand) {
           console.warn(
@@ -1564,8 +1564,8 @@ if (isBrowser()) {
             "color:#FFE066; font-family:monospace;"
           );
         } else {
-          // Normalize to global.PulseBand
-          global.PulseBand = injectedBand;
+          // Normalize to window.PulseBand
+          window.PulseBand = injectedBand;
 
           console.log(
             "%c[PulsePortal::PulseBand] %cbridge attached",
@@ -1574,10 +1574,10 @@ if (isBrowser()) {
           );
 
           // Attach proxy handler once
-          if (!global.__PulseBandProxyAttached) {
-            global.__PulseBandProxyAttached = true;
+          if (!window.__PulseBandProxyAttached) {
+            window.__PulseBandProxyAttached = true;
 
-            global.PulseBand.on("request", async (packet) => {
+            window.PulseBand.on("request", async (packet) => {
               let url, method, bodyOrQuery;
 
               switch (packet.type) {
@@ -1630,11 +1630,11 @@ if (isBrowser()) {
 
               try {
                 const hasLoggerRoute =
-                  global.PulseLogger &&
-                  typeof global.PulseLogger.route === "function";
+                  window.PulseLogger &&
+                  typeof window.PulseLogger.route === "function";
 
                 if (hasLoggerRoute) {
-                  data = await global.PulseLogger.route("fetchProxy", {
+                  data = await window.PulseLogger.route("fetchProxy", {
                     url: url + query,
                     method,
                     body: bodyOrQuery,
@@ -1675,8 +1675,8 @@ if (isBrowser()) {
               }
 
               try {
-                if (global.PulseBand && data) {
-                  global.PulseBand.emit("response:" + packet.sessionId, data);
+                if (window.PulseBand && data) {
+                  window.PulseBand.emit("response:" + packet.sessionId, data);
                 }
               } catch (err) {
                 console.error(
@@ -1691,9 +1691,9 @@ if (isBrowser()) {
           }
 
           // Always expose a normalized start helper
-          global.PulseBandStart = (opts) =>
-            global.PulseBand && typeof global.PulseBand.start === "function"
-              ? global.PulseBand.start(opts)
+          window.PulseBandStart = (opts) =>
+            window.PulseBand && typeof window.PulseBand.start === "function"
+              ? window.PulseBand.start(opts)
               : null;
         }
       } catch (err) {
@@ -1723,8 +1723,8 @@ if (isBrowser()) {
 
       // CHUNK SESSION START — OPTIONAL, CHUNK-AWARE SESSION MARKER
       try {
-        if (global.PulseBandStart) {
-          global.PulseBandStart({
+        if (window.PulseBandStart) {
+          window.PulseBandStart({
             type: "chunk-session",
             surface: "PulsePortal-v24",
             environment: safeEnvForBand(PulseSurfaceEnvironment),
@@ -1793,12 +1793,12 @@ function safeEnv(env) {
 }
 
 const PulsePortalAPI = Object.freeze({
-  VitalsMonitor: typeof window !== "undefined" ? global.VitalsMonitor : null,
-  Logger: typeof window !== "undefined" ? global.PulseLogger : null,
+  VitalsMonitor: typeof window !== "undefined" ? window.VitalsMonitor : null,
+  Logger: typeof window !== "undefined" ? window.PulseLogger : null,
   Understanding: PulseUnderstanding,
   SurfaceEnvironment: safeEnv(PulseSurfaceEnvironment),
-  UIFlow: typeof window !== "undefined" ? global.PulseUIFlow : null,
-  Errors: typeof window !== "undefined" ? global.PulseUIErrors : null,
+  UIFlow: typeof window !== "undefined" ? window.PulseUIFlow : null,
+  Errors: typeof window !== "undefined" ? window.PulseUIErrors : null,
   meta: {
     pulseRole,
     surfaceMeta,
@@ -1823,7 +1823,7 @@ try {
   // Mirror PulseBand
   G.PulseBand =
     typeof window !== "undefined"
-      ? global.PulseBand
+      ? window.PulseBand
       : G.PulseBand || null;
 
   // Mirror Firebase (frontend client SDK)
@@ -1832,31 +1832,31 @@ try {
   // Mirror PulseBandStart
   G.PulseBandStart =
     typeof window !== "undefined"
-      ? global.PulseBandStart
+      ? window.PulseBandStart
       : G.PulseBandStart || null;
 
   // Mirror VitalsMonitor
   G.VitalsMonitor =
     typeof window !== "undefined"
-      ? global.VitalsMonitor
+      ? window.VitalsMonitor
       : G.VitalsMonitor || null;
 
   // Mirror PulseLogger
   G.PulseLogger =
     typeof window !== "undefined"
-      ? global.PulseLogger
+      ? window.PulseLogger
       : G.PulseLogger || null;
 
   // Mirror UIFlow
   G.PulseUIFlow =
     typeof window !== "undefined"
-      ? global.PulseUIFlow
+      ? window.PulseUIFlow
       : G.PulseUIFlow || null;
 
   // Mirror UIErrors
   G.PulseUIErrors =
     typeof window !== "undefined"
-      ? global.PulseUIErrors
+      ? window.PulseUIErrors
       : G.PulseUIErrors || null;
 
   // Mirror Portal API

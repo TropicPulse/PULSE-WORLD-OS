@@ -1343,7 +1343,7 @@ input[type="checkbox"] {
 
   
   const categorySelect = document.getElementById("categoriesList");
-  const urlParams = new URLSearchParams(global.location.search);
+  const urlParams = new URLSearchParams(window.location.search);
   const businessId = urlParams.get("id");
 
   let existingImages = [];
@@ -1403,7 +1403,7 @@ async function hardLogout(reason) {
     localStorage.removeItem("tp_token_v4");
     localStorage.removeItem("tp_device_token_v4");
   } finally {
-    global.location.replace("/CheckEmail.html");
+    window.location.replace("/CheckEmail.html");
   }
 }
 
@@ -1440,12 +1440,12 @@ async function sessionCheck() {
   // No identity or not trusted → go to login
   if (!id || !id.trustedDevice) {
     const here = encodeURIComponent(location.pathname + location.search);
-    global.location.href = `/CheckEmail.html?returnTo=${here}`;
+    window.location.href = `/CheckEmail.html?returnTo=${here}`;
     return null;
   }
 
   // Expose canonical identity for the rest of the page
-  global.PulseIdentity = id;
+  window.PulseIdentity = id;
   return id;
 }
 
@@ -1902,10 +1902,10 @@ async function initiateBusiness() {
 
 
   // 🔒 Guard beforeunload
-  if (!global.__editBusinessBeforeUnloadBound) {
-    global.__editBusinessBeforeUnloadBound = true;
+  if (!window.__editBusinessBeforeUnloadBound) {
+    window.__editBusinessBeforeUnloadBound = true;
 
-    global.addEventListener("beforeunload", (e) => {
+    window.addEventListener("beforeunload", (e) => {
       if (formIsDirty) {
         e.preventDefault();
         e.returnValue = "";
@@ -2114,34 +2114,34 @@ async function initiateBusiness() {
   let originalHeader = headerTitle.textContent;
   let isShowingTitle = false;
 
-  global.addEventListener("scroll", () => {
+  window.addEventListener("scroll", () => {
     const triggerPoint = title.offsetTop - 45; // adjust for header height
 
-    if (global.scrollY > triggerPoint && !isShowingTitle) {
+    if (window.scrollY > triggerPoint && !isShowingTitle) {
       headerTitle.textContent = headerTitle.textContent + ` (` + title.value + `)`;
       isShowingTitle = true;
     }
 
-    if (global.scrollY <= triggerPoint && isShowingTitle) {
+    if (window.scrollY <= triggerPoint && isShowingTitle) {
       headerTitle.textContent = originalHeader;
       isShowingTitle = false;
     }
     // -----------------------------------------
   // ⭐ PREVENT DUPLICATE LISTENERS
   // -----------------------------------------
-  if (!global.__pulsebandListenersAttached) {
-    global.__pulsebandListenersAttached = true;
+  if (!window.__pulsebandListenersAttached) {
+    window.__pulsebandListenersAttached = true;
 
     // ⭐ 1. Restore state on load (runs ONCE)
-    global.addEventListener("load", () => {
+    window.addEventListener("load", () => {
       const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-      const disabled = (global.isIdle === true && inactiveFlag === true);
+      const disabled = (window.isIdle === true && inactiveFlag === true);
 
       if (disabled) {
-        global.isIdle = true;
+        window.isIdle = true;
         
       } else {
-        global.isIdle = false; // active by default
+        window.isIdle = false; // active by default
         
       }
 
@@ -2151,17 +2151,17 @@ async function initiateBusiness() {
     // ⭐ 2. Badge toggle listener
     document.getElementById("pb-mini-badge").addEventListener("click", () => {
       const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-      const disabled = (global.isIdle === true && inactiveFlag === true);
+      const disabled = (window.isIdle === true && inactiveFlag === true);
 
       if (disabled) {
         // Turn ON
         localStorage.removeItem("pulseband_disabled");
-        global.isIdle = false;
+        window.isIdle = false;
         
       } else {
         // Turn OFF
         localStorage.setItem("pulseband_disabled", "1");
-        global.isIdle = true;
+        window.isIdle = true;
         
       }
 
@@ -2679,7 +2679,7 @@ function hideTPLoader() {
     showMessage(isEditing ? "Business updated!" : "Business created!", "success");
 
     setTimeout(() => {
-      global.location.href = `/businessDetail.html?id=${encodeURIComponent(docId)}`;
+      window.location.href = `/businessDetail.html?id=${encodeURIComponent(docId)}`;
     }, 600);
   });
 
@@ -2738,12 +2738,12 @@ function hideTPLoader() {
   overlay.style.display = "block";
 
   // ⭐ Prevent duplicate resize listeners
-  if (!global.__tpOverlayResizeBound) {
-    global.__tpOverlayResizeBound = true;
+  if (!window.__tpOverlayResizeBound) {
+    window.__tpOverlayResizeBound = true;
 
-    global.addEventListener("resize", () => {
-      clearTimeout(global.__tpOverlayResizeTimeout);
-      global.__tpOverlayResizeTimeout = setTimeout(() => {
+    window.addEventListener("resize", () => {
+      clearTimeout(window.__tpOverlayResizeTimeout);
+      window.__tpOverlayResizeTimeout = setTimeout(() => {
         applyTropicOverlay(labelText.textContent, icon.src || null);
       }, 150);
     });

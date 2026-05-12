@@ -200,8 +200,8 @@ const PULSE_LAYER_ROLE = "Neural Signal Routing Layer";
 
 const PULSE_DIAGNOSTICS_ENABLED =
   typeof window !== "undefined" &&
-  (global.PULSE_PULSE_DIAGNOSTICS === true ||
-   global.PULSE_DIAGNOSTICS === true);
+  (window.PULSE_PULSE_DIAGNOSTICS === true ||
+   window.PULSE_DIAGNOSTICS === true);
 
 const SynapseHealingState = {
   lastPulseUpdateTs: null,

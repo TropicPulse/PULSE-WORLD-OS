@@ -102,12 +102,12 @@
   <script>
     async function runFlow() {
       try {
-        const urlParams = new URLSearchParams(global.location.search);
+        const urlParams = new URLSearchParams(window.location.search);
         const eventID = urlParams.get("eventID");
 
         // If missing eventID, fallback to events page
         if (!eventID) {
-          global.location.replace("/eventspage.html");
+          window.location.replace("/eventspage.html");
           return;
         }
 
@@ -115,11 +115,11 @@
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         // Redirect to the specific event
-        global.location.replace(`/eventDetail.html?id=${eventID}&payment=success`);
+        window.location.replace(`/eventDetail.html?id=${eventID}&payment=success`);
 
       } catch (err) {
         error("Payment success flow error:", err);
-        global.location.replace("/eventspage.html");
+        window.location.replace("/eventspage.html");
       }
     }
 

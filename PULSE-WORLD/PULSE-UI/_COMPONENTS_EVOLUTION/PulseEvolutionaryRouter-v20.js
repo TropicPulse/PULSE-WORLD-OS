@@ -542,7 +542,7 @@ export function createPulseEvolutionaryRouter({
 // GLOBAL REGISTRATION
 // ---------------------------------------------------------------------------
 try {
-  if (typeof window !== "undefined") global.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
-  if (typeof globalThis !== "undefined") global.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
-  if (typeof global !== "undefined") global.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
+  if (typeof window !== "undefined") window.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
+  if (typeof globalThis !== "undefined") window.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
+  if (typeof global !== "undefined") window.PulseEvolutionaryRouter = createPulseEvolutionaryRouter;
 } catch {}

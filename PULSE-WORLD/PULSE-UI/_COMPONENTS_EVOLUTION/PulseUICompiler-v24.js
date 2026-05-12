@@ -340,13 +340,13 @@ export function createPulseUICompiler({
 // ---------------------------------------------------------------------------
 try {
   if (typeof globalThis !== "undefined") {
-    global.PulseUICompiler = createPulseUICompiler;
+    window.PulseUICompiler = createPulseUICompiler;
   }
   if (typeof global !== "undefined") {
-    global.PulseUICompiler = createPulseUICompiler;
+    window.PulseUICompiler = createPulseUICompiler;
   }
   if (typeof window !== "undefined") {
-    global.PulseUICompiler = createPulseUICompiler;
+    window.PulseUICompiler = createPulseUICompiler;
   }
 } catch {
   // never throw

@@ -1298,10 +1298,15 @@ export const SignalPort = Object.freeze({
     g.SignalPort = g.SignalPort || SignalPort;
 
     if (typeof window !== "undefined") {
-      global.PulseSignal = g.PulseSignal;
-      global.PulseProofSignal = g.PulseProofSignal;
-      global.SignalPort = g.SignalPort;
+      window.PulseSignal = g.PulseSignal;
+      window.PulseProofSignal = g.PulseProofSignal;
+      window.SignalPort = g.SignalPort;
     }
+    console.log(
+      "%c[PULSE-WORLD-SIGNAL v24-IMMORTAL-EVOLVABLE] %c Initializing Signal %c",
+      "color:#90CAF9; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;",
+      "color:#E8F8FF; font-family:monospace;");
 
     // Let PulseUniversalMemory handle persistence/mirroring of these globals
     if (g.PulseUniversalMemory && typeof g.PulseUniversalMemory.resyncGlobalsToStorage === "function") {

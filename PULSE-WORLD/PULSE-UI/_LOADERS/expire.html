@@ -249,7 +249,7 @@
       status.textContent = "Sending a fresh link...";
       status.style.opacity = 1;
 
-      const params = new URLSearchParams(global.location.search);
+      const params = new URLSearchParams(window.location.search);
       const token = params.get("token");
 
       if (!token) {

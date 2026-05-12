@@ -83,18 +83,18 @@ const PIN_TTL_MS = process.env.PIN_TTL_MS;
 
 // CLOUD RUN / FRONTEND HINTS (guarded)
 const TP_API_KEY =
-  typeof window !== "undefined" ? global.TP_API_KEY : process.env.TP_API_KEY;
+  typeof window !== "undefined" ? window.TP_API_KEY : process.env.TP_API_KEY;
 const BASE_PAYMENT_URL =
   typeof window !== "undefined"
-    ? global.BASE_PAYMENT_URL
+    ? window.BASE_PAYMENT_URL
     : process.env.BASE_PAYMENT_URL;
 const GOOGLE_MAPS_KEY =
   typeof window !== "undefined"
-    ? global.GOOGLE_MAPS_KEY
+    ? window.GOOGLE_MAPS_KEY
     : process.env.GOOGLE_MAPS_KEY;
 const PLACEHOLDER_IMAGE_URL =
   typeof window !== "undefined"
-    ? global.PLACEHOLDER_IMAGE_URL
+    ? window.PLACEHOLDER_IMAGE_URL
     : process.env.PLACEHOLDER_IMAGE_URL;
 
 // ============================================================================

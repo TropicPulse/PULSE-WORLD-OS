@@ -86,7 +86,7 @@
 //   • Runs ONLY as a backend function (Cloud Functions / server environment)
 //   • Must remain ESM
 //   • Must remain deterministic and idempotent per request
-//   • Must not depend on global.* or client-side globals
+//   • Must not depend on window.* or client-side globals
 //
 // SAFETY CONSTRAINTS:
 //   • Never log secrets (Stripe keys, Twilio tokens, email passwords)

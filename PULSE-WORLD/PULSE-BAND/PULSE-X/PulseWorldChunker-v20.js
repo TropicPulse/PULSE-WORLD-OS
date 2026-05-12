@@ -178,10 +178,10 @@ export function createPulseWorldChunker({ Brain, Logger } = {}) {
   // DB is injected via Brain; no global firebase-admin, no global db
   const db = Brain?.firebase ? Brain.firebase("db") : null;
 
-  const fsAPI = Brain?.fsAPI || global.fsAPI || null;
-  const routeAPI = Brain?.routeAPI || global.routeAPI || null;
-  const schemaAPI = Brain?.schemaAPI || global.schemaAPI || null;
-  const fetchAPI = Logger?.fetchAPI || Brain?.fetchAPI || global.fetch || null;
+  const fsAPI = Brain?.fsAPI || window.fsAPI || null;
+  const routeAPI = Brain?.routeAPI || window.routeAPI || null;
+  const schemaAPI = Brain?.schemaAPI || window.schemaAPI || null;
+  const fetchAPI = Logger?.fetchAPI || Brain?.fetchAPI || window.fetch || null;
 
   const backendOrgans = new Map();
   const sessions = new Map();

@@ -410,7 +410,7 @@ export function PulseTouchDetector() {
         localStorage.setItem("PulseOrganismMap_v25", JSON.stringify(evt.map));
       } catch {}
 
-      global.__PULSE_TOUCH__?.onDetectorUpdate?.({
+      window.__PULSE_TOUCH__?.onDetectorUpdate?.({
         type: evt.type || "map_ready",
         map: evt.map,
         page: evt.page,
@@ -425,7 +425,7 @@ export function PulseTouchDetector() {
         localStorage.setItem("PulseChunks_v25", JSON.stringify(evt.chunks));
       } catch {}
 
-      global.__PULSE_TOUCH__?.onDetectorUpdate?.({
+      window.__PULSE_TOUCH__?.onDetectorUpdate?.({
         type: evt.type || "chunks_ready",
         chunks: evt.chunks
       });
@@ -438,7 +438,7 @@ export function PulseTouchDetector() {
         localStorage.setItem("PulseNormalizer_v25", JSON.stringify(evt.normalizer));
       } catch {}
 
-      global.__PULSE_TOUCH__?.onDetectorUpdate?.({
+      window.__PULSE_TOUCH__?.onDetectorUpdate?.({
         type: evt.type || "normalizer_ready",
         normalizer: evt.normalizer
       });

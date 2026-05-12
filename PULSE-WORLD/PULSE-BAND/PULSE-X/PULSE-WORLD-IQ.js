@@ -1112,10 +1112,10 @@ export async function createPulseIQMap(evolutionSources) {
 // Optional global exposure (never throws)
 try {
   if (typeof window !== "undefined") {
-    global.createPulseIQMap = createPulseIQMap;
+    window.createPulseIQMap = createPulseIQMap;
   }
   if (typeof globalThis !== "undefined") {
-    global.createPulseIQMap = createPulseIQMap;
+    window.createPulseIQMap = createPulseIQMap;
   }
 } catch {
   // never throw

@@ -189,7 +189,7 @@ export function createPulseOSHealerV24({ modeKind = "dual" } = {}) {
         fileName: "PulseNet.js",
         functionName: "updateSignalFromPulseBand",
         fieldName: "signalSlope",
-        note: "Unstable signal slope; consider smoothing global."
+        note: "Unstable signal slope; consider smoothing window."
       });
 
       return artifacts;

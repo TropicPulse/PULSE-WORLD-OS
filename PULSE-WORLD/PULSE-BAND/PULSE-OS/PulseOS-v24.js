@@ -283,8 +283,8 @@ if (typeof window !== "undefined") {
         Governed: Kernel.Governed
       };
 
-      global.Pulse = global.Pulse
-        ? Object.freeze({ ...global.Pulse, ...exposed })
+      window.Pulse = window.Pulse
+        ? Object.freeze({ ...window.Pulse, ...exposed })
         : Object.freeze(exposed);
     })
     .catch((err) => {

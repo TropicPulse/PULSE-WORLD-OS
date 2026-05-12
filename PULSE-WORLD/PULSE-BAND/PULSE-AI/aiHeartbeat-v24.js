@@ -727,7 +727,7 @@ export function pulseAiHeartbeat(source = "unknown") {
   try {
     if (typeof globalThis !== "undefined") {
       globalThis[AI_HEARTBEAT_KEY] = now;
-      global.PulseAIHeartbeatMode = mode;
+      window.PulseAIHeartbeatMode = mode;
     }
   } catch {}
 
@@ -775,7 +775,7 @@ function timeFallbackCheck() {
     aiHeartbeatHealing.lastPacket = packet;
     try {
       if (typeof globalThis !== "undefined") {
-        global.PulseAIHeartbeatMode = mode;
+        window.PulseAIHeartbeatMode = mode;
       }
     } catch {}
     void aiHeartbeatTick("time-fallback");
@@ -832,7 +832,7 @@ export function startAiHeartbeat() {
 
   try {
     if (typeof globalThis !== "undefined") {
-      global.PulseAIHeartbeatMode = mode;
+      window.PulseAIHeartbeatMode = mode;
     }
   } catch {}
 }
@@ -869,7 +869,7 @@ export function snapshotAiHeartbeat() {
 
   try {
     if (typeof globalThis !== "undefined") {
-      global.PulseAIHeartbeatMode = mode;
+      window.PulseAIHeartbeatMode = mode;
     }
   } catch {}
 

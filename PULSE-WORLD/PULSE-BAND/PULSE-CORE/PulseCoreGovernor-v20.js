@@ -44,8 +44,8 @@ function nextGovernorEpoch() {
 //  GOVERNOR CREATION — v20-IMMORTAL-GOVERNOR
 // ============================================================================
 export function createPulseCoreGovernor({
-  primaryStorage = typeof window !== "undefined" ? global.localStorage : null,
-  secondaryStorage = typeof window !== "undefined" ? global.sessionStorage : null,
+  primaryStorage = typeof window !== "undefined" ? window.localStorage : null,
+  secondaryStorage = typeof window !== "undefined" ? window.sessionStorage : null,
   dnaTag = "default-dna",
   version = "20.0-IMMORTAL-GOVERNOR",
   overlay = null,

@@ -15,7 +15,7 @@
  
   const phone = new URLSearchParams(location.search).get("n");
   if (phone) {
-    global.location.href = "sms:" + phone;
+    window.location.href = "sms:" + phone;
   } else {
     document.body.innerHTML = "Missing phone number.";
   }

@@ -1030,15 +1030,15 @@ export function prewarm(urls = [], metaPack = null) {
       persistPulseChunksToStorage();
 
       // Touch/Portal future hook
-      if (typeof window !== "undefined" && global.PulseTouchWarmup) {
+      if (typeof window !== "undefined" && window.PulseTouchWarmup) {
         try {
-          global.PulseTouchWarmup.onPrewarm(url, withLore, metaPack);
+          window.PulseTouchWarmup.onPrewarm(url, withLore, metaPack);
         } catch {}
       }
 
-      if (typeof window !== "undefined" && global.PulsePortalWarmup) {
+      if (typeof window !== "undefined" && window.PulsePortalWarmup) {
         try {
-          global.PulsePortalWarmup.onPrewarm(url, withLore, metaPack);
+          window.PulsePortalWarmup.onPrewarm(url, withLore, metaPack);
         } catch {}
       }
     });
@@ -1150,9 +1150,9 @@ function dechunkAll() {
   globalFailures = 0;
   chunksDegraded = false;
 
-  if (typeof window !== "undefined" && global.PulseChunks) {
-    if (global.PulseChunks.cache) {
-      global.PulseChunks.cache = {};
+  if (typeof window !== "undefined" && window.PulseChunks) {
+    if (window.PulseChunks.cache) {
+      window.PulseChunks.cache = {};
     }
   }
 
@@ -1226,9 +1226,9 @@ async function autoLoadOfflineImages() {
             const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
             const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-            if (global.PulseChunks) {
-              global.PulseChunks.cache = global.PulseChunks.cache || {};
-              global.PulseChunks.cache[url] = binary;
+            if (window.PulseChunks) {
+              window.PulseChunks.cache = window.PulseChunks.cache || {};
+              window.PulseChunks.cache[url] = binary;
             }
 
             const img = document.querySelector(
@@ -1257,9 +1257,9 @@ async function autoLoadOfflineImages() {
       const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
       const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-      if (global.PulseChunks) {
-        global.PulseChunks.cache = global.PulseChunks.cache || {};
-        global.PulseChunks.cache[url] = binary;
+      if (window.PulseChunks) {
+        window.PulseChunks.cache = window.PulseChunks.cache || {};
+        window.PulseChunks.cache[url] = binary;
       }
 
       const img = document.querySelector(
@@ -1294,9 +1294,9 @@ async function autoLoadOfflineImages() {
             const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
             const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-            if (global.PulseChunks) {
-              global.PulseChunks.cache = global.PulseChunks.cache || {};
-              global.PulseChunks.cache[url] = binary;
+            if (window.PulseChunks) {
+              window.PulseChunks.cache = window.PulseChunks.cache || {};
+              window.PulseChunks.cache[url] = binary;
             }
 
             const img = document.querySelector(
@@ -1331,7 +1331,7 @@ async function autoLoadOfflineImages() {
 //  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v27 IMMORTAL++)
 // ============================================================================
 if (typeof window !== "undefined") {
-  global.PulseChunks = {
+  window.PulseChunks = {
     // Core API
     getImage,
     getImageSync,
@@ -1368,7 +1368,7 @@ if (typeof window !== "undefined") {
   };
 }
 
-export default typeof window !== "undefined" ? global.PulseChunks : undefined;
+export default typeof window !== "undefined" ? window.PulseChunks : undefined;
 
 // Wire DOM + PulseBand + storage (IDB) events
 if (typeof window !== "undefined" && typeof document !== "undefined") {
@@ -1378,8 +1378,8 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
 }
 
 if (typeof window !== "undefined") {
-  if (global.PulseBand && typeof global.PulseBand.on === "function") {
-    global.PulseBand.on("chunk", handlePulseBandPacket);
+  if (window.PulseBand && typeof window.PulseBand.on === "function") {
+    window.PulseBand.on("chunk", handlePulseBandPacket);
   }
 }
 
@@ -1416,29 +1416,29 @@ try {
   }
 
   if (typeof global !== "undefined") {
-    global.PulseBand = migrate("PulseBand", window, global);
-    global.PulseChunks = migrate("PulseChunks", window, global);
+    window.PulseBand = migrate("PulseBand", window, global);
+    window.PulseChunks = migrate("PulseChunks", window, global);
   }
 
   if (typeof globalThis !== "undefined") {
-    global.PulseBand = migrate("PulseBand", window, globalThis);
-    global.PulseChunks = migrate("PulseChunks", window, globalThis);
+    window.PulseBand = migrate("PulseBand", window, globalThis);
+    window.PulseChunks = migrate("PulseChunks", window, globalThis);
   }
 
 } catch {}
 
 
-global.PulseChunks.signal = function (evt) {
+window.PulseChunks.signal = function (evt) {
   try {
     // ⭐ ALWAYS WRITE TO LOCALSTORAGE FIRST
     localStorage.setItem(
       "PulseChunks_v25",
-      JSON.stringify(global.PulseChunks)
+      JSON.stringify(window.PulseChunks)
     );
 
     // ⭐ ALWAYS HYDRATE FROM LOCALSTORAGE (SELF-HEAL)
     const raw = localStorage.getItem("PulseChunks_v25");
-    if (raw) Object.assign(global.PulseChunks, JSON.parse(raw));
+    if (raw) Object.assign(window.PulseChunks, JSON.parse(raw));
 
     // ⭐ TOUCH BOOTSTRAP
     if (evt.type === "touch_bootstrap") {
@@ -1446,11 +1446,11 @@ global.PulseChunks.signal = function (evt) {
       this.ready = true;
 
       // ⭐ SEND TO DETECTOR (NOT TOUCH DIRECTLY)
-      global.PulseDetector?.onChunksReady?.({
+      window.PulseDetector?.onChunksReady?.({
         type: "chunks_ready",
         page: evt.page,
         prefix: evt.prefix,
-        chunks: global.PulseChunks
+        chunks: window.PulseChunks
       });
 
       return;
@@ -1460,11 +1460,11 @@ global.PulseChunks.signal = function (evt) {
     if (evt.type === "touch_prewarm") {
       this.deepwarm?.(evt);
 
-      global.PulseDetector?.onChunksReady?.({
+      window.PulseDetector?.onChunksReady?.({
         type: "chunks_prewarm_ready",
         page: evt.page,
         prefix: evt.prefix,
-        chunks: global.PulseChunks
+        chunks: window.PulseChunks
       });
 
       return;

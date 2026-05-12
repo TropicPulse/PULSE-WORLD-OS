@@ -75,8 +75,8 @@ export class PulsePalPersona {
     // Optional: Mode Engine snapshot (if present globally)
     let modeSnapshot = null;
     try {
-      if (global.PulsePalModeEngine && typeof global.PulsePalModeEngine.getLast === "function") {
-        modeSnapshot = global.PulsePalModeEngine.getLast();
+      if (window.PulsePalModeEngine && typeof window.PulsePalModeEngine.getLast === "function") {
+        modeSnapshot = window.PulsePalModeEngine.getLast();
       }
     } catch {
       modeSnapshot = null;

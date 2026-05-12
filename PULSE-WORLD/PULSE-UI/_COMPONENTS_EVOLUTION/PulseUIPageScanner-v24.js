@@ -129,10 +129,10 @@ const PAGESCANNER_LS_MAX = 4000;
 
 function psHasLocalStorage() {
   try {
-    if (typeof window === "undefined" || !global.localStorage) return false;
+    if (typeof window === "undefined" || !window.localStorage) return false;
     const t = "__pagescanner_test__";
-    global.localStorage.setItem(t, "1");
-    global.localStorage.removeItem(t);
+    window.localStorage.setItem(t, "1");
+    window.localStorage.removeItem(t);
     return true;
   } catch {
     return false;
@@ -142,7 +142,7 @@ function psHasLocalStorage() {
 function psLoadBuffer() {
   if (!psHasLocalStorage()) return [];
   try {
-    const raw = global.localStorage.getItem(PAGESCANNER_LS_KEY);
+    const raw = window.localStorage.getItem(PAGESCANNER_LS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -179,7 +179,7 @@ function psSaveBuffer(buf) {
         ? buf.slice(buf.length - PAGESCANNER_LS_MAX)
         : buf;
 
-    global.localStorage.setItem(PAGESCANNER_LS_KEY, JSON.stringify(trimmed));
+    window.localStorage.setItem(PAGESCANNER_LS_KEY, JSON.stringify(trimmed));
 
     // IMMORTAL++: lazy bridge mirror
     psMirrorBufferToCoreMemory(trimmed);
@@ -763,16 +763,16 @@ export default PulsePageScanner;
 
 try {
   if (typeof window !== "undefined") {
-    global.PulsePageScanner = PulsePageScanner;
-    global.PulsePageScannerStore = PulsePageScannerStore;
+    window.PulsePageScanner = PulsePageScanner;
+    window.PulsePageScannerStore = PulsePageScannerStore;
   }
   if (typeof globalThis !== "undefined") {
-    global.PulsePageScanner = PulsePageScanner;
-    global.PulsePageScannerStore = PulsePageScannerStore;
+    window.PulsePageScanner = PulsePageScanner;
+    window.PulsePageScannerStore = PulsePageScannerStore;
   }
   if (typeof global !== "undefined") {
-    global.PulsePageScanner = PulsePageScanner;
-    global.PulsePageScannerStore = PulsePageScannerStore;
+    window.PulsePageScanner = PulsePageScanner;
+    window.PulsePageScannerStore = PulsePageScannerStore;
   }
   if (typeof g !== "undefined") {
     g.PulsePageScanner = PulsePageScanner;

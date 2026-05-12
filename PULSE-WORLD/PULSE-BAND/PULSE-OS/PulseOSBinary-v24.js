@@ -17,7 +17,7 @@
 //  BINARY CONTRACT (INSIDE KERNEL):
 //    - No Date.now()
 //    - No console.*
-//    - No global.*
+//    - No window.*
 //    - No randomness
 //    - No mutation of meta
 //    - No symbolic logging
@@ -269,10 +269,10 @@ if (typeof window !== "undefined") {
     }
   };
 
-  global.PulseBinary = Kernel;
+  window.PulseBinary = Kernel;
 
-  global.PulseBinary = global.PulseBinary
-    ? Object.freeze({ ...global.PulseBinary, ...shadow })
+  window.PulseBinary = window.PulseBinary
+    ? Object.freeze({ ...window.PulseBinary, ...shadow })
     : Object.freeze(shadow);
 });
 

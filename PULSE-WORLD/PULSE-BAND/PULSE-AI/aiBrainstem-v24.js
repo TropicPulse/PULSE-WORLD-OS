@@ -176,19 +176,19 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   // ------------------------------------------------------------------------
   // 0) UNIVERSAL CNS GLOBAL SURFACE (kept for legacy, but Pulse‑Net is primary)
   // ------------------------------------------------------------------------
-  global.db    = db;
-  global.log   = context.log;
-  global.warn  = context.warn;
-  global.error = context.error;
+  window.db    = db;
+  window.log   = context.log;
+  window.warn  = context.warn;
+  window.error = context.error;
 
-  global.fsAPI     = fsAPI;
-  global.routeAPI  = routeAPI;
-  global.schemaAPI = schemaAPI;
+  window.fsAPI     = fsAPI;
+  window.routeAPI  = routeAPI;
+  window.schemaAPI = schemaAPI;
 
   // NOTE: fetchAPI is considered Pulse‑Net routed; no raw internet here.
-  global.fetchAPI  = context.fetchAPI || global.fetchAPI || null;
+  window.fetchAPI  = context.fetchAPI || window.fetchAPI || null;
 
-  const admin = global.db; // optional alias for chunker/admin tools
+  const admin = window.db; // optional alias for chunker/admin tools
 
   // ------------------------------------------------------------------------
   // 1) PULSE‑NET SURFACE

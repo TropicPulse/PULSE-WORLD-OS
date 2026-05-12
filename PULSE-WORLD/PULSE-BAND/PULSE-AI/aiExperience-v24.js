@@ -10,7 +10,7 @@
 //   • Provide layered responses for unsafe / blocked intents.
 //   • Never alter core safety rules — only their expression.
 //   • Adapt tone to user evolution mode (passive vs active) without bragging.
-//   • Emit deterministic experience packets for the organism/global.
+//   • Emit deterministic experience packets for the organism/window.
 // ============================================================================
 import {
   OrganismIdentity,

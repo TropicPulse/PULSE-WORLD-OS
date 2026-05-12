@@ -2281,12 +2281,12 @@ body::before {
   
 log("🌞 Script loaded, attaching visibility listener…");
 
-if (global.__vaultScriptLoaded) {
+if (window.__vaultScriptLoaded) {
   warn("🔥 VAULT SCRIPT EXECUTED TWICE — ABORTING SECOND RUN");
   // Do NOTHING — just skip the rest of the file
 } else {
   log("🌞 Vault script executing for the FIRST time");
-  global.__vaultScriptLoaded = true;
+  window.__vaultScriptLoaded = true;
 {
 log("🌞 Vault script CONTINUING AS IS");
 let vaultOpened = false;
@@ -2299,8 +2299,8 @@ let resizeTimeout;
 let appStarted = false;
 let chamberWatcherStarted = false;
 let vaultIntroStarted = false;
-global.__vaultInitStarted = false;
-global.__vaultIntroShown = false;
+window.__vaultInitStarted = false;
+window.__vaultIntroShown = false;
 
 
 let persistenceEnabled = true;
@@ -2427,8 +2427,8 @@ visibilityArmed,
 appStarted,
 chamberWatcherStarted,
 vaultIntroStarted,
-__vaultInitStarted: global.__vaultInitStarted,
-__vaultIntroShown: global.__vaultIntroShown
+__vaultInitStarted: window.__vaultInitStarted,
+__vaultIntroShown: window.__vaultIntroShown
 });
 
 
@@ -2436,7 +2436,7 @@ __vaultIntroShown: global.__vaultIntroShown
 async function loadEvents() {
   mark("VAULT: loadEvents");
 
-  const htmlVersion = global.globalCacheVersion?.eventVersion || 1;
+  const htmlVersion = window.globalCacheVersion?.eventVersion || 1;
   const localVersion = Number(localStorage.getItem("eventCacheVersion") || 1);
 
   // HTML version newer → force reload
@@ -2461,13 +2461,13 @@ async function loadEvents() {
   // USE CACHE IF VALID + NOT FORCE RELOAD
   if (!forceReload && validCache) {
     mark("VAULT: Using cached unified events");
-    global.allEvents      = cached.all;
-    global.eventsToday    = cached.today;
-    global.eventsUpcoming = cached.upcoming;
-    global.eventsNow      = cached.now;
-    global.eventsThisWeek = cached.thisWeek;
-    global.eventsWeekend  = cached.weekend;
-    global.eventsTonight  = cached.tonight;
+    window.allEvents      = cached.all;
+    window.eventsToday    = cached.today;
+    window.eventsUpcoming = cached.upcoming;
+    window.eventsNow      = cached.now;
+    window.eventsThisWeek = cached.thisWeek;
+    window.eventsWeekend  = cached.weekend;
+    window.eventsTonight  = cached.tonight;
     return cached;
   }
 
@@ -2494,13 +2494,13 @@ async function loadEvents() {
     localStorage.removeItem("forceReload_events");
 
     // Populate globals
-    global.allEvents      = normalized.all;
-    global.eventsToday    = normalized.today;
-    global.eventsUpcoming = normalized.upcoming;
-    global.eventsNow      = normalized.now;
-    global.eventsThisWeek = normalized.thisWeek;
-    global.eventsWeekend  = normalized.weekend;
-    global.eventsTonight  = normalized.tonight;
+    window.allEvents      = normalized.all;
+    window.eventsToday    = normalized.today;
+    window.eventsUpcoming = normalized.upcoming;
+    window.eventsNow      = normalized.now;
+    window.eventsThisWeek = normalized.thisWeek;
+    window.eventsWeekend  = normalized.weekend;
+    window.eventsTonight  = normalized.tonight;
 
     return normalized;
 
@@ -2513,7 +2513,7 @@ async function loadEvents() {
 async function loadBusinesses() {
   mark("VAULT: loadBusinesses");
 
-  const htmlVersion = global.globalCacheVersion?.businessVersion || 1;
+  const htmlVersion = window.globalCacheVersion?.businessVersion || 1;
   const localVersion = Number(localStorage.getItem("businessCacheVersion") || 1);
 
   // HTML version newer → force reload
@@ -2533,7 +2533,7 @@ async function loadBusinesses() {
   // USE CACHE IF VALID + NOT FORCE RELOAD
   if (!forceReload && validCache) {
     mark("VAULT: Using cached unified businesses");
-    global.allBusinesses = cached;
+    window.allBusinesses = cached;
     return cached;
   }
 
@@ -2541,7 +2541,7 @@ async function loadBusinesses() {
   mark("VAULT: Fetching unified businesses from Cloud Function…");
 
   try {
-    const { lat, lng } = global.userLoyaltyContext?.location || {};
+    const { lat, lng } = window.userLoyaltyContext?.location || {};
 
     const raw = await getHook({
       type: "getBusinesses",
@@ -2610,12 +2610,12 @@ async function loadBusinesses() {
     localStorage.setItem("cachedUnifiedBusinesses", JSON.stringify(cleaned));
     localStorage.removeItem("forceReload_business");
 
-    global.allBusinesses = cleaned;
+    window.allBusinesses = cleaned;
     return cleaned;
 
   } catch (err) {
     error("❌ Failed to load businesses:", err);
-    global.allBusinesses = [];
+    window.allBusinesses = [];
     return [];
   }
 }
@@ -2728,7 +2728,7 @@ async function hardLogout(reason) {
     localStorage.removeItem("tp_token_v4");
     localStorage.removeItem("tp_device_token_v4");
   } finally {
-    global.location.replace("/CheckEmail.html");
+    window.location.replace("/CheckEmail.html");
   }
 }
 
@@ -2903,7 +2903,7 @@ async function loadLoyalty(uid) {
     // ---------------------------------------------------------
     // 0. VERSION CHECK (MATCHES ALL OTHER LOADERS)
     // ---------------------------------------------------------
-    const htmlLoyaltyVersion = global.globalCacheVersion?.loyaltyVersion || 1;
+    const htmlLoyaltyVersion = window.globalCacheVersion?.loyaltyVersion || 1;
     const localLoyaltyVersion = Number(localStorage.getItem("loyaltyCacheVersion") || 1);
 
     if (htmlLoyaltyVersion > localLoyaltyVersion) {
@@ -3339,7 +3339,7 @@ async function askVaultSpirit(message) {
   // 2. LOAD USER CONTEXT (FIREBASE ONLY)
   // ----------------------------------------------
   const loyalty = await loadLoyalty(identity.uid);
-  const identityData = global.identity || {};
+  const identityData = window.identity || {};
 
   // ----------------------------------------------
   // 3. LOCAL AI ENGINE
@@ -3459,7 +3459,7 @@ ctx.pendingData = null;
 saveVaultContext(ctx);
 
 // Clear pending state (in-memory)
-const mem = global.userLoyaltyContext || global.userContext || {};
+const mem = window.userLoyaltyContext || window.userContext || {};
 mem.pendingQuestion = null;
 mem.pendingData = null;
 
@@ -3488,7 +3488,7 @@ ctx.pendingData = null;
 saveVaultContext(ctx);
 
 // Clear pending state (in-memory)
-const mem = global.userLoyaltyContext || global.userContext || {};
+const mem = window.userLoyaltyContext || window.userContext || {};
 mem.pendingQuestion = null;
 mem.pendingData = null;
 
@@ -3539,8 +3539,8 @@ if (!isDirectionsIntent(message)) return null;
 
 const result = resolvePlace(
 message,
-global.allBusinesses,
-global.allEvents
+window.allBusinesses,
+window.allEvents
 );
 
 // SINGLE MATCH
@@ -3557,7 +3557,7 @@ return buildDirections(item, {
 
 // ASK USER TO CHOOSE
 if (result.mode === "ask") {
-global.__pendingPlaceChoices = result.matches;
+window.__pendingPlaceChoices = result.matches;
 return respondToResolution(result);
 }
 
@@ -3600,8 +3600,8 @@ function hideTPLoader() {
 
 async function handlePlaceChoice(message, userLocation) {
 const idx = parseInt(message.trim(), 10) - 1;
-const selected = global.__pendingPlaceChoices[idx];
-global.__pendingPlaceChoices = null;
+const selected = window.__pendingPlaceChoices[idx];
+window.__pendingPlaceChoices = null;
 
 const item = selected.item;
 const coords = item.coords || null;
@@ -3833,8 +3833,8 @@ function tokenize(str) {
 // ───────────────────────────────────────────────
 
 async function checkReminders(userContext) {
-  if (global.__remindersChecked) return;
-  global.__remindersChecked = true;
+  if (window.__remindersChecked) return;
+  window.__remindersChecked = true;
 
   const uid = userContext?.uid;
   if (!uid) return;
@@ -4124,8 +4124,8 @@ async function runVaultSpiritIntro(loyalty) {
     // 2. LAST VISIT CALCULATION
     // ------------------------------------------
     const rawLastVisit =
-      global.userLoyaltyContext?.lastVaultVisit ??
-      global.userRecord?.lastVaultVisit ??
+      window.userLoyaltyContext?.lastVaultVisit ??
+      window.userRecord?.lastVaultVisit ??
       null;
 
     const lastVisit = normalizeDateMs(rawLastVisit);
@@ -4316,13 +4316,13 @@ async function onWalletPageShow() {
 async function startApp() {
 
   // 🔒 HARD GUARD — prevents ANY duplicate initialization
-  if (global.__startAppLocked) return;
-  global.__startAppLocked = true;
+  if (window.__startAppLocked) return;
+  window.__startAppLocked = true;
 
 
   // Ensure DOM is fully loaded (mobile fix)
   if (document.readyState !== "complete") {
-    global.addEventListener("load", startApp, { once: true });
+    window.addEventListener("load", startApp, { once: true });
     return;
   }
 
@@ -4351,8 +4351,8 @@ async function startApp() {
     appStarted,
     chamberWatcherStarted,
     vaultIntroStarted,
-    __vaultInitStarted: global.__vaultInitStarted,
-    __vaultIntroShown: global.__vaultIntroShown
+    __vaultInitStarted: window.__vaultInitStarted,
+    __vaultIntroShown: window.__vaultIntroShown
   });
 }
 
@@ -4414,7 +4414,7 @@ function initializeVaultButton() {
       return;
     }
 
-    global.location.href = "/Vault.html";
+    window.location.href = "/Vault.html";
   };
 
   // Attach listeners ONCE
@@ -4448,13 +4448,13 @@ async function initWalletPage() {
   openWallet();
 
   if (loyalty) {
-    global.currentLoyaltyData = loyalty;
+    window.currentLoyaltyData = loyalty;
     updateLoyaltyMemory(loyalty);
   }
 }
 function runVaultSequence() {
-  if (global.__vaultSequenceRunning) return;
-  global.__vaultSequenceRunning = true;
+  if (window.__vaultSequenceRunning) return;
+  window.__vaultSequenceRunning = true;
 
   vaultStart = nowMs();
 
@@ -4552,19 +4552,19 @@ function runVaultSequence() {
 }
 
 async function safeIntro(loyalty) {
-  if (global.__vaultIntroShown) {
+  if (window.__vaultIntroShown) {
     log("✨ Intro already shown — skipping");
     return;
   }
 
-  global.__vaultIntroShown = true;
+  window.__vaultIntroShown = true;
 
   try {
     await runVaultSpiritIntro(loyalty);
   } catch (err) {
     error("Intro failed, skipping:", err);
     // Optional: allow retry if intro never actually started
-    // global.__vaultIntroShown = false;
+    // window.__vaultIntroShown = false;
   }
 }
 
@@ -4572,12 +4572,12 @@ async function safeIntro(loyalty) {
 // MAIN INIT (Optimized, Magical, Non-Blocking)
 // ───────────────────────────────────────────────
 async function initVaultPage() {
-  if (global.__vaultInitStarted) return;
-  global.__vaultInitStarted = true;
+  if (window.__vaultInitStarted) return;
+  window.__vaultInitStarted = true;
 
   // Attach listeners once
-  if (!global.__vaultListenersAttached) {
-    global.__vaultListenersAttached = true;
+  if (!window.__vaultListenersAttached) {
+    window.__vaultListenersAttached = true;
     sendBtn.addEventListener("click", onSendClick);
     inputEl.addEventListener("keydown", onInputKeydown);
     hideBtn.addEventListener("click", onHideClick);
@@ -4611,16 +4611,16 @@ async function initVaultPage() {
     loadEvents().catch(() => [])
   ]);
 
-  global.userLoyalty = loyalty;
+  window.userLoyalty = loyalty;
 
   // Normalize last visit
-  global.userLoyaltyContext = {
-    ...global.userLoyaltyContext,
+  window.userLoyaltyContext = {
+    ...window.userLoyaltyContext,
     lastVaultVisit: normalizeDateMs(identity.lastVaultVisit)
   };
 
   // Build user context
-  global.userContext = {
+  window.userContext = {
     ...identity,
     ...(wallet || {}),
     loyalty,
@@ -4659,7 +4659,7 @@ async function onSendClick(e) {
   if (!text) return;
 
   const minimized = sessionContainer.classList.contains("minimized");
-  const userLocation = global.userLoyaltyContext?.location || null;
+  const userLocation = window.userLoyaltyContext?.location || null;
 
   // ───────────────────────────────────────────────
   // Expand or minimize chat
@@ -4713,7 +4713,7 @@ async function onSendClick(e) {
   // ───────────────────────────────────────────────
   // 1. Numeric choice
   // ───────────────────────────────────────────────
-  if (global.__pendingPlaceChoices && /^[1-3]$/.test(text)) {
+  if (window.__pendingPlaceChoices && /^[1-3]$/.test(text)) {
     const response = await handlePlaceChoice(text, userLocation);
 
     addBubble("Vault Spirit", response.text, false, {
@@ -4808,14 +4808,14 @@ function tryInitVault(source = "unknown") {
   const now = nowMs();
 
   // Guard FIRST — no wasted logs, no wasted work
-  if (global.__vaultInitStarted) {
+  if (window.__vaultInitStarted) {
     log(`⛔ tryInitVault blocked (${source}) — init already started`);
     return;
   }
 
   log(`🔍 tryInitVault from: ${source}`, {
     now,
-    __vaultInitStarted: global.__vaultInitStarted
+    __vaultInitStarted: window.__vaultInitStarted
   });
 
   // No debounce needed — initVaultPage owns the flag
@@ -4829,15 +4829,15 @@ function tryInitVault(source = "unknown") {
 function armVisibility() {
 visibilityArmed = true;
 }
-if (!global.__vaultLoadListenerAttached) {
-  global.__vaultLoadListenerAttached = true;
+if (!window.__vaultLoadListenerAttached) {
+  window.__vaultLoadListenerAttached = true;
 
-  global.addEventListener("load", () => {
+  window.addEventListener("load", () => {
     mark("DOM LOADING");
 
     // Guard FIRST — no wasted work
-    if (appStarted || global.__vaultInitStarted) {
-      log("⛔ global.load: vault already started — skipping reset/init");
+    if (appStarted || window.__vaultInitStarted) {
+      log("⛔ window.load: vault already started — skipping reset/init");
       return;
     }
 
@@ -4869,14 +4869,14 @@ if (!global.__vaultLoadListenerAttached) {
       appStarted,
       chamberWatcherStarted,
       vaultIntroStarted,
-      __vaultInitStarted: global.__vaultInitStarted,
-      __vaultIntroShown: global.__vaultIntroShown
+      __vaultInitStarted: window.__vaultInitStarted,
+      __vaultIntroShown: window.__vaultIntroShown
     });
 
     // Use rAF instead of setTimeout(0)
     requestAnimationFrame(() => {
       mark("TRYING INIT VAULT");
-      tryInitVault("global.load");
+      tryInitVault("window.load");
     });
   });
 

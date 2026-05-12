@@ -174,14 +174,14 @@ const PIN_TTL_MS = process.env.PIN_TTL_MS;
 
 export const corsHandler = pulseCors;
 
-global.__serverTimeOffset = 0;
+window.__serverTimeOffset = 0;
 
-global.setServerNow = function(serverNowMs) {
-  global.__serverTimeOffset = serverNowMs - Date.now();
+window.setServerNow = function(serverNowMs) {
+  window.__serverTimeOffset = serverNowMs - Date.now();
 };
 
-global.nowMs = function() {
-  return Date.now() + global.__serverTimeOffset;
+window.nowMs = function() {
+  return Date.now() + window.__serverTimeOffset;
 };
 
 
@@ -1084,8 +1084,8 @@ app.get("/health", async (req, res) => {
     ts: Date.now(),
     firestore: "unknown",
     auth: "unknown",
-    lastFunctionError: global.lastFunctionError || null,
-    lastColdStart: global.lastColdStart || null
+    lastFunctionError: window.lastFunctionError || null,
+    lastColdStart: window.lastColdStart || null
   };
 
   try {
@@ -2430,7 +2430,7 @@ async function fetchBuffer(url) {
 async function computeSha256Hex(buffer) {
   
   try {
-    if (global.crypto && global.crypto.subtle && typeof global.crypto.subtle.digest === "function") {
+    if (window.crypto && window.crypto.subtle && typeof window.crypto.subtle.digest === "function") {
       // crypto.subtle.digest expects an ArrayBuffer
       let ab;
       if (buffer instanceof ArrayBuffer) {
@@ -2442,7 +2442,7 @@ async function computeSha256Hex(buffer) {
         // fallback: try to convert
         ab = Buffer.from(buffer).buffer;
       }
-      const hashBuf = await global.crypto.subtle.digest("SHA-256", ab);
+      const hashBuf = await window.crypto.subtle.digest("SHA-256", ab);
       const hashArr = Array.from(new Uint8Array(hashBuf));
       return hashArr.map(b => b.toString(16).padStart(2, "0")).join("");
     }
@@ -2464,7 +2464,7 @@ async function computeSha256Hex(buffer) {
 
 // // -------------------- migrateImageToFirebase (upgraded, same return type) --------------------
 // async function migrateImageToFirebase(appypieUrl, type = "images") {
-//   const IMAGEURL = global.PLACEHOLDER_IMAGE_URL;
+//   const IMAGEURL = window.PLACEHOLDER_IMAGE_URL;
 
 //   try {
 //     if (!appypieUrl || typeof appypieUrl !== "string") {
@@ -2689,7 +2689,7 @@ async function computeSha256Hex(buffer) {
 
 //     const PLACEHOLDER = typeof PLACEHOLDER_IMAGE_URL !== "undefined"
 //       ? PLACEHOLDER_IMAGE_URL
-//       : global.PLACEHOLDER_IMAGE_URL || null;
+//       : window.PLACEHOLDER_IMAGE_URL || null;
 
 //     // Collect candidate URLs
 //     const urls = [];
@@ -6859,9 +6859,9 @@ export const referralredirect = onRequest(
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Opening Tropic Pulse…</title>
             <script>
-              global.location = "${appLink}";
+              window.location = "${appLink}";
               setTimeout(() => {
-                global.location = "${fallback}";
+                window.location = "${fallback}";
               }, 800);
             </script>
           </head>
@@ -26874,7 +26874,7 @@ export const resolveVenue = onRequest(
   (req, res) => {
     corsHandler(req, res, async () => {
       try {
-        const mapsKey = global.GOOGLE_MAPS_KEY;
+        const mapsKey = window.GOOGLE_MAPS_KEY;
         if (!mapsKey) {
           return res.status(500).json({ status: "error", message: "Missing API key" });
         }
@@ -26931,7 +26931,7 @@ export const resolveVenue = onRequest(
 //   (req, res) => {
 //     corsHandler(req, res, async () => {
 //       try {
-//         const mapsKey = global.GOOGLE_MAPS_KEY;
+//         const mapsKey = window.GOOGLE_MAPS_KEY;
 
 //         if (!mapsKey) {
 //           return res.status(500).json({
@@ -27117,7 +27117,7 @@ export const generateMap = onRequest(
     }
 
     try {
-      const mapsKey = global.GOOGLE_MAPS_KEY;
+      const mapsKey = window.GOOGLE_MAPS_KEY;
       if (!mapsKey) {
         return res.status(500).json({ success: false, error: "Missing mapsKey env var" });
       }

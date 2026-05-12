@@ -1078,7 +1078,7 @@ let persistenceEnabled = true;
   
   
 
-  const params = new URLSearchParams(global.location.search);
+  const params = new URLSearchParams(window.location.search);
   const eventID = params.get("id");
 
   let existingShortCode = null;
@@ -1120,7 +1120,7 @@ async function hardLogout(reason) {
     localStorage.removeItem("tp_token_v4");
     localStorage.removeItem("tp_device_token_v4");
   } finally {
-    global.location.replace("/CheckEmail.html");
+    window.location.replace("/CheckEmail.html");
   }
 }
 
@@ -1157,18 +1157,18 @@ async function sessionCheck() {
   // No identity or not trusted → go to login
   if (!id || !id.trustedDevice) {
     const here = encodeURIComponent(location.pathname + location.search);
-    global.location.href = `/CheckEmail.html?returnTo=${here}`;
+    window.location.href = `/CheckEmail.html?returnTo=${here}`;
     return null;
   }
 
   // Expose canonical identity for the rest of the page
-  global.PulseIdentity = id;
+  window.PulseIdentity = id;
   return id;
 }
 
 function initializeOverlays() {
-  if (global.__tp_carousel_handlers_bound) return;
-  global.__tp_carousel_handlers_bound = true;
+  if (window.__tp_carousel_handlers_bound) return;
+  window.__tp_carousel_handlers_bound = true;
 
   const leftArrow  = el('leftArrow');
   const rightArrow = el('rightArrow');
@@ -1216,8 +1216,8 @@ function initializeOverlays() {
 /* -------------------------------------------------
    4. GLOBAL CLICK HANDLER (idempotent)
 -------------------------------------------------- */
-if (!global.__tp_global_click_installed) {
-  global.__tp_global_click_installed = true;
+if (!window.__tp_global_click_installed) {
+  window.__tp_global_click_installed = true;
 
   document.addEventListener("click", (e) => {
     document.querySelectorAll(".calendar-menu").forEach(menu => {
@@ -1241,19 +1241,19 @@ if (!document.__loyaltyVisibilityBound) {
 // -----------------------------------------
   // ⭐ PREVENT DUPLICATE LISTENERS
   // -----------------------------------------
-  if (!global.__pulsebandListenersAttached) {
-    global.__pulsebandListenersAttached = true;
+  if (!window.__pulsebandListenersAttached) {
+    window.__pulsebandListenersAttached = true;
 
     // ⭐ 1. Restore state on load (runs ONCE)
-    global.addEventListener("load", () => {
+    window.addEventListener("load", () => {
       const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-      const disabled = (global.isIdle === true && inactiveFlag === true);
+      const disabled = (window.isIdle === true && inactiveFlag === true);
 
       if (disabled) {
-        global.isIdle = true;
+        window.isIdle = true;
         
       } else {
-        global.isIdle = false; // active by default
+        window.isIdle = false; // active by default
         
       }
 
@@ -1263,17 +1263,17 @@ if (!document.__loyaltyVisibilityBound) {
     // ⭐ 2. Badge toggle listener
     document.getElementById("pb-mini-badge").addEventListener("click", () => {
       const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-      const disabled = (global.isIdle === true && inactiveFlag === true);
+      const disabled = (window.isIdle === true && inactiveFlag === true);
 
       if (disabled) {
         // Turn ON
         localStorage.removeItem("pulseband_disabled");
-        global.isIdle = false;
+        window.isIdle = false;
         
       } else {
         // Turn OFF
         localStorage.setItem("pulseband_disabled", "1");
-        global.isIdle = true;
+        window.isIdle = true;
         
       }
 
@@ -1840,11 +1840,11 @@ function updateCarousel() {
 
 /* ---------- Render event (main) ---------- */
 async function renderEvent(evRaw) {
-  if (global.__tp_render_event_ran) return;
-  global.__tp_render_event_ran = true;
+  if (window.__tp_render_event_ran) return;
+  window.__tp_render_event_ran = true;
   try {
     const ev = sanitizeEvent(evRaw || {});
-    global.__currentEvent = ev;
+    window.__currentEvent = ev;
 
     /* -------------------------------
        🔮 Inject Price Badge in Title
@@ -1947,7 +1947,7 @@ async function renderEvent(evRaw) {
       badge.className = 'edit-badge-detail';
       badge.innerHTML = '✏️ Edit';
       badge.onclick = () => {
-        global.location.href = `/EditEvent.html?id=${encodeURIComponent(ev.id)}`;
+        window.location.href = `/EditEvent.html?id=${encodeURIComponent(ev.id)}`;
       };
       wrapperEl.appendChild(badge);
     }
@@ -1980,7 +1980,7 @@ async function renderEvent(evRaw) {
     if (gcalAdd) {
       gcalAdd.onclick = (e) => {
         e.stopPropagation();
-        if (gcalUrls[0]) global.open(gcalUrls[0], '_blank', 'noopener');
+        if (gcalUrls[0]) window.open(gcalUrls[0], '_blank', 'noopener');
         menu.classList.add('hidden');
       };
     }
@@ -2008,7 +2008,7 @@ async function renderEvent(evRaw) {
           }
 
           // 2️⃣ Trigger download
-          global.location.href = res.url;
+          window.location.href = res.url;
           showToast("Calendar File Downloaded. Tap it to Open.");
 
         } catch (err) {
@@ -2147,7 +2147,7 @@ async function renderEvent(evRaw) {
 
           if (status === 'no_credits' && paymentLink) {
             showToast("You're Out of Credits. Redirecting...");
-            setTimeout(()=>global.location.replace(paymentLink), 800);
+            setTimeout(()=>window.location.replace(paymentLink), 800);
             return;
           }
 
@@ -2496,7 +2496,7 @@ let __tp_overlay_resize_timeout = null;
 
 function applyTropicOverlay(name, iconUrl = null) {
   // Remove any previous resize handler (idempotent)
-  global.removeEventListener("resize", global.__tp_overlay_resize_handler);
+  window.removeEventListener("resize", window.__tp_overlay_resize_handler);
 
   const overlay   = document.getElementById("tpOverlay");
   const dot       = document.getElementById("tpDot");
@@ -2531,14 +2531,14 @@ function applyTropicOverlay(name, iconUrl = null) {
   overlay.style.display = "block";
 
   // Install new resize handler
-  global.__tp_overlay_resize_handler = () => {
+  window.__tp_overlay_resize_handler = () => {
     clearTimeout(__tp_overlay_resize_timeout);
     __tp_overlay_resize_timeout = setTimeout(() => {
       applyTropicOverlay(labelText.textContent, icon.src || null);
     }, 150);
   };
 
-  global.addEventListener("resize", global.__tp_overlay_resize_handler);
+  window.addEventListener("resize", window.__tp_overlay_resize_handler);
 }
 (async () => {
   // -----------------------------------------

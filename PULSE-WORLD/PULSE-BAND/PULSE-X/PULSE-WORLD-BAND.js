@@ -45,8 +45,8 @@ export const ADRENAL_CONTEXT = {
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-const admin = global.db;
-const db = global.db;
+const admin = window.db;
+const db = window.db;
 
 import {
   PulseProofBridgeLogger as logger
@@ -976,10 +976,10 @@ if (typeof window !== "undefined") {
     };
 
     // Expose as lowercase (Portal expects this)
-    global.pulseband = PulseBandEngine;
+    window.pulseband = PulseBandEngine;
 
     // Expose as uppercase (Index + Touch expect this)
-    global.PulseBand = PulseBandEngine;
+    window.PulseBand = PulseBandEngine;
 
     console.log(
       "%c[CheckBand] %cPulseBand engine injected into window",
@@ -1000,9 +1000,9 @@ if (typeof window !== "undefined") {
 export function checkBand(band) {
   return getCheckBandStateSnapshot(band);
 }
-global.checkBand = checkBand;
-global.CheckBand = checkBand;
-global.checkband = checkBand;
+window.checkBand = checkBand;
+window.CheckBand = checkBand;
+window.checkband = checkBand;
 // ============================================================================
 //  DEFAULT EXPORT — IMMORTAL++ PULSE‑WORLD‑BAND ORGAN (v24)
 // ============================================================================

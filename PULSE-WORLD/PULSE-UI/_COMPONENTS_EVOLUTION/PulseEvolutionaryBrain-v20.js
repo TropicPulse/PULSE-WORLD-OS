@@ -583,13 +583,13 @@ export function createPulseEvolutionaryBrain({
 // ---------------------------------------------------------------------------
 try {
   if (typeof window !== "undefined") {
-    global.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
+    window.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
   }
   if (typeof globalThis !== "undefined") {
-    global.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
+    window.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
   }
   if (typeof global !== "undefined") {
-    global.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
+    window.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
   }
   if (typeof g !== "undefined") {
     g.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;

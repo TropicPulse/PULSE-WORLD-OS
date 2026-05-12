@@ -199,9 +199,9 @@ export function createPulseEvolutionaryAnimations({
 // ---------------------------------------------------------------------------
 try {
   if (typeof window !== "undefined") {
-    global.PulseEvolutionaryAnimations = createPulseEvolutionaryAnimations;
+    window.PulseEvolutionaryAnimations = createPulseEvolutionaryAnimations;
   }
   if (typeof globalThis !== "undefined") {
-    global.PulseEvolutionaryAnimations = createPulseEvolutionaryAnimations;
+    window.PulseEvolutionaryAnimations = createPulseEvolutionaryAnimations;
   }
 } catch {}

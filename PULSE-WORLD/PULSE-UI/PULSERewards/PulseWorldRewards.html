@@ -3095,7 +3095,7 @@ async function hardLogout(reason) {
     localStorage.removeItem("tp_token_v4");
     localStorage.removeItem("tp_device_token_v4");
   } finally {
-    global.location.replace("/CheckEmail.html");
+    window.location.replace("/CheckEmail.html");
   }
 }
 
@@ -3132,12 +3132,12 @@ async function sessionCheck() {
   // No identity or not trusted → go to login
   if (!id || !id.trustedDevice) {
     const here = encodeURIComponent(location.pathname + location.search);
-    global.location.href = `/CheckEmail.html?returnTo=${here}`;
+    window.location.href = `/CheckEmail.html?returnTo=${here}`;
     return null;
   }
 
   // Expose canonical identity for the rest of the page
-  global.PulseIdentity = id;
+  window.PulseIdentity = id;
   return id;
 }
 
@@ -3258,7 +3258,7 @@ async function loadHistory(uid) {
   // 0. VERSION CHECK (MATCH BUSINESS PAGE)
   // ---------------------------------------------------------
 try {
-  const htmlHistoryVersion = global.globalCacheVersion?.historyVersion || 1;
+  const htmlHistoryVersion = window.globalCacheVersion?.historyVersion || 1;
   let localHistoryVersion = Number(localStorage.getItem("historyCacheVersion") || 1);
 
   // HTML version newer → force reload
@@ -3997,7 +3997,7 @@ function lazyLoadQR(referralLink) {
     });
 
     waitForQR((src) => {
-      global.__tpLargeQR = src;
+      window.__tpLargeQR = src;
     });
 
   }, 150);
@@ -4084,10 +4084,10 @@ function wireInteractions() {
 
     
     // -------------------------------
-    // 🔔 global.message (scanner / QR)
+    // 🔔 window.message (scanner / QR)
     // -------------------------------
     document.addEventListener("DOMContentLoaded", () => {
-      global.addEventListener("message", (e) => {
+      window.addEventListener("message", (e) => {
         if (e.origin !== "https://www.tropicpulse.bz") return;
 
         const action = e.data?.action;
@@ -4652,7 +4652,7 @@ function renderStreak(loyalty, settings) {
   const mult = loyalty.streakMultiplier ?? 1;
   const lastEarned = normalizeDate(loyalty.lastEarnedDate);
 
-  const lastTier = global.__lastStreakTier || null;
+  const lastTier = window.__lastStreakTier || null;
 
   // Reset icons
   infoIconWrapper.innerHTML = "";
@@ -4690,7 +4690,7 @@ function renderStreak(loyalty, settings) {
   const tier = tiers.find(t => count < t.max);
   const bubbleEl = addBubble(tier.cls, tier.emoji);
 
-  global.__lastStreakTier = tier.cls;
+  window.__lastStreakTier = tier.cls;
 
   // Burst animation only when tier changes
   if (lastTier !== tier.cls) {
@@ -5204,7 +5204,7 @@ async function loadSettings() {
   // 0. VERSION CHECK (MATCH BUSINESS PAGE)
   // ---------------------------------------------------------
   try {
-  const htmlSettingsVersion = global.globalCacheVersion?.settingsVersion || 1;
+  const htmlSettingsVersion = window.globalCacheVersion?.settingsVersion || 1;
   let localSettingsVersion = Number(localStorage.getItem("settingsCacheVersion") || 1);
 
   // HTML version newer → force reload
@@ -5751,7 +5751,7 @@ async function loadAllUsers(uid) {
   // 0. VERSION CHECK (MATCH BUSINESS PAGE)
   // ---------------------------------------------------------
 try {
-  const htmlUsersVersion = global.globalCacheVersion?.usersVersion || 1;
+  const htmlUsersVersion = window.globalCacheVersion?.usersVersion || 1;
   let localUsersVersion = Number(localStorage.getItem("usersCacheVersion") || 1);
 
   // HTML version newer → force reload
@@ -6102,8 +6102,8 @@ async function loadUserDetails() {
 //   );
 
 //   // 7️⃣ Update global loyalty context
-//   global.currentLoyalty = loyalty;
-//   global.userLoyalty = loyalty;
+//   window.currentLoyalty = loyalty;
+//   window.userLoyalty = loyalty;
 
 //   log("✅ reloadLoaltyDataOnly complete");
 // }
@@ -6376,7 +6376,7 @@ function openTropicScanner() {
 
   // If scanner already loaded
   if (f.contentWindow?.TropicPulseScanner) {
-    f.contentglobal.TropicPulseScanner.open();
+    f.contentwindow.TropicPulseScanner.open();
     return;
   }
 
@@ -6424,7 +6424,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!id) return; // redirected to login
 
     // Expose identity for loyalty page
-    global.PulseIdentity = id;
+    window.PulseIdentity = id;
     const userID = id.uid;
 
     // -----------------------------------------

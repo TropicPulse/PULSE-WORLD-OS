@@ -453,13 +453,13 @@ export function createPulseEvolutionaryBinary({
 // ---------------------------------------------------------------------------
 try {
   if (typeof window !== "undefined") {
-    global.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
+    window.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
   }
   if (typeof globalThis !== "undefined") {
-    global.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
+    window.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
   }
   if (typeof global !== "undefined") {
-    global.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
+    window.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
   }
   if (typeof g !== "undefined") {
     g.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;

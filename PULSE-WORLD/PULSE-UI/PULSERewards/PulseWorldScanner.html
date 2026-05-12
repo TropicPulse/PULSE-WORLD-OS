@@ -848,7 +848,7 @@ if (!identityCheck || !identityCheck.uid) {
   });
 
   const returnTo = encodeURIComponent("/PulsePoints.html");
-  global.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
+  window.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
   throw new Error("No identity — redirecting to CheckEmail");
 }
 // --- END SIMPLE IDENTITY CHECK ---
@@ -975,14 +975,14 @@ let video = null;
 let stream = null;
 let scanLoop = null;
 
-global.TropicPulseScanner = {
+window.TropicPulseScanner = {
   open() {
     scannerIsOpen = true;
     const root = document.getElementById("t-scanner-root");
 
     root.style.opacity = "1";
     root.style.pointerEvents = "auto";
-    global.parent.postMessage({ action: "scannerReady" }, "*");
+    window.parent.postMessage({ action: "scannerReady" }, "*");
     this.reset();
     loadProfilePhoto();
     startInactivityWatcher();
@@ -1012,7 +1012,7 @@ global.TropicPulseScanner = {
     root.style.opacity = "0";
     root.style.pointerEvents = "none";
 
-    global.parent.postMessage({ action: "closeScanner" }, "*");
+    window.parent.postMessage({ action: "closeScanner" }, "*");
   },
 
   reset() {
@@ -1350,7 +1350,7 @@ function spawnTapRipple(x, y) {
   setTimeout(() => ripple.remove(), 500);
 }
 
-global.disableScannerInteractions = function() {
+window.disableScannerInteractions = function() {
   document.querySelectorAll("*").forEach(el => {
     el.style.pointerEvents = "none";
   });

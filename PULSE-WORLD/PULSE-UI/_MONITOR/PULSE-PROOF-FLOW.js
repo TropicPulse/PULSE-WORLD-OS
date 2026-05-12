@@ -66,7 +66,7 @@ const fetchFn =
 //  IMMORTAL++ BRIDGE RESOLUTION — NEVER IMPORT, NEVER TDZ
 // ============================================================================
 function getBridge() {
-  return global.PulseProofBridge || null;
+  return window.PulseProofBridge || null;
 }
 
 // Lazy getters — ALWAYS call these inside functions, never at top-level
@@ -95,10 +95,10 @@ const UIFLOW_LS_MAX = 4000;
 
 function hasLocalStorage() {
   try {
-    if (typeof window === "undefined" || !global.localStorage) return false;
+    if (typeof window === "undefined" || !window.localStorage) return false;
     const t = "__uiflow_v24_test__";
-    global.localStorage.setItem(t, "1");
-    global.localStorage.removeItem(t);
+    window.localStorage.setItem(t, "1");
+    window.localStorage.removeItem(t);
     return true;
   } catch {
     return false;
@@ -108,7 +108,7 @@ function hasLocalStorage() {
 function loadFlowBuffer() {
   if (!hasLocalStorage()) return [];
   try {
-    const raw = global.localStorage.getItem(UIFLOW_LS_KEY);
+    const raw = window.localStorage.getItem(UIFLOW_LS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -142,7 +142,7 @@ function saveFlowBuffer(buf) {
     const trimmed =
       buf.length > UIFLOW_LS_MAX ? buf.slice(buf.length - UIFLOW_LS_MAX) : buf;
 
-    global.localStorage.setItem(UIFLOW_LS_KEY, JSON.stringify(trimmed));
+    window.localStorage.setItem(UIFLOW_LS_KEY, JSON.stringify(trimmed));
 
     // Mirror to CoreMemory (lazy bridge)
     mirrorFlowBufferToCoreMemory(trimmed);
@@ -244,9 +244,9 @@ const FLOW_LAYER_VER  = "24.0-Immortal-Evo++++";
 
 const FLOW_DIAGNOSTICS_ENABLED =
   hasWindow &&
-  (global.PULSE_UIFLOW_DIAGNOSTICS === "true" ||
-   global.PULSE_DIAGNOSTICS === "true" ||
-   global.PULSE_ADMIN_MODE === "true");
+  (window.PULSE_UIFLOW_DIAGNOSTICS === "true" ||
+   window.PULSE_DIAGNOSTICS === "true" ||
+   window.PULSE_ADMIN_MODE === "true");
 
 function logFlow(stage, details = {}) {
   appendFlowRecord("flow_log", { stage, details });
@@ -446,22 +446,22 @@ function resolveFlowByIntent(intentId) {
 
 function getEvolutionaryPage() {
   if (!hasWindow) return null;
-  return global.PulseEvolutionaryPage || null;
+  return window.PulseEvolutionaryPage || null;
 }
 
 function getAdminDiagnosticsModel() {
   if (!hasWindow) return null;
-  return global.PulseAdminDiagnosticsModel || null;
+  return window.PulseAdminDiagnosticsModel || null;
 }
 
 function getEvidenceSummary() {
   if (!hasWindow) return null;
-  return global.PulseEvidenceSummary || null;
+  return window.PulseEvidenceSummary || null;
 }
 
 function getVitalsSnapshot() {
   if (!hasWindow) return null;
-  const store = global.PulseVitalsStore || global.PulseVitalsStore || null;
+  const store = window.PulseVitalsStore || window.PulseVitalsStore || null;
   try {
     return store ? store.tail(64) : null;
   } catch {
@@ -844,9 +844,9 @@ export default PulseUIFlowAPI;
 try {
   if (typeof window !== "undefined") {
     // v24 primary
-    global.PulseUIFlow = initUIFlow;
-    global.PulseUIFlowStore = PulseUIFlowStore;
-    global.PulseUIFlowV24 = {
+    window.PulseUIFlow = initUIFlow;
+    window.PulseUIFlowStore = PulseUIFlowStore;
+    window.PulseUIFlowV24 = {
       onError: (packet) => {
         appendFlowRecord("error_spine_packet_v24", packet);
         logFlow("ERROR_SPINE_PACKET_V24", { signature: packet.signature });
@@ -854,13 +854,13 @@ try {
     };
 
     // back-compat aliases
-    global.PulseUIFlowV20 = global.PulseUIFlowV20 || {
+    window.PulseUIFlowV20 = window.PulseUIFlowV20 || {
       onError: (packet) => {
         appendFlowRecord("error_spine_packet_v20_alias", packet);
         logFlow("ERROR_SPINE_PACKET_V20_ALIAS", { signature: packet.signature });
       }
     };
-    global.PulseUIFlowV16 = global.PulseUIFlowV16 || {
+    window.PulseUIFlowV16 = window.PulseUIFlowV16 || {
       onError: (packet) => {
         appendFlowRecord("error_spine_packet_legacy", packet);
         logFlow("ERROR_SPINE_PACKET_V16_ALIAS", { signature: packet.signature });
@@ -868,12 +868,12 @@ try {
     };
   }
   if (typeof globalThis !== "undefined") {
-    global.PulseUIFlow = initUIFlow;
-    global.PulseUIFlowStore = PulseUIFlowStore;
+    window.PulseUIFlow = initUIFlow;
+    window.PulseUIFlowStore = PulseUIFlowStore;
   }
   if (typeof global !== "undefined") {
-    global.PulseUIFlow = initUIFlow;
-    global.PulseUIFlowStore = PulseUIFlowStore;
+    window.PulseUIFlow = initUIFlow;
+    window.PulseUIFlowStore = PulseUIFlowStore;
   }
   if (typeof g !== "undefined") {
     g.PulseUIFlow = initUIFlow;

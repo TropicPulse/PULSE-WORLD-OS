@@ -75,17 +75,17 @@ const route = typeof safeRouteV24 === "function" ? safeRouteV24 : safeRouteLegac
 // ONLINE CHECK
 // ---------------------------------------------------------------------------
 function isOnline() {
-  if (typeof window !== "undefined" && typeof global.PULSE_ONLINE === "boolean") {
-    return global.PULSE_ONLINE === true;
+  if (typeof window !== "undefined" && typeof window.PULSE_ONLINE === "boolean") {
+    return window.PULSE_ONLINE === true;
   }
-  if (typeof global !== "undefined" && typeof global.PULSE_ONLINE === "boolean") {
-    return global.PULSE_ONLINE === true;
+  if (typeof global !== "undefined" && typeof window.PULSE_ONLINE === "boolean") {
+    return window.PULSE_ONLINE === true;
   }
   if (
     typeof globalThis !== "undefined" &&
-    typeof global.PULSE_ONLINE === "boolean"
+    typeof window.PULSE_ONLINE === "boolean"
   ) {
-    return global.PULSE_ONLINE === true;
+    return window.PULSE_ONLINE === true;
   }
   if (typeof g !== "undefined" && typeof g.PULSE_ONLINE === "boolean") {
     return g.PULSE_ONLINE === true;
@@ -149,14 +149,14 @@ const LAYER_NAME = "THE SKIN REFLEX";
 const LAYER_ROLE = "UNIVERSAL ERROR GUARDIAN & HEALING TRIGGER";
 const LAYER_VER = SkinReflexRole.version;
 
-const log = (typeof global !== "undefined" && global.log) || console.log;
-const warn = (typeof global !== "undefined" && global.warn) || console.warn;
-const error = (typeof global !== "undefined" && global.error) || console.error;
+const log = (typeof global !== "undefined" && window.log) || console.log;
+const warn = (typeof global !== "undefined" && window.warn) || console.warn;
+const error = (typeof global !== "undefined" && window.error) || console.error;
 
 const PROTECTOR_DIAGNOSTICS_ENABLED =
   hasWindow &&
-  (global.PULSE_PROTECTOR_DIAGNOSTICS === "true" ||
-    global.PULSE_DIAGNOSTICS === "true");
+  (window.PULSE_PROTECTOR_DIAGNOSTICS === "true" ||
+    window.PULSE_DIAGNOSTICS === "true");
 
 const logProtector = (stage, details = {}) => {
   if (!PROTECTOR_DIAGNOSTICS_ENABLED) return;
@@ -190,21 +190,21 @@ function getOrganismMapSafe() {
   try {
     if (!hasWindow) return null;
 
-    const brain = global.PulseOSBrain || null;
+    const brain = window.PulseOSBrain || null;
     if (brain && (brain.PulseOrganismMapV24 || brain.PulseOrganismMapV20 || brain.PulseOrganismMap)) {
       return brain.PulseOrganismMapV24 || brain.PulseOrganismMapV20 || brain.PulseOrganismMap;
     }
 
-    if (global.__PULSE_ORGANISM_MAP_V24__) {
-      return global.__PULSE_ORGANISM_MAP_V24__;
+    if (window.__PULSE_ORGANISM_MAP_V24__) {
+      return window.__PULSE_ORGANISM_MAP_V24__;
     }
 
-    if (global.__PULSE_ORGANISM_MAP_V20__) {
-      return global.__PULSE_ORGANISM_MAP_V20__;
+    if (window.__PULSE_ORGANISM_MAP_V20__) {
+      return window.__PULSE_ORGANISM_MAP_V20__;
     }
 
-    if (global.__PULSE_ORGANISM_MAP__) {
-      return global.__PULSE_ORGANISM_MAP__;
+    if (window.__PULSE_ORGANISM_MAP__) {
+      return window.__PULSE_ORGANISM_MAP__;
     }
 
     return null;
@@ -268,7 +268,7 @@ function emitReflexSenseReport(context = {}) {
 // ---------------------------------------------------------------------------
 async function sessionCheck() {
   try {
-    if (!hasWindow || !global.localStorage) {
+    if (!hasWindow || !window.localStorage) {
       logProtector("SESSIONCHECK_SKIPPED_NO_WINDOW", {});
       return null;
     }
@@ -276,25 +276,25 @@ async function sessionCheck() {
     let id = null;
 
     try {
-      const raw = global.localStorage.getItem("tp_identity_v9");
+      const raw = window.localStorage.getItem("tp_identity_v9");
       if (raw) id = JSON.parse(raw);
     } catch {
       id = null;
     }
 
     if (hasWindow) {
-      if (!global.Pulse) global.Pulse = {};
-      global.PulseIdentity = id || null;
+      if (!window.Pulse) window.Pulse = {};
+      window.PulseIdentity = id || null;
     }
 
     if (!id || !id.trustedDevice) {
       const here =
-        encodeURIComponent(global.location.pathname + global.location.search);
+        encodeURIComponent(window.location.pathname + window.location.search);
       logProtector("SESSIONCHECK_REDIRECT_UNTRUSTED", {
-        path: global.location.pathname,
+        path: window.location.pathname,
         trustedDevice: id?.trustedDevice || false
       });
-      global.location.href = `/CheckEmail.html?returnTo=${here}`;
+      window.location.href = `/CheckEmail.html?returnTo=${here}`;
       return null;
     }
 
@@ -318,14 +318,14 @@ function routeCheck() {
       return { needsHealing: false };
     }
 
-    if (!global.Pulse) global.Pulse = {};
+    if (!window.Pulse) window.Pulse = {};
 
-    const lastPage = global.Pulse.pageName || null;
+    const lastPage = window.Pulse.pageName || null;
     const pageName =
-      (global.location && global.location.pathname) || null;
+      (window.location && window.location.pathname) || null;
 
-    global.Pulse.lastPage = lastPage;
-    global.Pulse.pageName = pageName;
+    window.Pulse.lastPage = lastPage;
+    window.Pulse.pageName = pageName;
 
     const needsHealing =
       !pageName ||
@@ -354,7 +354,7 @@ function routeCheck() {
 // ---------------------------------------------------------------------------
 function emitPageScannerIntel(context = {}) {
   try {
-    if (typeof window === "undefined" || !global.PageScannerAdapter) return;
+    if (typeof window === "undefined" || !window.PageScannerAdapter) return;
 
     const packet = PulsePageScanner.buildDriftPacket(context);
 
@@ -368,8 +368,8 @@ function emitPageScannerIntel(context = {}) {
       });
     }
 
-    if (typeof global.PageScannerAdapter.onEvent === "function") {
-      global.PageScannerAdapter.onEvent(packet);
+    if (typeof window.PageScannerAdapter.onEvent === "function") {
+      window.PageScannerAdapter.onEvent(packet);
     }
   } catch (err) {
     safeSpine(err, "pagescanner.emitIntel");
@@ -404,10 +404,10 @@ function parseMissingField(message) {
 // ---------------------------------------------------------------------------
 function isExternal(url) {
   try {
-    const u = new URL(url, global.location.href);
+    const u = new URL(url, window.location.href);
 
     const localOrigins = new Set([
-      global.location.origin,
+      window.location.origin,
       "null",
       "file://",
       "data:",
@@ -444,9 +444,9 @@ export function createPulseSkinReflex({
   const SKINREFLEX_STORE_KEY = "PulseSkinReflexStore_v24";
 
   function loadSkinReflexStore() {
-    if (!hasWindow || !global.localStorage) return [];
+    if (!hasWindow || !window.localStorage) return [];
     try {
-      const raw = global.localStorage.getItem(SKINREFLEX_STORE_KEY);
+      const raw = window.localStorage.getItem(SKINREFLEX_STORE_KEY);
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed : [];
@@ -456,9 +456,9 @@ export function createPulseSkinReflex({
   }
 
   function saveSkinReflexStore(entries) {
-    if (!hasWindow || !global.localStorage) return;
+    if (!hasWindow || !window.localStorage) return;
     try {
-      global.localStorage.setItem(
+      window.localStorage.setItem(
         SKINREFLEX_STORE_KEY,
         JSON.stringify(entries)
       );
@@ -521,12 +521,12 @@ export function createPulseSkinReflex({
         hasBootedOnce = true;
 
         logProtector("SCANNER_FIRST_BOOT_ATTACH_ONLY", {
-          pageName: global.Pulse?.pageName || null
+          pageName: window.Pulse?.pageName || null
         });
 
         appendSkinReflexEntry("A1_ATTACH_FIRST_BOOT", {
           identity,
-          pageName: global.Pulse?.pageName || null
+          pageName: window.Pulse?.pageName || null
         });
 
         return {
@@ -689,9 +689,9 @@ export function createPulseSkinReflex({
   // INTERNAL: A1 ERROR INTERCEPTOR
   // -------------------------------------------------------------------------
   function installErrorInterceptor() {
-    if (!hasWindow || typeof global.addEventListener !== "function") return;
+    if (!hasWindow || typeof window.addEventListener !== "function") return;
 
-    global.addEventListener(
+    window.addEventListener(
       "error",
       async (event) => {
         if (healingInProgress) return;
@@ -711,7 +711,7 @@ export function createPulseSkinReflex({
         try {
           errorPacket = PulseUIErrors.normalizeError(
             event.error || msg,
-            "skinreflex.global.error"
+            "skinreflex.window.error"
           );
           PulseUIErrors.broadcast(errorPacket);
         } catch (spineErr) {
@@ -723,7 +723,7 @@ export function createPulseSkinReflex({
         const line = top.split(":")[1] || "unknown";
 
         const pagePath =
-          hasWindow && global.location ? global.location.pathname : null;
+          hasWindow && window.location ? window.location.pathname : null;
 
         const uiFlowSnapshot = (() => {
           try {
@@ -867,7 +867,7 @@ export function createPulseSkinReflex({
         if (msg.includes("process is not defined")) {
           logProtector("PAGE_ENV_MISMATCH", {
             error: "frontendEnvMismatch",
-            hint: "Replace process.env.* with global.PULSE_*"
+            hint: "Replace process.env.* with window.PULSE_*"
           });
 
           RouteMemory.markDegraded(msg, rawFrames, 0.7, false);
@@ -1062,16 +1062,16 @@ export function createPulseSkinReflex({
   // ============================================================
   try {
     if (typeof window !== "undefined") {
-      global.getAuth    = getAuth;
-      global.getHook    = getHook;
-      global.getMap     = getMap;
-      global.callHelper = callHelper;
+      window.getAuth    = getAuth;
+      window.getHook    = getHook;
+      window.getMap     = getMap;
+      window.callHelper = callHelper;
 
       // Optional aliases (safe)
-      global.PulseGetAuth    = getAuth;
-      global.PulseGetHook    = getHook;
-      global.PulseGetMap     = getMap;
-      global.PulseCallHelper = callHelper;
+      window.PulseGetAuth    = getAuth;
+      window.PulseGetHook    = getHook;
+      window.PulseGetMap     = getMap;
+      window.PulseCallHelper = callHelper;
     }
   } catch (err) {
     console.error("[SkinReflex] Failed to export globals:", err);
@@ -1087,13 +1087,13 @@ export default createPulseSkinReflex;
 // ---------------------------------------------------------------------------
 try {
   if (typeof window !== "undefined") {
-    global.PulseSkinReflex = createPulseSkinReflex;
+    window.PulseSkinReflex = createPulseSkinReflex;
   }
   if (typeof globalThis !== "undefined") {
-    global.PulseSkinReflex = createPulseSkinReflex;
+    window.PulseSkinReflex = createPulseSkinReflex;
   }
   if (typeof global !== "undefined") {
-    global.PulseSkinReflex = createPulseSkinReflex;
+    window.PulseSkinReflex = createPulseSkinReflex;
   }
   if (typeof g !== "undefined") {
     g.PulseSkinReflex = createPulseSkinReflex;

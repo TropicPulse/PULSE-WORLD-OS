@@ -300,8 +300,8 @@ export class PulseCoreMemoryEngine_v24 {
 //  FACTORY
 // ============================================================================
 export function createPulseCoreMemory({
-  primaryStorage   = global.localStorage,
-  secondaryStorage = global.sessionStorage,
+  primaryStorage   = window.localStorage,
+  secondaryStorage = window.sessionStorage,
   log              = console.log,
   warn             = console.warn,
   dnaTag           = "default-dna"

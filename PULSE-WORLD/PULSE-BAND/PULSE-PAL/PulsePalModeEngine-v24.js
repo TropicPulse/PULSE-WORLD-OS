@@ -273,10 +273,10 @@ export const PulsePalModeEngine = {
 // ============================================================================
 try {
   if (typeof globalThis !== "undefined") {
-    global.PulsePalModeEngine = PulsePalModeEngine;
+    window.PulsePalModeEngine = PulsePalModeEngine;
   }
   if (typeof window !== "undefined") {
-    global.PulsePalModeEngine = PulsePalModeEngine;
+    window.PulsePalModeEngine = PulsePalModeEngine;
   }
 } catch {
   // never throw

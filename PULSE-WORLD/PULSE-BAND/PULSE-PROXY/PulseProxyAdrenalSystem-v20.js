@@ -36,7 +36,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { PulseLineage } from "./PulseProxyBBB-v20.js";
 
-const db = global.db;
+const db = window.db;
 
 export const ORCHESTRATOR_MODES = {
   NORMAL: "normal",

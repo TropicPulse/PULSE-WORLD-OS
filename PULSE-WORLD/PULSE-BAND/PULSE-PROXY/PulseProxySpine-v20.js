@@ -136,9 +136,9 @@ const RATE_LIMIT_WINDOW_MS = process.env.RATE_LIMIT_WINDOW_MS;
 const MAX_REQUESTS_PER_WINDOW = process.env.MAX_REQUESTS_PER_WINDOW;
 const PIN_TTL_MS = process.env.PIN_TTL_MS;
 
-const log   = global.log   || console.log;
-const warn  = global.warn  || console.warn;
-const error = global.error || console.error;
+const log   = window.log   || console.log;
+const warn  = window.warn  || console.warn;
+const error = window.error || console.error;
 
 // backend-only PulseChunker base URL
 const CHUNKER_BASE =
@@ -292,7 +292,7 @@ export function getSpineHealingState() {
 const MAX_REQUESTS_PER_DAY = Number(process.env.PULSE_MAX_REQ_PER_DAY || "5000");
 
 const START_TIME = Date.now();
-global.__lastStartTime = global.__lastStartTime || START_TIME;
+window.__lastStartTime = window.__lastStartTime || START_TIME;
 
 const CLOUD_REGION =
   process.env.GOOGLE_CLOUD_REGION ||
@@ -705,14 +705,14 @@ if (process.env.REDIS_URL) {
 
   redis.on("ready", () => {
     redisReady = true;
-    global.__lastRedisError = null;
+    window.__lastRedisError = null;
     log("%c[REDIS] Connected — cache + rate limiting enabled (fail-open safe).", "color:#4CAF50; font-weight:bold;");
   });
 
   redis.on("error", (err) => {
     redisReady = false;
     const msg = String(err);
-    global.__lastRedisError = msg;
+    window.__lastRedisError = msg;
     healingState.lastRedisError = msg;
     warn("%c[REDIS ERROR] Entering degraded / fail-open mode:", "color:#FF9800; font-weight:bold;", msg);
 
@@ -728,7 +728,7 @@ if (process.env.REDIS_URL) {
   redis.connect().catch((err) => {
     const msg = String(err);
     redisReady = false;
-    global.__lastRedisError = msg;
+    window.__lastRedisError = msg;
     healingState.lastRedisError = msg;
     warn("%c[REDIS CONNECT FAILED] Staying in fail-open mode:", "color:#FF9800; font-weight:bold;", msg);
 
@@ -913,7 +913,7 @@ app.use((req, res, next) => {
 
   const advantageField = buildSpineAdvantageField({
     rateLimitBand: healingState.lastRateLimitDecision?.band,
-    redisReady: global.__lastRedisError == null,
+    redisReady: window.__lastRedisError == null,
     offlineMode: OFFLINE_MODE,
     cpuLoad,
     gpuLoad

@@ -974,15 +974,15 @@ function hideTPLoader() {
 function safeLogout() {
   localStorage.removeItem("tp_identity_v9");
   localStorage.removeItem("tp_device_token_v9");
-  global.location.replace("/login.html");
+  window.location.replace("/login.html");
 }
 
 /* ============================================================
    2. HERO HEADER ENTRANCE ANIMATION
    ============================================================ */
 async function runHeroHeaderEntrance() {
-  if (global.__heroHeaderPlayed) return;
-  global.__heroHeaderPlayed = true;
+  if (window.__heroHeaderPlayed) return;
+  window.__heroHeaderPlayed = true;
 
   const top = document.createElement("div");
   const bottom = document.createElement("div");
@@ -1108,16 +1108,16 @@ async function renderDashboard(identity) {
     if (identity.role?.toLowerCase() === "admin") {
       adminBtn.style.display = "block";
     }
-    adminBtn.onclick = () => (global.location.href = "/PULSEAdmin/PULSEAdmin.html");
+    adminBtn.onclick = () => (window.location.href = "/PULSEAdmin/PULSEAdmin.html");
   }
 
   if (stripeBtn) {
     const stripeUrl = identity.stripeDashboardURL || identity.loginLink || "#";
-    stripeBtn.onclick = () => (global.location.href = stripeUrl);
+    stripeBtn.onclick = () => (window.location.href = stripeUrl);
   }
 
   if (updateBtn) {
-    updateBtn.onclick = () => (global.location.href = "/userrecord.html");
+    updateBtn.onclick = () => (window.location.href = "/userrecord.html");
   }
 
   hideTPLoader();
@@ -1138,26 +1138,26 @@ async function renderDashboard(identity) {
   await renderDashboard(id);
 
   // PulseBand UI restore (unchanged)
-  if (!global.__pulsebandListenersAttached) {
-    global.__pulsebandListenersAttached = true;
+  if (!window.__pulsebandListenersAttached) {
+    window.__pulsebandListenersAttached = true;
 
-    global.addEventListener("load", () => {
+    window.addEventListener("load", () => {
       const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-      global.isIdle = !!inactiveFlag;
+      window.isIdle = !!inactiveFlag;
     });
 
     const miniBadge = document.getElementById("pb-mini-badge");
     if (miniBadge) {
       miniBadge.addEventListener("click", () => {
         const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-        const disabled = inactiveFlag && global.isIdle;
+        const disabled = inactiveFlag && window.isIdle;
 
         if (disabled) {
           localStorage.removeItem("pulseband_disabled");
-          global.isIdle = false;
+          window.isIdle = false;
         } else {
           localStorage.setItem("pulseband_disabled", "1");
-          global.isIdle = true;
+          window.isIdle = true;
         }
       });
     }

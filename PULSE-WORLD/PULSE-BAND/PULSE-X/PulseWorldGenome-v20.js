@@ -771,9 +771,9 @@ export async function fetchBuffer(url) {
 export async function computeSha256Hex(buffer) {
   // Ensure we have WebCrypto
   if (
-    !global.crypto ||
-    !global.crypto.subtle ||
-    typeof global.crypto.subtle.digest !== "function"
+    !window.crypto ||
+    !window.crypto.subtle ||
+    typeof window.crypto.subtle.digest !== "function"
   ) {
     return null; // No crypto available
   }
@@ -791,7 +791,7 @@ export async function computeSha256Hex(buffer) {
     }
 
     // Compute SHA‑256
-    const hashBuf = await global.crypto.subtle.digest("SHA-256", ab);
+    const hashBuf = await window.crypto.subtle.digest("SHA-256", ab);
     const hashArr = new Uint8Array(hashBuf);
 
     // Convert to hex
