@@ -168,130 +168,98 @@ function writeFsFile(path, content) {
 // ============================================================================
 export const PulseWorldFirebaseShadow = Object.freeze({
 
-  // ⭐ Save daily route map (Portal)
+  // ⭐ Save daily route map (Portal) — MINIMAL WRITE
   async savePageRoutes(page, routes) {
     try {
-      const payload = {
-        date: todayISO(),
+      setDocument(COL_PAGE_ROUTES, page, {
         routes,
         epoch: nowEpoch()
-      };
-
-      setDocument(COL_PAGE_ROUTES, page, payload);
-      console.log("[FirebaseShadow v25] Saved page routes →", page);
+      });
+      console.log("[Shadow LIMITED] Saved page routes →", page);
     } catch (err) {
-      console.error("[FirebaseShadow v25] FAILED savePageRoutes →", err);
+      console.error("[Shadow LIMITED] FAILED savePageRoutes →", err);
     }
   },
 
-  // ⭐ Load page routes (Portal)
+  // ⭐ Load page routes — SAFE
   async loadPageRoutes(page) {
     try {
-      const doc = getDocument(COL_PAGE_ROUTES, page);
-      return doc || null;
+      return getDocument(COL_PAGE_ROUTES, page) || null;
     } catch (err) {
-      console.error("[FirebaseShadow v25] FAILED loadPageRoutes →", err);
+      console.error("[Shadow LIMITED] FAILED loadPageRoutes →", err);
       return null;
     }
   },
 
-  // ⭐ Save daily organism snapshot (OrganismMap)
+  // ⭐ Save organism snapshot — MINIMAL WRITE (NO HISTORY)
   async saveOrganismSnapshot(snapshot) {
     try {
-      const payload = {
-        epoch: nowEpoch(),
-        snapshot
-      };
-
-      setDocument(COL_ORGANISM_SNAPSHOT, "daily", payload);
-      console.log("[FirebaseShadow v25] Saved organism snapshot");
+      setDocument(COL_ORGANISM_SNAPSHOT, "daily", {
+        snapshot,
+        epoch: nowEpoch()
+      });
+      console.log("[Shadow LIMITED] Saved organism snapshot");
     } catch (err) {
-      console.error("[FirebaseShadow v25] FAILED saveOrganismSnapshot →", err);
+      console.error("[Shadow LIMITED] FAILED saveOrganismSnapshot →", err);
     }
   },
 
-  // ⭐ Load organism snapshot
+  // ⭐ Load organism snapshot — SAFE
   async loadOrganismSnapshot() {
     try {
-      const doc = getDocument(COL_ORGANISM_SNAPSHOT, "daily");
-      return doc || null;
+      return getDocument(COL_ORGANISM_SNAPSHOT, "daily") || null;
     } catch (err) {
-      console.error("[FirebaseShadow v25] FAILED loadOrganismSnapshot →", err);
+      console.error("[Shadow LIMITED] FAILED loadOrganismSnapshot →", err);
       return null;
     }
   },
 
-  // ⭐ Log event (Logger)
+  // ⭐ Log event — DISABLED (NO QUOTA WASTE)
   async logEvent(type, payload) {
     try {
-      const id = String(nowEpoch());
-      const doc = {
-        type,
-        payload,
-        epoch: nowEpoch()
-      };
-
-      setDocument(COL_LOGS, id, doc);
-      console.log("[FirebaseShadow v25] Logged event →", type);
-    } catch (err) {
-      console.error("[FirebaseShadow v25] FAILED logEvent →", err);
-    }
+      // NO LOGGING — QUOTA SAVED
+      // console.log("[Shadow LIMITED] logEvent skipped →", type);
+    } catch {}
   },
 
-  // ⭐ Save per-system organism snapshot (hourly)
+  // ⭐ Save per-system snapshot — MINIMAL (NO HISTORY)
   async saveSystemSnapshot(systemName, snapshot) {
     try {
-      const epoch = nowEpoch();
-      const hourKey = hourKeyISO();
-
       const latestId = systemLatestId(systemName);
-      const latest = getDocument(COL_SYSTEM_SNAPSHOTS, latestId);
 
-      // Archive previous snapshot into history
-      if (latest && latest.epoch) {
-        const historyId = systemHistoryId(systemName, latest.epoch);
-        setDocument(COL_SYSTEM_SNAPSHOTS, historyId, latest);
-      }
-
-      const newLatest = {
+      setDocument(COL_SYSTEM_SNAPSHOTS, latestId, {
         system: systemName,
-        epoch,
-        hour: hourKey,
-        snapshot
-      };
+        snapshot,
+        epoch: nowEpoch()
+      });
 
-      setDocument(COL_SYSTEM_SNAPSHOTS, latestId, newLatest);
-      console.log(`[FirebaseShadow v25] Saved system snapshot → ${systemName}`);
+      console.log(`[Shadow LIMITED] Saved system snapshot → ${systemName}`);
     } catch (err) {
-      console.error("[FirebaseShadow v25] FAILED saveSystemSnapshot →", err);
+      console.error("[Shadow LIMITED] FAILED saveSystemSnapshot →", err);
     }
   },
 
-  // ⭐ Load latest system snapshot
+  // ⭐ Load latest system snapshot — SAFE
   async loadSystemSnapshot(systemName) {
     try {
-      const latestId = systemLatestId(systemName);
-      const doc = getDocument(COL_SYSTEM_SNAPSHOTS, latestId);
-      return doc || null;
+      return getDocument(COL_SYSTEM_SNAPSHOTS, systemLatestId(systemName)) || null;
     } catch (err) {
-      console.error("[FirebaseShadow v25] FAILED loadSystemSnapshot →", err);
+      console.error("[Shadow LIMITED] FAILED loadSystemSnapshot →", err);
       return null;
     }
   },
 
-  // ⭐ Save JSON to "Storage" (actually FS MAP via localStorage)
+  // ⭐ Save JSON — MINIMAL
   async saveJSON(path, obj) {
     try {
-      const fullPath = `${FS_JSON_ROOT}/${path}`;
-      const content = JSON.stringify(obj);
-
-      writeFsFile(fullPath, content);
-      console.log("[FirebaseShadow v25] Saved JSON →", fullPath);
+      writeFsFile(`${FS_JSON_ROOT}/${path}`, JSON.stringify(obj));
+      console.log("[Shadow LIMITED] Saved JSON →", path);
     } catch (err) {
-      console.error("[FirebaseShadow v25] FAILED saveJSON →", err);
+      console.error("[Shadow LIMITED] FAILED saveJSON →", err);
     }
   }
 });
+
 
 // ============================================================================
 // GLOBAL ATTACHMENT
