@@ -268,7 +268,7 @@ if (typeof window !== "undefined") {
     }
   };
 
-  window.PulseBinaryKernel = Kernel;
+  window.PulseBinary = Kernel;
 
   window.PulseBinary = window.PulseBinary
     ? Object.freeze({ ...window.PulseBinary, ...shadow })
