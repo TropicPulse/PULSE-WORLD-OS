@@ -1295,14 +1295,12 @@ function applyGateDecision(gateDecision, skin) {
     // 4 — PURE SYNC IGNITION (NO ASYNC, NO LOOPS)
     // ============================================================
     console.log(
-        "%c[PulseTouch::ignition → %s",
+        "%c[PulseTouch::ignition] %cportal-first warm.",
         "color:#00E5FF; font-weight:bold; font-family:monospace;",
-        "color:#00FF9C; font-family:monospace;","portal-first warm.");
+        "color:#00FF9C; font-family:monospace;");
 
   } catch (err) {
-    console.warn("%c[PulseTouch::auto‑ignite → %s",
-        "color:#00E5FF; font-weight:bold; font-family:monospace;",
-        "color:#00FF9C; font-family:monospace;","failed", err);
+    console.error("PulseTouch auto‑ignite failed", err);
   }
 })();
 
