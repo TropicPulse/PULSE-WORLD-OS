@@ -1226,6 +1226,7 @@ function applyGateDecision(gateDecision, skin) {
 
     // ============================================================
     // 0 — LOCALSTORAGE-FIRST MAP + SHADOW + CHUNKS + NORMALIZER
+    //     + SEND SIGNALS TO ALL THREE
     // ============================================================
     try {
       // LOCALSTORAGE FIRST. ALWAYS.
@@ -1237,7 +1238,7 @@ function applyGateDecision(gateDecision, skin) {
         console.warn("[PulseTouch] No OrganismMap in localStorage");
       }
 
-      // SHADOW READY (sync presence check / safe fallback)
+      // SHADOW READY (safe fallback)
       if (!window.PulseWorldFirebaseShadow) {
         console.warn("[PulseTouch] Shadow missing → creating safe no-op Shadow");
         window.PulseWorldFirebaseShadow = {
@@ -1245,55 +1246,71 @@ function applyGateDecision(gateDecision, skin) {
           fetch: null,
           storage: null,
           prewarm: function () {},
-          ready: true
+          ready: false,
+          signal: function () {}
         };
-      } else {
-        // mark as ready if not marked
-        if (!window.PulseWorldFirebaseShadow.ready) {
-          window.PulseWorldFirebaseShadow.ready = true;
-        }
-      }
-      // Shadow prewarm hook (if real implementation exposes it)
-      if (typeof window.PulseWorldFirebaseShadow.prewarm === "function") {
-        window.PulseWorldFirebaseShadow.prewarm();
       }
 
-      // CHUNKS READY (sync)
+      // CHUNKS READY (safe fallback)
       if (!window.PulseChunks) {
         console.warn("[PulseTouch] PulseChunks missing → creating safe no-op");
         window.PulseChunks = {
           prewarm: function () {},
-          ready: true
+          ready: false,
+          signal: function () {}
         };
-      } else {
-        if (!window.PulseChunks.ready) {
-          window.PulseChunks.ready = true;
-        }
       }
 
-      // CHUNKS NORMALIZER READY (sync)
+      // NORMALIZER READY (safe fallback)
       if (!window.PulseChunksNormalizer) {
         console.warn("[PulseTouch] PulseChunksNormalizer missing → identity normalizer");
         window.PulseChunksNormalizer = {
           normalize: x => x,
           prewarm: function () {},
-          ready: true
+          ready: false,
+          signal: function () {}
         };
-      } else {
-        if (!window.PulseChunksNormalizer.normalize) {
-          window.PulseChunksNormalizer.normalize = x => x;
-        }
-        if (!window.PulseChunksNormalizer.prewarm) {
-          window.PulseChunksNormalizer.prewarm = function () {};
-        }
-        if (!window.PulseChunksNormalizer.ready) {
-          window.PulseChunksNormalizer.ready = true;
-        }
       }
-      // Normalizer prewarm hook
-      if (typeof window.PulseChunksNormalizer.prewarm === "function") {
-        window.PulseChunksNormalizer.prewarm();
+
+      // ============================================================
+      // ⭐ SEND SIGNALS TO ALL THREE SUBSYSTEMS
+      // ============================================================
+      try {
+        window.PulseWorldFirebaseShadow.signal({
+          type: "touch_bootstrap",
+          page,
+          prefix
+        });
+
+        window.PulseChunks.signal({
+          type: "touch_bootstrap",
+          page,
+          prefix
+        });
+
+        window.PulseChunksNormalizer.signal({
+          type: "touch_bootstrap",
+          page,
+          prefix
+        });
+
+        console.log("[PulseTouch] Sent bootstrap signals to Shadow/Chunks/Normalizer");
+      } catch (err) {
+        console.error("[PulseTouch] SIGNAL BROADCAST FAILED →", err);
       }
+
+      // ============================================================
+      // ⭐ OPTIONAL: allow subsystems to prewarm themselves
+      // ============================================================
+      window.PulseWorldFirebaseShadow.prewarm?.();
+      window.PulseChunks.prewarm?.([]);
+      window.PulseChunksNormalizer.prewarm?.();
+
+      // Mark ready
+      window.PulseWorldFirebaseShadow.ready = true;
+      window.PulseChunks.ready = true;
+      window.PulseChunksNormalizer.ready = true;
+
     } catch (err) {
       console.error("[PulseTouch] SYNC BOOT BLOCK FAILED →", err);
     }
@@ -1321,24 +1338,17 @@ function applyGateDecision(gateDecision, skin) {
     // 2 — PRELOAD + PREWARM PORTAL (THE CORTEX)
     // ============================================================
     try {
-      // ⭐ Preload Portal JS (module)
       const portalScript = document.createElement("link");
       portalScript.rel = "modulepreload";
       portalScript.href = `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.js`;
       document.head.appendChild(portalScript);
 
-      // ⭐ Preload THIS PAGE HTML
       touch.preloader?.preloadPage?.(page);
-
-      // ⭐ Preload THIS PAGE chunks
       touch.chunker?.preloadChunksForPage?.(page);
-
-      // ⭐ Light advantage warm
       touch.advantage?.prewarmLight?.();
 
       appendTouchTimeline("touch_page_warm", { page });
 
-      // ⭐ Prewarm Portal chunks (sync call)
       window.PulseChunks.prewarm([
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.js`,
         `${prefix}_CREATION_BARRIER/PULSE-INDEX.js`,
@@ -1346,7 +1356,6 @@ function applyGateDecision(gateDecision, skin) {
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.assets.json`
       ]);
 
-      // ⭐ Route image scan (OrganismMap‑aware, using LOCALSTORAGE-FIRST hydrate)
       const map = window.PulseOrganismMap;
       if (map && map.systems?.UI?.pages?.[page]) {
         const route = map.systems.UI.pages[page].IDENTITY_META.ROUTE;
@@ -1370,7 +1379,7 @@ function applyGateDecision(gateDecision, skin) {
     }
 
     // ============================================================
-    // 3 — PREWARM TOUCH CORTEX (v25++ IMMORTAL)
+    // 3 — PREWARM TOUCH CORTEX
     // ============================================================
     try {
       window.PulseChunks.prewarm([
@@ -1389,11 +1398,10 @@ function applyGateDecision(gateDecision, skin) {
     }
 
     // ============================================================
-    // 4 — ORGANISMMAP SIGNAL (from localStorage-hydrated map)
+    // 4 — ORGANISMMAP SIGNAL
     // ============================================================
     try {
       const hasMapSignal =
-        typeof window !== "undefined" &&
         window.PulseOrganismMap &&
         typeof window.PulseOrganismMap.signal === "function";
 
@@ -1415,7 +1423,7 @@ function applyGateDecision(gateDecision, skin) {
     }
 
     // ============================================================
-    // 5 — PURE SYNC IGNITION (NO ASYNC, NO LOOPS)
+    // 5 — PURE SYNC IGNITION
     // ============================================================
     console.log(
       "%c[PulseTouch::ignition] %cportal-first warm + cortex prewarm complete.",
@@ -1427,6 +1435,7 @@ function applyGateDecision(gateDecision, skin) {
     console.error("PulseTouch auto‑ignite failed", err);
   }
 })();
+
 
 
 // ============================================================

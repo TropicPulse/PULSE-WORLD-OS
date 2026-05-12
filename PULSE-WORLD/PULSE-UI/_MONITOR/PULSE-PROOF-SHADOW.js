@@ -296,7 +296,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
 // ============================================================================
 // GLOBAL ATTACHMENT
 // ============================================================================
-window.PulseWorldFirebaseShadow = PulseWorldFirebaseShadow;
+
 
 console.log(
   "%c[PulseFirebaseShadow v25] %cSHADOW organ %c→ %s",
@@ -420,3 +420,5 @@ for (const g of GLOBAL_SURFACES) {
 }
 
 console.log("%c[ShadowDB] UNIVERSAL GLOBAL DB + FS compatibility layer ACTIVE", C_OK);
+
+window.PulseWorldFirebaseShadow = PulseWorldFirebaseShadow;
