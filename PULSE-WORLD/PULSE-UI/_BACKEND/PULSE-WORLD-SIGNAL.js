@@ -226,80 +226,66 @@ const PulseMemoryStorage = {
     return Array.from(keys);
   }
 };
-// ============================================================================
-//  IMMORTAL++ GLOBAL SKIP LIST — v27 Wallet-Safe, Provider-Safe, Crash-Proof
-// ============================================================================
 
+// Heuristic skip list so we don't try to serialize built-ins
 const PULSE_GLOBAL_SKIP_KEYS = new Set([
-  // Core JS / Browser built-ins
-  "window", "self", "global", "globalthis", "document", "location",
-  "navigator", "console", "frames", "parent", "top", "opener",
-  "performance", "crypto", "indexeddb", "localstorage", "sessionstorage",
-  "promise", "array", "object", "function", "number", "string", "boolean",
-  "map", "set", "weakmap", "weakset", "date", "regexp", "error",
-  "typeerror", "syntaxerror", "referenceerror", "rangeerror",
-  "evalerror", "urierror", "json", "math", "reflect", "proxy",
-  "intl", "atomics", "sharedarraybuffer", "bigint", "bigint64array",
-  "biguint64array", "dataview", "arraybuffer", "uint8array",
-  "uint16array", "uint32array", "int8array", "int16array",
-  "int32array", "float32array", "float64array",
-
-  // ========================================================================
-  //  WALLET / PROVIDER / CRYPTO EXTENSION GLOBALS — DO NOT TOUCH EVER
-  // ========================================================================
-  "ethereum",
-  "web3",
-  "__metamask",
-  "__mmwallet",
-  "__phantom",
-  "__coinbase",
-  "__walletconnect",
-  "__frame",
-  "__rabby",
-  "__keplr",
-  "__solflare",
-  "__terra",
-  "__okx",
-  "__binance",
-  "__bitget",
-
-  // Some wallets inject these hidden symbols
-  "_ethereum",
-  "_web3",
-  "_wallet",
-  "_provider",
-
-  // ========================================================================
-  //  EXTENSION / BROWSER INTERNALS — DO NOT TOUCH
-  // ========================================================================
-  "chrome",
-  "browser",
-  "mozextension",
-  "safari",
-  "opera",
-  "webkit",
-
-  // ========================================================================
-  //  SHIMS / DEPRECATED PROVIDERS — DO NOT TOUCH
-  // ========================================================================
-  "web3provider",
-  "currentprovider",
-  "legacyweb3",
-  "legacyprovider",
-
-  // ========================================================================
-  //  SECURITY-SENSITIVE GLOBALS
-  // ========================================================================
-  "serviceworker",
-  "caches",
-  "trustedtypes",
-  "crossoriginisolated",
-  "scheduler",
-  "performanceobserver",
-  "performanceentry",
-  "performanceeventtiming"
+  "window",
+  "self",
+  "global",
+  "globalThis",
+  "document",
+  "location",
+  "navigator",
+  "console",
+  "frames",
+  "parent",
+  "top",
+  "opener",
+  "performance",
+  "crypto",
+  "indexedDB",
+  "localStorage",
+  "sessionStorage",
+  "Promise",
+  "Array",
+  "Object",
+  "Function",
+  "Number",
+  "String",
+  "Boolean",
+  "Map",
+  "Set",
+  "WeakMap",
+  "WeakSet",
+  "Date",
+  "RegExp",
+  "Error",
+  "TypeError",
+  "SyntaxError",
+  "ReferenceError",
+  "RangeError",
+  "EvalError",
+  "URIError",
+  "JSON",
+  "Math",
+  "Reflect",
+  "Proxy",
+  "Intl",
+  "Atomics",
+  "SharedArrayBuffer",
+  "BigInt",
+  "BigInt64Array",
+  "BigUint64Array",
+  "DataView",
+  "ArrayBuffer",
+  "Uint8Array",
+  "Uint16Array",
+  "Uint32Array",
+  "Int8Array",
+  "Int16Array",
+  "Int32Array",
+  "Float32Array"
 ]);
-
 
 // Keys we explicitly care about for the signal system
 const PULSE_SIGNAL_KEYS = {
