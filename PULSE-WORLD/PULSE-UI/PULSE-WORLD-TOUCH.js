@@ -349,7 +349,7 @@ function appendTouchTimeline(kind, payload = {}) {
   } catch {}
 }
 
-
+window.TouchTimeline  = appendTouchTimeline();
 
 // ============================================================
 // ADAPTIVE CADENCE ENGINE — PRESSURE/TRUST/BAND/PULSE AWARE (v24++)

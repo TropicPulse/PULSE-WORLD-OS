@@ -925,7 +925,7 @@ function runPortalWarm() {
     });
 
     // ⭐ 6 — Log warm event into Touch timeline
-    touch.appendTouchTimeline("portalWarm", { page, next });
+    window.TouchTimeline("portalWarm", { page, next });
 
     console.log(
       "%c[PulsePortal::Warm] %cv26 next-page warm complete %c→ %s",
