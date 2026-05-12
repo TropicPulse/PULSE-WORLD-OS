@@ -1273,7 +1273,7 @@ function applyGateDecision(gateDecision, skin) {
       ]);
 
       // ⭐ Scan the REAL file path (absolute)
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(page);
+      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`${page}.html`);
 
       // ⭐ Log into Touch timeline
       appendTouchTimeline("portal_prewarm", {
