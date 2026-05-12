@@ -247,7 +247,6 @@ export const PulseRoleFallback = "LEGACY SUBSYSTEM";
 //  DETERMINISTIC COLOR MAP
 // ============================================================================
 
-
 export const PulseColors = {
   proof: "#4DD0E1",
   logger: "#FF7043",
@@ -255,8 +254,8 @@ export const PulseColors = {
   gpu: "#7E57C2",
   band: "#66BB6A",
   vault: "#26C6DA",
-  hooks: "#AB47BC",
-  x: "#FFA726",
+  ui: "#AB47BC",
+  endpoint: "#FFA726",
   router: "#42A5F5",
   expansion: "#26A69A",
   bridge: "#EC407A",
