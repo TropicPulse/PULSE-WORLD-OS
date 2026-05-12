@@ -108,7 +108,7 @@ export const PulseColors = {
   band: "#66BB6A",
   vault: "#26C6DA",
   hooks: "#AB47BC",
-  endpoint: "#FFA726",
+  x: "#FFA726",
   router: "#42A5F5",
   expansion: "#26A69A",
   bridge: "#EC407A",
@@ -639,7 +639,7 @@ export async function scanPulseSystemsOnce() {
       }
     }
 
-    if (!detectedVersion) detectedVersion = "12.3";
+    if (!detectedVersion) detectedVersion = "16";
     const version = `v${detectedVersion}`;
 
     // ---------------------------------------------

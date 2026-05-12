@@ -247,6 +247,7 @@ export const PulseRoleFallback = "LEGACY SUBSYSTEM";
 //  DETERMINISTIC COLOR MAP
 // ============================================================================
 
+
 export const PulseColors = {
   proof: "#4DD0E1",
   logger: "#FF7043",
@@ -255,7 +256,7 @@ export const PulseColors = {
   band: "#66BB6A",
   vault: "#26C6DA",
   hooks: "#AB47BC",
-  endpoint: "#FFA726",
+  x: "#FFA726",
   router: "#42A5F5",
   expansion: "#26A69A",
   bridge: "#EC407A",
@@ -817,7 +818,7 @@ function resolveFromOrganismMap() {
 
     return {
       subsystem: "legacy",
-      version: "v12.3",
+      version: "v16",
       color: PulseColorFallback,
       icon: PulseIconFallback
     };
@@ -825,7 +826,7 @@ function resolveFromOrganismMap() {
   } catch (err) {
     return {
       subsystem: "legacy",
-      version: "v12.3",
+      version: "v16",
       color: PulseColorFallback,
       icon: PulseIconFallback
     };
