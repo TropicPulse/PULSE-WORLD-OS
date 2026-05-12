@@ -1,19 +1,12 @@
 // ============================================================================
-//  PULSE OS v25.0‑IMMORTAL++ — PULSE-WORLD-SIGNAL Engine (CSS-MERGED TOP LAYER)
-//  Signal-Grade Telemetry • Logger-Independent • Offline-First
-//  ZERO RANDOMNESS • ZERO EGO • DUALBAND-AWARE • ORGANISM-MAP-AWARE
-//  CSS-Style Signal Cascade • Top-Layer Merged Comments • Color-Aware Logs
-//  BEAST + UI CONTEXT • EMITS ONLY ON CHANGE
-//  v25+ UPGRADE: SignalPort-style dispatch via OrganismMap (if present)
-//  v25+ UPGRADE: Universal Memory Layer (global/window → localStorage → window)
-//  v25+ UPGRADE: PulseSignal bus (Beast → localStorage → UI) + 60s heartbeat
+//  v25+ UNIVERSAL MEMORY LAYER (UPGRADED FOR SIGNAL v27)
+//  - Treat localStorage as source of truth (with in-memory fallback)
+//  - Sync ALL serializable globals (globalThis/window/g) → localStorage (one-shot scan)
+//  - Mirror important globals (PulseSignal, PulseProofSignal, SignalPort, etc.) on write
+//  - Beast-safe (no window), browser-safe, offline-safe
 // ============================================================================
 
-console.log(
-  "%cPulseProofSignal v25-IMMORTAL-EVOLVABLE (CSS-MERGED, OFFLINE, +SignalPort, +UniversalMemory, +PulseSignalBus)",
-  "color:#BA68C8;font-weight:bold;"
-);
-
+const PULSE_MEMORY_PREFIX = "__pulse_global__:";
 // Capture original console to avoid recursion and preserve native behavior
 const _c = { ...console };
 
@@ -28,132 +21,6 @@ const g =
     : typeof self !== "undefined"
     ? self
     : {};
-
-// global guard for Signal↔Logger recursion (kept for safety, though we no longer attach)
-g.__PULSE_SIGNAL_LOGGING = g.__PULSE_SIGNAL_LOGGING || { active: false };
-
-export const PulseVersion = {
-  proof: "25.0",
-  logger: "25.0",
-  renderer: "25.0",
-  gpu: "25.0",
-  band: "25.0",
-  vault: "25.0",
-  hooks: "25.0",
-  endpoint: "25.0",
-  router: "25.0",
-  expansion: "25.0",
-  bridge: "25.0",
-  internet: "25.0",
-  memory: "25.0",
-  pages: "25.0",
-  cns: "25.0",
-  world: "25.0",
-  mesh: "25.0",
-  ai: "25.0",
-  signal: "25.0"
-};
-
-// fallback only
-export const PulseVersionFallback = "16.x";
-
-// ============================================================================
-//  DETERMINISTIC ROLE MAP
-// ============================================================================
-
-export const PulseRoles = {
-  proof: "PROOF MONITOR",
-  logger: "PROOF LOGGER",
-  renderer: "RENDERER",
-  gpu: "GPU SUBSYSTEM",
-  band: "NERVOUS SYSTEM",
-  vault: "VAULT SUBSYSTEM",
-  hooks: "HOOK REGISTRY",
-  endpoint: "REMOTE ENDPOINT",
-  router: "ROUTER",
-  expansion: "EXPANSION ENGINE",
-  bridge: "CNS BRIDGE",
-  internet: "INTERNET SUBSYSTEM",
-  memory: "MEMORY SUBSYSTEM",
-  pages: "PAGE SUBSYSTEM",
-  cns: "CNS CORE",
-  world: "WORLD SUBSYSTEM",
-  mesh: "MESH SUBSYSTEM",
-  ai: "AI SUBSYSTEM",
-  signal: "SIGNAL SUBSYSTEM"
-};
-
-// fallback only
-export const PulseRoleFallback = "LEGACY SUBSYSTEM";
-
-// ============================================================================
-//  DETERMINISTIC COLOR MAP
-// ============================================================================
-
-export const PulseColors = {
-  proof: "#4DD0E1",
-  logger: "#FF7043",
-  renderer: "#29B6F6",
-  gpu: "#7E57C2",
-  band: "#66BB6A",
-  vault: "#26C6DA",
-  ui: "#AB47BC",
-  endpoint: "#FFA726",
-  router: "#42A5F5",
-  expansion: "#26A69A",
-  bridge: "#EC407A",
-  internet: "#8D6E63",
-  memory: "#5C6BC0",
-  pages: "#26C6DA",
-  cns: "#EF5350",
-  world: "#26A69A",
-  mesh: "#7E57C2",
-  ai: "#FFCA28",
-  signal: "#90CAF9"
-};
-
-// fallback only
-export const PulseColorFallback = "#BDBDBD";
-
-// ============================================================================
-//  DETERMINISTIC ICON MAP
-// ============================================================================
-
-export const PulseIcons = {
-  proof: "📜",
-  logger: "🖨️",
-  renderer: "✨",
-  gpu: "🎨",
-  band: "🧠",
-  vault: "🔐",
-  hooks: "🪝",
-  endpoint: "🌐",
-  router: "🛰️",
-  expansion: "🚀",
-  bridge: "🌉",
-  internet: "📡",
-  memory: "💾",
-  pages: "📄",
-  cns: "🧬",
-  world: "🌍",
-  mesh: "🕸️",
-  ai: "🤖",
-  signal: "📡"
-};
-
-// fallback only
-export const PulseIconFallback = "🖥️";
-
-// ============================================================================
-//  v25+ UNIVERSAL MEMORY LAYER
-//  - Treat localStorage as source of truth
-//  - Sync ALL globals (globalThis/window/g) → localStorage
-//  - Mirror localStorage → window/g on frontend
-//  - Beast-safe (no window), browser-safe, offline-safe
-// ============================================================================
-
-const PULSE_MEMORY_PREFIX = "__pulse_global__:";
-
 // Safe localStorage abstraction (works in beast + browser)
 const PulseMemoryStorage = {
   _ensureInMemory() {
@@ -287,10 +154,15 @@ const PULSE_GLOBAL_SKIP_KEYS = new Set([
   "Int8Array",
   "Int16Array",
   "Int32Array",
-  "Float32Array",
-  "Float64Array"
+  "Float32Array"
 ]);
 
+// Keys we explicitly care about for the signal system
+const PULSE_SIGNAL_KEYS = {
+  PulseSignal: `${PULSE_MEMORY_PREFIX}PulseSignal_v27`,
+  PulseProofSignal: `${PULSE_MEMORY_PREFIX}PulseProofSignal_v27`,
+  PulseSignalPort: `${PULSE_MEMORY_PREFIX}PulseSignalPort_v27`
+};
 const PulseUniversalMemory = {
   prefix: PULSE_MEMORY_PREFIX,
 
@@ -306,6 +178,7 @@ const PulseUniversalMemory = {
     }
   },
 
+  // One-shot scan: snapshot existing globals into storage
   _syncGlobalsToStorageOnce() {
     const root = g;
     const seen = new Set();
@@ -322,7 +195,7 @@ const PulseUniversalMemory = {
         if (seen.has(key)) continue;
         seen.add(key);
         if (PULSE_GLOBAL_SKIP_KEYS.has(key)) continue;
-        if (key.startsWith("__pulse_global__")) continue;
+        if (key.startsWith(this.prefix)) continue;
 
         let desc;
         try {
@@ -356,6 +229,67 @@ const PulseUniversalMemory = {
     }
   },
 
+  // “Every time they globalize, we localize”
+  mirrorGlobalWrite(prop, value) {
+    if (typeof prop !== "string") return;
+    if (PULSE_GLOBAL_SKIP_KEYS.has(prop)) return;
+    if (!this._isSerializable(value)) return;
+
+    const storageKey = this.prefix + prop;
+    PulseMemoryStorage.set(storageKey, value);
+
+    // Special handling for the three core signal structures
+    if (prop === "PulseSignal") {
+      PulseMemoryStorage.set(PULSE_SIGNAL_KEYS.PulseSignal, value);
+    } else if (prop === "PulseProofSignal") {
+      PulseMemoryStorage.set(PULSE_SIGNAL_KEYS.PulseProofSignal, value);
+    } else if (prop === "SignalPort" || prop === "PulseSignalPort") {
+      PulseMemoryStorage.set(PULSE_SIGNAL_KEYS.PulseSignalPort, value);
+    }
+  },
+
+  // Restore important globals from storage on boot (frontend)
+  restoreSignalGlobals() {
+    const pulseSignal = PulseMemoryStorage.get(PULSE_SIGNAL_KEYS.PulseSignal);
+    if (pulseSignal && !g.PulseSignal) {
+      g.PulseSignal = pulseSignal;
+    }
+
+    const proofSignal = PulseMemoryStorage.get(PULSE_SIGNAL_KEYS.PulseProofSignal);
+    if (proofSignal && !g.PulseProofSignal) {
+      g.PulseProofSignal = proofSignal;
+    }
+
+    const signalPort = PulseMemoryStorage.get(PULSE_SIGNAL_KEYS.PulseSignalPort);
+    if (signalPort && !g.SignalPort && !g.PulseSignalPort) {
+      g.SignalPort = signalPort;
+      g.PulseSignalPort = signalPort;
+    }
+  },
+
+  // Attach lightweight mirroring to global writes without overriding window/globalThis
+  attachGlobalMirroring() {
+    const selfRef = this;
+
+    // Mirror direct property sets on the global handle `g`
+    const originalSet = Reflect.set;
+    Reflect.set = function(target, prop, value, receiver) {
+      if (target === g) {
+        selfRef.mirrorGlobalWrite(prop, value);
+      }
+      return originalSet(target, prop, value, receiver);
+    };
+
+    // Mirror defineProperty on the global handle `g`
+    const originalDefine = Object.defineProperty;
+    Object.defineProperty = function(obj, prop, descriptor) {
+      if (obj === g && descriptor && "value" in descriptor) {
+        selfRef.mirrorGlobalWrite(prop, descriptor.value);
+      }
+      return originalDefine.call(Object, obj, prop, descriptor);
+    };
+  },
+
   _syncStorageToGlobalsOnce() {
     const keys = PulseMemoryStorage.keys();
     for (const key of keys) {
@@ -387,10 +321,14 @@ const PulseUniversalMemory = {
   },
 
   init() {
-    // First, sync any existing globals into storage
+    // 1) snapshot existing globals → storage
     this._syncGlobalsToStorageOnce();
-    // Then, mirror storage back into globals/window so frontend sees them
+    // 2) restore dedicated signal globals (PulseSignal, PulseProofSignal, SignalPort)
+    this.restoreSignalGlobals();
+    // 3) storage → globals so frontend sees persisted state
     this._syncStorageToGlobalsOnce();
+    // 4) from now on, every write to g.* is mirrored into storage
+    this.attachGlobalMirroring();
 
     // Optional: expose helper for later manual syncs if needed
     g.PulseUniversalMemory = g.PulseUniversalMemory || {
@@ -400,11 +338,16 @@ const PulseUniversalMemory = {
   }
 };
 
-// Initialize universal memory immediately (runs as soon as this module loads)
-PulseUniversalMemory.init();
+// Initialize universal memory once on load
+try {
+  PulseUniversalMemory.init();
+} catch (err) {
+  _c.warn("[PulseUniversalMemory] Initialization failed (non-fatal):", err);
+}
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, signal-scoped, FRONTEND-SAFE
+//  PACKET EMITTER — deterministic, signal-scoped, FRONTEND-SAFE, MAP-AWARE
+//  v27+: carries rawSignal / normalizedSignal / channel / port / threePart
 // ============================================================================
 
 function emitSignalPacket(type, payload) {
@@ -416,10 +359,22 @@ function emitSignalPacket(type, payload) {
     timestamp: now,
 
     // IMMORTAL++: minimal, stable, frontend-safe identity
-    version: "25.0-IMMORTAL++",
+    version: "27.0-IMMORTAL++",
     source: "PulseProofSignal",
 
-    // user payload last
+    // v27+ optional signal metadata (Map / SignalPort aware)
+    // rawSignal: original string from emit / map
+    // normalizedSignal: CSS-collapsed, normalized form
+    // channel: global channel (e.g. PULSE_BAND)
+    // port: SignalPort key (e.g. "pulseband")
+    // threePart: normalized 3-part name (_PulseBand_Boot_Start)
+    rawSignal: payload.rawSignal || null,
+    normalizedSignal: payload.normalizedSignal || null,
+    channel: payload.channel || null,
+    port: payload.port || null,
+    threePart: payload.threePart || null,
+
+    // user payload last (can override above if explicitly set)
     ...payload
   });
 }
@@ -433,7 +388,7 @@ function safeClone(v) {
 }
 
 // ============================================================================
-//  COLOR + COMMENT ENGINE (unchanged core)
+//  COLOR + COMMENT ENGINE (unchanged core + signal metadata surfaced)
 // ============================================================================
 
 const SIGNAL_COLORS = {
@@ -510,7 +465,7 @@ function buildCommentFromSignalPacket(packet, kind = "direct") {
       identity,
       bridgeEnv,
       meta: {
-        version: "25.0-IMMORTAL++",
+        version: "27.0-IMMORTAL++",
         generator: "PulseProofSignalCommentEngine",
         kind
       }
@@ -527,7 +482,13 @@ function buildCommentFromSignalPacket(packet, kind = "direct") {
       env,
       level: packet.level || null,
       subsystem: packet.subsystem || null,
-      message: packet.message || null
+      message: packet.message || null,
+      // v27+: surface signal metadata for debugging/normalization
+      rawSignal: packet.rawSignal || null,
+      normalizedSignal: packet.normalizedSignal || null,
+      channel: packet.channel || null,
+      port: packet.port || null,
+      threePart: packet.threePart || null
     },
     null,
     2
@@ -537,7 +498,7 @@ function buildCommentFromSignalPacket(packet, kind = "direct") {
 }
 
 // ============================================================================
-//  TOP-LAYER MERGE ENGINE (unchanged core behavior)
+//  TOP-LAYER MERGE ENGINE (unchanged core behavior + merges signal metadata)
 // ============================================================================
 
 const TopLayerMerge = {
@@ -592,7 +553,13 @@ const TopLayerMerge = {
         env,
         state,
         advantage,
-        stability
+        stability,
+        // v27+ signal metadata
+        rawSignal,
+        normalizedSignal,
+        channel,
+        port,
+        threePart
       } = p;
 
       if (level !== undefined) computed.level = level;
@@ -610,6 +577,13 @@ const TopLayerMerge = {
       if (state !== undefined) computed.state = state;
       if (advantage !== undefined) computed.advantage = advantage;
       if (stability !== undefined) computed.stability = stability;
+
+      // v27+: last-wins for signal metadata too
+      if (rawSignal !== undefined) computed.rawSignal = rawSignal;
+      if (normalizedSignal !== undefined) computed.normalizedSignal = normalizedSignal;
+      if (channel !== undefined) computed.channel = channel;
+      if (port !== undefined) computed.port = port;
+      if (threePart !== undefined) computed.threePart = threePart;
     }
     return computed;
   },
@@ -661,7 +635,12 @@ const TopLayerMerge = {
       level: p.level || null,
       subsystem: p.subsystem || null,
       message: p.message || null,
-      ts: p.timestamp
+      ts: p.timestamp,
+      rawSignal: p.rawSignal || null,
+      normalizedSignal: p.normalizedSignal || null,
+      channel: p.channel || null,
+      port: p.port || null,
+      threePart: p.threePart || null
     }));
 
     base.details.computed = safeClone(computed);
@@ -674,7 +653,12 @@ const TopLayerMerge = {
         lastType: lastPacket.packetType,
         lastLevel: lastPacket.level || null,
         lastSubsystem: lastPacket.subsystem || null,
-        lastMessage: lastPacket.message || null
+        lastMessage: lastPacket.message || null,
+        rawSignal: computed.rawSignal || null,
+        normalizedSignal: computed.normalizedSignal || null,
+        channel: computed.channel || null,
+        port: computed.port || null,
+        threePart: computed.threePart || null
       },
       null,
       2
@@ -702,7 +686,7 @@ function emitCommentLogForPacket(packet, kind = "direct") {
 }
 
 // ============================================================================
-//  INTERNAL BUFFER — burst-safe, offline-only
+//  INTERNAL BUFFER — burst-safe, offline-only (unchanged)
 // ============================================================================
 
 const SignalBuffer = {
@@ -747,7 +731,7 @@ const SignalBuffer = {
 };
 
 // ============================================================================
-//  CORE SIGNAL API — logger-independent, beast+UI aware
+//  CORE SIGNAL API — logger-independent, beast+UI aware, v27-ready
 // ============================================================================
 
 function normalizeDirectSignal(payload = {}) {
@@ -775,7 +759,14 @@ function normalizeDirectSignal(payload = {}) {
     organ = null,
     flow = null,
     reflex = null,
-    env = null
+    env = null,
+
+    // v27+ signal metadata (optional, usually filled by OrganismMap)
+    rawSignal = null,
+    normalizedSignal = null,
+    channel = null,
+    port = null,
+    threePart = null
   } = payload;
 
   return emitSignalPacket("direct", {
@@ -801,12 +792,17 @@ function normalizeDirectSignal(payload = {}) {
     organ,
     flow,
     reflex,
-    env
+    env,
+
+    rawSignal,
+    normalizedSignal,
+    channel,
+    port,
+    threePart
   });
 }
-
 // ============================================================================
-//  SIGNALPORT-STYLE DISPATCH — USING ORGANISMMAP IF PRESENT
+//  SIGNALPORT-STYLE DISPATCH — USING ORGANISMMAP IF PRESENT (v27-aware)
 // ============================================================================
 
 function resolveTargetViaOrganismMap(target) {
@@ -870,7 +866,13 @@ function dispatchSignalToOrganism(target, payload = {}) {
       subsystem: "signalport",
       message: `No subsystem found for target: ${target}`,
       extra: { target, resolved: false },
-      level: "warn"
+      level: "warn",
+      // v27 metadata: we at least know the port/target
+      rawSignal: payload.rawSignal || null,
+      normalizedSignal: payload.normalizedSignal || null,
+      channel: payload.channel || null,
+      port: String(target),
+      threePart: payload.threePart || null
     });
     SignalBuffer.push(packet);
     emitCommentLogForPacket(packet, "direct");
@@ -891,7 +893,12 @@ function dispatchSignalToOrganism(target, payload = {}) {
       subsystem: "signalport",
       message: `No PORT_IDENTITY handler for target: ${target}`,
       extra: { target, resolved: true },
-      level: "warn"
+      level: "warn",
+      rawSignal: payload.rawSignal || null,
+      normalizedSignal: payload.normalizedSignal || null,
+      channel: payload.channel || null,
+      port: String(target),
+      threePart: payload.threePart || null
     });
     SignalBuffer.push(packet);
     emitCommentLogForPacket(packet, "direct");
@@ -914,7 +921,7 @@ function dispatchSignalToOrganism(target, payload = {}) {
   }
 
   const packet = normalizeDirectSignal({
-    subsystem: portIdentity.portName,
+    subsystem: portIdentity.portName || "signalport",
     message: payload?.message || payload?.type || "dispatch",
     extra: {
       target,
@@ -922,6 +929,12 @@ function dispatchSignalToOrganism(target, payload = {}) {
       aliases: portIdentity.aliases,
       error: error ? String(error) : null
     },
+    // carry through v27 metadata if present
+    rawSignal: payload.rawSignal || null,
+    normalizedSignal: payload.normalizedSignal || null,
+    channel: payload.channel || null,
+    port: portIdentity.portName || String(target),
+    threePart: payload.threePart || null,
     ...payload
   });
 
@@ -947,7 +960,8 @@ function dispatchSignalToOrganism(target, payload = {}) {
 }
 
 // ============================================================================
-//  PULSE SIGNAL BUS — Beast → LocalStorage → UI (+ 60s heartbeat)
+//  PULSE SIGNAL BUS — Beast → PulseMemoryStorage → UI (+ 60s heartbeat)
+//  v27-ready: can carry signal metadata if desired
 // ============================================================================
 
 const PULSE_SIGNAL_KEY = "__pulse_signal__";
@@ -956,9 +970,15 @@ const PulseSignal = {
   _listeners: [],
 
   // Beast/backend: push raw state (network, stability, latency, etc.)
-  push(rawState) {
+  // Optionally include v27 metadata: rawSignal, normalizedSignal, channel, port, threePart
+  push(rawState, meta = {}) {
     const packet = emitSignalPacket("direct", {
-      state: safeClone(rawState) || rawState
+      state: safeClone(rawState) || rawState,
+      rawSignal: meta.rawSignal || null,
+      normalizedSignal: meta.normalizedSignal || null,
+      channel: meta.channel || null,
+      port: meta.port || null,
+      threePart: meta.threePart || null
     });
 
     // Feed into existing engines
@@ -1006,15 +1026,13 @@ const PulseSignal = {
   }
 };
 
-// 60s heartbeat: re-write latest packet to localStorage so any listener
-// that only watches storage (e.g., other tabs) gets a fresh event.
+// 60s heartbeat: re-write latest packet to storage so other contexts see it
 (function setupPulseSignalHeartbeat() {
   try {
     const intervalMs = 60_000;
     setInterval(() => {
       const packet = PulseSignal.getPacket();
       if (!packet) return;
-      // Re-set into storage to trigger storage events across contexts
       PulseMemoryStorage.set(PULSE_SIGNAL_KEY, packet);
     }, intervalMs);
   } catch {
@@ -1023,17 +1041,18 @@ const PulseSignal = {
 })();
 
 // ============================================================================
-//  PUBLIC API — PulseProofSignal Engine (FRONTEND-SAFE IMMORTAL++)
+//  PUBLIC API — PulseProofSignal Engine (FRONTEND-SAFE IMMORTAL++, v27)
 // ============================================================================
 
 export const PulseProofSignal = Object.freeze({
-  version: "25.0-IMMORTAL++",
+  version: "27.0-IMMORTAL++",
   source: "PulseProofSignal",
 
   configure(config) {
     SignalBuffer.configure(config);
   },
 
+  // payload can include v27 metadata: rawSignal, normalizedSignal, channel, port, threePart
   signal(payload) {
     const packet = normalizeDirectSignal(payload);
     SignalBuffer.push(packet);
@@ -1069,58 +1088,35 @@ export const PulseProofSignal = Object.freeze({
 // ============================================================================
 
 export const SignalPort = Object.freeze({
+  // payload can include v27 metadata; it flows into dispatch → normalizeDirectSignal
   send(target, payload = {}) {
     return PulseProofSignal.dispatch(target, payload);
   }
 });
 
 // ============================================================================
-// PULSE SIGNAL IMMORTAL++ v27 — LocalStorage-backed global attach
+//  PULSE SIGNAL IMMORTAL++ v27 — Global attach via PulseUniversalMemory
 // ============================================================================
 
 (function attachPulseSignals() {
-  const g = globalThis;
-
-  // -------------------------------
-  // 1. RESTORE FROM LOCALSTORAGE
-  // -------------------------------
-  let storedPulseSignal = null;
-  let storedProofSignal = null;
-  let storedSignalPort  = null;
-
   try {
-    storedPulseSignal = JSON.parse(localStorage.getItem("PulseSignal_v27"));
-  } catch {}
-  try {
-    storedProofSignal = JSON.parse(localStorage.getItem("PulseProofSignal_v27"));
-  } catch {}
-  try {
-    storedSignalPort = JSON.parse(localStorage.getItem("PulseSignalPort_v27"));
-  } catch {}
+    // Use the live engines; PulseUniversalMemory will mirror them into storage
+    g.PulseSignal = g.PulseSignal || PulseSignal;
+    g.PulseProofSignal = g.PulseProofSignal || PulseProofSignal;
+    g.SignalPort = g.SignalPort || SignalPort;
 
-  // -------------------------------
-  // 2. FALLBACK TO LIVE ENGINES
-  // -------------------------------
-  g.PulseSignal      = storedPulseSignal || g.PulseSignal      || PulseSignal;
-  g.PulseProofSignal = storedProofSignal || g.PulseProofSignal || PulseProofSignal;
-  g.SignalPort       = storedSignalPort  || g.SignalPort       || SignalPort;
+    if (typeof window !== "undefined") {
+      window.PulseSignal = g.PulseSignal;
+      window.PulseProofSignal = g.PulseProofSignal;
+      window.SignalPort = g.SignalPort;
+    }
 
-  // Mirror to window (browser only)
-  if (typeof window !== "undefined") {
-    window.PulseSignal      = g.PulseSignal;
-    window.PulseProofSignal = g.PulseProofSignal;
-    window.SignalPort       = g.SignalPort;
-  }
-
-  // -------------------------------
-  // 3. PERSIST BACK TO LOCALSTORAGE
-  // -------------------------------
-  try {
-    localStorage.setItem("PulseSignal_v27", JSON.stringify(g.PulseSignal));
-    localStorage.setItem("PulseProofSignal_v27", JSON.stringify(g.PulseProofSignal));
-    localStorage.setItem("PulseSignalPort_v27", JSON.stringify(g.SignalPort));
+    // Let PulseUniversalMemory handle persistence/mirroring of these globals
+    if (g.PulseUniversalMemory && typeof g.PulseUniversalMemory.resyncGlobalsToStorage === "function") {
+      g.PulseUniversalMemory.resyncGlobalsToStorage();
+    }
   } catch (err) {
-    console.warn("[PulseSignal IMMORTAL++] Failed to persist:", err);
+    _c.warn("[PulseSignal IMMORTAL++] Global attach failed (non-fatal):", err);
   }
 })();
 

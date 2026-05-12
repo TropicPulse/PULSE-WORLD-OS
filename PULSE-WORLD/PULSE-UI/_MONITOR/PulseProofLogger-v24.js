@@ -15,7 +15,7 @@
 // 7) AI CONSOLE / PROMPTS ARE REMOVED FROM LOGGER.
 // 8) LOGGER IS SCHEMA-STABLE AND EVOLVABLE.
 // ============================================================================
-import { PulseProofSignal, PulseColors, PulseIcons, PulseColorFallback, PulseIconFallback, PulseRoleFallback, PulseRoles,PulseVersion,PulseVersionFallback } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-SIGNAL.js";
+import { PulseProofSignal, PulseColors, PulseIcons, PulseColorFallback, PulseIconFallback, PulseRoleFallback, PulseRoles,PulseVersion,PulseVersionFallback } from "../_BACKEND/PULSE-WORLD-SIGNAL.js";
 
     console.log(
       "%c[PulseProofLogger v24-IMMORTAL-EVOLVABLE] %c Initializing PulseProofLogger %c",
