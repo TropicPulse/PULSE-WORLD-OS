@@ -1277,54 +1277,50 @@ function applyGateDecision(gateDecision, skin) {
 
     window.__PULSE_TOUCH__ = touch;
 
-    // ⭐ GLOBAL TIMER ROOT
+    // GLOBAL TIMER ROOT
     const t0 = performance.now();
     window.__PULSE_TOUCH_T0__ = t0;
     window.__PULSE_CHRONO_LAST__ = t0;
 
-    // Helper: schedule a microtask (or fallback)
-    const schedule = (fn) => {
-      if (window.queueMicrotask) {
-        queueMicrotask(fn);
-      } else {
-        Promise.resolve().then(fn);
-      }
-    };
+    // Helpers
+    const micro = fn => queueMicrotask(fn);
+    const idle  = fn =>
+      (window.requestIdleCallback
+        ? requestIdleCallback(fn, { timeout: 50 })
+        : setTimeout(fn, 0));
 
-    // ⭐ WARM 1 — ROUTE IMAGE SCAN (non‑blocking, parallel)
-    schedule(() => {
-      try {
-        window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
-      } catch (err) {
-        console.warn("PulseTouch route image scan failed", err);
-      }
+    // ⭐ WARM 1 — ROUTE IMAGE SCAN (microtask: tiny)
+    micro(() => {
+      try { window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`); }
+      catch (err) { console.warn("route image scan failed", err); }
     });
 
-    // ⭐ WARM 2 — ENGINE (chunk + prewarm) — parallel
-    schedule(() => {
+    // ⭐ WARM 2 — ENGINE WARM (idle: medium)
+    idle(() => {
       try {
         touch.chunker?.preloadAllChunks?.();
         touch.advantage?.prewarmAll?.();
       } catch (err) {
-        console.warn("PulseTouch engine warm failed", err);
+        console.warn("engine warm failed", err);
       }
     });
 
-    // ⭐ WARM 3 — UI (pages + snapshots) — parallel
-    schedule(() => {
+    // ⭐ WARM 3 — UI WARM (idle: heavy)
+    idle(() => {
       try {
         touch.preloader?.preloadAllPages?.();
         touch.memory?.snapshotAll?.();
       } catch (err) {
-        console.warn("PulseTouch UI warm failed", err);
+        console.warn("UI warm failed", err);
       }
     });
 
-    console.log("PulseTouch auto‑ignite: FULL UI organism loaded (parallel warm).");
+    console.log("PulseTouch auto‑ignite v24++: organism warm started.");
   } catch (err) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
 })();
+
 
 
 // ============================================================
