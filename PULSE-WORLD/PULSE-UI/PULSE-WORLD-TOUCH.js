@@ -1289,38 +1289,44 @@ function applyGateDecision(gateDecision, skin) {
         ? requestIdleCallback(fn, { timeout: 50 })
         : setTimeout(fn, 0));
 
-    // ⭐ WARM 1 — ROUTE IMAGE SCAN (microtask: tiny)
+    // ⭐ WARM 1 — SCAN IMAGES FOR CURRENT PAGE (micro)
     micro(() => {
-      try { window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`); }
-      catch (err) { console.warn("route image scan failed", err); }
-    });
-
-    // ⭐ WARM 2 — ENGINE WARM (idle: medium)
-    idle(() => {
       try {
-        touch.chunker?.preloadAllChunks?.();
-        touch.advantage?.prewarmAll?.();
+        window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
       } catch (err) {
-        console.warn("engine warm failed", err);
+        console.warn("PulseTouch route image scan failed", err);
       }
     });
 
-    // ⭐ WARM 3 — UI WARM (idle: heavy)
+    // ⭐ WARM 2 — PRELOAD NEXT PAGE ONLY (idle)
     idle(() => {
       try {
-        touch.preloader?.preloadAllPages?.();
-        touch.memory?.snapshotAll?.();
+        const next = touch.router?.predictNext?.(page);
+        if (next) {
+          touch.preloader?.preloadPage?.(next);
+          window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
+        }
       } catch (err) {
-        console.warn("UI warm failed", err);
+        console.warn("PulseTouch next-page preload failed", err);
       }
     });
 
-    console.log("PulseTouch auto‑ignite v24++: organism warm started.");
+    // ⭐ WARM 3 — LIGHT ENGINE WARM (idle, minimal)
+    idle(() => {
+      try {
+        // Only warm what helps next-page navigation
+        touch.chunker?.preloadChunksForPage?.(page);
+        touch.advantage?.prewarmLight?.();
+      } catch (err) {
+        console.warn("PulseTouch engine warm failed", err);
+      }
+    });
+
+    console.log("PulseTouch auto‑ignite v24++: next-page warm only.");
   } catch (err) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
 })();
-
 
 
 // ============================================================
