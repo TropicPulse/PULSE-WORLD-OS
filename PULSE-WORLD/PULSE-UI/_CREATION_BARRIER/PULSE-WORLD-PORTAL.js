@@ -292,12 +292,6 @@ function buildRouteId() {
 
     const path = window.location?.pathname || "/";
 
-    // 2 — If no organism map, fallback to barrier
-    if (!map || !map.systems?.UI?.pages) {
-      console.warn("[RouteCarpet] No OrganismMap — fallback → PulseWorldBarrier");
-      return "PulseWorldBarrier";
-    }
-
     const pages = map.systems.UI.pages;
 
     // 3 — Try to match pathname to a page key
@@ -540,13 +534,6 @@ window.prewarmAssets =
       );
     }
   };
-
-// ============================================================================
-// PULSEPORTAL v27 — ROUTE CARPET (OrganismMap-aware)
-// ============================================================================
-// ============================================================================
-// PULSEPORTAL v29 — ROUTE CARPET (LocalStorage + OrganismMap aware)
-// ============================================================================
 
 // ============================================================================
 // PULSEPORTAL v30 — ROUTE CARPET (Pure OrganismMap + LocalStorage)
