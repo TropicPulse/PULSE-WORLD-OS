@@ -85,12 +85,12 @@ import { createEarn, evolveEarn } from "../PULSE-EARN/PulseEarn-v24.js";
 // ============================================================================
 //  SEND ORGANISM
 // ============================================================================
-import { createPulseSend } from "../PULSE-SEND/PulseSend-v16.js";
+import { createPulseSend } from "../PULSE-SEND/PulseSend-v24.js";
 
 // ============================================================================
 //  BINARY SEND ORGANISM
 // ============================================================================
-import { createBinarySend } from "../PULSE-SEND/PulseSendBinary-v16.js";
+import { createBinarySend } from "../PULSE-SEND/PulseSendBinary-v24.js";
 
 // ============================================================================
 //  MEMORY + STATE

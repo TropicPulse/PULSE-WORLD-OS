@@ -38,9 +38,9 @@ export const EXPORT_META = Identity.EXPORT_META;
 // CORE MEMORY — IMMORTAL IMPULSE MEMORY
 // ============================================================================
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
-import { createPulseV3 } from "../PULSE-SEND/PulseSendV3UnifiedOrganism-v16.js";
-import { createPulseV2 } from "../PULSE-SEND/PulseSendV2EvolutionEngine-v16.js";
-import { createLegacyPulse } from "../PULSE-SEND/PulseSendLegacyPulse-v16.js";
+import { createPulseV3 } from "../PULSE-SEND/PulseSendV3UnifiedOrganism-v24.js";
+import { createPulseV2 } from "../PULSE-SEND/PulseSendV2EvolutionEngine-v24.js";
+import { createLegacyPulse } from "../PULSE-SEND/PulseSendLegacyPulse-v24.js";
 import { computeSpeedPolicy } from "../PULSE-PROXY/PulseProxyImpulseSpeed-v20.js";
 
 const CORE_MEMORY_NAMESPACE = "PulseImpulse-v20-Immortal-CHUNK";

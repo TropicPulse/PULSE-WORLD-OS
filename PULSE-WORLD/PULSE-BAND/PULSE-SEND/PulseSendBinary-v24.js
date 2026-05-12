@@ -92,7 +92,7 @@ import { createPulseSendImpulse as PulseSendImpulse } from "./PulseSendImpulse-v
 import { createLegacyPulse as PulseSendLegacyPulse } from "./PulseSendLegacyPulse-v24.js";
 
 // --- Adapter Layer ----------------------------------------------------------
-import { adaptPulseSendPacket as PulseSendAdapter } from "./PulseSendAdapter.js";
+import { adaptPulseSendPacket as PulseSendAdapter } from "./PulseSendAdapter-v24.js";
 
 // --- Engine Layer -----------------------------------------------------------
 import { PulseSendMover as PulseSendEngine } from "./PulseSendEngine-v24.js";

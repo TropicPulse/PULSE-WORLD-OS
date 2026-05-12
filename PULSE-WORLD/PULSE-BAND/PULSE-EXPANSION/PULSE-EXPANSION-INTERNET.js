@@ -59,8 +59,8 @@ import {
 } from "./PulseExpansionBeaconEngine-v20.js";
 
 // v16 mesh + binary mesh metas
-import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v16.js";
-import { BinaryMeshMeta } from "../PULSE-MESH/PulseMeshBinary-v16.js";
+import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v24.js";
+import { BinaryMeshMeta } from "../PULSE-MESH/PulseMeshBinary-v24.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";

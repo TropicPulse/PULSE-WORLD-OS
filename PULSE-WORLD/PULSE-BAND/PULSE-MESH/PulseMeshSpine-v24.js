@@ -50,7 +50,7 @@ import { createCommunityReflex } from "./PulseMeshFlow-V24.js";
 import { applyPulseCortex } from "./PulseMeshCortex-V24.js";
 import { applyPulseMeshTendons } from "./PulseMeshTendons-V24.js";
 import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring-v24.js";
-import { createPulseMeshImmuneSystem as recordMeshDriftEvent } from "./PulseMeshImmuneSystem.js";
+import { createPulseMeshImmuneSystem as recordMeshDriftEvent } from "./PulseMeshImmuneSystem-v24.js";
 import * as PulseMeshSkinReflex from "./PulseMeshSkinReflex-V24.js";
 
 // ============================================================================

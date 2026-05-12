@@ -111,10 +111,10 @@ import { getConsoleContext } from "./PulseExpansionBeaconConsole-v20.js";
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
   PulseMeshMeta
-} from "../PULSE-MESH/PulseMesh-v16.js";
+} from "../PULSE-MESH/PulseMesh-v24.js";
 import createBinaryMesh, {
   BinaryMeshMeta
-} from "../PULSE-MESH/PulseMeshBinary-v16.js";
+} from "../PULSE-MESH/PulseMeshBinary-v24.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";

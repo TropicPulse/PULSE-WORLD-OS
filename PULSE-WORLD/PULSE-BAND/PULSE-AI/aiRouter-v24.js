@@ -15,7 +15,7 @@ import NodeAdmin from "../PULSE-TOOLS/PulseToolsNodeAdmin-v20.js";
 // World / Expansion / Mesh / Server / Router / Earn / Band / Send / Router
 import { PulseWorldCoreMeta, createPulseWorldCore } from "../PULSE-EXPANSION/PulseExpansionUser-v24.js";
 import { PulseCastleMeta } from "../PULSE-EXPANSION/PulseExpansionCastle-v24.js";
-import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v16.js";
+import createPulseMesh, { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v24.js";
 import PulseBeaconMesh, { PulseBeaconMeshMeta } from "../PULSE-EXPANSION/PulseExpansionBeaconMesh-v20.js";
 import PulseBeaconEngine from "../PULSE-EXPANSION/PulseExpansionBeaconEngine-v20.js";
 import { PulseExpansionMeta } from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET.js";
@@ -24,7 +24,7 @@ import { PulseRouterMeta } from "../PULSE-EXPANSION/PulseExpansionRouter-v24.js"
 
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./aiDualBand-v24.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v16.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v24.js";
 import createBinaryRouter from "../PULSE-ROUTER/PulseRouterBinary-v24.js";
 import PulseRouter from "../PULSE-ROUTER/PulseRouter-v24.js";
 

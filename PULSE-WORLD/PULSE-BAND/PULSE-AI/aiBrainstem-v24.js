@@ -61,7 +61,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v24.js";
 
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
-import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
+import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
 
 import { createArchitectAPI } from "./aiArchitect-v24.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist-v24.js";

@@ -56,15 +56,15 @@ import * as PulseOSPresence from "./PulseOSPresence-V24.js";
 // IMMORTAL Mesh Presence Relay v16
 import {
   createPulseMeshPresenceRelay as PulseMeshPresence
-} from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
+} from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
 
 // IMMORTAL Binary Mesh Environment v16
 import {
   createBinaryMeshEnvironment as createBinaryMeshEnv
-} from "../PULSE-MESH/PulseMeshBinary-v16.js";
+} from "../PULSE-MESH/PulseMeshBinary-v24.js";
 
 // IMMORTAL OrganismMesh v16
-import { createOrganismMesh } from "../PULSE-MESH/PulseMeshOrganism-v16.js";
+import { createOrganismMesh } from "../PULSE-MESH/PulseMeshOrganism-v24.js";
 
 // IMMORTAL Expansion v24 (already v24)
 import {

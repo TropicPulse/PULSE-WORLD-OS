@@ -51,11 +51,11 @@ import {
 // Mesh (symbolic + binary) — v24 IMMORTAL ORGANISM
 import createBinaryMesh, {
   BinaryMeshMeta
-} from "../PULSE-MESH/PulseMeshBinary-v16.js";
+} from "../PULSE-MESH/PulseMeshBinary-v24.js";
 
 import createPulseMesh, {
   PulseMeshMeta
-} from "../PULSE-MESH/PulseMesh-v16.js";
+} from "../PULSE-MESH/PulseMesh-v24.js";
 
 // Beacon engine (optional, for presence / region signals)
 import PulseBeaconEngine from "./PulseExpansionBeaconEngine-v20.js";

@@ -30,7 +30,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 import * as PulseBinaryOS from "../PULSE-OS/PulseOSBinary-v24.js";
 
 // Mesh + BeaconMesh meta
-import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v16.js";
+import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v24.js";
 import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseExpansionBeaconMesh-v20.js";
 
 import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
@@ -41,7 +41,7 @@ import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/a
 
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v24.js";
-import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v16.js";
+import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v24.js";
 
 // PROXY CONTEXT — v24 IMMORTAL ORGANISM
 import {

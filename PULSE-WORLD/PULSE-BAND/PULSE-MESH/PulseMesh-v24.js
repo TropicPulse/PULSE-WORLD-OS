@@ -77,25 +77,25 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 
 // 0 — CORE ORGANISM BOOT
-import { createOrganismMesh } from "./PulseMeshOrganism-v16.js";
+import { createOrganismMesh } from "./PulseMeshOrganism-v24.js";
 
 // 1 — SPINE (root of mesh nervous system)
-import PulseMeshSpine from "./PulseMeshSpine.js";
+import PulseMeshSpine from "./PulseMeshSpine-v24.js";
 
 // 2 — FLOW (mesh circulation)
 import PulseMeshFlow from "./PulseMeshFlow-V24.js";
 
 // 3 — PRESENCE RELAY (mesh → world presence)
-import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v16.js";
+import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v24.js";
 
 // 4 — COGNITION (mesh-level cognition)
 import PulseMeshCognition from "./PulseMeshCognition-v24.js";
 
 // 5 — ENDOCRINE (mesh hormones)
-import PulseMeshEndocrineSystem from "./PulseMeshEndocrineSystem.js";
+import PulseMeshEndocrineSystem from "./PulseMeshEndocrineSystem-v24.js";
 
 // 6 — IMMUNE SYSTEM (mesh immune layer)
-import PulseMeshImmuneSystem from "./PulseMeshImmuneSystem.js";
+import PulseMeshImmuneSystem from "./PulseMeshImmuneSystem-v24.js";
 
 // 7 — ORGANS (mesh organ registry)
 import PulseMeshOrgans from "./PulseMeshOrgans-V24.js";

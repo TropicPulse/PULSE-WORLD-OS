@@ -70,7 +70,7 @@ const g =
 import { createPulseChunker } from "./PulseAIChunker-v24.js";
 
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
-import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v16.js";
+import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
 import pulseAIChunker from "./PulseAIChunker-v24.js";
 import createPulseFileScanner from "./PulseFileScanner-v24.js";
 import { createArchitectAPI } from "./aiArchitect-v24.js";

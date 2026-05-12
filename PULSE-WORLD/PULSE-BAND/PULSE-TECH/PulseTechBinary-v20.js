@@ -33,22 +33,22 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ---------------------------------------------------------------------------
 
 // v2 Evolution Engine core (shifter-side v2, symbolic)
-import { createPulseV2 as createPulseV2Shifter } from "../PULSE-SHIFTER/PulseShifterEvolutionaryPulse-v16.js";
+import { createPulseV2 as createPulseV2Shifter } from "../PULSE-SHIFTER/PulseShifterEvolutionaryPulse-v24.js";
 
 // Binary Shifter Evolutionary Pulse front-end
-import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/PulseShifterBinaryEvolutionaryPulse-v16.js";
+import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/PulseShifterBinaryEvolutionaryPulse-v24.js";
 
 // v1 Legacy Pulse surface (PULSE-SEND)
-import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSendLegacyPulse-v16.js";
+import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSendLegacyPulse-v24.js";
 
 // v3 Continuance Pulse surface (earn/continuance)
 import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse-v24.js";
 
 // v2 Evolution Engine (earn-side v2)
-import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseSendV2EvolutionEngine-v16.js";
+import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseSendV2EvolutionEngine-v24.js";
 
 // v3 Unified organism pulse
-import { createPulseV3 } from "../PULSE-SEND/PulseSendV3UnifiedOrganism-v16.js";
+import { createPulseV3 } from "../PULSE-SEND/PulseSendV3UnifiedOrganism-v24.js";
 
 
 // ===========================================================================
