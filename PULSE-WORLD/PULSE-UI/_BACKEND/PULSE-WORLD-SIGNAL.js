@@ -6,10 +6,11 @@
 //  BEAST + UI CONTEXT • EMITS ONLY ON CHANGE
 //  v25+ UPGRADE: SignalPort-style dispatch via OrganismMap (if present)
 //  v25+ UPGRADE: Universal Memory Layer (global/window → localStorage → window)
+//  v25+ UPGRADE: PulseSignal bus (Beast → localStorage → UI) + 60s heartbeat
 // ============================================================================
 
 console.log(
-  "%cPulseProofSignal v25-IMMORTAL-EVOLVABLE (CSS-MERGED, OFFLINE, +SignalPort, +UniversalMemory)",
+  "%cPulseProofSignal v25-IMMORTAL-EVOLVABLE (CSS-MERGED, OFFLINE, +SignalPort, +UniversalMemory, +PulseSignalBus)",
   "color:#BA68C8;font-weight:bold;"
 );
 
@@ -292,7 +293,6 @@ PulseUniversalMemory.init();
 
 // ============================================================================
 //  PACKET EMITTER — deterministic, signal-scoped, FRONTEND-SAFE
-//  No OrganismMap, No Meta, No EXPORT_META, No evo.epoch
 // ============================================================================
 
 function emitSignalPacket(type, payload) {
@@ -312,10 +312,6 @@ function emitSignalPacket(type, payload) {
   });
 }
 
-// ============================================================================
-//  COMMENT LOG GENERATION — SIGNAL IS AUTHORITY
-// ============================================================================
-
 function safeClone(v) {
   try {
     return JSON.parse(JSON.stringify(v));
@@ -324,11 +320,14 @@ function safeClone(v) {
   }
 }
 
-// Color map for logger rendering
+// ============================================================================
+//  COLOR + COMMENT ENGINE (unchanged core)
+// ============================================================================
+
 const SIGNAL_COLORS = {
-  "signal-direct": "color:#4FC3F7", // blue
-  "signal-top-layer": "color:#BA68C8", // deep violet
-  default: "color:#90A4AE" // fallback grey
+  "signal-direct": "color:#4FC3F7",
+  "signal-top-layer": "color:#BA68C8",
+  default: "color:#90A4AE"
 };
 
 function getColorForPacket(packet) {
@@ -406,7 +405,6 @@ function buildCommentFromSignalPacket(packet, kind = "direct") {
     }
   };
 
-  // Pretty string for legacy loggers that stringify second arg
   base.pretty = JSON.stringify(
     {
       summary: base.summary,
@@ -427,15 +425,13 @@ function buildCommentFromSignalPacket(packet, kind = "direct") {
 }
 
 // ============================================================================
-//  CSS-STYLE TOP-LAYER MERGE ENGINE — collapse subsignals → 1 comment
-//  + CHANGE DETECTION: emit ONLY when computed state changes
-//  (unchanged core behavior; we only read from it via latest())
+//  TOP-LAYER MERGE ENGINE (unchanged core behavior)
 // ============================================================================
 
 const TopLayerMerge = {
   _pending: null,
   _scheduled: false,
-  _lastComputedSnapshot: null, // for change detection
+  _lastComputedSnapshot: null,
 
   _reset() {
     this._pending = null;
@@ -467,7 +463,6 @@ const TopLayerMerge = {
   },
 
   _computeMergedState(packets) {
-    // CSS-style: last write wins; we only keep fields we care about
     const computed = {};
     for (const p of packets) {
       const {
@@ -529,7 +524,6 @@ const TopLayerMerge = {
     const lastPacket = packets[packets.length - 1];
     const computed = this._computeMergedState(packets);
 
-    // CSS-style limit: only emit if computed state actually changed
     if (!this._hasChanged(computed)) {
       return;
     }
@@ -578,7 +572,6 @@ const TopLayerMerge = {
   },
 
   _emitToSink(comment) {
-    // For now, sink is just console + in-memory buffer; Understanding can hook later
     try {
       _c.log("[PulseProofSignal:TOP-LAYER]", comment);
     } catch {
@@ -598,7 +591,6 @@ function emitCommentLogForPacket(packet, kind = "direct") {
 
 // ============================================================================
 //  INTERNAL BUFFER — burst-safe, offline-only
-//  No network transport; used for dev panels / Understanding
 // ============================================================================
 
 const SignalBuffer = {
@@ -628,7 +620,6 @@ const SignalBuffer = {
   },
 
   flush() {
-    // No network; just clear queue if desired
     this._queue.length = 0;
   },
 
@@ -713,23 +704,19 @@ function resolveTargetViaOrganismMap(target) {
   const systems = map.systems || {};
   const aliases = map.aliases || {};
 
-  // Normalize target → canonical lookup key
   const key = String(target)
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 
-  // 1. Direct alias match → canonical port
   const aliasMatch = aliases[key];
   if (aliasMatch && systems[aliasMatch]) {
     return systems[aliasMatch];
   }
 
-  // 2. Direct system match (canonical port name)
   if (systems[key]) {
     return systems[key];
   }
 
-  // 3. Match PORT_IDENTITY.portName
   for (const sysKey of Object.keys(systems)) {
     const identity = systems[sysKey];
     const port = identity?.IDENTITY_META?.PORT_IDENTITY?.portName;
@@ -739,7 +726,6 @@ function resolveTargetViaOrganismMap(target) {
     }
   }
 
-  // 4. Match PORT_IDENTITY.aliases
   for (const sysKey of Object.keys(systems)) {
     const identity = systems[sysKey];
     const portAliases = identity?.IDENTITY_META?.PORT_IDENTITY?.aliases || [];
@@ -749,14 +735,12 @@ function resolveTargetViaOrganismMap(target) {
     }
   }
 
-  // 5. Fuzzy match: startsWith
   for (const sysKey of Object.keys(systems)) {
     if (sysKey.startsWith(key)) {
       return systems[sysKey];
     }
   }
 
-  // 6. Fuzzy match: contains
   for (const sysKey of Object.keys(systems)) {
     if (sysKey.includes(key)) {
       return systems[sysKey];
@@ -767,10 +751,8 @@ function resolveTargetViaOrganismMap(target) {
 }
 
 function dispatchSignalToOrganism(target, payload = {}) {
-  // 1. Resolve via OrganismMap
   const resolved = resolveTargetViaOrganismMap(target);
 
-  // 2. If OrganismMap didn't find anything, fail early
   if (!resolved) {
     const packet = normalizeDirectSignal({
       subsystem: "signalport",
@@ -789,7 +771,6 @@ function dispatchSignalToOrganism(target, payload = {}) {
     };
   }
 
-  // 3. Pull PORT_IDENTITY from the organ identity
   const portIdentity =
     resolved.IDENTITY_META?.PORT_IDENTITY || resolved.PORT_IDENTITY || null;
 
@@ -811,7 +792,6 @@ function dispatchSignalToOrganism(target, payload = {}) {
     };
   }
 
-  // 4. Execute handler
   let result = null;
   let error = null;
 
@@ -821,7 +801,6 @@ function dispatchSignalToOrganism(target, payload = {}) {
     error = err;
   }
 
-  // 5. Log the dispatch as a signal
   const packet = normalizeDirectSignal({
     subsystem: portIdentity.portName,
     message: payload?.message || payload?.type || "dispatch",
@@ -837,7 +816,6 @@ function dispatchSignalToOrganism(target, payload = {}) {
   SignalBuffer.push(packet);
   emitCommentLogForPacket(packet, "direct");
 
-  // 6. Return result
   if (error) {
     return {
       ok: false,
@@ -857,13 +835,92 @@ function dispatchSignalToOrganism(target, payload = {}) {
 }
 
 // ============================================================================
+//  PULSE SIGNAL BUS — Beast → LocalStorage → UI (+ 60s heartbeat)
+// ============================================================================
+
+const PULSE_SIGNAL_KEY = "__pulse_signal__";
+
+const PulseSignal = {
+  _listeners: [],
+
+  // Beast/backend: push raw state (network, stability, latency, etc.)
+  push(rawState) {
+    const packet = emitSignalPacket("direct", {
+      state: safeClone(rawState) || rawState
+    });
+
+    // Feed into existing engines
+    SignalBuffer.push(packet);
+    emitCommentLogForPacket(packet, "direct");
+
+    // Persist to universal memory (localStorage or in-memory fallback)
+    PulseMemoryStorage.set(PULSE_SIGNAL_KEY, packet);
+
+    // Notify in-process listeners
+    this._notify(packet);
+
+    return packet;
+  },
+
+  // Frontend + Beast: get latest packet from storage
+  getPacket() {
+    return PulseMemoryStorage.get(PULSE_SIGNAL_KEY);
+  },
+
+  // Convenience: get just the state payload
+  getState() {
+    const p = this.getPacket();
+    return p?.state || null;
+  },
+
+  subscribe(fn) {
+    if (typeof fn !== "function") return () => {};
+    this._listeners.push(fn);
+
+    const current = this.getPacket();
+    if (current) {
+      try { fn(current); } catch {}
+    }
+
+    return () => {
+      this._listeners = this._listeners.filter(l => l !== fn);
+    };
+  },
+
+  _notify(packet) {
+    for (const fn of this._listeners) {
+      try { fn(packet); } catch {}
+    }
+  }
+};
+
+// 60s heartbeat: re-write latest packet to localStorage so any listener
+// that only watches storage (e.g., other tabs) gets a fresh event.
+(function setupPulseSignalHeartbeat() {
+  try {
+    const intervalMs = 60_000;
+    setInterval(() => {
+      const packet = PulseSignal.getPacket();
+      if (!packet) return;
+      // Re-set into storage to trigger storage events across contexts
+      PulseMemoryStorage.set(PULSE_SIGNAL_KEY, packet);
+    }, intervalMs);
+  } catch {
+    // heartbeat is best-effort only
+  }
+})();
+
+// Expose in universal global space
+g.PulseSignal = g.PulseSignal || PulseSignal;
+if (typeof window !== "undefined") {
+  window.PulseSignal = g.PulseSignal;
+}
+
+// ============================================================================
 //  PUBLIC API — PulseProofSignal Engine (FRONTEND-SAFE IMMORTAL++)
-//  + SignalPort-style dispatch
-//  + Universal Memory Layer
 // ============================================================================
 
 export const PulseProofSignal = Object.freeze({
-  // Minimal identity (frontend-safe)
   version: "25.0-IMMORTAL++",
   source: "PulseProofSignal",
 
@@ -871,11 +928,6 @@ export const PulseProofSignal = Object.freeze({
     SignalBuffer.configure(config);
   },
 
-  /**
-   * Direct signal logging — BEAST + UI context.
-   * CSS-style: contributes to merged top-layer comment.
-   * Emits ONLY when computed state changes.
-   */
   signal(payload) {
     const packet = normalizeDirectSignal(payload);
     SignalBuffer.push(packet);
@@ -883,42 +935,24 @@ export const PulseProofSignal = Object.freeze({
     return packet;
   },
 
-  /**
-   * Flush buffered raw packets (offline-only; no network).
-   */
   flush() {
     SignalBuffer.flush();
   },
 
-  /**
-   * Inspect in-memory signal buffer (dev panels, debugging).
-   */
   tail(n = 200) {
     return SignalBuffer.tail(n);
   },
 
-  /**
-   * Inspect merged top-layer comments (what Understanding will likely consume).
-   */
   comments(n = 100) {
     return SignalBuffer.comments(n);
   },
 
-  /**
-   * ⭐ Get latest merged computed snapshot (details.computed) directly.
-   * Returns null if no merged comment exists yet.
-   */
   latest() {
     const comments = SignalBuffer.comments(1);
     if (!comments || !comments.length) return null;
     return comments[0]?.details?.computed || null;
   },
 
-  /**
-   * ⭐ SignalPort-style dispatch:
-   * send a signal "to" a subsystem name, resolved via OrganismMap.
-   * Does NOT require OrganismMap, but uses it if present.
-   */
   dispatch(target, payload = {}) {
     return dispatchSignalToOrganism(target, payload);
   }
@@ -929,16 +963,12 @@ export const PulseProofSignal = Object.freeze({
 // ============================================================================
 
 export const SignalPort = Object.freeze({
-  /**
-   * Universal port: send to "pulseband", "proxy", "gpu", etc.
-   * Uses OrganismMap to resolve and route.
-   */
   send(target, payload = {}) {
     return PulseProofSignal.dispatch(target, payload);
   }
 });
 
-// Attach to global (optional but convenient in your world)
+// Attach to global
 g.PulseProofSignal = g.PulseProofSignal || PulseProofSignal;
 g.SignalPort = g.SignalPort || SignalPort;
 
@@ -949,6 +979,7 @@ g.SignalPort = g.SignalPort || SignalPort;
 if (typeof module !== "undefined") {
   module.exports = {
     PulseProofSignal,
-    SignalPort
+    SignalPort,
+    PulseSignal
   };
 }
