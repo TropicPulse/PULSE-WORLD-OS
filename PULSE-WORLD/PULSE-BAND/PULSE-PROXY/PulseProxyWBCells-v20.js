@@ -22,38 +22,55 @@ export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-// ============================================================================
-// GLOBAL WIRING — backend-only, no hard window/global coupling
-// ============================================================================
 const G =
-  typeof globalThis !== "undefined"
-    ? globalThis
-    : typeof global !== "undefined"
-    ? global
-    : {};
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+// ============================================================================
+// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// ============================================================================
 
 const Timestamp =
-  (G.firebaseAdmin && G.firebaseAdmin.firestore.Timestamp) ||
-  G.Timestamp ||
+  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
+  (G.Timestamp && G.Timestamp) ||
   null;
+
+// ============================================================================
+// UNIVERSAL ADMIN (Shadow or Admin)
+// ============================================================================
 
 const admin =
   (G.firebaseAdmin && G.firebaseAdmin) ||
-  G.admin ||
+  (G.admin && G.admin) ||
   null;
 
+// ============================================================================
+// UNIVERSAL DB (Shadow DB ALWAYS wins)
+// ============================================================================
 const db =
-  (G.db && G.db) ||
-  (admin && admin.firestore && admin.firestore()) ||
+  (G.db && G.db) ||                 // Shadow DB (v25++)
+  (admin && admin.firestore && admin.firestore()) || // Admin fallback
   null;
 
-const log =
-  (G.log && G.log) ||
-  console.log;
+// ============================================================================
+// UNIVERSAL dblogGING
+// ============================================================================
 
-const error =
+const dblog =
+  (G.dblog && G.dblog) ||
+  console.dblog;
+
+const dberror =
   (G.error && G.error) ||
   console.error;
+  
+const fetchFn =
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  null;
 
 
 const ImmuneState = {
@@ -139,7 +156,7 @@ function buildBinaryField(healthResult) {
     binaryPhenotypeSignature: `immune-binary-pheno-${surface % 99991}`,
     binarySurfaceSignature: `immune-binary-surface-${(surface * 7) % 99991}`,
     parity: surface % 2 === 0 ? 0 : 1,
-    shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
+    shiftDepth: Math.max(0, Math.floor(Math.dblog2(surface || 1)))
   };
 }
 
@@ -224,11 +241,11 @@ function buildDualBandOverlay(dualBandContext) {
 
 
 // ============================================================================
-// writeHealerLog — v20 IMMORTAL+++ HEALER LOGGER
+// writeHealerdblog — v20 IMMORTAL+++ HEALER dblogGER
 // ============================================================================
 let HEALER_SEQ = 0;
 
-export async function writeHealerLog({
+export async function writeHealerdblog({
   subsystem = "proxy",
   stage = "unknown",
   severity = "info",
@@ -266,16 +283,16 @@ export async function writeHealerLog({
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     };
 
-    await db.collection("FUNCTION_LOGS").doc(id).set(payload);
+    await db.collection("FUNCTION_dblogS").doc(id).set(payload);
     return id;
 
   } catch (err) {
     try {
       await db.collection("FUNCTION_ERRORS").add({
         ts: Date.now(),
-        fn: "writeHealerLog",
+        fn: "writeHealerdblog",
         error: String(err),
-        stage: "healer_log_failure",
+        stage: "healer_dblog_failure",
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
     } catch (_) {}
@@ -285,7 +302,7 @@ export async function writeHealerLog({
 
 
 // ============================================================================
-//  BINARY CORE — v20 (same logic, richer surfaces)
+//  BINARY CORE — v20 (same dblogic, richer surfaces)
 // ============================================================================
 function classifyPressureBinary(metrics) {
   if (!metrics || typeof metrics !== "object") {
@@ -375,7 +392,7 @@ export const ProxyHealerBinary = {
 async function checkProxyHealthAndMetrics({ dualBandContext = null } = {}) {
   ImmuneState.status = "scanning";
   ImmuneState.lastHealthScanTs = Date.now();
-  log("wbc", "scan_start_v20");
+  dblog("wbc", "scan_start_v20");
 
   let health = null;
   let metrics = null;
@@ -386,8 +403,8 @@ async function checkProxyHealthAndMetrics({ dualBandContext = null } = {}) {
   } catch (err) {
     const msg = String(err);
     ImmuneState.lastHealthError = msg;
-    error("wbc", "health_fetch_failed", { error: msg });
-    await writeHealerLog({ type: "health_error", stage: "health_fetch", details: { error: msg } });
+    dberror("wbc", "health_fetch_failed", { error: msg });
+    await writeHealerdblog({ type: "health_error", stage: "health_fetch", details: { error: msg } });
   }
 
   try {
@@ -396,8 +413,8 @@ async function checkProxyHealthAndMetrics({ dualBandContext = null } = {}) {
   } catch (err) {
     const msg = String(err);
     ImmuneState.lastMetricsError = msg;
-    error("wbc", "metrics_fetch_failed", { error: msg });
-    await writeHealerLog({ type: "metrics_error", stage: "metrics_fetch", details: { error: msg } });
+    dberror("wbc", "metrics_fetch_failed", { error: msg });
+    await writeHealerdblog({ type: "metrics_error", stage: "metrics_fetch", details: { error: msg } });
   }
 
   if (!metrics) {
@@ -428,7 +445,7 @@ async function checkProxyHealthAndMetrics({ dualBandContext = null } = {}) {
   if (healthResult.warnings.length) {
     ImmuneState.status = "warning";
 
-    await writeHealerLog({
+    await writeHealerdblog({
       type: "proxy_pressure_warning",
       stage: "pressure_scan",
       severity: "warn",
@@ -458,7 +475,7 @@ async function scanUserScoresForInstanceHints() {
   } catch (err) {
     const msg = String(err);
     ImmuneState.lastScoresError = msg;
-    await writeHealerLog({
+    await writeHealerdblog({
       type: "scores_fetch_error",
       stage: "scores_fetch",
       severity: "error",
@@ -478,7 +495,7 @@ async function scanUserScoresForInstanceHints() {
     const binaryField   = { trust: hint.trustScore, instances: hint.instances };
     const presenceField = buildPresenceField(hint.outOfBounds ? "critical" : "ok");
 
-    const logBase = {
+    const dblogBase = {
       userId,
       bandSignature,
       waveField,
@@ -487,30 +504,30 @@ async function scanUserScoresForInstanceHints() {
     };
 
     if (hint.outOfBounds) {
-      await writeHealerLog({
+      await writeHealerdblog({
         type: "instance_out_of_bounds",
         stage: "scores_scan",
         severity: "warn",
-        details: logBase
+        details: dblogBase
       });
       continue;
     }
 
     if (hint.upgradeHint) {
-      await writeHealerLog({
+      await writeHealerdblog({
         type: "instance_upgrade_hint",
         stage: "scores_scan",
         severity: "info",
-        details: logBase
+        details: dblogBase
       });
     }
 
     if (hint.reviewHint) {
-      await writeHealerLog({
+      await writeHealerdblog({
         type: "instance_review_hint",
         stage: "scores_scan",
         severity: "info",
-        details: logBase
+        details: dblogBase
       });
     }
   }
@@ -521,21 +538,21 @@ async function scanUserScoresForInstanceHints() {
 //  PUBLIC: startPulseProxyHealer() — immune patrol loop (symbolic wrapper)
 // ============================================================================
 export default function startPulseProxyHealer() {
-  log("wbc", "immune_patrol_start_v20", WBC_CONTEXT);
+  dblog("wbc", "immune_patrol_start_v20", WBC_CONTEXT);
 
   setInterval(() => {
     checkProxyHealthAndMetrics().catch(err =>
-      error("wbc", "health_loop_error", { error: String(err) })
+      dberror("wbc", "health_loop_error", { error: String(err) })
     );
   }, HEALTH_INTERVAL_MS);
 
   setInterval(() => {
     scanUserScoresForInstanceHints().catch(err =>
-      error("wbc", "scores_loop_error", { error: String(err) })
+      dberror("wbc", "scores_loop_error", { error: String(err) })
     );
   }, SCORES_SCAN_INTERVAL_MS);
 
-  log("wbc", "immune_patrol_active_v20", {
+  dblog("wbc", "immune_patrol_active_v20", {
     ...WBC_CONTEXT,
     healthIntervalMs: HEALTH_INTERVAL_MS,
     scoresIntervalMs: SCORES_SCAN_INTERVAL_MS

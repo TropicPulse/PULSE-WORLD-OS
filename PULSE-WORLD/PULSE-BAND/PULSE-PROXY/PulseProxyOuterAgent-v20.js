@@ -26,24 +26,61 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-//  GLOBAL WIRING — Safe, boundary‑first, no hard global dependency
+// UNIVERSAL GLOBAL RESOLVER (v25++)
+// Resolves to the true global object in ANY environment.
 // ============================================================================
+
+
 const G =
-  typeof globalThis !== "undefined"
-    ? globalThis
-    : typeof global !== "undefined"
-    ? global
-    : typeof window !== "undefined"
-    ? window
-    : {};
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+// ============================================================================
+// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// ============================================================================
 
-// Safe fallbacks — boundary organ, but never break if wiring incomplete
-const log   = G.log   || console.log;
-const error = G.error || console.error;
-
-const fetchFn =
-  (typeof G.fetch === "function" && G.fetch) ||
+const Timestamp =
+  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
+  (G.Timestamp && G.Timestamp) ||
   null;
+
+// ============================================================================
+// UNIVERSAL ADMIN (Shadow or Admin)
+// ============================================================================
+
+const admin =
+  (G.firebaseAdmin && G.firebaseAdmin) ||
+  (G.admin && G.admin) ||
+  null;
+
+// ============================================================================
+// UNIVERSAL DB (Shadow DB ALWAYS wins)
+// ============================================================================
+const db =
+  (G.db && G.db) ||                 // Shadow DB (v25++)
+  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  null;
+
+// ============================================================================
+// UNIVERSAL LOGGING
+// ============================================================================
+
+const dblog =
+  (G.log && G.log) ||
+  console.log;
+
+const dberror =
+  (G.error && G.error) ||
+  console.error;
+  
+const fetchFn =
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  null;
+
 
 // Optional nervous‑system helpers (symbolic only, never required)
 const PNSRepair   = G.PulsePNSRepair   || null;
@@ -457,7 +494,7 @@ function agentLog(stage, details = {}) {
   if (!AGENT_DIAGNOSTICS_ENABLED) return;
 
   try {
-    log(
+    dblog(
       "outer-agent",
       JSON.stringify({
         pulseLayer: AGENT_LAYER_ID,
@@ -763,7 +800,7 @@ async function doFetchSymbolic(descriptor, { presenceContext, deviceId } = {}) {
     };
   } catch (err) {
     const msg = String(err?.message || err);
-    error("PulseProxyOuterAgent.fetch failed:", msg);
+    dberror("PulseProxyOuterAgent.fetch failed:", msg);
 
     const worldLensContext2 = getWorldLensContext();
     const experienceField = buildExperienceField({

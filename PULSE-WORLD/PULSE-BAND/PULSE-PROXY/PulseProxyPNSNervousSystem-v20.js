@@ -29,17 +29,57 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-// ============================================================================
-// GLOBAL WIRING — v20 IMMORTAL (no imports, organism‑level wiring)
-// ============================================================================
 const G =
-  typeof globalThis !== "undefined"
-    ? globalThis
-    : typeof window !== "undefined"
-    ? window
-    : typeof global !== "undefined"
-    ? global
-    : {};
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+// ============================================================================
+// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// ============================================================================
+
+const Timestamp =
+  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
+  (G.Timestamp && G.Timestamp) ||
+  null;
+
+// ============================================================================
+// UNIVERSAL ADMIN (Shadow or Admin)
+// ============================================================================
+
+const admin =
+  (G.firebaseAdmin && G.firebaseAdmin) ||
+  (G.admin && G.admin) ||
+  null;
+
+// ============================================================================
+// UNIVERSAL DB (Shadow DB ALWAYS wins)
+// ============================================================================
+const db =
+  (G.db && G.db) ||                 // Shadow DB (v25++)
+  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  null;
+
+// ============================================================================
+// UNIVERSAL LOGGING
+// ============================================================================
+
+const dblog =
+  (G.log && G.log) ||
+  console.log;
+
+const dberror =
+  (G.error && G.error) ||
+  console.error;
+  
+const fetchFn =
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  null;
+
+
 
 const Impulse          = G.PulseProxyImpulse;
 const ImpulseStrategy  = G.PulseProxyImpulseStrategy || null;

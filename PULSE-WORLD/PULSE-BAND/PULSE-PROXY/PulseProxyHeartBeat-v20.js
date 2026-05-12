@@ -28,31 +28,55 @@ export const PulseHeartbeatExperienceMeta  = Identity.AI_EXPERIENCE_META;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-const g =
-  typeof globalThis !== "undefined"
-    ? globalThis
-    : typeof global !== "undefined"
-    ? global
-    : typeof window !== "undefined"
-    ? window
-    : typeof g !== "undefined"
-    ? g
-    : {};
 
-// Prefer global db if present (logger page / server)
-const db =
-  (g && g.db) ||
-  (typeof global !== "undefined" && global.db) ||
-  (typeof globalThis !== "undefined" && globalThis.db) ||
-  (typeof window !== "undefined" && window.db) ||
+const G =
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+// ============================================================================
+// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// ============================================================================
+
+const Timestamp =
+  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
+  (G.Timestamp && G.Timestamp) ||
   null;
 
-// Prefer global admin if present (logger page / server)
+// ============================================================================
+// UNIVERSAL ADMIN (Shadow or Admin)
+// ============================================================================
+
 const admin =
-  (g && g.db) ||
-  (typeof global !== "undefined" && global.db) ||
-  (typeof globalThis !== "undefined" && globalThis.db) ||
-  (typeof window !== "undefined" && window.db) ||
+  (G.firebaseAdmin && G.firebaseAdmin) ||
+  (G.admin && G.admin) ||
+  null;
+
+// ============================================================================
+// UNIVERSAL DB (Shadow DB ALWAYS wins)
+// ============================================================================
+const db =
+  (G.db && G.db) ||                 // Shadow DB (v25++)
+  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  null;
+
+// ============================================================================
+// UNIVERSAL LOGGING
+// ============================================================================
+
+const dblog =
+  (G.log && G.log) ||
+  console.log;
+
+const dberror =
+  (G.error && G.error) ||
+  console.error;
+  
+const fetchFn =
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
   null;
 
 import { safeRoute as route, PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";

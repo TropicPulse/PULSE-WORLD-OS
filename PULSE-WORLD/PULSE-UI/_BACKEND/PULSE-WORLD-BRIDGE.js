@@ -62,7 +62,7 @@ export { PulseProofBridge };
 // ============================================================================
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
-import { firestore as db, SetDoc as setdoc, GetDoc as getdoc, Doc as doc } from "../_MONITOR/PULSE-PROOF-SHADOW.js"
+
 import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons} from "../_MONITOR/PULSE-PROOF-LOGGER.js";
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PULSE-PROOF-MONITOR.js";
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PULSE-PROOF-FLOW.js";
@@ -75,15 +75,55 @@ import PulsePageScanner from "../_COMPONENTS_EVOLUTION/PulseUIPageScanner-v24.js
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../_COMPONENTS_EVOLUTION/PulseUIRouteMemory-v24.js";
 
 
+const G =
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+// ============================================================================
+// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// ============================================================================
 
-const g =
-  typeof globalThis !== "undefined"
-    ? globalThis
-    : typeof global !== "undefined"
-    ? global
-    : typeof window !== "undefined"
-    ? window
-    : {};
+const Timestamp =
+  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
+  (G.Timestamp && G.Timestamp) ||
+  null;
+
+// ============================================================================
+// UNIVERSAL ADMIN (Shadow or Admin)
+// ============================================================================
+
+const admin =
+  (G.firebaseAdmin && G.firebaseAdmin) ||
+  (G.admin && G.admin) ||
+  null;
+
+// ============================================================================
+// UNIVERSAL DB (Shadow DB ALWAYS wins)
+// ============================================================================
+const db =
+  (G.db && G.db) ||                 // Shadow DB (v25++)
+  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  null;
+
+// ============================================================================
+// UNIVERSAL LOGGING
+// ============================================================================
+
+const dblog =
+  (G.log && G.log) ||
+  console.log;
+
+const dberror =
+  (G.error && G.error) ||
+  console.error;
+  
+const fetchFn =
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  null;
 
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT — IMMORTAL, PORTAL-AWARE, ADV++

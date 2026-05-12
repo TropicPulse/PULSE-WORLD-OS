@@ -11,6 +11,7 @@ import {
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PULSE-WORLD-MAP.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
@@ -27,20 +28,55 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  GLOBAL WIRING — backend‑only, safe resolver
 // ============================================================================
-const G =
-  typeof globalThis !== "undefined"
-    ? globalThis
-    : typeof global !== "undefined"
-    ? global
-    : {};
 
-const db    = G.db    || null;
-const log   = G.log   || console.log;
-const error = G.error || console.error;
+const G =
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+// ============================================================================
+// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// ============================================================================
 
 const Timestamp =
-  (G.firebaseAdmin && G.firebaseAdmin.firestore.Timestamp) ||
-  G.Timestamp ||
+  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
+  (G.Timestamp && G.Timestamp) ||
+  null;
+
+// ============================================================================
+// UNIVERSAL ADMIN (Shadow or Admin)
+// ============================================================================
+
+const admin =
+  (G.firebaseAdmin && G.firebaseAdmin) ||
+  (G.admin && G.admin) ||
+  null;
+
+// ============================================================================
+// UNIVERSAL DB (Shadow DB ALWAYS wins)
+// ============================================================================
+const db =
+  (G.db && G.db) ||                 // Shadow DB (v25++)
+  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  null;
+
+// ============================================================================
+// UNIVERSAL dblogGING
+// ============================================================================
+
+const dblog =
+  (G.dblog && G.dblog) ||
+  console.dblog;
+
+const dberror =
+  (G.error && G.error) ||
+  console.error;
+  
+const fetchFn =
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
   null;
 
 
@@ -78,7 +114,7 @@ function buildBinaryField() {
     binarySurfaceSignature: `hypo-binary-surface-${(surface * 13) % 99991}`,
     binarySurface: { patternLen, density, surface },
     parity: surface % 2 === 0 ? 0 : 1,
-    shiftDepth: Math.max(0, Math.log2(surface || 1) | 0)
+    shiftDepth: Math.max(0, Math.dblog2(surface || 1) | 0)
   };
 }
 
@@ -205,7 +241,7 @@ G.PULSE_LAYER_STATE[4] = {
 };
 
 if (!db) {
-  log("hypothalamus", "WARNING: db missing — scoring disabled until wiring completes.");
+  dblog("hypothalamus", "WARNING: db missing — scoring disabled until wiring completes.");
 }
 
 // ============================================================================
@@ -220,8 +256,8 @@ export const UPGRADED_MULT  = 2;
 export const HIGHEND_MULT   = 2;
 export const EARN_MODE_MULT = 1.5;
 
-export const ENABLE_SCORING_LOGGING = true;
-export const SCORING_LOG_COLLECTION = "UserScoringLogs";
+export const ENABLE_SCORING_dblogGING = true;
+export const SCORING_dblog_COLLECTION = "UserScoringdblogs";
 
 // ============================================================================
 //  TRUST SCORE — deterministic (UNCHANGED)
@@ -245,7 +281,7 @@ function calculateTrustScore(m) {
 
   const final = Math.min(score, 100);
 
-  log("hypothalamus", `HealthIndex | user=${m.userId ?? "?"} | score=${final}`);
+  dblog("hypothalamus", `HealthIndex | user=${m.userId ?? "?"} | score=${final}`);
   return final;
 }
 
@@ -269,7 +305,7 @@ function calculateMeshScore(m) {
 
   const final = Math.min(score, 100);
 
-  log("hypothalamus", `MeshHealth | user=${m.userId ?? "?"} | score=${final}`);
+  dblog("hypothalamus", `MeshHealth | user=${m.userId ?? "?"} | score=${final}`);
   return final;
 }
 
@@ -285,7 +321,7 @@ function calculatePhase(trustScore) {
   else if (t < 75) phase = 3;
   else phase = 4;
 
-  log("hypothalamus", `Phase | trustScore=${t} | phase=${phase}`);
+  dblog("hypothalamus", `Phase | trustScore=${t} | phase=${phase}`);
   return phase;
 }
 
@@ -305,7 +341,7 @@ function isHub(m) {
     totalRequests > 500;
 
   if (hub) {
-    log(
+    dblog(
       "hypothalamus",
       `HIGH-FLOW ORGAN | user=${m.userId ?? "?"} | relays=${meshRelays} | hubSignals=${hubSignals} | totalRequests=${totalRequests}`
     );
@@ -343,7 +379,7 @@ function allocateInstances(
 
   const final = Math.max(1, Math.min(base, max));
 
-  log(
+  dblog(
     "hypothalamus",
     `Resource allocation | phase=${phase} | hub=${hubFlag} | tier=${deviceTier} | earnMode=${earnMode} | testEarn=${testEarnActive} | final=${final}`
   );
@@ -352,22 +388,22 @@ function allocateInstances(
 }
 
 // ============================================================================
-//  SNAPSHOT LOGGING — backend‑safe (kept, but now advantage-aware)
+//  SNAPSHOT dblogGING — backend‑safe (kept, but now advantage-aware)
 // ============================================================================
-async function logScoringSnapshot(userId, snapshot) {
-  if (!ENABLE_SCORING_LOGGING || !db) return;
+async function dblogScoringSnapshot(userId, snapshot) {
+  if (!ENABLE_SCORING_dblogGING || !db) return;
 
   try {
-    await db.collection(SCORING_LOG_COLLECTION).add({
+    await db.collection(SCORING_dblog_COLLECTION).add({
       ...HYPOTHALAMUS_CONTEXT,
       userId,
       ts: Date.now(),
       ...snapshot
     });
 
-    log("hypothalamus", `Snapshot logged | user=${userId}`);
+    dblog("hypothalamus", `Snapshot dblogged | user=${userId}`);
   } catch (err) {
-    error("hypothalamus", "Failed to log scoring snapshot", String(err));
+    dberror("hypothalamus", "Failed to dblog scoring snapshot", String(err));
   }
 }
 
@@ -400,7 +436,7 @@ export async function runUserScoring(dualBandContext = null) {
   const waveField = buildWaveField();
   const dualBandOverlay = buildDualBandOverlay(dualBandContext);
 
-  log("hypothalamus", "HYPOTHALAMUS_START", {
+  dblog("hypothalamus", "HYPOTHALAMUS_START", {
     hypothalamusCycle: HYPOTHALAMUS_CYCLE,
     hypothalamusCycleSignature,
     binaryField,
@@ -410,7 +446,7 @@ export async function runUserScoring(dualBandContext = null) {
   });
 
   if (!db) {
-    error("hypothalamus", "runUserScoring called but db is missing.");
+    dberror("hypothalamus", "runUserScoring called but db is missing.");
     G.PULSE_LAYER_STATE[4].ok = false;
     G.PULSE_LAYER_STATE[4].lastError = "db_missing";
     hypothalamusHealing.lastError = { message: "db_missing", stage: "init" };
@@ -423,7 +459,7 @@ export async function runUserScoring(dualBandContext = null) {
     snap = await db.collection("UserMetrics").get();
   } catch (err) {
     const msg = String(err);
-    error("hypothalamus", "Failed to read UserMetrics", msg);
+    dberror("hypothalamus", "Failed to read UserMetrics", msg);
     G.PULSE_LAYER_STATE[4].ok = false;
     G.PULSE_LAYER_STATE[4].lastError = msg;
     hypothalamusHealing.lastError = { message: msg, stage: "read_UserMetrics" };
@@ -492,7 +528,7 @@ export async function runUserScoring(dualBandContext = null) {
       { merge: true }
     );
 
-    await logScoringSnapshot(doc.id, {
+    await dblogScoringSnapshot(doc.id, {
       trustScore,
       meshScore,
       phase,
@@ -532,7 +568,7 @@ export async function runUserScoring(dualBandContext = null) {
     G.PULSE_LAYER_STATE[4].ok = true;
     G.PULSE_LAYER_STATE[4].lastError = null;
 
-    log("hypothalamus", `Homeostasis scoring pass complete. Processed=${processed}`);
+    dblog("hypothalamus", `Homeostasis scoring pass complete. Processed=${processed}`);
     return {
       ok: true,
       processed,
@@ -544,7 +580,7 @@ export async function runUserScoring(dualBandContext = null) {
     };
   } catch (err) {
     const msg = String(err);
-    error("hypothalamus", "Failed to commit UserScores batch", msg);
+    dberror("hypothalamus", "Failed to commit UserScores batch", msg);
     G.PULSE_LAYER_STATE[4].ok = false;
     G.PULSE_LAYER_STATE[4].lastError = msg;
     hypothalamusHealing.lastError = { message: msg, stage: "commit_UserScores" };

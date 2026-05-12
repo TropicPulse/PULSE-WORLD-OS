@@ -23,6 +23,61 @@ const C_INFO = "color:#E8F8FF; font-family:monospace;";
 const C_WARN = "color:#FFE066; font-family:monospace;";
 const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;";
 
+export function getFetchAPI({ trace = false, routes } = {}) {
+  const log = (msg, data) => trace && console.log(`[OrganismMap:fetch] ${msg}`, data);
+
+  const meta = Object.freeze({
+    layer: "PulseFetchAPI",
+    role: "NETWORK_ADAPTER",
+    version: "25.2-IMMORTAL-WORLD",
+    evo: {
+      deterministicField: true,
+      unifiedAdvantageField: true,
+      driftProof: true,
+      multiInstanceReady: true,
+      dualMode: true,
+      binaryAware: true,
+      symbolicAware: true,
+      presenceAware: true,
+      bandAware: true,
+      worldAware: true,
+      zeroMutation: true,
+      zeroExternalMutation: true,
+      zeroRoutingInfluence: true,
+      safeRouteFree: true
+    }
+  });
+
+  async function fetchViaRoute(url, options = {}) {
+    log("fetchViaRoute", { url, options });
+
+    try {
+      const route = await routes.resolve(url);
+
+      const opts = {
+        method: options.method || "GET",
+        headers: Object.assign({}, options.headers || {}),
+        body: options.body || null
+      };
+
+      const result = await routes.fetchThroughRoute(route, opts);
+      return Object.freeze({ ...result, meta });
+
+    } catch (err) {
+      return Object.freeze({
+        ok: false,
+        error: err?.message || "fetch_via_route_failed",
+        meta
+      });
+    }
+  }
+
+  return Object.freeze({
+    fetch: fetchViaRoute,
+    meta
+  });
+}
+
 function nowEpoch() {
   return Date.now();
 }
@@ -358,7 +413,7 @@ for (const g of GLOBAL_SURFACES) {
   g.GetDoc = GetDoc;
   g.SetDoc = SetDoc;
   g.UpdateDoc = UpdateDoc;
-
+  g.fetchfn = getFetchAPI;
   g.Storage = ShadowStorage;
   g.StorageRef = StorageRef;
   g.UploadString = UploadString;

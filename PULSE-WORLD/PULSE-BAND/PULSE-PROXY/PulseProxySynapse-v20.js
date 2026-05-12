@@ -26,28 +26,55 @@ export const PULSENET_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
+const G =
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
 // ============================================================================
-//  UNIVERSAL GLOBAL RESOLVER — symbolic layer only
-//  (Binary core never touches this; it is passed data only.)
+// UNIVERSAL TIMESTAMP (Shadow or Admin)
 // ============================================================================
-const G = typeof globalThis !== "undefined"
-  ? globalThis
-  : typeof window !== "undefined"
-  ? window
-  : typeof global !== "undefined"
-  ? global
-  : {};
 
-const admin = (G.firebaseAdmin && G.firebaseAdmin) || G.admin || null;
-const db    =
-  (G.db && G.db) ||
-  (admin && admin.firestore && admin.firestore()) ||
+const Timestamp =
+  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
+  (G.Timestamp && G.Timestamp) ||
   null;
 
-const log   = (G.log && G.log) || console.log;
-const error = (G.error && G.error) || console.error;
+// ============================================================================
+// UNIVERSAL ADMIN (Shadow or Admin)
+// ============================================================================
 
+const admin =
+  (G.firebaseAdmin && G.firebaseAdmin) ||
+  (G.admin && G.admin) ||
+  null;
 
+// ============================================================================
+// UNIVERSAL DB (Shadow DB ALWAYS wins)
+// ============================================================================
+const db =
+  (G.db && G.db) ||                 // Shadow DB (v25++)
+  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  null;
+
+// ============================================================================
+// UNIVERSAL LOGGING
+// ============================================================================
+
+const dblog =
+  (G.log && G.log) ||
+  console.log;
+
+const dberror =
+  (G.error && G.error) ||
+  console.error;
+  
+const fetchFn =
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  null;
 
 // ============================================================================
 //  BINARY CORE — v20 IMMORTAL+++
@@ -202,7 +229,7 @@ const pulseLog = (stage, details = {}) => {
   if (!PULSE_DIAGNOSTICS_ENABLED) return;
 
   try {
-    log(
+    dblog(
       JSON.stringify({
         pulseLayer: PULSE_LAYER_ID,
         pulseName: PULSE_LAYER_NAME,
