@@ -507,9 +507,70 @@ window.prewarmAssets =
     }
   };
 
+// ============================================================================
+// PULSEPORTAL v27 — ROUTE CARPET (OrganismMap-aware)
+// ============================================================================
 window.PulseRouteCarpet =
   window.PulseRouteCarpet ||
   {
+    // ------------------------------------------------------------------------
+    // ⭐ NEW — Predict next page using OrganismMap genome
+    // ------------------------------------------------------------------------
+    predictNext(currentPage) {
+      try {
+        const map = globalThis.PulseOrganismMap;
+
+        // ❌ No organism map → fallback to simple "index"
+        if (!map || !map.systems?.UI?.pages) {
+          console.warn("[RouteCarpet] No OrganismMap — fallback next=index");
+          return "index";
+        }
+
+        const pages = map.systems.UI.pages;
+        const keys = Object.keys(pages);
+
+        // ❌ No pages → fallback
+        if (!keys.length) {
+          console.warn("[RouteCarpet] No pages in OrganismMap — fallback");
+          return "index";
+        }
+
+        // --------------------------------------------------------------------
+        // ⭐ 1 — If page has explicit NEXT pointer in genome, use it
+        // --------------------------------------------------------------------
+        const meta = pages[currentPage]?.IDENTITY_META;
+        if (meta?.NEXT) {
+          console.log("[RouteCarpet] Using genome NEXT →", meta.NEXT);
+          return meta.NEXT;
+        }
+
+        // --------------------------------------------------------------------
+        // ⭐ 2 — Otherwise use page order in the OrganismMap
+        // --------------------------------------------------------------------
+        const index = keys.indexOf(currentPage);
+
+        if (index >= 0 && index < keys.length - 1) {
+          const next = keys[index + 1];
+          console.log("[RouteCarpet] Using ordered NEXT →", next);
+          return next;
+        }
+
+        // --------------------------------------------------------------------
+        // ⭐ 3 — Fallback: wrap to first page
+        // --------------------------------------------------------------------
+        const fallback = keys[0];
+        console.log("[RouteCarpet] Wrapping to first page →", fallback);
+        return fallback;
+
+      } catch (err) {
+        console.error("[RouteCarpet] predictNext ERROR →", err);
+        return "index";
+      }
+    },
+
+    // ------------------------------------------------------------------------
+    // ⭐ Existing unfold() — unchanged
+    // ------------------------------------------------------------------------
     unfold(routeDescriptor) {
       try {
         const routeId = routeDescriptor?.route || buildRouteId();
@@ -545,6 +606,7 @@ window.PulseRouteCarpet =
       }
     }
   };
+
 
 
    // ------------------------------------------------------------------------
