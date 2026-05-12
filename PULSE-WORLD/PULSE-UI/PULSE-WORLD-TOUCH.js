@@ -1267,11 +1267,12 @@ function applyGateDecision(gateDecision, skin) {
         "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.assets.json"
       ]);
 
-      // ⭐ Prewarm Portal images (Touch’s route scanner)
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(
-        page,
-        "./index.html"
-      );
+      // ⭐ Scan CURRENT PAGE images
+      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./PULSE/${page}.html`);
+
+      // ⭐ Scan INDEX images (UI builder)
+      window.__PULSE_SCAN_ROUTE_IMAGES__?.("./index.html");
+
 
       // ⭐ Log into Touch timeline
       appendTouchTimeline("portal_prewarm", {
