@@ -609,8 +609,7 @@ export function log(...args) {
   const safe  = meta?.subsystem || subsystem || "legacy";
 
   const version =
-    meta?.version ||
-    (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
+    (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`) || meta?.version;
 
   const color = PulseColors[safe] || meta?.color || PulseColorFallback;
   const icon  = PulseIcons[safe] || meta?.icon  || PulseIconFallback;
