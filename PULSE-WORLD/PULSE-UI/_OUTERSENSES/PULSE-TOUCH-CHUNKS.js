@@ -424,7 +424,7 @@ async function persistPulseChunkToStorage(url, entry, failures = 0) {
 
 function wirePulseChunksStorageEvents() {
   // No-op: IndexedDB does not use storage events
-  console.log("[PulseChunks v27] Storage events disabled (IndexedDB)");
+  console.log("[PulseChunks v27] Local Storage events disabled (IndexedDB Used)");
 }
 
 // ============================================================================
