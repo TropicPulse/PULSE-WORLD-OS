@@ -15,7 +15,7 @@
 // 7) AI CONSOLE / PROMPTS ARE REMOVED FROM LOGGER.
 // 8) LOGGER IS SCHEMA-STABLE AND EVOLVABLE.
 // ============================================================================
-  import { firebase as db } from "../_BACKEND/PULSE-WORLD-SHADOW.js"
+  import { firestore as db } from "../_BACKEND/PULSE-WORLD-SHADOW.js"
     console.log(
       "%c[PulseProofLogger v24-IMMORTAL-EVOLVABLE] %c Initializing PulseProofLogger %c",
       "color:#FF7043; font-weight:bold; font-family:monospace;",
