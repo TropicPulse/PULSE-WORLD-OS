@@ -55,7 +55,7 @@ import {
 
 console.log(
   "%c[PulsePortal v24‑IMMORTAL‑EVO+++] %cPortal membrane online",
-  "color:#26A69A; font-weight:bold; font-family:monospace;",   // Portal Cyan
+  "color:#7E57C2; font-weight:bold; font-family:monospace;",   // Portal Cyan
   "color:#00FF9C; font-family:monospace;"                      // Monitor Neon Green
 );
 
@@ -65,14 +65,14 @@ try {
 
   console.log(
     "%c[PulsePortal::SkinReflex] %cInstance created %c→ OK",
-    "color:#26A69A; font-weight:bold; font-family:monospace;",   // cyan tag
+    "color:#7E57C2; font-weight:bold; font-family:monospace;",   // cyan tag
     "color:#00FF9C; font-family:monospace;",                     // neon green message
     "color:#E8F8FF; font-family:monospace;"                      // soft white arrow
   );
 
   console.log(
     "%c↳ Methods wired to window: %cgetHook, getAuth, getMap, callHelper",
-    "color:#26A69A; font-family:monospace; font-weight:bold;",
+    "color:#7E57C2; font-family:monospace; font-weight:bold;",
     "color:#E8F8FF; font-family:monospace;"
   );
 
@@ -421,7 +421,7 @@ if (isBrowser()) {
         } catch (err) {
           console.error(
             "%c[PulsePortal::fetchImage] %cchunk error %c→ %s",
-            "color:#26A69A; font-weight:bold; font-family:monospace;", // Portal Cyan
+            "color:#7E57C2; font-weight:bold; font-family:monospace;", // Portal Cyan
             "color:#FF3B3B; font-weight:bold; font-family:monospace;", // Monitor Red
             "color:#FFE066; font-family:monospace;",                   // Monitor Yellow
             String(err)
@@ -448,7 +448,7 @@ window.fetchChunk =
         if (result && typeof result.chunk !== "undefined") {
           console.log(
             "%c[PulsePortal::fetchChunk] %cchunk loaded %c→ %s",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#00FF9C; font-family:monospace;",
             "color:#E8F8FF; font-family:monospace;",
             url
@@ -461,7 +461,7 @@ window.fetchChunk =
         const chunk = await window.PulseChunks.fetchChunk(url);
         console.log(
           "%c[PulsePortal::fetchChunk] %cfallback chunk loaded %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#00FF9C; font-family:monospace;",
           "color:#E8F8FF; font-family:monospace;",
           url
@@ -471,7 +471,7 @@ window.fetchChunk =
     } catch (err) {
       console.error(
         "%c[PulsePortal::fetchChunk] %cERROR %c→ %s",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#FF3B3B; font-weight:bold; font-family:monospace;",
         "color:#FFE066; font-family:monospace;",
         String(err)
@@ -490,7 +490,7 @@ window.prewarmAssets =
 
         console.log(
           "%c[PulsePortal::prewarmAssets] %cprewarmed %c→ %d assets",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#00FF9C; font-family:monospace;",
           "color:#E8F8FF; font-family:monospace;",
           urls.length
@@ -499,7 +499,7 @@ window.prewarmAssets =
     } catch (err) {
       console.error(
         "%c[PulsePortal::prewarmAssets] %cERROR %c→ %s",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#FF3B3B; font-weight:bold; font-family:monospace;",
         "color:#FFE066; font-family:monospace;",
         String(err)
@@ -524,7 +524,7 @@ window.PulseRouteCarpet =
 
         console.log(
           "%c[PulsePortal::RouteCarpet] %cunfolded %c→ route:%s, assets:%d",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#00FF9C; font-family:monospace;",
           "color:#E8F8FF; font-family:monospace;",
           routeId,
@@ -535,7 +535,7 @@ window.PulseRouteCarpet =
       } catch (err) {
         console.error(
           "%c[PulsePortal::RouteCarpet] %cERROR %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#FF3B3B; font-weight:bold; font-family:monospace;",
           "color:#FFE066; font-family:monospace;",
           String(err)
@@ -569,7 +569,7 @@ try {
           .catch((err) => {
             console.error(
               "%c[PulsePortal::ImageSrc] %cERROR %c→ %s",
-              "color:#26A69A; font-weight:bold; font-family:monospace;",
+              "color:#7E57C2; font-weight:bold; font-family:monospace;",
               "color:#FF3B3B; font-weight:bold; font-family:monospace;",
               "color:#FFE066; font-family:monospace;",
               String(err)
@@ -581,14 +581,14 @@ try {
 
     console.log(
       "%c[PulsePortal::ImageSrc] %cpatch active",
-      "color:#26A69A; font-weight:bold; font-family:monospace;",
+      "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;"
     );
   }
 } catch (err) {
   console.error(
     "%c[PulsePortal::ImageSrc] %cFAILED %c→ %s",
-    "color:#26A69A; font-weight:bold; font-family:monospace;",
+    "color:#7E57C2; font-weight:bold; font-family:monospace;",
     "color:#FF3B3B; font-weight:bold; font-family:monospace;",
     "color:#FFE066; font-family:monospace;",
     String(err)
@@ -618,7 +618,7 @@ try {
 
           console.log(
             "%c[PulsePortal::Fetch] %cimage shortcut %c→ %s",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#00FF9C; font-family:monospace;",
             "color:#E8F8FF; font-family:monospace;",
             url
@@ -642,7 +642,7 @@ try {
           if (result && result.__fetched) {
             console.log(
               "%c[PulsePortal::Fetch] %cproxy hit %c→ %s",
-              "color:#26A69A; font-weight:bold; font-family:monospace;",
+              "color:#7E57C2; font-weight:bold; font-family:monospace;",
               "color:#00FF9C; font-family:monospace;",
               "color:#E8F8FF; font-family:monospace;",
               url
@@ -661,7 +661,7 @@ try {
       } catch (err) {
         console.error(
           "%c[PulsePortal::Fetch] %cERROR %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#FF3B3B; font-weight:bold; font-family:monospace;",
           "color:#FFE066; font-family:monospace;",
           String(err)
@@ -673,14 +673,14 @@ try {
 
     console.log(
       "%c[PulsePortal::Fetch] %cpatch active",
-      "color:#26A69A; font-weight:bold; font-family:monospace;",
+      "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;"
     );
   }
 } catch (err) {
   console.error(
     "%c[PulsePortal::Fetch] %cFAILED %c→ %s",
-    "color:#26A69A; font-weight:bold; font-family:monospace;",
+    "color:#7E57C2; font-weight:bold; font-family:monospace;",
     "color:#FF3B3B; font-weight:bold; font-family:monospace;",
     "color:#FFE066; font-family:monospace;",
     String(err)
@@ -695,7 +695,7 @@ if (window.pulseband && !window.PulseBand) {
 
   console.log(
     "%c[PulsePortal::PulseBand] %chandler active",
-    "color:#26A69A; font-weight:bold; font-family:monospace;",
+    "color:#7E57C2; font-weight:bold; font-family:monospace;",
     "color:#00FF9C; font-family:monospace;"
   );
 
@@ -769,7 +769,7 @@ if (window.pulseband && !window.PulseBand) {
 
         console.log(
           "%c[PulsePortal::PulseBand] %cproxy request %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#00FF9C; font-family:monospace;",
           "color:#E8F8FF; font-family:monospace;",
           url + query
@@ -780,7 +780,7 @@ if (window.pulseband && !window.PulseBand) {
 
         console.log(
           "%c[PulsePortal::PulseBand] %cfetch request %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#00FF9C; font-family:monospace;",
           "color:#E8F8FF; font-family:monospace;",
           url + query
@@ -789,7 +789,7 @@ if (window.pulseband && !window.PulseBand) {
     } catch (err) {
       console.error(
         "%c[PulsePortal::PulseBand] %cREQUEST FAILED %c→ %s",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#FF3B3B; font-weight:bold; font-family:monospace;",
         "color:#FFE066; font-family:monospace;",
         String(err)
@@ -803,7 +803,7 @@ if (window.pulseband && !window.PulseBand) {
     } catch (err) {
       console.error(
         "%c[PulsePortal::PulseBand] %cEMIT FAILED %c→ %s",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#FF3B3B; font-weight:bold; font-family:monospace;",
         "color:#FFE066; font-family:monospace;",
         String(err)
@@ -828,14 +828,14 @@ if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function
 
       console.log(
         "%c[PulsePortal::PulseNet] %cingress %c→ OK",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#00FF9C; font-family:monospace;",
         "color:#E8F8FF; font-family:monospace;"
       );
     } catch (err) {
       console.error(
         "%c[PulsePortal::PulseNet] %cINGRESS FAILED %c→ %s",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#FF3B3B; font-weight:bold; font-family:monospace;",
         "color:#FFE066; font-family:monospace;",
         String(err)
@@ -853,14 +853,14 @@ if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function
 
       console.log(
         "%c[PulsePortal::PulseNet] %cfastlane %c→ OK",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#00FF9C; font-family:monospace;",
         "color:#E8F8FF; font-family:monospace;"
       );
     } catch (err) {
       console.error(
         "%c[PulsePortal::PulseNet] %cFASTLANE FAILED %c→ %s",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#FF3B3B; font-weight:bold; font-family:monospace;",
         "color:#FFE066; font-family:monospace;",
         String(err)
@@ -992,7 +992,7 @@ function runPortalWarm() {
 
     console.log(
       "%c[PulsePortal::Warm] %cv26 next-page warm complete %c→ %s",
-      "color:#26A69A; font-weight:bold; font-family:monospace;",
+      "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;",
       "color:#E8F8FF; font-family:monospace;",
       next
@@ -1090,7 +1090,7 @@ window.PulsePortal =
 
 console.log(
   "%c[PulsePortal::Surface] %cprojection active (v26 IMMORTAL++)",
-  "color:#26A69A; font-weight:bold; font-family:monospace;",
+  "color:#7E57C2; font-weight:bold; font-family:monospace;",
   "color:#00FF9C; font-family:monospace;"
 );
 
@@ -1098,7 +1098,7 @@ console.log(
 } catch (err) {
   console.error(
     "%c[PulsePortal::Surface] %cFAILED %c→ %s",
-    "color:#26A69A; font-weight:bold; font-family:monospace;",
+    "color:#7E57C2; font-weight:bold; font-family:monospace;",
     "color:#FF3B3B; font-weight:bold; font-family:monospace;",
     "color:#FFE066; font-family:monospace;",
     String(err)
@@ -1116,7 +1116,7 @@ try {
   ) {
     console.log(
       "%c[PulsePortal::Vitals] %cmonitor online",
-      "color:#26A69A; font-weight:bold; font-family:monospace;",
+      "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;"
     );
   }
@@ -1128,14 +1128,14 @@ try {
   ) {
     console.log(
       "%c[PulsePortal::Logger] %clogger active",
-      "color:#26A69A; font-weight:bold; font-family:monospace;",
+      "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;"
     );
   }
 } catch (err) {
   console.error(
     "%c[PulsePortal::Vitals/Logger] %cFAILED %c→ %s",
-    "color:#26A69A; font-weight:bold; font-family:monospace;",
+    "color:#7E57C2; font-weight:bold; font-family:monospace;",
     "color:#FF3B3B; font-weight:bold; font-family:monospace;",
     "color:#FFE066; font-family:monospace;",
     String(err)
@@ -1147,14 +1147,14 @@ try {
     window.PulseUIErrors?.init?.();
     console.log(
       "%c[PulsePortal::UIErrors] %cspine initialized",
-      "color:#26A69A; font-weight:bold; font-family:monospace;",
+      "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;"
     );
   }
 } catch (err) {
   console.error(
     "%c[PulsePortal::UIErrors] %cFAILED %c→ %s",
-    "color:#26A69A; font-weight:bold; font-family:monospace;",
+    "color:#7E57C2; font-weight:bold; font-family:monospace;",
     "color:#FF3B3B; font-weight:bold; font-family:monospace;",
     "color:#FFE066; font-family:monospace;",
     String(err)
@@ -1166,13 +1166,13 @@ if (isBrowser() && window.PulseSkinReflex?.membraneAlive) {
     window.PulseSkinReflex.membraneAlive("Portal-v24");
     console.log(
       "%c[PulsePortal::SkinReflex] %cmembrane alive",
-      "color:#26A69A; font-weight:bold; font-family:monospace;",
+      "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;"
     );
   } catch (err) {
     console.error(
       "%c[PulsePortal::SkinReflex] %cFAILED %c→ %s",
-      "color:#26A69A; font-weight:bold; font-family:monospace;",
+      "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#FF3B3B; font-weight:bold; font-family:monospace;",
       "color:#FFE066; font-family:monospace;",
       String(err)
@@ -1246,20 +1246,20 @@ if (isBrowser()) {
 
           console.log(
             "%c[PulsePortal::Binary] %corganism booted + wired",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#00FF9C; font-family:monospace;"
           );
         } else {
           console.error(
             "%c[PulsePortal::Binary] %cNO ORGANISM AVAILABLE",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#FF3B3B; font-weight:bold; font-family:monospace;"
           );
         }
       } catch (err) {
         console.error(
           "%c[PulsePortal::Binary] %cBOOT FAILED %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#FF3B3B; font-weight:bold; font-family:monospace;",
           "color:#FFE066; font-family:monospace;",
           String(err)
@@ -1305,14 +1305,14 @@ if (isBrowser()) {
 
           console.log(
             "%c[PulsePortal::Understanding] %cboot complete",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#00FF9C; font-family:monospace;"
           );
         }
       } catch (err) {
         console.error(
           "%c[PulsePortal::Understanding] %cFAILED %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#FF3B3B; font-weight:bold; font-family:monospace;",
           "color:#FFE066; font-family:monospace;",
           String(err)
@@ -1331,14 +1331,14 @@ if (isBrowser()) {
 
           console.log(
             "%c[PulsePortal::UIFlow] %cinitialized",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#00FF9C; font-family:monospace;"
           );
         }
       } catch (err) {
         console.error(
           "%c[PulsePortal::UIFlow] %cFAILED %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#FF3B3B; font-weight:bold; font-family:monospace;",
           "color:#FFE066; font-family:monospace;",
           String(err)
@@ -1348,7 +1348,7 @@ if (isBrowser()) {
     } catch (err) {
       console.error(
         "%c[PulsePortal::Boot] %cFAILED %c→ %s",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#FF3B3B; font-weight:bold; font-family:monospace;",
         "color:#FFE066; font-family:monospace;",
         String(err)
@@ -1381,14 +1381,14 @@ if (isBrowser()) {
 
         console.log(
           "%c[PulsePortal::UIFlow] %ccontext projected",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#00FF9C; font-family:monospace;"
         );
       }
     } catch (flowErr) {
       console.error(
         "%c[PulsePortal::UIFlow] %cCONTEXT FAILED %c→ %s",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#FF3B3B; font-weight:bold; font-family:monospace;",
         "color:#FFE066; font-family:monospace;",
         String(flowErr)
@@ -1409,7 +1409,7 @@ if (isBrowser()) {
         if (!injectedBand) {
           console.warn(
             "%c[PulsePortal::PulseBand] %cno injected PulseBand instance found",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#FFE066; font-family:monospace;"
           );
         } else {
@@ -1418,7 +1418,7 @@ if (isBrowser()) {
 
           console.log(
             "%c[PulsePortal::PulseBand] %cbridge attached",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#00FF9C; font-family:monospace;"
           );
 
@@ -1496,7 +1496,7 @@ if (isBrowser()) {
 
                   console.log(
                     "%c[PulsePortal::PulseBand] %cproxy request %c→ %s",
-                    "color:#26A69A; font-weight:bold; font-family:monospace;",
+                    "color:#7E57C2; font-weight:bold; font-family:monospace;",
                     "color:#00FF9C; font-family:monospace;",
                     "color:#E8F8FF; font-family:monospace;",
                     url + query
@@ -1507,7 +1507,7 @@ if (isBrowser()) {
 
                   console.log(
                     "%c[PulsePortal::PulseBand] %cfetch request %c→ %s",
-                    "color:#26A69A; font-weight:bold; font-family:monospace;",
+                    "color:#7E57C2; font-weight:bold; font-family:monospace;",
                     "color:#00FF9C; font-family:monospace;",
                     "color:#E8F8FF; font-family:monospace;",
                     url + query
@@ -1516,7 +1516,7 @@ if (isBrowser()) {
               } catch (err) {
                 console.error(
                   "%c[PulsePortal::PulseBand] %cREQUEST FAILED %c→ %s",
-                  "color:#26A69A; font-weight:bold; font-family:monospace;",
+                  "color:#7E57C2; font-weight:bold; font-family:monospace;",
                   "color:#FF3B3B; font-weight:bold; font-family:monospace;",
                   "color:#FFE066; font-family:monospace;",
                   String(err)
@@ -1530,7 +1530,7 @@ if (isBrowser()) {
               } catch (err) {
                 console.error(
                   "%c[PulsePortal::PulseBand] %cEMIT FAILED %c→ %s",
-                  "color:#26A69A; font-weight:bold; font-family:monospace;",
+                  "color:#7E57C2; font-weight:bold; font-family:monospace;",
                   "color:#FF3B3B; font-weight:bold; font-family:monospace;",
                   "color:#FFE066; font-family:monospace;",
                   String(err)
@@ -1548,7 +1548,7 @@ if (isBrowser()) {
       } catch (err) {
         console.error(
           "%c[PulsePortal::PulseBand] %cBOOT FAILED %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#FF3B3B; font-weight:bold; font-family:monospace;",
           "color:#FFE066; font-family:monospace;",
           String(err)
@@ -1582,20 +1582,20 @@ if (isBrowser()) {
 
           console.log(
             "%c[PulsePortal::PulseBand] %cchunk-session started",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#00FF9C; font-family:monospace;"
           );
         } else {
           console.warn(
             "%c[PulsePortal::PulseBand] %cno PulseBandStart available — chunk-session skipped",
-            "color:#26A69A; font-weight:bold; font-family:monospace;",
+            "color:#7E57C2; font-weight:bold; font-family:monospace;",
             "color:#FFE066; font-family:monospace;"
           );
         }
       } catch (err) {
         console.error(
           "%c[PulsePortal::PulseBand] %cCHUNK SESSION FAILED %c→ %s",
-          "color:#26A69A; font-weight:bold; font-family:monospace;",
+          "color:#7E57C2; font-weight:bold; font-family:monospace;",
           "color:#FF3B3B; font-weight:bold; font-family:monospace;",
           "color:#FFE066; font-family:monospace;",
           String(err)
@@ -1604,7 +1604,7 @@ if (isBrowser()) {
     } catch (err) {
       console.error(
         "%c[PulsePortal::PulseBand] %cBOOT FAILED %c→ %s",
-        "color:#26A69A; font-weight:bold; font-family:monospace;",
+        "color:#7E57C2; font-weight:bold; font-family:monospace;",
         "color:#FF3B3B; font-weight:bold; font-family:monospace;",
         "color:#FFE066; font-family:monospace;",
         String(err)
@@ -1657,7 +1657,7 @@ const PulsePortalAPI = Object.freeze({
 
 console.log(
   "%c[PulsePortal::API] %cexported",
-  "color:#26A69A; font-weight:bold; font-family:monospace;",
+  "color:#7E57C2; font-weight:bold; font-family:monospace;",
   "color:#00FF9C; font-family:monospace;"
 );
 
@@ -1700,14 +1700,14 @@ try {
 
     console.log(
       "%c[PulsePortal::Global] %cmirrors initialized",
-      "color:#26A69A; font-weight:bold; font-family:monospace;",
+      "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;"
     );
   }
 } catch (err) {
   console.error(
     "%c[PulsePortal::Global] %cFAILED %c→ %s",
-    "color:#26A69A; font-weight:bold; font-family:monospace;",
+    "color:#7E57C2; font-weight:bold; font-family:monospace;",
     "color:#FF3B3B; font-weight:bold; font-family:monospace;",
     "color:#FFE066; font-family:monospace;",
     String(err)
