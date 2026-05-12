@@ -24,7 +24,7 @@ import PulseBeaconMesh, { PulseBeaconMeshMeta } from "../PULSE-EXPANSION/PulseEx
 import PulseBeaconEngine from "../PULSE-EXPANSION/PulseExpansionBeaconEngine-v20.js";
 import { PulseExpansionMeta } from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET.js";
 import { PulseServerMeta } from "../PULSE-EXPANSION/PULSE-EXPANSION-SERVER.js";
-import { PulseRouterMeta } from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET-ROUTER.js";
+import { PulseRouterMeta } from "../PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./aiDualBand-v24.js";

@@ -91,7 +91,7 @@ import {
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PULSE-EXPANSION-INTERNET-ROUTER.js";
+} from "../PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 
 // User lanes
 import { getPulseUserContext } from "./PulseExpansionUser-v24.js";

@@ -36,7 +36,7 @@ import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PulseExpansionBeaconMesh
 
 import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
 import { PulseServerMeta, createPulseServer } from "./PULSE-EXPANSION-SERVER.js";
-import { PulseRouterMeta, createPulseRouter } from "./PULSE-EXPANSION-INTERNET-ROUTER.js";
+import { PulseRouterMeta, createPulseRouter } from "../PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 import { PulseExpansionMeta, createPulseExpansion } from "./PULSE-EXPANSION-INTERNET.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 
@@ -831,3 +831,12 @@ export function getPulseUserContext() {
 export const pulseUser = _pulseUserSingleton;
 
 export default createPulseWorldCore;
+
+// Mesh + BeaconMesh meta
+export { PulseMeshMeta, createPulseMesh };
+export { PulseBeaconMeshMeta, PulseBeaconMesh };
+
+export { PulseCastleMeta, createPulseCastle };
+export { PulseServerMeta, createPulseServer };
+export { PulseRouterMeta, createPulseRouter };
+export { PulseExpansionMeta, createPulseExpansion };

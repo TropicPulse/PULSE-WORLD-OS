@@ -17,7 +17,7 @@ import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 export const PulseRouterMeta = Identity.OrganMeta;
@@ -37,10 +37,10 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
-} from "./PULSE-EXPANSION-INTERNET.js";
+} from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET.js";
 
-import { PulseCastleMeta, createPulseCastle } from "./PulseExpansionCastle-v24.js";
-import { PulseServerMeta, createPulseServer } from "./PULSE-EXPANSION-SERVER.js";
+import { PulseCastleMeta, createPulseCastle } from "../PULSE-EXPANSION/PulseExpansionCastle-v24.js";
+import { PulseServerMeta, createPulseServer } from "../PULSE-EXPANSION/PULSE-EXPANSION-SERVER.js";
 
 // User lanes + world core
 import {
@@ -48,7 +48,7 @@ import {
   createPulseWorldCore,
   pulseUser,
   PulseUserMeta
-} from "./PulseExpansionUser-v24.js";
+} from "../PULSE-EXPANSION/PulseExpansionUser-v24.js";
 
 // Mesh (symbolic + binary) — v24 IMMORTAL ORGANISM
 import createBinaryMesh, {
@@ -60,20 +60,20 @@ import createPulseMesh, {
 } from "../PULSE-MESH/PulseMesh-v24.js";
 
 // Beacon engine (optional, for presence / region signals)
-import PulseBeaconEngine from "./PulseExpansionBeaconEngine-v20.js";
+import PulseBeaconEngine from "../PULSE-EXPANSION/PulseExpansionBeaconEngine-v20.js";
 
 // Beacon membrane (for meta only, if needed)
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
-} from "./PulseExpansionBeaconMesh-v20.js";
+} from "../PULSE-EXPANSION/PulseExpansionBeaconMesh-v20.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
 
 // Runtime / scheduler / overmind
-import { getPulseRuntimeContext } from "../PULSE-X/PulseWorldRuntime-v20.js";
-import { getPulseSchedulerContext } from "../PULSE-X/PulseWorldScheduler-v20.js";
-import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
+import { getPulseRuntimeContext } from "./PulseWorldRuntime-v20.js";
+import { getPulseSchedulerContext } from "./PulseWorldScheduler-v20.js";
+import { getPulseOvermindContext } from "./PULSE-WORLD-ALDWYN.js";
 
 // (Optional) Earn / treasury integration hook (symbolic only)
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";

@@ -31,11 +31,14 @@ const g =
     : typeof g !== "undefined"
     ? g
     : {};
+
+
 import { PulseProofBridgeFlow as initUIFlow, PulseProofBridgeErrors as PulseUIErrors, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { db, admin } from "./PulseWorldGenome-v20.js";
 import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
 import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v24.js";
-import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
+import { createPulseRouter } from "./PULSE-WORLD-INTERNET-ROUTER.js";
+import { PulseUnderstanding, PulseWorldCastle, PulseWorldMesh } from "./PULSE-WORLD-UNDERSTANDING.js";
 // ============================================================================
 // PULSE-NET v14-Immortal — Backend Gateway + Crown Throne Room
 //  • Single internet edge (via NetworkOrgan → route(...))
@@ -46,6 +49,27 @@ import { PulseForward as createForwardEngine } from "../PULSE-ENGINE/PulseEngine
 import { PulseBackward as createBackwardEngine } from "../PULSE-ENGINE/PulseEngineBackwardMotion-v24.js";
 
 
+const Router = createPulseRouter({ trace: false });
+
+export async function route(channel, packet) {
+  // 1. Understanding interprets meaning
+  const meaning = await PulseUnderstanding.handle({ channel, ...packet });
+
+  // 2. Router decides best path + executes fallback chain
+  const result = await Router.routeInternet(meaning, {
+    castle: async (req, decision) => {
+      return PulseWorldCastle.handle(req);
+    },
+    mesh: async (req, decision) => {
+      return PulseWorldMesh.handle(req);
+    },
+    cloud: async (req, decision) => {
+      return fetch(req.url, req.options).then(r => r.json());
+    }
+  });
+
+  return result;
+}
 
 // ============================================================================
 // GLOBAL ORGANISM MEMORY (shared across all imports)

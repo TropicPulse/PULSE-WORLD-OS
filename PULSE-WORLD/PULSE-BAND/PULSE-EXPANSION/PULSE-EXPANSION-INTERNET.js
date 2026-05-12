@@ -46,7 +46,7 @@ import {
 import {
   PulseRouterMeta,
   createPulseRouter
-} from "./PULSE-EXPANSION-INTERNET-ROUTER.js";
+} from "../PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 
 // Beacon mesh / engine
 import {
