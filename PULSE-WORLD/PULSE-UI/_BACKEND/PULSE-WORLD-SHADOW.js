@@ -189,7 +189,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
 //
 window.PulseWorldFirebaseShadow = PulseWorldFirebaseShadow;
 
-console.log("%c[PulseWorldFirebaseShadow] v24 SHADOW organ ready",
+console.log("%c[PulseFirebaseShadow] v24 %c SHADOW organ ready %c",
   "color:#00C4FF; font-weight:bold; font-family:monospace;");
 
   export const firebase = db;
