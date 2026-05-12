@@ -16,10 +16,11 @@
 //  • PulseSend‑v24‑Ascendant‑ready: immune validation before compute routing.
 //  • Earn‑v24‑GPU‑ready — aware of GPU Earn governor + profiles.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 export const pulseRole = Identity.pulseRole;

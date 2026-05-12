@@ -4,10 +4,11 @@
 //  Pure deterministic reflex builder (zero routing, zero sending, zero compute)
 //  Binary-first A-B-A + DualHash + Presence/Advantage/Chunk surfaces (metadata-only) + 24++ Reflex Profiles
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

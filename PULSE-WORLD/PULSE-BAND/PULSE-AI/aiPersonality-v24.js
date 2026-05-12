@@ -3,7 +3,8 @@
 //  Self‑Definition • Role Assignment • Binary‑Aware Identity Drift
 //  PURE IDENTITY. ZERO MUTATION. ZERO RANDOMNESS. PULSE‑NET ONLY.
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 
 const Identity = OrganismIdentity(import.meta.url);
 

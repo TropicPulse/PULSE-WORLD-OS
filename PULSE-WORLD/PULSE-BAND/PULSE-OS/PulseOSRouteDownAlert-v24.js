@@ -5,7 +5,8 @@
 // IMMUNE ALERT NODE / ROUTE FAILURE SENTINEL / AUTO-EMAIL
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 import { PulseWorldEmailAlert } from "../PULSE-X/PulseWorldEmailAlert-v20.js";
 
 const Identity = OrganismIdentity(import.meta.url);

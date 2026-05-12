@@ -4,10 +4,11 @@ FILE: /PULSE-WORLD/SnapshotPhysics-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC SNAPSHOT PHYSICS
 ===============================================================================
 */
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

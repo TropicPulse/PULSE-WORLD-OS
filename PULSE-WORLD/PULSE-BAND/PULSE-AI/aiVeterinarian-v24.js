@@ -3,7 +3,8 @@
 //  Animal Mapper • Behavior Interpreter • Safe Scan Explainer
 //  ZERO DIAGNOSIS • ZERO TREATMENT • ZERO PRESCRIPTION
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 
 const Identity = OrganismIdentity(import.meta.url);
 

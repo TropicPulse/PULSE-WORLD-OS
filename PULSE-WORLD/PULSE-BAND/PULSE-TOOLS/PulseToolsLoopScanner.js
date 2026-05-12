@@ -31,10 +31,11 @@
 //   - Callers that ignore presence/harmonicBias get pure v11 behavior.
 //   - v16 adds: artery snapshots, window buckets, advantage view, dual-band prewarm.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

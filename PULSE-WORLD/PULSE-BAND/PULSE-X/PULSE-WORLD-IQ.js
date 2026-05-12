@@ -133,7 +133,8 @@ AI_EXPERIENCE_META = {
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+} from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 
 const Identity = OrganismIdentity(import.meta.url);
 
@@ -148,7 +149,8 @@ export const EXPORT_META = Identity.EXPORT_META;
 // -----------------------------------------------------------------------------
 // IMPORTS (pure contracts; real system wires concrete implementations)
 // -----------------------------------------------------------------------------
-import { PulseOrganismMap } from "./PulseWorldOrganismMap-v24.js";
+import { PulseOrganismMap } from "./PULSE-WORLD-MAP.js
+";
 import { createPulseAIChunker } from "../PULSE-AI/PulseAIChunker-v24.js";
 import {
   PulseProofBridgeLogger as logger,

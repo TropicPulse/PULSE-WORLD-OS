@@ -26,7 +26,8 @@
 //      and lower layers — organism‑wide, not per‑organ.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // ============================================================================

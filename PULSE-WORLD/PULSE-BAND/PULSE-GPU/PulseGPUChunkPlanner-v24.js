@@ -13,10 +13,11 @@
 //  Expected sibling organ (not imported here, just referenced):
 //    - PulseGPUChunker-v24 (GPU-specialized clone of PulseAIChunker v20)
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 export const PulseGPUChunkerMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;

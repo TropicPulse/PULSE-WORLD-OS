@@ -24,7 +24,8 @@
 // • Reflex only — never blocks routing.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 const Identity = OrganismIdentity(import.meta.url);
 
 export const pulseRole = Identity.pulseRole;

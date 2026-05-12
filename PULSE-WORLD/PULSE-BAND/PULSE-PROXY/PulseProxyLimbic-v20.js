@@ -4,10 +4,11 @@
 //  PURE FACADE. NO LOGIC. NO STATE. NO SIDE‑EFFECTS.
 //  DUAL‑BAND + PRESENCE + ADVANTAGE + WORLD‑LENS PROJECTION.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

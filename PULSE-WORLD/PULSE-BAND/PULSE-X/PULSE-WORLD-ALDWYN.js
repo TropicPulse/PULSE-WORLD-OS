@@ -37,8 +37,8 @@ AI_EXPERIENCE_META = {
 */
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
@@ -55,7 +55,7 @@ import { PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeMonitor as 
 // ============================================================================
 //  GLOBAL MAPS
 // ============================================================================
-import { PulseOrganismMap } from "./PulseWorldOrganismMap-v24.js";
+
 import { PulseIQMap } from "./PulseWorldIQMap-v24.js";
 import { PulseIntentMap } from "./PulseWorldIntentMap-v24.js";
 

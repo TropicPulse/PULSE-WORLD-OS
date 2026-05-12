@@ -19,10 +19,11 @@
 //    - v24++: snapshot‑aware, artery‑aware, chunk/cache/prewarm aware,
 //      engine‑local tick space, governance‑aware, treasury‑pressure aware.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

@@ -12,7 +12,8 @@
 //   • Adapt tone to user evolution mode (passive vs active) without bragging.
 //   • Emit deterministic experience packets for the organism/window.
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 
 const Identity = OrganismIdentity(import.meta.url);
 

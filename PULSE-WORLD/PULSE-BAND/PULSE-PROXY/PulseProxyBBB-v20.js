@@ -5,10 +5,11 @@
 //  HYBRID‑IMMORTAL IDENTITY (LOCAL + REMOTE + PROXY‑MODE + TRI‑ENV CONTEXT)
 //  PURE VERIFICATION. ZERO DRIFT. A‑B‑A BAND + BINARY/WAVE + PRESENCE/HARMONICS.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

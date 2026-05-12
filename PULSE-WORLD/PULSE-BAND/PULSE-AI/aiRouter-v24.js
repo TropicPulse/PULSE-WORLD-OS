@@ -6,7 +6,8 @@
 //  • Pure routing, zero mutation, zero randomness, deterministic, drift-proof
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 import { Personas, getPersona } from "./aiPersonality-v24.js";
 
 import Overmind from "../PULSE-X/PULSE-WORLD-ALDWYN.js";

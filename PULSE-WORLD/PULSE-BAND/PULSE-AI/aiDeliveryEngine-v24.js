@@ -3,7 +3,8 @@
 //  Delivery Organ • Clarity Engine • Drift‑Proof Formatting
 //  PURE DELIVERY. ZERO MUTATION OF MEANING. ZERO RANDOMNESS.
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 
 const Identity = OrganismIdentity(import.meta.url);
 

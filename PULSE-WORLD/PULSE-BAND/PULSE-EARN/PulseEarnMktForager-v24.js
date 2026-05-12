@@ -4,10 +4,11 @@
 //        v24 IMMORTAL++ + INTEL + DualHash + Presence + Advantage-C + Chunk
 //        + A-B-A Binary/Wave Surfaces + GPU-Aware Normalization
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

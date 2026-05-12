@@ -5,7 +5,8 @@
 //  DUALBAND • TRUST-AWARE • ARTERY-AWARE • WINDOW-SAFE • DETERMINISTIC
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 
 const Identity = OrganismIdentity(import.meta.url);
 

@@ -26,10 +26,11 @@
 //     chunk/cache/presence/advantage-field aware, but still zero-network, zero-binary.
 // ============================================================================
 
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
@@ -46,7 +47,8 @@ export const EXPORT_META = Identity.EXPORT_META;
 //  IMPORTS — LAW: BRAIN MAY IMPORT ONLY PULSEIQ + ORGANISM + EVOLUTION
 // ============================================================================
 import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v24.js";
-import { PulseOrganismMap } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { PulseOrganismMap } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 import { PulseOSEvolution } from "./PulseOSBrainEvolution-v24.js";
 
 import checkBand from "../PULSE-X/PULSE-WORLD-BAND.js";

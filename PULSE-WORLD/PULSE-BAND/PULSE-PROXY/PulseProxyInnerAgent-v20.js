@@ -6,10 +6,11 @@
 //  PURE BACKEND ORGAN — NO INTERNET FETCH, NO MARKETPLACE, NO BUSINESS LOGIC.
 //  INTERNET IS ALWAYS BEAMED VIA EXPANSION / OUTER AGENT, NEVER FROM HERE.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

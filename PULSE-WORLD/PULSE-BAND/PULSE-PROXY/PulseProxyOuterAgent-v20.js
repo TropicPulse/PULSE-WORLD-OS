@@ -8,10 +8,11 @@
 //  PNS repair/purifier‑aware (symbolic only), drift‑proof, organism‑aware,
 //  chunk/cache/prewarm‑aware, speed‑aware, world‑lens‑aware (metadata only).
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

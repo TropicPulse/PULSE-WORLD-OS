@@ -24,10 +24,11 @@
 //   • Presence/advantage/chunk/computeProfile/pulseIntelligence DO NOT change the schema.
 //   • NO async, NO network, NO randomness, NO filesystem.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

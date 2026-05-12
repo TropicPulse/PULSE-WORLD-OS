@@ -19,10 +19,11 @@
 //  • PulseSend‑v24‑ready: impulses routable by compute router.
 //  • Earn‑v24‑GPU‑ready.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 const PULSE_GPU_EVENT_EMITTER_META_V24 = Identity.OrganMeta;

@@ -18,10 +18,11 @@ This organ requires FULL 20++ IMMORTAL STACK on every upgrade:
 - Strategy maps for all lineage variants (legacy → v9.3 → v10 → v12.3 → v15 → v16 → v20++)
 Always EXTEND, never REMOVE, existing surfaces and contracts.
 */
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

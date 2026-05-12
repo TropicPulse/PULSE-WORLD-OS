@@ -4,10 +4,11 @@ FILE: /PULSE-WORLD/MultiOrganismSupport-v16.js
 LAYER: PULSE-WORLD SUBSTRATE — MULTI-ORGANISM COORDINATION
 ===============================================================================
 */
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

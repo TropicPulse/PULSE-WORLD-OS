@@ -30,7 +30,8 @@
 //
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 
 // ============================================================================
 //  GLOBAL HANDLE (v24 IMMORTAL, environment-agnostic)

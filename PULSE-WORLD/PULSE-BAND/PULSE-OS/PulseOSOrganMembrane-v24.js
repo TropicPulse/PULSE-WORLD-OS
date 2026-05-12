@@ -31,7 +31,8 @@
 //   • Presence-aware, artery-aware, read-only
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 import { route, Router } from "./PulseOSCNSNervousSystem-v24.js";
 
 const Identity = OrganismIdentity(import.meta.url);

@@ -3,10 +3,11 @@
 //  Continuance v3 • Fluctuations v3 • Outages v3 • Presence • Advantage • Proxy
 //  PURE COMPUTE. ZERO MUTATION. ZERO RANDOMNESS. ZERO I/O.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

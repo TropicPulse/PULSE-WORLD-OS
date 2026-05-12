@@ -5,7 +5,8 @@
 //  Owner-Aware (Aldwyn) • Deterministic • Drift-Resistant • Non-Blocking
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
 
 const Identity = OrganismIdentity(import.meta.url);

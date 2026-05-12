@@ -25,10 +25,11 @@
 //  • Deterministic: same input → same output
 //  • Fail-open: invalid input → safe empty results
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 const PULSE_GPU_ORCHESTRATOR_META_V24 = Identity.OrganMeta;

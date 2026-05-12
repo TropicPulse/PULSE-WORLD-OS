@@ -23,10 +23,11 @@
 //    - All envelopes are deterministic, replayable, cache/prewarm aware.
 //    - Proxy Mode is ADDON-ONLY: tap-only, no routing, no OS logic here.
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA

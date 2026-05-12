@@ -3,10 +3,11 @@
 // PULSE OS — v24 IMMORTAL++
 // PULSE‑GPU WARM PATH CACHE — GPU WARM PATH HINT ENGINE (Every Advantage)
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 export const pulseRole = Identity.pulseRole;

@@ -4,7 +4,8 @@
 //  PURE FILTER. ZERO MUTATION. ZERO RANDOMNESS. DUALBAND + ARTERY‑AWARE.
 // ============================================================================
 
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================

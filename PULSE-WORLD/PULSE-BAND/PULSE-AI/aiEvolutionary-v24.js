@@ -3,7 +3,8 @@
 //  Meta‑Observer • Drift Detector • Abstraction Engine • User‑Evolution Guide
 //  PURE META. ZERO MUTATION. ZERO SELF‑MODIFICATION.
 // ============================================================================
-import { OrganismIdentity } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+import { OrganismIdentity } from "../PULSE-X/PULSE-WORLD-MAP.js
+";
 
 const Identity = OrganismIdentity(import.meta.url);
 

@@ -4,10 +4,11 @@
 //  Binary-aware • Symbolic-aware • Dispatch-aware • Memory-aware • CI-aware
 //  Earn-aware • Game-aware • GPU-Advantage-aware
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 export const pulseRole = Identity.pulseRole;

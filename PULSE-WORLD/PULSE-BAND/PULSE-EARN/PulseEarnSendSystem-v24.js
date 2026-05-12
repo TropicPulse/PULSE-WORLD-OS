@@ -3,10 +3,11 @@
 //  Earn → Pulse → Send Conductor (v24++ IMMORTAL-INTEL)
 //  Deterministic, Governed Single-Pass, DualBand + DualHash + Presence/Advantage/Chunk
 // ============================================================================
+PULSE-WORLD-MAP.js
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+  buildPulseOrganismMap as PulseOrganismMap
+} from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
