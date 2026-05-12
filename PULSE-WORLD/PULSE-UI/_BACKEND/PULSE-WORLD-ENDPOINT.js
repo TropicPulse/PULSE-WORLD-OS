@@ -1,16 +1,40 @@
 // ============================================================================
-// PulseWorldEndpoint-v25.js
+// PulseWorldEndpoint-v25++.js
 // ============================================================================
 // CENTRAL NERVOUS ENDPOINT FOR PULSE ARCHITECTURE — v25++ IMMORTAL
 // ----------------------------------------------------------------------------
 //  • Single canonical endpoint for CNS, CheckBand, PulseNet, Transport, PulseBand
 //  • Deterministic, chunk-aware, cache-aware, prewarmable, pulse-aware, versioned
-//  • Now supports:
+//  • Supports:
 //      - path or type (safeRoute-style)
 //      - unified route registry (no giant switch)
 //      - explicit Expansion / Internet routes
 //      - v25++ chunk pipeline (string or JSON)
+//      - PulseProofSignal integration
 // ============================================================================
+import { PulseProofSignal } from "./PULSE-WORLD-SIGNAL.js";
+
+// ----------------------------------------------------------------------------
+// SIGNAL INTEGRATION
+// ----------------------------------------------------------------------------
+
+const EndpointSignal =
+  (typeof PulseProofSignal === "function" && PulseProofSignal.for?.("PulseWorldEndpoint-v25")) ||
+  (typeof PulseProofSignal === "function" && new PulseProofSignal("PulseWorldEndpoint-v25")) ||
+  null;
+
+function emitSignal(event, payload) {
+  try {
+    if (!EndpointSignal) return;
+    if (typeof EndpointSignal.emit === "function") {
+      EndpointSignal.emit(event, payload);
+    } else if (typeof EndpointSignal.dispatch === "function") {
+      EndpointSignal.dispatch(event, payload);
+    }
+  } catch {
+    // endpoint must never crash from telemetry
+  }
+}
 
 // ----------------------------------------------------------------------------
 // STATE
@@ -60,6 +84,13 @@ function recordLatency(type, durationMs, error = null) {
   const n = endpointMetrics.totalCalls;
   const prevAvg = endpointMetrics.avgLatencyMs;
   endpointMetrics.avgLatencyMs = prevAvg + (durationMs - prevAvg) / n;
+
+  emitSignal("endpoint.metrics", {
+    type,
+    durationMs,
+    error: error ? String(error) : null,
+    snapshot: { ...endpointMetrics }
+  });
 }
 
 function getBandState(bandId = "symbolic") {
@@ -73,7 +104,8 @@ function getBandState(bandId = "symbolic") {
       lastUpdatedAt: 0,
       speedBoost: 1.0,
       speedBoostReason: "neutral",
-      speedBoostExpiresAt: 0
+      speedBoostExpiresAt: 0,
+      authoritativeBand: null
     });
   }
   return bandCache.get(key);
@@ -83,18 +115,21 @@ function applySpeedBoost(bandId, boost, reason, ttlMs = 30_000) {
   const key = String(bandId || "symbolic").toLowerCase();
   const expiresAt = nowMs() + ttlMs;
 
-  speedBoosts.set(key, {
+  const entry = {
     bandId: key,
     boost: typeof boost === "number" && boost > 0 ? boost : 1.0,
     reason: reason || "unspecified",
     expiresAt
-  });
+  };
+
+  speedBoosts.set(key, entry);
 
   const state = getBandState(key);
-  const entry = speedBoosts.get(key);
   state.speedBoost = entry.boost;
   state.speedBoostReason = entry.reason;
   state.speedBoostExpiresAt = expiresAt;
+
+  emitSignal("band.speedBoost", { bandId: key, entry });
 
   return entry;
 }
@@ -157,6 +192,12 @@ function handleChunkedPayloadV25(chunkMeta) {
   }
 
   if (entry.receivedCount < entry.totalChunks) {
+    emitSignal("endpoint.chunk.partial", {
+      chunkId,
+      chunkIndex,
+      totalChunks,
+      receivedCount: entry.receivedCount
+    });
     return { complete: false };
   }
 
@@ -173,6 +214,13 @@ function handleChunkedPayloadV25(chunkMeta) {
   }
 
   chunkBuffer.delete(chunkId);
+
+  emitSignal("endpoint.chunk.complete", {
+    chunkId,
+    totalChunks: entry.totalChunks,
+    isJson: entry.isJson
+  });
+
   return { complete: true, payload: assembled };
 }
 
@@ -202,7 +250,7 @@ async function handleCheckBand(payload) {
   const boostEntry = applySpeedBoost(bandId, boost, reason, 45_000);
   state.authoritativeBand = payload;
 
-  return {
+  const result = {
     ok: true,
     type: "CheckBandResult",
     bandId,
@@ -214,6 +262,10 @@ async function handleCheckBand(payload) {
       version: 25
     }
   };
+
+  emitSignal("band.check", { bandId, stability, result });
+
+  return result;
 }
 
 async function handleVitalsSample(payload) {
@@ -241,7 +293,7 @@ async function handleVitalsSample(payload) {
     effectiveAdvantage
   };
 
-  return {
+  const result = {
     ok: true,
     type: "VitalsTuningResult",
     bandId,
@@ -253,13 +305,24 @@ async function handleVitalsSample(payload) {
       version: 25
     }
   };
+
+  emitSignal("band.vitals", {
+    bandId,
+    latencyMs,
+    stability,
+    baseAdvantage,
+    effectiveAdvantage,
+    result
+  });
+
+  return result;
 }
 
 async function handlePulseNetRoute(payload) {
   const kind = payload?.kind || payload?.channel || "unknown";
   const bandId = payload?.band || payload?.bandId || "symbolic";
 
-  return {
+  const result = {
     ok: true,
     type: "PulseNetAck",
     kind,
@@ -270,12 +333,16 @@ async function handlePulseNetRoute(payload) {
       version: 25
     }
   };
+
+  emitSignal("pulsenet.route", { bandId, kind, payload, result });
+
+  return result;
 }
 
 async function handleCheckRouterMemory(payload) {
   const logs = Array.isArray(payload?.logs) ? payload.logs : [];
 
-  return {
+  const result = {
     ok: true,
     type: "RouterMemoryHealResult",
     logsCount: logs.length,
@@ -285,12 +352,16 @@ async function handleCheckRouterMemory(payload) {
       version: 25
     }
   };
+
+  emitSignal("router.memory.check", { logsCount: logs.length, result });
+
+  return result;
 }
 
 async function handleRouteDownAlert(payload) {
   const { error, type } = payload || {};
 
-  return {
+  const result = {
     ok: true,
     type: "RouteDownAck",
     routeType: type || "unknown",
@@ -300,6 +371,10 @@ async function handleRouteDownAlert(payload) {
       version: 25
     }
   };
+
+  emitSignal("route.down", { payload, result });
+
+  return result;
 }
 
 async function handlePulseBandMetrics(payload) {
@@ -311,7 +386,7 @@ async function handlePulseBandMetrics(payload) {
 
   const boostEntry = getEffectiveSpeedBoost(bandId);
 
-  return {
+  const result = {
     ok: true,
     type: "PulseBandMetricsAck",
     bandId,
@@ -321,16 +396,18 @@ async function handlePulseBandMetrics(payload) {
       version: 25
     }
   };
+
+  emitSignal("band.metrics", { bandId, payload, result });
+
+  return result;
 }
 
 // v25++: explicit Expansion / Internet entry
 async function handleExpansionRoute(payload) {
   const channel = payload?.channel || payload?.kind || "internet";
-  const route   = payload?.route ?? payload;
+  const route = payload?.route ?? payload;
 
-  // Here is where you later plug in full Pulse‑World Expansion / Net / World.
-  // For now, echo back with rich meta so you can see the full shape.
-  return {
+  const result = {
     ok: true,
     type: "ExpansionAck",
     channel,
@@ -340,6 +417,10 @@ async function handleExpansionRoute(payload) {
       version: 25
     }
   };
+
+  emitSignal("expansion.route", { channel, route, result });
+
+  return result;
 }
 
 // ----------------------------------------------------------------------------
@@ -390,6 +471,8 @@ export function prewarmPulseWorldEndpoint() {
   for (const d of fakeDurations) {
     recordLatency("prewarm", d, null);
   }
+
+  emitSignal("endpoint.prewarm", { bands: defaultBands });
 }
 
 // ----------------------------------------------------------------------------
@@ -412,6 +495,8 @@ export const PulseWorldEndpoint = Object.freeze({
       "%c[PulseWorldEndpoint] %chandle() %c→ %s",
       C_ID, C_INFO, C_OK, rawType
     );
+
+    emitSignal("endpoint.call", { type: rawType, route });
 
     try {
       try {
@@ -437,7 +522,7 @@ export const PulseWorldEndpoint = Object.freeze({
             C_ID, C_WARN, C_INFO
           );
 
-          return {
+          const partial = {
             ok: true,
             type: "ChunkInProgress",
             chunkId: payload.chunkId,
@@ -446,6 +531,9 @@ export const PulseWorldEndpoint = Object.freeze({
               version: 25
             }
           };
+
+          emitSignal("endpoint.chunk.inProgress", partial);
+          return partial;
         }
 
         console.log("%c[PulseWorldEndpoint] %cchunk complete", C_ID, C_OK);
@@ -468,7 +556,7 @@ export const PulseWorldEndpoint = Object.freeze({
         const duration = nowMs() - start;
         recordLatency(rawType, duration, null);
 
-        return {
+        const unknown = {
           ok: false,
           type: "UnknownRouteType",
           routeType: rawType,
@@ -477,6 +565,9 @@ export const PulseWorldEndpoint = Object.freeze({
             version: 25
           }
         };
+
+        emitSignal("endpoint.unknownRoute", unknown);
+        return unknown;
       }
 
       const result = await handler(payload, route);
@@ -488,6 +579,8 @@ export const PulseWorldEndpoint = Object.freeze({
       );
 
       recordLatency(rawType, duration, null);
+      emitSignal("endpoint.result", { type: rawType, durationMs: duration, result });
+
       return result;
 
     } catch (err) {
@@ -501,7 +594,7 @@ export const PulseWorldEndpoint = Object.freeze({
       const duration = nowMs() - start;
       recordLatency(rawType, duration, error);
 
-      return {
+      const failure = {
         ok: false,
         type: "PulseWorldEndpointError",
         message: String(err),
@@ -510,12 +603,18 @@ export const PulseWorldEndpoint = Object.freeze({
           version: 25
         }
       };
+
+      emitSignal("endpoint.error", { type: rawType, durationMs: duration, error: String(err) });
+
+      return failure;
     }
   },
 
   getMetrics() {
     console.log("%c[PulseWorldEndpoint] %cgetMetrics()", C_ID, C_INFO);
-    return safeJsonClone(endpointMetrics);
+    const snapshot = safeJsonClone(endpointMetrics);
+    emitSignal("endpoint.metrics.read", snapshot);
+    return snapshot;
   },
 
   getBandState(bandId) {
@@ -523,7 +622,9 @@ export const PulseWorldEndpoint = Object.freeze({
       "%c[PulseWorldEndpoint] %cgetBandState() %c→ %s",
       C_ID, C_INFO, C_OK, bandId
     );
-    return safeJsonClone(getBandState(bandId));
+    const snapshot = safeJsonClone(getBandState(bandId));
+    emitSignal("band.state.read", { bandId, snapshot });
+    return snapshot;
   },
 
   getSpeedBoost(bandId) {
@@ -531,7 +632,9 @@ export const PulseWorldEndpoint = Object.freeze({
       "%c[PulseWorldEndpoint] %cgetSpeedBoost() %c→ %s",
       C_ID, C_INFO, C_OK, bandId
     );
-    return safeJsonClone(getEffectiveSpeedBoost(bandId));
+    const snapshot = safeJsonClone(getEffectiveSpeedBoost(bandId));
+    emitSignal("band.speedBoost.read", { bandId, snapshot });
+    return snapshot;
   }
 });
 
