@@ -175,7 +175,7 @@ import getBoundariesForPersona from "../PULSE-AI/aiBoundaries-v24.js";
 import getPermissionsForPersona from "../PULSE-AI/aiPermissions-v24.js";
 import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v24.js";
 
-const C_ID   = "color:#00E5FF; font-weight:bold; font-family:monospace;"; // Cyan
+const C_ID   = "color:#FFCA28; font-weight:bold; font-family:monospace;"; // Cyan
 const C_OK   = "color:#00FF9C; font-family:monospace;";                   // Green
 const C_INFO = "color:#E8F8FF; font-family:monospace;";                   // White
 const C_WARN = "color:#FFE066; font-family:monospace;";                   // Yellow

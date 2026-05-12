@@ -757,7 +757,7 @@ if (channel) {
       console.log(
         "%c[BRIDGE::INBOUND] %c%s %c→",
         "color:#7C4DFF; font-weight:bold; font-family:monospace;",
-        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#EC407A; font-weight:bold; font-family:monospace;",
         type,
         "color:#E8F8FF; font-family:monospace;"
       );
@@ -765,7 +765,7 @@ if (channel) {
       if (payload !== undefined) {
         console.log(
           "%c↳ payload:",
-          "color:#00E5FF; font-family:monospace; font-weight:bold;"
+          "color:#EC407A; font-family:monospace; font-weight:bold;"
         );
         console.log(
           "%c" + JSON.stringify(payload, null, 2),

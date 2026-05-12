@@ -5,7 +5,7 @@
 // ============================================================================
 
 // IMMORTAL COLOR CONSTANTS
-const C_ID   = "color:#00E5FF; font-weight:bold; font-family:monospace;";
+const C_ID   = "color:#26C6DA; font-weight:bold; font-family:monospace;";
 const C_OK   = "color:#00FF9C; font-family:monospace;";
 const C_INFO = "color:#E8F8FF; font-family:monospace;";
 const C_WARN = "color:#FFE066; font-family:monospace;";

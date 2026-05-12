@@ -18,7 +18,7 @@
 
     console.log(
       "%c[PulseProofLogger v24-IMMORTAL-EVOLVABLE] %cv26 next-page warm complete %c→ %s",
-      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#FF7043; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;",
       "color:#E8F8FF; font-family:monospace;");
 

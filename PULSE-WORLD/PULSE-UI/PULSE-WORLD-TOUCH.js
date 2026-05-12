@@ -1221,6 +1221,9 @@ function applyGateDecision(gateDecision, skin) {
     const page =
       location.pathname.split("/").pop().replace(".html", "") || "index";
 
+    // ⭐ Determine prefix: index = "./", all other pages = "../"
+    const prefix = page === "index" ? "./" : "../";
+
     // ============================================================
     // 1 — IGNITE TOUCH (SYNC ONLY)
     // ============================================================
@@ -1238,43 +1241,39 @@ function applyGateDecision(gateDecision, skin) {
     // 2 — ALWAYS PRELOAD + PREWARM PORTAL (THE CORTEX)
     // ============================================================
     try {
-      // ⭐ Preload Portal JS (module)
+      // ⭐ Preload Portal JS (module) — now depth‑correct
       const portalScript = document.createElement("link");
       portalScript.rel = "modulepreload";
-      portalScript.href = "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.js";
+      portalScript.href = `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.js`;
       document.head.appendChild(portalScript);
-// ⭐ Preload THIS PAGE HTML
+
+      // ⭐ Preload THIS PAGE HTML
       touch.preloader?.preloadPage?.(page);
-      
+
       // ⭐ Preload THIS PAGE chunks
       touch.chunker?.preloadChunksForPage?.(page);
-      
+
       // ⭐ Light advantage warm
       touch.advantage?.prewarmLight?.();
-      
+
       appendTouchTimeline("touch_page_warm", { page });
       console.log(
         "%c[PulseTouch::Warm] %cv25 page warm complete → %s",
-        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#90CAF9; font-weight:bold; font-family:monospace;",
         "color:#00FF9C; font-family:monospace;",
         page
       );
-      // ⭐ Prewarm Portal chunks (PulseChunks)
+
+      // ⭐ Prewarm Portal chunks — now depth‑correct
       window.PulseChunks?.prewarm?.([
-        "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.js",
-        "./_CREATION_BARRIER/PULSE-INDEX.js",
-        "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.chunk.js",
-        "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.assets.json"
+        `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-INDEX.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.chunk.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.assets.json`
       ]);
 
-      // ⭐ Get the actual path of the current HTML file
-      const path = location.pathname.startsWith("/")
-        ? location.pathname.slice(1)
-        : location.pathname;
-
-      // ⭐ Scan the REAL file path
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${path}`);
-
+      // ⭐ Scan the REAL file path (absolute)
+      window.__PULSE_SCAN_ROUTE_IMAGES__?.(location.pathname);
 
       // ⭐ Log into Touch timeline
       appendTouchTimeline("portal_prewarm", {
@@ -1284,7 +1283,7 @@ function applyGateDecision(gateDecision, skin) {
 
       console.log(
         "%c[PulseTouch::PortalPrewarm] %cv25 Portal prewarmed",
-        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#90CAF9; font-weight:bold; font-family:monospace;",
         "color:#00FF9C; font-family:monospace;"
       );
     } catch (err) {
@@ -1295,15 +1294,15 @@ function applyGateDecision(gateDecision, skin) {
     // 4 — PURE SYNC IGNITION (NO ASYNC, NO LOOPS)
     // ============================================================
     console.log(
-        "%c[PulseTouch::ignition] %cportal-first warm.",
-        "color:#00E5FF; font-weight:bold; font-family:monospace;",
-        "color:#00FF9C; font-family:monospace;");
+      "%c[PulseTouch::ignition] %cportal-first warm.",
+      "color:#90CAF9; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;"
+    );
 
   } catch (err) {
     console.error("PulseTouch auto‑ignite failed", err);
   }
 })();
-
 
 
 // ============================================================

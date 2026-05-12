@@ -320,7 +320,7 @@ export function createPulseRouteMemory({
 
     console.log(
       `%c[RouteMemory v24] %c${stage} %c(seq:${seq})`,
-      "color:#00FF9C; font-weight:bold; font-family:monospace;",
+      "color:#5C6BC0; font-weight:bold; font-family:monospace;",
       `color:${color}; font-weight:bold; font-family:monospace;`,
       "color:#E8F8FF; font-family:monospace;"
     );
@@ -329,11 +329,11 @@ export function createPulseRouteMemory({
     if (Object.keys(details).length > 0) {
       console.log(
         "%c↳ details:",
-        "color:#00E5FF; font-family:monospace; font-weight:bold;"
+        "color:#5C6BC0; font-family:monospace; font-weight:bold;"
       );
       console.log(
         "%c" + JSON.stringify(details, null, 2),
-        "color:#E8F8FF; font-family:monospace;"
+        "color:#5C6BC0; font-family:monospace;"
       );
     }
   } catch {}

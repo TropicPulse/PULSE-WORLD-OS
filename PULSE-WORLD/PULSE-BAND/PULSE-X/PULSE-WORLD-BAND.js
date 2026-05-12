@@ -665,7 +665,7 @@ export function getCheckBandGlobalSignal() {
 //  • v24++: Touch hint passthrough, advantage score, drift flags, cache
 // ============================================================================
 // IMMORTAL COLOR CONSTANTS
-const C_ID   = "color:#00E5FF; font-weight:bold; font-family:monospace;";
+const C_ID   = "color:#66BB6A; font-weight:bold; font-family:monospace;";
 const C_OK   = "color:#00FF9C; font-family:monospace;";
 const C_INFO = "color:#E8F8FF; font-family:monospace;";
 const C_WARN = "color:#FFE066; font-family:monospace;";
@@ -983,13 +983,13 @@ if (typeof window !== "undefined") {
 
     console.log(
       "%c[CheckBand] %cPulseBand engine injected into window",
-      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#66BB6A; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;"
     );
   } catch (err) {
     console.error(
       "%c[CheckBand] %cFAILED TO INJECT PulseBand %c→ %s",
-      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#66BB6A; font-weight:bold; font-family:monospace;",
       "color:#FF3B3B; font-weight:bold; font-family:monospace;",
       "color:#FFE066; font-family:monospace;",
       String(err)
