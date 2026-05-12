@@ -48,7 +48,7 @@ import {
   PulseProofBridgeRouteMemory as PulseUIRouteMemory,
   PulseProofBridgeWorldAdminPanel as createPulseWorldAdminPanel,
   PulseProofBridgeAdminDiagnostics as createAdminDiagnosticsOrgan} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-  import { firebase } from "../_BACKEND/PULSE-WORLD-SHADOW.js"
+  import { firebase, setdoc, getdoc, Doc as doc } from "../_BACKEND/PULSE-WORLD-SHADOW.js"
 // ============================================================
 //  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
 // ============================================================
@@ -974,8 +974,8 @@ function savePageRoutesDaily(page, routes) {
     // Save globally
     window.PulsePageRouteSnapshot = snap;
 
-    // Save to Firebase (sync wrapper)
-    firebase.setSync("pulse_page_routes_v26", snap);
+   setdoc(doc(db, "pulse_page_routes_v26", "daily"), snap);
+
 
   } catch (err) {
     console.error("[PortalRouteSave] FAILED →", err);

@@ -232,3 +232,6 @@ console.log(
     );
 
   export const firebase = db;
+  export const setdoc  = setDoc;
+  export const getdoc  = getDoc;
+  export const Doc   = doc;
