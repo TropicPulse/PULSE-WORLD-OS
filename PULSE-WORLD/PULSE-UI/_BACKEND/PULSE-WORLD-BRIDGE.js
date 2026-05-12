@@ -62,6 +62,7 @@ export { PulseProofBridge };
 // ============================================================================
 //  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
 // ============================================================================
+import { firestore as db } from "../_BACKEND/PULSE-WORLD-SHADOW.js"
 import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons} from "../_MONITOR/PulseProofLogger-v24.js";
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PulseProofMonitor-v24.js";
 
@@ -87,13 +88,6 @@ const g =
     : typeof window !== "undefined"
     ? window
     : {};
-
-const db =
-  g.db ||
-  (typeof global !== "undefined" && global.db) ||
-  (typeof globalThis !== "undefined" && globalThis.db) ||
-  (typeof window !== "undefined" && window.db) ||
-  null;
 
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT — IMMORTAL, PORTAL-AWARE, ADV++

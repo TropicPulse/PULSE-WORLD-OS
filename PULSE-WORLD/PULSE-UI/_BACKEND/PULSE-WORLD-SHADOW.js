@@ -242,3 +242,4 @@ export const Collection = collection;
 export const Storage = storage;
 export const StorageRef = storageRef;
 export const UploadString = uploadString;
+
