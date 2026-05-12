@@ -1243,7 +1243,22 @@ function applyGateDecision(gateDecision, skin) {
       portalScript.rel = "modulepreload";
       portalScript.href = "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.js";
       document.head.appendChild(portalScript);
-
+// ⭐ Preload THIS PAGE HTML
+      touch.preloader?.preloadPage?.(page);
+      
+      // ⭐ Preload THIS PAGE chunks
+      touch.chunker?.preloadChunksForPage?.(page);
+      
+      // ⭐ Light advantage warm
+      touch.advantage?.prewarmLight?.();
+      
+      appendTouchTimeline("touch_page_warm", { page });
+      console.log(
+        "%c[PulseTouch::Warm] %cv25 page warm complete → %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#00FF9C; font-family:monospace;",
+        page
+      );
       // ⭐ Prewarm Portal chunks (PulseChunks)
       window.PulseChunks?.prewarm?.([
         "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.js",
@@ -1254,7 +1269,7 @@ function applyGateDecision(gateDecision, skin) {
 
       // ⭐ Prewarm Portal images (Touch’s route scanner)
       window.__PULSE_SCAN_ROUTE_IMAGES__?.(
-        "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.html",
+        page,
         "./index.html"
       );
 
@@ -1271,34 +1286,6 @@ function applyGateDecision(gateDecision, skin) {
       );
     } catch (err) {
       console.error("[PulseTouch::PortalPrewarm] FAILED →", err);
-    }
-
-    // ============================================================
-    // 3 — ONLY WARM CURRENT PAGE ON FIRST CONTACT
-    // ============================================================
-    try {
-      // ⭐ Preload THIS PAGE HTML
-      touch.preloader?.preloadPage?.(page);
-
-      // ⭐ Preload THIS PAGE images
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
-
-      // ⭐ Preload THIS PAGE chunks
-      touch.chunker?.preloadChunksForPage?.(page);
-
-      // ⭐ Light advantage warm
-      touch.advantage?.prewarmLight?.();
-
-      appendTouchTimeline("touch_page_warm", { page });
-
-      console.log(
-        "%c[PulseTouch::Warm] %cv25 page warm complete → %s",
-        "color:#00E5FF; font-weight:bold; font-family:monospace;",
-        "color:#00FF9C; font-family:monospace;",
-        page
-      );
-    } catch (err) {
-      console.error("[PulseTouch::Warm] FAILED →", err);
     }
 
     // ============================================================
