@@ -32,6 +32,16 @@ let routes = null;
 let schema = null;
 let fetchAPI = null;
 
+const C_ID   = "color:#26A69A; font-weight:bold; font-family:monospace;"; // Cyan
+const C_OK   = "color:#00FF9C; font-family:monospace;";                   // Neon Green
+const C_INFO = "color:#E8F8FF; font-family:monospace;";                   // White
+const C_WARN = "color:#FFE066; font-family:monospace;";                   // Yellow
+const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;"; // Red
+
+console.log(
+      "%c[PULSE-WORLD-MAP] %c→ %s",
+      C_ID, C_INFO, C_OK, "Initialized PULSE-WORLD-MAP"
+    );
 // -----------------------------------------------------------------------------
 // Version / roles / colors / icons (metadata only, no behavior)
 // -----------------------------------------------------------------------------
