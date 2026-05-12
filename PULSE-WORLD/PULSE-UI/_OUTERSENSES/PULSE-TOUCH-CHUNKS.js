@@ -1384,18 +1384,86 @@ console.log(
 );
 
 try {
+  // ⭐ MIGRATE PulseBand + PulseChunks INTO LOCALSTORAGE
+  function persist(name, value) {
+    try {
+      localStorage.setItem(name + "_v25", JSON.stringify(value));
+    } catch {}
+  }
+
+  function load(name) {
+    try {
+      const raw = localStorage.getItem(name + "_v25");
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function migrate(name, sourceA, sourceB) {
+    let val = sourceA[name] || sourceB[name] || load(name) || {};
+    persist(name, val);
+    sourceA[name] = val;
+    sourceB[name] = val;
+    return val;
+  }
+
   if (typeof global !== "undefined") {
-    global.PulseBand =
-      typeof window !== "undefined" ? window.PulseBand : global.PulseBand;
-    global.PulseChunks =
-      typeof window !== "undefined" ? window.PulseChunks : global.PulseChunks;
+    global.PulseBand = migrate("PulseBand", window, global);
+    global.PulseChunks = migrate("PulseChunks", window, global);
   }
+
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseBand =
-      typeof window !== "undefined" ? window.PulseBand : globalThis.PulseBand;
-    globalThis.PulseChunks =
-      typeof window !== "undefined"
-        ? window.PulseChunks
-        : globalThis.PulseChunks;
+    globalThis.PulseBand = migrate("PulseBand", window, globalThis);
+    globalThis.PulseChunks = migrate("PulseChunks", window, globalThis);
   }
+
 } catch {}
+
+
+window.PulseChunks.signal = function (evt) {
+  try {
+    // ⭐ ALWAYS WRITE TO LOCALSTORAGE FIRST
+    localStorage.setItem(
+      "PulseChunks_v25",
+      JSON.stringify(window.PulseChunks)
+    );
+
+    // ⭐ ALWAYS HYDRATE FROM LOCALSTORAGE (SELF-HEAL)
+    const raw = localStorage.getItem("PulseChunks_v25");
+    if (raw) Object.assign(window.PulseChunks, JSON.parse(raw));
+
+    // ⭐ TOUCH BOOTSTRAP
+    if (evt.type === "touch_bootstrap") {
+      this.prewarm?.();
+      this.ready = true;
+
+      // ⭐ SEND TO DETECTOR (NOT TOUCH DIRECTLY)
+      window.PulseDetector?.onChunksReady?.({
+        type: "chunks_ready",
+        page: evt.page,
+        prefix: evt.prefix,
+        chunks: window.PulseChunks
+      });
+
+      return;
+    }
+
+    // ⭐ TOUCH PREWARM
+    if (evt.type === "touch_prewarm") {
+      this.deepwarm?.(evt);
+
+      window.PulseDetector?.onChunksReady?.({
+        type: "chunks_prewarm_ready",
+        page: evt.page,
+        prefix: evt.prefix,
+        chunks: window.PulseChunks
+      });
+
+      return;
+    }
+
+  } catch (err) {
+    console.error("[PulseChunks] signal handler failed →", err);
+  }
+};
