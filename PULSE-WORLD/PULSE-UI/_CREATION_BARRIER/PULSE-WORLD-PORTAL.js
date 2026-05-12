@@ -1664,46 +1664,59 @@ console.log(
 export default PulsePortalAPI;
 
 // ============================================================================
-// GLOBAL MIRRORS — OPTIONAL, FOR NODE/SSR/TOOLS
+// GLOBAL MIRRORS — UNIVERSAL (Browser + Node + Workers)
 // ============================================================================
 try {
-  if (typeof global !== "undefined") {
-    global.PulseBand =
-      typeof window !== "undefined" ? window.PulseBand : global.PulseBand || null;
+  const G = globalThis; // universal global root
 
-    global.PulseBandStart =
-      typeof window !== "undefined"
-        ? window.PulseBandStart
-        : global.PulseBandStart || null;
+  // Mirror PulseBand
+  G.PulseBand =
+    typeof window !== "undefined"
+      ? window.PulseBand
+      : G.PulseBand || null;
 
-    global.VitalsMonitor =
-      typeof window !== "undefined"
-        ? window.VitalsMonitor
-        : global.VitalsMonitor || null;
+  // Mirror Firebase (frontend client SDK)
+  G.Firebase = typeof db !== "undefined" ? db : G.Firebase || null;
 
-    global.PulseLogger =
-      typeof window !== "undefined"
-        ? window.PulseLogger
-        : global.PulseLogger || null;
+  // Mirror PulseBandStart
+  G.PulseBandStart =
+    typeof window !== "undefined"
+      ? window.PulseBandStart
+      : G.PulseBandStart || null;
 
-    global.PulseUIFlow =
-      typeof window !== "undefined"
-        ? window.PulseUIFlow
-        : global.PulseUIFlow || null;
+  // Mirror VitalsMonitor
+  G.VitalsMonitor =
+    typeof window !== "undefined"
+      ? window.VitalsMonitor
+      : G.VitalsMonitor || null;
 
-    global.PulseUIErrors =
-      typeof window !== "undefined"
-        ? window.PulseUIErrors
-        : global.PulseUIErrors || null;
+  // Mirror PulseLogger
+  G.PulseLogger =
+    typeof window !== "undefined"
+      ? window.PulseLogger
+      : G.PulseLogger || null;
 
-    global.PulsePortalAPI = PulsePortalAPI;
+  // Mirror UIFlow
+  G.PulseUIFlow =
+    typeof window !== "undefined"
+      ? window.PulseUIFlow
+      : G.PulseUIFlow || null;
 
-    console.log(
-      "%c[PulsePortal::Global] %cmirrors initialized",
-      "color:#7E57C2; font-weight:bold; font-family:monospace;",
-      "color:#00FF9C; font-family:monospace;"
-    );
-  }
+  // Mirror UIErrors
+  G.PulseUIErrors =
+    typeof window !== "undefined"
+      ? window.PulseUIErrors
+      : G.PulseUIErrors || null;
+
+  // Mirror Portal API
+  G.PulsePortalAPI = PulsePortalAPI;
+
+  console.log(
+    "%c[PulsePortal::Global] %cv26 universal mirrors initialized",
+    "color:#7E57C2; font-weight:bold; font-family:monospace;",
+    "color:#00FF9C; font-family:monospace;"
+  );
+
 } catch (err) {
   console.error(
     "%c[PulsePortal::Global] %cFAILED %c→ %s",
@@ -1713,4 +1726,3 @@ try {
     String(err)
   );
 }
-global.Firebase = db;
