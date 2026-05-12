@@ -284,7 +284,23 @@ const PULSE_GLOBAL_SKIP_KEYS = new Set([
   "Int8Array",
   "Int16Array",
   "Int32Array",
-  "Float32Array"
+  "Float32Array",
+  // 🔥 minimal wallet/provider safety (same casing style)
+  "ethereum",
+  "web3",
+  "__metamask",
+  "__mmwallet",
+  "__phantom",
+  "__coinbase",
+  "__walletconnect",
+  "__frame",
+  "__rabby",
+  "__keplr",
+  "__solflare",
+  "__terra",
+  "__okx",
+  "__binance",
+  "__bitget"
 ]);
 
 // Keys we explicitly care about for the signal system
