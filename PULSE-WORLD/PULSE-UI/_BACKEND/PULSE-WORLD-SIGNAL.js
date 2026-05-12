@@ -910,12 +910,6 @@ const PulseSignal = {
   }
 })();
 
-// Expose in universal global space
-g.PulseSignal = g.PulseSignal || PulseSignal;
-if (typeof window !== "undefined") {
-  window.PulseSignal = g.PulseSignal;
-}
-
 // ============================================================================
 //  PUBLIC API — PulseProofSignal Engine (FRONTEND-SAFE IMMORTAL++)
 // ============================================================================
@@ -968,9 +962,55 @@ export const SignalPort = Object.freeze({
   }
 });
 
-// Attach to global
-g.PulseProofSignal = g.PulseProofSignal || PulseProofSignal;
-g.SignalPort = g.SignalPort || SignalPort;
+// ============================================================================
+// PULSE SIGNAL IMMORTAL++ v27 — LocalStorage-backed global attach
+// ============================================================================
+
+(function attachPulseSignals() {
+  const g = globalThis;
+
+  // -------------------------------
+  // 1. RESTORE FROM LOCALSTORAGE
+  // -------------------------------
+  let storedPulseSignal = null;
+  let storedProofSignal = null;
+  let storedSignalPort  = null;
+
+  try {
+    storedPulseSignal = JSON.parse(localStorage.getItem("PulseSignal_v27"));
+  } catch {}
+  try {
+    storedProofSignal = JSON.parse(localStorage.getItem("PulseProofSignal_v27"));
+  } catch {}
+  try {
+    storedSignalPort = JSON.parse(localStorage.getItem("PulseSignalPort_v27"));
+  } catch {}
+
+  // -------------------------------
+  // 2. FALLBACK TO LIVE ENGINES
+  // -------------------------------
+  g.PulseSignal      = storedPulseSignal || g.PulseSignal      || PulseSignal;
+  g.PulseProofSignal = storedProofSignal || g.PulseProofSignal || PulseProofSignal;
+  g.SignalPort       = storedSignalPort  || g.SignalPort       || SignalPort;
+
+  // Mirror to window (browser only)
+  if (typeof window !== "undefined") {
+    window.PulseSignal      = g.PulseSignal;
+    window.PulseProofSignal = g.PulseProofSignal;
+    window.SignalPort       = g.SignalPort;
+  }
+
+  // -------------------------------
+  // 3. PERSIST BACK TO LOCALSTORAGE
+  // -------------------------------
+  try {
+    localStorage.setItem("PulseSignal_v27", JSON.stringify(g.PulseSignal));
+    localStorage.setItem("PulseProofSignal_v27", JSON.stringify(g.PulseProofSignal));
+    localStorage.setItem("PulseSignalPort_v27", JSON.stringify(g.SignalPort));
+  } catch (err) {
+    console.warn("[PulseSignal IMMORTAL++] Failed to persist:", err);
+  }
+})();
 
 // ============================================================================
 //  DUAL-MODE EXPORTS — FRONTEND-SAFE
