@@ -247,3 +247,61 @@ console.log(
   "%c[PulseFirebaseShadow v25] %cSHADOW organ %c→ %s",
   C_ID, C_INFO, C_OK, "Ready (LOCALSTORAGE MAP, NO SDK, DELTA-SYNCED)"
 );
+// ============================================================================
+// FIREBASE SHADOW COMPATIBILITY LAYER (v25++)
+// Makes old pages using Firebase-style calls still work.
+// ============================================================================
+
+// Fake "firestore" root object
+export const firestore = {
+  _type: "shadow-firestore"
+};
+
+// Fake Doc() → returns a simple path descriptor
+export function Doc(_firestore, collection, id) {
+  return { collection, id };
+}
+
+// Fake Collection() → returns collection name
+export function Collection(_firestore, collection) {
+  return collection;
+}
+
+// Fake GetDoc() → reads from localStorage MAP
+export async function GetDoc(docRef) {
+  const { collection, id } = docRef;
+  const data = getDocument(collection, id);
+  return {
+    exists: () => !!data,
+    data: () => data
+  };
+}
+
+// Fake SetDoc() → writes to localStorage MAP + delta
+export async function SetDoc(docRef, value) {
+  const { collection, id } = docRef;
+  setDocument(collection, id, value);
+}
+
+// Fake UpdateDoc() → merges into existing doc
+export async function UpdateDoc(docRef, value) {
+  const { collection, id } = docRef;
+  const existing = getDocument(collection, id) || {};
+  setDocument(collection, id, { ...existing, ...value });
+}
+
+// ============================================================================
+// STORAGE SHADOW (FS MAP)
+// ============================================================================
+
+export const Storage = {
+  _type: "shadow-storage"
+};
+
+export function StorageRef(_storage, path) {
+  return { path };
+}
+
+export async function UploadString(ref, content) {
+  writeFsFile(ref.path, content);
+}
