@@ -121,20 +121,33 @@ const PulseSignalState = {
 
 function startPulseSignalListener() {
   try {
-    // Poll merged comments (CSS‑merged)
     setInterval(() => {
-      const comments = PulseProofSignal.comments(1);
-      if (!comments || !comments.length) return;
-      const last = comments[0];
-      PulseSignalState.updateFromSignal(last);
+
+      // ⭐ GET the correct localStorage signals (v27)
+      const pulseRaw = localStorage.getItem("PulseSignal_v27");
+      const proofRaw = localStorage.getItem("PulseProofSignal_v27");
+      const portRaw  = localStorage.getItem("PulseSignalPort_v27");
+
+      // Pick whichever exists (your organism decides)
+      const state =
+        (pulseRaw && JSON.parse(pulseRaw)) ||
+        (proofRaw && JSON.parse(proofRaw)) ||
+        (portRaw && JSON.parse(portRaw));
+
+      if (!state) return;
+
+      // Update Understanding
+      PulseSignalState.updateFromSignal(state);
+
     }, 50);
+
   } catch (err) {
     console.error("[Understanding v25] Signal listener failed:", err);
   }
 }
 
-// Start listener immediately
 startPulseSignalListener();
+
 
 // ============================================================================
 //  ENVIRONMENT SNAPSHOT
