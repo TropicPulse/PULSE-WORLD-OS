@@ -32,8 +32,8 @@ import {
   safeRoute as safeRouteLegacy,
   PulseProofBridgeLogger as PulseLogger
 } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-import PulseUIErrors from "./PULSE-PROOF-ERRORS.js";
-import { getUIFlowSnapshot } from "./PULSE-PROOF-FLOW.js";
+import PulseUIErrors from "../_MONITOR/PULSE-PROOF-ERRORS.js";
+import { getUIFlowSnapshot } from "../_MONITOR/PULSE-PROOF-FLOW.js";
 import PulsePageScanner from "./PulseUIPageScanner-v24.js";
 import createPulseRouteMemory from "./PulseUIRouteMemory-v24.js";
 
