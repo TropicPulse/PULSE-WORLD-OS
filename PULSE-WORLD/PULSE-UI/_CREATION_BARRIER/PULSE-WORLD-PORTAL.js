@@ -876,7 +876,7 @@ window.addEventListener("load", () => {
     const next = window.__PULSE_TOUCH__?.router?.predictNext?.(page);
 
     if (next) {
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
+      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`../${next}.html`);
 
       console.log(
         "%c[PulsePortal::Prewarm] %cnext-page assets prewarmed %c→ %s",
