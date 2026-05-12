@@ -57,8 +57,8 @@ import { PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeMonitor as 
 //  GLOBAL MAPS
 // ============================================================================
 
-import { PulseIQMap } from "./PulseWorldIQMap-v24.js";
-import { PulseIntentMap } from "./PulseWorldIntentMap-v24.js";
+import { PulseIQMap } from "./PULSE-WORLD-IQ.js";
+import { PulseIntentMap } from "./PULSE-WORLD-INTENT.js";
 
 // ============================================================================
 //  AI ORGANISM (v16 IMMORTAL-INTEL)

@@ -46,7 +46,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS — LAW: BRAIN MAY IMPORT ONLY PULSEIQ + ORGANISM + EVOLUTION
 // ============================================================================
-import { PulseIQMap } from "../PULSE-X/PulseWorldIQMap-v24.js";
+import { PulseIQMap } from "../PULSE-X/PULSE-WORLD-IQ.js";
 import { PulseOrganismMap } from "../PULSE-X/PULSE-WORLD-MAP.js
 ";
 import { PulseOSEvolution } from "./PulseOSBrainEvolution-v24.js";
