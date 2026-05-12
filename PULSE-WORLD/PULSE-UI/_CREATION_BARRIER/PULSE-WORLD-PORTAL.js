@@ -52,8 +52,14 @@ import {
 // ============================================================
 //  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
 // ============================================================
-let PulseSkinReflex = null;
 
+console.log(
+  "%c[PulsePortal v24‑IMMORTAL‑EVO+++] %cPortal membrane online",
+  "color:#26A69A; font-weight:bold; font-family:monospace;",   // Portal Cyan
+  "color:#00FF9C; font-family:monospace;"                      // Monitor Neon Green
+);
+
+let PulseSkinReflex = null;
 try {
   PulseSkinReflex = PulseProofBridgeReflex;
 
@@ -108,11 +114,6 @@ const db =
   (typeof window !== "undefined" && window.db) ||
   null;
 
-console.log(
-  "%c[PulsePortal v24‑IMMORTAL‑EVO+++] %cPortal membrane online",
-  "color:#26A69A; font-weight:bold; font-family:monospace;",   // Portal Cyan
-  "color:#00FF9C; font-family:monospace;"                      // Monitor Neon Green
-);
 
 // ============================================================================
 // BROWSER DETECTION — HARD MEMBRANE
