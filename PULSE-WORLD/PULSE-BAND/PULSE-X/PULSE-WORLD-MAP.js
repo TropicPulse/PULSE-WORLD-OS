@@ -45,15 +45,35 @@ console.log(
       "%c[PULSE-WORLD-MAP] %c→ %s",
       C_ID, C_INFO, C_OK, "Initialized PULSE-WORLD-MAP"
     );
-// -----------------------------------------------------------------------------
-// Version / roles / colors / icons (metadata only, no behavior)
-// -----------------------------------------------------------------------------
+    
+// ============================================================================
+// DELTA SYNC ENGINE — Only send changes, not full maps
+// ============================================================================
+function applyDelta(collection, newData) {
+  const key = `firebase_map_${collection}`;
+  const raw = localStorage.getItem(key);
+  const oldData = raw ? JSON.parse(raw) : [];
 
-// ============================================================================
-//  DETERMINISTIC VERSION MAP
-//  - All real subsystems are v25
-//  - Legacy is fallback ONLY
-// ============================================================================
+  const delta = [];
+  const index = new Map(oldData.map(x => [x.id, x]));
+
+  for (const doc of newData) {
+    const old = index.get(doc.id);
+    if (!old || JSON.stringify(old) !== JSON.stringify(doc)) {
+      delta.push(doc);
+    }
+  }
+
+  if (delta.length > 0) {
+    localStorage.setItem(key, JSON.stringify(newData));
+
+    window.dispatchEvent(new CustomEvent("firebase_delta_out", {
+      detail: { collection, delta }
+    }));
+  }
+
+  return delta;
+}
 
 // ============================================================================
 // PREWARM LAYER — Aligns all adapters before organism boot
@@ -77,84 +97,125 @@ export function prewarmLayer() {
     schema.getSchema("prewarm");
 
     fetchAPI = getFetchAPI({ trace: false, routes });
+
   } catch (err) {
     console.error("[OrganismMap:Prewarm] Failed:", err);
   }
 }
 
+
 // ============================================================================
 // DATABASE API — Firestore/SQL/KV Compatible Adapter
 // ============================================================================
 export function getDb({ trace = false } = {}) {
-  const log = (msg, data) => trace && console.log(`[aiDeps:db] ${msg}`, data);
+  const log = (msg, data) => trace && console.log(`[OrganismMap:db] ${msg}`, data);
+
+  function read(collection) {
+    const raw = localStorage.getItem(`firebase_map_${collection}`);
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch { return []; }
+  }
+
+  function write(collection, arr) {
+    const delta = applyDelta(collection, arr);
+    return delta;
+  }
 
   return Object.freeze({
-    async getCollection(collection, options = {}) {
-      log("getCollection", { collection, options });
-      return [];
+    async getCollection(collection) {
+      log("getCollection", { collection });
+      return read(collection);
     },
 
     async getDocument(collection, id) {
       log("getDocument", { collection, id });
-      return null;
+      return read(collection).find(x => x.id === id) || null;
+    },
+
+    async setDocument(collection, id, value) {
+      log("setDocument", { collection, id, value });
+
+      const arr = read(collection);
+      const idx = arr.findIndex(x => x.id === id);
+
+      if (idx >= 0) arr[idx] = value;
+      else arr.push(value);
+
+      return write(collection, arr);
+    },
+
+    async deleteDocument(collection, id) {
+      log("deleteDocument", { collection, id });
+
+      const arr = read(collection).filter(x => x.id !== id);
+      return write(collection, arr);
     }
   });
 }
+
 
 // ============================================================================
 // FILESYSTEM API — Required by aiEvolution
 // ============================================================================
 export function getFsAPI({ trace = false } = {}) {
-  const log = (msg, data) => trace && console.log(`[aiDeps:fs] ${msg}`, data);
+  const log = (msg, data) => trace && console.log(`[OrganismMap:fs] ${msg}`, data);
 
   return Object.freeze({
     async getAllFiles() {
       log("getAllFiles");
-      return [];
+      const raw = localStorage.getItem("firebase_fs_index");
+      return raw ? JSON.parse(raw) : [];
     },
 
     async getFile(path) {
       log("getFile", { path });
-      return null;
+      return localStorage.getItem(`firebase_fs_${path}`) || null;
+    },
+
+    async writeFile(path, content) {
+      log("writeFile", { path });
+
+      localStorage.setItem(`firebase_fs_${path}`, content);
+
+      window.dispatchEvent(new CustomEvent("firebase_fs_delta_out", {
+        detail: { path, content }
+      }));
+
+      return true;
     }
   });
 }
+
 
 // ============================================================================
 // ROUTE API — FETCH‑AWARE (IMMORTAL v25)
 // ============================================================================
 export function getRouteAPI({ trace = false } = {}) {
-  const log = (msg, data) => trace && console.log(`[aiDeps:routes] ${msg}`, data);
+  const log = (msg, data) => trace && console.log(`[OrganismMap:routes] ${msg}`, data);
+
+  function readRoutes() {
+    const raw = localStorage.getItem("firebase_map_routes");
+    return raw ? JSON.parse(raw) : [];
+  }
 
   return Object.freeze({
     async getRouteMap() {
       log("getRouteMap");
-      return [];
+      return readRoutes();
     },
 
     async getRoute(routeId) {
       log("getRoute", { routeId });
-      return null;
+      return readRoutes().find(x => x.id === routeId) || null;
     },
 
     async resolve(url) {
       log("resolve", { url });
-
       return {
         id: "default",
         target: url,
         method: "GET",
-        meta: {
-          layer: "PulseRouteAPI",
-          role: "ROUTE_RESOLUTION",
-          version: "25.0-IMMORTAL-WORLD",
-          evo: {
-            worldAware: true,
-            bandAware: true,
-            driftProof: true,
-            routeOnly: true
-          }
-        }
+        meta: { layer: "PulseRouteAPI", version: "25.0-MAP" }
       };
     },
 
@@ -163,52 +224,45 @@ export function getRouteAPI({ trace = false } = {}) {
 
       try {
         const res = await fetch(route.target, {
-          method: options.method || route.method || "GET",
+          method: options.method || "GET",
           headers: options.headers || {},
-          body: options.body || null,
-          redirect: "follow",
-          cache: "no-store"
+          body: options.body || null
         });
 
         const text = await res.text();
-
-        return {
-          ok: res.ok,
-          status: res.status,
-          statusText: res.statusText,
-          url: res.url,
-          headers: Object.fromEntries(res.headers.entries()),
-          body: text
-        };
+        return { ok: res.ok, status: res.status, body: text };
       } catch (err) {
-        return {
-          ok: false,
-          error: err?.message || "route_fetch_failed"
-        };
+        return { ok: false, error: err.message };
       }
     }
   });
 }
 
+
 // ============================================================================
 // SCHEMA API — Required by aiEvolution
 // ============================================================================
 export function getSchemaAPI({ trace = false } = {}) {
-  const log = (msg, data) => trace && console.log(`[aiDeps:schema] ${msg}`, data);
+  const log = (msg, data) => trace && console.log(`[OrganismMap:schema] ${msg}`, data);
+
+  function readSchemas() {
+    const raw = localStorage.getItem("firebase_map_schemas");
+    return raw ? JSON.parse(raw) : [];
+  }
 
   return Object.freeze({
     async getAllSchemas() {
       log("getAllSchemas");
-      return [];
-
+      return readSchemas();
     },
 
     async getSchema(name) {
       log("getSchema", { name });
-      return null;
+      return readSchemas().find(x => x.name === name) || null;
     }
   });
 }
+
 
 // ============================================================================
 // FETCH API — ROUTE‑AWARE, IMMORTAL v25

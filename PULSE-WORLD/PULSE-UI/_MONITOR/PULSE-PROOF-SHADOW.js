@@ -1,245 +1,249 @@
 /* ============================================================================
-   PULSE-WORLD ORGAN — PulseWorldFirebaseShadow (v24 SHADOW)
-   Frontend-safe Firebase organ for Portal + Logger + Touch + RouteCarpet
-   ----------------------------------------------------------------------------
+   PULSE-WORLD ORGAN — PulseWorldFirebaseShadow (v25++ SHADOW, MAP-DRIVEN)
+   Frontend-safe "Firebase shadow" organ for Portal + Logger + Touch + RouteCarpet
+
    ROLE:
-     - Provides SAFE Firebase Client SDK access on frontend
-     - No Admin SDK, no secrets, no private keys
+     - Provides SAFE access to Firebase-MIRRORED DATA via MAPS (no SDK)
+     - Reads/writes via localStorage-backed firebase_map_* (delta-based)
      - Used for: logs, routes, snapshots, metadata, analytics
      - NOT used for: auth verification, privileged writes, admin tasks
 
    PLACEMENT:
-     /PULSE-WORLD/PULSE-WORLD-FRONTEND/PulseWorldFirebaseShadow-v24.js
+     /PULSE-WORLD/PULSE-WORLD-FRONTEND/PulseWorldFirebaseShadow-v25.js
 
    NOTES:
      - This is the SHADOW organ (frontend mirror of backend FirebaseGenome)
-     - Safe for browser, safe for public, safe for Portal + Logger
-     - All writes must obey Firebase Security Rules
-     - No privileged operations allowed
+     - All data flows through firebase_map_* and delta sync
+     - Backend MAP + Admin SDK handle real Firebase writes
 ============================================================================ */
 
-//
-// 1 — IMPORT FIREBASE CLIENT SDK (SAFE FOR FRONTEND)
-// ----------------------------------------------------------------------------
-// These imports contain NO secrets, NO admin access, NO private keys.
-// They are designed for browser use.
-//
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const C_ID   = "color:#8D6E63; font-weight:bold; font-family:monospace;";
+const C_OK   = "color:#00FF9C; font-family:monospace;";
+const C_INFO = "color:#E8F8FF; font-family:monospace;";
+const C_WARN = "color:#FFE066; font-family:monospace;";
+const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;";
 
-import { getDatabase, ref, set as rtdbSet, get as rtdbGet} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+function nowEpoch() {
+  return Date.now();
+}
 
-import { getStorage, ref as storageRef, uploadString} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
 
-const C_ID   = "color:#8D6E63; font-weight:bold; font-family:monospace;"; // Cyan
-const C_OK   = "color:#00FF9C; font-family:monospace;";                   // Neon Green
-const C_INFO = "color:#E8F8FF; font-family:monospace;";                   // White
-const C_WARN = "color:#FFE066; font-family:monospace;";                   // Yellow
-const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;"; // Red
-//
-// 2 — FIREBASE CONFIG (PUBLIC, SAFE)
-// ----------------------------------------------------------------------------
-// This is the SAME config used everywhere. It is NOT secret.
-// Firebase Client SDK config is PUBLIC BY DESIGN.
-//
-const firebaseConfig = {
-  apiKey: "AIzaSyD4I5YDtZMMC_tDuwR9CEjhs_iAdrLzthQ",
-  authDomain: "tropic-pulse.firebaseapp.com",
-  projectId: "tropic-pulse",
-  storageBucket: "tropic-pulse.firebasestorage.app",
-  messagingSenderId: "642785071979",
-  appId: "1:642785071979:web:4287c6bdf51f5233db722e"
-};
+function hourKeyISO() {
+  return new Date().toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
+}
 
+// Collection names in MAP (mirroring Firebase)
+const COL_PAGE_ROUTES       = "pulse_page_routes";
+const COL_ORGANISM_SNAPSHOT = "pulse_organism_snapshot";
+const COL_LOGS              = "pulse_logs";
+const COL_SYSTEM_SNAPSHOTS  = "pulse_system_snapshots"; // system snapshots
+const FS_JSON_ROOT          = "pulse_json_storage";     // virtual "storage" in fs map
 
-//
-// 3 — INITIALIZE FRONTEND FIREBASE APP
-// ----------------------------------------------------------------------------
-// This creates a SAFE frontend Firebase instance.
-// No Admin SDK. No privileged access.
-//
-const app = initializeApp(firebaseConfig);
+// Helper: get doc ID for system latest + history
+function systemLatestId(systemName) {
+  return `${systemName}::latest`;
+}
 
-//
-// 4 — FRONTEND FIREBASE SERVICES
-// ----------------------------------------------------------------------------
-// These are safe for browser use.
-//
-const db = getFirestore(app);
-const rtdb = getDatabase(app);
-const storage = getStorage(app);
+function systemHistoryId(systemName, epoch) {
+  return `${systemName}::history::${epoch}`;
+}
 
+// ---------------------------------------------------------------------------
+// LOCALSTORAGE MAP HELPERS (READ + DELTA WRITE)
+// ---------------------------------------------------------------------------
 
-//
-// 5 — SHADOW ORGAN API (SAFE FRONTEND FUNCTIONS)
-// ----------------------------------------------------------------------------
-// These functions are used by Portal + Logger + Touch + RouteCarpet.
-// They write ONLY non-sensitive metadata.
-// They obey Firebase Security Rules.
-// They NEVER bypass rules.
-// They NEVER perform admin operations.
-//
+function readCollection(collection) {
+  const key = `firebase_map_${collection}`;
+  const raw = localStorage.getItem(key);
+  if (!raw) return [];
+  try { return JSON.parse(raw); } catch { return []; }
+}
+
+function writeCollectionWithDelta(collection, newArr) {
+  const key = `firebase_map_${collection}`;
+  const raw = localStorage.getItem(key);
+  const oldArr = raw ? JSON.parse(raw) : [];
+
+  const delta = [];
+  const index = new Map(oldArr.map(x => [x.id, x]));
+
+  for (const doc of newArr) {
+    const old = index.get(doc.id);
+    if (!old || JSON.stringify(old) !== JSON.stringify(doc)) {
+      delta.push(doc);
+    }
+  }
+
+  if (delta.length > 0) {
+    localStorage.setItem(key, JSON.stringify(newArr));
+    window.dispatchEvent(new CustomEvent("firebase_delta_out", {
+      detail: { collection, delta }
+    }));
+  }
+
+  return delta;
+}
+
+function getDocument(collection, id) {
+  return readCollection(collection).find(x => x.id === id) || null;
+}
+
+function setDocument(collection, id, value) {
+  const arr = readCollection(collection);
+  const idx = arr.findIndex(x => x.id === id);
+  if (idx >= 0) arr[idx] = { ...value, id };
+  else arr.push({ ...value, id });
+  return writeCollectionWithDelta(collection, arr);
+}
+
+// FS-style helper for JSON “storage”
+function writeFsFile(path, content) {
+  const key = `firebase_fs_${path}`;
+  localStorage.setItem(key, content);
+  window.dispatchEvent(new CustomEvent("firebase_fs_delta_out", {
+    detail: { path, content }
+  }));
+}
+
+// ============================================================================
+// SHADOW ORGAN API (MAP-DRIVEN, NO FIREBASE SDK, LOCALSTORAGE-BASED)
+// ============================================================================
 export const PulseWorldFirebaseShadow = Object.freeze({
 
-  //
   // ⭐ Save daily route map (Portal)
-  //
   async savePageRoutes(page, routes) {
     try {
-      const today = new Date().toISOString().slice(0, 10);
-
-      await SetDoc(Doc(firestore, "pulse_page_routes", page), {
-        date: today,
+      const payload = {
+        date: todayISO(),
         routes,
-        epoch: Date.now()
-      });
+        epoch: nowEpoch()
+      };
 
-      console.log("[FirebaseShadow] Saved page routes →", page);
+      setDocument(COL_PAGE_ROUTES, page, payload);
+      console.log("[FirebaseShadow v25] Saved page routes →", page);
     } catch (err) {
-      console.error("[FirebaseShadow] FAILED savePageRoutes →", err);
+      console.error("[FirebaseShadow v25] FAILED savePageRoutes →", err);
     }
   },
 
-  //
   // ⭐ Load page routes (Portal)
-  //
   async loadPageRoutes(page) {
     try {
-      const snap = await GetDoc(Doc(firestore, "pulse_page_routes", page));
-      return snap.exists() ? snap.data() : null;
+      const doc = getDocument(COL_PAGE_ROUTES, page);
+      return doc || null;
     } catch (err) {
-      console.error("[FirebaseShadow] FAILED loadPageRoutes →", err);
+      console.error("[FirebaseShadow v25] FAILED loadPageRoutes →", err);
       return null;
     }
   },
 
-  //
   // ⭐ Save daily organism snapshot (OrganismMap)
-  //
   async saveOrganismSnapshot(snapshot) {
     try {
-      await SetDoc(Doc(firestore, "pulse_organism_snapshot", "daily"), snapshot);
-      console.log("[FirebaseShadow] Saved organism snapshot");
+      const payload = {
+        epoch: nowEpoch(),
+        snapshot
+      };
+
+      setDocument(COL_ORGANISM_SNAPSHOT, "daily", payload);
+      console.log("[FirebaseShadow v25] Saved organism snapshot");
     } catch (err) {
-      console.error("[FirebaseShadow] FAILED saveOrganismSnapshot →", err);
+      console.error("[FirebaseShadow v25] FAILED saveOrganismSnapshot →", err);
     }
   },
 
-  //
   // ⭐ Load organism snapshot
-  //
   async loadOrganismSnapshot() {
     try {
-      const snap = await GetDoc(Doc(firestore, "pulse_organism_snapshot", "daily"));
-      return snap.exists() ? snap.data() : null;
+      const doc = getDocument(COL_ORGANISM_SNAPSHOT, "daily");
+      return doc || null;
     } catch (err) {
-      console.error("[FirebaseShadow] FAILED loadOrganismSnapshot →", err);
+      console.error("[FirebaseShadow v25] FAILED loadOrganismSnapshot →", err);
       return null;
     }
   },
 
-  //
   // ⭐ Log event (Logger)
-  //
   async logEvent(type, payload) {
     try {
-      const id = String(Date.now());
-      await SetDoc(Doc(firestore, "pulse_logs", id), {
+      const id = String(nowEpoch());
+      const doc = {
         type,
         payload,
-        epoch: Date.now()
-      });
+        epoch: nowEpoch()
+      };
 
-      console.log("[FirebaseShadow] Logged event →", type);
+      setDocument(COL_LOGS, id, doc);
+      console.log("[FirebaseShadow v25] Logged event →", type);
     } catch (err) {
-      console.error("[FirebaseShadow] FAILED logEvent →", err);
+      console.error("[FirebaseShadow v25] FAILED logEvent →", err);
     }
   },
 
-  //
   // ⭐ Save per-system organism snapshot (hourly)
-  //
   async saveSystemSnapshot(systemName, snapshot) {
     try {
-      const epoch = Date.now();
-      const hourKey = new Date().toISOString().slice(0, 13); // "YYYY-MM-DDTHH"
+      const epoch = nowEpoch();
+      const hourKey = hourKeyISO();
 
-      const systemPath = `ORGANISM/SYSTEMS/${systemName}`;
+      const latestId = systemLatestId(systemName);
+      const latest = getDocument(COL_SYSTEM_SNAPSHOTS, latestId);
 
-      // 1 — Load existing latest snapshot
-      const latestRef = Doc(firestore, systemPath, "latest");
-      const latestSnap = await GetDoc(latestRef);
-
-      // 2 — Archive previous snapshot
-      if (latestSnap.exists()) {
-        const historyRef = Doc(firestore, `${systemPath}/history`, String(latestSnap.data().epoch));
-        await SetDoc(historyRef, latestSnap.data());
+      // Archive previous snapshot into history
+      if (latest && latest.epoch) {
+        const historyId = systemHistoryId(systemName, latest.epoch);
+        setDocument(COL_SYSTEM_SNAPSHOTS, historyId, latest);
       }
 
-      // 3 — Save new snapshot
-      await SetDoc(latestRef, {
+      const newLatest = {
+        system: systemName,
         epoch,
         hour: hourKey,
         snapshot
-      });
+      };
 
-      console.log(`[FirebaseShadow] Saved system snapshot → ${systemName}`);
-
+      setDocument(COL_SYSTEM_SNAPSHOTS, latestId, newLatest);
+      console.log(`[FirebaseShadow v25] Saved system snapshot → ${systemName}`);
     } catch (err) {
-      console.error("[FirebaseShadow] FAILED saveSystemSnapshot →", err);
+      console.error("[FirebaseShadow v25] FAILED saveSystemSnapshot →", err);
     }
   },
 
-  //
   // ⭐ Load latest system snapshot
-  //
   async loadSystemSnapshot(systemName) {
     try {
-      const snap = await GetDoc(Doc(firestore, `ORGANISM/SYSTEMS/${systemName}`, "latest"));
-      return snap.exists() ? snap.data() : null;
+      const latestId = systemLatestId(systemName);
+      const doc = getDocument(COL_SYSTEM_SNAPSHOTS, latestId);
+      return doc || null;
     } catch (err) {
-      console.error("[FirebaseShadow] FAILED loadSystemSnapshot →", err);
+      console.error("[FirebaseShadow v25] FAILED loadSystemSnapshot →", err);
       return null;
     }
   },
 
-  //
-  // ⭐ Save JSON to Storage
-  //
+  // ⭐ Save JSON to "Storage" (actually FS MAP via localStorage)
   async saveJSON(path, obj) {
     try {
-      const ref = StorageRef(Storage, path);
-      await UploadString(ref, JSON.stringify(obj), "raw");
-      console.log("[FirebaseShadow] Saved JSON →", path);
+      const fullPath = `${FS_JSON_ROOT}/${path}`;
+      const content = JSON.stringify(obj);
+
+      writeFsFile(fullPath, content);
+      console.log("[FirebaseShadow v25] Saved JSON →", fullPath);
     } catch (err) {
-      console.error("[FirebaseShadow] FAILED saveJSON →", err);
+      console.error("[FirebaseShadow v25] FAILED saveJSON →", err);
     }
   }
 });
 
-//
-// 6 — GLOBAL ATTACHMENT
-// ----------------------------------------------------------------------------
-// Makes the organ available everywhere on frontend.
-//
+// ============================================================================
+// GLOBAL ATTACHMENT
+// ============================================================================
 window.PulseWorldFirebaseShadow = PulseWorldFirebaseShadow;
+
 console.log(
-      "%c[PulseFirebaseShadow] %cSHADOW organ %c→ %s",
-      C_ID, C_INFO, C_OK, "Ready"
-    );
-
-  // Export the REAL Firestore instance
-// ⭐ Export REAL Firestore + helpers
-export const firestore = db;
-export const Doc = doc;
-export const RTDB = rtdb;
-export const SetDoc = setDoc;
-export const GetDoc = getDoc;
-export const UpdateDoc = updateDoc;
-export const Collection = collection;
-
-// ⭐ Export REAL Storage helpers
-export const Storage = storage;
-export const StorageRef = storageRef;
-export const UploadString = uploadString;
-
+  "%c[PulseFirebaseShadow v25] %cSHADOW organ %c→ %s",
+  C_ID, C_INFO, C_OK, "Ready (LOCALSTORAGE MAP, NO SDK, DELTA-SYNCED)"
+);
