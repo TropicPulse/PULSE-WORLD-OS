@@ -31,7 +31,11 @@ import { getDatabase, ref, set as rtdbSet, get as rtdbGet} from "https://www.gst
 
 import { getStorage, ref as storageRef, uploadString} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-
+const C_ID   = "color:#8D6E63; font-weight:bold; font-family:monospace;"; // Cyan
+const C_OK   = "color:#00FF9C; font-family:monospace;";                   // Neon Green
+const C_INFO = "color:#E8F8FF; font-family:monospace;";                   // White
+const C_WARN = "color:#FFE066; font-family:monospace;";                   // Yellow
+const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;"; // Red
 //
 // 2 — FIREBASE CONFIG (PUBLIC, SAFE)
 // ----------------------------------------------------------------------------
@@ -222,8 +226,9 @@ export const PulseWorldFirebaseShadow = Object.freeze({
 // Makes the organ available everywhere on frontend.
 //
 window.PulseWorldFirebaseShadow = PulseWorldFirebaseShadow;
-
-console.log("%c[PulseFirebaseShadow] v24 %c SHADOW organ ready %c",
-  "color:#00C4FF; font-weight:bold; font-family:monospace;");
+console.log(
+      "%c[PulseFirebaseShadow] %cSHADOW organ %c→ %s",
+      C_ID, C_INFO, C_OK, "Ready"
+    );
 
   export const firebase = db;
