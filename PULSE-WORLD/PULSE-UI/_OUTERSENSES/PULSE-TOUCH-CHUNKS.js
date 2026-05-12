@@ -1195,8 +1195,15 @@ async function autoLoadOfflineImages() {
   }
 
   for (const url of urls) {
-    try {
-      const { value, ok, error, envelope } = await fetchChunk(url);
+  try {
+    // ⭐ ADD THIS
+    if (shouldSkipChunk(url)) {
+      console.log("[PulseChunks] Skipping asset:", url);
+      continue;
+    }
+
+    const { value, ok, error, envelope } = await fetchChunk(url);
+
 
       if (!ok) {
         console.warn(
