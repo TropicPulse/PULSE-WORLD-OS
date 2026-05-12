@@ -1,15 +1,15 @@
 // ============================================================================
-//  PULSE OS — OUTER SENSE ORGAN
+//  PULSE OS — OUTER SENSE ORGAN (UPGRADED v25++ IMMORTAL ROUTER)
 //  FILE: _OUTERSENSES/PULSE-TOUCH-DETECTOR-v25++.js
 //  ORGAN: PulseTouchDetector (v25++ IMMORTAL)
-//  ROLE: Edge SKIN + Cookie Reader + Fastlane + Advantage Hints Surface
+//  ROLE: Edge SKIN + Cookie Reader + IMMORTAL ROUTER
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulseTouchDetector = {
   id: "pulsetouch.detector",
   kind: "edge_skin",
   version: "v25++-IMMORTAL",
-  role: "Pulse‑Touch skin signal reader",
+  role: "Pulse‑Touch skin signal reader + IMMORTAL router",
   surfaces: {
     band: ["touch", "edge", "skin", "fastlane", "advantage", "routing"],
     wave: ["clinical", "precise", "sensory"],
@@ -278,15 +278,9 @@ function deriveCookieIntegrity(parsed) {
 }
 
 // ============================================================================
-// IMPLEMENTATION — v25++ IMMORTAL
+// COOKIE DETECTION — v25++ IMMORTAL
 // ============================================================================
 
-/**
- * Edge‑safe, deterministic Pulse‑Touch cookie reader (v25++).
- *
- * @param {object} event - Edge / Netlify / gateway event with headers.
- * @returns {object} skinState - Normalized Pulse‑Touch state.
- */
 export function detectPulseTouch(event) {
   const headers = event?.headers || {};
   const cookieHeader =
@@ -321,7 +315,6 @@ export function detectPulseTouch(event) {
   const lastPulseTs = safeNumber(parsed.lastPulseTs, null);
 
   return {
-    // CORE FIELDS
     region,
     trusted: parsed.trusted || "0",
     trustLevel,
@@ -331,7 +324,6 @@ export function detectPulseTouch(event) {
     identity: parsed.identity || "anon",
     v: version,
 
-    // IMMORTAL ADVANTAGE FIELDS
     page: parsed.page || "index",
     chunkProfile: parsed.chunkProfile || "default",
     integrity,
@@ -344,23 +336,17 @@ export function detectPulseTouch(event) {
     animation,
     animationTier,
 
-    // CONTINUOUS / FASTLANE HINTS
     pulseStream,
     fastLane,
     pulseOrigin: parsed.pulseOrigin || "edge",
 
-    // Optional temporal hints
     originTs,
     lastPulseTs,
 
-    // Derived clusters / hints for Advantage / Analytics
     regionCluster
   };
 }
 
-/**
- * Organism’s “blind touch” state when no pulse_touch cookie is present or readable.
- */
 export function defaultPulseTouchState() {
   const region = "unknown";
   const presence = "unknown";
@@ -404,14 +390,60 @@ export function defaultPulseTouchState() {
 }
 
 // ============================================================================
-// FACTORY ORGAN — IMMORTAL++
+// IMMORTAL ROUTER — NEW v25++
 // ============================================================================
+
 export function PulseTouchDetector() {
   return {
     meta: ORGAN_META_PulseTouchDetector,
     contract: ORGAN_CONTRACT_PulseTouchDetector,
     overlays: IMMORTAL_OVERLAYS_PulseTouchDetector,
     detect: detectPulseTouch,
-    defaultState: defaultPulseTouchState
+    defaultState: defaultPulseTouchState,
+
+    // ============================================================
+    // NEW IMMORTAL ROUTER CALLBACKS
+    // ============================================================
+
+    onMapReady(evt) {
+      try {
+        localStorage.setItem("PulseOrganismMap_v25", JSON.stringify(evt.map));
+      } catch {}
+
+      window.__PULSE_TOUCH__?.onDetectorUpdate?.({
+        type: evt.type || "map_ready",
+        map: evt.map,
+        page: evt.page,
+        prefix: evt.prefix
+      });
+
+      console.log("[Detector] Map → localStorage → Touch");
+    },
+
+    onChunksReady(evt) {
+      try {
+        localStorage.setItem("PulseChunks_v25", JSON.stringify(evt.chunks));
+      } catch {}
+
+      window.__PULSE_TOUCH__?.onDetectorUpdate?.({
+        type: evt.type || "chunks_ready",
+        chunks: evt.chunks
+      });
+
+      console.log("[Detector] Chunks → localStorage → Touch");
+    },
+
+    onNormalizerReady(evt) {
+      try {
+        localStorage.setItem("PulseNormalizer_v25", JSON.stringify(evt.normalizer));
+      } catch {}
+
+      window.__PULSE_TOUCH__?.onDetectorUpdate?.({
+        type: evt.type || "normalizer_ready",
+        normalizer: evt.normalizer
+      });
+
+      console.log("[Detector] Normalizer → localStorage → Touch");
+    }
   };
 }

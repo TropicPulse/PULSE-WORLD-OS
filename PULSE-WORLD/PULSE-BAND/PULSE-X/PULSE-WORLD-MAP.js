@@ -1542,3 +1542,54 @@ try {
 } catch (err) {
   console.warn("[OrganismMap] failed to store in localStorage", err);
 }
+// ============================================================
+// OrganismMap Signal Receiver (v25++ IMMORTAL)
+// ============================================================
+window.PulseOrganismMap = window.PulseOrganismMapV25 || window.PulseOrganismMap || {};
+
+window.PulseOrganismMap.signal = function (evt) {
+  try {
+    // ⭐ ALWAYS WRITE TO LOCALSTORAGE FIRST
+    localStorage.setItem(
+      "PulseOrganismMap_v25",
+      JSON.stringify(window.PulseOrganismMap)
+    );
+
+    // ⭐ ALWAYS HYDRATE FROM LOCALSTORAGE (SELF-HEAL)
+    const raw = localStorage.getItem("PulseOrganismMap_v25");
+    if (raw) Object.assign(window.PulseOrganismMap, JSON.parse(raw));
+
+    // ⭐ TOUCH BOOTSTRAP
+    if (evt.type === "touch_bootstrap") {
+      this.prewarm?.();
+      this.ready = true;
+
+      // ⭐ SEND TO DETECTOR (NOT TOUCH DIRECTLY)
+      window.PulseDetector?.onMapReady?.({
+        type: "map_ready",
+        page: evt.page,
+        prefix: evt.prefix,
+        map: window.PulseOrganismMap
+      });
+
+      return;
+    }
+
+    // ⭐ TOUCH PREWARM
+    if (evt.type === "touch_prewarm") {
+      this.deepwarm?.(evt);
+
+      window.PulseDetector?.onMapReady?.({
+        type: "map_prewarm_ready",
+        page: evt.page,
+        prefix: evt.prefix,
+        map: window.PulseOrganismMap
+      });
+
+      return;
+    }
+
+  } catch (err) {
+    console.error("[OrganismMap] signal handler failed →", err);
+  }
+};

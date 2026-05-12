@@ -280,45 +280,31 @@ const PulseSurfaceEnvironment = buildSurfaceEnvironment();
 // ============================================================================
 // MEMBRANE META — PULSE PORTAL CONTEXT
 // ============================================================================
-
 function buildRouteId() {
   if (typeof window === "undefined") return "PulseWorldBarrier";
 
   try {
-    // ⭐ ALWAYS load from localStorage FIRST
-    let raw = localStorage.getItem("PulseOrganismMap_v25");
-    let map = null;
+    // ⭐ ALWAYS load from localStorage FIRST — ONLY SOURCE OF TRUTH
+    const raw = localStorage.getItem("PulseOrganismMap_v25");
 
-    if (raw) {
+    if (!raw) {
+      console.warn("[RouteCarpet] No localStorage map → fallback PulseWorldBarrier");
+      return "PulseWorldBarrier";
+    }
+
+    let map;
+    try {
       map = JSON.parse(raw);
-      globalThis.PulseOrganismMap = map; // update global cache
-      console.log("[RouteCarpet] Loaded OrganismMap from localStorage");
-    } else {
-      // ⭐ Only use global cache if localStorage is missing
-      map = globalThis.PulseOrganismMap || null;
-      console.warn("[RouteCarpet] No localStorage map → using global cache");
+    } catch (err) {
+      console.error("[RouteCarpet] Failed to parse localStorage map → fallback", err);
+      return "PulseWorldBarrier";
     }
 
     const path = window.location?.pathname || "/";
 
     // ⭐ HARD GUARDS — prevent crashes
-    if (!map || typeof map !== "object") {
-      console.warn("[RouteCarpet] No OrganismMap → fallback PulseWorldBarrier");
-      return "PulseWorldBarrier";
-    }
-
-    if (!map.systems) {
-      console.warn("[RouteCarpet] OrganismMap missing systems → fallback PulseWorldBarrier");
-      return "PulseWorldBarrier";
-    }
-
-    if (!map.systems.UI) {
-      console.warn("[RouteCarpet] OrganismMap missing UI → fallback PulseWorldBarrier");
-      return "PulseWorldBarrier";
-    }
-
-    if (!map.systems.UI.pages) {
-      console.warn("[RouteCarpet] OrganismMap missing UI.pages → fallback PulseWorldBarrier");
+    if (!map?.systems?.UI?.pages) {
+      console.warn("[RouteCarpet] Map missing UI.pages → fallback PulseWorldBarrier");
       return "PulseWorldBarrier";
     }
 
@@ -343,6 +329,7 @@ function buildRouteId() {
     return "PulseWorldBarrier";
   }
 }
+
 
 
 const surfaceMeta = Object.freeze({
