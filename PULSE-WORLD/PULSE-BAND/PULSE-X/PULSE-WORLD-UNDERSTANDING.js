@@ -121,32 +121,39 @@ const PulseSignalState = {
 
 function startPulseSignalListener() {
   try {
-    setInterval(() => {
+    // Load once on boot
+    const pulseRaw = localStorage.getItem("PulseSignal_v27");
+    const proofRaw = localStorage.getItem("PulseProofSignal_v27");
+    const portRaw  = localStorage.getItem("PulseSignalPort_v27");
 
-      // ⭐ GET the correct localStorage signals (v27)
-      const pulseRaw = localStorage.getItem("PulseSignal_v27");
-      const proofRaw = localStorage.getItem("PulseProofSignal_v27");
-      const portRaw  = localStorage.getItem("PulseSignalPort_v27");
+    const state =
+      (pulseRaw && JSON.parse(pulseRaw)) ||
+      (proofRaw && JSON.parse(proofRaw)) ||
+      (portRaw && JSON.parse(portRaw));
 
-      // Pick whichever exists (your organism decides)
-      const state =
-        (pulseRaw && JSON.parse(pulseRaw)) ||
-        (proofRaw && JSON.parse(proofRaw)) ||
-        (portRaw && JSON.parse(portRaw));
-
-      if (!state) return;
-
-      // Update Understanding
+    if (state) {
       PulseSignalState.updateFromSignal(state);
+    }
 
-    }, 50);
+    // Listen for changes to the correct keys
+    window.addEventListener("storage", (e) => {
+      if (
+        e.key === "PulseSignal_v27" ||
+        e.key === "PulseProofSignal_v27" ||
+        e.key === "PulseSignalPort_v27"
+      ) {
+        if (!e.newValue) return;
+        PulseSignalState.updateFromSignal(JSON.parse(e.newValue));
+      }
+    });
 
   } catch (err) {
-    console.error("[Understanding v25] Signal listener failed:", err);
+    console.error("[Understanding v27] Signal listener failed:", err);
   }
 }
 
 startPulseSignalListener();
+
 
 
 // ============================================================================
