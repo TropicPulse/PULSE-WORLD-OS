@@ -45,7 +45,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 // IMPORTS — Mom / Dad / Baby Hearts (backend-only, safe)
 // ============================================================================
-import * as heartbeat from "./PulseProxyHeartBeat-v20.js";
+import * as heartbeat from "../../PULSE-WORLD-HEARTBEAT/PULSE-WORLD-HEARTBEAT.js";
 import * as aiHeartbeat from "../PULSE-AI/aiHeartbeat-v24.js";
 import {
   pulseEarnFromHeartbeat,
