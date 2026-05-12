@@ -65,19 +65,15 @@ export { PulseProofBridge };
 import { firestore as db, SetDoc as setdoc, GetDoc as getdoc, Doc as doc } from "../_MONITOR/PULSE-PROOF-SHADOW.js"
 import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons} from "../_MONITOR/PULSE-PROOF-LOGGER.js";
 import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PULSE-PROOF-MONITOR.js";
-
-import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
-
 import { initUIFlow as PulseProofFlow } from "../_MONITOR/PULSE-PROOF-FLOW.js";
 import PulseUIErrors from "../_MONITOR/PULSE-PROOF-ERRORS.js";
+import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
+
+
 import { createPulseSkinReflex as PulseProofReflex } from "../_COMPONENTS_EVOLUTION/PulseUISkinReflex-v24.js";
-
-
 import PulsePageScanner from "../_COMPONENTS_EVOLUTION/PulseUIPageScanner-v24.js";
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../_COMPONENTS_EVOLUTION/PulseUIRouteMemory-v24.js";
 
-import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
-import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 
 
 const g =
@@ -829,6 +825,8 @@ if (channel) {
   });
 }
 
+import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
+import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 
 // ============================================================================
 //  EXPORT SURFACE
