@@ -5,7 +5,7 @@ LAYER: REFLEX MEMORY ORGAN • v24-IMMORTAL++
 ===============================================================================
 */
 
-import PulseUIErrors from "./PULSE-PROOF-ERRORS.js";
+import PulseUIErrors from "../_MONITOR/PULSE-PROOF-ERRORS.js";
 
 // ============================================================================
 //  IMMORTAL++: NO DIRECT BRIDGE IMPORTS — ALWAYS USE GLOBAL BRIDGE
