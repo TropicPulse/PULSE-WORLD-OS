@@ -871,50 +871,81 @@ if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function
 // ---------------------------------------------------------
 // PULSEPORTAL v25 — NEXT-PAGE WARM (ZERO BLOCKING)
 // ---------------------------------------------------------
+// ============================================================================
+// PULSEPORTAL v26 — NEXT-PAGE WARM (ASSUMES TOUCH PREWARMED PORTAL)
+// ============================================================================
 
 function runPortalWarm() {
   try {
     const touch = window.__PULSE_TOUCH__;
-    if (!touch) return;
-
-    const page =
-      location.pathname.split("/").pop().replace(".html", "") || "index";
-
-    const next = touch.router?.predictNext?.(page);
-    if (!next) {
-      console.log("[PortalWarm] no next page predicted");
+    if (!touch) {
+      console.warn("[PortalWarm] Touch not ready — skipping warm");
       return;
     }
 
-    // ⭐ WARM 1 — Preload NEXT PAGE HTML
-    touch.preloader?.preloadPage?.(next);
+    // ⭐ CURRENT PAGE (Touch already warmed this)
+    const page =
+      location.pathname.split("/").pop().replace(".html", "") || "index";
 
-    // ⭐ WARM 2 — Preload NEXT PAGE IMAGES
-    window.__PULSE_SCAN_ROUTE_IMAGES__?.(`../PULSE/${next}.html`);
+    // ⭐ USE PORTAL ROUTER (NOT TOUCH)
+    const next = window.PulsePortalRouter?.predictNext?.(page);
 
-    // ⭐ WARM 3 — Preload CHUNKS for NEXT PAGE
-    touch.chunker?.preloadChunksForPage?.(next);
+    if (!next) {
+      console.log("[PortalWarm] No next page predicted");
+      return;
+    }
 
-    // ⭐ WARM 4 — Light ADVANTAGE warm
-    touch.advantage?.prewarmLight?.();
+    // ⭐ SKIP IF NEXT PAGE == CURRENT PAGE
+    if (next === page) {
+      console.log("[PortalWarm] Next page is current page — skipping");
+      return;
+    }
+
+    // ========================================================================
+    // ⭐ PORTAL WARM — USE PORTAL ORGANS (NOT TOUCH)
+    // ========================================================================
+
+    // ⭐ 1 — Preload NEXT PAGE HTML
+    window.PulsePortalPreloader?.preloadPage?.(next);
+
+    // ⭐ 2 — Preload NEXT PAGE IMAGES (Bridge-aware)
+    window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
+
+    // ⭐ 3 — Preload NEXT PAGE CHUNKS
+    window.PulsePortalChunker?.preloadChunksForPage?.(next);
+
+    // ⭐ 4 — Light ADVANTAGE warm (Portal’s warm engine)
+    window.PulsePortalWarmup?.prewarmLight?.(next);
+
+    // ⭐ 5 — Prewarm assets via RouteCarpet
+    window.PulseRouteCarpet?.unfold?.({
+      route: next,
+      imports: [`./${next}.js`],
+      assets: [`./${next}.assets.json`]
+    });
+
+    // ⭐ 6 — Log warm event into Touch timeline
+    touch.appendTouchTimeline("portalWarm", { page, next });
 
     console.log(
-      "%c[PulsePortal::Warm] %cv25 next-page warm complete %c→ %s",
+      "%c[PulsePortal::Warm] %cv26 next-page warm complete %c→ %s",
       "color:#00E5FF; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;",
       "color:#E8F8FF; font-family:monospace;",
       next
     );
+
   } catch (err) {
-    console.error("[PulsePortal::Warm] FAILED →", err);
+    console.error("[PortalWarm] FAILED →", err);
   }
 }
 
-// ---------------------------------------------------------
-// WAIT FOR TOUCH TO BE READY
-// ---------------------------------------------------------
+// ============================================================================
+// WAIT FOR TOUCH → THEN WARM NEXT PAGE
+// ============================================================================
+
 const waitForTouch = setInterval(() => {
-  if (window.__PULSE_TOUCH__?.ready) {
+  if (window.__PULSE_TOUCH__) {
     clearInterval(waitForTouch);
     runPortalWarm();
   }

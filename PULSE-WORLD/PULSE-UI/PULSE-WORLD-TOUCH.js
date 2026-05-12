@@ -1210,17 +1210,20 @@ function applyGateDecision(gateDecision, skin) {
 }
 
 // ============================================================
-// PULSETOUCH v25++ — PURE SYNC IGNITION + INLINE NEXT‑PAGE WARM
+// PULSETOUCH v25++ — PORTAL-FIRST IGNITION + PORTAL PREWARM
 // ============================================================
 (function autoIgnitePulseTouch() {
   try {
+    // ⭐ Prevent double-boot
     if (window.__PULSE_TOUCH__) return;
 
-       //ALREADY PREWARMING PAGE BELOW
+    // ⭐ Detect current page
     const page =
       location.pathname.split("/").pop().replace(".html", "") || "index";
 
-    // ⭐ 1 — Ignite PulseTouch (SYNC ONLY)
+    // ============================================================
+    // 1 — IGNITE TOUCH (SYNC ONLY)
+    // ============================================================
     const touch = createPulseTouch({
       page,
       mode: "fast",
@@ -1228,37 +1231,81 @@ function applyGateDecision(gateDecision, skin) {
       chunkProfile: "default",
       band: "symbolic"
     });
-    
-  
-    // ⭐ 2 — Expose globally
+
     window.__PULSE_TOUCH__ = touch;
 
-    // ⭐ 3 — INLINE NEXT‑PAGE WARM (NO NEW FUNCTIONS)
+    // ============================================================
+    // 2 — ALWAYS PRELOAD + PREWARM PORTAL (THE CORTEX)
+    // ============================================================
     try {
-        touch.preloader?.preloadPage?.(page);
+      // ⭐ Preload Portal JS (module)
+      const portalScript = document.createElement("link");
+      portalScript.rel = "modulepreload";
+      portalScript.href = "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.js";
+      document.head.appendChild(portalScript);
 
-        // ⭐ WARM 2 — Preload NEXT PAGE IMAGES
-        window.__PULSE_SCAN_ROUTE_IMAGES__?.(page);
+      // ⭐ Prewarm Portal chunks (PulseChunks)
+      window.PulseChunks?.prewarm?.([
+        "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.js",
+        "./_CREATION_BARRIER/PULSE-INDEX.js",
+        "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.chunk.js",
+        "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.assets.json"
+      ]);
 
-        // ⭐ WARM 3 — Preload CHUNKS for NEXT PAGE
-        touch.chunker?.preloadChunksForPage?.(page);
+      // ⭐ Prewarm Portal images (Touch’s route scanner)
+      window.__PULSE_SCAN_ROUTE_IMAGES__?.(
+        "./_CREATION_BARRIER/PULSE-WORLD-PORTAL.html",
+        "./index.html"
+      );
 
-        // ⭐ WARM 4 — Light ADVANTAGE warm
-        touch.advantage?.prewarmLight?.();
+      // ⭐ Log into Touch timeline
+      appendTouchTimeline("portal_prewarm", {
+        page,
+        portal: "PULSE-WORLD-PORTAL"
+      });
 
-        console.log(
-          "%c[PulseTouch::Warm] %cv25 Main Index Page warm complete %c→ %s",
-          "color:#00E5FF; font-weight:bold; font-family:monospace;",
-          "color:#00FF9C; font-family:monospace;",
-          "color:#E8F8FF; font-family:monospace;",
-          `index.html`
-        );
+      console.log(
+        "%c[PulseTouch::PortalPrewarm] %cv25 Portal prewarmed",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#00FF9C; font-family:monospace;"
+      );
+    } catch (err) {
+      console.error("[PulseTouch::PortalPrewarm] FAILED →", err);
+    }
+
+    // ============================================================
+    // 3 — ONLY WARM CURRENT PAGE ON FIRST CONTACT
+    // ============================================================
+    try {
+      // ⭐ Preload THIS PAGE HTML
+      touch.preloader?.preloadPage?.(page);
+
+      // ⭐ Preload THIS PAGE images
+      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${page}.html`);
+
+      // ⭐ Preload THIS PAGE chunks
+      touch.chunker?.preloadChunksForPage?.(page);
+
+      // ⭐ Light advantage warm
+      touch.advantage?.prewarmLight?.();
+
+      appendTouchTimeline("touch_page_warm", { page });
+
+      console.log(
+        "%c[PulseTouch::Warm] %cv25 page warm complete → %s",
+        "color:#00E5FF; font-weight:bold; font-family:monospace;",
+        "color:#00FF9C; font-family:monospace;",
+        page
+      );
     } catch (err) {
       console.error("[PulseTouch::Warm] FAILED →", err);
     }
 
-    // ⭐ 4 — NO async, NO idle, NO scanning loops, NO timers
-    console.log("PulseTouch v25++ ignition: sync + inline warm.");
+    // ============================================================
+    // 4 — PURE SYNC IGNITION (NO ASYNC, NO LOOPS)
+    // ============================================================
+    console.log("PulseTouch v25++ ignition: portal-first warm.");
+
   } catch (err) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
