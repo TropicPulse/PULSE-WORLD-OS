@@ -25,7 +25,7 @@
 // They are designed for browser use.
 //
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import { getDatabase, ref, set as rtdbSet, get as rtdbGet} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -88,7 +88,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
     try {
       const today = new Date().toISOString().slice(0, 10);
 
-      await setDoc(doc(db, "pulse_page_routes", page), {
+      await SetDoc(Doc(firestore, "pulse_page_routes", page), {
         date: today,
         routes,
         epoch: Date.now()
@@ -105,7 +105,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
   //
   async loadPageRoutes(page) {
     try {
-      const snap = await getDoc(doc(db, "pulse_page_routes", page));
+      const snap = await GetDoc(Doc(firestore, "pulse_page_routes", page));
       return snap.exists() ? snap.data() : null;
     } catch (err) {
       console.error("[FirebaseShadow] FAILED loadPageRoutes →", err);
@@ -118,7 +118,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
   //
   async saveOrganismSnapshot(snapshot) {
     try {
-      await setDoc(doc(db, "pulse_organism_snapshot", "daily"), snapshot);
+      await SetDoc(Doc(firestore, "pulse_organism_snapshot", "daily"), snapshot);
       console.log("[FirebaseShadow] Saved organism snapshot");
     } catch (err) {
       console.error("[FirebaseShadow] FAILED saveOrganismSnapshot →", err);
@@ -130,7 +130,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
   //
   async loadOrganismSnapshot() {
     try {
-      const snap = await getDoc(doc(db, "pulse_organism_snapshot", "daily"));
+      const snap = await GetDoc(Doc(firestore, "pulse_organism_snapshot", "daily"));
       return snap.exists() ? snap.data() : null;
     } catch (err) {
       console.error("[FirebaseShadow] FAILED loadOrganismSnapshot →", err);
@@ -144,7 +144,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
   async logEvent(type, payload) {
     try {
       const id = String(Date.now());
-      await setDoc(doc(db, "pulse_logs", id), {
+      await SetDoc(Doc(firestore, "pulse_logs", id), {
         type,
         payload,
         epoch: Date.now()
@@ -156,7 +156,7 @@ export const PulseWorldFirebaseShadow = Object.freeze({
     }
   },
 
-    //
+  //
   // ⭐ Save per-system organism snapshot (hourly)
   //
   async saveSystemSnapshot(systemName, snapshot) {
@@ -167,17 +167,17 @@ export const PulseWorldFirebaseShadow = Object.freeze({
       const systemPath = `ORGANISM/SYSTEMS/${systemName}`;
 
       // 1 — Load existing latest snapshot
-      const latestRef = doc(db, systemPath, "latest");
-      const latestSnap = await getDoc(latestRef);
+      const latestRef = Doc(firestore, systemPath, "latest");
+      const latestSnap = await GetDoc(latestRef);
 
-      // 2 — If a previous snapshot exists → archive it
+      // 2 — Archive previous snapshot
       if (latestSnap.exists()) {
-        const historyRef = doc(db, `${systemPath}/history`, String(latestSnap.data().epoch));
-        await setDoc(historyRef, latestSnap.data());
+        const historyRef = Doc(firestore, `${systemPath}/history`, String(latestSnap.data().epoch));
+        await SetDoc(historyRef, latestSnap.data());
       }
 
-      // 3 — Save new snapshot as latest
-      await setDoc(latestRef, {
+      // 3 — Save new snapshot
+      await SetDoc(latestRef, {
         epoch,
         hour: hourKey,
         snapshot
@@ -190,13 +190,12 @@ export const PulseWorldFirebaseShadow = Object.freeze({
     }
   },
 
-
   //
   // ⭐ Load latest system snapshot
   //
   async loadSystemSnapshot(systemName) {
     try {
-      const snap = await getDoc(doc(db, `ORGANISM/SYSTEMS/${systemName}`, "latest"));
+      const snap = await GetDoc(Doc(firestore, `ORGANISM/SYSTEMS/${systemName}`, "latest"));
       return snap.exists() ? snap.data() : null;
     } catch (err) {
       console.error("[FirebaseShadow] FAILED loadSystemSnapshot →", err);
@@ -204,21 +203,19 @@ export const PulseWorldFirebaseShadow = Object.freeze({
     }
   },
 
-
   //
-  // ⭐ Save JSON to Storage (optional)
+  // ⭐ Save JSON to Storage
   //
   async saveJSON(path, obj) {
     try {
-      const ref = storageRef(storage, path);
-      await uploadString(ref, JSON.stringify(obj), "raw");
+      const ref = StorageRef(Storage, path);
+      await UploadString(ref, JSON.stringify(obj), "raw");
       console.log("[FirebaseShadow] Saved JSON →", path);
     } catch (err) {
       console.error("[FirebaseShadow] FAILED saveJSON →", err);
     }
   }
 });
-
 
 //
 // 6 — GLOBAL ATTACHMENT
@@ -231,7 +228,17 @@ console.log(
       C_ID, C_INFO, C_OK, "Ready"
     );
 
-  export const firebase = db;
-  export const setdoc  = setDoc;
-  export const getdoc  = getDoc;
-  export const Doc   = doc;
+  // Export the REAL Firestore instance
+// ⭐ Export REAL Firestore + helpers
+export const firestore = db;
+export const Doc = doc;
+export const RTDB = rtdb;
+export const SetDoc = setDoc;
+export const GetDoc = getDoc;
+export const UpdateDoc = updateDoc;
+export const Collection = collection;
+
+// ⭐ Export REAL Storage helpers
+export const Storage = storage;
+export const StorageRef = storageRef;
+export const UploadString = uploadString;
