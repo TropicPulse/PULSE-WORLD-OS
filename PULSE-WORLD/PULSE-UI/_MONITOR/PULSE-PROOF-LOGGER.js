@@ -882,3 +882,5 @@ export const VitalsLogger = {
 
 export const logger = { ...VitalsLogger };
 export default logger;
+
+export {PulseColors, PulseIcons, PulseColorFallback, PulseIconFallback, PulseRoleFallback, PulseRoles,PulseVersion,PulseVersionFallback};
