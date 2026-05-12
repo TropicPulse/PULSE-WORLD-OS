@@ -5,12 +5,40 @@
 //  - Mirror important globals (PulseSignal, PulseProofSignal, SignalPort, etc.) on write
 //  - Beast-safe (no window), browser-safe, offline-safe
 // ============================================================================
+// ============================================================================
+//  PULSE-WINDOW-BOOTSTRAP v27 (FINAL FORM)
+//  - window IS the global surface
+//  - continuity comes from localStorage
+//  - route history is tracked
+// ============================================================================
+
+(function PulseWindowBootstrap() {
+  // 1. Ensure window is the global surface
+  window.global = window;
+
+  // 2. Load continuity hint from last page
+  const hint = localStorage.getItem("pulse_continuity") || null;
+
+  // 3. Rebuild organism state container
+  window.__PULSE__ = window.__PULSE__ || {};
+  window.__PULSE__.continuity = hint;
+
+  // 4. Track route history
+  const routeHistory = JSON.parse(localStorage.getItem("pulse_route_history") || "[]");
+  routeHistory.push(window.location.pathname);
+  localStorage.setItem("pulse_route_history", JSON.stringify(routeHistory));
+
+  // 5. (Optional) Clear continuity so next page sets a new one
+  // localStorage.removeItem("pulse_continuity");
+
+})();
 
 import { PulseProofBridgeFlow as initUIFlow, PulseProofBridgeErrors as PulseUIErrors, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
 import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v24.js";
 import { createPulseRouter } from "./PULSE-WORLD-INTERNET-ROUTER.js";
 import { PulseUnderstanding, PulseWorldCastle, PulseWorldMesh } from "./PULSE-WORLD-UNDERSTANDING.js";
+
 
 const PULSE_MEMORY_PREFIX = "__pulse_global__:";
 // ============================================================================

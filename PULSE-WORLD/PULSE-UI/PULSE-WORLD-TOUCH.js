@@ -170,7 +170,26 @@
 //   window.PulseBridgeRoute
 // ============================================================
 
-global = window;
+(function PulseWindowBootstrap() {
+  // 1. Ensure window is the global surface
+  window.global = window;
+
+  // 2. Load continuity hint from last page
+  const hint = localStorage.getItem("pulse_continuity") || null;
+
+  // 3. Rebuild organism state container
+  window.__PULSE__ = window.__PULSE__ || {};
+  window.__PULSE__.continuity = hint;
+
+  // 4. Track route history
+  const routeHistory = JSON.parse(localStorage.getItem("pulse_route_history") || "[]");
+  routeHistory.push(window.location.pathname);
+  localStorage.setItem("pulse_route_history", JSON.stringify(routeHistory));
+
+  // 5. (Optional) Clear continuity so next page sets a new one
+  // localStorage.removeItem("pulse_continuity");
+
+})();
 
 // ============================================================
 // CONSTANTS — COOKIE + VERSION + TIMELINE + PULSE CONFIG (v24++)
