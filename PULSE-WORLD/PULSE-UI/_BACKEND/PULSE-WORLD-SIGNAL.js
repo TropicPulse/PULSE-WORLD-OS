@@ -7,6 +7,13 @@
 // ============================================================================
 
 const PULSE_MEMORY_PREFIX = "__pulse_global__:";
+// ============================================================================
+
+console.log(
+  "%cPulseProofSignal v25-IMMORTAL-EVOLVABLE (CSS-MERGED, OFFLINE, +SignalPort, +UniversalMemory, +PulseSignalBus)",
+  "color:#BA68C8;font-weight:bold;"
+);
+
 // Capture original console to avoid recursion and preserve native behavior
 const _c = { ...console };
 
@@ -21,6 +28,129 @@ const g =
     : typeof self !== "undefined"
     ? self
     : {};
+
+// global guard for Signal↔Logger recursion (kept for safety, though we no longer attach)
+g.__PULSE_SIGNAL_LOGGING = g.__PULSE_SIGNAL_LOGGING || { active: false };
+
+export const PulseVersion = {
+  proof: "25.0",
+  logger: "25.0",
+  renderer: "25.0",
+  gpu: "25.0",
+  band: "25.0",
+  vault: "25.0",
+  hooks: "25.0",
+  endpoint: "25.0",
+  router: "25.0",
+  expansion: "25.0",
+  bridge: "25.0",
+  internet: "25.0",
+  memory: "25.0",
+  pages: "25.0",
+  cns: "25.0",
+  world: "25.0",
+  mesh: "25.0",
+  ai: "25.0",
+  signal: "25.0"
+};
+
+// fallback only
+export const PulseVersionFallback = "16.x";
+
+// ============================================================================
+//  DETERMINISTIC ROLE MAP
+// ============================================================================
+
+export const PulseRoles = {
+  proof: "PROOF MONITOR",
+  logger: "PROOF LOGGER",
+  renderer: "RENDERER",
+  gpu: "GPU SUBSYSTEM",
+  band: "NERVOUS SYSTEM",
+  vault: "VAULT SUBSYSTEM",
+  hooks: "HOOK REGISTRY",
+  endpoint: "REMOTE ENDPOINT",
+  router: "ROUTER",
+  expansion: "EXPANSION ENGINE",
+  bridge: "CNS BRIDGE",
+  internet: "INTERNET SUBSYSTEM",
+  memory: "MEMORY SUBSYSTEM",
+  pages: "PAGE SUBSYSTEM",
+  cns: "CNS CORE",
+  world: "WORLD SUBSYSTEM",
+  mesh: "MESH SUBSYSTEM",
+  ai: "AI SUBSYSTEM",
+  signal: "SIGNAL SUBSYSTEM"
+};
+
+// fallback only
+export const PulseRoleFallback = "LEGACY SUBSYSTEM";
+
+// ============================================================================
+//  DETERMINISTIC COLOR MAP
+// ============================================================================
+
+export const PulseColors = {
+  proof: "#4DD0E1",
+  logger: "#FF7043",
+  renderer: "#29B6F6",
+  gpu: "#7E57C2",
+  band: "#66BB6A",
+  vault: "#26C6DA",
+  ui: "#AB47BC",
+  endpoint: "#FFA726",
+  router: "#42A5F5",
+  expansion: "#26A69A",
+  bridge: "#EC407A",
+  internet: "#8D6E63",
+  memory: "#5C6BC0",
+  pages: "#26C6DA",
+  cns: "#EF5350",
+  world: "#26A69A",
+  mesh: "#7E57C2",
+  ai: "#FFCA28",
+  signal: "#90CAF9"
+};
+
+// fallback only
+export const PulseColorFallback = "#BDBDBD";
+
+// ============================================================================
+//  DETERMINISTIC ICON MAP
+// ============================================================================
+
+export const PulseIcons = {
+  proof: "📜",
+  logger: "🖨️",
+  renderer: "✨",
+  gpu: "🎨",
+  band: "🧠",
+  vault: "🔐",
+  hooks: "🪝",
+  endpoint: "🌐",
+  router: "🛰️",
+  expansion: "🚀",
+  bridge: "🌉",
+  internet: "📡",
+  memory: "💾",
+  pages: "📄",
+  cns: "🧬",
+  world: "🌍",
+  mesh: "🕸️",
+  ai: "🤖",
+  signal: "📡"
+};
+
+// fallback only
+export const PulseIconFallback = "🖥️";
+
+// ============================================================================
+//  v25+ UNIVERSAL MEMORY LAYER
+//  - Treat localStorage as source of truth
+//  - Sync ALL globals (globalThis/window/g) → localStorage
+//  - Mirror localStorage → window/g on frontend
+//  - Beast-safe (no window), browser-safe, offline-safe
+// ============================================================================
 // Safe localStorage abstraction (works in beast + browser)
 const PulseMemoryStorage = {
   _ensureInMemory() {
