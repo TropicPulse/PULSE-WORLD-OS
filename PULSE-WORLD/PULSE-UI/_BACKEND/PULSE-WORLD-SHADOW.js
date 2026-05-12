@@ -192,4 +192,4 @@ window.PulseWorldFirebaseShadow = PulseWorldFirebaseShadow;
 console.log("%c[PulseWorldFirebaseShadow] v24 SHADOW organ ready",
   "color:#00C4FF; font-weight:bold; font-family:monospace;");
 
-  export default db;
+  export const firebase = db;
