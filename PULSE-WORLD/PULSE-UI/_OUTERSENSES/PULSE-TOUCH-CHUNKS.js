@@ -168,35 +168,141 @@ function generateLoreHeader({ meta, context, pulseRole, route }) {
 */
 `;
 }
-
 // ============================================================================
-//  SAFETY FENCE — OUTLIER RULES
+//  SAFETY FENCE — OUTLIER RULES (v27 IMMORTAL++ UPGRADE)
+//  Case-insensitive, organ-aware, portal-aware, OS-aware
 // ============================================================================
 function shouldSkipChunk(filePath = "", fileSize = 0) {
   if (!filePath) return true;
 
-  if (filePath.includes("firebase-admin")) return true;
-  if (filePath.includes("env")) return true;
-  if (filePath.includes("package")) return true;
-  if (filePath.includes("PulseWorldTransport")) return true;
-  if (filePath.includes("PulseOSLongTermMemory")) return true;
-  if (filePath.includes("index.html")) return true;
+  // Normalize for case-insensitive matching
+  const fp = String(filePath).toLowerCase().trim();
 
-  if (
-    filePath.includes("PulseChunker") ||
-    filePath.includes("Chunk") ||
-    filePath.includes("Portal") ||
-    filePath.includes("Index") ||
-    filePath.includes("User") ||
-    filePath.includes("Brainstem") ||
-    filePath.includes("Organs") ||
-    filePath.includes("PulsePresence")
-  ) {
-    return true;
+  // ------------------------------------------------------------------------
+  // 1. NEVER CHUNK SYSTEM / OS / INTERNAL / META FILES
+  // ------------------------------------------------------------------------
+  const hardBlock = [
+    "firebase-admin",
+    "env",
+    "package",
+    "pulseworldtransport",
+    "pulseoslongtermmemory",
+    "index.html",
+    "service-worker",
+    "sw.js",
+    "manifest.json",
+    "robots.txt",
+    "sitemap",
+    "favicon",
+    "asset-manifest",
+    "vite",
+    "webpack",
+    "rollup",
+    "parcel"
+  ];
+
+  for (const key of hardBlock) {
+    if (fp.includes(key)) return true;
   }
 
-  if (fileSize > 1024 * 1024 * 5) return true; // 5MB safety cap
+  // ------------------------------------------------------------------------
+  // 2. NEVER CHUNK ANYTHING FROM CORE ORGANS / PORTALS / TOUCH / PROOF / MAP
+  // ------------------------------------------------------------------------
+  const organBlock = [
+    "pulsechunker",
+    "chunk",
+    "portal",
+    "touch",
+    "tap",
+    "proof",
+    "bridge",
+    "pulseproof",
+    "pulsebridge",
+    "pulsetouch",
+    "pulsetap",
+    "pulseportal",
+    "pulsepresence",
+    "presence",
+    "brainstem",
+    "organs",
+    "organism",
+    "organismmap",
+    "pulsemap",
+    "pulseos",
+    "pulseworld",
+    "pulseworldtransport",
+    "router",
+    "route",
+    "index",
+    "user",
+    "auth",
+    "login",
+    "admin"
+  ];
 
+  for (const key of organBlock) {
+    if (fp.includes(key)) return true;
+  }
+
+  // ------------------------------------------------------------------------
+  // 3. NEVER CHUNK FILE EXTENSIONS THAT ARE NOT CHUNKABLE
+  // ------------------------------------------------------------------------
+  const forbiddenExt = [
+    ".zip",
+    ".rar",
+    ".7z",
+    ".exe",
+    ".dll",
+    ".so",
+    ".dylib",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".mp4",
+    ".mov",
+    ".avi",
+    ".mkv",
+    ".mp3",
+    ".wav",
+    ".flac"
+  ];
+
+  for (const ext of forbiddenExt) {
+    if (fp.endsWith(ext)) return true;
+  }
+
+  // ------------------------------------------------------------------------
+  // 4. NEVER CHUNK DIRECTORIES THAT SHOULD NOT BE CHUNKED
+  // ------------------------------------------------------------------------
+  const forbiddenDirs = [
+    "/pulseadmin/",
+    "/private/",
+    "/system/",
+    "/internal/",
+    "/node_modules/",
+    "/vendor/",
+    "/build/",
+    "/dist/",
+    "/server/",
+    "/_backend/"
+  ];
+
+  for (const dir of forbiddenDirs) {
+    if (fp.includes(dir)) return true;
+  }
+
+  // ------------------------------------------------------------------------
+  // 5. SIZE CAP — NEVER CHUNK > 5MB
+  // ------------------------------------------------------------------------
+  if (fileSize > 1024 * 1024 * 5) return true;
+
+  // ------------------------------------------------------------------------
+  // 6. DEFAULT: ALLOW
+  // ------------------------------------------------------------------------
   return false;
 }
 
