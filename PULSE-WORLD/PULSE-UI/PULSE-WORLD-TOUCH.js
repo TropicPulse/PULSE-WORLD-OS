@@ -1214,10 +1214,35 @@ function applyGateDecision(gateDecision, skin) {
 // ============================================================
 (function autoIgnitePulseTouch() {
   try {
-    // ============================================================
-    // 0 — INSTALL GLOBAL→LOCALSTORAGE MIRROR + SEED G
+      // ============================================================
+    // 0 — INSTALL GLOBAL→LOCALSTORAGE MIRROR (LIMITED + FIRST RUN CLEAR)
     // ============================================================
     const G = (function installGlobalLocalStorageMirror(prefix = "__G__") {
+
+      // ⭐ FIRST RUN CLEAR (mirror-only keys)
+      const FLAG = prefix + "__CLEARED__";
+      if (!localStorage.getItem(FLAG)) {
+        const keys = Object.keys(localStorage);
+        for (const k of keys) {
+          if (k.startsWith(prefix)) {
+            localStorage.removeItem(k);
+            console.log("🧹 [Mirror] Cleared key →", k);
+          }
+        }
+        localStorage.setItem(FLAG, "1");
+        console.log("🔥 [Mirror] First-run mirror clear complete");
+      }
+
+      // ⭐ DO NOT STORE THESE ORGANS (TOO LARGE / NON-SERIALIZABLE)
+      const SKIP = new Set([
+        "PulseWorldFirebaseShadow",
+        "PulseDetector",
+        "__PULSE_TOUCH__"
+      ]);
+
+      // ⭐ MAX SIZE LIMIT (50KB)
+      const MAX_SIZE = 50 * 1024;
+
       const mirror = new Proxy({}, {
         get(_, prop) {
           const key = prefix + String(prop);
@@ -1225,14 +1250,47 @@ function applyGateDecision(gateDecision, skin) {
           if (raw === null) return undefined;
           try { return JSON.parse(raw); } catch { return raw; }
         },
+
         set(_, prop, value) {
-          const key = prefix + String(prop);
-          localStorage.setItem(key, JSON.stringify(value));
+          // Skip forbidden keys
+          if (SKIP.has(prop)) {
+            console.warn(`[Mirror] Skipping ${prop} (not allowed in storage)`);
+            return true;
+          }
+
+          // Skip functions or objects containing functions
+          if (typeof value === "function") {
+            console.warn(`[Mirror] Skipping ${prop} (function)`);
+            return true;
+          }
+
+          // Try to serialize
+          let json;
+          try {
+            json = JSON.stringify(value);
+          } catch {
+            console.warn(`[Mirror] Skipping ${prop} (non-serializable)`);
+            return true;
+          }
+
+          // Size check
+          if (json.length > MAX_SIZE) {
+            console.warn(`[Mirror] Skipping ${prop} (too large: ${json.length} bytes)`);
+            return true;
+          }
+
+          // Safe write
+          try {
+            localStorage.setItem(prefix + String(prop), json);
+          } catch (err) {
+            console.error(`[Mirror] FAILED to store ${prop} →`, err);
+          }
+
           return true;
         },
+
         deleteProperty(_, prop) {
-          const key = prefix + String(prop);
-          localStorage.removeItem(key);
+          localStorage.removeItem(prefix + String(prop));
           return true;
         }
       });
@@ -1241,15 +1299,13 @@ function applyGateDecision(gateDecision, skin) {
       window.G = mirror;
       window.g = mirror;
 
-      // seed from existing globals (one‑time snapshot)
+      // ⭐ SAFE SEEDING (SKIPS SHADOW + TOUCH)
       const seedKeys = [
         "PulseOrganismMap",
         "PulseChunks",
-        "PulseChunksNormalizer",
-        "PulseDetector",
-        "PulseWorldFirebaseShadow",
-        "__PULSE_TOUCH__"
+        "PulseChunksNormalizer"
       ];
+
       for (const k of seedKeys) {
         if (Object.prototype.hasOwnProperty.call(window, k) && window[k] != null) {
           mirror[k] = window[k];
@@ -1258,6 +1314,7 @@ function applyGateDecision(gateDecision, skin) {
 
       return mirror;
     })();
+
 
     // ⭐ Prevent double‑boot (organism lives in G/localStorage)
     if (G.__PULSE_TOUCH__) return;
