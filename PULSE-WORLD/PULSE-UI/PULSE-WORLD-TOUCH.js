@@ -789,35 +789,18 @@ async function scanAndPreloadRouteImages(routeHtml) {
   hasScannedRoute = true;
 
   try {
-    const html = await fetch(routeHtml, { cache: "force-cache" }).then(r => r.text());
-    const doc = new DOMParser().parseFromString(html, "text/html");
+    // Instead of fetching the whole HTML, fetch ONLY the image list
+    const res = await fetch(routeHtml + "?imgmap=1", { cache: "force-cache" });
+    const list = await res.json(); // server returns ["img1.jpg", "img2.png"]
 
-    // ⭐ Only scan REAL page content — not headers, not footers, not templates
-    const root =
-      doc.querySelector("main") ||
-      doc.querySelector("#app") ||
-      doc.body;
-
-    // ⭐ Only preload actual content images
-    const imgs = [...root.querySelectorAll("img")]
-      .map(i => i.getAttribute("src"))
-      .filter(src =>
-        src &&
-        !src.includes("icon") &&
-        !src.includes("logo") &&
-        !src.includes("sprite") &&
-        !src.includes("placeholder")
-      );
-
-    for (const src of imgs) {
+    for (const src of list) {
       const img = new Image();
-      img.loading = "eager"; // force immediate decode
-      img.src = src;
+      img.src = src; // let browser decide decode timing
     }
 
     appendTouchTimeline("route_image_prewarm", {
       route: routeHtml,
-      count: imgs.length
+      count: list.length
     });
   } catch (err) {
     appendTouchTimeline("route_image_prewarm_failed", { route: routeHtml });
@@ -825,6 +808,7 @@ async function scanAndPreloadRouteImages(routeHtml) {
 }
 
 window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
+
 
 
 
