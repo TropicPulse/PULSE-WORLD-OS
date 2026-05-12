@@ -17,7 +17,7 @@
 // ============================================================================
   import { firebase as db } from "../_BACKEND/PULSE-WORLD-SHADOW.js"
     console.log(
-      "%c[PulseProofLogger v24-IMMORTAL-EVOLVABLE] %c next-page warm complete %c",
+      "%c[PulseProofLogger v24-IMMORTAL-EVOLVABLE] %c Initializing PulseProofLogger %c",
       "color:#FF7043; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;",
       "color:#E8F8FF; font-family:monospace;");
