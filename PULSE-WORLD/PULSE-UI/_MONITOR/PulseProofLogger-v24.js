@@ -16,7 +16,11 @@
 // 8) LOGGER IS SCHEMA-STABLE AND EVOLVABLE.
 // ============================================================================
 
-console.log("PulseProofLogger v24-IMMORTAL-EVOLVABLE");
+    console.log(
+      "%c[PulseProofLogger v24-IMMORTAL-EVOLVABLE] %cv26 next-page warm complete %c→ %s",
+      "color:#00E5FF; font-weight:bold; font-family:monospace;",
+      "color:#00FF9C; font-family:monospace;",
+      "color:#E8F8FF; font-family:monospace;");
 
 // Capture original console to avoid recursion and preserve native behavior
 const _c = { ...console };
@@ -608,8 +612,8 @@ export function log(...args) {
     meta?.version ||
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
-  const color = meta?.color || PulseColors[safe] || PulseColorFallback;
-  const icon  = meta?.icon  || PulseIcons[safe]  || PulseIconFallback;
+  const color = PulseColors[safe] || meta?.color || PulseColorFallback;
+  const icon  = PulseIcons[safe] || meta?.icon  || PulseIconFallback;
 
   const prefix      = `${icon} ${safe.toUpperCase()} ${version}`;
   const safeMessage = mark404(message);
@@ -653,7 +657,7 @@ export function warn(...args) {
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || "#FFEE58"; // ORIGINAL COLOR
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const icon  = PulseIcons[safe] || meta?.icon  || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
@@ -684,7 +688,7 @@ export function error(...args) {
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || "#EF5350"; // ORIGINAL COLOR
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const icon  = PulseIcons[safe] || meta?.icon  || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
@@ -715,7 +719,7 @@ export function critical(...args) {
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || "#D32F2F"; // ORIGINAL COLOR
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const icon  = PulseIcons[safe] || meta?.icon  || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
@@ -753,7 +757,7 @@ export function comment(...args) {
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
   const color = meta?.color || "#90CAF9"; // ORIGINAL COLOR
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const icon  = PulseIcons[safe] || meta?.icon  || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const safeMessage = mark404(message);
@@ -781,8 +785,8 @@ export function group(subsystem, label, absolute = false) {
     meta?.version ||
     (PulseVersion[safe] ? `v${PulseVersion[safe]}` : `v${PulseVersionFallback}`);
 
-  const color = meta?.color || PulseColors[safe] || PulseColorFallback;
-  const icon  = meta?.icon  || PulseIcons[safe] || PulseIconFallback;
+  const color = PulseColors[safe] || meta?.color || PulseColorFallback;
+  const icon  = PulseIcons[safe] || meta?.icon  || PulseIconFallback;
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const time = _chronoLabel(absolute);
