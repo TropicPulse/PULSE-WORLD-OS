@@ -276,13 +276,55 @@ const PulseSurfaceEnvironment = buildSurfaceEnvironment();
 // ============================================================================
 
 function buildRouteId() {
-  if (!isBrowser()) return "unknown-route";
+  if (typeof window === "undefined") return "PulseWorldBarrier";
+
   try {
-    return window.location?.pathname || "unknown-route";
-  } catch {
-    return "unknown-route";
+    // 1 — Load OrganismMap (global or localStorage)
+    let map = globalThis.PulseOrganismMap;
+    if (!map) {
+      const raw = localStorage.getItem("PulseOrganismMap_v25");
+      if (raw) {
+        map = JSON.parse(raw);
+        globalThis.PulseOrganismMap = map;
+        console.log("[RouteCarpet] buildRouteId() loaded OrganismMap from localStorage");
+      }
+    }
+
+    const path = window.location?.pathname || "/";
+
+    // 2 — If no organism map, fallback to barrier
+    if (!map || !map.systems?.UI?.pages) {
+      console.warn("[RouteCarpet] No OrganismMap — fallback → PulseWorldBarrier");
+      return "PulseWorldBarrier";
+    }
+
+    const pages = map.systems.UI.pages;
+
+    // 3 — Try to match pathname to a page key
+    for (const key of Object.keys(pages)) {
+      const page = pages[key];
+      const meta = page?.IDENTITY_META || {};
+
+      // Match by ROUTE
+      if (meta.ROUTE === path) return meta.ROUTE;
+
+      // Match by ALIAS
+      if (meta.ALIAS === path) return meta.ROUTE || key;
+
+      // Match by key ("/home" → "home")
+      if ("/" + key === path) return meta.ROUTE || key;
+    }
+
+    // 4 — Fallback: ALWAYS go to barrier
+    console.warn("[RouteCarpet] No page matched path:", path, "→ fallback PulseWorldBarrier");
+    return "PulseWorldBarrier";
+
+  } catch (err) {
+    console.error("[RouteCarpet] buildRouteId ERROR →", err);
+    return "PulseWorldBarrier";
   }
 }
+
 
 const surfaceMeta = Object.freeze({
   layer: "PulseEvolutionaryPortal",
@@ -502,17 +544,53 @@ window.prewarmAssets =
 // ============================================================================
 // PULSEPORTAL v27 — ROUTE CARPET (OrganismMap-aware)
 // ============================================================================
+// ============================================================================
+// PULSEPORTAL v29 — ROUTE CARPET (LocalStorage + OrganismMap aware)
+// ============================================================================
+
+// ============================================================================
+// PULSEPORTAL v30 — ROUTE CARPET (Pure OrganismMap + LocalStorage)
+// ============================================================================
+
 window.PulseRouteCarpet =
   window.PulseRouteCarpet ||
   {
     // ------------------------------------------------------------------------
-    // ⭐ NEW — Predict next page using OrganismMap genome
+    // ⭐ Load OrganismMap from localStorage if global is missing
+    // ------------------------------------------------------------------------
+    loadOrganismMap() {
+      try {
+        // Already loaded globally
+        if (globalThis.PulseOrganismMap) return globalThis.PulseOrganismMap;
+
+        // Load from localStorage
+        const raw = localStorage.getItem("PulseOrganismMap_v25");
+        if (!raw) return null;
+
+        const parsed = JSON.parse(raw);
+        globalThis.PulseOrganismMap = parsed;
+
+        console.log("[RouteCarpet] Loaded OrganismMap from localStorage");
+        return parsed;
+
+      } catch (err) {
+        console.error("[RouteCarpet] Failed to load OrganismMap →", err);
+        return null;
+      }
+    },
+
+    // ------------------------------------------------------------------------
+    // ⭐ Predict next page using ONLY:
+    // 1. Genome NEXT
+    // 2. Page order
+    // 3. Wrap fallback
     // ------------------------------------------------------------------------
     predictNext(currentPage) {
       try {
-        const map = globalThis.PulseOrganismMap;
+        // Ensure OrganismMap is loaded
+        const map = this.loadOrganismMap();
 
-        // ❌ No organism map → fallback to simple "index"
+        // ❌ No organism map → fallback to index
         if (!map || !map.systems?.UI?.pages) {
           console.warn("[RouteCarpet] No OrganismMap — fallback next=index");
           return "index";
@@ -528,7 +606,7 @@ window.PulseRouteCarpet =
         }
 
         // --------------------------------------------------------------------
-        // ⭐ 1 — If page has explicit NEXT pointer in genome, use it
+        // ⭐ 1 — Genome NEXT
         // --------------------------------------------------------------------
         const meta = pages[currentPage]?.IDENTITY_META;
         if (meta?.NEXT) {
@@ -537,7 +615,7 @@ window.PulseRouteCarpet =
         }
 
         // --------------------------------------------------------------------
-        // ⭐ 2 — Otherwise use page order in the OrganismMap
+        // ⭐ 2 — Page order NEXT
         // --------------------------------------------------------------------
         const index = keys.indexOf(currentPage);
 
@@ -548,7 +626,7 @@ window.PulseRouteCarpet =
         }
 
         // --------------------------------------------------------------------
-        // ⭐ 3 — Fallback: wrap to first page
+        // ⭐ 3 — Wrap to first page
         // --------------------------------------------------------------------
         const fallback = keys[0];
         console.log("[RouteCarpet] Wrapping to first page →", fallback);
@@ -598,7 +676,6 @@ window.PulseRouteCarpet =
       }
     }
   };
-
 
 
    // ------------------------------------------------------------------------
