@@ -94,7 +94,7 @@ logID("DOM START", true);
 
 if (!window.__PULSE_UI_INIT__) {
   window.__PULSE_UI_INIT__ = true;
-  
+
   document.addEventListener("DOMContentLoaded", () => {
     // End DOM timing
     const __DOM_END = performance.now();
