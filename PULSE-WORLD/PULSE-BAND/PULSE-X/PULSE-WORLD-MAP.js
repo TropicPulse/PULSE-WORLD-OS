@@ -27,7 +27,7 @@
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 let fs = null;
-let db = null;
+import {db, db as firebase, admin} from "./PulseWorldFirebaseGenome-v20.js"
 let routes = null;
 let schema = null;
 let fetchAPI = null;
@@ -587,69 +587,76 @@ function classifySystem(system) {
 // ============================================================================
 
 export async function scanPulseSystemsOnce() {
-  // If already scanned → return cached map
+  // If already loaded in memory → return
   if (window.PulseOrganismMap) {
     return window.PulseOrganismMap;
   }
 
-  const fs = getFsAPI({ trace: false });
-  const allFiles = await fs.getAllFiles();
+  const today = new Date().toISOString().slice(0, 10);
 
-  // Detect PULSE-* system directories
-  const pulseSystems = allFiles
-    .filter(f => f.type === "dir" && f.name.startsWith("PULSE-"))
-    .map(f => ({
-      name: f.name,
-      path: f.path
-    }));
+  // Try Firebase snapshot
+  const fb = await firebase.get("pulse_organism_snapshot_v26");
+  if (fb && fb.date === today) {
+    window.PulseOrganismMap = fb.snapshot;
+    return fb.snapshot;
+  }
+
+  // Rebuild genome (JS + HTML + systems)
+  const snapshot = await buildPulseOrganismSnapshotV26();
+
+  // Save to Firebase
+  await firebase.set("pulse_organism_snapshot_v26", {
+    date: today,
+    snapshot
+  });
+
+  // Save globally
+  window.PulseOrganismMap = snapshot;
+
+  return snapshot;
+}
+
+
+// ============================================================================
+// v25++ GENOME SNAPSHOT — ONE REAL SCAN, REUSED FOREVER
+// ============================================================================
+
+export async function buildPulseOrganismSnapshotV26() {
+  const fs = getFsAPI({ trace: false });
+
+  // ⭐ Scan entire PULSE-WORLD (two levels up)
+  const allFiles = await fs.getAllFiles("/PULSE-WORLD");
 
   const systems = {};
-  const fileToMeta = {}; // <-- for logger lookups
+  const fileToMeta = {};
+  const htmlRoutes = {};
+  const jsRoutes = {};
+
+  // Detect PULSE-* systems
+  const pulseSystems = allFiles.filter(f =>
+    f.type === "dir" && f.name.startsWith("PULSE-")
+  );
 
   for (const system of pulseSystems) {
     const systemFiles = allFiles.filter(f =>
       f.path.startsWith(system.path)
     );
 
-    // Extract organ names
+    // Extract organs (JS files)
     const organs = systemFiles
       .filter(f => f.type === "file" && f.name.endsWith(".js"))
       .map(f => f.name.replace(".js", ""));
 
-    // ---------------------------------------------
-    // SUBSYSTEM FROM FOLDER NAME
-    // ---------------------------------------------
+    // Subsystem name
     const subsystem = system.name.replace(/^PULSE-/, "").toLowerCase();
 
-    // ---------------------------------------------
-    // VERSION FROM FILES
-    // ---------------------------------------------
-    let detectedVersion = null;
+    // Detect version
+    const version = detectVersionFromFiles(systemFiles);
 
-    for (const file of systemFiles) {
-      const match = file.name.match(/-v(\d+(\.\d+)?)/i);
-      if (match) {
-        const v = match[1];
-        if (!detectedVersion) detectedVersion = v;
-        else {
-          const a = parseFloat(detectedVersion);
-          const b = parseFloat(v);
-          if (b > a) detectedVersion = v;
-        }
-      }
-    }
-
-    if (!detectedVersion) detectedVersion = "16";
-    const version = `v${detectedVersion}`;
-
-    // ---------------------------------------------
-    // CLASSIFICATION
-    // ---------------------------------------------
+    // Classification
     const classification = classifySystem(system);
 
-    // ---------------------------------------------
-    // STORE SYSTEM
-    // ---------------------------------------------
+    // Store system
     const sysKey = system.name.toLowerCase();
     systems[sysKey] = {
       root: system.name,
@@ -661,9 +668,7 @@ export async function scanPulseSystemsOnce() {
       organs
     };
 
-    // ---------------------------------------------
-    // MAP FILES → SUBSYSTEM + VERSION (for logger)
-    // ---------------------------------------------
+    // Map file metadata
     for (const file of systemFiles) {
       fileToMeta[file.path] = {
         subsystem,
@@ -674,65 +679,69 @@ export async function scanPulseSystemsOnce() {
     }
   }
 
-  // ========================================================================
-  // SAVE IMMORTAL MAP
-  // ========================================================================
-  window.PulseOrganismMap = {
-    systems,
-    fileToMeta,
-
-    // Resolve caller file → subsystem + version
-    resolveCaller(stack) {
-      try {
-        const lines = stack.split("\n");
-        for (const line of lines) {
-          const match = line.match(/(file:\/\/[^\s)]+)/);
-          if (match) {
-            const fileUrl = match[1];
-            const meta = this.lookup(fileUrl);
-            if (meta) return meta;
-          }
-        }
-      } catch {}
-      return this.defaultMeta;
-    },
-
-    lookup(fileUrl) {
-      return this.fileToMeta[fileUrl] || this.defaultMeta;
-    },
-
-    defaultMeta: {
-      subsystem: "legacy",
-      version: "v12.3",
-      color: PulseColorFallback,
-      icon: PulseIconFallback
-    }
-  };
-
-  return window.PulseOrganismMap;
-}
-
-// ============================================================================
-// v25++ GENOME SNAPSHOT — ONE REAL SCAN, REUSED FOREVER
-// ============================================================================
-
-export async function buildPulseOrganismSnapshotV25() {
-  if (window.__PULSE_ORGANISM_SNAPSHOT__) {
-    return window.__PULSE_ORGANISM_SNAPSHOT__;
+  // ⭐ Scan HTML files for routes
+  const htmlFiles = allFiles.filter(f => f.name.endsWith(".html"));
+  for (const file of htmlFiles) {
+    const html = await fs.readFile(file.path);
+    htmlRoutes[file.name.replace(".html", "")] = extractRoutesFromHTML(html);
   }
 
-  const map = await scanPulseSystemsOnce();
+  // ⭐ Scan JS files for route definitions
+  const jsFiles = allFiles.filter(f => f.name.endsWith(".js"));
+  for (const file of jsFiles) {
+    const js = await fs.readFile(file.path);
+    jsRoutes[file.name.replace(".js", "")] = extractRoutesFromJS(js);
+  }
 
+  // ⭐ Build final snapshot
   const snapshot = {
     epoch: Date.now(),
-    version: "v25.0-NETWORK",
-    systems: map.systems,
-    fileToMeta: map.fileToMeta
+    version: "v26.0-GENOME",
+    systems,
+    fileToMeta,
+    htmlRoutes,
+    jsRoutes
   };
 
   window.__PULSE_ORGANISM_SNAPSHOT__ = snapshot;
   return snapshot;
 }
+function extractRoutesFromHTML(html) {
+  const routes = new Set();
+
+  html.replace(/href="([^"]+\.html)"/g, (_, href) => {
+    routes.add(href.replace(".html", ""));
+  });
+
+  html.replace(/data-route="([^"]+)"/g, (_, r) => routes.add(r));
+  html.replace(/route="([^"]+)"/g, (_, r) => routes.add(r));
+
+  return Array.from(routes);
+}
+
+function extractRoutesFromJS(js) {
+  const routes = new Set();
+
+  js.replace(/route:\s*"([^"]+)"/g, (_, r) => routes.add(r));
+  js.replace(/navigate\("([^"]+)"\)/g, (_, r) => routes.add(r));
+
+  return Array.from(routes);
+}
+
+function detectVersionFromFiles(files) {
+  let detected = null;
+
+  for (const file of files) {
+    const match = file.name.match(/-v(\d+(\.\d+)?)/i);
+    if (match) {
+      const v = parseFloat(match[1]);
+      if (!detected || v > detected) detected = v;
+    }
+  }
+
+  return detected ? `v${detected}` : "v16";
+}
+
 
 // ============================================================================
 // v25++ RUNTIME GENOME ACCESSOR — SYNC ONLY, EVERY PAGE
@@ -743,7 +752,7 @@ export function getPulseOrganismMapV25() {
 
   const snapshot = window.__PULSE_ORGANISM_SNAPSHOT__;
   if (!snapshot) {
-    console.error("[OrganismMap:v25++] Missing organism snapshot. Run buildPulseOrganismSnapshotV25() at prewarm/build.");
+    console.error("[OrganismMap:v25++] Missing organism snapshot. Run buildPulseOrganismSnapshotV26() at prewarm/build.");
     throw new Error("PulseOrganismSnapshotMissing");
   }
 
@@ -925,7 +934,7 @@ window.FrontendArchitect = window.FrontendArchitect || {
 // ============================================================================
 
 export async function bootOrganismGenomeV25() {
-  await buildPulseOrganismSnapshotV25(); // ONE real scan (prewarm / first load)
+  await buildPulseOrganismSnapshotV26(); // ONE real scan (prewarm / first load)
   getPulseOrganismMapV25();              // hydrate sync map
   buildOrganismListenersV25();           // wire signals → organs
 }

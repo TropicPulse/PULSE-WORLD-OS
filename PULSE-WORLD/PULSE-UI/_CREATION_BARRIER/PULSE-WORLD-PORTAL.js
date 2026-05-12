@@ -48,7 +48,7 @@ import {
   PulseProofBridgeRouteMemory as PulseUIRouteMemory,
   PulseProofBridgeWorldAdminPanel as createPulseWorldAdminPanel,
   PulseProofBridgeAdminDiagnostics as createAdminDiagnosticsOrgan} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-
+  import {db as firebase} from "../_BACKEND/PULSE-WORLD-SHADOW.js"
 // ============================================================
 //  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
 // ============================================================
@@ -867,14 +867,62 @@ if (window.PulsePortalBridge && typeof window.PulsePortalBridge.on === "function
     }
   });
 }
+function detectRoutesOnPageSync() {
+  const routes = new Set();
 
-// ---------------------------------------------------------
-// PULSEPORTAL v25 — NEXT-PAGE WARM (ZERO BLOCKING)
-// ---------------------------------------------------------
+  // <a href="page.html">
+  document.querySelectorAll("a[href]").forEach(a => {
+    const href = a.getAttribute("href");
+    if (href && href.endsWith(".html")) {
+      routes.add(href.split("/").pop().replace(".html", ""));
+    }
+  });
+
+  // data-route="page"
+  document.querySelectorAll("[data-route]").forEach(el => {
+    const r = el.getAttribute("data-route");
+    if (r) routes.add(r);
+  });
+
+  // route="page"
+  document.querySelectorAll("[route]").forEach(el => {
+    const r = el.getAttribute("route");
+    if (r) routes.add(r);
+  });
+
+  return Array.from(routes);
+}
+
+function savePageRoutesDaily(page, routes) {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Load existing snapshot
+    const snap = window.PulsePageRouteSnapshot || {};
+
+    // If already saved today → skip
+    if (snap.date === today && snap.routes?.[page]) return;
+
+    // Update snapshot
+    snap.date = today;
+    snap.routes = snap.routes || {};
+    snap.routes[page] = routes;
+
+    // Save globally
+    window.PulsePageRouteSnapshot = snap;
+
+    // Save to Firebase (sync wrapper)
+    firebase.setSync("pulse_page_routes_v26", snap);
+
+  } catch (err) {
+    console.error("[PortalRouteSave] FAILED →", err);
+  }
+}
+
+
 // ============================================================================
 // PULSEPORTAL v26 — NEXT-PAGE WARM (ASSUMES TOUCH PREWARMED PORTAL)
 // ============================================================================
-
 function runPortalWarm() {
   try {
     const touch = window.__PULSE_TOUCH__;
@@ -883,12 +931,33 @@ function runPortalWarm() {
       return;
     }
 
-    // ⭐ CURRENT PAGE (Touch already warmed this)
+    // ⭐ CURRENT PAGE
     const page =
       location.pathname.split("/").pop().replace(".html", "") || "index";
 
+    // ========================================================================
+    // ⭐ NEW — DETECT ROUTES ON PAGE (SYNC, NO SCAN)
+    // ========================================================================
+    const routes = detectRoutesOnPageSync();
+
+    // ⭐ Save to global memory
+    window.PulsePageRoutes = window.PulsePageRoutes || {};
+    window.PulsePageRoutes[page] = routes;
+
+    // ⭐ Save to Firebase (sync wrapper)
+    savePageRoutesDaily(page, routes);
+
+    // ========================================================================
     // ⭐ USE PORTAL ROUTER (NOT TOUCH)
-    const next = window.PulsePortalRouter?.predictNext?.(page);
+    // ========================================================================
+    const next = window.PulseRouteCarpet?.predictNext?.(page);
+
+    // ⭐ Prewarm assets via RouteCarpet
+    window.PulseRouteCarpet?.unfold?.({
+      route: next,
+      imports: [`./${next}.js`],
+      assets: [`./${next}.assets.json`]
+    });
 
     if (!next) {
       console.log("[PortalWarm] No next page predicted");
@@ -917,13 +986,6 @@ function runPortalWarm() {
     // ⭐ 4 — Light ADVANTAGE warm (Portal’s warm engine)
     window.PulsePortalWarmup?.prewarmLight?.(next);
 
-    // ⭐ 5 — Prewarm assets via RouteCarpet
-    window.PulseRouteCarpet?.unfold?.({
-      route: next,
-      imports: [`./${next}.js`],
-      assets: [`./${next}.assets.json`]
-    });
-
     // ⭐ 6 — Log warm event into Touch timeline
     window.TouchTimeline("portalWarm", { page, next });
 
@@ -939,17 +1001,6 @@ function runPortalWarm() {
     console.error("[PortalWarm] FAILED →", err);
   }
 }
-
-// ============================================================================
-// WAIT FOR TOUCH → THEN WARM NEXT PAGE
-// ============================================================================
-
-const waitForTouch = setInterval(() => {
-  if (window.__PULSE_TOUCH__) {
-    clearInterval(waitForTouch);
-    runPortalWarm();
-  }
-}, 10);
 
 // ============================================================================
 // ⭐ SIGNAL SNAPSHOT EXPORT (v26 IMMORTAL++)
@@ -1661,3 +1712,4 @@ try {
     String(err)
   );
 }
+global.Firebase = db;
