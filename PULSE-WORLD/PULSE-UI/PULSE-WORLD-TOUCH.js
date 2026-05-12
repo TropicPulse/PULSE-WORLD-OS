@@ -1210,16 +1210,16 @@ function applyGateDecision(gateDecision, skin) {
 }
 
 // ============================================================
-// PULSETOUCH v25 — PURE SYNC IGNITION (NO ASYNC, NO WARM)
+// PULSETOUCH v25++ — PURE SYNC IGNITION + INLINE NEXT‑PAGE WARM
 // ============================================================
 (function autoIgnitePulseTouch() {
   try {
     if (window.__PULSE_TOUCH__) return;
 
-    const page =
-      location.pathname.split("/").pop().replace(".html", "") || "index";
+       //ALREADY PREWARMING PAGE BELOW
 
-    // 1 — Ignite PulseTouch (SYNC ONLY)
+  const page = "index.html";
+    // ⭐ 1 — Ignite PulseTouch (SYNC ONLY)
     const touch = createPulseTouch({
       page,
       mode: "fast",
@@ -1227,12 +1227,36 @@ function applyGateDecision(gateDecision, skin) {
       chunkProfile: "default",
       band: "symbolic"
     });
-
-    // 2 — Expose globally
+    
+    // ⭐ 2 — Expose globally
     window.__PULSE_TOUCH__ = touch;
 
-    // 3 — NO async, NO idle, NO scanning, NO warm
-    console.log("PulseTouch v25 ignition: pure sync, zero warm.");
+    // ⭐ 3 — INLINE NEXT‑PAGE WARM (NO NEW FUNCTIONS)
+    try {
+        touch.preloader?.preloadPage?.(page);
+
+        // ⭐ WARM 2 — Preload NEXT PAGE IMAGES
+        window.__PULSE_SCAN_ROUTE_IMAGES__?.(page);
+
+        // ⭐ WARM 3 — Preload CHUNKS for NEXT PAGE
+        touch.chunker?.preloadChunksForPage?.(page);
+
+        // ⭐ WARM 4 — Light ADVANTAGE warm
+        touch.advantage?.prewarmLight?.();
+
+        console.log(
+          "%c[PulseTouch::Warm] %cv25 Main Index Page warm complete %c→ %s",
+          "color:#00E5FF; font-weight:bold; font-family:monospace;",
+          "color:#00FF9C; font-family:monospace;",
+          "color:#E8F8FF; font-family:monospace;",
+          `index.html`
+        );
+    } catch (err) {
+      console.error("[PulseTouch::Warm] FAILED →", err);
+    }
+
+    // ⭐ 4 — NO async, NO idle, NO scanning loops, NO timers
+    console.log("PulseTouch v25++ ignition: sync + inline warm.");
   } catch (err) {
     console.warn("PulseTouch auto‑ignite failed", err);
   }
