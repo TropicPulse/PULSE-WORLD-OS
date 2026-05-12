@@ -472,31 +472,31 @@ if (isBrowser()) {
         return url;
       });
 
-window.fetchChunk =
-  window.fetchChunk ||
-  (async function (url) {
-    if (!url) return null;
+      window.fetchChunk =
+        window.fetchChunk ||
+        (async function (url) {
+          if (!url) return null;
 
-    try {
-      if (window.PulseChunks?.PulseChunker) {
-        const metaPack = {
-          ...baseMetaPack,
-          route: buildRouteId()
-        };
+          try {
+            if (window.PulseChunks?.PulseChunker) {
+              const metaPack = {
+                ...baseMetaPack,
+                route: buildRouteId()
+              };
 
-        const result = await window.PulseChunks.PulseChunker(url, 0, metaPack);
+              const result = await window.PulseChunks.PulseChunker(url, 0, metaPack);
 
-        if (result && typeof result.chunk !== "undefined") {
-          console.log(
-            "%c[PulsePortal::fetchChunk] %cchunk loaded %c→ %s",
-            "color:#7E57C2; font-weight:bold; font-family:monospace;",
-            "color:#00FF9C; font-family:monospace;",
-            "color:#E8F8FF; font-family:monospace;",
-            url
-          );
-          return result.chunk;
-        }
-      }
+              if (result && typeof result.chunk !== "undefined") {
+                console.log(
+                  "%c[PulsePortal::fetchChunk] %cchunk loaded %c→ %s",
+                  "color:#7E57C2; font-weight:bold; font-family:monospace;",
+                  "color:#00FF9C; font-family:monospace;",
+                  "color:#E8F8FF; font-family:monospace;",
+                  url
+                );
+                return result.chunk;
+              }
+            }
 
       if (window.PulseChunks?.fetchChunk) {
         const chunk = await window.PulseChunks.fetchChunk(url);
