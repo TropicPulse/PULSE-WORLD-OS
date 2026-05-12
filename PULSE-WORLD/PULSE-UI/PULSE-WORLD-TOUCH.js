@@ -790,7 +790,7 @@ async function scanAndPreloadRouteImages(routeHtml) {
   
   try {
     // Instead of fetching the whole HTML, fetch ONLY the image list
-    const res = await fetch(routeHtml + "?imgmap=1", { cache: "force-cache" });
+    const res = await fetch(routeHtml + "?DNAGENOME=1", { cache: "force-cache" });
     const list = await res.json(); // server returns ["img1.jpg", "img2.png"]
 
     for (const src of list) {
@@ -1272,8 +1272,15 @@ function applyGateDecision(gateDecision, skin) {
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.assets.json`
       ]);
 
-      // ⭐ Scan the REAL file path (absolute)
-      window.__PULSE_SCAN_ROUTE_IMAGES__?.(`${page}.html`);
+      const map = globalThis.PulseOrganismMap;
+      if (map && map.systems?.UI?.pages?.[page]) {
+        const route = map.systems.UI.pages[page].IDENTITY_META.ROUTE;
+        window.__PULSE_SCAN_ROUTE_IMAGES__?.(route);
+      } else {
+         // ⭐ Scan the REAL file path (absolute)
+        window.__PULSE_SCAN_ROUTE_IMAGES__?.(`${page}.html`);
+      }
+
 
       // ⭐ Log into Touch timeline
       appendTouchTimeline("portal_prewarm", {
