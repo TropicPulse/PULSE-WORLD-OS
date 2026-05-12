@@ -27,7 +27,7 @@
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 let fs = null;
-import {db, db as firebase, admin} from "./PulseWorldFirebaseGenome-v20.js"
+import {db as firebase} from "./PulseWorldFirebaseGenome-v20.js"
 let routes = null;
 let schema = null;
 let fetchAPI = null;
@@ -169,9 +169,9 @@ export const PulseIconFallback = "🖥️";
 // ============================================================================
 export function prewarmLayer() {
   try {
-    db = getDb({ trace: false });
-    db.getCollection("prewarm");
-    db.getDocument("prewarm", "id");
+    firebase = getDb({ trace: false });
+    firebase.getCollection("prewarm");
+    firebase.getDocument("prewarm", "id");
 
     fs = getFsAPI({ trace: false });
     fs.getAllFiles();
