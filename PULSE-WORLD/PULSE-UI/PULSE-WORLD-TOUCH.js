@@ -1214,7 +1214,7 @@ function applyGateDecision(gateDecision, skin) {
 // ============================================================
 (function autoIgnitePulseTouch() {
   try {
-    // ⭐ Prevent double-boot
+    // ⭐ Prevent double‑boot
     if (window.__PULSE_TOUCH__) return;
 
     // ⭐ Detect current page
@@ -1236,18 +1236,18 @@ function applyGateDecision(gateDecision, skin) {
     });
 
     console.log(
-      "%c[PulseTouch v24-IMMORTAL-EVOLVABLE] %c Initializing PULSE-WORLD-TOUCH %c",
+      "%c[PulseTouch v25++ IMMORTAL] %c Initializing TOUCH organism",
       "color:#90CAF9; font-weight:bold; font-family:monospace;",
-      "color:#00FF9C; font-family:monospace;",
-      "color:#E8F8FF; font-family:monospace;");
+      "color:#00FF9C; font-family:monospace;"
+    );
 
     window.__PULSE_TOUCH__ = touch;
 
     // ============================================================
-    // 2 — ALWAYS PRELOAD + PREWARM PORTAL (THE CORTEX)
+    // 2 — PRELOAD + PREWARM PORTAL (THE CORTEX)
     // ============================================================
     try {
-      // ⭐ Preload Portal JS (module) — now depth‑correct
+      // ⭐ Preload Portal JS (module)
       const portalScript = document.createElement("link");
       portalScript.rel = "modulepreload";
       portalScript.href = `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.js`;
@@ -1263,14 +1263,8 @@ function applyGateDecision(gateDecision, skin) {
       touch.advantage?.prewarmLight?.();
 
       appendTouchTimeline("touch_page_warm", { page });
-      console.log(
-        "%c[PulseTouch::Warm] %cv25 page warm complete → %s",
-        "color:#90CAF9; font-weight:bold; font-family:monospace;",
-        "color:#00FF9C; font-family:monospace;",
-        page
-      );
 
-      // ⭐ Prewarm Portal chunks — now depth‑correct
+      // ⭐ Prewarm Portal chunks
       window.PulseChunks?.prewarm?.([
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.js`,
         `${prefix}_CREATION_BARRIER/PULSE-INDEX.js`,
@@ -1278,24 +1272,22 @@ function applyGateDecision(gateDecision, skin) {
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.assets.json`
       ]);
 
+      // ⭐ Route image scan (OrganismMap‑aware)
       const map = globalThis.PulseOrganismMap;
       if (map && map.systems?.UI?.pages?.[page]) {
         const route = map.systems.UI.pages[page].IDENTITY_META.ROUTE;
         window.__PULSE_SCAN_ROUTE_IMAGES__?.(route);
       } else {
-         // ⭐ Scan the REAL file path (absolute)
         window.__PULSE_SCAN_ROUTE_IMAGES__?.(`${page}.html`);
       }
 
-
-      // ⭐ Log into Touch timeline
       appendTouchTimeline("portal_prewarm", {
         page,
         portal: "PULSE-WORLD-PORTAL"
       });
 
       console.log(
-        "%c[PulseTouch::PortalPrewarm] %cv25 Portal prewarmed",
+        "%c[PulseTouch::PortalPrewarm] %cPortal prewarmed",
         "color:#90CAF9; font-weight:bold; font-family:monospace;",
         "color:#00FF9C; font-family:monospace;"
       );
@@ -1304,10 +1296,43 @@ function applyGateDecision(gateDecision, skin) {
     }
 
     // ============================================================
-    // 4 — PURE SYNC IGNITION (NO ASYNC, NO LOOPS)
+    // 3 — PREWARM TOUCH CORTEX (v25++ IMMORTAL)
+    // ============================================================
+    try {
+      window.PulseChunks?.prewarm?.([
+        `${prefix}_CREATION_BARRIER/PULSE-TOUCH-WARMUP.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-TOUCH-SECURITY.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-TOUCH-GATE.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-TOUCH-PREDICTOR.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-TOUCH-ANALYTICS.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-TOUCH-PRESENCE-ORACLE.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-TOUCH-ADVANTAGE.js`
+      ]);
+
+      appendTouchTimeline("touch_cortex_prewarm", { page });
+    } catch (err) {
+      console.error("[PulseTouch::CortexPrewarm] FAILED →", err);
+    }
+
+    // ============================================================
+    // 4 — PREWARM ORGANISMMAP (if present)
+    // ============================================================
+    try {
+      if (window.PulseOrganismMap) {
+        window.PulseChunks?.prewarm?.([
+          `${prefix}_CREATION_BARRIER/PULSE-ORGANISM-MAP.js`
+        ]);
+        appendTouchTimeline("organism_map_prewarm", { page });
+      }
+    } catch (err) {
+      console.error("[PulseTouch::OrganismMapPrewarm] FAILED →", err);
+    }
+
+    // ============================================================
+    // 5 — PURE SYNC IGNITION (NO ASYNC, NO LOOPS)
     // ============================================================
     console.log(
-      "%c[PulseTouch::ignition] %cportal-first warm.",
+      "%c[PulseTouch::ignition] %cportal-first warm + cortex prewarm complete.",
       "color:#90CAF9; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;"
     );
@@ -1316,6 +1341,7 @@ function applyGateDecision(gateDecision, skin) {
     console.error("PulseTouch auto‑ignite failed", err);
   }
 })();
+
 
 
 // ============================================================
