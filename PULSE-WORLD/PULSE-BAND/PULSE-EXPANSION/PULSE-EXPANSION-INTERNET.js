@@ -35,7 +35,7 @@ import {
 import {
   PulseWorldCoreMeta,
   createPulseWorldCore
-} from "./PULSE-EXPANSION-USER.js"; // world core stays v16 but referenced as OS meta
+} from "./PulseExpansionUser-v24.js"; // world core stays v16 but referenced as OS meta
 
 // v16 server/router
 import {

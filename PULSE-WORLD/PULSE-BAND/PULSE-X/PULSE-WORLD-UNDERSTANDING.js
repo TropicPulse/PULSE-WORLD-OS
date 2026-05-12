@@ -101,7 +101,7 @@ import {
 //  IMPORTS — MAPS (Intent, Organism, IQ)
 // ============================================================================
 import { PulseIntentMap } from "./PULSE-WORLD-INTENT.js";
-import { createPulseWorldCore, createPulseCastle, createPulseMesh } from "../PULSE-EXPANSION/PULSE-EXPANSION-USER.js";
+import { createPulseWorldCore, createPulseCastle, createPulseMesh } from "../PULSE-EXPANSION/PulseExpansionUser-v24.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 
 // ============================================================================

@@ -94,7 +94,7 @@ import {
 } from "../PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 
 // User lanes
-import { getPulseUserContext } from "./PULSE-EXPANSION-USER.js";
+import { getPulseUserContext } from "./PulseExpansionUser-v24.js";
 
 // WorldCore (AI mirror)
 import {

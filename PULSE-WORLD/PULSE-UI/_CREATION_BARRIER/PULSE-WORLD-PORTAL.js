@@ -281,47 +281,49 @@ const PulseSurfaceEnvironment = buildSurfaceEnvironment();
 // MEMBRANE META — PULSE PORTAL CONTEXT
 // ============================================================================
 function buildRouteId() {
-  if (typeof window === "undefined") return "PulseWorldBarrier";
-
   try {
-    // ⭐ ALWAYS load from localStorage FIRST — ONLY SOURCE OF TRUTH
-    const raw = localStorage.getItem("PulseOrganismMap_v25");
-
-    if (!raw) {
-      console.warn("[RouteCarpet] No localStorage map → fallback PulseWorldBarrier");
-      return "PulseWorldBarrier";
-    }
-
-    let map;
-    try {
-      map = JSON.parse(raw);
-    } catch (err) {
-      console.error("[RouteCarpet] Failed to parse localStorage map → fallback", err);
-      return "PulseWorldBarrier";
-    }
-
+    // ⭐ 1. Primary route = current page
     const path = window.location?.pathname || "/";
 
-    // ⭐ HARD GUARDS — prevent crashes
-    if (!map?.systems?.UI?.pages) {
-      console.warn("[RouteCarpet] Map missing UI.pages → fallback PulseWorldBarrier");
-      return "PulseWorldBarrier";
+    // ⭐ 2. If we have a route history, use the last known route as fallback
+    const routeHistory = JSON.parse(localStorage.getItem("pulse_route_history") || "[]");
+    const lastRoute = routeHistory.length > 0 ? routeHistory[routeHistory.length - 1] : null;
+
+    // ⭐ 3. Try to load the old map (optional)
+    const raw = localStorage.getItem("PulseOrganismMap_v25");
+    let map = null;
+
+    if (raw) {
+      try {
+        map = JSON.parse(raw);
+      } catch (err) {
+        console.warn("[RouteCarpet] Map parse failed → ignoring map");
+        map = null;
+      }
     }
 
-    const pages = map.systems.UI.pages;
+    // ⭐ 4. If map exists, try to match path
+    if (map?.systems?.UI?.pages) {
+      const pages = map.systems.UI.pages;
 
-    // ⭐ MATCH PATH
-    for (const key of Object.keys(pages)) {
-      const page = pages[key];
-      const meta = page?.IDENTITY_META || {};
+      for (const key of Object.keys(pages)) {
+        const page = pages[key];
+        const meta = page?.IDENTITY_META || {};
 
-      if (meta.ROUTE === path) return meta.ROUTE;
-      if (meta.ALIAS === path) return meta.ROUTE || key;
-      if ("/" + key === path) return meta.ROUTE || key;
+        if (meta.ROUTE === path) return meta.ROUTE;
+        if (meta.ALIAS === path) return meta.ROUTE || key;
+        if ("/" + key === path) return meta.ROUTE || key;
+      }
     }
 
-    // ⭐ Fallback
-    console.warn("[RouteCarpet] No page matched path:", path, "→ fallback PulseWorldBarrier");
+    // ⭐ 5. Fallback to last known route
+    if (lastRoute) {
+      console.warn("[RouteCarpet] Using last known route:", lastRoute);
+      return lastRoute;
+    }
+
+    // ⭐ 6. Final fallback
+    console.warn("[RouteCarpet] No route matched → PulseWorldBarrier");
     return "PulseWorldBarrier";
 
   } catch (err) {
@@ -329,7 +331,6 @@ function buildRouteId() {
     return "PulseWorldBarrier";
   }
 }
-
 
 
 const surfaceMeta = Object.freeze({

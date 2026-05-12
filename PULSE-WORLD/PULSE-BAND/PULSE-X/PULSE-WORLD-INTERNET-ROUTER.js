@@ -48,7 +48,7 @@ import {
   createPulseWorldCore,
   pulseUser,
   PulseUserMeta
-} from "../PULSE-EXPANSION/PULSE-EXPANSION-USER.js";
+} from "../PULSE-EXPANSION/PulseExpansionUser-v24.js";
 
 // Mesh (symbolic + binary) — v24 IMMORTAL ORGANISM
 import createBinaryMesh, {

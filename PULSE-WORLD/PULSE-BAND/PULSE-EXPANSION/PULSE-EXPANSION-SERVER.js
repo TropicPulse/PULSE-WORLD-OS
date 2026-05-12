@@ -58,7 +58,7 @@ import {
 import {
   getPulseUserContext,
   createPulseWorldCore
-} from "./PULSE-EXPANSION-USER.js";
+} from "./PulseExpansionUser-v24.js";
 
 // Adrenal (compute starter / circulation governor)
 import {
