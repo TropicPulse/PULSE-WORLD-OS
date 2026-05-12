@@ -1,54 +1,24 @@
 // ============================================================================
-// FILE: /PULSE-TOUCH/PULSE-TOUCH-GATE-v24.js
-// PULSE OS — v24 IMMORTAL
+// FILE: /PULSE-TOUCH/PULSE-TOUCH-GATE-v25++.js
+// PULSE OS — v25++ IMMORTAL
 // PULSE‑TOUCH EVOLUTIONARY GATE — ROUTING + ADVANTAGE CORTEX + FASTLANE
 // ============================================================================
-//
-// ROLE:
-//   Evolutionary routing organ at the edge. Given a securityDecision and
-//   touchState, it deterministically selects the page route and exposes
-//   an advantage profile (hydration, animation, chunking, warmup).
-//
-//   v24 keeps the v17 routing semantics IMMUTABLE and adds IMMORTAL++ overlays:
-//     • Explicit AI_EXPERIENCE_META / ORGAN_META / CONTRACT / OVERLAYS
-//     • FastLane + continuous pulse evolution (from Pulse‑Touch Detector v24)
-//     • Presence‑intensity, region‑cluster, hydration/animation tiers
-//     • Deterministic, drift‑proof, additive‑only evolution
-//
-// CONTRACT:
-//   • MUST map securityDecision → page
-//   • MUST NOT infer identity
-//   • MUST NOT leak internal logic
-//   • MUST remain deterministic
-//   • MUST remain drift‑proof
-//   • MUST remain additive‑only (IMMORTAL++)
-//
-// ============================================================================
-// IMPORTS — v24 TOUCH STACK (EDGE‑ONLY, NO NETWORK)
-// ============================================================================
 
-// Core skin + security + warmup + advantage cortex
-// (These filenames assume your v24 upgrades; adjust paths if needed.)
-import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR.js";
-import { pulseTouchWarmup } from "./PULSE-TOUCH-WARMUP.js";
+import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR-v25++.js";
+import { PulseTouchWarmup } from "./PULSE-TOUCH-WARMUP.js";
 import { pulseTouchSecurity } from "./PULSE-TOUCH-SECURITY.js";
-import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE.js";
-
-// Optional future‑oriented helpers (safe if missing)
+import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE-v25++.js";
+import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS-v25++.js";
 import { PulseTouchPredictor } from "./PULSE-TOUCH-PREDICTOR.js";
-import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS.js";
 import { PulsePresenceOracle } from "./PULSE-TOUCH-PRESENCE-ORACLE.js";
 
-// ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
 export const AI_EXPERIENCE_META_PulseTouchGate = {
   id: "pulsetouch.gate",
   kind: "routing_organ",
-  version: "v24-IMMORTAL++",
+  version: "v25++-IMMORTAL",
   role: "evolutionary_page_selector",
   surfaces: {
-    band: ["routing", "trust", "evolution"],
+    band: ["routing", "trust", "evolution", "advantage", "fastlane"],
     wave: ["decisive", "final", "absolute"],
     binary: ["allow", "challenge", "deny"],
     presence: ["routing_state"],
@@ -58,7 +28,9 @@ export const AI_EXPERIENCE_META_PulseTouchGate = {
       "hydration_tier",
       "animation_tier",
       "region_cluster",
-      "presence_intensity"
+      "presence_intensity",
+      "chunk_bias",
+      "prewarm_plan"
     ],
     speed: "instant_compute"
   },
@@ -70,7 +42,8 @@ export const AI_EXPERIENCE_META_PulseTouchGate = {
   consumers: [
     "PulseTouchSecurity",
     "PulseTouchWarmup",
-    "PulseTouchAdvantageCortex"
+    "PulseTouchAdvantageCortex",
+    "PulseTouchAnalytics"
   ],
   invariants: {
     networkCalls: "none",
@@ -80,9 +53,6 @@ export const AI_EXPERIENCE_META_PulseTouchGate = {
   }
 };
 
-// ============================================================================
-// ORGAN_META
-// ============================================================================
 export const ORGAN_META_PulseTouchGate = {
   id: "organ.pulsetouch.gate",
   organism: "PulseTouch",
@@ -116,30 +86,31 @@ export const ORGAN_META_PulseTouchGate = {
   },
   lineage: {
     family: "pulsetouch_gate",
-    generation: 6,
-    osVersion: "v24",
+    generation: 7,
+    osVersion: "v25++",
     history: [
       "Gate v1 (Basic Routing)",
       "Gate v2 (Trust‑Based Evolution)",
       "Gate v3 (IMMORTAL Evolutionary Organ)",
       "Gate v14 (Advantage Cortex)",
       "Gate v17 (FastLane + Continuous Pulse Aware)",
-      "Gate v24 (IMMORTAL++ Evolutionary Router)"
+      "Gate v24 (IMMORTAL++ Evolutionary Router)",
+      "Gate v25++ (Full Advantage + Analytics + Warmup Orchestrator)"
     ]
   }
 };
 
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
 export const ORGAN_CONTRACT_PulseTouchGate = {
   inputs: {
-    securityDecision: "PulseTouchSecurity decision object",
-    touchState: "PulseTouchDetector skinState"
+    event: "edge request event with headers"
   },
   outputs: {
     route: "string",
-    advantage: "object"
+    advantage: "object",
+    touchState: "PulseTouchDetector skinState",
+    securityDecision: "PulseTouchSecurity decision",
+    analytics: "PulseTouchAnalytics view",
+    advantageView: "Advantage Cortex view"
   },
   consumers: [
     "PulseTouchWarmup",
@@ -154,9 +125,6 @@ export const ORGAN_CONTRACT_PulseTouchGate = {
   }
 };
 
-// ============================================================================
-// IMMORTAL_OVERLAYS
-// ============================================================================
 export const IMMORTAL_OVERLAYS_PulseTouchGate = {
   drift: {
     allowed: false,
@@ -172,8 +140,8 @@ export const IMMORTAL_OVERLAYS_PulseTouchGate = {
     notes: "Only additive evolution allowed; existing actions keep meaning."
   },
   load: {
-    maxComponents: 2,
-    notes: "Routing + Advantage Cortex."
+    maxComponents: 3,
+    notes: "Routing + Advantage Cortex + Analytics."
   },
   worldLens: {
     awareOfWorlds: false
@@ -196,48 +164,32 @@ export const IMMORTAL_OVERLAYS_PulseTouchGate = {
 };
 
 // ============================================================================
-// v24 IMMORTAL — CORE ROUTING (UNCHANGED, UNTOUCHABLE)
+// SACRED ROUTING CORE — v17/v24/v25++ (UNCHANGED)
 // ============================================================================
-//
-// NOTE:
-//   This is the sacred v17 routing core. v24 MUST NOT change its
-//   semantics. All evolution happens in the Advantage Cortex.
-// ============================================================================
+
 export function evolutionaryGate(securityDecision) {
   if (securityDecision.action === "hellno") {
     return "/hellno.html";
   }
-
   if (securityDecision.action === "challenge") {
     return "/challenge.html";
   }
-
   return "/index.html";
 }
 
 // ============================================================================
-// v24 IMMORTAL — ADVANTAGE CORTEX (ADDITIVE, NEVER OVERRIDES ROUTING)
+// ADVANTAGE PROFILE (EDGE‑LEVEL, BEFORE FULL CORTEX)
 // ============================================================================
-//
-// INPUTS:
-//   securityDecision: { action, trustLevel, region, ... }
-//   touchState:       Pulse‑Touch skinState (from detectPulseTouch)
-//
-// OUTPUT:
-//   advantage profile for Warmup / Chunk / Animation / Hydration.
-// ============================================================================
+
 export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
   const { trustLevel, action } = securityDecision;
 
-  // v24 continuous pulse + fastlane hints (from Touch v24 Detector)
-  const pulseStream = touchState.pulseStream || "continuous"; // "continuous" | "burst" | "single" | "unknown"
-  const fastLane = touchState.fastLane || "enabled";          // "enabled" | "disabled" | "unknown"
-
-  // presence intensity (never inferred — only normalized)
-  const presenceIntensity = touchState.presence || "unknown";
+  const pulseStream = touchState.pulseStream || "continuous";
+  const fastLane = touchState.fastLane || "enabled";
+  const presenceIntensity = touchState.presenceIntensity || "medium";
+  const regionCluster = touchState.regionCluster || "clusterUnknown";
 
   return {
-    // Hydration tier
     hydrationTier:
       action === "hellno"
         ? "minimal"
@@ -245,7 +197,6 @@ export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
         ? "safe"
         : "full",
 
-    // Animation tier
     animationTier:
       action === "hellno"
         ? "none"
@@ -253,7 +204,6 @@ export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
         ? "reduced"
         : "smooth",
 
-    // Chunk strategy
     chunkStrategy:
       action === "hellno"
         ? "minimal"
@@ -261,7 +211,6 @@ export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
         ? "safe"
         : "aggressive",
 
-    // Warmup profile
     warmupProfile:
       action === "hellno"
         ? "minimal"
@@ -269,10 +218,7 @@ export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
         ? "safe"
         : "full",
 
-    // Region cluster
-    regionCluster: securityDecision.region || "unknown",
-
-    // Mode hint
+    regionCluster,
     modeHint:
       trustLevel === "hostile"
         ? "safe"
@@ -280,15 +226,100 @@ export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
         ? "balanced"
         : "fast",
 
-    // v24 continuous pulse awareness
     pulseStream,
     fastLane,
-
-    // v24 presence intensity
     presenceIntensity,
-
-    // v24 temporal hints (if Touch v24 writes them)
     originTs: touchState.originTs || null,
     lastPulseTs: touchState.lastPulseTs || null
+  };
+}
+
+// ============================================================================
+// FULL ORCHESTRATOR — v25++ IMMORTAL
+// ============================================================================
+//
+// 1) Detect skinState (Detector)
+// 2) Run Security
+// 3) Run Warmup (non‑blocking, but we still record warmed flag)
+// 4) Run Analytics (metrics + advantageHints)
+// 5) Run Predictor (optional)
+// 6) Run Presence Oracle (optional)
+// 7) Run Advantage Cortex (chunkPlan + prewarmPlan + biases)
+// 8) Compute final route (sacred core)
+// 9) Return full routing + advantage bundle
+// ============================================================================
+
+export async function PulseTouchGate(event) {
+  // 1) Skin
+  const touchState = detectPulseTouch(event);
+
+  // 2) Security
+  const securityDecision = pulseTouchSecurity(touchState);
+
+  // 3) Warmup (organ factory)
+  const warmupOrgan = PulseTouchWarmup();
+  const warmup = await warmupOrgan.warmup(touchState);
+
+  // 4) Analytics
+  const analyticsOrgan = PulseTouchAnalytics();
+  const { metrics, advantageHints } = analyticsOrgan.analyze(
+    touchState,
+    securityDecision,
+    warmup
+  );
+
+  // 5) Predictor (optional)
+  let predictorView = null;
+  try {
+    const predictor = PulseTouchPredictor?.();
+    if (predictor && typeof predictor.predict === "function") {
+      predictorView = predictor.predict({ touchState, metrics });
+    }
+  } catch {
+    predictorView = null;
+  }
+
+  // 6) Presence Oracle (optional)
+  let oracleView = null;
+  try {
+    const oracle = PulsePresenceOracle?.();
+    if (oracle && typeof oracle.evaluate === "function") {
+      oracleView = oracle.evaluate({ touchState, metrics });
+    }
+  } catch {
+    oracleView = null;
+  }
+
+  // 7) Advantage Cortex
+  const advantageOrgan = pulseTouchAdvantageCortex();
+  const advantageView = advantageOrgan.compute(
+    {
+      page: touchState.page,
+      advantageHints,
+      metrics
+    },
+    predictorView,
+    oracleView
+  );
+
+  // 8) Sacred route
+  const route = evolutionaryGate(securityDecision);
+
+  // 9) Edge‑level advantage profile (for quick consumers)
+  const edgeAdvantage = evolutionaryGateAdvantages(securityDecision, touchState);
+
+  const advantage = {
+    edge: edgeAdvantage,
+    cortex: advantageView,
+    analytics: { metrics, advantageHints }
+  };
+
+  return {
+    route,
+    advantage,
+    touchState,
+    securityDecision,
+    analytics: { metrics, advantageHints },
+    advantageView
   };
 }

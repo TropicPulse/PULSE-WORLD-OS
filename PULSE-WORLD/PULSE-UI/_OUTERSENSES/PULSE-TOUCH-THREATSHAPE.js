@@ -1,36 +1,17 @@
 // ============================================================================
-// FILE: /PULSE-TOUCH/PULSE-TOUCH-THREATSHAPE.js
-// PULSE OS — v24 IMMORTAL++
-// PULSE‑TOUCH THREATSHAPE ENGINE — 3‑SHAPE THREAT MODEL
+//  PULSE OS — EDGE SECURITY ORGAN
+//  FILE: /PULSE-TOUCH/PULSE-TOUCH-THREATSHAPE-v25++.js
+//  ORGAN: PulseTouchThreatShape (v25++ IMMORTAL)
+//  ROLE: Multi‑Dimensional Threat Classification / Early Firewall Cortex
 // ============================================================================
-//
-// ROLE:
-//   Early threat shape classification for Pulse‑Touch at the edge.
-//   Consumes Pulse‑Touch skinState and produces a stable ThreatShape object:
-//
-//     • shape: NOT_A_THREAT | POSSIBLE_THREAT | MAJOR_THREAT
-//     • recommendedAction: allow | alert | hellno
-//     • riskScore: 0–100
-//     • reasons: string[]
-//     • regionRisk / pulseRisk / temporalRisk / clusterRisk
-//     • meta: region / pulseStream / fastLane / mode / presence / timestamps
-//
-// CONTRACT:
-//   • MUST NOT use PII
-//   • MUST NOT infer personal identity
-//   • MUST remain deterministic and drift‑proof
-//   • MUST output a stable ThreatShape object
-//
-// ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
+
 export const AI_EXPERIENCE_META_PulseTouchThreatShape = {
   id: "pulsetouch.threatshape",
   kind: "cortex_organ",
-  version: "v24-IMMORTAL++",
+  version: "v25++-IMMORTAL",
   role: "threat_shape_engine",
   surfaces: {
-    band: ["security", "threatshape", "risk"],
+    band: ["security", "threatshape", "risk", "headers", "geo", "ua"],
     wave: ["analytical", "cold", "early_firewall"],
     binary: ["not_a_threat", "possible_threat", "major_threat"],
     presence: ["threatshape_state"],
@@ -39,6 +20,12 @@ export const AI_EXPERIENCE_META_PulseTouchThreatShape = {
       "pulse_risk",
       "temporal_risk",
       "cluster_risk",
+      "header_risk",
+      "method_risk",
+      "ua_risk",
+      "geo_risk",
+      "cookie_risk",
+      "integrity_risk",
       "shape_hint"
     ],
     speed: "instant_compute"
@@ -51,9 +38,6 @@ export const AI_EXPERIENCE_META_PulseTouchThreatShape = {
   }
 };
 
-// ============================================================================
-// ORGAN META
-// ============================================================================
 export const ORGAN_META_PulseTouchThreatShape = {
   id: "organ.pulsetouch.threatshape",
   organism: "PulseTouch",
@@ -69,39 +53,29 @@ export const ORGAN_META_PulseTouchThreatShape = {
     temporalAware: true,
     presenceAware: true,
     modeAware: true,
-
+    headerAware: true,
+    uaAware: true,
+    geoAware: true,
+    cookieAware: true,
+    integrityAware: true,
     zeroPII: true,
     zeroTracking: true,
     zeroIdentityInference: true,
-
     failOpenAware: true,
     threeShapeModel: true,
     operatorAlertAware: true,
     hellnoAware: true
-  },
-  lineage: {
-    family: "pulsetouch_threatshape",
-    generation: 2,
-    osVersion: "v24",
-    history: [
-      "Touch v17 (Detector / Security / Gate / Warmup)",
-      "ThreatShape v18 (Pre‑Entry Firewall Cortex)",
-      "ThreatShape v24 (IMMORTAL++ ThreatShape Engine)"
-    ]
   }
 };
 
-// ============================================================================
-// ORGAN CONTRACT
-// ============================================================================
 export const ORGAN_CONTRACT_PulseTouchThreatShape = {
   inputs: {
-    pulseTouch: "Pulse‑Touch skinState from detector",
-    event: "Edge / Netlify event (optional, for future use)"
+    pulseTouch: "Pulse‑Touch skinState",
+    event: "Edge event with headers (optional)"
   },
   outputs: {
-    threatShape: "ThreatShape object (3‑shape model)",
-    securityDecision: "Optional skeleton decision (trustLevel/action)",
+    threatShape: "ThreatShape object",
+    securityDecision: "Optional skeleton decision",
     notifyOperator: "boolean",
     hellno: "boolean"
   },
@@ -115,26 +89,11 @@ export const ORGAN_CONTRACT_PulseTouchThreatShape = {
   }
 };
 
-// ============================================================================
-// IMMORTAL OVERLAYS
-// ============================================================================
 export const IMMORTAL_OVERLAYS_PulseTouchThreatShape = {
-  drift: {
-    allowed: false,
-    notes: "Shape thresholds and semantics must remain stable."
-  },
-  pressure: {
-    expectedLoad: "high",
-    notes: "Runs on many requests; must remain O(1)."
-  },
-  stability: {
-    semantics: "stable",
-    notes: "Only additive evolution allowed; existing shapes must not change meaning."
-  },
-  load: {
-    maxComponents: 1,
-    notes: "Single ThreatShape per evaluation."
-  },
+  drift: { allowed: false },
+  pressure: { expectedLoad: "high" },
+  stability: { semantics: "stable" },
+  load: { maxComponents: 1 },
   triHeart: {
     cognitive: "early_threat_classification",
     emotional: "no_emotion",
@@ -143,129 +102,160 @@ export const IMMORTAL_OVERLAYS_PulseTouchThreatShape = {
 };
 
 // ============================================================================
-// CORE IMPLEMENTATION — v24 IMMORTAL++
+// HELPERS — v25++
 // ============================================================================
 
-/**
- * Build a ThreatShape from early environment identity.
- *
- * @param {Object} pulseTouch - Output from detectPulseTouch(event)
- * @param {Object} event      - Raw edge event (for IP / headers if needed)
- * @returns {Object} ThreatShape
- */
+function getHeader(headers, key) {
+  return (
+    headers?.[key] ||
+    headers?.[key.toLowerCase()] ||
+    headers?.[key.toUpperCase()]
+  );
+}
+
+function classifyHeaderShape(headers) {
+  const count = Object.keys(headers || {}).length;
+  if (count === 0) return "empty";
+  if (count < 5) return "minimal";
+  if (count < 15) return "normal";
+  return "heavy";
+}
+
+function classifyMethod(method) {
+  switch ((method || "GET").toUpperCase()) {
+    case "GET": return "read";
+    case "HEAD": return "read_head";
+    case "POST": return "write";
+    case "PUT":
+    case "PATCH":
+    case "DELETE": return "mutating";
+    default: return "unknown";
+  }
+}
+
+function classifyUA(ua) {
+  if (!ua) return "unknown";
+  const s = ua.toLowerCase();
+  if (s.includes("curl") || s.includes("wget") || s.includes("httpclient")) return "script";
+  if (s.includes("bot") || s.includes("spider") || s.includes("crawler")) return "bot";
+  if (s.includes("chrome") || s.includes("safari") || s.includes("firefox") || s.includes("edge")) return "browser";
+  return "unknown";
+}
+
+function classifyGeo(headers) {
+  const c = getHeader(headers, "cf-ipcountry") || "unknown";
+  if (c === "T1") return "tor";
+  if (c === "unknown") return "unknown";
+  return "normal";
+}
+
+function classifyCookieIntegrity(pulseTouch) {
+  const required = ["region", "mode", "presence", "page"];
+  const missing = required.filter((k) => !pulseTouch[k]);
+  if (missing.length === 0) return "intact";
+  if (missing.length <= 2) return "partial";
+  return "unknown";
+}
+
+// ============================================================================
+// CORE IMPLEMENTATION — v25++ IMMORTAL
+// ============================================================================
+
 export function buildThreatShape(pulseTouch, event = {}) {
-  const reasons = [];
+  const headers = event.headers || {};
+  const method = event.httpMethod || event.method || "GET";
+
+  const ua = getHeader(headers, "user-agent") || "";
+  const referer = getHeader(headers, "referer") || "";
+  const host = getHeader(headers, "host") || "";
+  const scheme = getHeader(headers, "x-forwarded-proto") || "https";
+  const acceptLang = getHeader(headers, "accept-language") || "";
+  const cfBot = getHeader(headers, "cf-bot-score") || null;
+
+  const headerShape = classifyHeaderShape(headers);
+  const methodShape = classifyMethod(method);
+  const uaShape = classifyUA(ua);
+  const geoShape = classifyGeo(headers);
+  const integrityRisk = classifyCookieIntegrity(pulseTouch);
+
   let riskScore = 0;
+  const reasons = [];
 
-  const region = pulseTouch.region || "unknown";
-  const pulseStream = pulseTouch.pulseStream || "continuous";
-  const fastLane = pulseTouch.fastLane || "enabled";
-  const mode = pulseTouch.mode || "fast";
-  const presence = pulseTouch.presence || "unknown";
-  const originTs = pulseTouch.originTs || null;
-  const lastPulseTs = pulseTouch.lastPulseTs || null;
-
-  // ------------------------------------------------------------
   // REGION RISK
-  // ------------------------------------------------------------
-  let regionRisk = "safe"; // safe | restricted | blocked
+  const region = pulseTouch.region || "unknown";
+  if (region === "kp") { riskScore += 80; reasons.push("region_blocked"); }
+  else if (region === "ng") { riskScore += 40; reasons.push("region_restricted"); }
+  else if (region === "unknown") { riskScore += 10; reasons.push("region_unknown"); }
 
-  const BLOCKED_REGIONS = new Set(["kp"]);
-  const RESTRICTED_REGIONS = new Set(["ng"]);
-
-  if (BLOCKED_REGIONS.has(region)) {
-    regionRisk = "blocked";
-    riskScore += 80;
-    reasons.push(`region_blocked:${region}`);
-  } else if (RESTRICTED_REGIONS.has(region)) {
-    regionRisk = "restricted";
-    riskScore += 40;
-    reasons.push(`region_restricted:${region}`);
-  }
-
-  // ------------------------------------------------------------
   // PULSE RISK
-  // ------------------------------------------------------------
-  let pulseRisk = "normal"; // normal | anomalous | hostile
+  const pulseStream = pulseTouch.pulseStream || "continuous";
+  if (pulseStream === "single") { riskScore += 10; reasons.push("pulse_single"); }
+  if (pulseStream === "burst") { riskScore += 5; reasons.push("pulse_burst"); }
 
-  if (pulseStream === "single") {
-    pulseRisk = "anomalous";
-    riskScore += 10;
-    reasons.push("pulse_single");
-  } else if (pulseStream === "burst") {
-    pulseRisk = "anomalous";
-    riskScore += 5;
-    reasons.push("pulse_burst");
-  }
+  // FASTLANE
+  if (pulseTouch.fastLane === "disabled") { riskScore += 5; reasons.push("fastlane_disabled"); }
 
-  if (fastLane === "disabled") {
-    pulseRisk = pulseRisk === "normal" ? "anomalous" : pulseRisk;
-    riskScore += 5;
-    reasons.push("fastlane_disabled");
-  }
-
-  // ------------------------------------------------------------
   // TEMPORAL RISK
-  // ------------------------------------------------------------
-  let temporalRisk = "normal"; // normal | drift | suspicious
-
+  const { originTs, lastPulseTs } = pulseTouch;
   if (originTs && lastPulseTs && lastPulseTs > originTs) {
     const delta = lastPulseTs - originTs;
-    if (delta > 15000) {
-      temporalRisk = "drift";
-      riskScore += 10;
-      reasons.push("temporal_drift");
-    } else if (delta > 5000) {
-      temporalRisk = "suspicious";
-      riskScore += 5;
-      reasons.push("temporal_suspicious");
-    }
+    if (delta > 15000) { riskScore += 10; reasons.push("temporal_drift"); }
+    else if (delta > 5000) { riskScore += 5; reasons.push("temporal_suspicious"); }
   }
 
-  // ------------------------------------------------------------
-  // CLUSTER RISK
-  // ------------------------------------------------------------
-  let clusterRisk = "safe"; // safe | unknown | blocked
-
-  if (region === "unknown") {
-    clusterRisk = "unknown";
-    riskScore += 10;
-    reasons.push("cluster_unknown_region");
+  // MODE / PRESENCE
+  if (pulseTouch.mode === "safe") { riskScore += 5; reasons.push("mode_safe"); }
+  if (pulseTouch.presence === "inactive" || pulseTouch.presence === "unknown") {
+    riskScore += 5; reasons.push(`presence_${pulseTouch.presence}`);
   }
 
-  // ------------------------------------------------------------
-  // MODE / PRESENCE HINTS
-  // ------------------------------------------------------------
-  if (mode === "safe") {
+  // HEADER SHAPE
+  if (headerShape === "empty") { riskScore += 15; reasons.push("header_empty"); }
+  if (headerShape === "heavy") { riskScore += 5; reasons.push("header_heavy"); }
+
+  // METHOD SHAPE
+  if (methodShape === "mutating") { riskScore += 15; reasons.push("method_mutating"); }
+  if (methodShape === "write") { riskScore += 8; reasons.push("method_write"); }
+
+  // UA SHAPE
+  if (uaShape === "script") { riskScore += 15; reasons.push("ua_script"); }
+  if (uaShape === "bot") { riskScore += 10; reasons.push("ua_bot"); }
+  if (!ua) { riskScore += 5; reasons.push("ua_missing"); }
+
+  // GEO SHAPE
+  if (geoShape === "tor") { riskScore += 20; reasons.push("geo_tor"); }
+  if (geoShape === "unknown") { riskScore += 5; reasons.push("geo_unknown"); }
+
+  // TLS / SCHEME
+  if (scheme !== "https") { riskScore += 10; reasons.push("scheme_insecure"); }
+
+  // REFERER
+  if (referer && !referer.includes(host)) {
     riskScore += 5;
-    reasons.push("mode_safe");
+    reasons.push("referer_external");
   }
 
-  if (presence === "inactive" || presence === "unknown") {
-    riskScore += 5;
-    reasons.push(`presence_${presence}`);
+  // COOKIE INTEGRITY
+  if (integrityRisk === "partial") { riskScore += 10; reasons.push("cookie_partial"); }
+  if (integrityRisk === "unknown") { riskScore += 20; reasons.push("cookie_unknown"); }
+
+  // BOT SCORE
+  if (cfBot && Number(cfBot) < 30) {
+    riskScore += 15;
+    reasons.push("cfbot_low");
   }
 
-  // ------------------------------------------------------------
-  // NORMALIZE RISK SCORE (0–100)
-  // ------------------------------------------------------------
-  if (riskScore < 0) riskScore = 0;
-  if (riskScore > 100) riskScore = 100;
+  // NORMALIZE
+  riskScore = Math.min(100, Math.max(0, riskScore));
 
-  // ------------------------------------------------------------
-  // MAP RISK → THREAT SHAPE (3‑tier model)
-  // ------------------------------------------------------------
+  // SHAPE
   let shape = "NOT_A_THREAT";
   let recommendedAction = "allow";
 
-  if (regionRisk === "blocked" || riskScore >= 80) {
+  if (riskScore >= 80) {
     shape = "MAJOR_THREAT";
     recommendedAction = "hellno";
-  } else if (
-    regionRisk === "restricted" ||
-    clusterRisk === "unknown" ||
-    riskScore >= 40
-  ) {
+  } else if (riskScore >= 40) {
     shape = "POSSIBLE_THREAT";
     recommendedAction = "alert";
   }
@@ -275,66 +265,45 @@ export function buildThreatShape(pulseTouch, event = {}) {
     recommendedAction,
     riskScore,
     reasons,
-    regionRisk,
-    pulseRisk,
-    temporalRisk,
-    clusterRisk,
+    regionRisk: region,
+    pulseRisk: pulseStream,
+    temporalRisk: originTs && lastPulseTs ? "evaluated" : "none",
+    clusterRisk: pulseTouch.regionCluster || "unknown",
+    headerShape,
+    methodShape,
+    uaShape,
+    geoShape,
+    integrityRisk,
     meta: {
       region,
       pulseStream,
-      fastLane,
-      mode,
-      presence,
+      fastLane: pulseTouch.fastLane,
+      mode: pulseTouch.mode,
+      presence: pulseTouch.presence,
       originTs,
       lastPulseTs
     }
   };
 }
 
-/**
- * Map ThreatShape → Security decision skeleton.
- */
 export function threatShapeToSecurityDecision(threatShape) {
   const { shape, riskScore } = threatShape;
 
-  let trustLevel = "trusted";
-  let action = "allow";
+  if (shape === "MAJOR_THREAT") return { riskScore, trustLevel: "hostile", action: "hellno" };
+  if (shape === "POSSIBLE_THREAT") return { riskScore, trustLevel: "suspicious", action: "allow" };
+  if (riskScore >= 20) return { riskScore, trustLevel: "neutral", action: "allow" };
 
-  if (shape === "MAJOR_THREAT") {
-    trustLevel = "hostile";
-    action = "hellno";
-  } else if (shape === "POSSIBLE_THREAT") {
-    trustLevel = "suspicious";
-    action = "allow"; // fail‑open, operator alerted
-  } else if (riskScore >= 20) {
-    trustLevel = "neutral";
-    action = "allow";
-  }
-
-  return {
-    riskScore,
-    trustLevel,
-    action
-  };
+  return { riskScore, trustLevel: "trusted", action: "allow" };
 }
 
-/**
- * Decide whether to notify operator (email/webhook) based on ThreatShape.
- */
 export function shouldNotifyOperator(threatShape) {
   return threatShape.shape === "POSSIBLE_THREAT";
 }
 
-/**
- * Decide whether to hard‑block (HELLNO) based on ThreatShape.
- */
 export function shouldHellno(threatShape) {
   return threatShape.shape === "MAJOR_THREAT";
 }
 
-// ============================================================================
-// FACTORY ORGAN — IMMORTAL++
-// ============================================================================
 export function PulseTouchThreatShape() {
   return {
     meta: ORGAN_META_PulseTouchThreatShape,

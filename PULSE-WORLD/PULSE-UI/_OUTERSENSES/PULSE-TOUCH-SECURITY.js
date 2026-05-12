@@ -1,40 +1,18 @@
 // ============================================================================
-// FILE: /PULSE-TOUCH/PULSE-TOUCH-SECURITY.js
-// PULSE OS — v24 IMMORTAL++
+// FILE: /PULSE-TOUCH/PULSE-TOUCH-SECURITY-v25++.js
+// PULSE OS — v25++ IMMORTAL
 // PULSE‑TOUCH SECURITY CORTEX — RISK ENGINE + TRUST CLASSIFIER + THREATSHAPE
 // ============================================================================
-//
-// ROLE:
-//   Security cortex at the edge. Given a Pulse‑Touch skin state and the
-//   raw event headers, it deterministically computes:
-//
-//     • riskScore
-//     • trustLevel
-//     • action
-//     • advantage
-//
-//   v24 IMMORTAL++ adds:
-//     • ThreatShape integration (3‑shape threat model)
-//     • FastLane + continuous pulse evolution
-//     • Presence‑intensity, region‑cluster, mode‑tier scoring
-//     • Temporal hint weighting
-//     • Deterministic, drift‑proof, additive‑only evolution
-//
-// ============================================================================
-// DEPENDENCIES
-// ============================================================================
+
 import { buildThreatShape as PulseTouchThreatShape } from "./PULSE-TOUCH-THREATSHAPE.js";
 
-// ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
 export const AI_EXPERIENCE_META_PulseTouchSecurity = {
   id: "pulsetouch.security",
   kind: "cortex_organ",
-  version: "v24-IMMORTAL++",
+  version: "v25++-IMMORTAL",
   role: "risk_engine",
   surfaces: {
-    band: ["security", "trust", "risk"],
+    band: ["security", "trust", "risk", "shape", "headers"],
     wave: ["analytical", "cold", "precise"],
     binary: ["allow", "challenge", "deny"],
     presence: ["security_state"],
@@ -47,14 +25,19 @@ export const AI_EXPERIENCE_META_PulseTouchSecurity = {
       "presence_intensity",
       "pulse_stream",
       "fastlane_state",
-      "threatshape"
+      "threatshape",
+      "header_shape",
+      "method_shape",
+      "geo_shape",
+      "ua_shape"
     ],
     speed: "instant_compute"
   },
   consumers: [
     "PulseTouchGate",
     "PulseTouchWarmup",
-    "PulseTouchAdvantageCortex"
+    "PulseTouchAdvantageCortex",
+    "PulseTouchAnalytics"
   ],
   invariants: {
     networkCalls: "none",
@@ -64,9 +47,6 @@ export const AI_EXPERIENCE_META_PulseTouchSecurity = {
   }
 };
 
-// ============================================================================
-// ORGAN_META
-// ============================================================================
 export const ORGAN_META_PulseTouchSecurity = {
   id: "organ.pulsetouch.security",
   organism: "PulseTouch",
@@ -82,14 +62,12 @@ export const ORGAN_META_PulseTouchSecurity = {
     identityHintAware: true,
     trustHintAware: true,
 
-    // IMMORTAL guarantees
     zeroPII: true,
     zeroTracking: true,
     zeroInference: true,
     coldLogic: true,
     hostileAware: true,
 
-    // IMMORTAL advantage cortex
     dualBandAware: true,
     chunkProfileAware: true,
     pageHintAware: true,
@@ -105,20 +83,19 @@ export const ORGAN_META_PulseTouchSecurity = {
     hydrationTierAware: true,
     animationTierAware: true,
 
-    // v24 FastLane / Continuous Pulse
     pulseStreamAware: true,
     fastLaneAware: true,
     temporalHintAware: true,
     cookieEvolutionAware: true,
 
-    // v24 ThreatShape
-    threatShapeAware: true
+    threatShapeAware: true,
+    headerShapeAware: true,
+    methodShapeAware: true,
+    geoShapeAware: true,
+    uaShapeAware: true
   }
 };
 
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
 export const ORGAN_CONTRACT_PulseTouchSecurity = {
   inputs: {
     pulseTouch: "Pulse‑Touch skinState from detector",
@@ -129,12 +106,17 @@ export const ORGAN_CONTRACT_PulseTouchSecurity = {
     trustLevel: "trusted | neutral | suspicious | hostile",
     action: "allow | challenge | hellno",
     advantage: "advantage profile for Gate / Warmup / Chunk",
-    threatShape: "shape classification"
+    threatShape: "shape classification",
+    headerShape: "header profile classification",
+    methodShape: "method classification",
+    geoShape: "geo classification",
+    uaShape: "user-agent classification"
   },
   consumers: [
     "PulseTouchGate",
     "PulseTouchWarmup",
-    "PulseTouchAdvantageCortex"
+    "PulseTouchAdvantageCortex",
+    "PulseTouchAnalytics"
   ],
   guarantees: {
     deterministic: true,
@@ -145,9 +127,6 @@ export const ORGAN_CONTRACT_PulseTouchSecurity = {
   }
 };
 
-// ============================================================================
-// IMMORTAL_OVERLAYS
-// ============================================================================
 export const IMMORTAL_OVERLAYS_PulseTouchSecurity = {
   drift: {
     allowed: false,
@@ -173,44 +152,108 @@ export const IMMORTAL_OVERLAYS_PulseTouchSecurity = {
 };
 
 // ============================================================================
-// IMPLEMENTATION — v24 IMMORTAL++
+// HELPERS — v25++
 // ============================================================================
-//
-// Core scoring logic is the v17 engine, preserved.
-// v24 adds ThreatShape + FastLane + continuous pulse scoring.
+
+function getHeader(headers, key) {
+  if (!headers) return undefined;
+  return (
+    headers[key] ||
+    headers[key.toLowerCase()] ||
+    headers[key.toUpperCase()]
+  );
+}
+
+function classifyMethod(method) {
+  switch ((method || "GET").toUpperCase()) {
+    case "GET":
+      return "read";
+    case "HEAD":
+      return "read_head";
+    case "POST":
+      return "write";
+    case "PUT":
+    case "PATCH":
+    case "DELETE":
+      return "mutating";
+    default:
+      return "unknown";
+  }
+}
+
+function classifyGeo(headers) {
+  const country = getHeader(headers, "cf-ipcountry") || "unknown";
+  if (country === "T1") return "tor";
+  if (country === "unknown") return "unknown";
+  return "normal";
+}
+
+function classifyUA(ua) {
+  if (!ua) return "unknown";
+  const s = ua.toLowerCase();
+  if (s.includes("curl") || s.includes("wget") || s.includes("httpclient")) {
+    return "script";
+  }
+  if (s.includes("bot") || s.includes("spider") || s.includes("crawler")) {
+    return "bot";
+  }
+  if (s.includes("chrome") || s.includes("safari") || s.includes("firefox") || s.includes("edge")) {
+    return "browser";
+  }
+  return "unknown";
+}
+
+function classifyHeaderShape(headers) {
+  const keys = Object.keys(headers || {});
+  const count = keys.length;
+
+  if (count === 0) return "empty";
+  if (count < 5) return "minimal";
+  if (count < 15) return "normal";
+  return "heavy";
+}
+
 // ============================================================================
+// IMPLEMENTATION — v25++ IMMORTAL
+// ============================================================================
+
 export function evaluateSecurity(pulseTouch, event) {
-  // ============================================================
-  // BASE RISK SCORING — DETERMINISTIC, UNFORGIVING
-  // ============================================================
   const headers = event?.headers || {};
+  const method = event?.httpMethod || event?.method || "GET";
+
   const ip =
-    headers["x-forwarded-for"] ||
-    headers["client-ip"] ||
-    headers["x-nf-client-connection-ip"] ||
+    getHeader(headers, "x-forwarded-for") ||
+    getHeader(headers, "client-ip") ||
+    getHeader(headers, "x-nf-client-connection-ip") ||
     "unknown";
+
+  const ua = getHeader(headers, "user-agent") || "";
+  const referer = getHeader(headers, "referer") || getHeader(headers, "referrer") || "";
+  const scheme = getHeader(headers, "x-forwarded-proto") || "https";
+  const host = getHeader(headers, "host") || "";
+  const acceptLang = getHeader(headers, "accept-language") || "";
+  const cfBot = getHeader(headers, "cf-bot-score") || null;
+
+  const methodShape = classifyMethod(method);
+  const geoShape = classifyGeo(headers);
+  const uaShape = classifyUA(ua);
+  const headerShape = classifyHeaderShape(headers);
 
   let riskScore = 0;
 
-  // Original scoring (preserved)
+  // v17 core (preserved)
   if (pulseTouch.trusted === "0") riskScore += 40;
   if (pulseTouch.region === "unknown") riskScore += 20;
   if (pulseTouch.identity === "anon") riskScore += 20;
   if (pulseTouch.presence === "unknown") riskScore += 10;
   if (ip === "unknown") riskScore += 10;
 
-  // ============================================================
-  // v24 THREATSHAPE — 3‑SHAPE THREAT MODEL
-  // ============================================================
+  // ThreatShape
   const threatShape = PulseTouchThreatShape(pulseTouch);
-
   if (threatShape === "SPIKE") riskScore += 25;
   if (threatShape === "WAVE") riskScore += 10;
-  if (threatShape === "FLAT") riskScore += 0;
 
-  // ============================================================
-  // v24 FASTLANE / CONTINUOUS PULSE SIGNALS
-  // ============================================================
+  // FastLane / continuous pulse
   if (pulseTouch.presence === "inactive") riskScore += 5;
   if (pulseTouch.mode === "safe") riskScore += 5;
   if (pulseTouch.region === "global") riskScore += 5;
@@ -225,9 +268,29 @@ export function evaluateSecurity(pulseTouch, event) {
     if (delta > 5000) riskScore += 5;
   }
 
-  // ============================================================
-  // TRUST CLASSIFICATION — IMMORTAL THRESHOLDS
-  // ============================================================
+  // v25++ header / method / geo / UA scoring
+  if (methodShape === "mutating") riskScore += 15;
+  if (methodShape === "write") riskScore += 8;
+
+  if (geoShape === "tor") riskScore += 20;
+  if (geoShape === "unknown") riskScore += 5;
+
+  if (uaShape === "script") riskScore += 15;
+  if (uaShape === "bot") riskScore += 10;
+  if (!ua) riskScore += 5;
+
+  if (headerShape === "empty") riskScore += 15;
+  if (headerShape === "heavy") riskScore += 5;
+
+  if (scheme !== "https") riskScore += 10;
+
+  if (cfBot && Number(cfBot) < 30) riskScore += 15;
+
+  if (referer && !referer.includes(host)) {
+    riskScore += 5;
+  }
+
+  // Trust classification
   let trustLevel = "trusted";
   let action = "allow";
 
@@ -242,9 +305,7 @@ export function evaluateSecurity(pulseTouch, event) {
     action = "allow";
   }
 
-  // ============================================================
-  // ADVANTAGE PROFILE — NEVER OVERRIDES ROUTING
-  // ============================================================
+  // Advantage profile
   const advantage = {
     hydrationTier:
       trustLevel === "hostile" ? "minimal" :
@@ -261,8 +322,8 @@ export function evaluateSecurity(pulseTouch, event) {
       trustLevel === "hostile" ? "minimal" :
       trustLevel === "suspicious" ? "safe" : "full",
 
-    regionCluster: pulseTouch.region || "unknown",
-    presenceIntensity: pulseTouch.presence || "unknown",
+    regionCluster: pulseTouch.regionCluster || pulseTouch.region || "unknown",
+    presenceIntensity: pulseTouch.presenceIntensity || pulseTouch.presence || "unknown",
     pulseStream: pulseTouch.pulseStream || "continuous",
     fastLane: pulseTouch.fastLane || "enabled",
 
@@ -271,7 +332,11 @@ export function evaluateSecurity(pulseTouch, event) {
       lastPulseTs: pulseTouch.lastPulseTs || null
     },
 
-    threatShape
+    threatShape,
+    headerShape,
+    methodShape,
+    geoShape,
+    uaShape
   };
 
   return {
@@ -279,13 +344,14 @@ export function evaluateSecurity(pulseTouch, event) {
     trustLevel,
     action,
     advantage,
-    threatShape
+    threatShape,
+    headerShape,
+    methodShape,
+    geoShape,
+    uaShape
   };
 }
 
-// ============================================================================
-// FACTORY ORGAN — IMMORTAL++
-// ============================================================================
 export function PulseTouchSecurity() {
   return {
     meta: ORGAN_META_PulseTouchSecurity,

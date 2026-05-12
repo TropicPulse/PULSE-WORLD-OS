@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: /PULSE-TOUCH/PULSE-TOUCH-WARMUP.js
-// PULSE OS — v24 IMMORTAL++
+// PULSE OS — v25++ IMMORTAL
 // PULSE‑TOUCH WARMUP — METABOLIC PRE‑PULSE ENGINE
 // ============================================================================
 //
@@ -10,14 +10,12 @@
 //
 //   It never blocks routing, never touches PII, never reaches the network.
 //   It only prepares local, in‑memory hints for downstream organs.
-//
 // ============================================================================
-// AI_EXPERIENCE_META — v24 IMMORTAL++
-// ============================================================================
+
 export const AI_EXPERIENCE_META_PulseTouchWarmup = {
   id: "pulsetouch.warmup",
   kind: "metabolic_organ",
-  version: "v24-IMMORTAL++",
+  version: "v25++-IMMORTAL",
   role: "pre_pulse_warmup_engine",
   surfaces: {
     band: ["warmup", "metabolism", "advantage"],
@@ -39,14 +37,17 @@ export const AI_EXPERIENCE_META_PulseTouchWarmup = {
       "animation_tier_warmup",
       "mode_tier_warmup",
       "presence_intensity_warmup",
-      "region_cluster_warmup"
+      "region_cluster_warmup",
+      "metabolic_profile",
+      "nextpage_warmup"
     ],
     speed: "async_parallel"
   },
   consumers: [
     "PulseTouchGate",
     "PulseTouchSecurity",
-    "PulseTouchAdvantageCortex"
+    "PulseTouchAdvantageCortex",
+    "PulseTouchAnalytics"
   ],
   invariants: {
     networkCalls: "none",
@@ -56,9 +57,6 @@ export const AI_EXPERIENCE_META_PulseTouchWarmup = {
   }
 };
 
-// ============================================================================
-// ORGAN_META
-// ============================================================================
 export const ORGAN_META_PulseTouchWarmup = {
   id: "organ.pulsetouch.warmup",
   organism: "PulseTouch",
@@ -91,26 +89,27 @@ export const ORGAN_META_PulseTouchWarmup = {
     advantageRoutingAware: true,
     regionClusterAware: true,
     modeAware: true,
-    presenceIntensityAware: true
+    presenceIntensityAware: true,
+
+    metabolicProfileAware: true,
+    nextPageWarmupAware: true
   },
   lineage: {
     family: "pulsetouch_warmup",
-    generation: 6,
-    osVersion: "v24",
+    generation: 7,
+    osVersion: "v25++",
     history: [
       "Warmup v1 (No‑op)",
       "Warmup v2 (Parallel Preload)",
       "Warmup v3 (IMMORTAL Pre‑Pulse Engine)",
       "Warmup v14 (Advantage Cortex)",
       "Warmup v17 (FastLane + Continuous Pulse Metabolism)",
-      "Warmup v24 (IMMORTAL++ Metabolic Engine)"
+      "Warmup v24 (IMMORTAL++ Metabolic Engine)",
+      "Warmup v25++ (Metabolic Profile + NextPage Warmup)"
     ]
   }
 };
 
-// ============================================================================
-// ORGAN_CONTRACT
-// ============================================================================
 export const ORGAN_CONTRACT_PulseTouchWarmup = {
   inputs: {
     pulseTouch: "Pulse‑Touch skinState from detector"
@@ -118,12 +117,13 @@ export const ORGAN_CONTRACT_PulseTouchWarmup = {
   outputs: {
     warmed: "boolean",
     tasks: "string[] of completed warmup task ids",
-    advantageWarmup: "summary of warmup‑relevant hints"
+    advantageWarmup: "summary of warmup‑relevant hints + metabolic profile"
   },
   consumers: [
     "PulseTouchGate",
     "PulseTouchSecurity",
-    "PulseTouchAdvantageCortex"
+    "PulseTouchAdvantageCortex",
+    "PulseTouchAnalytics"
   ],
   guarantees: {
     deterministic: true,
@@ -136,9 +136,6 @@ export const ORGAN_CONTRACT_PulseTouchWarmup = {
   }
 };
 
-// ============================================================================
-// IMMORTAL_OVERLAYS
-// ============================================================================
 export const IMMORTAL_OVERLAYS_PulseTouchWarmup = {
   drift: {
     allowed: false,
@@ -164,17 +161,7 @@ export const IMMORTAL_OVERLAYS_PulseTouchWarmup = {
 };
 
 // ============================================================================
-// IMPLEMENTATION — v24 IMMORTAL++
-// ============================================================================
-//
-// v17 warmup pipeline preserved, wrapped in IMMORTAL++ meta.
-// All tasks are safe no‑ops by default, but return task ids so
-// downstream organs can introspect what was warmed.
-// ============================================================================
-// ============================================================================
-// PULSE-TOUCH WARMUP — v25++ IMMORTAL METABOLIC ENGINE
-// Fully integrated with PulseChunks v25++, PulsePresenceNormalizer v25++,
-// PulseBand, PulseSignal, PulseRoute, and Portal warmup surfaces.
+// IMPLEMENTATION — v25++ IMMORTAL METABOLIC ENGINE
 // ============================================================================
 
 export async function warmupOrganism(pulseTouch) {
@@ -189,85 +176,108 @@ export async function warmupOrganism(pulseTouch) {
     hydration,
     animation,
     identity
-  } = pulseTouch;
+  } = pulseTouch || {};
 
   const tasks = [];
+  const hasWindow = typeof window !== "undefined";
 
   // ============================================================
   // 1. PREWARM CHUNKS (REAL)
   // ============================================================
-  if (window.PulseChunks && typeof window.PulseChunks.prewarm === "function") {
+  if (hasWindow && window.PulseChunks && typeof window.PulseChunks.prewarm === "function") {
     const urls = collectVisibleAssets();
-    window.PulseChunks.prewarm(urls, {
-      meta: {
-        identity: "PulseTouchWarmup",
-        version: "v25++",
-        layer: "metabolic"
-      },
-      context: { page, region, mode }
-    });
-    tasks.push("prechunk_assets");
+    try {
+      window.PulseChunks.prewarm(urls, {
+        meta: {
+          identity: "PulseTouchWarmup",
+          version: "v25++",
+          layer: "metabolic"
+        },
+        context: { page, region, mode }
+      });
+      tasks.push("prechunk_assets");
+    } catch {
+      // silent by contract
+    }
   }
 
   // ============================================================
   // 2. PREWARM NEXT PAGE (Portal)
   // ============================================================
-  if (window.PulsePortalWarmup && typeof window.PulsePortalWarmup.prewarm === "function") {
+  let nextPageWarmup = null;
+  if (hasWindow && window.PulsePortalWarmup && typeof window.PulsePortalWarmup.prewarm === "function") {
     try {
-      window.PulsePortalWarmup.prewarm(page, chunkProfile);
+      const hint = window.PulsePortalWarmup.prewarm(page, chunkProfile);
+      nextPageWarmup = normalizeNextPageWarmup(hint, page);
       tasks.push("portal_nextpage_prewarm");
-    } catch {}
+    } catch {
+      // silent
+    }
   }
 
   // ============================================================
   // 3. PREWARM SIGNALS (PulseSignal / PulseProofSignal / PulseSignalPort)
   // ============================================================
-  try {
-    const pulse = localStorage.getItem("PulseSignal_v27");
-    const proof = localStorage.getItem("PulseProofSignal_v27");
-    const port = localStorage.getItem("PulseSignalPort_v27");
+  if (hasWindow) {
+    try {
+      const pulse = window.localStorage?.getItem("PulseSignal_v27");
+      const proof = window.localStorage?.getItem("PulseProofSignal_v27");
+      const port = window.localStorage?.getItem("PulseSignalPort_v27");
 
-    if (pulse || proof || port) {
-      tasks.push("signal_prewarm");
+      if (pulse || proof || port) {
+        tasks.push("signal_prewarm");
+      }
+    } catch {
+      // silent
     }
-  } catch {}
+  }
 
   // ============================================================
   // 4. PREWARM PRESENCE NORMALIZER (v25++)
   // ============================================================
-  if (window.PulsePresenceNormalizerStore) {
+  if (hasWindow && window.PulsePresenceNormalizerStore) {
     try {
       window.PulsePresenceNormalizerStore.tail(50);
       tasks.push("presence_normalizer_prewarm");
-    } catch {}
+    } catch {
+      // silent
+    }
   }
 
   // ============================================================
   // 5. PREWARM PULSEBAND (chunk manifests)
   // ============================================================
-  if (window.PulseBand && typeof window.PulseBand.emit === "function") {
+  if (hasWindow && window.PulseBand && typeof window.PulseBand.emit === "function") {
     try {
       window.PulseBand.emit("warmup", { page, region, mode });
       tasks.push("pulseband_prewarm");
-    } catch {}
+    } catch {
+      // silent
+    }
   }
 
   // ============================================================
   // 6. PREWARM ROUTE (PulseRoute)
   // ============================================================
-  try {
-    const route = window.PulseRoute || location.pathname;
-    if (route) tasks.push("route_prewarm");
-  } catch {}
+  if (hasWindow) {
+    try {
+      const route = window.PulseRoute || window.location?.pathname || null;
+      if (route) tasks.push("route_prewarm");
+    } catch {
+      // silent
+    }
+  }
 
   // ============================================================
   // 7. PREWARM ORGANISM MAP (if present)
   // ============================================================
-  if (window.PulseOrganismMap && typeof window.PulseOrganismMap.prewarm === "function") {
+  if (hasWindow && window.PulseOrganismMap && typeof window.PulseOrganismMap.prewarm === "function") {
     try {
       window.PulseOrganismMap.prewarm(page, region, mode);
       tasks.push("organism_map_prewarm");
-    } catch {}
+    } catch {
+      // silent
+    }
   }
 
   // ============================================================
@@ -291,27 +301,48 @@ export async function warmupOrganism(pulseTouch) {
     (async () => { await warmupRegionCluster(region); tasks.push("region_cluster_warmup"); })()
   ]);
 
+  // ============================================================
+  // 9. METABOLIC PROFILE (v25++)
+  // ============================================================
+  const warmupDensity = tasks.length;
+  const warmupCostHint =
+    warmupDensity === 0 ? "none" :
+    warmupDensity <= 5 ? "low" :
+    warmupDensity <= 12 ? "medium" : "high";
+
+  const readyForFastLane =
+    fastLane === "enabled" &&
+    warmupDensity >= 5;
+
+  const metabolicProfile = {
+    page,
+    chunkProfile,
+    region,
+    presence,
+    mode,
+    pulseStream,
+    fastLane,
+    hydration,
+    animation,
+    identity,
+    warmedTasks: tasks.slice(),
+    warmupDensity,
+    warmupCostHint,
+    readyForFastLane,
+    nextPageWarmup: nextPageWarmup || null
+  };
+
   return {
     warmed: true,
     tasks,
-    advantageWarmup: {
-      page,
-      chunkProfile,
-      region,
-      presence,
-      mode,
-      pulseStream,
-      fastLane,
-      hydration,
-      animation,
-      identity
-    }
+    advantageWarmup: metabolicProfile
   };
 }
 
 // ============================================================================
 // COLLECT VISIBLE ASSETS FOR PREWARM
 // ============================================================================
+
 function collectVisibleAssets() {
   if (typeof document === "undefined") return [];
 
@@ -344,10 +375,30 @@ function collectVisibleAssets() {
   return [...urls];
 }
 
+// Normalize any portal hint into a stable nextPageWarmup object.
+function normalizeNextPageWarmup(hint, currentPage) {
+  if (!hint) return null;
+
+  // Accept either a string page or an object with page/assets/chunks.
+  if (typeof hint === "string") {
+    return {
+      page: hint,
+      assets: [],
+      chunks: []
+    };
+  }
+
+  const page = hint.page || currentPage || "index";
+  const assets = Array.isArray(hint.assets) ? hint.assets.slice() : [];
+  const chunks = Array.isArray(hint.chunks) ? hint.chunks.slice() : [];
+
+  return { page, assets, chunks };
+}
 
 // ============================================================================
 // TASK IMPLEMENTATIONS — ALL SAFE NO‑OPS (IMMORTAL++)
 // ============================================================================
+
 async function prechunkPage(page, chunkProfile) {
   void page;
   void chunkProfile;
@@ -427,6 +478,7 @@ async function warmupRegionCluster(region) {
 // ============================================================================
 // FACTORY ORGAN — IMMORTAL++
 // ============================================================================
+
 export function PulseTouchWarmup() {
   return {
     meta: ORGAN_META_PulseTouchWarmup,
