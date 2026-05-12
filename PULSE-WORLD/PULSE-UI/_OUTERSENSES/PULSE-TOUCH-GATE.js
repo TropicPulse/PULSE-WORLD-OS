@@ -4,11 +4,11 @@
 // PULSE‑TOUCH EVOLUTIONARY GATE — ROUTING + ADVANTAGE CORTEX + FASTLANE
 // ============================================================================
 
-import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR-v25++.js";
+import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR.js";
 import { PulseTouchWarmup } from "./PULSE-TOUCH-WARMUP.js";
 import { pulseTouchSecurity } from "./PULSE-TOUCH-SECURITY.js";
-import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE-v25++.js";
-import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS-v25++.js";
+import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE.js";
+import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS.js";
 import { PulseTouchPredictor } from "./PULSE-TOUCH-PREDICTOR.js";
 import { PulsePresenceOracle } from "./PULSE-TOUCH-PRESENCE-ORACLE.js";
 

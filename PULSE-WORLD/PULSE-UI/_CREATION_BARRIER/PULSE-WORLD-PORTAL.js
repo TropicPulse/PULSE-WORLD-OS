@@ -49,7 +49,7 @@ import {
   PulseProofBridgeRouteMemory as PulseUIRouteMemory,
   PulseProofBridgeWorldAdminPanel as createPulseWorldAdminPanel,
   PulseProofBridgeAdminDiagnostics as createAdminDiagnosticsOrgan} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-  import { firestore as db, SetDoc as setdoc, GetDoc as getdoc, Doc as doc } from "../_BACKEND/PULSE-WORLD-SHADOW.js"
+  import { firestore as db, SetDoc as setdoc, GetDoc as getdoc, Doc as doc } from "../_MONITOR/PULSE-PROOF-SHADOW.js"
 // ============================================================
 //  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
 // ============================================================
