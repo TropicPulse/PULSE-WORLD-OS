@@ -920,9 +920,8 @@ function savePageRoutesDaily(page, routes) {
   }
 }
 
-
 // ============================================================================
-// PULSEPORTAL v26 — NEXT-PAGE WARM (ASSUMES TOUCH PREWARMED PORTAL)
+// PULSEPORTAL v27 — NEXT-PAGE WARM (OrganismMap-aware, Touch-safe)
 // ============================================================================
 function runPortalWarm() {
   try {
@@ -932,7 +931,7 @@ function runPortalWarm() {
       return;
     }
 
-    // ⭐ CURRENT PAGE
+    // ⭐ CURRENT PAGE NAME
     const page =
       location.pathname.split("/").pop().replace(".html", "") || "index";
 
@@ -972,14 +971,28 @@ function runPortalWarm() {
     }
 
     // ========================================================================
+    // ⭐ ORGANISMMAP-AWARE ROUTE RESOLUTION
+    // ========================================================================
+    let nextRouteHtml = null;
+
+    const map = globalThis.PulseOrganismMap;
+    if (map && map.systems?.UI?.pages?.[next]) {
+      // ⭐ Use the REAL route from the organism genome
+      nextRouteHtml = map.systems.UI.pages[next].IDENTITY_META.ROUTE;
+    } else {
+      // ⭐ Fallback: local relative path
+      nextRouteHtml = `./${next}.html`;
+    }
+
+    // ========================================================================
     // ⭐ PORTAL WARM — USE PORTAL ORGANS (NOT TOUCH)
     // ========================================================================
 
     // ⭐ 1 — Preload NEXT PAGE HTML
     window.PulsePortalPreloader?.preloadPage?.(next);
 
-    // ⭐ 2 — Preload NEXT PAGE IMAGES (Bridge-aware)
-    window.__PULSE_SCAN_ROUTE_IMAGES__?.(`./${next}.html`);
+    // ⭐ 2 — Preload NEXT PAGE IMAGES (OrganismMap-aware)
+    window.__PULSE_SCAN_ROUTE_IMAGES__?.(nextRouteHtml);
 
     // ⭐ 3 — Preload NEXT PAGE CHUNKS
     window.PulsePortalChunker?.preloadChunksForPage?.(next);
@@ -991,7 +1004,7 @@ function runPortalWarm() {
     window.TouchTimeline("portalWarm", { page, next });
 
     console.log(
-      "%c[PulsePortal::Warm] %cv26 next-page warm complete %c→ %s",
+      "%c[PulsePortal::Warm] %cv27 next-page warm complete %c→ %s",
       "color:#7E57C2; font-weight:bold; font-family:monospace;",
       "color:#00FF9C; font-family:monospace;",
       "color:#E8F8FF; font-family:monospace;",
@@ -1002,6 +1015,17 @@ function runPortalWarm() {
     console.error("[PortalWarm] FAILED →", err);
   }
 }
+
+// ============================================================================
+// WAIT FOR TOUCH → THEN WARM NEXT PAGE
+// ============================================================================
+const waitForTouch = setInterval(() => {
+  if (window.__PULSE_TOUCH__) {
+    clearInterval(waitForTouch);
+    runPortalWarm();
+  }
+}, 10);
+
 
 // ============================================================================
 // ⭐ SIGNAL SNAPSHOT EXPORT (v26 IMMORTAL++)
