@@ -167,10 +167,10 @@ const UIRUNTIME_LS_MAX = 4000;
 
 function runtimeHasLocalStorage() {
   try {
-    if (typeof window === "undefined" || !window.localStorage) return false;
+    if (typeof window === "undefined" || !global.localStorage) return false;
     const t = "__uiruntime_v24_test__";
-    window.localStorage.setItem(t, "1");
-    window.localStorage.removeItem(t);
+    global.localStorage.setItem(t, "1");
+    global.localStorage.removeItem(t);
     return true;
   } catch {
     return false;
@@ -180,7 +180,7 @@ function runtimeHasLocalStorage() {
 function runtimeLoadBuffer() {
   if (!runtimeHasLocalStorage()) return [];
   try {
-    const raw = window.localStorage.getItem(UIRUNTIME_LS_KEY);
+    const raw = global.localStorage.getItem(UIRUNTIME_LS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -210,7 +210,7 @@ function runtimeSaveBuffer(buf) {
   try {
     const trimmed =
       buf.length > UIRUNTIME_LS_MAX ? buf.slice(buf.length - UIRUNTIME_LS_MAX) : buf;
-    window.localStorage.setItem(UIRUNTIME_LS_KEY, JSON.stringify(trimmed));
+    global.localStorage.setItem(UIRUNTIME_LS_KEY, JSON.stringify(trimmed));
     mirrorRuntimeBufferToCoreMemory(trimmed);
   } catch {}
 }
@@ -266,20 +266,20 @@ function readSurfaceContext() {
   }
 
   try {
-    const portal = window.PulsePortal || null;
+    const portal = global.PulsePortal || null;
     const meta   = portal?.meta || null;
 
     const route =
-      window.location?.pathname ||
+      global.location?.pathname ||
       meta?.route ||
       null;
 
     const band =
-      window.PulseBand?.mode ||
+      global.PulseBand?.mode ||
       null;
 
     const sessionId =
-      window.PulseBand?.sessionId ||
+      global.PulseBand?.sessionId ||
       null;
 
     return {
@@ -665,7 +665,7 @@ export function createPulseUIRuntime({
       try {
         const envelope = window?.PulseUIErrors?.normalizeError?.(err, "ui.runtime.mount");
         if (envelope) {
-          window.PulseUIErrors.broadcast?.(envelope);
+          global.PulseUIErrors.broadcast?.(envelope);
         }
       } catch {}
 
@@ -708,7 +708,7 @@ export function createPulseUIRuntime({
       try {
         const envelope = window?.PulseUIErrors?.normalizeError?.(err, "ui.runtime.unmount");
         if (envelope) {
-          window.PulseUIErrors.broadcast?.(envelope);
+          global.PulseUIErrors.broadcast?.(envelope);
         }
       } catch {}
 
@@ -741,12 +741,12 @@ export function createPulseUIRuntime({
 
 try {
   if (typeof window !== "undefined") {
-    window.PulseUIRuntime = createPulseUIRuntime;
-    window.PulseUIRuntimeStore = PulseUIRuntimeStore;
+    global.PulseUIRuntime = createPulseUIRuntime;
+    global.PulseUIRuntimeStore = PulseUIRuntimeStore;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseUIRuntime = createPulseUIRuntime;
-    globalThis.PulseUIRuntimeStore = PulseUIRuntimeStore;
+    global.PulseUIRuntime = createPulseUIRuntime;
+    global.PulseUIRuntimeStore = PulseUIRuntimeStore;
   }
   if (typeof global !== "undefined") {
     global.PulseUIRuntime = createPulseUIRuntime;

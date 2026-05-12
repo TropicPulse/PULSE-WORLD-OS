@@ -15,7 +15,7 @@ function saveIdentity() {
 }
 
 // This runs automatically every time the page loads
-window.onload = () => {
+global.onload = () => {
   const userId = localStorage.getItem("tp_userId");
   const token = localStorage.getItem("tp_token");
 

@@ -154,20 +154,20 @@
 // import { PulseTouchAnalytics } from "./_OUTERSENSES/...";
 // import { PulsePresenceOracle } from "./_OUTERSENSES/...";
 
-// All Touch organs will be accessed through window.*
+// All Touch organs will be accessed through global.*
 // Example:
-//   window.PulseTouchDetector
-//   window.PulseTouchWarmup
-//   window.PulseTouchSecurity
-//   window.PulseTouchGate
-//   window.pulseTouchAdvantageCortex
-//   window.PulseTouchThreatShape
-//   window.PulseTouchPredictor
-//   window.PulseTouchAnalytics
-//   window.PulsePresenceOracle
-//   window.PulseNet
-//   window.PulseProofLogger
-//   window.PulseBridgeRoute
+//   global.PulseTouchDetector
+//   global.PulseTouchWarmup
+//   global.PulseTouchSecurity
+//   global.PulseTouchGate
+//   global.pulseTouchAdvantageCortex
+//   global.PulseTouchThreatShape
+//   global.PulseTouchPredictor
+//   global.PulseTouchAnalytics
+//   global.PulsePresenceOracle
+//   global.PulseNet
+//   global.PulseProofLogger
+//   global.PulseBridgeRoute
 // ============================================================
 
 
@@ -219,13 +219,13 @@ const hasWindow = typeof window !== "undefined";
 const hasDocument = typeof document !== "undefined";
 
 if (hasWindow) {
-  window.__PULSE_TOUCH__ = window.__PULSE_TOUCH__ || null;
+  global.__PULSE_TOUCH__ = global.__PULSE_TOUCH__ || null;
 
-  window.__PULSE_TOUCH_ORIGIN_TS__ =
-    window.__PULSE_TOUCH_ORIGIN_TS__ || Date.now();
+  global.__PULSE_TOUCH_ORIGIN_TS__ =
+    global.__PULSE_TOUCH_ORIGIN_TS__ || Date.now();
 
-  window.__PULSE_TOUCH_PULSE_STATE__ =
-    window.__PULSE_TOUCH_PULSE_STATE__ || {
+  global.__PULSE_TOUCH_PULSE_STATE__ =
+    global.__PULSE_TOUCH_PULSE_STATE__ || {
       started: false,
       intervalId: null,
       intervalMs: PULSE_TOUCH_PULSE_INTERVAL_MS_BASE,
@@ -236,11 +236,11 @@ if (hasWindow) {
       lastPresenceOracle: null
     };
 
-  window.__PULSE_TOUCH_LAST_GATE__ =
-    window.__PULSE_TOUCH_LAST_GATE__ || null;
+  global.__PULSE_TOUCH_LAST_GATE__ =
+    global.__PULSE_TOUCH_LAST_GATE__ || null;
 
-  window.__PULSE_TOUCH_LAST_SECURITY__ =
-    window.__PULSE_TOUCH_LAST_SECURITY__ || null;
+  global.__PULSE_TOUCH_LAST_SECURITY__ =
+    global.__PULSE_TOUCH_LAST_SECURITY__ || null;
 }
 
 // optional broadcast channel for multi‑tab awareness
@@ -262,10 +262,10 @@ try {
 function hasLocalStorage() {
   if (!hasWindow) return false;
   try {
-    if (!window.localStorage) return false;
+    if (!global.localStorage) return false;
     const t = "__pulse_touch_test__";
-    window.localStorage.setItem(t, "1");
-    window.localStorage.removeItem(t);
+    global.localStorage.setItem(t, "1");
+    global.localStorage.removeItem(t);
     return true;
   } catch {
     return false;
@@ -275,7 +275,7 @@ function hasLocalStorage() {
 function loadTouchTimeline() {
   if (!hasLocalStorage()) return [];
   try {
-    const raw = window.localStorage.getItem(PULSE_TOUCH_TIMELINE_LS_KEY);
+    const raw = global.localStorage.getItem(PULSE_TOUCH_TIMELINE_LS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -291,7 +291,7 @@ function saveTouchTimeline(buf) {
       buf.length > PULSE_TOUCH_TIMELINE_MAX
         ? buf.slice(buf.length - PULSE_TOUCH_TIMELINE_MAX)
         : buf;
-    window.localStorage.setItem(
+    global.localStorage.setItem(
       PULSE_TOUCH_TIMELINE_LS_KEY,
       JSON.stringify(trimmed)
     );
@@ -310,7 +310,7 @@ function fireTimelineHooks(kind, payload) {
 function appendTouchTimeline(kind, payload = {}) {
   const ts = Date.now();
   const origin =
-    (hasWindow && window.__PULSE_TOUCH_ORIGIN_TS__) || ts;
+    (hasWindow && global.__PULSE_TOUCH_ORIGIN_TS__) || ts;
 
   const entry = {
     ts,
@@ -330,7 +330,7 @@ function appendTouchTimeline(kind, payload = {}) {
 
   // Optional: mirror into bridge (fire-and-forget)
   try {
-    window.PulseBridgeRoute?.("touch.timeline", {
+    global.PulseBridgeRoute?.("touch.timeline", {
       ts,
       dt: entry.dt,
       kind,
@@ -340,7 +340,7 @@ function appendTouchTimeline(kind, payload = {}) {
 
   // Optional: mirror into logger
   try {
-    window.PulseProofLogger?.route?.("touchTimeline.log", {
+    global.PulseProofLogger?.route?.("touchTimeline.log", {
       ts,
       dt: entry.dt,
       kind,
@@ -349,7 +349,7 @@ function appendTouchTimeline(kind, payload = {}) {
   } catch {}
 }
 
-window.TouchTimeline  = appendTouchTimeline();
+global.TouchTimeline  = appendTouchTimeline();
 
 // ============================================================
 // ADAPTIVE CADENCE ENGINE — PRESSURE/TRUST/BAND/PULSE AWARE (v24++)
@@ -432,7 +432,7 @@ function applyAdaptiveCadence(state, { security, skin }) {
 
 let pulseTouchAnalyticsInstance = null;
 function getPulseTouchAnalytics() {
-  const A = window.PulseTouchAnalytics;
+  const A = global.PulseTouchAnalytics;
   if (!A) return null;
 
   if (pulseTouchAnalyticsInstance) return pulseTouchAnalyticsInstance;
@@ -456,7 +456,7 @@ function getPulseTouchAnalytics() {
 
 function startContinuousPulseStream(skin, security, gateDecision) {
   if (!hasWindow) return;
-  const state = window.__PULSE_TOUCH_PULSE_STATE__;
+  const state = global.__PULSE_TOUCH_PULSE_STATE__;
   if (!state || state.started) return;
 
   state.started = true;
@@ -490,7 +490,7 @@ function startContinuousPulseStream(skin, security, gateDecision) {
 
 function stopContinuousPulseStream() {
   if (!hasWindow) return;
-  const state = window.__PULSE_TOUCH_PULSE_STATE__;
+  const state = global.__PULSE_TOUCH_PULSE_STATE__;
   if (!state || !state.started) return;
 
   try {
@@ -554,12 +554,12 @@ function sendFastLanePulse(mode, skin, security, gateDecision) {
 
   // 1) PulseNet FastLane (Portal-safe)
   try {
-    window.pulseNetFastLanePulse?.(payload);
+    global.pulseNetFastLanePulse?.(payload);
   } catch {}
 
   // 2) Optional ingress
   try {
-    window.pulseNetIngressFromUser?.({
+    global.pulseNetIngressFromUser?.({
       source: "pulse-touch",
       event: "pulse",
       ts,
@@ -607,7 +607,7 @@ function registerHook(kind, fn) {
 
 function createPulseTouch(options = {}) {
   const originTs =
-    (hasWindow && window.__PULSE_TOUCH_ORIGIN_TS__) || Date.now();
+    (hasWindow && global.__PULSE_TOUCH_ORIGIN_TS__) || Date.now();
 
   appendTouchTimeline("touch_init_called", {
     originTs,
@@ -630,29 +630,29 @@ function createPulseTouch(options = {}) {
 
   try {
     predictor =
-      typeof window.PulseTouchPredictor === "function"
-        ? window.PulseTouchPredictor()
-        : window.PulseTouchPredictor || null;
+      typeof global.PulseTouchPredictor === "function"
+        ? global.PulseTouchPredictor()
+        : global.PulseTouchPredictor || null;
   } catch {}
 
   try {
     analytics =
-      typeof window.PulseTouchAnalytics === "function"
-        ? window.PulseTouchAnalytics()
-        : window.PulseTouchAnalytics || null;
+      typeof global.PulseTouchAnalytics === "function"
+        ? global.PulseTouchAnalytics()
+        : global.PulseTouchAnalytics || null;
   } catch {}
 
   try {
     presenceOracle =
-      typeof window.PulsePresenceOracle === "function"
-        ? window.PulsePresenceOracle()
-        : window.PulsePresenceOracle || null;
+      typeof global.PulsePresenceOracle === "function"
+        ? global.PulsePresenceOracle()
+        : global.PulsePresenceOracle || null;
   } catch {}
 
   try {
     advantageCortex =
-      typeof window.pulseTouchAdvantageCortex === "function"
-        ? window.pulseTouchAdvantageCortex()
+      typeof global.pulseTouchAdvantageCortex === "function"
+        ? global.pulseTouchAdvantageCortex()
         : null;
   } catch {}
 
@@ -676,14 +676,14 @@ function createPulseTouch(options = {}) {
   appendTouchTimeline("cookie_seeded", { state: defaults });
 
   // 2) Detector
-  const detected = window.PulseTouchDetector?.normalize(
+  const detected = global.PulseTouchDetector?.normalize(
     readPulseTouchInternal(defaults)
   ) || defaults;
 
   appendTouchTimeline("skin_detected", { skin: detected });
 
   // 3) Expose globally
-  if (hasWindow) window.__PULSE_TOUCH__ = detected;
+  if (hasWindow) global.__PULSE_TOUCH__ = detected;
 
   // 4) Preflights
   appendTouchTimeline("preflights_start", {
@@ -695,7 +695,7 @@ function createPulseTouch(options = {}) {
   // 5) Warmup
   let warmupResult = null;
   try {
-    warmupResult = window.PulseTouchWarmup?.prewarm?.(detected);
+    warmupResult = global.PulseTouchWarmup?.prewarm?.(detected);
     appendTouchTimeline("warmup_done", {});
   } catch {
     appendTouchTimeline("warmup_failed", {});
@@ -704,7 +704,7 @@ function createPulseTouch(options = {}) {
   // 6) Security
   let security = null;
   try {
-    security = window.PulseTouchSecurity?.evaluate?.(detected);
+    security = global.PulseTouchSecurity?.evaluate?.(detected);
     appendTouchTimeline("security_evaluated", { security });
     fireSecurityHooks(security, detected);
   } catch {
@@ -715,7 +715,7 @@ function createPulseTouch(options = {}) {
   // 7) Gate
   let gateDecision = null;
   try {
-    gateDecision = window.PulseTouchGate?.decide?.({
+    gateDecision = global.PulseTouchGate?.decide?.({
       skin: detected,
       security
     });
@@ -807,14 +807,14 @@ async function scanAndPreloadRouteImages(routeHtml) {
   }
 }
 
-window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
+global.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
 
 
 
 
   // 10) Ignite PulseNet (local immortal loop) — idempotent, portal-safe
   try {
-    window.startPulseNet?.({
+    global.startPulseNet?.({
       instanceId: "core",
       intervalMs: 750,
       superInstance: true
@@ -837,7 +837,7 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
       advantage: advantageProfile,
       ts: Date.now()
     };
-    window.pulseNetIngressFromUser?.(packet);
+    global.pulseNetIngressFromUser?.(packet);
     appendTouchTimeline("ingress_initial_sent", {});
   } catch {
     appendTouchTimeline("ingress_initial_failed", {});
@@ -852,7 +852,7 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
 
   // 13) Compiler signal — TOUCH → BRIDGE → COMPILER (portal-safe)
   try {
-    window.bridgeRoute
+    global.bridgeRoute
       ?.("compiler.request", {
         source: "pulse-touch",
         reason: "first_contact",
@@ -895,7 +895,7 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
       } catch {}
     }
     if (hasWindow) {
-      window.__PULSE_TOUCH_LAST_SECURITY__ = sec;
+      global.__PULSE_TOUCH_LAST_SECURITY__ = sec;
     }
   }
 
@@ -907,7 +907,7 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
       } catch {}
     }
     if (hasWindow) {
-      window.__PULSE_TOUCH_LAST_GATE__ = {
+      global.__PULSE_TOUCH_LAST_GATE__ = {
         ts: Date.now(),
         decision: gate,
         skin
@@ -934,10 +934,10 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
     writePulseTouchCookie(current);
 
     const detectedUpdated =
-      window.PulseTouchDetector?.normalize?.(current) || current;
+      global.PulseTouchDetector?.normalize?.(current) || current;
 
     if (hasWindow) {
-      window.__PULSE_TOUCH__ = detectedUpdated;
+      global.__PULSE_TOUCH__ = detectedUpdated;
     }
 
     appendTouchTimeline("skin_updated", {
@@ -947,7 +947,7 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
     });
 
     try {
-      window.pulseNetIngressFromUser?.({
+      global.pulseNetIngressFromUser?.({
         source: "pulse-touch",
         event: "update",
         key,
@@ -961,7 +961,7 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
     }
 
     try {
-      const state = hasWindow ? window.__PULSE_TOUCH_PULSE_STATE__ : null;
+      const state = hasWindow ? global.__PULSE_TOUCH_PULSE_STATE__ : null;
       if (state && state.started) {
         applyAdaptiveCadence(state, {
           security,
@@ -976,7 +976,7 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
   function read() {
     const current = readPulseTouchInternal(defaults);
     const normalized =
-      window.PulseTouchDetector?.normalize?.(current) || current;
+      global.PulseTouchDetector?.normalize?.(current) || current;
     appendTouchTimeline("skin_read", { skin: normalized });
     return normalized;
   }
@@ -996,9 +996,9 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
     return {
       skin,
       timeline,
-      lastGate: (hasWindow && window.__PULSE_TOUCH_LAST_GATE__) || null,
+      lastGate: (hasWindow && global.__PULSE_TOUCH_LAST_GATE__) || null,
       lastSecurity:
-        (hasWindow && window.__PULSE_TOUCH_LAST_SECURITY__) || null
+        (hasWindow && global.__PULSE_TOUCH_LAST_SECURITY__) || null
     };
   }
 
@@ -1014,16 +1014,16 @@ window.__PULSE_SCAN_ROUTE_IMAGES__ = scanAndPreloadRouteImages;
     };
     writePulseTouchCookie(merged);
     const normalized =
-      window.PulseTouchDetector?.normalize?.(merged) || merged;
+      global.PulseTouchDetector?.normalize?.(merged) || merged;
     if (hasWindow) {
-      window.__PULSE_TOUCH__ = normalized;
+      global.__PULSE_TOUCH__ = normalized;
     }
     appendTouchTimeline("skin_reconfigured", {
       skin: normalized
     });
 
     try {
-      const state = hasWindow ? window.__PULSE_TOUCH_PULSE_STATE__ : null;
+      const state = hasWindow ? global.__PULSE_TOUCH_PULSE_STATE__ : null;
       if (state && state.started) {
         applyAdaptiveCadence(state, {
           security,
@@ -1179,7 +1179,7 @@ function applyGateDecision(gateDecision, skin) {
   if (gateDecision.refresh === true) {
     try {
       if (hasWindow) {
-        window.__PULSE_TOUCH_LAST_GATE__ = {
+        global.__PULSE_TOUCH_LAST_GATE__ = {
           ts: Date.now(),
           decision: gateDecision,
           skin
@@ -1296,8 +1296,8 @@ function applyGateDecision(gateDecision, skin) {
       });
 
       // expose mirror
-      window.G = mirror;
-      window.g = mirror;
+      global.G = mirror;
+      global.g = mirror;
 
       // ⭐ SAFE SEEDING (SKIPS SHADOW + TOUCH)
       const seedKeys = [
@@ -1321,7 +1321,7 @@ function applyGateDecision(gateDecision, skin) {
 
     // ⭐ Detect current page
     const page =
-      window.location.pathname.split("/").pop().replace(".html", "") || "index";
+      global.location.pathname.split("/").pop().replace(".html", "") || "index";
 
     // ⭐ Determine prefix: index = "./", all other pages = "../"
     const prefix = page === "index" ? "./" : "../";
@@ -1329,8 +1329,8 @@ function applyGateDecision(gateDecision, skin) {
     // ============================================================
     // 1 — ENSURE DETECTOR + ORGANS EXIST (IN G / LOCALSTORAGE)
     // ============================================================
-    if (!G.PulseDetector && typeof window.PulseTouchDetector === "function") {
-      G.PulseDetector = window.PulseTouchDetector();
+    if (!G.PulseDetector && typeof global.PulseTouchDetector === "function") {
+      G.PulseDetector = global.PulseTouchDetector();
     }
 
     if (!G.PulseWorldFirebaseShadow) {
@@ -1430,7 +1430,7 @@ function applyGateDecision(gateDecision, skin) {
     // ============================================================
     // 4 — IGNITE TOUCH (SYNC ONLY, AFTER SIGNALS)
     // ============================================================
-    const touch = window.createPulseTouch({
+    const touch = global.createPulseTouch({
       page,
       mode: "fast",
       presence: "active",
@@ -1460,7 +1460,7 @@ function applyGateDecision(gateDecision, skin) {
     );
 
     G.__PULSE_TOUCH__ = touch;
-    window.__PULSE_TOUCH__ = touch; // legacy surface if you still need it
+    global.__PULSE_TOUCH__ = touch; // legacy surface if you still need it
 
     // ============================================================
     // 5 — PRELOAD + PREWARM PORTAL (THE CORTEX)
@@ -1475,7 +1475,7 @@ function applyGateDecision(gateDecision, skin) {
       touch.chunker?.preloadChunksForPage?.(page);
       touch.advantage?.prewarmLight?.();
 
-      window.appendTouchTimeline?.("touch_page_warm", { page });
+      global.appendTouchTimeline?.("touch_page_warm", { page });
 
       G.PulseChunks.prewarm?.([
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.js`,
@@ -1488,12 +1488,12 @@ function applyGateDecision(gateDecision, skin) {
 
       if (map && map.systems?.UI?.pages?.[page]) {
         const route = map.systems.UI.pages[page].IDENTITY_META.ROUTE;
-        window.__PULSE_SCAN_ROUTE_IMAGES__?.(route);
+        global.__PULSE_SCAN_ROUTE_IMAGES__?.(route);
       } else {
-        window.__PULSE_SCAN_ROUTE_IMAGES__?.(`${page}.html`);
+        global.__PULSE_SCAN_ROUTE_IMAGES__?.(`${page}.html`);
       }
 
-      window.appendTouchTimeline?.("portal_prewarm", {
+      global.appendTouchTimeline?.("portal_prewarm", {
         page,
         portal: "PULSE-WORLD-PORTAL"
       });
@@ -1521,7 +1521,7 @@ function applyGateDecision(gateDecision, skin) {
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-ADVANTAGE.js`
       ]);
 
-      window.appendTouchTimeline?.("touch_cortex_prewarm", { page });
+      global.appendTouchTimeline?.("touch_cortex_prewarm", { page });
     } catch (err) {
       console.error("[PulseTouch::CortexPrewarm] FAILED →", err);
     }
@@ -1545,7 +1545,7 @@ function applyGateDecision(gateDecision, skin) {
           fastLane: touch.fastLane
         });
 
-        window.appendTouchTimeline?.("organism_map_signal", { page });
+        global.appendTouchTimeline?.("organism_map_signal", { page });
       }
     } catch (err) {
       console.error("[PulseTouch::OrganismMapSignal] FAILED →", err);

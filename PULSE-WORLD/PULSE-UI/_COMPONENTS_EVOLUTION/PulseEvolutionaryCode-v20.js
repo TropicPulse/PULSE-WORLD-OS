@@ -508,10 +508,10 @@ export function createPulseEvolutionaryCode({
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
-    window.PulseEvolutionaryCode = createPulseEvolutionaryCode;
+    global.PulseEvolutionaryCode = createPulseEvolutionaryCode;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseEvolutionaryCode = createPulseEvolutionaryCode;
+    global.PulseEvolutionaryCode = createPulseEvolutionaryCode;
   }
   if (typeof global !== "undefined") {
     global.PulseEvolutionaryCode = createPulseEvolutionaryCode;

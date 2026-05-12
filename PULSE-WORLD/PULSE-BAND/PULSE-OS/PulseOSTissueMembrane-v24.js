@@ -53,8 +53,8 @@ const LAYER_VER  = "24.0-IMMORTAL++";
 
 const LAYER_DIAGNOSTICS_ENABLED =
   hasWindow &&
-  (window.PULSE_LAYER_DIAGNOSTICS === "true" ||
-   window.PULSE_DIAGNOSTICS === "true");
+  (global.PULSE_LAYER_DIAGNOSTICS === "true" ||
+   global.PULSE_DIAGNOSTICS === "true");
 
 const logLayer = (stage, details = {}) => {
   if (!LAYER_DIAGNOSTICS_ENABLED) return;
@@ -131,10 +131,10 @@ function _bucketCost(v) {
   return "none";
 }
 
-// optional presence hint: window.PULSE_PRESENCE_DENSITY ∈ [0,1]
+// optional presence hint: global.PULSE_PRESENCE_DENSITY ∈ [0,1]
 function _presenceDensity() {
   if (!hasWindow) return 0;
-  const v = window.PULSE_PRESENCE_DENSITY;
+  const v = global.PULSE_PRESENCE_DENSITY;
   return _clamp01(typeof v === "number" ? v : 0);
 }
 
@@ -398,8 +398,8 @@ export async function layerHelper(
 // ============================================================================
 let layerHealing = false;
 
-if (hasWindow && typeof window.addEventListener === "function") {
-  window.addEventListener(
+if (hasWindow && typeof global.addEventListener === "function") {
+  global.addEventListener(
     "error",
     async (event) => {
       if (layerHealing) return;
@@ -476,7 +476,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
       if (msg.includes("process is not defined")) {
         logLayer("LAYER_ENV_MISMATCH", {
           error: "layerEnvMismatch",
-          hint: "Replace process.env.* with window.PULSE_*",
+          hint: "Replace process.env.* with global.PULSE_*",
           band
         });
 
@@ -511,7 +511,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
         message: msg,
         frames: rawFrames,
         routeTrace,
-        page: hasWindow && window.location ? window.location.pathname : null,
+        page: hasWindow && global.location ? global.location.pathname : null,
         reflexOrigin: "LayerScanner",
         layer: "A2",
         degraded,

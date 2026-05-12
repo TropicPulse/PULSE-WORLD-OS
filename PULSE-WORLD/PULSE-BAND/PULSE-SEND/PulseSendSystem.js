@@ -787,8 +787,8 @@ export function createPulseSendSystem({
         presenceSurface
       });
 
-      if (typeof window !== "undefined" && window.PulseBand?.receivePulseSendResult) {
-        window.PulseBand.receivePulseSendResult({
+      if (typeof window !== "undefined" && global.PulseBand?.receivePulseSendResult) {
+        global.PulseBand.receivePulseSendResult({
           impulse,
           normalized,
           pulse,

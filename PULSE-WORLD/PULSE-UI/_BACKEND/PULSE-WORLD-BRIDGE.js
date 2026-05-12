@@ -40,7 +40,7 @@ const PulseProofBridge = {
   }
 };
 
-globalThis.PulseProofBridge = PulseProofBridge;
+global.PulseProofBridge = PulseProofBridge;
 
 export function attachRealBridge(real) {
   for (const key of Object.keys(PulseProofBridge)) {
@@ -153,18 +153,18 @@ function buildBridgeEnvironment() {
     };
   }
 
-  const surfaceEnv = window.PulseSurface?.environment;
+  const surfaceEnv = global.PulseSurface?.environment;
 
-  const ua = surfaceEnv?.userAgent ?? window.navigator?.userAgent ?? null;
+  const ua = surfaceEnv?.userAgent ?? global.navigator?.userAgent ?? null;
   const screenInfo = {
-    width: safeGet(() => window.screen?.width, null),
-    height: safeGet(() => window.screen?.height, null),
-    pixelRatio: safeGet(() => window.devicePixelRatio, null)
+    width: safeGet(() => global.screen?.width, null),
+    height: safeGet(() => global.screen?.height, null),
+    pixelRatio: safeGet(() => global.devicePixelRatio, null)
   };
 
   const locale =
     surfaceEnv?.locale ??
-    safeGet(() => window.navigator?.language, null);
+    safeGet(() => global.navigator?.language, null);
 
   const timezone =
     surfaceEnv?.timezone ??
@@ -177,9 +177,9 @@ function buildBridgeEnvironment() {
   return {
     runtime: surfaceEnv?.runtime ?? "browser",
     userAgent: ua,
-    online: surfaceEnv?.online ?? window.navigator?.onLine ?? null,
-    origin: surfaceEnv?.origin ?? window.location?.origin ?? null,
-    page: window.location?.pathname ?? null,
+    online: surfaceEnv?.online ?? global.navigator?.onLine ?? null,
+    origin: surfaceEnv?.origin ?? global.location?.origin ?? null,
+    page: global.location?.pathname ?? null,
     screen: screenInfo,
     locale,
     timezone,
@@ -228,10 +228,10 @@ function getBridgeIdentitySnapshot() {
 // ============================================================================
 
 function isOnline() {
-  if (typeof window !== "undefined" && typeof window.PULSE_ONLINE === "boolean")
-    return window.PULSE_ONLINE;
-  if (typeof globalThis !== "undefined" && typeof globalThis.PULSE_ONLINE === "boolean")
-    return globalThis.PULSE_ONLINE;
+  if (typeof window !== "undefined" && typeof global.PULSE_ONLINE === "boolean")
+    return global.PULSE_ONLINE;
+  if (typeof globalThis !== "undefined" && typeof global.PULSE_ONLINE === "boolean")
+    return global.PULSE_ONLINE;
   if (typeof global !== "undefined" && typeof global.PULSE_ONLINE === "boolean")
     return global.PULSE_ONLINE;
   if (typeof g.PULSE_ONLINE === "boolean") return g.PULSE_ONLINE;
@@ -247,10 +247,10 @@ const BRIDGE_LS_MAX = 6000;
 
 function hasLocalStorage() {
   try {
-    if (typeof window === "undefined" || !window.localStorage) return false;
+    if (typeof window === "undefined" || !global.localStorage) return false;
     const t = "__pulse_bridge_test__";
-    window.localStorage.setItem(t, "1");
-    window.localStorage.removeItem(t);
+    global.localStorage.setItem(t, "1");
+    global.localStorage.removeItem(t);
     return true;
   } catch {
     return false;
@@ -260,7 +260,7 @@ function hasLocalStorage() {
 function loadBridgeBuffer() {
   if (!hasLocalStorage()) return [];
   try {
-    const raw = window.localStorage.getItem(BRIDGE_LS_KEY);
+    const raw = global.localStorage.getItem(BRIDGE_LS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -274,7 +274,7 @@ function saveBridgeBuffer(buf) {
   try {
     const trimmed =
       buf.length > BRIDGE_LS_MAX ? buf.slice(buf.length - BRIDGE_LS_MAX) : buf;
-    window.localStorage.setItem(BRIDGE_LS_KEY, JSON.stringify(trimmed));
+    global.localStorage.setItem(BRIDGE_LS_KEY, JSON.stringify(trimmed));
   } catch {
     // never throw
   }
@@ -401,7 +401,7 @@ async function flushBridgeToFirebase() {
 
 if (typeof window !== "undefined") {
   if (isOnline()) flushBridgeToFirebase().catch(() => {});
-  window.addEventListener("online", () => flushBridgeToFirebase().catch(() => {}));
+  global.addEventListener("online", () => flushBridgeToFirebase().catch(() => {}));
 }
 
 // ============================================================================
@@ -603,13 +603,13 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
 
   // 1 — Direct frontend hooks (keep this)
   if (typeof window !== "undefined" &&
-      window.PulseHooks &&
-      typeof window.PulseHooks[path] === "function") {
+      global.PulseHooks &&
+      typeof global.PulseHooks[path] === "function") {
 
     appendBridgeRecord("safeRoute_direct_call", { path, payload });
 
     try {
-      return Promise.resolve(window.PulseHooks[path](payload));
+      return Promise.resolve(global.PulseHooks[path](payload));
     } catch (err) {
       appendBridgeRecord("safeRoute_direct_error", { path, payload, err });
       return Promise.resolve(null);
@@ -620,10 +620,10 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
   return new Promise(async (resolve) => {
     try {
       if (typeof window !== "undefined" &&
-          window.PulseRemoteEndpoint &&
-          typeof window.PulseRemoteEndpoint.handle === "function") {
+          global.PulseRemoteEndpoint &&
+          typeof global.PulseRemoteEndpoint.handle === "function") {
 
-        const result = await window.PulseRemoteEndpoint.handle({
+        const result = await global.PulseRemoteEndpoint.handle({
           path,
           payload
         });
@@ -658,8 +658,8 @@ export function signal(path, payload = {}) {
 
 export function prewarmBridge(hints = {}) {
   try {
-    if (typeof window !== "undefined" && window.prewarmAssets && Array.isArray(hints.assets)) {
-      window.prewarmAssets(hints.assets);
+    if (typeof window !== "undefined" && global.prewarmAssets && Array.isArray(hints.assets)) {
+      global.prewarmAssets(hints.assets);
       appendBridgeRecord("prewarm_assets", { urls: hints.assets });
     }
   } catch {}
@@ -937,7 +937,7 @@ export const PulseProofBridgeAdminDiagnostics = createAdminDiagnosticsOrgan;
 })();
 
 // ⭐ THIS IS THE WHOLE POINT OF THIS PAGE
-window.PulseRemoteEndpoint = {
+global.PulseRemoteEndpoint = {
   async handle(route) {
     return PulseWorldEndpoint.handle(route);
   }

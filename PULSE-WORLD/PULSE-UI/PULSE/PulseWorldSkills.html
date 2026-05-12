@@ -1335,7 +1335,7 @@ body::before {
 /* -------------------------------------------------------
    GLOBAL STATE
 ------------------------------------------------------- */
-let identityUser     = window.PulseIdentity || {};
+let identityUser     = global.PulseIdentity || {};
 let currentUser      = null;
 let isAdmin          = identityUser.role === "Admin";
 let formIsDirty      = false;
@@ -1354,8 +1354,8 @@ const msg             = document.getElementById("msg");
    HERO HEADER ENTRANCE
 ------------------------------------------------------- */
 async function runHeroHeaderEntrance() {
-  if (window.__heroHeaderPlayed) return;
-  window.__heroHeaderPlayed = true;
+  if (global.__heroHeaderPlayed) return;
+  global.__heroHeaderPlayed = true;
 
   const top = document.createElement("div");
   const bottom = document.createElement("div");
@@ -1693,7 +1693,7 @@ function showMessage(text, type = "error") {
   if (el) el.addEventListener("change", markDirty);
 });
 
-window.addEventListener("beforeunload", e => {
+global.addEventListener("beforeunload", e => {
   if (!formIsDirty) return;
   e.preventDefault();
   e.returnValue = "";
@@ -1730,19 +1730,19 @@ function loadFallbackPhoto() {
 /* -------------------------------------------------------
    STRIPE REDIRECT
 ------------------------------------------------------- */
-window.attemptStripeRedirect = function (url) {
+global.attemptStripeRedirect = function (url) {
   if (url.includes("stripe.com") || url.includes("connect.stripe.com"))
-    return window.location.href = url;
+    return global.location.href = url;
 
   if (!formIsDirty)
-    return window.location.href = url;
+    return global.location.href = url;
 
   const row = document.getElementById("leaveConfirmRow");
   row.style.display = "flex";
 
   document.getElementById("leaveYesBtn").onclick = () => {
     row.style.display = "none";
-    window.location.href = url;
+    global.location.href = url;
   };
 
   document.getElementById("leaveNoBtn").onclick = () => {
@@ -1763,17 +1763,17 @@ window.attemptStripeRedirect = function (url) {
     lastTime = now;
   };
 
-  window.isIdle = true;
+  global.isIdle = true;
 
   // 1. SESSION CHECK (SkinReflex)
   mark("USERRECORD: STARTING sessionCheck()");
-  const id = await window.sessionCheck();
+  const id = await global.sessionCheck();
   if (!id) return;
 
   identityUser = id;
-  window.identityUser = id;
+  global.identityUser = id;
   isAdmin = id.role === "Admin";
-  window.isAdmin = isAdmin;
+  global.isAdmin = isAdmin;
 
   // 2. DETERMINE CURRENT USER
   if (isAdmin) {
@@ -1803,7 +1803,7 @@ window.attemptStripeRedirect = function (url) {
       };
     }
 
-    window.currentUser = currentUser;
+    global.currentUser = currentUser;
 
     if (typeof populateUserUI === "function") {
       populateUserUI(currentUser);

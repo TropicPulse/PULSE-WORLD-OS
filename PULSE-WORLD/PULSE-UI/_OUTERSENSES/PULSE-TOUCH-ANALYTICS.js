@@ -84,8 +84,8 @@ function getSignalHints() {
 
 function getGenomeHints() {
   try {
-    if (window.PulseGenome && typeof window.PulseGenome.snapshot === "function") {
-      return window.PulseGenome.snapshot();
+    if (global.PulseGenome && typeof global.PulseGenome.snapshot === "function") {
+      return global.PulseGenome.snapshot();
     }
   } catch {}
   return {};
@@ -110,7 +110,7 @@ function getDeviceMetrics() {
 
 function getAnimationTier() {
   try {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReduced = global.matchMedia("(prefers-reduced-motion: reduce)").matches;
     return prefersReduced ? "reduced" : "smooth";
   } catch {
     return "smooth";

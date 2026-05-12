@@ -83,19 +83,19 @@
 <!-- Backend Connector Layer -->
 <script type="module">
  
-    window.__FIREBASETOKEN__ = "%%FIREBASE_TOKEN%%";
+    global.__FIREBASETOKEN__ = "%%FIREBASE_TOKEN%%";
     // Your backend replaces %%FIREBASE_TOKEN%% with the real firebase custom token.
  
     document.addEventListener("DOMContentLoaded", async () => {
       // DisplayName is cosmetic only — page must load no matter what
-      const params = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(global.location.search);
       
       const returnTo = params.get("returnTo");
       // Real firebase token is embedded privately
-      const token = window.__FIREBASETOKEN__;
+      const token = global.__FIREBASETOKEN__;
 
       if (!token) {
-        window.location.href = "/error.html";
+        global.location.href = "/error.html";
         return;
       }
 
@@ -114,7 +114,7 @@
         const data = await response.json();
 
         if (!data.success || !data.identity) {
-          window.location.href = "/error.html";
+          global.location.href = "/error.html";
           return;
         }
 
@@ -123,14 +123,14 @@
 
       setTimeout(() => {
         if (returnTo) {
-          window.location.replace(returnTo);
+          global.location.replace(returnTo);
         } else {
-          window.location.replace("/loading.html?dest=appDashboard");
+          global.location.replace("/loading.html?dest=appDashboard");
         }
     })
 
       } catch (err) {
-        window.location.href = "/error.html";
+        global.location.href = "/error.html";
       }
     });
   </script>

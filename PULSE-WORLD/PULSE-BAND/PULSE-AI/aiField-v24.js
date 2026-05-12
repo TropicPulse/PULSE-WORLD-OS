@@ -156,8 +156,8 @@ class AIBinaryField {
     // Optional: expose window‑safe vitals snapshot for UI / diagnostics
     try {
       if (typeof window !== "undefined") {
-        window.PulseBinaryFieldVitalsSnapshot =
-          window.PulseBinaryFieldVitalsSnapshot || (() => this.vitals.snapshot());
+        global.PulseBinaryFieldVitalsSnapshot =
+          global.PulseBinaryFieldVitalsSnapshot || (() => this.vitals.snapshot());
       }
     } catch {
       // never throw

@@ -190,8 +190,8 @@ function getSignalHints() {
 
 function getGenomeHints() {
   try {
-    if (window.PulseGenome) {
-      return window.PulseGenome.snapshot?.() || {};
+    if (global.PulseGenome) {
+      return global.PulseGenome.snapshot?.() || {};
     }
   } catch {}
   return {};

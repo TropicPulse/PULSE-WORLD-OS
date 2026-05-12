@@ -162,7 +162,7 @@ function startPulseSignalListener() {
     }
 
     // Listen for changes to the correct keys
-    window.addEventListener("storage", (e) => {
+    global.addEventListener("storage", (e) => {
       if (
         e.key === "PulseSignal_v27" ||
         e.key === "PulseProofSignal_v27" ||
@@ -199,20 +199,20 @@ function buildEnvironmentSnapshot() {
     };
   }
 
-  const surfaceEnv = window.PulseSurface?.environment;
+  const surfaceEnv = global.PulseSurface?.environment;
   const powerSnapshot =
     typeof PulsePowerAPI?.getPulsePowerSnapshot === "function"
       ? PulsePowerAPI.getPulsePowerSnapshot()
       : null;
 
-  const touchSnapshot = window.__PULSE_TOUCH__ || null;
+  const touchSnapshot = global.__PULSE_TOUCH__ || null;
 
   const base = {
     runtime: "browser",
-    userAgent: window.navigator?.userAgent || null,
-    language: window.navigator?.language || null,
-    online: window.navigator?.onLine ?? null,
-    platform: window.navigator?.platform || null,
+    userAgent: global.navigator?.userAgent || null,
+    language: global.navigator?.language || null,
+    online: global.navigator?.onLine ?? null,
+    platform: global.navigator?.platform || null,
     pulseTouch: touchSnapshot,
     pulsePower: powerSnapshot || null
   };
@@ -292,7 +292,7 @@ async function resolveIdentityBinaryFirst(ProxyBin, ProxySymInstance) {
 // ============================================================================
 async function resolveKernelsBinaryFirst() {
   const BinaryKernel =
-    typeof window !== "undefined" ? window.PulseBinary ?? null : null;
+    typeof window !== "undefined" ? global.PulseBinary ?? null : null;
 
   let SymbolicKernel = null;
 
@@ -307,8 +307,8 @@ async function resolveKernelsBinaryFirst() {
 
   if (!SymbolicKernel && typeof window !== "undefined") {
     SymbolicKernel =
-      window.Pulse?.SymbolicKernel ??
-      window.Pulse?.Kernel ??
+      global.Pulse?.SymbolicKernel ??
+      global.Pulse?.Kernel ??
       null;
   }
 
@@ -329,11 +329,11 @@ async function buildPulseKernel() {
   const { BinaryKernel, SymbolicKernel } = await resolveKernelsBinaryFirst();
 
   const BinaryShadow =
-    typeof window !== "undefined" ? window.PulseBinary ?? null : null;
+    typeof window !== "undefined" ? global.PulseBinary ?? null : null;
   const UIFlow =
-    typeof window !== "undefined" ? window.PulseUI ?? null : null;
+    typeof window !== "undefined" ? global.PulseUI ?? null : null;
   const SkinReflex =
-    typeof window !== "undefined" ? window.PulseSkinReflex ?? null : null;
+    typeof window !== "undefined" ? global.PulseSkinReflex ?? null : null;
 
   const BinaryBrain = BinaryKernel?.Brain ?? null;
   const BinaryEvolution = BinaryKernel?.Evolution ?? null;
@@ -552,7 +552,7 @@ async function buildPulseKernel() {
     UIFlow,
     SkinReflex,
 
-    Errors: typeof window !== "undefined" ? window.PulseUIErrors : null,
+    Errors: typeof window !== "undefined" ? global.PulseUIErrors : null,
 
     Governed: {
       run: runThroughGovernor
@@ -742,14 +742,14 @@ async function runCompileChunkActNow({
 }
 
 // ============================================================================
-//  GLOBAL BROADCAST (window.Pulse)
+//  GLOBAL BROADCAST (global.Pulse)
 // ============================================================================
 if (typeof window !== "undefined") {
   PulseKernelPromise
     .then((PulseKernel) => {
-      window.Pulse = window.Pulse
+      global.Pulse = global.Pulse
         ? {
-            ...window.Pulse,
+            ...global.Pulse,
             meta: PulseKernel.meta,
             Brain: PulseKernel.Brain,
             Evolution: PulseKernel.Evolution,
@@ -773,7 +773,7 @@ if (typeof window !== "undefined") {
             SkinReflex: PulseKernel.SkinReflex,
             Errors: PulseKernel.Errors,
 
-            // ⭐ NEW: expose signal snapshot directly on window.Pulse
+            // ⭐ NEW: expose signal snapshot directly on global.Pulse
             Signal: {
               get: () => PulseSignalState.get()
             }
@@ -824,7 +824,7 @@ export async function prewarmUnderstanding({
             scripts: assets.filter((a) => a.kind === "script").map((a) => a.href),
             styles: assets.filter((a) => a.kind === "style").map((a) => a.href)
           },
-          touch: window.__PULSE_TOUCH__ || null
+          touch: global.__PULSE_TOUCH__ || null
         });
       }
     } catch (err) {
@@ -851,8 +851,8 @@ export async function prewarmUnderstanding({
 
     try {
       const urls = assets.map((a) => a.href).filter(Boolean);
-      if (urls.length && window.prewarmAssets) {
-        window.prewarmAssets(urls);
+      if (urls.length && global.prewarmAssets) {
+        global.prewarmAssets(urls);
       }
     } catch (err) {
       console.error("[PulseUnderstanding] legacy prewarmAssets failed:", err);
@@ -893,9 +893,9 @@ export const PulseUnderstanding = {
   Environment: PulseEnvironment,
   IntentMap: PulseIntentMap,
   OrganismMap: PulseOrganismMap,
-  IQMap: typeof window !== "undefined" ? window.PulseIQMap : null,
+  IQMap: typeof window !== "undefined" ? global.PulseIQMap : null,
   Kernel: PulseKernelPromise,
-  Errors: typeof window !== "undefined" ? window.PulseUIErrors : null,
+  Errors: typeof window !== "undefined" ? global.PulseUIErrors : null,
 
   Identity: () =>
     typeof window !== "undefined" ? window?.Pulse?.Identity ?? null : null,

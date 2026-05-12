@@ -46,8 +46,8 @@ function nextEpoch() {
 //  CREATE EVOLUTION ENGINE — v20 IMMORTAL
 // ============================================================================
 export function createPulseCoreEvolutions({
-  primaryStorage = typeof window !== "undefined" ? window.localStorage : null,
-  secondaryStorage = typeof window !== "undefined" ? window.sessionStorage : null,
+  primaryStorage = typeof window !== "undefined" ? global.localStorage : null,
+  secondaryStorage = typeof window !== "undefined" ? global.sessionStorage : null,
   dnaTag = "default-dna",
   version = "20.0-IMMORTAL-ADVANTAGE",
   overlay = null,

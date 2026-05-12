@@ -1292,9 +1292,9 @@ export const SignalPort = Object.freeze({
     g.SignalPort = g.SignalPort || SignalPort;
 
     if (typeof window !== "undefined") {
-      window.PulseSignal = g.PulseSignal;
-      window.PulseProofSignal = g.PulseProofSignal;
-      window.SignalPort = g.SignalPort;
+      global.PulseSignal = g.PulseSignal;
+      global.PulseProofSignal = g.PulseProofSignal;
+      global.SignalPort = g.SignalPort;
     }
 
     // Let PulseUniversalMemory handle persistence/mirroring of these globals

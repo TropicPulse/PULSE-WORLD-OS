@@ -4,8 +4,8 @@
 //  - No routing
 //  - No sending
 //  - Pure guards + dynamic multi-instance slicing context
-//  - Optional EarnReflex hook (window.PulseEarnReflex)
-//  - Optional ReflexRouter hook (window.PulseEarnReflexRouter)
+//  - Optional EarnReflex hook (global.PulseEarnReflex)
+//  - Optional ReflexRouter hook (global.PulseEarnReflexRouter)
 //  - Dual-band aware (symbolic + binary pulses)
 //  - Presence-aware (metadata only)
 //  - Chunk/prewarm/advantage-aware (metadata only)
@@ -111,7 +111,7 @@ async function maybeEmitAndRouteEarnReflex(event, pulseOrImpulse, instanceContex
   try {
     if (typeof window === "undefined") return;
 
-    const reflex = window.PulseEarnReflex;
+    const reflex = global.PulseEarnReflex;
     if (!reflex || typeof reflex.fromGovernorEvent !== "function") return;
 
     const { earnReflex } = await reflex.fromGovernorEvent(
@@ -120,8 +120,8 @@ async function maybeEmitAndRouteEarnReflex(event, pulseOrImpulse, instanceContex
       instanceContext
     );
 
-    const router = window.PulseEarnReflexRouter;
-    const earn = window.Pulse?.Earn;
+    const router = global.PulseEarnReflexRouter;
+    const earn = global.Pulse?.Earn;
 
     if (router && typeof router.route === "function" && earn) {
       router.route(earnReflex, earn);

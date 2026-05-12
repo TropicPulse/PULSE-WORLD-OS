@@ -536,7 +536,7 @@
 import * as PulseWindow from "../_CREATION_BARRIER/PULSE-WORLD-PORTAL.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const band = window.PulseBand;
+  const band = global.PulseBand;
   if (!band) {
     console.error("PulseBand not booted — Window not loaded?");
     return;
@@ -593,7 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3. Start a PulseBand session
   // ---------------------------------------------------------------
   band.start({
-    userId: window.__pulseUserId || "anonymous",
+    userId: global.__pulseUserId || "anonymous",
     payload: "REQUEST_USERS_CACHE",
     chunkSize: 500
   });

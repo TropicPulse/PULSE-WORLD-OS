@@ -415,8 +415,8 @@ function mark(label) {
 }
 
 /* 2. UI ONLY — ensure this runs ONCE */
-if (!window.__PULSE_UI_INIT__) {
-  window.__PULSE_UI_INIT__ = true;
+if (!global.__PULSE_UI_INIT__) {
+  global.__PULSE_UI_INIT__ = true;
 
   document.addEventListener("DOMContentLoaded", () => {
     mark("WINDOW DOM STARTED INDEX PAGE");
@@ -462,8 +462,8 @@ if (!window.__PULSE_UI_INIT__) {
     ============================================================ */
     (async () => {
       try {
-        const vitals    = window.VitalsMonitor.Vitals?.generate?.() ?? null;
-        const binary    = window.PulseBinary ?? null;
+        const vitals    = global.VitalsMonitor.Vitals?.generate?.() ?? null;
+        const binary    = global.PulseBinary ?? null;
         const sentience = binary?.Sentience?.snapshot?.() ?? null;
 
         const signalBars  = vitals?.network?.bars ?? "—";
@@ -518,7 +518,7 @@ if (!window.__PULSE_UI_INIT__) {
       try {
         const file = testFile.files[0];
 
-        const binary   = window.PulseBinary ?? null;
+        const binary   = global.PulseBinary ?? null;
         const vitalsFn = binary?.Vitals?.generate;
 
         const before = performance.now();

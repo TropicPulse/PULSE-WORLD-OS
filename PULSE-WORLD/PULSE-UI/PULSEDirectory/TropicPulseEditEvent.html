@@ -950,7 +950,7 @@ input, select, textarea {
 
   const categorySelect = document.getElementById("category");
 
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(global.location.search);
   const eventId = urlParams.get("id");
 
   let existingImages = [];
@@ -1023,7 +1023,7 @@ async function hardLogout(reason) {
     localStorage.removeItem("tp_token_v4");
     localStorage.removeItem("tp_device_token_v4");
   } finally {
-    window.location.replace("/CheckEmail.html");
+    global.location.replace("/CheckEmail.html");
   }
 }
 
@@ -1056,12 +1056,12 @@ async function sessionCheck() {
   // No identity or not trusted → go to login
   if (!id || !id.trustedDevice) {
     const here = encodeURIComponent(location.pathname + location.search);
-    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    global.location.href = `/CheckEmail.html?returnTo=${here}`;
     return null;
   }
 
   // Expose canonical identity for the rest of the page
-  window.PulseIdentity = id;
+  global.PulseIdentity = id;
   return id;
 }
 
@@ -1117,10 +1117,10 @@ function mark(label) {
 
 
   // 🔒 Guard beforeunload
-  if (!window.__editEventBeforeUnloadBound) {
-    window.__editEventBeforeUnloadBound = true;
+  if (!global.__editEventBeforeUnloadBound) {
+    global.__editEventBeforeUnloadBound = true;
 
-    window.addEventListener("beforeunload", (e) => {
+    global.addEventListener("beforeunload", (e) => {
       if (formIsDirty) {
         e.preventDefault();
         e.returnValue = "";
@@ -1379,24 +1379,24 @@ if (eventForm && !eventForm.__bound) {
     showMessage(isEditing ? "Event updated!" : "Event created!", "success");
 
     setTimeout(() => {
-      window.location.href = `/eventDetail.html?id=${encodeURIComponent(docId)}`;
+      global.location.href = `/eventDetail.html?id=${encodeURIComponent(docId)}`;
     }, 600);
     // -----------------------------------------
   // ⭐ PREVENT DUPLICATE LISTENERS
   // -----------------------------------------
-  if (!window.__pulsebandListenersAttached) {
-    window.__pulsebandListenersAttached = true;
+  if (!global.__pulsebandListenersAttached) {
+    global.__pulsebandListenersAttached = true;
 
     // ⭐ 1. Restore state on load (runs ONCE)
-    window.addEventListener("load", () => {
+    global.addEventListener("load", () => {
       const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-      const disabled = (window.isIdle === true && inactiveFlag === true);
+      const disabled = (global.isIdle === true && inactiveFlag === true);
 
       if (disabled) {
-        window.isIdle = true;
+        global.isIdle = true;
         
       } else {
-        window.isIdle = false; // active by default
+        global.isIdle = false; // active by default
         
       }
 
@@ -1406,17 +1406,17 @@ if (eventForm && !eventForm.__bound) {
     // ⭐ 2. Badge toggle listener
     document.getElementById("pb-mini-badge").addEventListener("click", () => {
       const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-      const disabled = (window.isIdle === true && inactiveFlag === true);
+      const disabled = (global.isIdle === true && inactiveFlag === true);
 
       if (disabled) {
         // Turn ON
         localStorage.removeItem("pulseband_disabled");
-        window.isIdle = false;
+        global.isIdle = false;
         
       } else {
         // Turn OFF
         localStorage.setItem("pulseband_disabled", "1");
-        window.isIdle = true;
+        global.isIdle = true;
         
       }
 
@@ -1895,10 +1895,10 @@ function applyTropicOverlay(name, iconUrl = null) {
   overlay.style.display = "block";
 
   // 🔒 Global guard for resize listener
-  if (!window.__tp_overlay_resize_bound) {
-    window.__tp_overlay_resize_bound = true;
+  if (!global.__tp_overlay_resize_bound) {
+    global.__tp_overlay_resize_bound = true;
 
-    window.addEventListener("resize", () => {
+    global.addEventListener("resize", () => {
       clearTimeout(__tp_overlay_resize_timeout);
       __tp_overlay_resize_timeout = setTimeout(() => {
         applyTropicOverlay(labelText.textContent, icon.src || null);

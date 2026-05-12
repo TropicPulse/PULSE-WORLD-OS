@@ -241,7 +241,7 @@ export async function PulseWorldCompile(options = {}) {
   // ==========================================================================
   try {
     if (typeof globalThis?.PulseProofBridge?.signal === "function") {
-      globalThis.PulseProofBridge.signal("compiler.event", {
+      global.PulseProofBridge.signal("compiler.event", {
         signature: sig,
         metafile: result.metafile || null,
         chunkHints

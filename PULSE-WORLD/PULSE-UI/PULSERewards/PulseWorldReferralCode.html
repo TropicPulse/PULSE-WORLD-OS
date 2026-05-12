@@ -101,7 +101,7 @@ log("🌞 Script loaded, attaching visibility listener…");
     });
 
     const returnTo = encodeURIComponent("/PulsePoints.html");
-    window.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
+    global.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
     throw new Error("No identity — redirecting to CheckEmail");
   }
   // --- END SIMPLE IDENTITY CHECK ---

@@ -87,7 +87,7 @@ export function PulsePilotCopilotAdapter({ db }) {
       document.querySelector("cwc-chat") ||
       document.querySelector("[data-copilot-root]") ||
       document.querySelector("[data-telemetry-id='CopilotChat']") ||
-      window.location.href.includes("copilot");
+      global.location.href.includes("copilot");
 
     if (isCopilot && state.activeAI !== "copilot") {
       state.activeAI = "copilot";

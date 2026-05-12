@@ -66,10 +66,10 @@ export function createPulseOSSpinalCord({
 
         if (
           hasWindow &&
-          window.PageScannerAdapter &&
-          typeof window.PageScannerAdapter.onEvent === "function"
+          global.PageScannerAdapter &&
+          typeof global.PageScannerAdapter.onEvent === "function"
         ) {
-          window.PageScannerAdapter.onEvent(packet);
+          global.PageScannerAdapter.onEvent(packet);
         }
 
         if (typeof packet.severity === "number") {

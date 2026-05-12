@@ -243,10 +243,10 @@ export function createPulseMeshSkinReflex({
   // ==========================================================================
   function attach() {
     if (typeof window !== "undefined") {
-      window.addEventListener("error", handleMeshError, true);
-      window.addEventListener("unhandledrejection", handleUnhandledRejection, true);
+      global.addEventListener("error", handleMeshError, true);
+      global.addEventListener("unhandledrejection", handleUnhandledRejection, true);
 
-      log?.("[MeshSkinReflex] attached to window.error + window.unhandledrejection");
+      log?.("[MeshSkinReflex] attached to global.error + global.unhandledrejection");
     }
   }
 

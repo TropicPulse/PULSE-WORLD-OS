@@ -113,7 +113,7 @@ const ENGINE_BLOCK_ROLE = Object.freeze({
      • Load PulseCompass IMMORTAL+ (lane orchestrator)
      • Prewarm ALL organs (UI + Compass + lanes + DB) in CHUNKS
      • Handle trust boundary (INSIDE / OUTSIDE)
-     • Expose Motion API + diagnostics to window.PulseEngineBlock
+     • Expose Motion API + diagnostics to global.PulseEngineBlock
      • Schedule idle-aware background motion ticks
 
    FORBIDDEN:
@@ -175,7 +175,7 @@ const Evolution = {
     const model = {
       lineage: "PulseEngineBlock-v24",
       stable: true,
-      page: typeof window !== "undefined" ? window.location.pathname : "unknown",
+      page: typeof window !== "undefined" ? global.location.pathname : "unknown",
       role: ENGINE_BLOCK_ROLE.identity,
       layer: ENGINE_BLOCK_ROLE.layer
     };
@@ -191,8 +191,8 @@ const Evolution = {
    7. INSTANTIATE UI ORGANS — IMMORTAL ORDER (v24)
    ============================================================================ */
 const safePathname =
-  typeof window !== "undefined" && window.location && window.location.pathname
-    ? window.location.pathname
+  typeof window !== "undefined" && global.location && global.location.pathname
+    ? global.location.pathname
     : "PulseEngineBlock";
 
 const MemoryOrgan = createPulseEvolutionaryMemory({
@@ -301,7 +301,7 @@ function runMotionTickOnce() {
 function scheduleMotionTickIdle() {
   if (typeof window === "undefined") return;
 
-  const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 50));
+  const idle = global.requestIdleCallback || ((cb) => setTimeout(cb, 50));
 
   motionTickIdleHandle = idle(() => {
     if (document.visibilityState === "visible") {
@@ -314,7 +314,7 @@ function startMotionTickLoop() {
   if (typeof window === "undefined") return;
   if (motionTickTimer) return;
 
-  motionTickTimer = window.setInterval(() => {
+  motionTickTimer = global.setInterval(() => {
     if (document.visibilityState !== "visible") return;
     scheduleMotionTickIdle();
   }, motionTickIntervalMs);
@@ -323,7 +323,7 @@ function startMotionTickLoop() {
 function stopMotionTickLoop() {
   if (typeof window === "undefined") return;
   if (motionTickTimer) {
-    window.clearInterval(motionTickTimer);
+    global.clearInterval(motionTickTimer);
     motionTickTimer = null;
   }
 }
@@ -427,7 +427,7 @@ function buildInsideAPI() {
     });
 
     if (typeof window !== "undefined") {
-      window.PulseEngineBlock = buildOutsideAPI();
+      global.PulseEngineBlock = buildOutsideAPI();
     }
 
     console.log("[BOOT] PulseEngineBlock ready in OUTSIDE mode.");
@@ -449,7 +449,7 @@ function buildInsideAPI() {
   }
 
   if (typeof window !== "undefined") {
-    window.PulseEngineBlock = buildInsideAPI();
+    global.PulseEngineBlock = buildInsideAPI();
   }
 
   startMotionTickLoop();

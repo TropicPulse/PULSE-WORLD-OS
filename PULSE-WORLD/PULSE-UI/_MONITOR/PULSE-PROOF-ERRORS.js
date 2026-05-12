@@ -17,8 +17,8 @@ let triedImport = false;
 
 function resolveBridgeExport() {
   // If global mirror exists, use it
-  if (globalThis.PulseProofBridge) {
-    BridgeExport = globalThis.PulseProofBridge;
+  if (global.PulseProofBridge) {
+    BridgeExport = global.PulseProofBridge;
     return BridgeExport;
   }
 
@@ -129,10 +129,10 @@ const UIE_LS_MAX = 4000;
 
 function uieHasLocalStorage() {
   try {
-    if (typeof window === "undefined" || !window.localStorage) return false;
+    if (typeof window === "undefined" || !global.localStorage) return false;
     const t = "__uie_test__";
-    window.localStorage.setItem(t, "1");
-    window.localStorage.removeItem(t);
+    global.localStorage.setItem(t, "1");
+    global.localStorage.removeItem(t);
     return true;
   } catch {
     return false;
@@ -142,7 +142,7 @@ function uieHasLocalStorage() {
 function uieLoadBuffer() {
   if (!uieHasLocalStorage()) return [];
   try {
-    const raw = window.localStorage.getItem(UIE_LS_KEY);
+    const raw = global.localStorage.getItem(UIE_LS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -156,7 +156,7 @@ function uieSaveBuffer(buf) {
   try {
     const trimmed =
       buf.length > UIE_LS_MAX ? buf.slice(buf.length - UIE_LS_MAX) : buf;
-    window.localStorage.setItem(UIE_LS_KEY, JSON.stringify(trimmed));
+    global.localStorage.setItem(UIE_LS_KEY, JSON.stringify(trimmed));
   } catch {
     // never throw
   }
@@ -465,21 +465,21 @@ export const PulseUIErrors = (() => {
 
   function readSurfaceContext() {
     try {
-      const portal = typeof window !== "undefined" ? window.PulsePortal : null;
+      const portal = typeof window !== "undefined" ? global.PulsePortal : null;
       const env = portal?.env || null;
       const meta = portal?.meta || null;
 
       const route =
-        (typeof window !== "undefined" && window.location?.pathname) ||
+        (typeof window !== "undefined" && global.location?.pathname) ||
         meta?.route ||
         null;
 
       const band =
-        (typeof window !== "undefined" && window.PulseBand?.mode) ||
+        (typeof window !== "undefined" && global.PulseBand?.mode) ||
         null;
 
       const sessionId =
-        (typeof window !== "undefined" && window.PulseBand?.sessionId) ||
+        (typeof window !== "undefined" && global.PulseBand?.sessionId) ||
         null;
 
       return {
@@ -686,28 +686,28 @@ try {
   // CAPTURE — global listeners
   // --------------------------------------------------------------------------
   function installGlobalHandlers() {
-    if (typeof window === "undefined" || !window.addEventListener) return;
+    if (typeof window === "undefined" || !global.addEventListener) return;
 
     // JS runtime errors
-    window.addEventListener("error", (e) => {
-      const envelope = normalizeError(e.error || e, "window.error");
-      appendUIErrorRecord("window.error", envelope);
+    global.addEventListener("error", (e) => {
+      const envelope = normalizeError(e.error || e, "global.error");
+      appendUIErrorRecord("global.error", envelope);
       broadcast(envelope);
     });
 
     // Promise rejections
-    window.addEventListener("unhandledrejection", (e) => {
+    global.addEventListener("unhandledrejection", (e) => {
       const envelope = normalizeError(
         e.reason || e,
-        "window.unhandledrejection"
+        "global.unhandledrejection"
       );
-      appendUIErrorRecord("window.unhandledrejection", envelope);
+      appendUIErrorRecord("global.unhandledrejection", envelope);
       broadcast(envelope);
     });
 
     // SkinReflex internal errors (if it exposes a handler)
     try {
-      window.PulseSkinReflex?.registerErrorHandler?.((err) => {
+      global.PulseSkinReflex?.registerErrorHandler?.((err) => {
         const envelope = normalizeError(err, "skin.reflex");
         appendUIErrorRecord("skin.reflex", envelope);
         broadcast(envelope);
@@ -716,13 +716,13 @@ try {
 
     // Optional: iframe / worker bridges (future hooks, no WorkerGlobalScope)
     try {
-      window.addEventListener("message", (evt) => {
+      global.addEventListener("message", (evt) => {
         if (!evt?.data || !evt.data.__PulseUIError) return;
         const envelope = normalizeError(
           evt.data.error || evt.data,
-          evt.data.origin || "window.message"
+          evt.data.origin || "global.message"
         );
-        appendUIErrorRecord("window.message", envelope);
+        appendUIErrorRecord("global.message", envelope);
         broadcast(envelope);
       });
     } catch {}
@@ -755,12 +755,12 @@ export default PulseUIErrors;
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
-    window.PulseUIErrorStore = PulseUIErrorStore;
-    window.PulseUIErrors = PulseUIErrors;
+    global.PulseUIErrorStore = PulseUIErrorStore;
+    global.PulseUIErrors = PulseUIErrors;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseUIErrorStore = PulseUIErrorStore;
-    globalThis.PulseUIErrors = PulseUIErrors;
+    global.PulseUIErrorStore = PulseUIErrorStore;
+    global.PulseUIErrors = PulseUIErrors;
   }
   if (typeof global !== "undefined") {
     global.PulseUIErrorStore = PulseUIErrorStore;

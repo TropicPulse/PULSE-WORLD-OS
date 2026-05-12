@@ -289,9 +289,9 @@ function buildPresenceRelayView(PulseMeshPresenceRelay) {
     const snapshot = PulseMeshPresenceRelay.getPresenceSnapshot?.() || null;
 
     return {
-      nearbyPresence: window.nearbyPresence || [],
-      bandStats: window.bandStats || {},
-      lastScanAt: window.lastScanAt || 0,
+      nearbyPresence: global.nearbyPresence || [],
+      bandStats: global.bandStats || {},
+      lastScanAt: global.lastScanAt || 0,
       snapshot
     };
   } catch {
@@ -563,7 +563,7 @@ function buildNarrativeForYou({
   // Presence relay narrative
   const nearbyCount = presenceRelay?.nearbyPresence?.length ?? 0;
   if (nearbyCount > 0) {
-    parts.push(`Mesh Presence: ${nearbyCount} nearby organisms detected in the presence window.`);
+    parts.push(`Mesh Presence: ${nearbyCount} nearby organisms detected in the presence global.`);
   }
 
   return parts.join(" ");

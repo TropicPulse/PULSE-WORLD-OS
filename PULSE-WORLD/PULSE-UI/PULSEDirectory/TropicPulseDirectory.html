@@ -2110,12 +2110,12 @@ async function sessionCheck() {
   // No identity or not trusted → go to login
   if (!id || !id.trustedDevice) {
     const here = encodeURIComponent(location.pathname + location.search);
-    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    global.location.href = `/CheckEmail.html?returnTo=${here}`;
     return null;
   }
 
   // Expose canonical identity for the rest of the page
-  window.PulseIdentity = id;
+  global.PulseIdentity = id;
   return id;
 }
 
@@ -2764,8 +2764,8 @@ async function loadBusinessCategories() {
     if (!myBtn.__clickAdded) {
       myBtn.onclick = () => {
         if (!userEmail) {
-          const returnTo = encodeURIComponent(window.location.href);
-          window.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
+          const returnTo = encodeURIComponent(global.location.href);
+          global.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
           return;
         }
         setMode("my");
@@ -2780,11 +2780,11 @@ async function loadBusinessCategories() {
     if (!createBtn.__clickAdded) {
       createBtn.onclick = () => {
         if (!userEmail) {
-          const returnTo = encodeURIComponent(window.location.href);
-          window.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
+          const returnTo = encodeURIComponent(global.location.href);
+          global.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
           return;
         }
-        window.location.href = `/EditBusiness.html`;
+        global.location.href = `/EditBusiness.html`;
       };
       createBtn.__clickAdded = true;
     }
@@ -2929,16 +2929,16 @@ async function loadBusinessCategories() {
     // -----------------------------
     const floatingUp = document.getElementById("floatingScrollUp");
 
-    if (!window.__scrollUpAdded) {
-      window.addEventListener("scroll", () => {
-        floatingUp.classList.toggle("visible", window.scrollY > 300);
+    if (!global.__scrollUpAdded) {
+      global.addEventListener("scroll", () => {
+        floatingUp.classList.toggle("visible", global.scrollY > 300);
       });
-      window.__scrollUpAdded = true;
+      global.__scrollUpAdded = true;
     }
 
     if (!floatingUp.__clickAdded) {
       floatingUp.onclick = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        global.scrollTo({ top: 0, behavior: "smooth" });
       };
       floatingUp.__clickAdded = true;
     }
@@ -3101,19 +3101,19 @@ async function loadBusinessCategories() {
     // -----------------------------------------
   // ⭐ PREVENT DUPLICATE LISTENERS
   // -----------------------------------------
-  if (!window.__pulsebandListenersAttached) {
-    window.__pulsebandListenersAttached = true;
+  if (!global.__pulsebandListenersAttached) {
+    global.__pulsebandListenersAttached = true;
 
     // ⭐ 1. Restore state on load (runs ONCE)
-    window.addEventListener("load", () => {
+    global.addEventListener("load", () => {
       const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-      const disabled = (window.isIdle === true && inactiveFlag === true);
+      const disabled = (global.isIdle === true && inactiveFlag === true);
 
       if (disabled) {
-        window.isIdle = true;
+        global.isIdle = true;
         
       } else {
-        window.isIdle = false; // active by default
+        global.isIdle = false; // active by default
         
       }
 
@@ -3123,17 +3123,17 @@ async function loadBusinessCategories() {
     // ⭐ 2. Badge toggle listener
     document.getElementById("pb-mini-badge").addEventListener("click", () => {
       const inactiveFlag = localStorage.getItem("pulseband_disabled") === "1";
-      const disabled = (window.isIdle === true && inactiveFlag === true);
+      const disabled = (global.isIdle === true && inactiveFlag === true);
 
       if (disabled) {
         // Turn ON
         localStorage.removeItem("pulseband_disabled");
-        window.isIdle = false;
+        global.isIdle = false;
         
       } else {
         // Turn OFF
         localStorage.setItem("pulseband_disabled", "1");
-        window.isIdle = true;
+        global.isIdle = true;
         
       }
 
@@ -3466,7 +3466,7 @@ function formatCompactTime(mins) {
 }
 
   function openBusiness(id) {
-    window.location.href = `/businessDetail.html?id=${encodeURIComponent(id)}`;
+    global.location.href = `/businessDetail.html?id=${encodeURIComponent(id)}`;
   }
 
   function getMinutesUntilOpen(biz) {
@@ -3973,7 +3973,7 @@ function formatCompactTime(mins) {
         e.preventDefault();
 
         showActionBubble([
-          { label: b.phones?.[0] || "No number", icon: "📞", action: () => window.location.href = `tel:${b.phones[0]}` }
+          { label: b.phones?.[0] || "No number", icon: "📞", action: () => global.location.href = `tel:${b.phones[0]}` }
         ], e);
       };
       right.appendChild(callBtn);
@@ -3989,7 +3989,7 @@ function formatCompactTime(mins) {
 
           const wa = b.whatsapp[0];
           showActionBubble([
-            { label: wa, icon: "🟢", action: () => window.location.href = `https://wa.me/${wa.replace(/\+/g, "")}` }
+            { label: wa, icon: "🟢", action: () => global.location.href = `https://wa.me/${wa.replace(/\+/g, "")}` }
           ], e);
         };
         right.appendChild(waBtn);
@@ -4127,7 +4127,7 @@ function formatCompactTime(mins) {
         editBtn.innerHTML = "✏️";
         editBtn.onclick = (e) => {
           e.stopPropagation();
-          window.location.href = `/EditBusiness.html?id=${encodeURIComponent(b.id)}`;
+          global.location.href = `/EditBusiness.html?id=${encodeURIComponent(b.id)}`;
         };
         imgWrapper.appendChild(editBtn);
       }
@@ -4263,7 +4263,7 @@ function formatCompactTime(mins) {
     card.textContent = "▲";
 
     card.onclick = () => {
-        window.scrollTo({
+        global.scrollTo({
         top: 0,
         behavior: "smooth"
       });
@@ -4891,15 +4891,15 @@ function getSelectedSearchFields() {
     const bubbleWidth = 130;
     const bubbleHeight = options.length * 50 + 20;
 
-    const pageX = rect.left + window.scrollX;
-    const pageY = rect.top + window.scrollY;
+    const pageX = rect.left + global.scrollX;
+    const pageY = rect.top + global.scrollY;
 
     // Ideal position (to the left of the button)
     let left = pageX - bubbleWidth - 10;
 
     // Clamp so it never goes off-screen
     const minLeft = 10; // padding from left edge
-    const maxLeft = window.innerWidth - bubbleWidth - 10;
+    const maxLeft = global.innerWidth - bubbleWidth - 10;
 
     left = Math.max(minLeft, Math.min(left, maxLeft));
 
@@ -4963,7 +4963,7 @@ function refreshDistances() {
 function scrollToTopSmooth() {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      global.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
 }

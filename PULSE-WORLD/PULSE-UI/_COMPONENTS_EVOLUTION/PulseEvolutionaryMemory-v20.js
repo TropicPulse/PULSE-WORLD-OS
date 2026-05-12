@@ -823,10 +823,10 @@ export function createPulseEvolutionaryMemory({
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
-    window.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
+    global.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
+    global.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;
   }
   if (typeof global !== "undefined") {
     global.PulseEvolutionaryMemory = createPulseEvolutionaryMemory;

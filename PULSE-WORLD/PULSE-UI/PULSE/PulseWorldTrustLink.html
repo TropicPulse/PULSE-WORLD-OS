@@ -60,17 +60,17 @@
 
   <!-- 2. PAGE LOGIC — SAFE TO RUN AFTER PORTAL -->
   <script type="module">
-    window.__SERVER_HAS_TOKEN__ = true;
+    global.__SERVER_HAS_TOKEN__ = true;
 
     document.addEventListener("DOMContentLoaded", () => {
-      const params = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(global.location.search);
 
       // ⭐ Public-safe identity layer
       const displayName = params.get("displayName") || "Friend";
 
       // Server-side token presence check
-      if (!window.__SERVER_HAS_TOKEN__) {
-        window.location.href = "/error.html";
+      if (!global.__SERVER_HAS_TOKEN__) {
+        global.location.href = "/error.html";
         return;
       }
 
@@ -81,12 +81,12 @@
         body: JSON.stringify({ request: true })
       })
       .then(() => {
-        window.location.href =
+        global.location.href =
           "/success.html?displayName=" +
           encodeURIComponent(displayName);
       })
       .catch(() => {
-        window.location.href = "/error.html";
+        global.location.href = "/error.html";
       });
     });
   </script>

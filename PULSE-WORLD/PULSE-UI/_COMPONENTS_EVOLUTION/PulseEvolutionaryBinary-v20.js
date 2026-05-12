@@ -453,10 +453,10 @@ export function createPulseEvolutionaryBinary({
 // ---------------------------------------------------------------------------
 try {
   if (typeof window !== "undefined") {
-    window.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
+    global.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
+    global.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;
   }
   if (typeof global !== "undefined") {
     global.PulseEvolutionaryBinary = createPulseEvolutionaryBinary;

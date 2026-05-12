@@ -81,8 +81,8 @@ const fetchFn =
 // ============================================================================
 const SHADOW_DIAGNOSTICS_ENABLED =
   typeof window !== "undefined" &&
-  (window.PULSE_SHADOW_DIAGNOSTICS === true ||
-    window.PULSE_DIAGNOSTICS === true);
+  (global.PULSE_SHADOW_DIAGNOSTICS === true ||
+    global.PULSE_DIAGNOSTICS === true);
 
 function logShadow(stage, details = {}) {
   if (!SHADOW_DIAGNOSTICS_ENABLED) return;

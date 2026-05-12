@@ -331,10 +331,10 @@ export const PulsePalPersonaEngine = {
 // ============================================================================
 try {
   if (typeof globalThis !== "undefined") {
-    globalThis.PulsePalPersonaEngine = PulsePalPersonaEngine;
+    global.PulsePalPersonaEngine = PulsePalPersonaEngine;
   }
   if (typeof window !== "undefined") {
-    window.PulsePalPersonaEngine = PulsePalPersonaEngine;
+    global.PulsePalPersonaEngine = PulsePalPersonaEngine;
   }
 } catch {
   // never throw

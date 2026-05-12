@@ -134,7 +134,7 @@ function writeCollectionWithDelta(collection, newArr) {
 
   if (delta.length > 0) {
     localStorage.setItem(key, JSON.stringify(newArr));
-    window.dispatchEvent(new CustomEvent("firebase_delta_out", {
+    global.dispatchEvent(new CustomEvent("firebase_delta_out", {
       detail: { collection, delta }
     }));
   }
@@ -158,7 +158,7 @@ function setDocument(collection, id, value) {
 function writeFsFile(path, content) {
   const key = `firebase_fs_${path}`;
   localStorage.setItem(key, content);
-  window.dispatchEvent(new CustomEvent("firebase_fs_delta_out", {
+  global.dispatchEvent(new CustomEvent("firebase_fs_delta_out", {
     detail: { path, content }
   }));
 }// ============================================================================
@@ -420,4 +420,4 @@ for (const g of GLOBAL_SURFACES) {
 
 console.log("%c[ShadowDB] UNIVERSAL GLOBAL DB + FS compatibility layer ACTIVE", C_OK);
 
-window.PulseWorldFirebaseShadow = PulseWorldFirebaseShadow;
+global.PulseWorldFirebaseShadow = PulseWorldFirebaseShadow;

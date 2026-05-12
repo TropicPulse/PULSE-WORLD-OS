@@ -184,10 +184,10 @@ export async function warmupOrganism(pulseTouch) {
   // ============================================================
   // 1. PREWARM CHUNKS (REAL)
   // ============================================================
-  if (hasWindow && window.PulseChunks && typeof window.PulseChunks.prewarm === "function") {
+  if (hasWindow && global.PulseChunks && typeof global.PulseChunks.prewarm === "function") {
     const urls = collectVisibleAssets();
     try {
-      window.PulseChunks.prewarm(urls, {
+      global.PulseChunks.prewarm(urls, {
         meta: {
           identity: "PulseTouchWarmup",
           version: "v25++",
@@ -205,9 +205,9 @@ export async function warmupOrganism(pulseTouch) {
   // 2. PREWARM NEXT PAGE (Portal)
   // ============================================================
   let nextPageWarmup = null;
-  if (hasWindow && window.PulsePortalWarmup && typeof window.PulsePortalWarmup.prewarm === "function") {
+  if (hasWindow && global.PulsePortalWarmup && typeof global.PulsePortalWarmup.prewarm === "function") {
     try {
-      const hint = window.PulsePortalWarmup.prewarm(page, chunkProfile);
+      const hint = global.PulsePortalWarmup.prewarm(page, chunkProfile);
       nextPageWarmup = normalizeNextPageWarmup(hint, page);
       tasks.push("portal_nextpage_prewarm");
     } catch {
@@ -220,9 +220,9 @@ export async function warmupOrganism(pulseTouch) {
   // ============================================================
   if (hasWindow) {
     try {
-      const pulse = window.localStorage?.getItem("PulseSignal_v27");
-      const proof = window.localStorage?.getItem("PulseProofSignal_v27");
-      const port = window.localStorage?.getItem("PulseSignalPort_v27");
+      const pulse = global.localStorage?.getItem("PulseSignal_v27");
+      const proof = global.localStorage?.getItem("PulseProofSignal_v27");
+      const port = global.localStorage?.getItem("PulseSignalPort_v27");
 
       if (pulse || proof || port) {
         tasks.push("signal_prewarm");
@@ -235,9 +235,9 @@ export async function warmupOrganism(pulseTouch) {
   // ============================================================
   // 4. PREWARM PRESENCE NORMALIZER (v25++)
   // ============================================================
-  if (hasWindow && window.PulsePresenceNormalizerStore) {
+  if (hasWindow && global.PulsePresenceNormalizerStore) {
     try {
-      window.PulsePresenceNormalizerStore.tail(50);
+      global.PulsePresenceNormalizerStore.tail(50);
       tasks.push("presence_normalizer_prewarm");
     } catch {
       // silent
@@ -247,9 +247,9 @@ export async function warmupOrganism(pulseTouch) {
   // ============================================================
   // 5. PREWARM PULSEBAND (chunk manifests)
   // ============================================================
-  if (hasWindow && window.PulseBand && typeof window.PulseBand.emit === "function") {
+  if (hasWindow && global.PulseBand && typeof global.PulseBand.emit === "function") {
     try {
-      window.PulseBand.emit("warmup", { page, region, mode });
+      global.PulseBand.emit("warmup", { page, region, mode });
       tasks.push("pulseband_prewarm");
     } catch {
       // silent
@@ -261,7 +261,7 @@ export async function warmupOrganism(pulseTouch) {
   // ============================================================
   if (hasWindow) {
     try {
-      const route = window.PulseRoute || window.location?.pathname || null;
+      const route = global.PulseRoute || global.location?.pathname || null;
       if (route) tasks.push("route_prewarm");
     } catch {
       // silent
@@ -271,9 +271,9 @@ export async function warmupOrganism(pulseTouch) {
   // ============================================================
   // 7. PREWARM ORGANISM MAP (if present)
   // ============================================================
-  if (hasWindow && window.PulseOrganismMap && typeof window.PulseOrganismMap.prewarm === "function") {
+  if (hasWindow && global.PulseOrganismMap && typeof global.PulseOrganismMap.prewarm === "function") {
     try {
-      window.PulseOrganismMap.prewarm(page, region, mode);
+      global.PulseOrganismMap.prewarm(page, region, mode);
       tasks.push("organism_map_prewarm");
     } catch {
       // silent

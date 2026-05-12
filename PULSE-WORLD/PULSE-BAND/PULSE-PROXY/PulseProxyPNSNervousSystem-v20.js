@@ -276,7 +276,7 @@ export function nervousLog(stage, payload = {}) {
   try {
     const enabled =
       typeof window !== "undefined"
-        ? window.PULSE_NERVOUS_DIAGNOSTICS || window.PULSE_DIAGNOSTICS
+        ? global.PULSE_NERVOUS_DIAGNOSTICS || global.PULSE_DIAGNOSTICS
         : process.env.PULSE_NERVOUS_DIAGNOSTICS === "true" ||
           process.env.PULSE_DIAGNOSTICS === "true";
 
@@ -300,8 +300,8 @@ export function nervousLog(stage, payload = {}) {
       console.log("[NERV]", JSON.stringify(packet));
     }
 
-    if (typeof window !== "undefined" && window.PulseLogger?.nervous) {
-      window.PulseLogger.nervous(packet);
+    if (typeof window !== "undefined" && global.PulseLogger?.nervous) {
+      global.PulseLogger.nervous(packet);
     }
   } catch (_) {
     // NEVER throw — nervous system must never break flow
@@ -664,8 +664,8 @@ export const pulseband = {
   // GPU Brain Init — Motor Cortex Warmup (symbolic, v20)
 // ------------------------------------------------------------
   async initGraphics(rawAssets = {}) {
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG("PulseBand → initGraphics() called");
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG("PulseBand → initGraphics() called");
     }
     nervousLog("GPU_INIT_CALLED");
 
@@ -685,8 +685,8 @@ export const pulseband = {
 
       const packages = PulseGPU.PulseGPUBrainExport.buildAndStore(input);
 
-      if (typeof window !== "undefined" && window.PULSE_LOG) {
-        window.PULSE_LOG("PulseBand → GPU Brain ready");
+      if (typeof window !== "undefined" && global.PULSE_LOG) {
+        global.PULSE_LOG("PulseBand → GPU Brain ready");
       }
 
       this.gpu.packages = packages;
@@ -695,8 +695,8 @@ export const pulseband = {
 
       nervousLog("GPU_INIT_READY", { gpuReady: this.gpu.ready });
     } catch (err) {
-      if (typeof window !== "undefined" && window.PULSE_LOG) {
-        window.PULSE_LOG("PulseBand → GPU Brain FAILED");
+      if (typeof window !== "undefined" && global.PULSE_LOG) {
+        global.PULSE_LOG("PulseBand → GPU Brain FAILED");
       }
 
       this.gpu.ready = false;
@@ -711,15 +711,15 @@ export const pulseband = {
 // ------------------------------------------------------------
   async initEngine() {
     if (this.engine.initialized) {
-      if (typeof window !== "undefined" && window.PULSE_LOG) {
-        window.PULSE_LOG("PulseBand → initEngine() skipped (already initialized)");
+      if (typeof window !== "undefined" && global.PULSE_LOG) {
+        global.PULSE_LOG("PulseBand → initEngine() skipped (already initialized)");
       }
       nervousLog("ENGINE_INIT_SKIPPED", { initialized: true });
       return;
     }
 
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG("PulseBand → Initializing engine…");
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG("PulseBand → Initializing engine…");
     }
     nervousLog("ENGINE_INIT_START");
 
@@ -735,8 +735,8 @@ export const pulseband = {
       }
     });
 
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG("PulseBand → Engine ready");
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG("PulseBand → Engine ready");
     }
     nervousLog("ENGINE_INIT_READY", { initialized: true });
   },
@@ -745,8 +745,8 @@ export const pulseband = {
   // Page Toggle — Local Nervous System Enable/Disable
   // ------------------------------------------------------------
   enableForPage() {
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG("PulseBand → Page enabled");
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG("PulseBand → Page enabled");
     }
     nervousLog("PAGE_ENABLE");
 
@@ -755,8 +755,8 @@ export const pulseband = {
   },
 
   disableForPage() {
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG("PulseBand → Page disabled");
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG("PulseBand → Page disabled");
     }
     nervousLog("PAGE_DISABLE");
 
@@ -862,15 +862,15 @@ export const pulseband = {
   },
 
   async requestPulse(deviceId) {
-    if (typeof window === "undefined" || !window.PulseNet || !window.PulseNet.pulseOnce) {
-      if (typeof window !== "undefined" && window.PULSE_LOG) {
-        window.PULSE_LOG("[PulseBand] PulseNet not available");
+    if (typeof window === "undefined" || !global.PulseNet || !global.PulseNet.pulseOnce) {
+      if (typeof window !== "undefined" && global.PULSE_LOG) {
+        global.PULSE_LOG("[PulseBand] PulseNet not available");
       }
       nervousLog("PULSE_REQUEST_NO_PULSENET");
       return { ok: false, reason: "no-pulsenet" };
     }
 
-    const res = await window.PulseNet.pulseOnce(deviceId);
+    const res = await global.PulseNet.pulseOnce(deviceId);
 
     if (res && res.ok) {
       this.onPulseSuccess(res.payload || {});
@@ -998,8 +998,8 @@ export const pulseband = {
       return null;
     }
 
-    if (typeof window !== "undefined" && window.PulseNet?.onImpulse) {
-      window.PulseNet.onImpulse(impulse);
+    if (typeof window !== "undefined" && global.PulseNet?.onImpulse) {
+      global.PulseNet.onImpulse(impulse);
     }
 
     return impulse;
@@ -1034,8 +1034,8 @@ export const pulseband = {
   // setStatus — NERVOUS SYSTEM PULSE (symbolic, backed by binary math)
 // ------------------------------------------------------------
   setStatus(newState = {}) {
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG("PulseBand → setStatus()");
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG("PulseBand → setStatus()");
     }
     nervousLog("SET_STATUS_CALLED");
 
@@ -1051,8 +1051,8 @@ export const pulseband = {
     }
 
     if (!this.gpu.ready && clean.gpuAssets) {
-      if (typeof window !== "undefined" && window.PULSE_LOG) {
-        window.PULSE_LOG("PulseBand → GPU auto-init triggered");
+      if (typeof window !== "undefined" && global.PULSE_LOG) {
+        global.PULSE_LOG("PulseBand → GPU auto-init triggered");
       }
       nervousLog("GPU_AUTO_INIT");
       this.initGraphics(clean.gpuAssets);
@@ -1060,8 +1060,8 @@ export const pulseband = {
 
     // LIVE MERGE
     if (clean.live) {
-      if (typeof window !== "undefined" && window.PULSE_LOG) {
-        window.PULSE_LOG("PulseBand → LIVE merge");
+      if (typeof window !== "undefined" && global.PULSE_LOG) {
+        global.PULSE_LOG("PulseBand → LIVE merge");
       }
       nervousLog("LIVE_MERGE", { keys: Object.keys(clean.live || {}) });
 
@@ -1124,8 +1124,8 @@ export const pulseband = {
 
     // SNAPSHOT MERGE
     if (clean.snapshot) {
-      if (typeof window !== "undefined" && window.PULSE_LOG) {
-        window.PULSE_LOG("PulseBand → SNAPSHOT merge");
+      if (typeof window !== "undefined" && global.PULSE_LOG) {
+        global.PULSE_LOG("PulseBand → SNAPSHOT merge");
       }
       nervousLog("SNAPSHOT_MERGE", { keys: Object.keys(clean.snapshot || {}) });
 
@@ -1136,8 +1136,8 @@ export const pulseband = {
       };
     }
 
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG("PulseBand → Flat mirror update");
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG("PulseBand → Flat mirror update");
     }
 
     // FLAT MIRROR
@@ -1203,8 +1203,8 @@ export const pulseband = {
     this.state.chunkCachePrewarmHints = chunkCachePrewarmHints;
     this.state.impulseSpeedField = impulseSpeedField;
 
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG("PulseBand → emit(update)");
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG("PulseBand → emit(update)");
     }
     nervousLog("EMIT_UPDATE");
 
@@ -1217,8 +1217,8 @@ export const pulseband = {
   on(event, callback) {
     if (typeof callback !== "function") return;
 
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG(`PulseBand → on(${event})`);
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG(`PulseBand → on(${event})`);
     }
     nervousLog("EVENT_SUBSCRIBE", { event });
 
@@ -1227,8 +1227,8 @@ export const pulseband = {
   },
 
   emit(event, data) {
-    if (typeof window !== "undefined" && window.PULSE_LOG) {
-      window.PULSE_LOG(`PulseBand → emit(${event})`);
+    if (typeof window !== "undefined" && global.PULSE_LOG) {
+      global.PULSE_LOG(`PulseBand → emit(${event})`);
     }
     nervousLog("EVENT_EMIT", { event });
 

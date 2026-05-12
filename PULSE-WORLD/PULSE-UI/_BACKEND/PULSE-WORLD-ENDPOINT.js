@@ -552,5 +552,5 @@ console.log(
 );
 
 if (typeof window !== "undefined") {
-  window.PulseRemoteEndpoint = PulseWorldEndpoint;
+  global.PulseRemoteEndpoint = PulseWorldEndpoint;
 }

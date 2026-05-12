@@ -110,13 +110,13 @@ export async function route(channel, packet) {
 // ============================================================================
 // GLOBAL ORGANISM MEMORY (shared across all imports)
 // ============================================================================
-globalThis.__PULSE_MEM__ = globalThis.__PULSE_MEM__ || {};
+global.__PULSE_MEM__ = global.__PULSE_MEM__ || {};
 
 // Per-instance organism state (family)
-globalThis.__PULSE_ORGANISM_FAMILY__ =
-  globalThis.__PULSE_ORGANISM_FAMILY__ || {};
+global.__PULSE_ORGANISM_FAMILY__ =
+  global.__PULSE_ORGANISM_FAMILY__ || {};
 function getOrganism(instanceId) {
-  const fam = globalThis.__PULSE_ORGANISM_FAMILY__;
+  const fam = global.__PULSE_ORGANISM_FAMILY__;
   if (!fam[instanceId]) {
     fam[instanceId] = {
       id: instanceId,
@@ -131,9 +131,9 @@ function getOrganism(instanceId) {
 }
 
 // Local PULSE-NET runtime state (family registry)
-globalThis.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__ || {};
+global.__PULSE_NET_FAMILY__ = global.__PULSE_NET_FAMILY__ || {};
 function getNetState(instanceId) {
-  const fam = globalThis.__PULSE_NET_FAMILY__;
+  const fam = global.__PULSE_NET_FAMILY__;
   if (!fam[instanceId]) {
     fam[instanceId] = {
       started: false,
@@ -182,7 +182,7 @@ function queueSignalBurst(kind, payload, priority = 1, reason = "manual") {
 // ============================================================================
 // GLOBAL INGRESS QUEUES — EXPANSION/CASTLE/SERVER/USER/BRAIN/SOLDIER/MESH
 // ============================================================================
-globalThis.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__ || {
+global.__PULSE_NET_INGRESS__ = global.__PULSE_NET_INGRESS__ || {
   expansion: [],
   castle: [],
   server: [],
@@ -193,7 +193,7 @@ globalThis.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__ || {
 };
 
 function getIngress() {
-  return globalThis.__PULSE_NET_INGRESS__;
+  return global.__PULSE_NET_INGRESS__;
 }
 
 function enqueueIngress(kind, packet) {
@@ -223,8 +223,8 @@ const BinaryOrgan = {
 };
 
 const MemoryOrgan = {
-  read: (key) => globalThis.__PULSE_MEM__[key] ?? null,
-  write: (key, value) => (globalThis.__PULSE_MEM__[key] = value)
+  read: (key) => global.__PULSE_MEM__[key] ?? null,
+  write: (key, value) => (global.__PULSE_MEM__[key] = value)
 };
 
 const BrainOrgan = {
@@ -235,9 +235,9 @@ const BrainOrgan = {
 // TEMPORAL PREWARM CACHE — INTENT + TOUCH HINTS
 // ============================================================================
 const TEMPORAL_CACHE_MAX = 512;
-globalThis.__PULSE_NET_TEMPORAL_CACHE__ =
-  globalThis.__PULSE_NET_TEMPORAL_CACHE__ || new Map();
-const temporalCache = globalThis.__PULSE_NET_TEMPORAL_CACHE__;
+global.__PULSE_NET_TEMPORAL_CACHE__ =
+  global.__PULSE_NET_TEMPORAL_CACHE__ || new Map();
+const temporalCache = global.__PULSE_NET_TEMPORAL_CACHE__;
 
 function makeTemporalKey(intent) {
   const skin = intent?.skin || {};
@@ -813,10 +813,10 @@ async function tickFamily(instanceId = "core") {
   try {
     await NetworkOrgan.sendHeartbeat(instanceId, getOrganism(instanceId), result);
 
-    if (typeof window !== "undefined" && !window.__PULSE_UIFLOW_BOOTED__) {
-      window.__PULSE_UIFLOW_BOOTED__ = true;
+    if (typeof window !== "undefined" && !global.__PULSE_UIFLOW_BOOTED__) {
+      global.__PULSE_UIFLOW_BOOTED__ = true;
       initUIFlow().catch((err) => {
-        window.__PULSE_UIFLOW_BOOTED__ = false;
+        global.__PULSE_UIFLOW_BOOTED__ = false;
         try {
           const packet = PulseUIErrors.normalizeError(err, "PulseNet.UIFlowBoot");
           PulseUIErrors.broadcast(packet);
@@ -998,8 +998,8 @@ export function PulseNetOrganism(instanceId = "core") {
 
 export function PulseNetInstances() {
   return {
-    organisms: globalThis.__PULSE_ORGANISM_FAMILY__,
-    nets: globalThis.__PULSE_NET_FAMILY__
+    organisms: global.__PULSE_ORGANISM_FAMILY__,
+    nets: global.__PULSE_NET_FAMILY__
   };
 }
 
@@ -1008,7 +1008,7 @@ const PulseTouchOrgan = {
     try {
       if (typeof window === "undefined") return null;
 
-      const touch = window.__PULSE_TOUCH__ || null;
+      const touch = global.__PULSE_TOUCH__ || null;
       if (!touch) return null;
 
       return {
@@ -1136,7 +1136,7 @@ export const PulseNetBridge = Object.freeze({
   //  • Deterministic, safe, chunk-ready
   // --------------------------------------------------------------------------
   sendRoute(route) {
-    if (!window.PulseRemoteEndpoint || !window.PulseRemoteEndpoint.handle) {
+    if (!global.PulseRemoteEndpoint || !global.PulseRemoteEndpoint.handle) {
       return Promise.resolve({
         ok: false,
         reason: "no_PulseRemoteEndpoint"
@@ -1151,7 +1151,7 @@ export const PulseNetBridge = Object.freeze({
       origin: "PulseNetBridge"
     };
 
-    return window.PulseRemoteEndpoint.handle(normalized);
+    return global.PulseRemoteEndpoint.handle(normalized);
   }
 });
 
@@ -1191,7 +1191,7 @@ export function pulseWorldHealthSnapshot() {
   });
 
   const temporalCacheSize =
-    globalThis.__PULSE_NET_TEMPORAL_CACHE__?.size ?? 0;
+    global.__PULSE_NET_TEMPORAL_CACHE__?.size ?? 0;
 
   return {
     status: "ok",
@@ -1271,29 +1271,29 @@ export function createPulseWorldV21({
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
-    window.__PULSE_MEM__ = globalThis.__PULSE_MEM__;
-    window.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__;
-    window.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__;
-    window.__PULSE_ORGANISM_FAMILY__ = globalThis.__PULSE_ORGANISM_FAMILY__;
-    window.__PULSE_TOUCH__ = globalThis.__PULSE_TOUCH__;
-    window.__PULSE_NET_TEMPORAL_CACHE__ = globalThis.__PULSE_NET_TEMPORAL_CACHE__;
+    global.__PULSE_MEM__ = global.__PULSE_MEM__;
+    global.__PULSE_NET_INGRESS__ = global.__PULSE_NET_INGRESS__;
+    global.__PULSE_NET_FAMILY__ = global.__PULSE_NET_FAMILY__;
+    global.__PULSE_ORGANISM_FAMILY__ = global.__PULSE_ORGANISM_FAMILY__;
+    global.__PULSE_TOUCH__ = global.__PULSE_TOUCH__;
+    global.__PULSE_NET_TEMPORAL_CACHE__ = global.__PULSE_NET_TEMPORAL_CACHE__;
   }
   if (typeof global !== "undefined") {
-    global.__PULSE_MEM__ = globalThis.__PULSE_MEM__;
-    global.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__;
-    global.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__;
-    global.__PULSE_ORGANISM_FAMILY__ = globalThis.__PULSE_ORGANISM_FAMILY__;
-    global.__PULSE_TOUCH__ = globalThis.__PULSE_TOUCH__;
-    global.__PULSE_NET_TEMPORAL_CACHE__ = globalThis.__PULSE_NET_TEMPORAL_CACHE__;
+    global.__PULSE_MEM__ = global.__PULSE_MEM__;
+    global.__PULSE_NET_INGRESS__ = global.__PULSE_NET_INGRESS__;
+    global.__PULSE_NET_FAMILY__ = global.__PULSE_NET_FAMILY__;
+    global.__PULSE_ORGANISM_FAMILY__ = global.__PULSE_ORGANISM_FAMILY__;
+    global.__PULSE_TOUCH__ = global.__PULSE_TOUCH__;
+    global.__PULSE_NET_TEMPORAL_CACHE__ = global.__PULSE_NET_TEMPORAL_CACHE__;
   }
 
   if (typeof g !== "undefined") {
-    g.__PULSE_MEM__ = globalThis.__PULSE_MEM__;
-    g.__PULSE_NET_INGRESS__ = globalThis.__PULSE_NET_INGRESS__;
-    g.__PULSE_NET_FAMILY__ = globalThis.__PULSE_NET_FAMILY__;
-    g.__PULSE_ORGANISM_FAMILY__ = globalThis.__PULSE_ORGANISM_FAMILY__;
-    g.__PULSE_TOUCH__ = globalThis.__PULSE_TOUCH__;
-    g.__PULSE_NET_TEMPORAL_CACHE__ = globalThis.__PULSE_NET_TEMPORAL_CACHE__;
+    g.__PULSE_MEM__ = global.__PULSE_MEM__;
+    g.__PULSE_NET_INGRESS__ = global.__PULSE_NET_INGRESS__;
+    g.__PULSE_NET_FAMILY__ = global.__PULSE_NET_FAMILY__;
+    g.__PULSE_ORGANISM_FAMILY__ = global.__PULSE_ORGANISM_FAMILY__;
+    g.__PULSE_TOUCH__ = global.__PULSE_TOUCH__;
+    g.__PULSE_NET_TEMPORAL_CACHE__ = global.__PULSE_NET_TEMPORAL_CACHE__;
   }
 } catch {}
 

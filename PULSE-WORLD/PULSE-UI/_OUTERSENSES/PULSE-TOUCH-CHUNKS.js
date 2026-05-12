@@ -1030,15 +1030,15 @@ export function prewarm(urls = [], metaPack = null) {
       persistPulseChunksToStorage();
 
       // Touch/Portal future hook
-      if (typeof window !== "undefined" && window.PulseTouchWarmup) {
+      if (typeof window !== "undefined" && global.PulseTouchWarmup) {
         try {
-          window.PulseTouchWarmup.onPrewarm(url, withLore, metaPack);
+          global.PulseTouchWarmup.onPrewarm(url, withLore, metaPack);
         } catch {}
       }
 
-      if (typeof window !== "undefined" && window.PulsePortalWarmup) {
+      if (typeof window !== "undefined" && global.PulsePortalWarmup) {
         try {
-          window.PulsePortalWarmup.onPrewarm(url, withLore, metaPack);
+          global.PulsePortalWarmup.onPrewarm(url, withLore, metaPack);
         } catch {}
       }
     });
@@ -1150,9 +1150,9 @@ function dechunkAll() {
   globalFailures = 0;
   chunksDegraded = false;
 
-  if (typeof window !== "undefined" && window.PulseChunks) {
-    if (window.PulseChunks.cache) {
-      window.PulseChunks.cache = {};
+  if (typeof window !== "undefined" && global.PulseChunks) {
+    if (global.PulseChunks.cache) {
+      global.PulseChunks.cache = {};
     }
   }
 
@@ -1219,9 +1219,9 @@ async function autoLoadOfflineImages() {
             const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
             const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-            if (window.PulseChunks) {
-              window.PulseChunks.cache = window.PulseChunks.cache || {};
-              window.PulseChunks.cache[url] = binary;
+            if (global.PulseChunks) {
+              global.PulseChunks.cache = global.PulseChunks.cache || {};
+              global.PulseChunks.cache[url] = binary;
             }
 
             const img = document.querySelector(
@@ -1250,9 +1250,9 @@ async function autoLoadOfflineImages() {
       const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
       const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-      if (window.PulseChunks) {
-        window.PulseChunks.cache = window.PulseChunks.cache || {};
-        window.PulseChunks.cache[url] = binary;
+      if (global.PulseChunks) {
+        global.PulseChunks.cache = global.PulseChunks.cache || {};
+        global.PulseChunks.cache[url] = binary;
       }
 
       const img = document.querySelector(
@@ -1287,9 +1287,9 @@ async function autoLoadOfflineImages() {
             const unwrapped = PulseChunkNormalizer.unwrap(fallback.data);
             const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-            if (window.PulseChunks) {
-              window.PulseChunks.cache = window.PulseChunks.cache || {};
-              window.PulseChunks.cache[url] = binary;
+            if (global.PulseChunks) {
+              global.PulseChunks.cache = global.PulseChunks.cache || {};
+              global.PulseChunks.cache[url] = binary;
             }
 
             const img = document.querySelector(
@@ -1324,7 +1324,7 @@ async function autoLoadOfflineImages() {
 //  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v27 IMMORTAL++)
 // ============================================================================
 if (typeof window !== "undefined") {
-  window.PulseChunks = {
+  global.PulseChunks = {
     // Core API
     getImage,
     getImageSync,
@@ -1361,7 +1361,7 @@ if (typeof window !== "undefined") {
   };
 }
 
-export default typeof window !== "undefined" ? window.PulseChunks : undefined;
+export default typeof window !== "undefined" ? global.PulseChunks : undefined;
 
 // Wire DOM + PulseBand + storage (IDB) events
 if (typeof window !== "undefined" && typeof document !== "undefined") {
@@ -1371,8 +1371,8 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
 }
 
 if (typeof window !== "undefined") {
-  if (window.PulseBand && typeof window.PulseBand.on === "function") {
-    window.PulseBand.on("chunk", handlePulseBandPacket);
+  if (global.PulseBand && typeof global.PulseBand.on === "function") {
+    global.PulseBand.on("chunk", handlePulseBandPacket);
   }
 }
 
@@ -1414,24 +1414,24 @@ try {
   }
 
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseBand = migrate("PulseBand", window, globalThis);
-    globalThis.PulseChunks = migrate("PulseChunks", window, globalThis);
+    global.PulseBand = migrate("PulseBand", window, globalThis);
+    global.PulseChunks = migrate("PulseChunks", window, globalThis);
   }
 
 } catch {}
 
 
-window.PulseChunks.signal = function (evt) {
+global.PulseChunks.signal = function (evt) {
   try {
     // ⭐ ALWAYS WRITE TO LOCALSTORAGE FIRST
     localStorage.setItem(
       "PulseChunks_v25",
-      JSON.stringify(window.PulseChunks)
+      JSON.stringify(global.PulseChunks)
     );
 
     // ⭐ ALWAYS HYDRATE FROM LOCALSTORAGE (SELF-HEAL)
     const raw = localStorage.getItem("PulseChunks_v25");
-    if (raw) Object.assign(window.PulseChunks, JSON.parse(raw));
+    if (raw) Object.assign(global.PulseChunks, JSON.parse(raw));
 
     // ⭐ TOUCH BOOTSTRAP
     if (evt.type === "touch_bootstrap") {
@@ -1439,11 +1439,11 @@ window.PulseChunks.signal = function (evt) {
       this.ready = true;
 
       // ⭐ SEND TO DETECTOR (NOT TOUCH DIRECTLY)
-      window.PulseDetector?.onChunksReady?.({
+      global.PulseDetector?.onChunksReady?.({
         type: "chunks_ready",
         page: evt.page,
         prefix: evt.prefix,
-        chunks: window.PulseChunks
+        chunks: global.PulseChunks
       });
 
       return;
@@ -1453,11 +1453,11 @@ window.PulseChunks.signal = function (evt) {
     if (evt.type === "touch_prewarm") {
       this.deepwarm?.(evt);
 
-      window.PulseDetector?.onChunksReady?.({
+      global.PulseDetector?.onChunksReady?.({
         type: "chunks_prewarm_ready",
         page: evt.page,
         prefix: evt.prefix,
-        chunks: window.PulseChunks
+        chunks: global.PulseChunks
       });
 
       return;

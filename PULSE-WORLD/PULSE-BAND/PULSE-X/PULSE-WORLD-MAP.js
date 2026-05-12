@@ -67,7 +67,7 @@ function applyDelta(collection, newData) {
   if (delta.length > 0) {
     localStorage.setItem(key, JSON.stringify(newData));
 
-    window.dispatchEvent(new CustomEvent("firebase_delta_out", {
+    global.dispatchEvent(new CustomEvent("firebase_delta_out", {
       detail: { collection, delta }
     }));
   }
@@ -177,7 +177,7 @@ export function getFsAPI({ trace = false } = {}) {
 
       localStorage.setItem(`firebase_fs_${path}`, content);
 
-      window.dispatchEvent(new CustomEvent("firebase_fs_delta_out", {
+      global.dispatchEvent(new CustomEvent("firebase_fs_delta_out", {
         detail: { path, content }
       }));
 
@@ -481,7 +481,7 @@ function classifySystem(system) {
 // ============================================================================
 export async function scanPulseSystemsOnce() {
   // Already in memory → return hydrated map
-  if (window.PulseOrganismMap) return window.PulseOrganismMap;
+  if (global.PulseOrganismMap) return global.PulseOrganismMap;
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -491,7 +491,7 @@ export async function scanPulseSystemsOnce() {
     if (raw) {
       const snapshot = JSON.parse(raw);
       const hydrated = attachOrganismMapRuntime(snapshot);
-      window.PulseOrganismMap = hydrated;
+      global.PulseOrganismMap = hydrated;
       return hydrated;
     }
   } catch {}
@@ -503,7 +503,7 @@ export async function scanPulseSystemsOnce() {
       const snapshot = fb.snapshot;
       const hydrated = attachOrganismMapRuntime(snapshot);
 
-      window.PulseOrganismMap = hydrated;
+      global.PulseOrganismMap = hydrated;
       localStorage.setItem("PulseOrganismMap_v25", JSON.stringify(snapshot));
 
       return hydrated;
@@ -528,7 +528,7 @@ export async function scanPulseSystemsOnce() {
   } catch {}
 
   // Save globally
-  window.PulseOrganismMap = hydrated;
+  global.PulseOrganismMap = hydrated;
   return hydrated;
 }
 
@@ -707,7 +707,7 @@ export function attachOrganismMapRuntime(snapshot) {
 
 
 async function savePerSystemSnapshots(snapshot) {
-  const shadow = globalThis.PulseWorldFirebaseShadow;
+  const shadow = global.PulseWorldFirebaseShadow;
   if (!shadow) return;
 
   const { systems, fileToMeta, htmlRoutes, jsRoutes } = snapshot;
@@ -801,9 +801,9 @@ function detectVersionFromFiles(files) {
 // ============================================================================
 
 export function getPulseOrganismMapV25() {
-  if (window.PulseOrganismMapV25) return window.PulseOrganismMapV25;
+  if (global.PulseOrganismMapV25) return global.PulseOrganismMapV25;
 
-  const snapshot = window.__PULSE_ORGANISM_SNAPSHOT__;
+  const snapshot = global.__PULSE_ORGANISM_SNAPSHOT__;
   if (!snapshot) {
     console.error("[OrganismMap:v25++] Missing organism snapshot.");
     throw new Error("PulseOrganismSnapshotMissing");
@@ -838,7 +838,7 @@ export function getPulseOrganismMapV25() {
     }
   };
 
-  window.PulseOrganismMapV25 = map;
+  global.PulseOrganismMapV25 = map;
   return map;
 }
 
@@ -913,7 +913,7 @@ export function createPulseSignalBusV25() {
   return { on, emit, clearAll };
 }
 
-window.PulseSignalBus = window.PulseSignalBus || createPulseSignalBusV25();
+global.PulseSignalBus = global.PulseSignalBus || createPulseSignalBusV25();
 
 // ============================================================================
 // v25++ LISTENER ENGINE — AUTO WIRES ORGANS FROM GENOME
@@ -921,7 +921,7 @@ window.PulseSignalBus = window.PulseSignalBus || createPulseSignalBusV25();
 
 export function buildOrganismListenersV25() {
   const organism = getPulseOrganismMapV25();
-  const bus = window.PulseSignalBus;
+  const bus = global.PulseSignalBus;
 
   // Reset listeners safely
   bus.clearAll?.();
@@ -974,8 +974,8 @@ export function buildOrganismListenersV25() {
       sys.organs.some(organ => n.includes(organ.toUpperCase()))
     );
 
-    if (!known && window.FrontendArchitect?.handleUnknownSignal) {
-      window.FrontendArchitect.handleUnknownSignal({ signal: n });
+    if (!known && global.FrontendArchitect?.handleUnknownSignal) {
+      global.FrontendArchitect.handleUnknownSignal({ signal: n });
     }
   });
 }
@@ -985,7 +985,7 @@ export function buildOrganismListenersV25() {
 // v25++ ARCHITECT LAYER — SELF-DIAGNOSTIC ORGANISM
 // ============================================================================
 
-window.FrontendArchitect = window.FrontendArchitect || {
+global.FrontendArchitect = global.FrontendArchitect || {
   handleUnknownSignal({ signal }) {
     console.warn(`⚠️ [Architect] Unknown signal not in genome: ${signal}`);
   },
@@ -1014,7 +1014,7 @@ export async function bootOrganismGenomeV25() {
   const snapshot = await buildPulseOrganismSnapshotV26();
 
   // Save snapshot globally for sync access
-  window.__PULSE_ORGANISM_SNAPSHOT__ = snapshot;
+  global.__PULSE_ORGANISM_SNAPSHOT__ = snapshot;
 
   // Hydrate runtime map
   getPulseOrganismMapV25();
@@ -1545,19 +1545,19 @@ try {
 // ============================================================
 // OrganismMap Signal Receiver (v25++ IMMORTAL)
 // ============================================================
-window.PulseOrganismMap = window.PulseOrganismMapV25 || window.PulseOrganismMap || {};
+global.PulseOrganismMap = global.PulseOrganismMapV25 || global.PulseOrganismMap || {};
 
-window.PulseOrganismMap.signal = function (evt) {
+global.PulseOrganismMap.signal = function (evt) {
   try {
     // ⭐ ALWAYS WRITE TO LOCALSTORAGE FIRST
     localStorage.setItem(
       "PulseOrganismMap_v25",
-      JSON.stringify(window.PulseOrganismMap)
+      JSON.stringify(global.PulseOrganismMap)
     );
 
     // ⭐ ALWAYS HYDRATE FROM LOCALSTORAGE (SELF-HEAL)
     const raw = localStorage.getItem("PulseOrganismMap_v25");
-    if (raw) Object.assign(window.PulseOrganismMap, JSON.parse(raw));
+    if (raw) Object.assign(global.PulseOrganismMap, JSON.parse(raw));
 
     // ⭐ TOUCH BOOTSTRAP
     if (evt.type === "touch_bootstrap") {
@@ -1565,11 +1565,11 @@ window.PulseOrganismMap.signal = function (evt) {
       this.ready = true;
 
       // ⭐ SEND TO DETECTOR (NOT TOUCH DIRECTLY)
-      window.PulseDetector?.onMapReady?.({
+      global.PulseDetector?.onMapReady?.({
         type: "map_ready",
         page: evt.page,
         prefix: evt.prefix,
-        map: window.PulseOrganismMap
+        map: global.PulseOrganismMap
       });
 
       return;
@@ -1579,11 +1579,11 @@ window.PulseOrganismMap.signal = function (evt) {
     if (evt.type === "touch_prewarm") {
       this.deepwarm?.(evt);
 
-      window.PulseDetector?.onMapReady?.({
+      global.PulseDetector?.onMapReady?.({
         type: "map_prewarm_ready",
         page: evt.page,
         prefix: evt.prefix,
-        map: window.PulseOrganismMap
+        map: global.PulseOrganismMap
       });
 
       return;

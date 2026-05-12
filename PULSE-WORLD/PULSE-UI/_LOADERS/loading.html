@@ -136,12 +136,12 @@
 
         if (!token) {
           setTimeout(() => {
-            window.location.replace("/CheckEmail.html");
+            global.location.replace("/CheckEmail.html");
           }, 300);
           return;
         }
 
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(global.location.search);
         const dest = params.get("dest") || "appDashboard";
 
         fetch("https://verifytoken-ilx3agka5q-uc.a.run.app", {
@@ -158,7 +158,7 @@
               }
             });
             setTimeout(() => {
-              window.location.replace("/CheckEmail.html");
+              global.location.replace("/CheckEmail.html");
             }, 300);
             return;
           }
@@ -173,10 +173,10 @@
             
             setTimeout(() => {
               if (dest === "stripeDashboard") {
-                window.location.replace(data.identity.stripeDashboardURL);
+                global.location.replace(data.identity.stripeDashboardURL);
                 return;
               }
-              window.location.replace("/dashboard.html");
+              global.location.replace("/dashboard.html");
             }, 300);
           }, 500);
         });

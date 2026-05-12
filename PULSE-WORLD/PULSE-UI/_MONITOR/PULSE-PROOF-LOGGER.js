@@ -126,8 +126,8 @@ function detectUsVsThem(layer) {
 }
 
 function detectPage() {
-  if (typeof window !== "undefined" && window.location) {
-    return window.location.pathname || null;
+  if (typeof window !== "undefined" && global.location) {
+    return global.location.pathname || null;
   }
   return null;
 }
@@ -148,10 +148,10 @@ const LS_MAX_ENTRIES = 16000;
 
 function hasLocalStorage() {
   try {
-    if (typeof window === "undefined" || !window.localStorage) return false;
+    if (typeof window === "undefined" || !global.localStorage) return false;
     const testKey = "__pulse_logger_test__";
-    window.localStorage.setItem(testKey, "1");
-    window.localStorage.removeItem(testKey);
+    global.localStorage.setItem(testKey, "1");
+    global.localStorage.removeItem(testKey);
     return true;
   } catch (_) {
     return false;
@@ -161,7 +161,7 @@ function hasLocalStorage() {
 function loadLocalLogsFromStorage() {
   if (!hasLocalStorage()) return [];
   try {
-    const raw = window.localStorage.getItem(LS_KEY_LOGS);
+    const raw = global.localStorage.getItem(LS_KEY_LOGS);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -178,7 +178,7 @@ function saveLocalLogsToStorage(entries) {
       entries.length > LS_MAX_ENTRIES
         ? entries.slice(entries.length - LS_MAX_ENTRIES)
         : entries;
-    window.localStorage.setItem(LS_KEY_LOGS, JSON.stringify(trimmed));
+    global.localStorage.setItem(LS_KEY_LOGS, JSON.stringify(trimmed));
   } catch (_) {
     // Never throw from logger; logging must never break the app.
   }
@@ -506,7 +506,7 @@ function mark404(message) {
 // ---------------------------------------------------------------------------
 //  UNIFIED CHRONO CORE — v26
 // ---------------------------------------------------------------------------
-let _pulseChronoLast = window.__PULSE_CHRONO_LAST__ || performance.now();
+let _pulseChronoLast = global.__PULSE_CHRONO_LAST__ || performance.now();
 
 
 function _chronoLabel(absolute) {
@@ -536,7 +536,7 @@ export function log(...args) {
   const prefix      = `${icon} ${safe.toUpperCase()} ${version}`;
   const safeMessage = mark404(message);
   const time        = _chronoLabel(absolute);
-  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
+  global.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   // RAW MODE — SAME COLORS, SAME FORMAT, SAME %d SUPPORT
   if (raw) {
@@ -580,7 +580,7 @@ export function warn(...args) {
 
   const safeMessage = mark404(message);
   const time = _chronoLabel(absolute);
-  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
+  global.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.warn(
     `%c${prefix} ⚠️ [WARN] — ${safeMessage} %c${time}`,
@@ -611,7 +611,7 @@ export function error(...args) {
 
   const safeMessage = mark404(message);
   const time = _chronoLabel(absolute);
-  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
+  global.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.error(
     `%c${prefix} 🟥 [ERROR] — ${safeMessage} %c${time}`,
@@ -642,7 +642,7 @@ export function critical(...args) {
 
   const safeMessage = mark404(message);
   const time = _chronoLabel(absolute);
-  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
+  global.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.groupCollapsed(
     `%c${prefix} 💀 [CRITICAL] — ${safeMessage} %c${time}`,
@@ -680,7 +680,7 @@ export function comment(...args) {
 
   const safeMessage = mark404(message);
   const time = _chronoLabel(absolute);
-  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
+  global.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.log(
     `%c${prefix} 📝 [COMMENT] — ${safeMessage} %c${time}`,
@@ -708,7 +708,7 @@ export function group(subsystem, label, absolute = false) {
   const prefix = `${icon} ${safe.toUpperCase()} ${version}`;
 
   const time = _chronoLabel(absolute);
-  window.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
+  global.__PULSE_CHRONO_LAST__ = _pulseChronoLast;
 
   _c.groupCollapsed(
     `%c${prefix} — ${label} %c${time}`,
@@ -729,8 +729,8 @@ export function groupEnd() {
 
 function resolveFromOrganismMap() {
   try {
-    if (window.PulseOrganismMap && typeof window.PulseOrganismMap.resolveCaller === "function") {
-      return window.PulseOrganismMap.resolveCaller(new Error().stack);
+    if (global.PulseOrganismMap && typeof global.PulseOrganismMap.resolveCaller === "function") {
+      return global.PulseOrganismMap.resolveCaller(new Error().stack);
     }
 
     return {
@@ -839,22 +839,22 @@ console.error = (...args) => error(...args);
 (function bindLogger() {
   try {
     if (typeof window !== "undefined") {
-      window.log = log;
-      window.warn = warn;
-      window.error = error;
-      window.critical = critical;
-      window.comment = comment;
-      window.group = group;
-      window.groupEnd = groupEnd;
+      global.log = log;
+      global.warn = warn;
+      global.error = error;
+      global.critical = critical;
+      global.comment = comment;
+      global.group = group;
+      global.groupEnd = groupEnd;
 
-      window.PulseOfflineLogs = {
+      global.PulseOfflineLogs = {
         getAll: () => getLocalLogs(),
         getByLevel: (level) => getLocalLogs({ level }),
         getBySubsystem: (subsystem) => getLocalLogs({ subsystem }),
         clear: () => PulseLoggerStore.clear()
       };
 
-      window.PulseLogger = {
+      global.PulseLogger = {
         log,
         warn,
         error,

@@ -132,7 +132,7 @@ const PN_SESSION_ID = (() => {
 function getCurrentRouteTag() {
   try {
     if (g.PulseRoute && typeof g.PulseRoute === "string") return g.PulseRoute;
-    if (typeof window !== "undefined" && window.PulseRoute) return window.PulseRoute;
+    if (typeof window !== "undefined" && global.PulseRoute) return global.PulseRoute;
     if (typeof location !== "undefined" && location.pathname) return location.pathname;
   } catch {}
   return null;
@@ -546,12 +546,12 @@ export default PulseChunkNormalizer;
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
-    window.PulseChunkNormalizer = PulseChunkNormalizer;
-    window.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
+    global.PulseChunkNormalizer = PulseChunkNormalizer;
+    global.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseChunkNormalizer = PulseChunkNormalizer;
-    globalThis.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
+    global.PulseChunkNormalizer = PulseChunkNormalizer;
+    global.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
   }
   if (typeof global !== "undefined") {
     global.PulseChunkNormalizer = PulseChunkNormalizer;

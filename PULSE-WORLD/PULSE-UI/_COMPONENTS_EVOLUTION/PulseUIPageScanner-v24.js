@@ -129,10 +129,10 @@ const PAGESCANNER_LS_MAX = 4000;
 
 function psHasLocalStorage() {
   try {
-    if (typeof window === "undefined" || !window.localStorage) return false;
+    if (typeof window === "undefined" || !global.localStorage) return false;
     const t = "__pagescanner_test__";
-    window.localStorage.setItem(t, "1");
-    window.localStorage.removeItem(t);
+    global.localStorage.setItem(t, "1");
+    global.localStorage.removeItem(t);
     return true;
   } catch {
     return false;
@@ -142,7 +142,7 @@ function psHasLocalStorage() {
 function psLoadBuffer() {
   if (!psHasLocalStorage()) return [];
   try {
-    const raw = window.localStorage.getItem(PAGESCANNER_LS_KEY);
+    const raw = global.localStorage.getItem(PAGESCANNER_LS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -179,7 +179,7 @@ function psSaveBuffer(buf) {
         ? buf.slice(buf.length - PAGESCANNER_LS_MAX)
         : buf;
 
-    window.localStorage.setItem(PAGESCANNER_LS_KEY, JSON.stringify(trimmed));
+    global.localStorage.setItem(PAGESCANNER_LS_KEY, JSON.stringify(trimmed));
 
     // IMMORTAL++: lazy bridge mirror
     psMirrorBufferToCoreMemory(trimmed);
@@ -763,12 +763,12 @@ export default PulsePageScanner;
 
 try {
   if (typeof window !== "undefined") {
-    window.PulsePageScanner = PulsePageScanner;
-    window.PulsePageScannerStore = PulsePageScannerStore;
+    global.PulsePageScanner = PulsePageScanner;
+    global.PulsePageScannerStore = PulsePageScannerStore;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulsePageScanner = PulsePageScanner;
-    globalThis.PulsePageScannerStore = PulsePageScannerStore;
+    global.PulsePageScanner = PulsePageScanner;
+    global.PulsePageScannerStore = PulsePageScannerStore;
   }
   if (typeof global !== "undefined") {
     global.PulsePageScanner = PulsePageScanner;

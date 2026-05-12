@@ -518,8 +518,8 @@ async function runAudit(overrideData=null) {
 
 /* Initialize page */
 loadSnapshotList();
-window.runAudit = runAudit;
-window.loadSavedAiSnapshot = loadSavedAiSnapshot;
+global.runAudit = runAudit;
+global.loadSavedAiSnapshot = loadSavedAiSnapshot;
 
 </script>
 

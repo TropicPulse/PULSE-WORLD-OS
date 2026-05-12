@@ -190,10 +190,10 @@ const ROUTE_MEMORY_LS_MAX_ENTRIES = 4000;
 
 function hasLocalStorage() {
   try {
-    if (typeof window === "undefined" || !window.localStorage) return false;
+    if (typeof window === "undefined" || !global.localStorage) return false;
     const testKey = "__pulse_route_memory_test__";
-    window.localStorage.setItem(testKey, "1");
-    window.localStorage.removeItem(testKey);
+    global.localStorage.setItem(testKey, "1");
+    global.localStorage.removeItem(testKey);
     return true;
   } catch {
     return false;
@@ -203,7 +203,7 @@ function hasLocalStorage() {
 function loadRouteMemoryBuffer() {
   if (!hasLocalStorage()) return [];
   try {
-    const raw = window.localStorage.getItem(ROUTE_MEMORY_LS_KEY);
+    const raw = global.localStorage.getItem(ROUTE_MEMORY_LS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -236,7 +236,7 @@ function saveRouteMemoryBuffer(buffer) {
       buffer.length > ROUTE_MEMORY_LS_MAX_ENTRIES
         ? buffer.slice(buffer.length - ROUTE_MEMORY_LS_MAX_ENTRIES)
         : buffer;
-    window.localStorage.setItem(ROUTE_MEMORY_LS_KEY, JSON.stringify(trimmed));
+    global.localStorage.setItem(ROUTE_MEMORY_LS_KEY, JSON.stringify(trimmed));
     mirrorRouteMemoryToCoreMemory(trimmed);
   } catch {
     // never throw
@@ -787,12 +787,12 @@ export default createPulseRouteMemory;
 
 try {
   if (typeof window !== "undefined") {
-    window.PulseRouteMemory = createPulseRouteMemory;
-    window.PulseRouteMemoryStore = PulseRouteMemoryStore;
+    global.PulseRouteMemory = createPulseRouteMemory;
+    global.PulseRouteMemoryStore = PulseRouteMemoryStore;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseRouteMemory = createPulseRouteMemory;
-    globalThis.PulseRouteMemoryStore = PulseRouteMemoryStore;
+    global.PulseRouteMemory = createPulseRouteMemory;
+    global.PulseRouteMemoryStore = PulseRouteMemoryStore;
   }
   if (typeof global !== "undefined") {
     global.PulseRouteMemory = createPulseRouteMemory;

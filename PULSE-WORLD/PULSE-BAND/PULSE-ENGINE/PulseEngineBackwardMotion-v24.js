@@ -77,12 +77,12 @@ const fetchFn =
 
 // Safe presence/advantage contexts (optional, zero-mutation)
 const presenceContext =
-  (typeof window !== "undefined" && window.PULSE_PRESENCE) ||
+  (typeof window !== "undefined" && global.PULSE_PRESENCE) ||
   g.PULSE_PRESENCE ||
   {};
 
 const advantageContext =
-  (typeof window !== "undefined" && window.PULSE_ADVANTAGE) ||
+  (typeof window !== "undefined" && global.PULSE_ADVANTAGE) ||
   g.PULSE_ADVANTAGE ||
   {};
 

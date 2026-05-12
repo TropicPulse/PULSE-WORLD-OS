@@ -976,10 +976,10 @@ if (typeof window !== "undefined") {
     };
 
     // Expose as lowercase (Portal expects this)
-    window.pulseband = PulseBandEngine;
+    global.pulseband = PulseBandEngine;
 
     // Expose as uppercase (Index + Touch expect this)
-    window.PulseBand = PulseBandEngine;
+    global.PulseBand = PulseBandEngine;
 
     console.log(
       "%c[CheckBand] %cPulseBand engine injected into window",
@@ -1000,9 +1000,9 @@ if (typeof window !== "undefined") {
 export function checkBand(band) {
   return getCheckBandStateSnapshot(band);
 }
-window.checkBand = checkBand;
-window.CheckBand = checkBand;
-window.checkband = checkBand;
+global.checkBand = checkBand;
+global.CheckBand = checkBand;
+global.checkband = checkBand;
 // ============================================================================
 //  DEFAULT EXPORT — IMMORTAL++ PULSE‑WORLD‑BAND ORGAN (v24)
 // ============================================================================

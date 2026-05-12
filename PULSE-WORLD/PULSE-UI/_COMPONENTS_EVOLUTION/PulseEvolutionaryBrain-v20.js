@@ -583,10 +583,10 @@ export function createPulseEvolutionaryBrain({
 // ---------------------------------------------------------------------------
 try {
   if (typeof window !== "undefined") {
-    window.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
+    global.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
   }
   if (typeof globalThis !== "undefined") {
-    globalThis.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
+    global.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
   }
   if (typeof global !== "undefined") {
     global.PulseEvolutionaryBrain = createPulseEvolutionaryBrain;
