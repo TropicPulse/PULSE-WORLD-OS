@@ -305,3 +305,63 @@ export function StorageRef(_storage, path) {
 export async function UploadString(ref, content) {
   writeFsFile(ref.path, content);
 }
+// ============================================================================
+// GLOBAL DB + FS COMPATIBILITY (v25++ MAP-DRIVEN)
+// Makes ALL legacy pages automatically use the new Shadow DB.
+// ============================================================================
+// ============================================================================
+// UNIVERSAL GLOBAL DB + FS BROADCAST (v25++ IMMORTAL)
+// Makes EVERY legacy reference (window/globalThis/global/self) identical.
+// ============================================================================
+
+// Build the DB object once
+const ShadowDB = {
+  getDocument,
+  setDocument,
+  readCollection,
+  writeCollectionWithDelta
+};
+
+// Build the Firestore-compat object once
+const ShadowFirestore = { _type: "shadow-firestore" };
+
+// Build the Storage-compat object once
+const ShadowStorage = { _type: "shadow-storage" };
+
+// Build the helper bundle once
+const ShadowHelpers = {
+  Doc,
+  Collection,
+  GetDoc,
+  SetDoc,
+  UpdateDoc,
+  StorageRef,
+  UploadString
+};
+
+// List of ALL global surfaces we must support
+const GLOBAL_SURFACES = [
+  window,
+  globalThis,
+  self,
+  (typeof global !== "undefined" ? global : null)
+].filter(Boolean);
+
+// Broadcast to ALL surfaces
+for (const g of GLOBAL_SURFACES) {
+  g.db = ShadowDB;
+
+  g.firestore = ShadowFirestore;
+
+  g.Doc = Doc;
+  g.Collection = Collection;
+  g.GetDoc = GetDoc;
+  g.SetDoc = SetDoc;
+  g.UpdateDoc = UpdateDoc;
+
+  g.Storage = ShadowStorage;
+  g.StorageRef = StorageRef;
+  g.UploadString = UploadString;
+}
+
+console.log("%c[ShadowDB] UNIVERSAL GLOBAL DB + FS compatibility layer ACTIVE", C_OK);
