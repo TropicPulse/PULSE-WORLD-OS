@@ -60,6 +60,12 @@ console.log(
   "color:#00FF9C; font-family:monospace;"                      // Monitor Neon Green
 );
 
+
+// ============================================================================
+// WAIT FOR TOUCH → THEN WARM NEXT PAGE
+// ============================================================================
+
+
 let PulseSkinReflex = null;
 try {
   PulseSkinReflex = PulseProofBridgeReflex;
@@ -433,6 +439,13 @@ if (isBrowser()) {
 
       return safe;
     }
+
+    const waitForTouch = setInterval(() => {
+      if (window.__PULSE_TOUCH__) {
+        clearInterval(waitForTouch);
+        runPortalWarm();
+      }
+    }, 10);
 
     // ------------------------------------------------------------------------
     // PORTAL-SAFE FETCH HELPERS — IMAGE + CHUNK + PREWARM
@@ -1133,16 +1146,6 @@ function runPortalWarm() {
     console.error("[PortalWarm] FAILED →", err);
   }
 }
-
-// ============================================================================
-// WAIT FOR TOUCH → THEN WARM NEXT PAGE
-// ============================================================================
-const waitForTouch = setInterval(() => {
-  if (window.__PULSE_TOUCH__) {
-    clearInterval(waitForTouch);
-    runPortalWarm();
-  }
-}, 10);
 
 
 // ============================================================================
