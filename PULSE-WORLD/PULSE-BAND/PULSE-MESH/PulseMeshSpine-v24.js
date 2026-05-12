@@ -1,25 +1,28 @@
-
 // ============================================================================
-// FILE: PulseMeshSpine-v15.0-Immortal.js
-// [pulse:mesh] PULSE_MESH_SPINE v15.0-MESH-SPINE-Immortal  // deep-orange
+// FILE: PulseMeshSpine-v24-IMMORTAL++.js
+// [pulse:mesh] PULSE_MESH_SPINE v24-IMMORTAL++  // deep-orange
 // Deterministic Pathway Engine • Advantage Surfaces • Dual-Band Mesh Spine
 // Metadata-Only • No Payload Access • No Network Fetch • Drift-Proof
+// Hyper-Advantage • Burst-Aware • Lane-Aware • GPU-Warm-Aware
 // ============================================================================
 //
-// IDENTITY — MESH SPINE (v15.0-Immortal):
+// IDENTITY — MESH SPINE (v24-IMMORTAL++):
 // --------------------------------------
 // • Deterministic routing spine for the mesh organism.
 // • Pure pathway engine: chooses next hops, never moves packets itself.
 // • Emits full advantage surfaces:
-//      - Prewarm surface (next-hop + presence-band)
-//      - Chunk surface (lineage + factoring + aura bias)
-//      - Cache surface (stable neighbor profile)
-//      - Presence surface (global presence-band + hop index)
-// • Records lineage, drift, flow, trust, load, factoring, presence.
+//      - Prewarm surface (next-hop + presence-band + burst/lane hints)
+//      - Chunk surface (lineage + factoring + aura bias + mode pressure)
+//      - Cache surface (stable neighbor profile + lane/burst suitability)
+//      - Presence surface (global presence-band + hop index + mode)
+//      - Burst surface (bluetooth-style / local-burst suitability)
+//      - Lane surface (lane pressure + lane locality profile)
+// • Records lineage, drift, flow, trust, load, factoring, presence, bursts.
 // • No timestamps — uses deterministic meshCycle counter.
 // • Presence-aware, binary-aware, dual-band, mesh-aware, SDN-aligned.
+// • IMMORTAL++: hyper-advantage field, burst-aware, lane-aware, gpuWarm-aware.
 //
-// SAFETY CONTRACT (v15.0-Immortal):
+// SAFETY CONTRACT (v24-IMMORTAL++):
 // ---------------------------------
 // • No payload access, no payload mutation.
 // • No external network fetch, no CNS access.
@@ -27,6 +30,7 @@
 // • No recursion, bounded hops, deterministic loop exit.
 // • Deterministic-field, unified-advantage-field, drift-proof.
 // • Multi-instance-ready, zero randomness, zero timestamps.
+// • Metadata-only: all effects via flags + MeshMemory surfaces.
 // ============================================================================
 import {
   OrganismIdentity,
@@ -35,20 +39,23 @@ import {
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 import { createCommunityReflex } from "./PulseMeshFlow-V24.js";
 import { applyPulseCortex } from "./PulseMeshCortex-V24.js";
 import { applyPulseMeshTendons } from "./PulseMeshTendons-V24.js";
-import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring-v20.js";
+import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring-v24.js";
 import { createPulseMeshImmuneSystem as recordMeshDriftEvent } from "./PulseMeshImmuneSystem.js";
 import * as PulseMeshSkinReflex from "./PulseMeshSkinReflex-V24.js";
+
+// ============================================================================
+// GLOBAL MESH MEMORY — v24-IMMORTAL++
+// ============================================================================
 
 export const MeshMemory = {
   drift: [],
@@ -65,14 +72,21 @@ export const MeshMemory = {
   prewarm: [],
   chunks: [],
   cache: [],
-  presence: []
+  presence: [],
+
+  // v24-IMMORTAL++ advantage extensions
+  bursts: [],          // burst surfaces (bluetooth-style / local-burst suitability)
+  lanes: [],           // lane surfaces (lane pressure + lane locality profile)
+  energyDecay: [],     // energy decay profile per hop
+  modePressure: [],    // binary/symbolic/dual pressure per hop
+  presenceBandStats: [] // global presence-band evolution over meshCycle
 };
 
 // Deterministic cycle counter (replaces timestamps)
 let meshCycle = 0;
 
 // ============================================================================
-// Mesh Factory (v15.0-MESH-Immortal)
+// Mesh Factory (v24-IMMORTAL++)
 // ============================================================================
 export function createPulseMesh() {
   return {
@@ -81,7 +95,7 @@ export function createPulseMesh() {
     meta: {
       layer: "PulseMeshSpine",
       role: "ROUTING_SPINE",
-      version: "15.0-MESH-SPINE-Immortal",
+      version: "24-IMMORTAL++",
       target: "full-mesh",
       selfRepairable: true,
       evo: {
@@ -115,6 +129,14 @@ export function createPulseMesh() {
         dualBandReady: true,
         gpuWarmAware: true,
 
+        // v24-IMMORTAL++ extensions
+        burstAware: true,
+        laneAware: true,
+        bluetoothBurstAware: true,
+        localBurstAware: true,
+        organismModeAware: true,
+        meshConsciousnessAware: true,
+
         zeroCompute: true,
         zeroMutation: true,
         zeroRoutingInfluence: true
@@ -144,7 +166,10 @@ export function registerMeshNode(mesh, nodeConfig) {
     reflex: nodeConfig.reflex || mesh.reflex,
     trustLevel: nodeConfig.trustLevel ?? 0.5,
     load: nodeConfig.load ?? 0.0,
-    locality: nodeConfig.locality || "local" // "local" | "edge" | "internet"
+    locality: nodeConfig.locality || "local", // "local" | "edge" | "internet"
+    // v24++: optional lane/burst hints (metadata-only)
+    laneHint: nodeConfig.laneHint || null,          // e.g. "gpu", "io", "bluetooth"
+    burstHint: nodeConfig.burstHint || null         // e.g. "local-burst", "wide-burst"
   });
 
   return mesh;
@@ -191,23 +216,46 @@ function recordFactoring(impulse) {
 }
 
 // ============================================================================
-// v15.0+ ADVANTAGE SURFACES (metadata-only)
-// Prewarm • Chunk • Cache • Presence-Band
+// Presence-band classification (binary / symbolic / dual / mesh)
 // ============================================================================
-
-// Presence-band classification (binary / symbolic / dual)
 function classifyPresenceBand(impulse) {
   const f = impulse.flags || {};
+  if (f.mesh_presence_band) return f.mesh_presence_band;
   if (f.binary_mode && f.dual_mode) return "dual";
   if (f.binary_mode) return "binary";
   if (f.dual_mode) return "dual";
   return "symbolic";
 }
 
-// Prewarm snapshot: next-hop candidates, mode, locality bias
+// v24++: classify burst mode (bluetooth/local/wide) from flags only
+function classifyBurstMode(impulse) {
+  const f = impulse.flags || {};
+  if (f.mesh_bluetooth_burst) return "bluetooth";
+  if (f.mesh_local_burst) return "local-burst";
+  if (f.mesh_wide_burst) return "wide-burst";
+  return "none";
+}
+
+// v24++: classify lane hint (gpu/io/mesh) from flags only
+function classifyLaneHint(impulse) {
+  const f = impulse.flags || {};
+  if (f.mesh_lane_gpu) return "gpu";
+  if (f.mesh_lane_io) return "io";
+  if (f.mesh_lane_mesh) return "mesh";
+  return "generic";
+}
+
+// ============================================================================
+// v24-IMMORTAL++ ADVANTAGE SURFACES
+// Prewarm • Chunk • Cache • Presence • Burst • Lane
+// ============================================================================
+
+// Prewarm snapshot: next-hop candidates, mode, locality bias, burst/lane hints
 function recordPrewarmSurface(mesh, impulse, node, context) {
   const neighbors = node.neighbors || [];
   const presenceBand = classifyPresenceBand(impulse);
+  const burstMode = classifyBurstMode(impulse);
+  const laneHint = classifyLaneHint(impulse);
 
   const snapshot = {
     cycle: meshCycle,
@@ -218,7 +266,14 @@ function recordPrewarmSurface(mesh, impulse, node, context) {
     neighbors: neighbors.slice().sort(), // deterministic
     routeHint: impulse.routeHint || null,
     score: typeof impulse.score === "number" ? impulse.score : null,
-    energy: typeof impulse.energy === "number" ? impulse.energy : null
+    energy: typeof impulse.energy === "number" ? impulse.energy : null,
+
+    // v24++ additions
+    burstMode,
+    laneHint,
+    locality: node.locality || "local",
+    trustLevel: typeof node.trustLevel === "number" ? node.trustLevel : 0.5,
+    load: typeof node.load === "number" ? node.load : 0
   };
 
   MeshMemory.prewarm.push(snapshot);
@@ -226,9 +281,11 @@ function recordPrewarmSurface(mesh, impulse, node, context) {
   impulse.flags = impulse.flags || {};
   impulse.flags.mesh_prewarm_surface = true;
   impulse.flags.mesh_prewarm_presence_band = presenceBand;
+  impulse.flags.mesh_prewarm_burst_mode = burstMode;
+  impulse.flags.mesh_prewarm_lane_hint = laneHint;
 }
 
-// Chunk snapshot: lineage + factoring + trust/load at this hop
+// Chunk snapshot: lineage + factoring + trust/load at this hop + mode pressure
 function recordChunkSurface(impulse, node) {
   const presenceBand = classifyPresenceBand(impulse);
   const flags = impulse.flags || {};
@@ -242,19 +299,35 @@ function recordChunkSurface(impulse, node) {
     mesh_factor_bias: flags.mesh_factor_bias || 0,
     mesh_factor_pressure: flags.mesh_factor_pressure || 0,
     aura_factoring_bias: flags.aura_factoring_bias || 0,
-    aura_prefers_stable_routes: !!flags.aura_prefers_stable_routes
+    aura_prefers_stable_routes: !!flags.aura_prefers_stable_routes,
+
+    // v24++ mode pressure snapshot
+    binaryMode: !!flags.binary_mode,
+    dualMode: !!flags.dual_mode,
+    symbolicMode: !flags.binary_mode,
+    organismMode: flags.organism_mode || null
   };
 
   MeshMemory.chunks.push(chunk);
+
+  MeshMemory.modePressure.push({
+    cycle: meshCycle,
+    nodeId: node.id,
+    presenceBand,
+    binaryMode: !!flags.binary_mode,
+    dualMode: !!flags.dual_mode,
+    symbolicMode: !flags.binary_mode
+  });
 
   impulse.flags = impulse.flags || {};
   impulse.flags.mesh_chunk_surface = true;
   impulse.flags.mesh_chunk_presence_band = presenceBand;
 }
 
-// Cache snapshot: stable route profile (locality + trust/load + mode)
+// Cache snapshot: stable route profile (locality + trust/load + mode + burst)
 function recordCacheSurface(mesh, impulse, node) {
   const presenceBand = classifyPresenceBand(impulse);
+  const burstMode = classifyBurstMode(impulse);
 
   const neighbors = node.neighbors || [];
   const neighborProfiles = neighbors
@@ -265,14 +338,18 @@ function recordCacheSurface(mesh, impulse, node) {
           id,
           locality: "unknown",
           trust: 0,
-          load: 1
+          load: 1,
+          laneHint: null,
+          burstHint: null
         };
       }
       return {
         id: n.id,
         locality: n.locality || "local",
         trust: typeof n.trustLevel === "number" ? n.trustLevel : 0.5,
-        load: typeof n.load === "number" ? n.load : 0
+        load: typeof n.load === "number" ? n.load : 0,
+        laneHint: n.laneHint || null,
+        burstHint: n.burstHint || null
       };
     })
     .sort((a, b) => String(a.id).localeCompare(String(b.id)));
@@ -283,7 +360,8 @@ function recordCacheSurface(mesh, impulse, node) {
     presenceBand,
     binaryMode: !!impulse.flags?.binary_mode,
     dualMode: !!impulse.flags?.dual_mode,
-    neighborProfiles
+    neighborProfiles,
+    burstMode
   };
 
   MeshMemory.cache.push(cacheProfile);
@@ -291,6 +369,7 @@ function recordCacheSurface(mesh, impulse, node) {
   impulse.flags = impulse.flags || {};
   impulse.flags.mesh_cache_surface = true;
   impulse.flags.mesh_cache_presence_band = presenceBand;
+  impulse.flags.mesh_cache_burst_mode = burstMode;
 }
 
 // Presence snapshot: global presence-band + mode + hop index
@@ -309,13 +388,89 @@ function recordPresenceSurface(impulse, node) {
 
   MeshMemory.presence.push(presence);
 
+  // v24++: track global presence-band stats over time
+  MeshMemory.presenceBandStats.push({
+    cycle: meshCycle,
+    presenceBand
+  });
+
   impulse.flags = impulse.flags || {};
   impulse.flags.mesh_presence_surface = true;
   impulse.flags.mesh_presence_band = presenceBand;
 }
 
+// Burst surface: bluetooth/local/wide burst suitability (metadata-only)
+function recordBurstSurface(impulse, node) {
+  const presenceBand = classifyPresenceBand(impulse);
+  const burstMode = classifyBurstMode(impulse);
+
+  const burst = {
+    cycle: meshCycle,
+    nodeId: node.id,
+    presenceBand,
+    burstMode,
+    locality: node.locality || "local",
+    // simple deterministic suitability score (metadata-only)
+    suitability:
+      burstMode === "bluetooth"
+        ? (node.locality === "local" ? 1 : 0.4)
+        : burstMode === "local-burst"
+        ? (node.locality === "local" ? 0.9 : 0.5)
+        : burstMode === "wide-burst"
+        ? (node.locality === "internet" ? 1 : 0.6)
+        : 0
+  };
+
+  MeshMemory.bursts.push(burst);
+
+  impulse.flags = impulse.flags || {};
+  impulse.flags.mesh_burst_surface = true;
+  impulse.flags.mesh_burst_mode = burstMode;
+}
+
+// Lane surface: lane pressure + lane locality profile (metadata-only)
+function recordLaneSurface(impulse, node) {
+  const presenceBand = classifyPresenceBand(impulse);
+  const laneHint = classifyLaneHint(impulse);
+
+  const lane = {
+    cycle: meshCycle,
+    nodeId: node.id,
+    presenceBand,
+    laneHint,
+    locality: node.locality || "local",
+    // deterministic lane pressure from load + factoring
+    lanePressure: Math.max(
+      0,
+      Math.min(
+        1,
+        (node.load ?? 0) * 0.6 +
+          (impulse.flags?.mesh_factor_pressure ?? 0) * 0.4
+      )
+    )
+  };
+
+  MeshMemory.lanes.push(lane);
+
+  impulse.flags = impulse.flags || {};
+  impulse.flags.mesh_lane_surface = true;
+  impulse.flags.mesh_lane_hint = laneHint;
+}
+
+// Energy decay recorder (metadata-only)
+function recordEnergyDecay(impulse, node) {
+  const energy =
+    typeof impulse.energy === "number" ? impulse.energy : null;
+
+  MeshMemory.energyDecay.push({
+    cycle: meshCycle,
+    nodeId: node.id,
+    energy
+  });
+}
+
 // ============================================================================
-// Routing Entry Point (v15.0-MESH-Immortal)
+// Routing Entry Point (v24-IMMORTAL++)
 // Metadata-only • Deterministic • Local-first • Dual-Mode • Full Advantage
 // ============================================================================
 export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
@@ -325,6 +480,11 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
   impulse.flags.mesh_meta = mesh.meta;
   impulse.flags.mesh_route_started = true;
   impulse.flags.mesh_spine_surface = true;
+
+  // v24++: organism mode hint (if provided by OrganismMesh)
+  if (context.organismMode) {
+    impulse.flags.organism_mode = context.organismMode;
+  }
 
   // v15.0: mode tagging (binary / dual / symbolic)
   const binaryMode = !!context.binaryMode || !!impulse.flags.binary_mode;
@@ -351,7 +511,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
         severity: "warning",
         meshNodeId: currentNodeId,
         note: "Mesh node missing during routing",
-        fileName: "PulseMeshSpine-v15.0-Immortal.js",
+        fileName: "PulseMeshSpine-v24-IMMORTAL++.js",
         functionName: "routeImpulse",
         fieldName: "nodes"
       });
@@ -403,7 +563,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
         severity: "warning",
         meshNodeId: node.id,
         note: "Mesh routing exceeded max hops — safety stop",
-        fileName: "PulseMeshSpine-v15.0-Immortal.js",
+        fileName: "PulseMeshSpine-v24-IMMORTAL++.js",
         functionName: "routeImpulse",
         fieldName: "hops"
       });
@@ -418,12 +578,14 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
     }
 
     // -------------------------------------------------------
-    // v15.0+ ADVANTAGE SURFACES (prewarm/chunk/cache/presence)
+    // v24-IMMORTAL++ ADVANTAGE SURFACES
     // -------------------------------------------------------
     recordPrewarmSurface(mesh, impulse, node, { binaryMode, dualMode });
     recordChunkSurface(impulse, node);
     recordCacheSurface(mesh, impulse, node);
     recordPresenceSurface(impulse, node);
+    recordBurstSurface(impulse, node);
+    recordLaneSurface(impulse, node);
 
     // -------------------------------------------------------
     // 0. SIGNAL PRESSURE SURFACE (factoring + aura hints)
@@ -449,7 +611,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
         severity: "info",
         meshNodeId: node.id,
         note: "Reflex dropped impulse",
-        fileName: "PulseMeshSpine-v15.0-Immortal.js",
+        fileName: "PulseMeshSpine-v24-IMMORTAL++.js",
         functionName: "routeImpulse",
         fieldName: "reflex"
       });
@@ -481,9 +643,11 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
 
     // -------------------------------------------------------
     // 4. Energy decay (instinctive fatigue, metadata-only)
-    // -------------------------------------------------------
+// -------------------------------------------------------
     impulse.energy =
       typeof impulse.energy === "number" ? impulse.energy * 0.9 : 0.9;
+
+    recordEnergyDecay(impulse, node);
 
     if (impulse.energy <= 0.05) {
       impulse.flags.mesh_energy_exhausted = true;
@@ -506,8 +670,8 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
     }
 
     // -------------------------------------------------------
-    // 6. Next hop selection (factoring + load + locality + mode aware)
-    // -------------------------------------------------------
+    // 6. Next hop selection (factoring + load + locality + mode + burst)
+// -------------------------------------------------------
     const nextId = selectNextHop(mesh, node, visited, impulse, {
       binaryMode,
       dualMode
@@ -522,7 +686,7 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
         severity: "warning",
         meshNodeId: node.id,
         note: "Mesh routing stalled — no available neighbors",
-        fileName: "PulseMeshSpine-v15.0-Immortal.js",
+        fileName: "PulseMeshSpine-v24-IMMORTAL++.js",
         functionName: "routeImpulse",
         fieldName: "neighbors"
       });
@@ -545,7 +709,8 @@ export function routeImpulse(mesh, impulse, entryNodeId, context = {}) {
 }
 
 // ============================================================================
-// Next Hop Selection (factoring-aware, load-aware, locality-aware, mode-aware)
+// Next Hop Selection (factoring-aware, load-aware, locality-aware, mode-aware,
+//                    burst-aware, lane-aware)
 // ============================================================================
 function selectNextHop(mesh, node, visited, impulse, { binaryMode, dualMode }) {
   const neighbors = node.neighbors || [];
@@ -553,6 +718,8 @@ function selectNextHop(mesh, node, visited, impulse, { binaryMode, dualMode }) {
 
   const factorPressure = impulse.flags?.mesh_factor_pressure || 0;
   const prefersStableRoutes = !!impulse.flags?.aura_prefers_stable_routes;
+  const burstMode = classifyBurstMode(impulse);
+  const laneHint = classifyLaneHint(impulse);
 
   const candidates = neighbors
     .filter((n) => !visited.has(n))
@@ -605,6 +772,26 @@ function selectNextHop(mesh, node, visited, impulse, { binaryMode, dualMode }) {
       // dual mode: slightly favor local/edge mix, keep deterministic
       if (dualMode && locality === "edge") {
         penalty -= 0.02;
+      }
+
+      // v24++: burst-aware tweaks
+      if (burstMode === "bluetooth") {
+        // strongly prefer local nodes for bluetooth-style bursts
+        if (locality === "local") penalty -= 0.08;
+        if (locality === "internet") penalty += 0.12;
+      } else if (burstMode === "local-burst") {
+        if (locality === "local") penalty -= 0.05;
+      } else if (burstMode === "wide-burst") {
+        if (locality === "internet") penalty -= 0.05;
+      }
+
+      // v24++: lane-aware tweaks (gpu/io/mesh)
+      if (laneHint && n.laneHint) {
+        if (laneHint === n.laneHint) {
+          penalty -= 0.06; // matching lane is slightly preferred
+        } else {
+          penalty += 0.04; // mismatched lane slightly penalized
+        }
       }
 
       return {

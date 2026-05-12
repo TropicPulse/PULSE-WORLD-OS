@@ -1,44 +1,21 @@
 // ============================================================================
-// [pulse:mesh] PULSE_MESH_ENVIRONMENTAL_FIELD v15-Evo-Immortal // teal
+// [pulse:mesh] PULSE_MESH_ENVIRONMENTAL_FIELD v24-IMMORTAL++ // platinum
 // Internal Weather System • Metadata-Only • Stabilization + Pressure Signals
-// Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
+// Presence-Aware • Binary-Aware • Bluetooth-Aware • Dual-Band • Drift-Proof
+// Advantage-Aware • Mesh-Pressure-Aware • Zero-Compute • Zero-Mutation
 // ============================================================================
-//
-// IDENTITY — THE ENVIRONMENTAL FIELD (v15-Evo-Immortal):
-// ------------------------------------------------------
-// • The organism’s internal “weather system.”
-// • Aggregates friction, noise, stability, resonance, drift, load, and pressure.
-// • Holds system-pressure indicators for Flow, Aura, Reflex, Mesh, Factoring,
-//   Binary vs Symbolic mode pressure, and Presence-band pressure.
-// • Exposes feedback-ready pressure snapshots for Cortex, Aura, Flow, Endocrine,
-//   Echo, Halo, Cognition, Mesh Awareness, Binary Mesh.
-// • Read-only to all organs except trusted CNS Brain writers.
-// • Pure metadata-only stabilization layer — zero routing, zero payload access.
-// • NOT blood pressure — this is atmospheric/system pressure.
-//
-// SAFETY CONTRACT (v15):
-// ----------------------
-// • No payload access.
-// • No routing.
-// • No autonomy.
-// • No imports.
-// • Deterministic-field: same inputs → same field state.
-// • Unified-advantage-field: inherits all safe systemic advantages.
-// • Drift-proof, multi-instance-ready, factoring-aware, mesh-pressure-aware,
-//   binary-aware, dual-band-ready, presence-aware, advantage-aware.
-// ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
@@ -47,11 +24,12 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 export function createPulseField({ log, warn, error } = {}) {
 
-  // -----------------------------------------------------------
-  // INTERNAL FIELD STATE (metadata-only)
-// -----------------------------------------------------------
+  // ========================================================================
+  // INTERNAL FIELD STATE — v24 IMMORTAL++
+  // Metadata-only • Deterministic • Zero-Mutation • Zero-Compute
+  // ========================================================================
   const FieldState = {
-    // Global "weather"
+    // Global “weather”
     friction: 0,
     noise: 0,
     stability: 1,
@@ -86,17 +64,22 @@ export function createPulseField({ log, warn, error } = {}) {
     presenceBinaryPressure: 0,
     presenceDualPressure: 0,
 
-    // v15: derived advantage / survival pressures
-    advantagePressure: 0,          // overall advantage field tension
-    survivalStress: 0,             // flow + mesh + factoring + aura tension
-    meshStormRisk: 0,              // meshStormPressure + throttleRate
-    binaryPreference: 0,           // bias toward binary routes
-    presenceLoad: 0,               // how hard presence bands are being used
+    // v24++: Bluetooth presence pressure
+    bluetoothProximityPressure: 0,
+    bluetoothLinkQualityPressure: 0,
+    bluetoothEvents: 0,
+
+    // v24++: derived advantage / survival pressures
+    advantagePressure: 0,
+    survivalStress: 0,
+    meshStormRisk: 0,
+    binaryPreference: 0,
+    presenceLoad: 0,
 
     meta: {
       layer: "PulseField",
       role: "ENVIRONMENTAL_FIELD",
-      version: "15-Evo-Immortal",
+      version: "24-IMMORTAL++",
       target: "full-mesh",
       selfRepairable: true,
       evo: {
@@ -124,6 +107,10 @@ export function createPulseField({ log, warn, error } = {}) {
         presenceAware: true,
         bandAware: true,
 
+        // v24++ additions
+        bluetoothPresenceAware: true,
+        bluetoothMeshAware: true,
+
         zeroCompute: true,
         zeroMutation: true,
         zeroRoutingInfluence: true
@@ -131,11 +118,12 @@ export function createPulseField({ log, warn, error } = {}) {
     }
   };
 
-
-  // -----------------------------------------------------------
-  // FIELD UPDATE API (trusted CNS writers only)
-// -----------------------------------------------------------
+  // ========================================================================
+  // FIELD UPDATE API — trusted CNS writers only
+  // ========================================================================
   const PulseFieldControl = {
+
+    // Basic setters
     setFriction(v) { FieldState.friction = clamp01(v); },
     setNoise(v) { FieldState.noise = clamp01(v); },
     setStability(v) { FieldState.stability = clamp01(v); },
@@ -143,17 +131,17 @@ export function createPulseField({ log, warn, error } = {}) {
     setLoadWave(v) { FieldState.loadWave = clamp01(v); },
     setDriftPressure(v) { FieldState.driftPressure = clamp01(v); },
 
-    // System pressure setters
+    // System pressure
     setFlowPressure(v) { FieldState.flowPressure = clamp01(v); },
     setThrottleRate(v) { FieldState.throttleRate = clamp01(v); },
     setAuraTension(v) { FieldState.auraTension = clamp01(v); },
     setReflexDropRate(v) { FieldState.reflexDropRate = clamp01(v); },
     setMeshStormPressure(v) { FieldState.meshStormPressure = clamp01(v); },
 
-    // Factoring pressure
+    // Factoring
     setFactoringPressure(v) { FieldState.factoringPressure = clamp01(v); },
 
-    // External environment
+    // External
     setExternalHeat(v) { FieldState.externalHeat = clamp01(v); },
     setExternalStorm(v) { FieldState.externalStorm = clamp01(v); },
     setExternalSignal(v) { FieldState.externalSignal = clamp01(v); },
@@ -168,14 +156,19 @@ export function createPulseField({ log, warn, error } = {}) {
     setPresenceBinaryPressure(v) { FieldState.presenceBinaryPressure = clamp01(v); },
     setPresenceDualPressure(v) { FieldState.presenceDualPressure = clamp01(v); },
 
-    // v15: derived pressures (usually set via deriveFromDiagnostics)
+    // v24++ Bluetooth presence pressure
+    setBluetoothProximityPressure(v) { FieldState.bluetoothProximityPressure = clamp01(v); },
+    setBluetoothLinkQualityPressure(v) { FieldState.bluetoothLinkQualityPressure = clamp01(v); },
+    setBluetoothEvents(v) { FieldState.bluetoothEvents = Math.max(0, v|0); },
+
+    // Derived pressures
     setAdvantagePressure(v) { FieldState.advantagePressure = clamp01(v); },
     setSurvivalStress(v) { FieldState.survivalStress = clamp01(v); },
     setMeshStormRisk(v) { FieldState.meshStormRisk = clamp01(v); },
     setBinaryPreference(v) { FieldState.binaryPreference = clamp01(v); },
     setPresenceLoad(v) { FieldState.presenceLoad = clamp01(v); },
 
-    // Bulk update from PulseEnvironment or system pressure snapshot
+    // Bulk update
     applyEnvironmentSnapshot(env = {}) {
       for (const key in env) {
         if (key in FieldState) {
@@ -185,7 +178,7 @@ export function createPulseField({ log, warn, error } = {}) {
       }
     },
 
-    // v15: derive pressures from Halo + Echo + Cognition snapshots
+    // v24++: derive from Halo + Echo + Cognition + Bluetooth
     deriveFromDiagnostics({ halo, echo, cognition } = {}) {
       try {
         if (halo) applyHaloToField(FieldState, halo);
@@ -193,19 +186,23 @@ export function createPulseField({ log, warn, error } = {}) {
         if (cognition) applyCognitionToField(FieldState, cognition);
         recomputeDerivedPressures(FieldState);
       } catch (e) {
-        warn?.("[PulseField] deriveFromDiagnostics failed", e?.message || e);
+        warn?.("[PulseField v24] deriveFromDiagnostics failed", e?.message || e);
       }
     }
   };
 
-
-  // -----------------------------------------------------------
-  // FIELD READ API (feedback-aware, metadata-only)
-// -----------------------------------------------------------
+  // ========================================================================
+  // FIELD READ API — metadata-only
+  // ========================================================================
   const PulseField = {
-    snapshot() { return { ...FieldState, meta: { ...FieldState.meta, evo: { ...FieldState.meta.evo } } }; },
+    snapshot() {
+      return {
+        ...FieldState,
+        meta: { ...FieldState.meta, evo: { ...FieldState.meta.evo } }
+      };
+    },
 
-    // Raw scalar getters
+    // Raw getters
     getFriction() { return FieldState.friction; },
     getNoise() { return FieldState.noise; },
     getStability() { return FieldState.stability; },
@@ -233,13 +230,18 @@ export function createPulseField({ log, warn, error } = {}) {
     getPresenceBinaryPressure() { return FieldState.presenceBinaryPressure; },
     getPresenceDualPressure() { return FieldState.presenceDualPressure; },
 
+    // v24++ Bluetooth
+    getBluetoothProximityPressure() { return FieldState.bluetoothProximityPressure; },
+    getBluetoothLinkQualityPressure() { return FieldState.bluetoothLinkQualityPressure; },
+    getBluetoothEvents() { return FieldState.bluetoothEvents; },
+
     getAdvantagePressure() { return FieldState.advantagePressure; },
     getSurvivalStress() { return FieldState.survivalStress; },
     getMeshStormRisk() { return FieldState.meshStormRisk; },
     getBinaryPreference() { return FieldState.binaryPreference; },
     getPresenceLoad() { return FieldState.presenceLoad; },
 
-    // v15: feedback snapshots for other organs (metadata-only hints)
+    // Feedback snapshots
     buildFlowHints() {
       return {
         flow_pressure: FieldState.flowPressure,
@@ -259,6 +261,11 @@ export function createPulseField({ log, warn, error } = {}) {
           symbolic: FieldState.presenceSymbolicPressure,
           binary: FieldState.presenceBinaryPressure,
           dual: FieldState.presenceDualPressure
+        },
+        bluetooth_pressure: {
+          proximity: FieldState.bluetoothProximityPressure,
+          linkQuality: FieldState.bluetoothLinkQualityPressure,
+          events: FieldState.bluetoothEvents
         }
       };
     },
@@ -272,7 +279,9 @@ export function createPulseField({ log, warn, error } = {}) {
         driftPressure: FieldState.driftPressure,
         binaryBias: FieldState.binaryPreference,
         externalHeat: FieldState.externalHeat,
-        externalStorm: FieldState.externalStorm
+        externalStorm: FieldState.externalStorm,
+        bluetoothProximity: FieldState.bluetoothProximityPressure,
+        bluetoothLinkQuality: FieldState.bluetoothLinkQualityPressure
       };
     },
 
@@ -283,32 +292,55 @@ export function createPulseField({ log, warn, error } = {}) {
         friction: FieldState.friction,
         noise: FieldState.noise,
         survivalStress: FieldState.survivalStress,
-        advantagePressure: FieldState.advantagePressure
+        advantagePressure: FieldState.advantagePressure,
+        bluetoothProximity: FieldState.bluetoothProximityPressure,
+        bluetoothLinkQuality: FieldState.bluetoothLinkQualityPressure
       };
     },
 
     getMeta() { return FieldState.meta; }
   };
 
-
-  // -----------------------------------------------------------
-  // INTERNAL: DIAGNOSTIC DERIVATION (metadata-only)
-// -----------------------------------------------------------
+  // ========================================================================
+  // INTERNAL: DIAGNOSTIC DERIVATION — v24 IMMORTAL++
+  // ========================================================================
   function applyHaloToField(state, halo) {
     const impulses = halo.impulses_total || 0;
     const throttles = halo.flow_throttles || halo.flow?.throttles || 0;
-    const anomalyRate = halo.safety?.anomaly_rate ?? 0;
 
     state.flowPressure = clamp01(halo.flow?.throttle_rate ?? state.flowPressure);
     state.throttleRate = clamp01(halo.flow?.throttle_rate ?? state.throttleRate);
-    state.meshStormPressure = clamp01(impulses > 0 ? throttles / impulses : state.meshStormPressure);
+
+    state.meshStormPressure = clamp01(
+      impulses > 0 ? throttles / impulses : state.meshStormPressure
+    );
+
     state.reflexDropRate = clamp01(
       impulses > 0
         ? (halo.safety?.reflex_drops || 0) / impulses
         : state.reflexDropRate
     );
+
     state.stability = clamp01(halo.health?.stability ?? state.stability);
     state.driftPressure = clamp01(halo.health?.drift_risk ?? state.driftPressure);
+
+    // v24++: bluetooth presence from Halo
+    if (halo.bluetooth) {
+      const bt = halo.bluetooth;
+      if (bt.events > 0) {
+        state.bluetoothEvents += bt.events;
+        state.bluetoothProximityPressure = clamp01(
+          Math.max(
+            state.bluetoothProximityPressure,
+            bt.near ? 0.6 : bt.mid ? 0.4 : bt.far ? 0.2 : 0
+          )
+        );
+        state.bluetoothLinkQualityPressure = clamp01(
+          Math.max(state.bluetoothLinkQualityPressure, bt.avgLinkQuality || 0)
+        );
+      }
+    }
+
     state.advantagePressure = clamp01(
       halo.advantage?.events
         ? Math.min(1, halo.advantage.events / (impulses || 1))
@@ -356,28 +388,42 @@ export function createPulseField({ log, warn, error } = {}) {
     if (echo.mode?.dual) {
       state.dualModeResonance = clamp01(Math.max(state.dualModeResonance, 0.3));
     }
+
+    // v24++: bluetooth presence from Echo
+    const bt = echo.bluetoothPresence || echo.presence?.bluetooth;
+    if (bt) {
+      state.bluetoothEvents++;
+      if (bt.proximityTier === "near") state.bluetoothProximityPressure = clamp01(0.6);
+      else if (bt.proximityTier === "mid") state.bluetoothProximityPressure = clamp01(0.4);
+      else if (bt.proximityTier === "far") state.bluetoothProximityPressure = clamp01(0.2);
+
+      const q = clamp01(
+        bt.linkQuality ??
+        bt.quality ??
+        bt.rssiRatio ??
+        bt.signalRatio ??
+        0
+      );
+      state.bluetoothLinkQualityPressure = clamp01(
+        Math.max(state.bluetoothLinkQualityPressure, q)
+      );
+    }
   }
 
-  function applyCognitionToField(state, cognition) {
+    function applyCognitionToField(state, cognition) {
     if (!cognition) return;
 
     const mesh = cognition.mesh || {};
     const advantage = cognition.advantage || {};
     const presence = cognition.presence || {};
     const mode = cognition.mode || {};
-    const band = cognition.band || {};
 
-    // Mesh pressure from cognition
-    const hopsDensity = mesh.hopsCount || 0;
-    const stalls = mesh.stallsCount || 0;
-    const drops = mesh.dropsCount || 0;
-    const factoringEvents = mesh.factoringEvents || 0;
-
+    // Mesh pressure
     const meshPressure = clamp01(
-      (hopsDensity > 0 ? 0.1 : 0) +
-      (stalls > 0 ? 0.2 : 0) +
-      (drops > 0 ? 0.2 : 0) +
-      (factoringEvents > 0 ? 0.2 : 0)
+      (mesh.hopsCount > 0 ? 0.1 : 0) +
+      (mesh.stallsCount > 0 ? 0.2 : 0) +
+      (mesh.dropsCount > 0 ? 0.2 : 0) +
+      (mesh.factoringEvents > 0 ? 0.2 : 0)
     );
 
     state.meshStormPressure = clamp01(Math.max(state.meshStormPressure, meshPressure));
@@ -388,20 +434,16 @@ export function createPulseField({ log, warn, error } = {}) {
       )
     );
 
-    // Advantage / binary preference
-    const binaryPrefSamples = advantage.binaryPreferenceSamples || 0;
-    const factoredPaths = advantage.factoredPaths || 0;
-    const advEvents = advantage.events || 0;
-
+    // Advantage
     const advPressure = clamp01(
-      (binaryPrefSamples > 0 ? 0.3 : 0) +
-      (factoredPaths > 0 ? 0.3 : 0) +
-      (advEvents > 0 ? 0.2 : 0)
+      (advantage.binaryPreferenceSamples > 0 ? 0.3 : 0) +
+      (advantage.factoredPaths > 0 ? 0.3 : 0) +
+      (advantage.events > 0 ? 0.2 : 0)
     );
 
     state.advantagePressure = clamp01(Math.max(state.advantagePressure, advPressure));
     state.binaryPreference = clamp01(
-      binaryPrefSamples > 0 ? 0.5 : state.binaryPreference
+      advantage.binaryPreferenceSamples > 0 ? 0.5 : state.binaryPreference
     );
 
     // Presence load
@@ -411,19 +453,25 @@ export function createPulseField({ log, warn, error } = {}) {
     );
 
     // Mode pressure from cognition
-    const totalMode = (mode.binary || 0) + (mode.symbolic || 0) + (mode.dual || 0) || 1;
+    const totalMode =
+      (mode.binary || 0) +
+      (mode.symbolic || 0) +
+      (mode.dual || 0) || 1;
+
     state.binaryModePressure = clamp01(
       Math.max(
         state.binaryModePressure,
         (mode.binary || 0) / totalMode
       )
     );
+
     state.symbolicModePressure = clamp01(
       Math.max(
         state.symbolicModePressure,
         (mode.symbolic || 0) / totalMode
       )
     );
+
     state.dualModeResonance = clamp01(
       Math.max(
         state.dualModeResonance,
@@ -458,7 +506,6 @@ export function createPulseField({ log, warn, error } = {}) {
     state.advantagePressure = clamp01(adv);
   }
 
-
   // -----------------------------------------------------------
   // Helper
   // -----------------------------------------------------------
@@ -466,7 +513,6 @@ export function createPulseField({ log, warn, error } = {}) {
     if (typeof v !== "number" || Number.isNaN(v)) return 0;
     return Math.max(0, Math.min(1, v));
   }
-
 
   // -----------------------------------------------------------
   // PUBLIC INTERFACE

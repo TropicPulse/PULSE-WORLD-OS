@@ -1,14 +1,15 @@
 // ============================================================================
-//  EvolutionaryWiring.js — v15-Evo-Immortal
+//  EvolutionaryWiring-v24-IMMORTAL++.js
 //  PulseMesh Wiring Organ • Nervous System Pathway Selector
-//  Binary-Aware • Presence-Aware • Advantage-Aware • Drift-Proof
+//  Binary-Aware • Presence-Aware • Bluetooth-Aware • Advantage-Aware • Drift-Proof
+//  Deterministic • Zero Payload Mutation • Zero Network • Zero Randomness
 // ============================================================================
 //
 //  WHAT THIS ORGAN IS:
 //  --------------------
 //  • The wiring layer of the Pulse Nervous System.
 //  • Chooses wiring surfaces for symbolic + binary + dual-band pulses.
-//  • Pattern-aware, lineage-aware, presence-aware, advantage-aware, deterministic.
+//  • Pattern-aware, lineage-aware, presence-aware, advantage-aware, bluetooth-aware, deterministic.
 //  • Self-repairing: bad wiring auto-corrects to safe defaults.
 //  • Zero compute on payloads, zero mutation of input impulses.
 //
@@ -20,29 +21,28 @@
 //  • Not a network layer.
 //  • Not a messenger.
 //
-//  SAFETY CONTRACT (v15):
-//  -----------------------
-//  • No imports.
+//  SAFETY CONTRACT (v24-IMMORTAL++):
+//  ---------------------------------
 //  • No network.
 //  • No randomness.
 //  • No timestamps.
 //  • Pure deterministic wiring logic.
 //  • Zero mutation of input impulses.
-//  • Presence-aware, binary-aware, dual-band-aware, advantage-aware.
+//  • Presence-aware, binary-aware, dual-band-aware, advantage-aware, bluetooth-aware.
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
@@ -72,7 +72,7 @@ function simplePatternHash(str) {
   return h.toString(16);
 }
 
-// Infer default wiring surface from organ + pattern + mode + presence band + advantage hints
+// Infer default wiring surface from organ + pattern + mode + presence band + advantage hints + bluetooth hints
 function inferDefaultWiring(targetOrgan, pulse) {
   const p = (pulse.pattern || "").toLowerCase();
   const mode = pulse.mode || "symbolic";
@@ -81,11 +81,23 @@ function inferDefaultWiring(targetOrgan, pulse) {
   const binaryBias = clamp01(pulse.flags?.aura_binary_mesh_bias ?? 0);
   const factoringBias = clamp01(pulse.flags?.aura_factoring_bias ?? 0);
 
-  const prefersBinary = band === "binary" || mode === "binary" || binaryBias > 0.3;
+  // v24++: bluetooth presence bias (metadata-only)
+  const btBias = clamp01(
+    pulse.flags?.bluetooth_proximity_bias ??
+    pulse.flags?.bluetooth_link_quality_bias ??
+    0
+  );
+
+  const prefersBinary =
+    band === "binary" ||
+    mode === "binary" ||
+    binaryBias > 0.3 ||
+    btBias > 0.4;
+
   const prefersDual = band === "dual" || mode === "dual";
   const prefersFactored = factoringBias > 0.4;
 
-  // Presence-band + advantage bias first
+  // Presence-band + advantage + bluetooth bias first
   if (prefersBinary) {
     if (targetOrgan === "GPU") return prefersFactored ? "gpuBinaryFactoredBurst" : "gpuBinaryBurst";
     if (targetOrgan === "Earn") return prefersFactored ? "earnBinaryFactoredChain" : "earnBinaryChain";
@@ -123,7 +135,7 @@ function clamp01(v) {
 
 
 // ============================================================================
-//  FACTORY — Create PulseMesh Wiring Organ (v15-Evo-Immortal)
+//  FACTORY — Create PulseMesh Wiring Organ (v24-IMMORTAL++)
 // ============================================================================
 //
 //  Behavior:
@@ -132,10 +144,11 @@ function clamp01(v) {
 //    • snapshot() → returns wiring meta-memory for backendAI / Awareness
 //
 //  Memory model:
-//    • internal map: wiringKey → { surface, successCount, failureCount, band, presenceTag, advantage }
+//    • internal map: wiringKey → { surface, successCount, failureCount, band, presenceTag, advantage, bluetooth }
 //    • deterministic fallback: if failures dominate → safeFallback
 //    • presence-aware: wiring memory is band + presenceTag scoped
 //    • advantage-aware: tracks binary/factored preference usage
+//    • bluetooth-aware: tracks bluetooth bias usage (metadata-only)
 // ============================================================================
 
 export function createPulseMeshWiring({ log } = {}) {
@@ -144,7 +157,7 @@ export function createPulseMeshWiring({ log } = {}) {
   const meta = {
     layer: "PulseMeshWiring",
     role: "WIRING_ORGAN",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -162,7 +175,11 @@ export function createPulseMeshWiring({ log } = {}) {
       advantageAware: true,
       unifiedAdvantageField: true,
       deterministicField: true,
-      futureEvolutionReady: true
+      futureEvolutionReady: true,
+
+      // v24++
+      bluetoothPresenceAware: true,
+      bluetoothMeshAware: true
     }
   };
 
@@ -175,7 +192,7 @@ export function createPulseMeshWiring({ log } = {}) {
       entry = memory[key] = createEntry(surface, pulse);
     }
 
-    log && log("[PulseMesh-Wiring-v15] Selecting wiring surface", {
+    log && log("[PulseMesh-Wiring-v24] Selecting wiring surface", {
       jobId: pulse.jobId,
       pattern: pulse.pattern,
       targetOrgan,
@@ -187,7 +204,8 @@ export function createPulseMeshWiring({ log } = {}) {
       surface: entry.surface,
       successCount: entry.successCount,
       failureCount: entry.failureCount,
-      advantage: entry.advantage
+      advantage: entry.advantage,
+      bluetooth: entry.bluetooth
     });
 
     return entry.surface;
@@ -222,12 +240,24 @@ export function createPulseMeshWiring({ log } = {}) {
       entry.advantage.factoringBiasTotal += factoringBias;
     }
 
-    // ⭐ Self-repair: if failures dominate, switch to safeFallback
+    // v24++: Bluetooth bias tracking (metadata-only)
+    const btBias = clamp01(
+      pulse.flags?.bluetooth_proximity_bias ??
+      pulse.flags?.bluetooth_link_quality_bias ??
+      0
+    );
+
+    if (btBias > 0) {
+      entry.bluetooth.biasSamples += 1;
+      entry.bluetooth.biasTotal += btBias;
+    }
+
+    // Self-repair: if failures dominate, switch to safeFallback
     if (entry.failureCount > entry.successCount) {
       entry.surface = "safeFallback";
     }
 
-    log && log("[PulseMesh-Wiring-v15] Remembering wiring", {
+    log && log("[PulseMesh-Wiring-v24] Remembering wiring", {
       jobId: pulse.jobId,
       pattern: pulse.pattern,
       targetOrgan,
@@ -238,7 +268,8 @@ export function createPulseMeshWiring({ log } = {}) {
       surface: entry.surface,
       successCount: entry.successCount,
       failureCount: entry.failureCount,
-      advantage: entry.advantage
+      advantage: entry.advantage,
+      bluetooth: entry.bluetooth
     });
 
     return entry;
@@ -256,6 +287,10 @@ export function createPulseMeshWiring({ log } = {}) {
         binaryPreferenceTotal: 0,
         factoringBiasSamples: 0,
         factoringBiasTotal: 0
+      },
+      bluetooth: {
+        biasSamples: 0,
+        biasTotal: 0
       }
     };
   }
@@ -266,6 +301,11 @@ export function createPulseMeshWiring({ log } = {}) {
     for (const key in memory) {
       if (!Object.prototype.hasOwnProperty.call(memory, key)) continue;
       const e = memory[key];
+
+      const btSamples = e.bluetooth.biasSamples || 0;
+      const btAvg =
+        btSamples > 0 ? e.bluetooth.biasTotal / btSamples : 0;
+
       entries.push({
         key,
         surface: e.surface,
@@ -284,6 +324,10 @@ export function createPulseMeshWiring({ log } = {}) {
             e.advantage.factoringBiasSamples > 0
               ? e.advantage.factoringBiasTotal / e.advantage.factoringBiasSamples
               : 0
+        },
+        bluetooth: {
+          biasSamples: btSamples,
+          biasAvg: btAvg
         }
       });
     }

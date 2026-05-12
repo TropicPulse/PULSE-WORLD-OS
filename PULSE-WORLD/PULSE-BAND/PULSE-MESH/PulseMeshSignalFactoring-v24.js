@@ -1,20 +1,21 @@
 // ============================================================================
-// FILE: PulseMeshSignalFactoring-v20-IMMORTAL-INTEL-ADVANTAGE.js
-// [pulse:mesh] SIGNAL FACTORING LAYER — v20++ IMMORTAL INTEL + ADVANTAGE + ER
+// FILE: PulseMeshSignalFactoring-v24-IMMORTAL-INTEL-ADVANTAGE.js
+// [pulse:mesh] SIGNAL FACTORING LAYER — v24++ IMMORTAL INTEL + ADVANTAGE + ER
 // ----------------------------------------------------------------------------
 // ROLE:
 //   • Mesh‑level 1/0 factoring engine (metadata‑only, INTEL‑aware, base‑shape aware).
 //   • Mirrors CNS/Earn factoring (stride, depth, /2 pattern) at mesh layer.
 //   • Shapes impulses with factoring pressure from aura, flow, mesh, presence.
 //   • Emits dual INTEL + classic signatures for factoring + base‑shape state.
-//   • CNS/Band‑aware + Advantage‑aware (GPU, bandwidth, density).
-//   • ER‑ready: factoring surfaces can be embedded into Evidential Records v20.
+//   • CNS/Band‑aware + Advantage‑aware (GPU, bandwidth, density, burst tiers).
+//   • ER‑ready: factoring surfaces can be embedded into Evidential Records v20+.
+//   • Chunk/Prewarm/Cache/Burst‑aware for mesh v24++ organism meshes.
 //   • NEVER mutates payloads beyond meta/flags — flags + meta only.
 //   • Deterministic: same impulse + same context → same factoring result.
 //   • Zero randomness, zero timestamps, zero async, zero network.
-//   • Drift‑proof, multi‑instance‑ready, chunk/prewarm/cache‑aware.
+//   • Drift‑proof, multi‑instance‑ready, chunk/prewarm/cache/burst‑aware.
 // ----------------------------------------------------------------------------
-// SAFETY CONTRACT (IMMORTAL v20 INTEL+ADVANTAGE):
+// SAFETY CONTRACT (IMMORTAL v24 INTEL+ADVANTAGE):
 //   • No payload mutation (only meta/flags fields are allowed).
 //   • No routing influence (metadata only; routers MAY read but not obey).
 //   • No randomness, no timestamps.
@@ -41,7 +42,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-// HASH HELPERS — v20 IMMORTAL INTEL (dual‑hash)
+// HASH HELPERS — v24 IMMORTAL INTEL (dual‑hash)
 // ============================================================================
 
 function computeHash(str) {
@@ -96,7 +97,7 @@ function normalizeBand(band) {
 }
 
 // ============================================================================
-// BAND / BINARY / WAVE SURFACE (mesh‑level, v20)
+// BAND / BINARY / WAVE SURFACE (mesh‑level, v24)
 // ============================================================================
 
 function buildMeshBandBinaryWave(impulse, cycleIndex, deviceProfile = {}) {
@@ -163,8 +164,37 @@ function buildMeshBandBinaryWave(impulse, cycleIndex, deviceProfile = {}) {
 }
 
 // ============================================================================
-// ADVANTAGE FIELD (mesh‑level, v20)
+// ADVANTAGE FIELD (mesh‑level, v24)
 // ============================================================================
+
+function classifyBurstTier(advantageScore, bandwidth, gpuScore) {
+  if (advantageScore >= 0.2 || (bandwidth >= 500 && gpuScore >= 5000)) {
+    return "burst_elite";
+  }
+  if (advantageScore >= 0.08 || (bandwidth >= 200 && gpuScore >= 2000)) {
+    return "burst_high";
+  }
+  if (advantageScore >= 0.03 || (bandwidth >= 50 && gpuScore >= 800)) {
+    return "burst_medium";
+  }
+  if (advantageScore > 0) {
+    return "burst_low";
+  }
+  return "burst_none";
+}
+
+function classifyBurstStyle(burstTier) {
+  if (burstTier === "burst_elite" || burstTier === "burst_high") {
+    return "warp_burst";
+  }
+  if (burstTier === "burst_medium") {
+    return "lane_burst";
+  }
+  if (burstTier === "burst_low") {
+    return "micro_burst";
+  }
+  return "none";
+}
 
 function buildMeshAdvantageField(impulse, deviceProfile, bandPack, factoringProfile, bandSnapshot) {
   const gpuScore = safeNumber(deviceProfile?.gpuScore || 0);
@@ -191,8 +221,11 @@ function buildMeshAdvantageField(impulse, deviceProfile, bandPack, factoringProf
     bandMode === "offline_biased" ||
     fallbackLevel > 0;
 
+  const burstTier = classifyBurstTier(advantageScore, bandwidth, gpuScore);
+  const burstStyle = classifyBurstStyle(burstTier);
+
   return {
-    advantageVersion: "M-20.0-MESH",
+    advantageVersion: "M-24.0-MESH-IMMORTAL++",
     band: bandPack.band,
     gpuScore,
     bandwidth,
@@ -203,12 +236,14 @@ function buildMeshAdvantageField(impulse, deviceProfile, bandPack, factoringProf
     bandMode,
     bandLevel,
     fallbackLevel,
-    bandRisk
+    bandRisk,
+    burstTier,
+    burstStyle
   };
 }
 
 // ============================================================================
-// CHUNK / PREWARM / CACHE PLAN (mesh‑level, v20)
+// CHUNK / PREWARM / CACHE PLAN (mesh‑level, v24)
 // ============================================================================
 
 function buildMeshChunkPrewarmPlan(impulse, factoringProfile, bandPack, advantageField) {
@@ -238,6 +273,8 @@ function buildMeshChunkPrewarmPlan(impulse, factoringProfile, bandPack, advantag
   let gpuBatchStyle = "none";
   if (channelCount >= 32) {
     gpuBatchStyle = "warp_aligned";
+  } else if (channelCount >= 8) {
+    gpuBatchStyle = "lane_group";
   }
 
   // Cache tier hint
@@ -246,16 +283,31 @@ function buildMeshChunkPrewarmPlan(impulse, factoringProfile, bandPack, advantag
     cacheTier = "hot";
   } else if (factoringProfile.cachePriority === "normal" && advantageField.advantageScore >= 0.2) {
     cacheTier = "warm";
+  } else if (factoringProfile.cachePriority === "low" && advantageField.advantageScore > 0) {
+    cacheTier = "cool";
   }
 
+  // Burst hint (symbolic “bluetooth/power burst” style metadata)
+  const burstTier = advantageField.burstTier;
+  const burstStyle = advantageField.burstStyle;
+  const burstHint =
+    burstTier === "burst_elite" || burstTier === "burst_high"
+      ? "prefer_burst_delivery"
+      : burstTier === "burst_medium"
+      ? "allow_burst_delivery"
+      : "no_special_burst";
+
   return {
-    planVersion: "v20-IMMORTAL-INTEL-MESH",
+    planVersion: "v24-IMMORTAL++-INTEL-MESH",
     priorityLabel,
     bandPresence: factoringProfile.presenceTier,
     band: bandPack.band,
     planSurface,
     gpuBatchStyle,
     cacheTier,
+    burstTier,
+    burstStyle,
+    burstHint,
     chunks: {
       impulseEnvelope: true,
       channelList: true,
@@ -269,12 +321,16 @@ function buildMeshChunkPrewarmPlan(impulse, factoringProfile, bandPack, advantag
       meshEcho: factoringProfile.prewarmNeeded,
       meshFlow: factoringProfile.prewarmNeeded,
       meshAura: factoringProfile.prewarmNeeded
+    },
+    bursts: {
+      enabled: burstTier !== "burst_none",
+      style: burstStyle
     }
   };
 }
 
 // ============================================================================
-// FACTORING PROFILE (mesh‑level 1/0, depth, stride, v20)
+// FACTORING PROFILE (mesh‑level 1/0, depth, stride, v24)
 // ============================================================================
 
 function buildMeshFactoringProfile(impulse, cycleIndex, context) {
@@ -314,7 +370,7 @@ function buildMeshFactoringProfile(impulse, cycleIndex, context) {
   const prewarmNeeded = pressure > 0.25;
 
   return {
-    version: "v20-IMMORTAL-INTEL-MESH",
+    version: "v24-IMMORTAL-INTEL-MESH",
     cycleIndex,
     pressure,
     depth,
@@ -333,7 +389,7 @@ function buildMeshFactoringProfile(impulse, cycleIndex, context) {
 }
 
 // ============================================================================
-// BASE SHAPE / BASE FORMULA SURFACE (mesh‑level, v20)
+// BASE SHAPE / BASE FORMULA SURFACE (mesh‑level, v24)
 // ============================================================================
 
 function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantageField) {
@@ -347,7 +403,7 @@ function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantag
   }, {});
 
   const shapePayload = {
-    version: "v20-IMMORTAL-INTEL-MESH-BASESHAPE",
+    version: "v24-IMMORTAL++-INTEL-MESH-BASESHAPE",
     presenceTier: factoringProfile.presenceTier,
     presenceBand: factoringProfile.presenceBand,
     auraPressureIndex: factoringProfile.auraPressureIndex,
@@ -362,6 +418,8 @@ function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantag
     advantageScore: advantageField.advantageScore,
     bandMode: advantageField.bandMode,
     bandRisk: advantageField.bandRisk,
+    burstTier: advantageField.burstTier,
+    burstStyle: advantageField.burstStyle,
     channelKinds: channelKindHistogram,
     impulseKind: String(impulse?.kind || impulse?.type || "impulse"),
     route: String(impulse?.route || impulse?.path || "mesh")
@@ -384,6 +442,8 @@ function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantag
     advantageField.advantageScore.toFixed(6),
     shapePayload.bandMode,
     shapePayload.bandRisk ? "RISK" : "SAFE",
+    shapePayload.burstTier,
+    shapePayload.burstStyle,
     JSON.stringify(channelKindHistogram),
     shapePayload.impulseKind,
     shapePayload.route
@@ -407,7 +467,7 @@ function buildMeshBaseShapeSurface(impulse, factoringProfile, bandPack, advantag
 }
 
 // ============================================================================
-// IMMORTAL META TEMPLATE — v20 IMMORTAL INTEL (mesh)
+// IMMORTAL META TEMPLATE — v24 IMMORTAL INTEL (mesh)
 // ============================================================================
 
 function buildMeshSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile) {
@@ -471,7 +531,13 @@ function buildMeshSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
 
         baseShapeAware: true,
         baseFormulaKeyAware: true,
-        patternMatchSurface: true
+        patternMatchSurface: true,
+
+        // v24++ extras
+        chunkPrewarmReady: true,
+        cacheTierAware: true,
+        burstTierAware: true,
+        erSurfaceReady: true
       },
       signatures: {
         factoringSignatureIntel: sig.intel,
@@ -489,7 +555,7 @@ function buildMeshSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
 let meshFactoringCycle = 0;
 
 // ============================================================================
-// CORE API — applyMeshSignalFactoring (v20 IMMORTAL INTEL + ADVANTAGE)
+// CORE API — applyMeshSignalFactoring (v24 IMMORTAL INTEL + ADVANTAGE)
 // ============================================================================
 
 export function applyMeshSignalFactoring(impulse, context = {}) {
@@ -586,7 +652,7 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
     ...factoringProfile
   };
 
-  // 7) Band/Binary/Wave + Advantage + Chunk/Prewarm (v20)
+  // 7) Band/Binary/Wave + Advantage + Chunk/Prewarm (v24)
   const bandSnapshot = context.bandSnapshot || null;
 
   const bandPack = buildMeshBandBinaryWave(
@@ -632,7 +698,19 @@ export function applyMeshSignalFactoring(impulse, context = {}) {
   impulse.meta.signalFactoring.baseFormulaKey    = baseShapeSurface.baseFormulaKey;
   impulse.meta.signalFactoring.baseShapeVersion  = baseShapeSurface.baseShapeVersion;
 
+  // 10) v24++ ER surface + burst/cache hints (metadata‑only)
+  impulse.meta.signalFactoring.erSurface = {
+    erVersion: "ER-MESH-v24++",
+    erEmbeddingReady: true,
+    baseFormulaKey: baseShapeSurface.baseFormulaKey,
+    presenceTier: factoringProfile.presenceTier,
+    presenceBand: factoringProfile.presenceBand
+  };
+
   impulse.flags.meshSignalFactoring = true;
+  impulse.flags.mesh_factoring_burst_tier = meshChunkPrewarmPlan.burstTier;
+  impulse.flags.mesh_factoring_cache_tier = meshChunkPrewarmPlan.cacheTier;
+  impulse.flags.mesh_factoring_gpu_batch_style = meshChunkPrewarmPlan.gpuBatchStyle;
 
   return impulse;
 }

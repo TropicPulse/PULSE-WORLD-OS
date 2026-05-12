@@ -1,70 +1,76 @@
 // ============================================================================
-//  PulseSendLegacyPulse-v16-Immortal-ORGANISM.js
+//  PulseSendLegacyPulse-v24-IMMORTAL-ORGANISM.js
 //  Pulse v1 Organism • Stable Evolutionary Floor • Non-Evolving
-//  v16-Immortal-ORGANISM:
+//  v24-IMMORTAL-ORGANISM:
 //    - Binary-aware surfaces
 //    - CacheChunk + Prewarm + Presence + Degradation + ImmortalMeta
 //    - DualHash surfaces (primary + secondary, fallback-safe)
-//    - Still: stable, non-evolving, metadata-only
+//    - Still: stable, non-evolving, metadata-only (no new evolution logic)
 // ============================================================================
 //
 //  ROLE:
 //    • v1 is the *stable floor* of the organism stack.
 //    • It never evolves, never mutates, never computes evolution tiers.
-//    • It surfaces 12.3+ / 14.4+ / 16 metadata (cacheChunk, prewarm, presence,
+//    • It surfaces 12.3+ / 14.4+ / 16+/24 metadata (cacheChunk, prewarm, presence,
 //      degradation, immortalMeta, ancestry).
 //    • It does NOT use these surfaces to evolve or change behavior.
 //    • Deterministic, stable, non-evolving, non-computing.
 //
-//  SAFETY CONTRACT (v16-Immortal-ORGANISM-EvoStable):
+//  SAFETY CONTRACT (v24-IMMORTAL-ORGANISM-EvoStable):
 //  --------------------------------------------------
 //  • No randomness.
 //  • No timestamps.
 //  • No external mutation.
 //  • Deterministic, stable, non-evolving organism.
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, pure
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
-    h = (h + s.charCodeAt(i) * (i + 3)) % 131072;
+    h = (h + s.charCodeAt(i) * (i + 5)) % 262144; // v24: 18‑bit
   }
-  return `h12_${h}`;
+  return `h24_${h}`;
 }
 
 function computeHashAlt(str) {
   let h = 1;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
-    h = (h * 131 + s.charCodeAt(i) * (i + 11)) % 262139;
+    h = (h * 131 + s.charCodeAt(i) * (i + 17)) % 524287; // v24: 19‑bit
   }
-  return `h13_${h}`;
+  return `h24b_${h}`;
 }
 
 function stableStringify(v) {
   if (v === null || typeof v !== "object") return JSON.stringify(v);
   if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
   const keys = Object.keys(v).sort();
-  return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
+  return (
+    "{" +
+    keys.map(k => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") +
+    "}"
+  );
 }
 
 function computeDualHash(value) {
@@ -149,10 +155,10 @@ function extractBinarySurface(payload) {
 
 function classifyDegradationTier(healthScore) {
   const h = typeof healthScore === "number" ? healthScore : 1.0;
-  if (h >= 0.95) return "microDegrade";
-  if (h >= 0.85) return "softDegrade";
-  if (h >= 0.50) return "midDegrade";
-  if (h >= 0.15) return "hardDegrade";
+  if (h >= 0.97) return "microDegrade";
+  if (h >= 0.88) return "softDegrade";
+  if (h >= 0.55) return "midDegrade";
+  if (h >= 0.18) return "hardDegrade";
   return "criticalDegrade";
 }
 
@@ -169,7 +175,7 @@ function extractImmortalMeta(payload) {
 
 
 // ============================================================================
-//  16 surfaces — surfaced only, never used for evolution
+//  v24 surfaces — surfaced only, never used for evolution
 // ============================================================================
 
 function buildCacheChunkSurface({ pattern, lineage, pageId }) {
@@ -247,8 +253,9 @@ function buildImmortalSurface({ immortalMeta }) {
 
 
 // ============================================================================
-//  DIAGNOSTICS (stable, non-evolving, v16 surfaces)
+//  DIAGNOSTICS (stable, non-evolving, v24 surfaces)
 // ============================================================================
+
 function buildDiagnostics(pattern, lineage, payload, healthScore) {
   const binarySurface = extractBinarySurface(payload);
   const degradationSurface = buildDegradationSurface({ healthScore });
@@ -265,7 +272,7 @@ function buildDiagnostics(pattern, lineage, payload, healthScore) {
     patternLength: patternLen,
     lineageDepth,
     lineageDensity: lineageDepth === 0 ? 0 : patternLen / lineageDepth,
-    stabilityTier: "v1-evo-stable-16-Immortal-ORGANISM",
+    stabilityTier: "v1-evo-stable-24-Immortal-ORGANISM",
 
     binary: binarySurface,
     degradation: degradationSurface,
@@ -280,9 +287,10 @@ function buildDiagnostics(pattern, lineage, payload, healthScore) {
 
 
 // ============================================================================
-//  FACTORY — Create a Pulse v1 Organism (v16 Stable-Plus-Immortal ORGANISM)
-//  NOTE: Signature kept compatible with v14.4 usage in createPulseSend(...)
+//  FACTORY — Create a Pulse v1 Organism (v24 Stable-Plus-Immortal ORGANISM)
+//  NOTE: Signature kept compatible with v16/v14.4 usage in createPulseSend(...)
 // ============================================================================
+
 export function createLegacyPulse({
   jobId,
   pattern,
@@ -302,9 +310,9 @@ export function createLegacyPulse({
   );
   const evolutionStage = computeEvolutionStage(safePattern, lineage);
 
-  const patternAncestry       = buildPatternAncestry(safePattern);
-  const lineageSignature      = buildLineageSignature(lineage);
-  const pageAncestry          = buildPageAncestrySignature({
+  const patternAncestry  = buildPatternAncestry(safePattern);
+  const lineageSignature = buildLineageSignature(lineage);
+  const pageAncestry     = buildPageAncestrySignature({
     pattern: safePattern,
     lineage,
     pageId
@@ -314,7 +322,7 @@ export function createLegacyPulse({
     patternStrength: safePattern.length,
     lineageDepth: lineage.length,
     modeBias: mode === "stress" ? 2 : 1,
-    stabilityTier: "v1-evo-stable-16-Immortal-ORGANISM"
+    stabilityTier: "v1-evo-stable-24-Immortal-ORGANISM"
   };
 
   const healthScore = 1.0;
@@ -348,7 +356,7 @@ export function createLegacyPulse({
     mode,
     pageId,
 
-    pulseType: "Pulse-v1-EvoStable-v16-Immortal-ORGANISM",
+    pulseType: "Pulse-v1-EvoStable-v24-Immortal-ORGANISM",
 
     advantageField,
     healthScore,
@@ -386,9 +394,10 @@ export function createLegacyPulse({
 
 
 // ============================================================================
-//  FROM IMPULSE — build a v1 Pulse from an Impulse traveler (v16 IMMORTAL)
+//  FROM IMPULSE — build a v1 Pulse from an Impulse traveler (v24 IMMORTAL)
 //  (fallback path from higher-band impulse into stable v1 floor)
 // ============================================================================
+
 export function legacyPulseFromImpulse(impulse, overrides = {}) {
   if (!impulse) return null;
 

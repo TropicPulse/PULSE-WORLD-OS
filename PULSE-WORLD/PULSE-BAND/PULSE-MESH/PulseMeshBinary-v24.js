@@ -1,7 +1,7 @@
 // ============================================================================
-// FILE: BinaryMesh-v16.js
-// BINARY MESH — v16-Immortal
-// “PURE BINARY CONNECTIVE TISSUE / BINARY-FIRST / SYMBOLIC FALLBACK”
+// FILE: BinaryMesh-v24-IMMORTAL++.js
+// BINARY MESH — v24-IMMORTAL++
+// “PURE BINARY CONNECTIVE TISSUE / BINARY-FIRST / SYMBOLIC FALLBACK / BLUETOOTH-PRESENCE-AWARE”
 // ============================================================================
 //
 // ROLE:
@@ -9,8 +9,9 @@
 //   • Zero symbolic data in the binary path (0/1 arrays only).
 //   • Deterministic, drift-proof, mutation-safe, presence-aware.
 //   • Dual-band aware (binary primary, symbolic fallback).
+//   • Bluetooth presence–aware via metadata (no device control).
 //   • Falls back to symbolic PulseMesh when binary contract is violated.
-//   • Exposes read-only BinaryMeshArtery v2 for NodeAdmin/Overmind.
+//   • Exposes read-only BinaryMeshArtery v3 for NodeAdmin/Overmind.
 //
 // ARCHITECTURAL POSITION:
 //   • Lives in mesh_binary layer.
@@ -18,24 +19,15 @@
 //   • Talks to symbolic mesh via fallback (PulseMeshFlow, PresenceRelay, etc.).
 //   • Never routes, never computes semantics — only validates and passes bits.
 //
-// GUARANTEES:
-//   • No randomness, no timing-based behavior, no env access.
+// GUARANTEES (v24-IMMORTAL++):
+//   • No randomness, no timing-based branching, no env access.
 //   • No dynamic imports, no eval.
 //   • No network, no filesystem.
 //   • Zero mutation of input bits.
 //   • Mesh-topology-aware only via symbolic fallback.
 //   • Presence-aware only via control metadata (band, presenceTag).
+//   • Bluetooth-aware only via control metadata (bluetoothPresence).
 //   • Artery metrics are local, read-only, advisory-only.
-//
-// CONTRACT (v16-Immortal):
-//   • INPUT (data path):
-//       - bits: number[] (0 or 1 only)
-//   • INPUT (control path):
-//       - from: string
-//       - options: { band?, presenceTag?, trace? }
-//   • OUTPUT:
-//       - bits (unchanged) OR symbolic fallback result
-//       - optional: binaryMeshArtery snapshot (read-only)
 // ============================================================================
 import {
   OrganismIdentity,
@@ -51,6 +43,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 // export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // ============================================================================
 // IMPORTS — MESH SUBSYSTEMS (SYMBOLIC SIDE)
 // ============================================================================
@@ -68,7 +61,7 @@ import PulseMeshFlow from "./PulseMeshFlow-V24.js";
 import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v16.js";
 
 // 4 — COGNITION (mesh-level cognition)
-import PulseMeshCognition from "./PulseMeshCognition.js";
+import PulseMeshCognition from "./PulseMeshCognition-v24.js";
 
 // 5 — ENDOCRINE (mesh hormones)
 import PulseMeshEndocrineSystem from "./PulseMeshEndocrineSystem.js";
@@ -115,7 +108,13 @@ function safeLog(fn, fallback) {
   return () => {};
 }
 
-// BinaryMeshArtery v2 — local, read-only, no timing-based branching
+function clamp01(v) {
+  if (v <= 0) return 0;
+  if (v >= 1) return 1;
+  return v;
+}
+
+// BinaryMeshArtery v3 — local, read-only, no timing-based branching
 function computeBinaryMeshArtery(state) {
   const total = state.totalTransmits;
   const fallbacks = state.totalFallbacks;
@@ -153,6 +152,11 @@ function computeBinaryMeshArtery(state) {
     return "none";
   }
 
+  const btAvgLinkQuality =
+    state.btLinkQualitySamples > 0
+      ? state.btLinkQualitySum / state.btLinkQualitySamples
+      : 0;
+
   return Object.freeze({
     totalTransmits: total,
     totalFallbacks: fallbacks,
@@ -169,19 +173,50 @@ function computeBinaryMeshArtery(state) {
     costBucket: bucketCost(cost),
     budgetBucket: bucket(budget),
     lastFallbackReason: state.lastFallbackReason || null,
-    lastFrom: state.lastFrom || null
+    lastFrom: state.lastFrom || null,
+
+    bluetoothEvents: state.btEvents,
+    bluetoothNear: state.btNear,
+    bluetoothMid: state.btMid,
+    bluetoothFar: state.btFar,
+    bluetoothUnknown: state.btUnknown,
+    bluetoothAvgLinkQuality: btAvgLinkQuality
   });
 }
 
+function classifyBluetoothPresenceOnState(state, bluetoothPresence) {
+  if (!bluetoothPresence || typeof bluetoothPresence !== "object") return;
+
+  state.btEvents += 1;
+
+  const proximity = bluetoothPresence.proximityTier || "unknown";
+  if (proximity === "near") {
+    state.btNear += 1;
+  } else if (proximity === "mid") {
+    state.btMid += 1;
+  } else if (proximity === "far") {
+    state.btFar += 1;
+  } else {
+    state.btUnknown += 1;
+  }
+
+  const qRaw = Number(bluetoothPresence.linkQuality);
+  if (Number.isFinite(qRaw)) {
+    const q = clamp01(qRaw);
+    state.btLinkQualitySum += q;
+    state.btLinkQualitySamples += 1;
+  }
+}
+
 // ============================================================================
-// BINARY MESH FACTORY — v16-Immortal (WITH CORTEX + TENDONS APPLIED)
+// BINARY MESH FACTORY — v24-IMMORTAL++ (WITH CORTEX + TENDONS APPLIED)
 // ============================================================================
 export function createBinaryMesh({
   symbolicMesh,
   trace = false,
   maxBitsLength = 64,
   defaultBand = "binary",
-  defaultPresenceTag = "BinaryMesh-v16"
+  defaultPresenceTag = "BinaryMesh-v24"
 } = {}) {
 
   const links = Object.create(null);
@@ -196,7 +231,16 @@ export function createBinaryMesh({
     totalBits: 0,
     lastFallbackReason: null,
     lastFrom: null,
-    maxBitsLength
+    maxBitsLength,
+
+    // bluetooth artery metadata
+    btEvents: 0,
+    btNear: 0,
+    btMid: 0,
+    btFar: 0,
+    btUnknown: 0,
+    btLinkQualitySum: 0,
+    btLinkQualitySamples: 0
   };
 
   function link(from, to) {
@@ -212,13 +256,15 @@ export function createBinaryMesh({
   // -------------------------------------------------------------------------
   function fallback(reason, from, bits, {
     band = defaultBand,
-    presenceTag = defaultPresenceTag
+    presenceTag = defaultPresenceTag,
+    bluetoothPresence = null
   } = {}) {
 
     arteryState.totalFallbacks += 1;
     arteryState.lastFallbackReason = reason;
     arteryState.lastFrom = from;
     arteryState.totalBits += Array.isArray(bits) ? bits.length : 0;
+    classifyBluetoothPresenceOnState(arteryState, bluetoothPresence);
 
     if (!symbolicMesh) {
       throw new Error(`BinaryMesh fallback (${reason}) from:${from} but no symbolicMesh provided`);
@@ -226,8 +272,8 @@ export function createBinaryMesh({
 
     if (trace) {
       logWarn(
-        `[BinaryMesh v16] FALLBACK (${reason}) from:${from} band:${band} presence:${presenceTag}`,
-        bits
+        `[BinaryMesh v24] FALLBACK (${reason}) from:${from} band:${band} presence:${presenceTag}`,
+        { bits, bluetoothPresence }
       );
     }
 
@@ -238,6 +284,7 @@ export function createBinaryMesh({
       bits,
       band,
       presenceTag,
+      bluetoothPresence,
       flags: {
         binary_fallback: true,
         binary_reason: reason,
@@ -255,7 +302,8 @@ export function createBinaryMesh({
 
     return symbolicMesh.transmit(from, impulse, {
       band: "symbolic",
-      presenceTag: "PulseMesh-v16"
+      presenceTag: "PulseMesh-v24",
+      bluetoothPresence
     });
   }
 
@@ -264,26 +312,28 @@ export function createBinaryMesh({
   // -------------------------------------------------------------------------
   function transmit(from, bits, {
     band = defaultBand,
-    presenceTag = defaultPresenceTag
+    presenceTag = defaultPresenceTag,
+    bluetoothPresence = null
   } = {}) {
 
     arteryState.totalTransmits += 1;
     arteryState.totalBits += Array.isArray(bits) ? bits.length : 0;
+    classifyBluetoothPresenceOnState(arteryState, bluetoothPresence);
 
     const to = links[from];
 
     if (!to) {
-      return fallback("missing-link", from, bits, { band, presenceTag });
+      return fallback("missing-link", from, bits, { band, presenceTag, bluetoothPresence });
     }
 
     if (!isPureBinary(bits, maxBitsLength)) {
-      return fallback("non-binary-input", from, bits, { band, presenceTag });
+      return fallback("non-binary-input", from, bits, { band, presenceTag, bluetoothPresence });
     }
 
     if (trace) {
       logInfo(
-        `[BinaryMesh v16] ${from} → ${to} band:${band} presence:${presenceTag}`,
-        bits
+        `[BinaryMesh v24] ${from} → ${to} band:${band} presence:${presenceTag}`,
+        { bits, bluetoothPresence }
       );
     }
 
@@ -301,7 +351,7 @@ export function createBinaryMesh({
 }
 
 // ============================================================================
-// LOCAL BINARY SUBSYSTEMS — LIVE ON THIS PAGE (v16-Immortal)
+// LOCAL BINARY SUBSYSTEMS — LIVE ON THIS PAGE (v24-IMMORTAL++)
 // ============================================================================
 //
 //  PulseBinaryMeshPresence:
@@ -312,11 +362,10 @@ export function createBinaryMesh({
 //    • Extension point for future binary-first logic.
 //    • Currently just forwards to binaryMesh.transmit (pure connective tissue).
 // ============================================================================
-
 const PulseBinaryMeshPresence = {
   create({ context, binaryMesh, log, warn }) {
     function prewarm() {
-      log?.("[BinaryPresence v16] prewarm");
+      log?.("[BinaryPresence v24] prewarm");
     }
 
     function pulse(from, bits, options) {
@@ -338,7 +387,7 @@ const PulseBinaryMeshPresence = {
 const PulseBinaryMeshPrime = {
   create({ context, binaryMesh, log, warn }) {
     function prewarm() {
-      log?.("[BinaryPrime v16] prewarm");
+      log?.("[BinaryPrime v24] prewarm");
     }
 
     function process(from, bits, options) {
@@ -358,7 +407,7 @@ const PulseBinaryMeshPrime = {
 };
 
 // ============================================================================
-// BINARY MESH ENVIRONMENT — v16-Immortal
+// BINARY MESH ENVIRONMENT — v24-IMMORTAL++
 //   BINARY BARREL: BOOT ORGANISM, LOAD SUBSYSTEMS, WIRE, PREWARM
 // ============================================================================
 export function createBinaryMeshEnvironment({
@@ -366,7 +415,7 @@ export function createBinaryMeshEnvironment({
   trace = false,
   maxBitsLength = 64,
   defaultBand = "binary",
-  defaultPresenceTag = "BinaryMesh-v16"
+  defaultPresenceTag = "BinaryMesh-v24"
 } = {}) {
 
   const log   = context.log   || safeLog(globalThis?.log, console?.log);
@@ -501,20 +550,20 @@ export function createBinaryMeshEnvironment({
   // 4) PREWARM
   // -------------------------------------------------------
   function prewarm() {
-    log("[BinaryMesh v16] Prewarm start");
+    log("[BinaryMesh v24] Prewarm start");
 
     for (const [name, system] of Object.entries(ALL_SYSTEMS)) {
       if (system && typeof system.prewarm === "function") {
         try {
           system.prewarm();
-          log("[BinaryMesh v16] Prewarmed system", { name });
+          log("[BinaryMesh v24] Prewarmed system", { name });
         } catch (e) {
-          warn("[BinaryMesh v16] Prewarm failed", { name, error: e?.message });
+          warn("[BinaryMesh v24] Prewarm failed", { name, error: e?.message });
         }
       }
     }
 
-    log("[BinaryMesh v16] Prewarm complete");
+    log("[BinaryMesh v24] Prewarm complete");
   }
 
   // -------------------------------------------------------

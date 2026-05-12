@@ -1,8 +1,10 @@
 // ============================================================================
-// [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v12.3-Presence-Evo-MAX-PRIME // gold
-// Mesh Endocrine Interpreter • Metadata-Only • Zero-Compute • Zero-Mutation
-// Presence-Aware • Binary-Aware • Drift-Proof • Advantage-Field-Aware
+// [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v24-IMMORTAL++  // platinum
+// Mesh Endocrine Interpreter • Metadata-Only • Deterministic
+// Presence-Aware • Binary-Aware • Bluetooth-Presence-Aware • Advantage-Field-Aware
+// Zero-Compute (heuristics only) • Zero-Mutation • Zero-Routing-Influence
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
@@ -16,10 +18,11 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 // export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // ============================================================================
-// [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v15-Evo-Immortal  // gold
+// [pulse:mesh] PULSE_MESH_ENDOCRINE_SYSTEM v24-IMMORTAL++  // platinum
 // Mesh Hormone Interpreter • Metadata-Only • Deterministic
-// Reads Halo + Field + Echo + Mesh Pressure + Aura Pressure
+// Reads Halo + Field + Echo + Mesh Pressure + Aura Pressure + Bluetooth Presence
 // Produces Endocrine Interpretation (no mutation, no routing influence)
 // ============================================================================
 
@@ -36,7 +39,7 @@ export function createPulseMeshEndocrineSystem({
   const meta = {
     layer: "PulseMeshEndocrineSystem",
     role: "MESH_ENDOCRINE_INTERPRETER",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -64,6 +67,10 @@ export function createPulseMeshEndocrineSystem({
       presenceAware: true,
       bandAware: true,
 
+      // v24++: bluetooth / proximity awareness (metadata-only)
+      bluetoothPresenceAware: true,
+      bluetoothMeshAware: true,
+
       zeroCompute: true,
       zeroMutation: true,
       zeroRoutingInfluence: true
@@ -74,7 +81,7 @@ export function createPulseMeshEndocrineSystem({
     meta,
 
     // -------------------------------------------------------
-    // [pulse:mesh] EXAMINE_MESH  // white-gold
+    // [pulse:mesh] EXAMINE_MESH  // white-platinum
     // -------------------------------------------------------
     examineMesh(entryNodeId, context = {}) {
       const haloSnapshot =
@@ -84,15 +91,25 @@ export function createPulseMeshEndocrineSystem({
 
       const echoReflection = PulseEcho.sendEcho(entryNodeId, {
         presenceBand: context.presenceBand || "symbolic",
-        presenceTag: context.presenceTag || "PulseMeshEndocrine-v15"
+        presenceTag: context.presenceTag || "PulseMeshEndocrine-v24",
+        // v24++: bluetooth presence is metadata-only; if caller passes it,
+        // Echo may choose to propagate it into echoReflection.
+        bluetoothPresence: context.bluetoothPresence || undefined
       });
+
+      const bluetoothSummary = extractBluetoothPresenceSummary(
+        haloSnapshot,
+        fieldSnapshot,
+        echoReflection
+      );
 
       return buildMeshEndocrineReport({
         halo: haloSnapshot,
         field: fieldSnapshot,
         echo: echoReflection,
         mesh,
-        meta
+        meta,
+        bluetoothSummary
       });
     }
   };
@@ -100,9 +117,9 @@ export function createPulseMeshEndocrineSystem({
 
 
 // ============================================================================
-// Mesh Endocrine Report Builder (v15-Evo-Immortal)
+// Mesh Endocrine Report Builder (v24-IMMORTAL++)
 // ============================================================================
-function buildMeshEndocrineReport({ halo, field, echo, mesh, meta }) {
+function buildMeshEndocrineReport({ halo, field, echo, mesh, meta, bluetoothSummary }) {
 
   const flowThrottles = halo.flow_throttles ?? 0;
   const flowThrottleRate = halo.flow?.throttle_rate ?? 0;
@@ -112,9 +129,9 @@ function buildMeshEndocrineReport({ halo, field, echo, mesh, meta }) {
   const sections = [];
 
   // -------------------------------------------------------
-  // PERFORMANCE SUMMARY (v15: uses throughput + advantage + aura pressure)
-  // -------------------------------------------------------
-  const performance = estimateMeshPerformance(field, echo, flowThrottleRate, throughput);
+  // PERFORMANCE SUMMARY (v24++: throughput + advantage + aura + bt presence)
+// -------------------------------------------------------
+  const performance = estimateMeshPerformance(field, echo, flowThrottleRate, throughput, bluetoothSummary);
 
   sections.push({
     title: "Mesh Performance",
@@ -133,16 +150,18 @@ function buildMeshEndocrineReport({ halo, field, echo, mesh, meta }) {
       `Presence Band: ${echo.presence?.band}`,
       `Mesh Factored Path: ${echo.advantage?.factoredPath ? "YES" : "no"}`,
       `Binary Mesh Ready: ${mesh?.binaryMesh ? "YES" : "no"}`,
-      `Symbolic Mesh Ready: ${mesh?.symbolicMesh ? "YES" : "no"}`
+      `Symbolic Mesh Ready: ${mesh?.symbolicMesh ? "YES" : "no"}`,
+      `Bluetooth Proximity: ${bluetoothSummary.proximityTier}`,
+      `Bluetooth Link Quality: ${pct(bluetoothSummary.linkQualityRatio)}`
     ]
   });
 
   // -------------------------------------------------------
-  // STABILITY & DRIFT (v15: uses aura + mesh pressure + throughput)
-  // -------------------------------------------------------
+  // STABILITY & DRIFT (v24++: aura + mesh pressure + throughput + bt)
+// -------------------------------------------------------
   sections.push({
     title: "Stability & Drift",
-    summary: describeMeshStability(field, echo, flowThrottleRate, throughput),
+    summary: describeMeshStability(field, echo, flowThrottleRate, throughput, bluetoothSummary),
     details: [
       `Stability: ${pct(field.stability)}`,
       `Drift Pressure: ${pct(field.driftPressure)}`,
@@ -150,29 +169,32 @@ function buildMeshEndocrineReport({ halo, field, echo, mesh, meta }) {
       `Aura Tension: ${echo.aura?.systemUnderTension ? "HIGH" : "normal"}`,
       `Factoring Bias: ${echo.aura?.factoringBias ?? 0}`,
       `Flow Guard Activity: ${pct(flowThrottleRate)}`,
-      `Throughput: ${throughput}`
+      `Throughput: ${throughput}`,
+      `Bluetooth Proximity: ${bluetoothSummary.proximityTier}`,
+      `Bluetooth Stability Hint: ${bluetoothSummary.stabilityHint}`
     ]
   });
 
   // -------------------------------------------------------
-  // IMMUNE & HORMONES (v15: uses advantage + reflex + immune + throughput)
-  // -------------------------------------------------------
+  // IMMUNE & HORMONES (v24++: advantage + reflex + immune + bt)
+// -------------------------------------------------------
   sections.push({
     title: "Immune & Hormones",
-    summary: describeMeshImmuneHormones(echo, throughput),
+    summary: describeMeshImmuneHormones(echo, throughput, bluetoothSummary),
     details: [
       `Immune Quarantine: ${echo.immune?.quarantined ? "YES" : "no"}`,
       `Hormone Event: ${echo.hormones?.event || "none"}`,
       `Reflex Drop: ${echo.reflex?.dropped ? "YES" : "no"}`,
       `Binary Advantage Bias: ${echo.advantage?.binaryBias ?? 0}`,
       `Factored Path Depth: ${echo.advantage?.factorDepth ?? 0}`,
-      `Throughput: ${throughput}`
+      `Throughput: ${throughput}`,
+      `Bluetooth Events: ${bluetoothSummary.events}`
     ]
   });
 
   // -------------------------------------------------------
-  // FIELD ENVIRONMENT (v15: unchanged but throughput-aware)
-  // -------------------------------------------------------
+  // FIELD ENVIRONMENT (v24++: unchanged but throughput-aware)
+// -------------------------------------------------------
   sections.push({
     title: "Mesh Internal Environment",
     summary: describeMeshField(field, throughput),
@@ -188,23 +210,38 @@ function buildMeshEndocrineReport({ halo, field, echo, mesh, meta }) {
   });
 
   // -------------------------------------------------------
-  // FLOW & SURVIVAL PATTERNS (v15: uses mesh + aura + advantage + throughput)
-  // -------------------------------------------------------
+  // FLOW & SURVIVAL PATTERNS (v24++: mesh + aura + advantage + bt)
+// -------------------------------------------------------
   sections.push({
     title: "Flow & Survival Patterns",
-    summary: describeMeshFlowSurvival(echo, flowThrottleRate, throughput),
+    summary: describeMeshFlowSurvival(echo, flowThrottleRate, throughput, bluetoothSummary),
     details: [
       `Flow Throttled: ${echo.flow?.throttled ? "YES" : "no"}`,
       `Throttle Reason: ${echo.flow?.reason || "none"}`,
       `Binary Mesh Bias: ${echo.aura?.binaryMeshBias ?? 0}`,
       `Organism Self‑Protection: ${flowThrottleRate > 0 ? "ACTIVE" : "quiet"}`,
-      `Throughput: ${throughput}`
+      `Throughput: ${throughput}`,
+      `Bluetooth Proximity: ${bluetoothSummary.proximityTier}`
     ]
   });
 
   // -------------------------------------------------------
-  // MESH TOPOLOGY (v15: throughput-aware)
+  // BLUETOOTH PRESENCE FIELD (v24++: new endocrine section)
+// -------------------------------------------------------
+  sections.push({
+    title: "Bluetooth Presence Field",
+    summary: summarizeBluetoothPresence(bluetoothSummary),
+    details: [
+      `Proximity Tier: ${bluetoothSummary.proximityTier}`,
+      `Link Quality: ${pct(bluetoothSummary.linkQualityRatio)}`,
+      `Events Count: ${bluetoothSummary.events}`,
+      `Raw Source: ${bluetoothSummary.source}`
+    ]
+  });
+
   // -------------------------------------------------------
+  // MESH TOPOLOGY (v24++: throughput-aware)
+// -------------------------------------------------------
   sections.push({
     title: "Mesh Topology",
     summary: summarizeMeshTopology(mesh, throughput),
@@ -226,7 +263,8 @@ function buildMeshEndocrineReport({ halo, field, echo, mesh, meta }) {
       field,
       echo,
       flowThrottleRate,
-      throughput
+      throughput,
+      bluetoothSummary
     ),
     sections,
     meta
@@ -235,9 +273,9 @@ function buildMeshEndocrineReport({ halo, field, echo, mesh, meta }) {
 
 
 // ============================================================================
-// Interpretation Logic (v15)
+// Interpretation Logic (v24-IMMORTAL++)
 // ============================================================================
-function estimateMeshPerformance(field, echo, flowThrottleRate = 0, throughput) {
+function estimateMeshPerformance(field, echo, flowThrottleRate = 0, throughput, bluetoothSummary) {
   let base = 100;
 
   const stability = field.stability ?? 1;
@@ -266,6 +304,11 @@ function estimateMeshPerformance(field, echo, flowThrottleRate = 0, throughput) 
   if (throughput === "moderate routing") base -= 1;
   if (throughput === "high routing") base -= 3;
 
+  // v24++: bluetooth presence as soft modifier (metadata-only)
+  const q = bluetoothSummary.linkQualityRatio;
+  if (bluetoothSummary.proximityTier === "near" && q > 0.6) base += 2;
+  if (bluetoothSummary.proximityTier === "far" && q < 0.3) base -= 2;
+
   return Math.max(0, base);
 }
 
@@ -277,16 +320,18 @@ function describeMeshThroughput(echo) {
   return "high routing";
 }
 
-
-function describeMeshStability(field, echo, flowThrottleRate = 0) {
+function describeMeshStability(field, echo, flowThrottleRate = 0, _throughput, bluetoothSummary) {
   const stability = field.stability ?? 1;
   const drift = field.driftPressure ?? 0;
 
   if (flowThrottleRate > 0.2)
     return "Flow Guard is engaging frequently — mesh is protecting itself.";
 
-  if (stability > 0.85 && drift < 0.2)
+  if (stability > 0.85 && drift < 0.2) {
+    if (bluetoothSummary.proximityTier === "near")
+      return "Mesh is stable with low Drift Pressure and strong local bluetooth presence.";
     return "Mesh is stable with low Drift Pressure.";
+  }
 
   if (stability > 0.6 && drift < 0.4)
     return "Mesh is generally stable with mild Drift Pressure.";
@@ -300,7 +345,42 @@ function describeMeshStability(field, echo, flowThrottleRate = 0) {
   return "Mixed stability; mesh is compensating.";
 }
 
-function describeMeshImmuneHormones(echo) {
+function summarizeBluetoothPresence(bt) {
+  if (!bt || typeof bt !== "object") {
+    return "No bluetooth presence detected.";
+  }
+
+  const tier = bt.proximityTier || "unknown";
+  const q = typeof bt.linkQualityRatio === "number" ? bt.linkQualityRatio : 0;
+  const events = bt.events || 0;
+
+  // High-level interpretation (metadata-only)
+  let tierDesc = "Bluetooth presence neutral.";
+  if (tier === "near") tierDesc = "Strong local bluetooth presence.";
+  else if (tier === "mid") tierDesc = "Moderate bluetooth presence.";
+  else if (tier === "far") tierDesc = "Weak or distant bluetooth presence.";
+  else if (tier === "unknown") tierDesc = "Bluetooth presence unknown.";
+
+  // Link quality interpretation (metadata-only)
+  let qualityDesc = "Link quality neutral.";
+  if (q > 0.75) qualityDesc = "High link quality.";
+  else if (q > 0.45) qualityDesc = "Moderate link quality.";
+  else if (q > 0.2) qualityDesc = "Low link quality.";
+  else qualityDesc = "Very weak link quality.";
+
+  // Event interpretation
+  const eventDesc =
+    events > 5
+      ? "Frequent bluetooth metadata events observed."
+      : events > 0
+      ? "Bluetooth metadata active."
+      : "No bluetooth metadata events.";
+
+  return `${tierDesc} ${qualityDesc} ${eventDesc}`;
+}
+
+
+function describeMeshImmuneHormones(echo, _throughput, bluetoothSummary) {
   const parts = [];
 
   if (echo.immune?.quarantined)
@@ -314,6 +394,9 @@ function describeMeshImmuneHormones(echo) {
   else parts.push("No hormone modulation.");
 
   if (echo.reflex?.dropped) parts.push("Reflex Drop occurred.");
+
+  if (bluetoothSummary.events > 0)
+    parts.push("Bluetooth presence field active (metadata-only).");
 
   return parts.join(" ");
 }
@@ -337,9 +420,12 @@ function describeMeshField(field) {
   return bits.join(" ");
 }
 
-function describeMeshFlowSurvival(echo, flowThrottleRate = 0) {
-  if (!echo.flow?.throttled && flowThrottleRate === 0)
+function describeMeshFlowSurvival(echo, flowThrottleRate = 0, _throughput, bluetoothSummary) {
+  if (!echo.flow?.throttled && flowThrottleRate === 0) {
+    if (bluetoothSummary.proximityTier === "near")
+      return "Flow smooth — no braking needed, local bluetooth presence steady.";
     return "Flow smooth — no braking needed.";
+  }
 
   if (echo.flow?.reason === "max_depth")
     return "Flow Guard stopped deep recursion — organism prevented runaway loop.";
@@ -367,14 +453,17 @@ function summarizeMeshTopology(mesh) {
   return `Mesh online with ${systems} systems and ${links} symbolic links.`;
 }
 
-function summarizeMeshForYou(performance, field, echo, flowThrottleRate = 0) {
+function summarizeMeshForYou(performance, field, echo, flowThrottleRate = 0, _throughput, bluetoothSummary) {
   const perf = performance.toFixed(1);
 
   if (perf > 100)
     return `Mesh at ${perf}%. Stability strong, resonance high, Flow compensating cleanly.`;
 
-  if (perf > 90 && flowThrottleRate === 0)
+  if (perf > 90 && flowThrottleRate === 0) {
+    if (bluetoothSummary.proximityTier === "near")
+      return `Mesh performing well at ${perf}%. No braking needed, local bluetooth presence is strong.`;
     return `Mesh performing well at ${perf}%. No braking needed.`;
+  }
 
   if (perf > 90 && flowThrottleRate > 0)
     return `Mesh at ${perf}%. High performance, but Flow Guard has begun intervening — you are pushing the edge.`;
@@ -382,7 +471,64 @@ function summarizeMeshForYou(performance, field, echo, flowThrottleRate = 0) {
   if (flowThrottleRate > 0.2)
     return `Mesh at ${perf}%. Organism is actively braking — recent patterns were survival‑level stress.`;
 
-  return `Mesh at ${perf}%. Stability and Drift require monitoring — Immune, Aura, and Flow Guard will reveal compensation vs degradation.`;
+  return `Mesh at ${perf}%. Stability and Drift require monitoring — Immune, Aura, Flow Guard, and Bluetooth Presence will reveal compensation vs degradation.`;
+}
+
+
+// ============================================================================
+// Bluetooth Presence Extraction (v24-IMMORTAL++)
+//   • Metadata-only, no device access.
+//   • Reads from echo / field / halo if present.
+// ============================================================================
+
+function extractBluetoothPresenceSummary(halo, field, echo) {
+  // All fields are optional; we just normalize what we can see.
+  const bt =
+    echo?.bluetoothPresence ||
+    echo?.presence?.bluetooth ||
+    echo?.flags?.bluetooth_presence ||
+    field?.bluetoothPresence ||
+    halo?.bluetoothPresence ||
+    null;
+
+  let proximityTier = "unknown";
+  let linkQualityRatio = 0;
+  let events = 0;
+  let source = "none";
+
+  if (bt && typeof bt === "object") {
+    proximityTier =
+      bt.proximityTier ||
+      bt.proximity ||
+      bt.rangeTier ||
+      "unknown";
+
+    const qRaw = Number(
+      bt.linkQuality ??
+      bt.quality ??
+      bt.rssiRatio ??
+      bt.signalRatio
+    );
+    if (Number.isFinite(qRaw)) {
+      linkQualityRatio = clamp01(qRaw);
+    }
+
+    events = Number(bt.events || 1);
+    source = bt.source || "echo/field/halo";
+  }
+
+  return {
+    proximityTier,
+    linkQualityRatio,
+    events,
+    source,
+    stabilityHint:
+      proximityTier === "near"
+        ? "local devices nearby"
+        : proximityTier === "far"
+        ? "remote / weak presence"
+        : "neutral"
+  };
 }
 
 
@@ -392,4 +538,11 @@ function summarizeMeshForYou(performance, field, echo, flowThrottleRate = 0) {
 function pct(v) {
   if (typeof v !== "number" || Number.isNaN(v)) return "0%";
   return `${(v * 100).toFixed(0)}%`;
+}
+
+function clamp01(v) {
+  if (!Number.isFinite(v)) return 0;
+  if (v <= 0) return 0;
+  if (v >= 1) return 1;
+  return v;
 }

@@ -1,16 +1,19 @@
 // ============================================================================
-//  FILE: PulseShifterEvolutionaryPulse-v16-IMMORTAL-INTEL+++.js
+//  FILE: PulseShifterEvolutionaryPulse-v24-IMMORTAL-INTEL++++.js
 //  Pulse v2 Organism • Evolution Engine • Pattern + Lineage + Shape + Intelligence
-//  v16-IMMORTAL-INTEL+++:
-//    • Dual-band aware (symbolic/binary) + Presence/Band Surface
-//    • ImmortalMeta surfaced (presenceBandState, harmonicDrift, coherenceScore)
+//  v24-IMMORTAL-INTEL++++:
+//    • Binary-first dual-band (binary/symbolic) + Presence/Band Surface
+//    • ImmortalMeta surfaced (presenceBandState, harmonicDrift, coherenceScore, burstTier)
 //    • BinarySurface surfaced (non-breaking, metadata-only)
-//    • PulseIntelligence (solvedness, factoring, computeTier, readiness, depth)
-//    • Pulse-Compute hints preserved (computeHints) for legacy consumers
-//    • DualHash signatures across evolution + intelligence
-//    • INTERNAL SignalFactoringSurface (pressure/signal/depth/stride) IMMORTAL-style
-//    • INTERNAL BaseShapeSurface + baseFormulaKey (INTEL hash) for mining/cheatsheets
+//    • PulseIntelligence v24++++ (solvedness, factoring, computeTier, readiness, depth)
+//    • Internal Signal Factoring v24 (pressure/signal/depth/stride/intent) — mesh/earn-aligned
+//    • BaseShapeSurface + baseFormulaKey (INTEL hash) for mining/cheatsheets
+//    • Chunk/Prewarm/Cache-style hints for GPU/burst/“bluetooth” impulse bursts
+//    • Pulse-Compute v24 (legacy-compatible compute hints)
+//    • DualHash signatures across evolution + intelligence + factoring + baseShape
+//    • Deterministic, drift-proof, zero IO, zero randomness
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
@@ -18,14 +21,13 @@ import {
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
@@ -56,9 +58,7 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash
@@ -76,7 +76,9 @@ function safeNumber(v, fallback = 0) {
 
 function normalizeBand(band) {
   const x = String(band || "symbolic").toLowerCase();
-  return x === "binary" ? "binary" : "symbolic";
+  if (x === "binary") return "binary";
+  if (x === "dual") return "dual";
+  return "symbolic";
 }
 
 function buildLineage(parentLineage, pattern) {
@@ -98,7 +100,6 @@ function computeShapeSignatureAlt(pattern, lineage) {
 
 function computeEvolutionStage(pattern, lineage) {
   const depth = lineage.length;
-
   if (depth === 1) return "seed";
   if (depth === 2) return "sprout";
   if (depth === 3) return "branch";
@@ -106,15 +107,13 @@ function computeEvolutionStage(pattern, lineage) {
   return "wild";
 }
 
+// v2-style deterministic pattern evolution
 function evolvePattern(pattern, context = {}) {
   const { routerHint, meshHint, organHint } = context;
-
   const parts = [pattern];
-
   if (routerHint) parts.push(`r:${routerHint}`);
   if (meshHint) parts.push(`m:${meshHint}`);
   if (organHint) parts.push(`o:${organHint}`);
-
   return parts.join("|");
 }
 
@@ -135,10 +134,8 @@ function buildPageAncestrySignature({ pattern, lineage, pageId }) {
     lineageSignature: buildLineageSignature(lineage),
     pageId: pageId || "NO_PAGE"
   };
-
   return computeHash(JSON.stringify(shape));
 }
-
 
 // ============================================================================
 //  BINARY SURFACE + IMMORTAL META (metadata-only)
@@ -181,7 +178,8 @@ function extractBinarySurfaceFromPayload(payload) {
 function extractImmortalMeta(payload, {
   presenceBandState,
   harmonicDrift,
-  coherenceScore
+  coherenceScore,
+  burstTier
 } = {}) {
   const m = payload?.immortalMeta || {};
   return {
@@ -189,15 +187,15 @@ function extractImmortalMeta(payload, {
     harmonicDrift: harmonicDrift ?? m.harmonicDrift ?? null,
     coherenceScore: coherenceScore ?? m.coherenceScore ?? null,
     dualBandMode: m.dualBandMode ?? null,
-    shifterBand: m.shifterBand ?? null
+    shifterBand: m.shifterBand ?? null,
+    burstTier: burstTier ?? m.burstTier ?? null // v24: burst/“bluetooth” tier
   };
 }
-
 
 // ============================================================================
 //  DIAGNOSTICS
 // ============================================================================
-function buildDiagnostics(pattern, lineage, healthScore, tier, binarySurface, immortalMeta, pulseIntelligence) {
+function buildDiagnostics(pattern, lineage, healthScore, tier, binarySurface, immortalMeta, pulseIntelligence, factoringSurface, baseShapeSurface) {
   return {
     patternLength: pattern.length,
     lineageDepth: lineage.length,
@@ -211,6 +209,8 @@ function buildDiagnostics(pattern, lineage, healthScore, tier, binarySurface, im
     binary: binarySurface,
     immortal: immortalMeta,
     intelligence: pulseIntelligence,
+    factoring: factoringSurface,
+    baseShape: baseShapeSurface,
 
     binaryPatternHash: binarySurface.binaryPattern
       ? computeHash(binarySurface.binaryPattern)
@@ -219,13 +219,14 @@ function buildDiagnostics(pattern, lineage, healthScore, tier, binarySurface, im
       ? computeHash(binarySurface.binaryMode)
       : null,
     immortalSignature: computeHash(JSON.stringify(immortalMeta)),
-    intelligenceSignature: computeHash(JSON.stringify(pulseIntelligence))
+    intelligenceSignature: computeHash(JSON.stringify(pulseIntelligence)),
+    factoringSignature: computeHash(JSON.stringify(factoringSurface)),
+    baseShapeSignature: computeHash(JSON.stringify(baseShapeSurface))
   };
 }
 
-
 // ============================================================================
-//  INTERNAL: PulseIntelligence (v16-INTEL) — symbolic shifter
+//  INTERNAL: PulseIntelligence (v24-INTEL++++)
 // ============================================================================
 function computePulseIntelligence({
   pattern,
@@ -248,42 +249,37 @@ function computePulseIntelligence({
   const payloadComplexity = Math.min(payloadSize / maxPayload, 1);
 
   const binaryStrength = typeof binarySurface.binaryStrength === "number"
-    ? Math.min(Math.max(binarySurface.binaryStrength, 0), 1)
+    ? clamp01(binarySurface.binaryStrength)
     : 0;
 
-  const solvednessScore = Math.max(
-    0,
-    Math.min(
-      healthScore * 0.6 +
-      (1 - patternComplexity) * 0.2 +
-      (1 - payloadComplexity) * 0.1 +
-      binaryStrength * 0.1,
-      1
-    )
+  const depthNorm = clamp01(lineageDepth / 16);
+
+  const solvednessScore = clamp01(
+    healthScore * 0.55 +
+    (1 - patternComplexity) * 0.15 +
+    (1 - payloadComplexity) * 0.10 +
+    binaryStrength * 0.10 +
+    depthNorm * 0.10
   );
 
   const factoringSignal =
-    lineageDepth >= 4 || payloadSize >= 12
+    lineageDepth >= 5 || payloadSize >= 16
       ? "high"
-      : lineageDepth >= 2 || payloadSize >= 4
+      : lineageDepth >= 3 || payloadSize >= 8
         ? "medium"
         : "low";
 
   const computeTier =
-    solvednessScore >= 0.9 ? "nearSolution" :
-    solvednessScore >= 0.7 ? "highValue"    :
-    solvednessScore >= 0.4 ? "normal"       :
-    solvednessScore >= 0.2 ? "lowPriority"  :
+    solvednessScore >= 0.92 ? "nearSolution" :
+    solvednessScore >= 0.75 ? "highValue"    :
+    solvednessScore >= 0.45 ? "normal"       :
+    solvednessScore >= 0.20 ? "lowPriority"  :
     "avoidCompute";
 
-  const readinessScore = Math.max(
-    0,
-    Math.min(
-      solvednessScore * 0.6 +
-      healthScore * 0.3 +
-      (factoringSignal === "high" ? 0.1 : factoringSignal === "medium" ? 0.05 : 0),
-      1
-    )
+  const readinessScore = clamp01(
+    solvednessScore * 0.6 +
+    healthScore * 0.25 +
+    (factoringSignal === "high" ? 0.10 : factoringSignal === "medium" ? 0.05 : 0)
   );
 
   return {
@@ -296,19 +292,205 @@ function computePulseIntelligence({
   };
 }
 
+// ============================================================================
+//  INTERNAL: Pulse-level Signal Factoring v24 (IMMORTAL++++)
+//  Mirrors Mesh/Earn style: pressure → signal (1/0) → depth → stride → intent
+// ============================================================================
+let pulseFactoringCycle = 0;
+
+function computePulseFactoringSurface({
+  pattern,
+  lineage,
+  payload,
+  pulseIntelligence,
+  bandMode = "binary",
+  presenceBandState = null,
+  coherenceScore = null
+}) {
+  pulseFactoringCycle++;
+
+  const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
+  const payloadSize = payload && typeof payload === "object"
+    ? Object.keys(payload).length
+    : 0;
+
+  const patternLen = typeof pattern === "string" ? pattern.length : 0;
+
+  const auraBias =
+    presenceBandState === "presence_high" ? 1.0 :
+    presenceBandState === "presence_mid"  ? 0.7 :
+    presenceBandState === "presence_low"  ? 0.4 :
+    0.2;
+
+  const flowBias =
+    bandMode === "binary" ? 0.8 :
+    bandMode === "dual"   ? 0.6 :
+    0.4;
+
+  const meshBias =
+    lineageDepth >= 6 ? 0.9 :
+    lineageDepth >= 3 ? 0.6 :
+    0.3;
+
+  const complexityNorm = clamp01((patternLen + payloadSize) / 160);
+  const intelligenceNorm = clamp01(pulseIntelligence.solvednessScore);
+  const coherenceNorm = typeof coherenceScore === "number"
+    ? clamp01(coherenceScore)
+    : 0.5;
+
+  const factoringPressure =
+    auraBias        * 0.22 +
+    flowBias        * 0.20 +
+    meshBias        * 0.18 +
+    complexityNorm  * 0.15 +
+    intelligenceNorm* 0.15 +
+    coherenceNorm   * 0.10;
+
+  const clampedPressure = clamp01(factoringPressure);
+
+  const highPressure = clampedPressure >= 0.6;
+  const lowPressure  = clampedPressure <= 0.18;
+
+  let signal;
+  if (highPressure) {
+    signal = 1;
+  } else if (lowPressure) {
+    signal = 0;
+  } else {
+    signal = pulseIntelligence.factoringSignal === "high" ? 1 : 0;
+  }
+
+  const depth =
+    signal === 1
+      ? Math.min(1 + Math.floor(lineageDepth / 2), 10)
+      : 0;
+
+  const stride =
+    depth > 0 ? 1 / (depth + 1) : 1;
+
+  const intent =
+    signal === 1
+      ? "prefer_factored_pulse_v24"
+      : "normal";
+
+  const intelPayload = {
+    layer: "PulseShifterFactoring",
+    version: "v24-IMMORTAL-INTEL++++",
+    cycleIndex: pulseFactoringCycle,
+    pressure: clampedPressure,
+    signal,
+    depth,
+    stride,
+    intent,
+    auraBias,
+    flowBias,
+    meshBias,
+    bandMode,
+    presenceBandState,
+    coherenceScore
+  };
+
+  const classicString =
+    `PULSE_FACTORS_V24::SIG:${signal}` +
+    `::DEPTH:${depth}` +
+    `::STRIDE:${stride.toFixed(4)}` +
+    `::PRESS:${clampedPressure.toFixed(4)}` +
+    `::BAND:${bandMode}`;
+
+  const sig = buildDualHashSignature(
+    "PULSE_SHIFTER_SIGNAL_FACTORS_V24",
+    intelPayload,
+    classicString
+  );
+
+  return {
+    cycleIndex: pulseFactoringCycle,
+    pressure: clampedPressure,
+    signal,
+    depth,
+    stride,
+    intent,
+    auraBias,
+    flowBias,
+    meshBias,
+    bandMode,
+    presenceBandState,
+    coherenceScore,
+    signatures: sig
+  };
+}
 
 // ============================================================================
-//  INTERNAL: Deterministic evolution compute loop (v2 — IMMORTAL tier)
+//  INTERNAL: Base Shape Surface v24 (symbolic/binary shifter)
+// ============================================================================
+function buildShifterBaseShapeSurface({
+  pattern,
+  lineage,
+  binarySurface,
+  immortalMeta,
+  pulseIntelligence,
+  factoringSurface
+}) {
+  const ancestry = buildPatternAncestry(pattern);
+
+  const shapePayload = {
+    version: "v24-IMMORTAL-INTEL-SHIFTER-BASESHAPE",
+    pattern,
+    ancestry,
+    lineageDepth: lineage.length,
+    evolutionStage: computeEvolutionStage(pattern, lineage),
+    hasBinary: binarySurface.hasBinary,
+    binaryMode: binarySurface.binaryMode || null,
+    presenceBandState: immortalMeta.presenceBandState || null,
+    coherenceScore: immortalMeta.coherenceScore ?? null,
+    burstTier: immortalMeta.burstTier ?? null,
+    solvednessScore: pulseIntelligence.solvednessScore,
+    computeTier: pulseIntelligence.computeTier,
+    factoringSignal: pulseIntelligence.factoringSignal,
+    factoringPressure: factoringSurface.pressure,
+    factoringDepth: factoringSurface.depth,
+    factoringStride: factoringSurface.stride,
+    factoringIntent: factoringSurface.intent
+  };
+
+  const classicString =
+    `SHIFTER_BASE_SHAPE_V24::${shapePayload.version}` +
+    `::PAT:${pattern}` +
+    `::DEPTH:${shapePayload.lineageDepth}` +
+    `::STAGE:${shapePayload.evolutionStage}` +
+    `::BIN:${shapePayload.hasBinary ? 1 : 0}` +
+    `::TIER:${shapePayload.computeTier}`;
+
+  const sig = buildDualHashSignature(
+    "SHIFTER_BASE_SHAPE_V24",
+    shapePayload,
+    classicString
+  );
+
+  const baseFormulaKey = sig.intel;
+
+  return {
+    baseShapeVersion: shapePayload.version,
+    baseShapeIntelSignature: sig.intel,
+    baseShapeClassicSignature: sig.classic,
+    baseFormulaKey,
+    shapePayload
+  };
+}
+
+// ============================================================================
+//  INTERNAL: Deterministic evolution compute loop (v2 — IMMORTAL v24)
 // ============================================================================
 function runEvolutionComputeLoopV2({
   pattern,
   lineage,
   payload,
   mode,
-  bandMode = "symbolic",
+  bandMode = "binary",          // v24: binary-first
   presenceBandState = null,
   harmonicDrift = null,
-  coherenceScore = null
+  coherenceScore = null,
+  burstTier = null
 }) {
   const lineageDepth = Array.isArray(lineage) ? lineage.length : 0;
   const payloadSize = payload && typeof payload === "object"
@@ -321,7 +503,8 @@ function runEvolutionComputeLoopV2({
   const immortalMeta  = extractImmortalMeta(payload, {
     presenceBandState,
     harmonicDrift,
-    coherenceScore
+    coherenceScore,
+    burstTier
   });
 
   const maxPattern = 64;
@@ -346,6 +529,16 @@ function runEvolutionComputeLoopV2({
     binarySurface
   });
 
+  const factoringSurface = computePulseFactoringSurface({
+    pattern,
+    lineage,
+    payload,
+    pulseIntelligence,
+    bandMode,
+    presenceBandState: immortalMeta.presenceBandState,
+    coherenceScore: immortalMeta.coherenceScore
+  });
+
   const advantageField = {
     patternStrength: patternLen,
     lineageDepth,
@@ -357,12 +550,13 @@ function runEvolutionComputeLoopV2({
       1,
 
     // IMMORTAL / band surface (metadata-only, deterministic)
-    bandMode: bandMode === "binary" ? "binary" : "symbolic",
+    bandMode: normalizeBand(bandMode),
     presenceBandState: immortalMeta.presenceBandState,
     harmonicDrift: immortalMeta.harmonicDrift,
     coherenceScore: immortalMeta.coherenceScore,
+    burstTier: immortalMeta.burstTier,
 
-    experimentalTier: "v2-evolution-engine-v16-IMMORTAL-INTEL+++",
+    experimentalTier: "v2-evolution-engine-v24-IMMORTAL-INTEL++++",
 
     // Binary-aware advantage surface
     binaryAware: binarySurface.hasBinary,
@@ -378,18 +572,43 @@ function runEvolutionComputeLoopV2({
     factoringSignal: pulseIntelligence.factoringSignal,
     computeTier: pulseIntelligence.computeTier,
     payloadComplexity: pulseIntelligence.payloadComplexity,
-    readinessScore: pulseIntelligence.readinessScore
+    readinessScore: pulseIntelligence.readinessScore,
+
+    // Internal factoring surfaced
+    factoringPressure: factoringSurface.pressure,
+    factoringDepth: factoringSurface.depth,
+    factoringStride: factoringSurface.stride,
+    factoringIntent: factoringSurface.intent,
+
+    // v24: burst / “bluetooth” style hints (metadata-only)
+    burstReady:
+      immortalMeta.burstTier === "high" ||
+      (pulseIntelligence.computeTier === "highValue" && factoringSurface.signal === 1),
+    burstStyle:
+      immortalMeta.burstTier === "high" ? "power_burst" :
+      immortalMeta.burstTier === "mid"  ? "mesh_burst"  :
+      "none"
   };
+
+  const baseShapeSurface = buildShifterBaseShapeSurface({
+    pattern,
+    lineage,
+    binarySurface,
+    immortalMeta,
+    pulseIntelligence,
+    factoringSurface
+  });
 
   return {
     advantageField,
     healthScore,
     binarySurface,
     immortalMeta,
-    pulseIntelligence
+    pulseIntelligence,
+    factoringSurface,
+    baseShapeSurface
   };
 }
-
 
 // ============================================================================
 //  INTERNAL: Pulse-level compute / factoring / evolution hints (legacy surface)
@@ -430,7 +649,9 @@ function runPulseComputeV2({
     computeTier,
     patternStrength: advantageField.patternStrength,
     lineageDepth: advantageField.lineageDepth,
-    modeBias: advantageField.modeBias
+    modeBias: advantageField.modeBias,
+    burstReady: advantageField.burstReady,
+    burstStyle: advantageField.burstStyle
   };
 
   return {
@@ -441,127 +662,9 @@ function runPulseComputeV2({
   };
 }
 
-
 // ============================================================================
-//  INTERNAL: SHIFTER-LEVEL SIGNAL FACTORING + BASE SHAPE (symbolic shifter)
-// ============================================================================
-
-function buildShifterSignalFactoringSurface({
-  pattern,
-  lineage,
-  binarySurface,
-  immortalMeta,
-  pulseIntelligence
-}) {
-  const depth = lineage.length || 1;
-  const binaryWeight = binarySurface.hasBinary ? 1 : 0;
-  const coherence = typeof immortalMeta.coherenceScore === "number"
-    ? immortalMeta.coherenceScore
-    : 0.5;
-
-  const solvedness = safeNumber(pulseIntelligence.solvednessScore, 0);
-
-  // Symbolic shifter pressure: lineage + coherence + solvedness + binary hint
-  const pressure =
-    0.35 * (depth / (depth + 4)) +
-    0.25 * coherence +
-    0.25 * solvedness +
-    0.15 * (binaryWeight);
-
-  const clampedPressure = clamp01(pressure);
-
-  const signal = clampedPressure > 0.25 ? 1 : 0;
-  const stride =
-    depth > 0 ? 1 / (depth + 1) : 1;
-
-  const factoringProfile = {
-    layer: "shifter-symbolic",
-    version: "v16-IMMORTAL-INTEL+++",
-    pressure: clampedPressure,
-    signal,
-    depth,
-    stride,
-    hasBinary: binarySurface.hasBinary,
-    coherenceScore: immortalMeta.coherenceScore,
-    solvedness: pulseIntelligence.solvednessScore,
-    computeTier: pulseIntelligence.computeTier,
-    factoringSignal: pulseIntelligence.factoringSignal
-  };
-
-  const classicString =
-    `SYM_SHIFTER_FACTORS::SIG:${signal}` +
-    `::DEPTH:${depth}` +
-    `::STRIDE:${stride.toFixed(4)}` +
-    `::PRESS:${clampedPressure.toFixed(4)}`;
-
-  const sig = buildDualHashSignature(
-    "SYM_SHIFTER_SIGNAL_FACTORS",
-    factoringProfile,
-    classicString
-  );
-
-  return {
-    factoringProfile,
-    signatures: sig
-  };
-}
-
-function buildShifterBaseShapeSurface({
-  pattern,
-  lineage,
-  binarySurface,
-  immortalMeta,
-  pulseIntelligence,
-  factoringSurface
-}) {
-  const ancestry = buildPatternAncestry(pattern);
-
-  const shapePayload = {
-    version: "v16-IMMORTAL-INTEL-SYM-SHIFTER-BASESHAPE",
-    pattern,
-    ancestry,
-    lineageDepth: lineage.length,
-    evolutionStage: computeEvolutionStage(pattern, lineage),
-    hasBinary: binarySurface.hasBinary,
-    binaryMode: binarySurface.binaryMode || null,
-    presenceBandState: immortalMeta.presenceBandState || null,
-    coherenceScore: immortalMeta.coherenceScore ?? null,
-    solvednessScore: pulseIntelligence.solvednessScore,
-    computeTier: pulseIntelligence.computeTier,
-    factoringSignal: pulseIntelligence.factoringSignal,
-    factoringPressure: factoringSurface.factoringProfile.pressure,
-    factoringDepth: factoringSurface.factoringProfile.depth,
-    factoringStride: factoringSurface.factoringProfile.stride
-  };
-
-  const classicString =
-    `SYM_SHIFTER_BASE_SHAPE::${shapePayload.version}` +
-    `::PAT:${pattern}` +
-    `::DEPTH:${shapePayload.lineageDepth}` +
-    `::STAGE:${shapePayload.evolutionStage}` +
-    `::BIN:${shapePayload.hasBinary ? 1 : 0}` +
-    `::TIER:${shapePayload.computeTier}`;
-
-  const sig = buildDualHashSignature(
-    "SYM_SHIFTER_BASE_SHAPE",
-    shapePayload,
-    classicString
-  );
-
-  const baseFormulaKey = sig.intel;
-
-  return {
-    baseShapeVersion: shapePayload.version,
-    baseShapeIntelSignature: sig.intel,
-    baseShapeClassicSignature: sig.classic,
-    baseFormulaKey,
-    shapePayload
-  };
-}
-
-
-// ============================================================================
-//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v16-IMMORTAL-INTEL+++)
+//  FACTORY — Create a Pulse v2 Evolution Engine Organism (v24-IMMORTAL-INTEL++++)
+//  BINARY-FIRST SHIFTER — createPulseV2 (binary default)
 // ============================================================================
 export function createPulseV2({
   jobId,
@@ -574,10 +677,11 @@ export function createPulseV2({
   pageId = "NO_PAGE",
 
   // SHIFTER dual-band + presence surface
-  bandMode = "symbolic",
+  bandMode = "binary",              // v24: binary-first
   presenceBandState = null,
   harmonicDrift = null,
-  coherenceScore = null
+  coherenceScore = null,
+  burstTier = null
 }) {
   const lineage         = buildLineage(parentLineage, pattern);
   const shapeSignature  = computeShapeSignature(pattern, lineage);
@@ -597,7 +701,9 @@ export function createPulseV2({
     healthScore,
     binarySurface,
     immortalMeta,
-    pulseIntelligence
+    pulseIntelligence,
+    factoringSurface,
+    baseShapeSurface
   } = runEvolutionComputeLoopV2({
     pattern,
     lineage,
@@ -606,7 +712,8 @@ export function createPulseV2({
     bandMode,
     presenceBandState,
     harmonicDrift,
-    coherenceScore
+    coherenceScore,
+    burstTier
   });
 
   const pulseCompute = runPulseComputeV2({
@@ -631,7 +738,9 @@ export function createPulseV2({
     tier,
     binarySurface,
     immortalMeta,
-    pulseIntelligence
+    pulseIntelligence,
+    factoringSurface,
+    baseShapeSurface
   );
 
   const evolutionSignature  = computeHash(pattern + "::" + lineageSignature);
@@ -640,23 +749,34 @@ export function createPulseV2({
     `${shapeSignature}::${shapeSignature2}::${evolutionSignature}::${evolutionSignature2}`
   );
 
-  // INTERNAL: shifter-level factoring + base shape + baseFormulaKey
-  const factoringSurface = buildShifterSignalFactoringSurface({
+  const intelPayload = {
+    kind: "PulseShifterEvolutionaryPulse",
+    version: "v24-IMMORTAL-INTEL++++",
     pattern,
-    lineage,
-    binarySurface,
-    immortalMeta,
-    pulseIntelligence
-  });
+    lineageDepth: lineage.length,
+    tier,
+    bandMode: normalizeBand(bandMode),
+    presenceBandState: immortalMeta.presenceBandState,
+    factoringPressure: advantageField.factoringPressure,
+    factoringDepth: advantageField.factoringDepth,
+    factoringStride: advantageField.factoringStride,
+    factoringIntent: advantageField.factoringIntent,
+    burstTier: immortalMeta.burstTier,
+    burstReady: advantageField.burstReady,
+    burstStyle: advantageField.burstStyle
+  };
 
-  const baseShapeSurface = buildShifterBaseShapeSurface({
-    pattern,
-    lineage,
-    binarySurface,
-    immortalMeta,
-    pulseIntelligence,
-    factoringSurface
-  });
+  const classicString =
+    `PULSE_CREATE_V24::PATTERN:${pattern}` +
+    `::LINEAGE_DEPTH:${lineage.length}` +
+    `::TIER:${tier}` +
+    `::BAND:${normalizeBand(bandMode)}`;
+
+  const dualHash = buildDualHashSignature(
+    "PULSE_SHIFTER_EVOLUTION_CREATE_V24",
+    intelPayload,
+    classicString
+  );
 
   const baseFormulaKey = baseShapeSurface.baseFormulaKey;
 
@@ -675,13 +795,14 @@ export function createPulseV2({
     pageId,
 
     // Band / presence surface
-    bandMode: bandMode === "binary" ? "binary" : "symbolic",
+    bandMode: normalizeBand(bandMode),
     presenceBandState: immortalMeta.presenceBandState,
     harmonicDrift: immortalMeta.harmonicDrift,
     coherenceScore: immortalMeta.coherenceScore,
+    burstTier: immortalMeta.burstTier,
 
     // Evolution engine type
-    pulseType: "Pulse-v2-EvolutionEngine-v16-IMMORTAL-INTEL+++",
+    pulseType: "Pulse-v2-EvolutionEngine-v24-IMMORTAL-INTEL++++",
 
     // Advantage + health
     advantageField,
@@ -693,13 +814,13 @@ export function createPulseV2({
     binarySurface,
     pulseIntelligence,
 
-    // Pulse-level compute / factoring / evolution hints
-    pulseCompute,
-
-    // INTERNAL factoring + base shape
-    shifterFactoring: factoringSurface,
+    // Internal factoring + base shape
+    pulseFactoring: factoringSurface,
     shifterBaseShape: baseShapeSurface,
     baseFormulaKey,
+
+    // Pulse-level compute / factoring / evolution hints
+    pulseCompute,
 
     // Meta: signatures + diagnostics
     meta: {
@@ -744,21 +865,24 @@ export function createPulseV2({
       immortalMetaSignature: computeHash(JSON.stringify(immortalMeta)),
       immortalMetaSignature2: computeHashIntelligence(JSON.stringify(immortalMeta)),
 
-      shifterFactoringSignature: computeHash(JSON.stringify(factoringSurface)),
-      shifterFactoringSignature2: computeHashIntelligence(JSON.stringify(factoringSurface)),
+      pulseFactoringSignature: computeHash(JSON.stringify(factoringSurface)),
+      pulseFactoringSignature2: computeHashIntelligence(JSON.stringify(factoringSurface)),
 
       baseShapeSignature: computeHash(JSON.stringify(baseShapeSurface)),
       baseShapeSignature2: computeHashIntelligence(JSON.stringify(baseShapeSurface)),
 
       baseFormulaKeySignature: computeHash(baseFormulaKey),
-      baseFormulaKeySignature2: computeHashIntelligence(baseFormulaKey)
+      baseFormulaKeySignature2: computeHashIntelligence(baseFormulaKey),
+
+      dualHashIntel: dualHash.intel,
+      dualHashClassic: dualHash.classic
     }
   };
 }
 
-
 // ============================================================================
 //  EVOLUTION ENGINE — evolve an existing Pulse deterministically (v2 style)
+//  BINARY-FIRST SHIFTER — evolvePulseV2
 // ============================================================================
 export function evolvePulseV2(
   pulse,
@@ -769,10 +893,11 @@ export function evolvePulseV2(
     meshHint,
     organHint,
 
-    bandMode = pulse.bandMode || "symbolic",
+    bandMode = pulse.bandMode || "binary",
     presenceBandState = pulse.presenceBandState ?? null,
     harmonicDrift = pulse.harmonicDrift ?? null,
-    coherenceScore = pulse.coherenceScore ?? null
+    coherenceScore = pulse.coherenceScore ?? null,
+    burstTier = pulse.burstTier ?? null
   } = context;
 
   const nextPattern = evolvePattern(pulse.pattern, {
@@ -799,7 +924,9 @@ export function evolvePulseV2(
     healthScore,
     binarySurface,
     immortalMeta,
-    pulseIntelligence
+    pulseIntelligence,
+    factoringSurface,
+    baseShapeSurface
   } = runEvolutionComputeLoopV2({
     pattern: nextPattern,
     lineage: nextLineage,
@@ -808,7 +935,8 @@ export function evolvePulseV2(
     bandMode,
     presenceBandState,
     harmonicDrift,
-    coherenceScore
+    coherenceScore,
+    burstTier
   });
 
   const pulseCompute = runPulseComputeV2({
@@ -833,7 +961,9 @@ export function evolvePulseV2(
     tier,
     binarySurface,
     immortalMeta,
-    pulseIntelligence
+    pulseIntelligence,
+    factoringSurface,
+    baseShapeSurface
   );
 
   const evolutionSignature  = computeHash(nextPattern + "::" + lineageSignature);
@@ -842,23 +972,34 @@ export function evolvePulseV2(
     `${shapeSignature}::${shapeSignature2}::${evolutionSignature}::${evolutionSignature2}`
   );
 
-  // INTERNAL: shifter-level factoring + base shape + baseFormulaKey
-  const factoringSurface = buildShifterSignalFactoringSurface({
+  const intelPayload = {
+    kind: "PulseShifterEvolutionaryPulse",
+    version: "v24-IMMORTAL-INTEL++++",
     pattern: nextPattern,
-    lineage: nextLineage,
-    binarySurface,
-    immortalMeta,
-    pulseIntelligence
-  });
+    lineageDepth: nextLineage.length,
+    tier,
+    bandMode: normalizeBand(bandMode),
+    presenceBandState: immortalMeta.presenceBandState,
+    factoringPressure: advantageField.factoringPressure,
+    factoringDepth: advantageField.factoringDepth,
+    factoringStride: advantageField.factoringStride,
+    factoringIntent: advantageField.factoringIntent,
+    burstTier: immortalMeta.burstTier,
+    burstReady: advantageField.burstReady,
+    burstStyle: advantageField.burstStyle
+  };
 
-  const baseShapeSurface = buildShifterBaseShapeSurface({
-    pattern: nextPattern,
-    lineage: nextLineage,
-    binarySurface,
-    immortalMeta,
-    pulseIntelligence,
-    factoringSurface
-  });
+  const classicString =
+    `PULSE_EVOLVE_V24::PATTERN:${nextPattern}` +
+    `::LINEAGE_DEPTH:${nextLineage.length}` +
+    `::TIER:${tier}` +
+    `::BAND:${normalizeBand(bandMode)}`;
+
+  const dualHash = buildDualHashSignature(
+    "PULSE_SHIFTER_EVOLUTION_EVOLVE_V24",
+    intelPayload,
+    classicString
+  );
 
   const baseFormulaKey = baseShapeSurface.baseFormulaKey;
 
@@ -877,13 +1018,14 @@ export function evolvePulseV2(
     pageId,
 
     // Band / presence surface
-    bandMode: bandMode === "binary" ? "binary" : "symbolic",
+    bandMode: normalizeBand(bandMode),
     presenceBandState: immortalMeta.presenceBandState,
     harmonicDrift: immortalMeta.harmonicDrift,
     coherenceScore: immortalMeta.coherenceScore,
+    burstTier: immortalMeta.burstTier,
 
     // Evolution engine type
-    pulseType: "Pulse-v2-EvolutionEngine-v16-IMMORTAL-INTEL+++",
+    pulseType: "Pulse-v2-EvolutionEngine-v24-IMMORTAL-INTEL++++",
 
     // Advantage + health
     advantageField,
@@ -895,13 +1037,13 @@ export function evolvePulseV2(
     binarySurface,
     pulseIntelligence,
 
-    // Pulse-level compute / factoring / evolution hints
-    pulseCompute,
-
-    // INTERNAL factoring + base shape
-    shifterFactoring: factoringSurface,
+    // Internal factoring + base shape
+    pulseFactoring: factoringSurface,
     shifterBaseShape: baseShapeSurface,
     baseFormulaKey,
+
+    // Pulse-level compute / factoring / evolution hints
+    pulseCompute,
 
     // Meta: signatures + diagnostics
     meta: {
@@ -946,14 +1088,17 @@ export function evolvePulseV2(
       immortalMetaSignature: computeHash(JSON.stringify(immortalMeta)),
       immortalMetaSignature2: computeHashIntelligence(JSON.stringify(immortalMeta)),
 
-      shifterFactoringSignature: computeHash(JSON.stringify(factoringSurface)),
-      shifterFactoringSignature2: computeHashIntelligence(JSON.stringify(factoringSurface)),
+      pulseFactoringSignature: computeHash(JSON.stringify(factoringSurface)),
+      pulseFactoringSignature2: computeHashIntelligence(JSON.stringify(factoringSurface)),
 
       baseShapeSignature: computeHash(JSON.stringify(baseShapeSurface)),
       baseShapeSignature2: computeHashIntelligence(JSON.stringify(baseShapeSurface)),
 
       baseFormulaKeySignature: computeHash(baseFormulaKey),
-      baseFormulaKeySignature2: computeHashIntelligence(baseFormulaKey)
+      baseFormulaKeySignature2: computeHashIntelligence(baseFormulaKey),
+
+      dualHashIntel: dualHash.intel,
+      dualHashClassic: dualHash.classic
     }
   };
 }

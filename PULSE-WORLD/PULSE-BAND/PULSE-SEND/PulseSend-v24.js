@@ -1,19 +1,23 @@
 // ============================================================================
-//  PulseSend-v16-Immortal-ORGANISM.js — PulseSend Organism v16 (Symbolic)
-//  Evolutionary Transport Organ • Pattern + Lineage + Shape • SDN-Aware
+//  FILE: PulseSend-v24-IMMORTAL-ORGANISM.js — PulseSend Organism v24++
+//  Evolutionary Transport Organ • Pattern + Lineage + Shape • SDN + Mesh-Aware
 //  12.3: Fallback / Movement / Route / Pathway / Return surfaces
 //        + cacheChunkSurface + prewarmSurface + presenceSurface
-//  14.4: IMMORTAL-INTEL (pulseIntelligence)
-//  16.0: IMMORTAL-ORGANISM meta + dual-hash + full intelligence fabric
+//  16.0: IMMORTAL-INTEL (pulseIntelligence)
+//  20.0: Mesh Signal Factoring awareness (meshFactoringSurface passthrough)
+//  24++: Binary-first band, dual-band presence, advantage + factoring fabric,
+//        burst modes (bluetoothBurst / powerBurst) + techSurface v2
+//        + deterministic IMMORTAL meta surfaces across the chain.
 // ============================================================================
 //
-//  SAFETY CONTRACT (v16-Immortal-ORGANISM):
+//  SAFETY CONTRACT (v24-IMMORTAL-ORGANISM):
 //  ----------------------------------------
 //  • No randomness.
 //  • No timestamps.
 //  • No external IO.
 //  • Pure deterministic transport chain.
 //  • Zero mutation outside instance.
+//  • Metadata-only intelligence + factoring surfaces.
 // ============================================================================
 import {
   OrganismIdentity,
@@ -22,37 +26,45 @@ import {
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // --- Evolution Engines ------------------------------------------------------
-import {createPulseV2 as PulseV2EvolutionEngine }  from "./PulseSendV2EvolutionEngine-v16.js";
-import {createPulseV3 as PulseV3UnifiedOrganism }  from "./PulseSendV3UnifiedOrganism-v16.js";
+// v24++: binary-first shifter (SymPulse v16-IMMORTAL-INTEL upgraded usage)
+import {
+  createSymPulseV2 as PulseV2SymShifter
+} from "./PulseShifterEvolutionaryPulse-v16-IMMORTAL-INTEL.js";
+
+// keep v3 / legacy stack for compatibility
+import { createPulseV3 as PulseV3UnifiedOrganism }  from "./PulseSendV3UnifiedOrganism-v24.js";
+import { createPulseV2 as PulseV2EvolutionEngine }  from "./PulseSendV2EvolutionEngine-v24.js";
 
 // --- Impulse Layer ----------------------------------------------------------
-import {createPulseSendImpulse as PulseSendImpulse }        from "./PulseSendImpulse-v16.js";
+import { createPulseSendImpulse as PulseSendImpulse } from "./PulseSendImpulse-v24.js";
 
 // --- Legacy Pulse Layer -----------------------------------------------------
-import {createLegacyPulse as PulseSendLegacyPulse }    from "./PulseSendLegacyPulse-v16.js";
+import { createLegacyPulse as PulseSendLegacyPulse } from "./PulseSendLegacyPulse-v24.js";
 
 // --- Adapter Layer ----------------------------------------------------------
-import {adaptPulseSendPacket as PulseSendAdapter }        from "./PulseSendAdapter.js";
+import { adaptPulseSendPacket as PulseSendAdapter } from "./PulseSendAdapter-v24.js";
 
 // --- Engine Layer -----------------------------------------------------------
-import {PulseSendMover as PulseSendEngine }         from "./PulseSendEngine.js";
+import { PulseSendMover as PulseSendEngine } from "./PulseSendEngine-v24.js";
 
 // --- Return Layer -----------------------------------------------------------
-import {createPulseSendReturn as PulseSendReturn }         from "./PulseSendReturn.js";
+import { createPulseSendReturn as PulseSendReturn } from "./PulseSendReturn-v24.js";
 
 // --- System Layer (Final Conductor) ----------------------------------------
-import {createPulseSendSystem as PulseSendSystem }         from "./PulseSendSystem.js";
+import { createPulseSendSystem as PulseSendSystem } from "./PulseSendSystem.js";
 
+// --- Mesh Factoring (awareness only, optional) -----------------------------
+import {
+  applyMeshSignalFactoring
+} from "./PulseMeshSignalFactoring-v20-IMMORTAL-INTEL-ADVANTAGE.js";
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, pure
@@ -80,7 +92,7 @@ function stableStringify(value) {
 }
 
 // ============================================================================
-//  DUAL HASH — v16 IMMORTAL (symbolic-only, backed by computeHash)
+//  DUAL HASH — v24 IMMORTAL (symbolic/binary, backed by computeHash)
 // ============================================================================
 function computeDualHash(label, payload) {
   const raw = label + "::" + stableStringify(payload || {});
@@ -102,20 +114,23 @@ function buildFallbackSurface(type, error) {
   };
 }
 
-function buildSendDiagnostics({ jobId, pattern, mode, pulseType }) {
+function buildSendDiagnostics({ jobId, pattern, mode, pulseType, bandMode }) {
   const shape = {
     jobId,
     patternLength: (pattern || "").length,
     mode,
-    pulseType
+    pulseType,
+    bandMode: bandMode || "binary"
   };
   const patternHash = computeHash(pattern || "");
   const modeHash = computeHash(mode || "normal");
+  const bandHash = computeHash(bandMode || "binary");
   const dual = computeDualHash("SEND_DIAGNOSTICS", shape);
   return {
     ...shape,
     patternHash,
     modeHash,
+    bandHash,
     diagnosticsDualHashPrimary: dual.primary,
     diagnosticsDualHashSecondary: dual.secondary
   };
@@ -192,30 +207,44 @@ function buildReturnSurface(result) {
 }
 
 // ============================================================================
-// ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe, v16 extension)
+//  Pulse Intelligence v24++ (logic-only, IMMORTAL-safe)
+//  • binary-first band
+//  • advantage + presence + factoring aware
+//  • ready for meshFactoring + GPU advantage
 // ============================================================================
-function computePulseIntelligence({ advantageField, presenceField, factoringSignal, band }) {
+function computePulseIntelligenceV24({
+  advantageField = {},
+  presenceField = {},
+  factoringSignal,
+  band,
+  meshFactoringProfile = null
+}) {
   const advantageScore = Number(advantageField.advantageScore || 0);
   const advantageTier  = Number(advantageField.advantageTier  || 0);
 
   const presenceTier = presenceField.presenceTier || "idle";
   const presenceWeight =
     presenceTier === "critical" ? 1.0 :
-    presenceTier === "high"     ? 0.8 :
-    presenceTier === "elevated" ? 0.6 :
-    presenceTier === "soft"     ? 0.4 :
-    presenceTier === "low"      ? 0.3 :
+    presenceTier === "high"     ? 0.85 :
+    presenceTier === "elevated" ? 0.7 :
+    presenceTier === "soft"     ? 0.5 :
+    presenceTier === "low"      ? 0.35 :
     0.2;
 
   const factoring = factoringSignal ? 1 : 0;
   const bandIsBinary = band === "binary" ? 1 : 0;
+
+  const meshPressure = meshFactoringProfile
+    ? Number(meshFactoringProfile.pressure || 0)
+    : 0;
 
   const solvednessScore = Math.max(
     0,
     Math.min(
       advantageScore * 5 +
       presenceWeight * 0.3 +
-      factoring * 0.2,
+      factoring * 0.2 +
+      meshPressure * 0.2,
       1
     )
   );
@@ -230,8 +259,8 @@ function computePulseIntelligence({ advantageField, presenceField, factoringSign
   const readinessScore = Math.max(
     0,
     Math.min(
-      solvednessScore * 0.6 +
-      (bandIsBinary ? 0.2 : 0) +
+      solvednessScore * 0.55 +
+      (bandIsBinary ? 0.25 : 0.1) +
       (advantageTier >= 2 ? 0.2 : advantageTier === 1 ? 0.1 : 0),
       1
     )
@@ -243,22 +272,38 @@ function computePulseIntelligence({ advantageField, presenceField, factoringSign
     computeTier,
     readinessScore,
     band,
-    advantageTier
+    advantageTier,
+    meshPressure
   };
 }
 
+// ============================================================================
+//  12.3+ surfaces — cacheChunk / prewarm / presence (v24 dual-hash upgrade)
+//  + burst modes (bluetoothBurst / powerBurst) derived from priority + mode
+// ============================================================================
+function deriveBurstMode({ priority, mode }) {
+  const p = priority || "normal";
+  const m = mode || "normal";
 
-// ============================================================================
-//  12.3+ surfaces — cacheChunk / prewarm / presence (v16 dual-hash upgrade)
-// ============================================================================
-function buildCacheChunkSurface({ jobId, pattern, targetOrgan, pathway, mode, pulseType }) {
+  if (p === "critical" || p === "high") {
+    if (m === "realtime" || m === "reflex") return "bluetoothBurst";
+    return "powerBurst";
+  }
+  if (p === "normal" && (m === "realtime" || m === "reflex")) {
+    return "lightBurst";
+  }
+  return "none";
+}
+
+function buildCacheChunkSurface({ jobId, pattern, targetOrgan, pathway, mode, pulseType, bandMode }) {
   const shape = {
     jobId: jobId || "NO_JOB",
     pattern: pattern || "",
     targetOrgan: targetOrgan || null,
     pathway: pathway || null,
     mode: mode || "normal",
-    pulseType: pulseType || "UNKNOWN"
+    pulseType: pulseType || "UNKNOWN",
+    bandMode: bandMode || "binary"
   };
 
   const serialized = stableStringify(shape);
@@ -292,11 +337,14 @@ function buildPrewarmSurface({ priority, mode, pathway }) {
     level = "light";
   }
 
+  const burstMode = deriveBurstMode({ priority: safePriority, mode: safeMode });
+
   const shape = {
     priority: safePriority,
     mode: safeMode,
     hasPathway,
-    level
+    level,
+    burstMode
   };
 
   const raw = stableStringify(shape);
@@ -309,6 +357,7 @@ function buildPrewarmSurface({ priority, mode, pathway }) {
 
   return {
     level,
+    burstMode,
     prewarmKey,
     prewarmShape: shape,
     prewarmDualHashPrimary: dual.primary,
@@ -316,7 +365,7 @@ function buildPrewarmSurface({ priority, mode, pathway }) {
   };
 }
 
-function buildPresenceSurface({ pattern, pathway }) {
+function buildPresenceSurface({ pattern, pathway, bandMode }) {
   const safePattern = pattern || "";
   const hasPathway = !!pathway;
 
@@ -330,7 +379,8 @@ function buildPresenceSurface({ pattern, pathway }) {
   const shape = {
     pattern: safePattern,
     hasPathway,
-    scope
+    scope,
+    bandMode: bandMode || "binary"
   };
 
   const raw = stableStringify(shape);
@@ -351,9 +401,29 @@ function buildPresenceSurface({ pattern, pathway }) {
 }
 
 // ============================================================================
-// ⭐ NEW: TECH SURFACE — USE ALL IMPORTS
+//  TECH SURFACE v2 — USE ALL IMPORTS + expose band/burst + meshFactoring
 // ============================================================================
-function buildTechSurface({ jobId, pattern, payload, priority, returnTo, mode }) {
+function buildTechSurfaceV2({
+  jobId,
+  pattern,
+  payload,
+  priority,
+  returnTo,
+  mode,
+  bandMode,
+  meshFactoringProfile
+}) {
+  const v2sym = PulseV2SymShifter
+    ? PulseV2SymShifter({
+        jobId,
+        pattern,
+        payload,
+        priority,
+        returnTo,
+        mode,
+        bandMode: bandMode || "binary"
+      })
+    : null;
 
   const v2 = PulseV2EvolutionEngine?.createPulseV2
     ? PulseV2EvolutionEngine.createPulseV2({ jobId, pattern, payload, priority, returnTo, mode })
@@ -388,6 +458,7 @@ function buildTechSurface({ jobId, pattern, payload, priority, returnTo, mode })
     : null;
 
   const shape = {
+    v2sym,
     v2,
     v3,
     impulse,
@@ -395,10 +466,12 @@ function buildTechSurface({ jobId, pattern, payload, priority, returnTo, mode })
     adapter,
     engine,
     ret,
-    system
+    system,
+    bandMode: bandMode || "binary",
+    meshFactoringProfile
   };
 
-  const dual = computeDualHash("TECH_SURFACE", shape);
+  const dual = computeDualHash("TECH_SURFACE_V2", shape);
 
   return {
     ...shape,
@@ -408,7 +481,7 @@ function buildTechSurface({ jobId, pattern, payload, priority, returnTo, mode })
 }
 
 // ============================================================================
-//  FACTORY — Build the Full PulseSend v16 IMMORTAL-ORGANISM
+//  FACTORY — Build the Full PulseSend v24++ IMMORTAL-ORGANISM
 // ============================================================================
 export function createPulseSend({
   createPulseV3,
@@ -431,12 +504,12 @@ export function createPulseSend({
     try {
       sdn.emitImpulse(source, payload);
     } catch (e) {
-      log && log("[PulseSend-v16] SDN emit failed (non-fatal)", { source, error: e });
+      log && log("[PulseSend-v24] SDN emit failed (non-fatal)", { source, error: e });
     }
   }
 
   // ========================================================================
-  //  PUBLIC API — send()
+  //  PUBLIC API — send()  (binary-first, dual-band aware, 24++ surfaces)
   // ========================================================================
   function send({
     jobId,
@@ -444,31 +517,81 @@ export function createPulseSend({
     payload = {},
     priority = "normal",
     returnTo = null,
-    mode = "normal"
+    mode = "normal",
+    // v24++ band/presence hints (optional)
+    bandMode = "binary",
+    presenceField = null,
+    advantageField = null
   }) {
 
     let pulse = null;
     let pulseType = null;
     let fallbackSurface = null;
 
-    emitSDN("send:begin", { jobId, pattern, priority, returnTo, mode });
+    emitSDN("send:begin", {
+      jobId,
+      pattern,
+      priority,
+      returnTo,
+      mode,
+      bandMode
+    });
 
-    // ⭐ Tier 1 — Pulse v3
+    // ⭐ Tier 0 — binary-first SymShifter v2 (if wired)
     try {
-      pulse = createPulseV3({ jobId, pattern, payload, priority, returnTo, mode });
-      pulseType = "Pulse-v3";
-    } catch (errV3) {
-      fallbackSurface = buildFallbackSurface("v3→v2", errV3);
+      if (createPulseV2 && typeof createPulseV2 === "function") {
+        // allow host to override, but default to SymPulseV2 if available
+        pulse = PulseV2SymShifter
+          ? PulseV2SymShifter({
+              jobId,
+              pattern,
+              payload,
+              priority,
+              returnTo,
+              mode,
+              bandMode
+            })
+          : createPulseV2({
+              jobId,
+              pattern,
+              payload,
+              priority,
+              returnTo,
+              mode
+            });
+        pulseType = "Pulse-v2-SymShifter-binary-first";
+      }
+    } catch (errSym) {
+      fallbackSurface = buildFallbackSurface("v2sym→v3", errSym);
       emitSDN("send:pulse-fallback", {
         jobId,
         pattern,
-        from: "v3",
-        to: "v2",
-        error: String(errV3)
+        from: "v2sym",
+        to: "v3",
+        error: String(errSym)
       });
+      pulse = null;
+      pulseType = null;
     }
 
-    // ⭐ Tier 2 — Pulse v2
+    // ⭐ Tier 1 — Pulse v3
+    if (!pulse) {
+      try {
+        pulse = createPulseV3({ jobId, pattern, payload, priority, returnTo, mode });
+        pulseType = "Pulse-v3";
+      } catch (errV3) {
+        fallbackSurface = buildFallbackSurface("v3→v2", errV3);
+        emitSDN("send:pulse-fallback", {
+          jobId,
+          pattern,
+          from: "v3",
+          to: "v2",
+          error: String(errV3)
+        });
+      }
+    }
+
+    // ⭐ Tier 2 — Pulse v2 (classic)
     if (!pulse) {
       try {
         pulse = createPulseV2({ jobId, pattern, payload, priority, returnTo, mode });
@@ -493,7 +616,53 @@ export function createPulseSend({
       emitSDN("send:pulse-fallback", { jobId, pattern, from: "none", to: "v1" });
     }
 
-    emitSDN("send:pulse-created", { jobId, pattern, mode, pulseType });
+    // v24++: enforce bandMode / presence on pulse surface if missing
+    const effectiveBand = pulse.bandMode || bandMode || "binary";
+    pulse.bandMode = effectiveBand;
+    pulse.band = effectiveBand;
+
+    if (presenceField && !pulse.presenceField) {
+      pulse.presenceField = presenceField;
+    }
+    if (advantageField && !pulse.advantageField) {
+      pulse.advantageField = advantageField;
+    }
+
+    emitSDN("send:pulse-created", {
+      jobId,
+      pattern,
+      mode,
+      pulseType,
+      bandMode: effectiveBand
+    });
+
+    // ⭐ Optional mesh signal factoring (metadata-only)
+    let meshFactoringProfile = null;
+    try {
+      if (applyMeshSignalFactoring && pulseMesh) {
+        const factoringImpulse = {
+          id: jobId || pattern || "psend",
+          band: effectiveBand,
+          presenceField: pulse.presenceField || {},
+          advantageField: pulse.advantageField || {},
+          flags: {
+            aura_factoring_bias: 0,
+            mesh_factor_depth: 0,
+            mesh_factor_bias: 0
+          }
+        };
+        applyMeshSignalFactoring(factoringImpulse, {
+          band: effectiveBand,
+          presenceField: pulse.presenceField || {},
+          advantageField: pulse.advantageField || {},
+          deviceProfile: pulseMesh.deviceProfile || {}
+        });
+        meshFactoringProfile = factoringImpulse.flags.mesh_factoring_profile || null;
+      }
+    } catch (e) {
+      // factoring is advisory only
+      log && log("[PulseSend-v24] mesh factoring advisory failed", { error: e });
+    }
 
     // ⭐ Route
     const targetOrgan = pulseRouter.route(pulse);
@@ -503,7 +672,15 @@ export function createPulseSend({
     const pathway = pulseMesh.pathwayFor(targetOrgan, mode);
     const pathwaySurface = buildPathwaySurface(pathway);
 
-    emitSDN("send:routed", { jobId, pattern, targetOrgan, pathway, mode, pulseType });
+    emitSDN("send:routed", {
+      jobId,
+      pattern,
+      targetOrgan,
+      pathway,
+      mode,
+      pulseType,
+      bandMode: effectiveBand
+    });
 
     // ⭐ Movement
     const movement = impulse.fire({ pulse, targetOrgan, pathway, mode });
@@ -532,18 +709,31 @@ export function createPulseSend({
     });
 
     // ⭐ Memory
-    pulseRouter.remember(pulse, targetOrgan, "success", pulse.healthScore || 1);
+    pulseRouter.remember(
+      pulse,
+      targetOrgan,
+      "success",
+      pulse.healthScore || 1
+    );
 
-    emitSDN("send:complete", { jobId, pattern, targetOrgan, mode, pulseType });
+    emitSDN("send:complete", {
+      jobId,
+      pattern,
+      targetOrgan,
+      mode,
+      pulseType,
+      bandMode: effectiveBand
+    });
 
-    // ⭐ 12.3 surfaces — cacheChunk / prewarm / presence (v16 dual-hash)
+    // ⭐ 12.3 surfaces — cacheChunk / prewarm / presence (v24 dual-hash + burst)
     const cacheChunkSurface = buildCacheChunkSurface({
       jobId,
       pattern,
       targetOrgan,
       pathway,
       mode,
-      pulseType
+      pulseType,
+      bandMode: effectiveBand
     });
 
     const prewarmSurface = buildPrewarmSurface({
@@ -554,33 +744,37 @@ export function createPulseSend({
 
     const presenceSurface = buildPresenceSurface({
       pattern,
-      pathway
+      pathway,
+      bandMode: effectiveBand
     });
 
-    // ⭐ NEW: TECH SURFACE (uses ALL imports)
-    const techSurface = buildTechSurface({
+    // ⭐ TECH SURFACE v2 (uses ALL imports + band + meshFactoring)
+    const techSurface = buildTechSurfaceV2({
       jobId,
       pattern,
       payload,
       priority,
       returnTo,
-      mode
+      mode,
+      bandMode: effectiveBand,
+      meshFactoringProfile
     });
 
-    // ⭐ INTELLIGENCE (v16 IMMORTAL-ORGANISM)
-    const pulseIntelligence = computePulseIntelligence({
+    // ⭐ INTELLIGENCE v24++ (IMMORTAL-ORGANISM)
+    const pulseIntelligence = computePulseIntelligenceV24({
       advantageField: pulse.advantageField || {},
       presenceField: pulse.presenceField || {},
       factoringSignal: pulse.factoringSignal || null,
-      band: pulse.band || "symbolic"
+      band: effectiveBand,
+      meshFactoringProfile
     });
 
     const pulseIntelligenceDualHash = computeDualHash(
-      "PULSE_INTELLIGENCE",
+      "PULSE_INTELLIGENCE_V24",
       pulseIntelligence
     );
 
-    // ⭐ GLOBAL SEND DUAL-HASH (mirrors BinarySend-style global signature)
+    // ⭐ GLOBAL SEND DUAL-HASH (binary-first)
     const sendSignaturePayload = {
       jobId,
       pattern,
@@ -589,10 +783,11 @@ export function createPulseSend({
       targetOrgan,
       pathway,
       priority,
-      returnTo
+      returnTo,
+      bandMode: effectiveBand
     };
 
-    const sendDualHash = computeDualHash("PULSE_SEND_V16", sendSignaturePayload);
+    const sendDualHash = computeDualHash("PULSE_SEND_V24", sendSignaturePayload);
 
     // ⭐ Return full telemetry
     return {
@@ -601,6 +796,7 @@ export function createPulseSend({
       result,
       mode,
       pulseType,
+      bandMode: effectiveBand,
 
       // ⭐ top-level intelligence
       pulseIntelligence,
@@ -627,7 +823,8 @@ export function createPulseSend({
           jobId,
           pattern,
           mode,
-          pulseType
+          pulseType,
+          bandMode: effectiveBand
         }),
 
         // ⭐ mirrored intelligence + signature + dual-hash
@@ -648,16 +845,15 @@ export function createPulseSend({
   };
 }
 
-
 // ============================================================================
-//  ORGAN EXPORT — ⭐ PulseSend (v16 IMMORTAL-ORGANISM)
+//  ORGAN EXPORT — ⭐ PulseSend (v24++ IMMORTAL-ORGANISM)
 // ============================================================================
 export const PulseSend = {
   PulseRole,
 
   send(...args) {
     throw new Error(
-      "[PulseSend-v16] PulseSend.send() was called before initialization. " +
+      "[PulseSend-v24] PulseSend.send() was called before initialization. " +
       "Use createPulseSend(...) to wire dependencies."
     );
   }

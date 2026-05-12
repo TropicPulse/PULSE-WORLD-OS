@@ -1,11 +1,12 @@
 // ============================================================================
-// [pulse:mesh] COMMUNITY_HORMONE_LAYER v15-Evo-Immortal  // pink
+// [pulse:mesh] COMMUNITY_HORMONE_LAYER v24-IMMORTAL++  // pink-platinum
 // Global Modulation Layer • Metadata-Only • Deterministic Influence Tags
-// Presence-Aware • Binary-Aware • Dual-Band • Drift-Proof • Advantage-Aware
+// Presence-Aware • Binary-Aware • Bluetooth-Aware • Dual-Band • Drift-Proof
+// Advantage-Aware • Mesh-Pressure-Aware • Flow-Aware • Drift-Aware
 // ============================================================================
 //
-// IDENTITY — HORMONES (v15-Evo-Immortal):
-// --------------------------------------
+// IDENTITY — HORMONES (v24-IMMORTAL++):
+// ------------------------------------
 // • Pure metadata-only modulation layer.
 // • Reads system pressure (Field + SDN context) and emits deterministic tags.
 // • NEVER mutates payloads.
@@ -13,12 +14,12 @@
 // • NEVER computes or synthesizes dynamic state.
 // • No internal hormone state — pure reflection.
 // • Other organs MAY interpret tags; hormones never enforce behavior.
-// • Presence-aware, binary-aware, dual-band-ready, deterministic-field,
-//   unified-advantage-field, mesh-pressure-aware, flow-aware, drift-aware,
-//   advantage-aware, chunk/prewarm-ready.
+// • Presence-aware, binary-aware, dual-band-ready, bluetooth-aware,
+//   deterministic-field, unified-advantage-field, mesh-pressure-aware,
+//   flow-aware, drift-aware, advantage-aware, chunk/prewarm-ready.
 //
-// SAFETY CONTRACT (v15):
-// ----------------------
+// SAFETY CONTRACT (v24-IMMORTAL++):
+// ---------------------------------
 // • No payload access.
 // • No score/energy mutation.
 // • No routing override.
@@ -26,33 +27,33 @@
 // • No internal state mutation.
 // • Deterministic-field, drift-proof.
 // • Unified-advantage-field, multi-instance-ready.
-// • Zero imports — all dependencies injected by CNS.
+// • Zero imports beyond CNS genome identity.
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
 
   // ---------------------------------------------------------------------------
-  // META — v15-Evo-Immortal identity
+  // META — v24-IMMORTAL++ identity
   // ---------------------------------------------------------------------------
   const meta = {
     layer: "PulseHormones",
     role: "GLOBAL_MODULATION",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -83,13 +84,17 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
       zeroMutation: true,
       zeroRoutingInfluence: true,
       chunkPrewarmReady: true,
-      advantageAware: true
+      advantageAware: true,
+
+      // v24++
+      bluetoothPresenceAware: true,
+      bluetoothMeshAware: true
     }
   };
 
 
   // ---------------------------------------------------------------------------
-  // HORMONE ENGINE (v15)
+  // HORMONE ENGINE (v24-IMMORTAL++)
   // Pure reflection: no internal state, no synthesis, no mutation.
   // ---------------------------------------------------------------------------
   function applyPulseHormones(impulse, context = {}) {
@@ -131,6 +136,11 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
     const presenceBinary   = field.presenceBinaryPressure ?? 0;
     const presenceDual     = field.presenceDualPressure ?? 0;
 
+    // v24++ Bluetooth presence pressure
+    const bluetoothProximity = field.bluetoothProximityPressure ?? 0;
+    const bluetoothLinkQual  = field.bluetoothLinkQualityPressure ?? 0;
+    const bluetoothEvents    = field.bluetoothEvents ?? 0;
+
     // Context hints (SDN / caller)
     const globalLoad   = context.globalLoad ?? 0;
     const trustLevel   = context.trustLevel ?? 1;
@@ -142,8 +152,6 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
     // -------------------------------------------------------------------------
     // BASELINE HORMONE EVENT CLASSIFICATION
     // -------------------------------------------------------------------------
-    // We never touch payload/score; we only tag the situation.
-
     const highPressure =
       flowPressure   > 0.5 ||
       throttleRate   > 0.2 ||
@@ -167,7 +175,6 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
       friction       < 0.4 &&
       noise          < 0.4;
 
-    // Reset any prior hormone_event (we don't rely on previous runs)
     delete impulse.flags.hormone_event;
 
     if (calmEnvironment) {
@@ -201,12 +208,12 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
       impulse.flags.hormone_emergency_braking = true;
     }
 
-    // Low stability + high drift → alert without changing event type
+    // Low stability + high drift → alert
     if (stability < 0.6 && driftPressure > 0.3) {
       impulse.flags.hormone_drift_alert = true;
     }
 
-    // High friction/noise → friction/noise alerts
+    // Friction / noise alerts
     if (friction > 0.5) {
       impulse.flags.hormone_friction_alert = true;
     }
@@ -266,7 +273,6 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
       impulse.flags.hormone_presence_dual_pressure       = true;
     }
 
-    // Tag the band we are actually in for downstream interpretation
     impulse.flags.hormone_presence_band = presenceBand;
     if (binaryMode) {
       impulse.flags.hormone_binary_mode_active = true;
@@ -297,12 +303,10 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
       impulse.flags.hormone_reflex_guard_alert   = true;
     }
 
-    // Advantage cascade hint: high binary pressure + factoring + mesh storm
     if (binaryModePressure > 0.4 && factoring > 0.3 && meshStorm > 0.3) {
       impulse.flags.hormone_advantage_cascade_hotspot = true;
     }
 
-    // Global load + trust shaping (still metadata-only)
     if (globalLoad > 0.7) {
       impulse.flags.hormone_global_load_high = true;
     }
@@ -310,11 +314,44 @@ export function createPulseMeshHormones({ PulseFieldRead, log, warn, error }) {
       impulse.flags.hormone_low_trust_context = true;
     }
 
-    // Echo mode: mark as diagnostic-only modulation
     if (echoMode) {
       impulse.flags.hormone_echo_mode = true;
     }
 
+
+    // -------------------------------------------------------------------------
+    // v24++ BLUETOOTH PRESENCE HORMONE REFLECTION
+    // -------------------------------------------------------------------------
+    if (bluetoothEvents > 0) {
+      impulse.flags.hormone_bluetooth_events = bluetoothEvents;
+    }
+
+    if (bluetoothProximity > 0.2) {
+      impulse.flags.hormone_bluetooth_proximity_pressure = bluetoothProximity;
+      if (bluetoothProximity > 0.5) {
+        impulse.flags.hormone_bluetooth_near_field = true;
+      } else if (bluetoothProximity > 0.3) {
+        impulse.flags.hormone_bluetooth_mid_field = true;
+      } else {
+        impulse.flags.hormone_bluetooth_far_field = true;
+      }
+    }
+
+    if (bluetoothLinkQual > 0.2) {
+      impulse.flags.hormone_bluetooth_link_quality = bluetoothLinkQual;
+      if (bluetoothLinkQual > 0.7) {
+        impulse.flags.hormone_bluetooth_link_strong = true;
+      } else if (bluetoothLinkQual > 0.4) {
+        impulse.flags.hormone_bluetooth_link_medium = true;
+      } else {
+        impulse.flags.hormone_bluetooth_link_weak = true;
+      }
+    }
+
+    // Combined bluetooth stress hint (still metadata-only)
+    if (bluetoothProximity > 0.5 && bluetoothLinkQual < 0.4) {
+      impulse.flags.hormone_bluetooth_congested_field = true;
+    }
 
     impulse.flags.hormones_applied = true;
     return impulse;

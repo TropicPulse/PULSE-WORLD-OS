@@ -1,32 +1,37 @@
 // ============================================================================
 // FILE: /organs/senses/PulseMeshSenses.js
-// [pulse:senses] PULSE_MESH_SENSES v15-Evo-Immortal  // white-silver
+// [pulse:senses] PULSE_MESH_SENSES v24-IMMORTAL++  // white-silver
 // Unified Sensory Cortex • Metadata-Only • System Awareness Brain
+// Organism-Aware • Presence-Relay-Aware • Advantage-Field-Aware
 // ============================================================================
 //
-// IDENTITY — THE SENSES CORTEX (v15-Evo-Immortal):
-// ------------------------------------------------
+// IDENTITY — THE SENSES CORTEX (v24-IMMORTAL++):
+// ---------------------------------------------
 // • Unified sensory cortex for the organism.
 // • Reads from:
 //      - PulseHalo (counters + safety + mesh metrics)
 //      - PulseField (internal weather + pressure signals)
-//      - PulseEcho (diagnostic reflection sonar v15)
+//      - PulseEcho (diagnostic reflection sonar v15+)
 //      - PulseClinician (endocrine + mesh interpretation)
 //      - SDN context (v12.3-Presence nervous system)
+//      - OrganismMesh (artery + consciousness + mode) [optional]
+//      - PulseMeshPresenceRelay v16 (nearby presence window) [optional]
 // • Produces a deterministic unified awareness model for:
 //      - Awareness Page
 //      - Backend AI
 //      - Clinician
 //      - Immune Commander
+//      - OrganismMesh / Overmind-Prime
 //
-// SAFETY CONTRACT (v15-Evo-Immortal):
-// -----------------------------------
+// SAFETY CONTRACT (v24-IMMORTAL++):
+// ---------------------------------
 // • Metadata-only.
 // • Read-only — NEVER mutates impulses.
 // • No routing, no hormones, no memory writes.
 // • Deterministic-field: same system → same awareness snapshot.
 // • Zero imports — all dependencies injected by CNS Brain.
 // • Binary-aware, dual-mode-ready, mesh-aware, presence-aware, drift-proof.
+// • Organism-aware, artery-aware, consciousness-aware, presence-relay-aware.
 // ============================================================================
 import {
   OrganismIdentity,
@@ -50,6 +55,9 @@ export function createPulseSenses({
   PulseEcho,
   PulseClinician,
   SDN,
+  // v24++ optional organism + presence relay
+  OrganismMesh = null,          // { getOrganismArtery?, getOrganismConsciousness?, getOrganismMode?, getOrganismReport? }
+  PulseMeshPresenceRelay = null, // { getNearbyPresenceWindow?, getPresenceSnapshot? }
   log,
   warn,
   error
@@ -58,7 +66,7 @@ export function createPulseSenses({
   const sensesMeta = {
     layer: "PulseSenses",
     role: "AWARENESS_CORTEX",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -86,6 +94,11 @@ export function createPulseSenses({
       driftAware: true,
 
       meshAware: true,
+      organismAware: true,
+      arteryAware: true,
+      consciousnessAware: true,
+      presenceRelayAware: true,
+
       zeroCompute: true,
       zeroMutation: true,
       zeroRoutingInfluence: true
@@ -100,14 +113,17 @@ export function createPulseSenses({
     },
 
     // -------------------------------------------------------
-    // STATUS — Unified Sensory Model (v15-Evo-Immortal)
+    // STATUS — Unified Sensory Model (v24-IMMORTAL++)
     // -------------------------------------------------------
     status(entryNodeId, context = {}) {
-      const halo = PulseHalo.status();
-      const field = PulseFieldRead.snapshot();
-      const echoReflection = PulseEcho.sendEcho(entryNodeId, context);
-      const clinicianView = PulseClinician.examineSystem(entryNodeId, context);
-      const sdnView = SDN.snapshot?.() ?? {};
+      const halo = safeStatus(PulseHalo, "status");
+      const field = safeSnapshot(PulseFieldRead, "snapshot");
+      const echoReflection = safeEcho(PulseEcho, entryNodeId, context);
+      const clinicianView = safeClinician(PulseClinician, entryNodeId, context);
+      const sdnView = SDN?.snapshot?.() ?? {};
+
+      const organism = buildOrganismView(OrganismMesh);
+      const presenceRelayView = buildPresenceRelayView(PulseMeshPresenceRelay);
 
       return buildUnifiedAwareness({
         meta: sensesMeta,
@@ -115,12 +131,14 @@ export function createPulseSenses({
         field,
         echo: echoReflection,
         clinician: clinicianView,
-        sdn: sdnView
+        sdn: sdnView,
+        organism,
+        presenceRelay: presenceRelayView
       });
     },
 
     // -------------------------------------------------------
-    // AWARENESS PAGE VIEW (v15-Evo-Immortal)
+    // AWARENESS PAGE VIEW (v24-IMMORTAL++)
     // -------------------------------------------------------
     forAwarenessPage(entryNodeId, context = {}) {
       const unified = this.status(entryNodeId, context);
@@ -137,12 +155,14 @@ export function createPulseSenses({
         sdn: unified.sdn,
         mode: unified.mode,
         presence: unified.presence,
+        organism: unified.organism,
+        presenceRelay: unified.presenceRelay,
         narrative: unified.narrative_for_you
       };
     },
 
     // -------------------------------------------------------
-    // AI VIEW (v15-Evo-Immortal)
+    // AI VIEW (v24-IMMORTAL++)
     // -------------------------------------------------------
     forAI(entryNodeId, context = {}) {
       const unified = this.status(entryNodeId, context);
@@ -160,12 +180,14 @@ export function createPulseSenses({
         sdn: unified.sdn,
         mode: unified.mode,
         presence: unified.presence,
+        organism: unified.organism,
+        presenceRelay: unified.presenceRelay,
         narrative_for_ai: unified.narrative_for_ai
       };
     },
 
     // -------------------------------------------------------
-    // CLINICIAN VIEW (v15-Evo-Immortal)
+    // CLINICIAN VIEW (v24-IMMORTAL++)
     // -------------------------------------------------------
     forClinician(entryNodeId, context = {}) {
       return this.status(entryNodeId, context).clinician_view;
@@ -175,13 +197,118 @@ export function createPulseSenses({
   return Senses;
 }
 
+// ============================================================================
+// SAFE HELPERS
+// ============================================================================
+
+function safeStatus(obj, method) {
+  try {
+    if (!obj || typeof obj[method] !== "function") return {};
+    return obj[method]() || {};
+  } catch {
+    return {};
+  }
+}
+
+function safeSnapshot(obj, method) {
+  try {
+    if (!obj || typeof obj[method] !== "function") return {};
+    return obj[method]() || {};
+  } catch {
+    return {};
+  }
+}
+
+function safeEcho(PulseEcho, entryNodeId, context) {
+  try {
+    if (!PulseEcho || typeof PulseEcho.sendEcho !== "function") return {};
+    return PulseEcho.sendEcho(entryNodeId, context) || {};
+  } catch {
+    return {};
+  }
+}
+
+function safeClinician(PulseClinician, entryNodeId, context) {
+  try {
+    if (!PulseClinician || typeof PulseClinician.examineSystem !== "function") return {};
+    return PulseClinician.examineSystem(entryNodeId, context) || {};
+  } catch {
+    return {};
+  }
+}
+
+function buildOrganismView(OrganismMesh) {
+  if (!OrganismMesh) {
+    return {
+      mode: "unknown",
+      artery: null,
+      consciousness: null,
+      report: null
+    };
+  }
+
+  try {
+    const artery = OrganismMesh.getOrganismArtery?.() || null;
+    const consciousness = OrganismMesh.getOrganismConsciousness?.() || null;
+    const mode = OrganismMesh.getOrganismMode?.() || "unknown";
+    const report = OrganismMesh.getOrganismReport?.() || null;
+
+    return {
+      mode,
+      artery,
+      consciousness,
+      report
+    };
+  } catch {
+    return {
+      mode: "unknown",
+      artery: null,
+      consciousness: null,
+      report: null
+    };
+  }
+}
+
+function buildPresenceRelayView(PulseMeshPresenceRelay) {
+  if (!PulseMeshPresenceRelay) {
+    return {
+      nearbyPresence: [],
+      bandStats: {},
+      lastScanAt: 0,
+      snapshot: null
+    };
+  }
+
+  try {
+    const window = PulseMeshPresenceRelay.getNearbyPresenceWindow?.() || {
+      nearbyPresence: [],
+      bandStats: {},
+      lastScanAt: 0
+    };
+    const snapshot = PulseMeshPresenceRelay.getPresenceSnapshot?.() || null;
+
+    return {
+      nearbyPresence: window.nearbyPresence || [],
+      bandStats: window.bandStats || {},
+      lastScanAt: window.lastScanAt || 0,
+      snapshot
+    };
+  } catch {
+    return {
+      nearbyPresence: [],
+      bandStats: {},
+      lastScanAt: 0,
+      snapshot: null
+    };
+  }
+}
 
 // ============================================================================
-// UNIFIED AWARENESS BUILDER (v15-Evo-Immortal)
+// UNIFIED AWARENESS BUILDER (v24-IMMORTAL++)
 // ============================================================================
-function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
+function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn, organism, presenceRelay }) {
   const performancePercent = clinician.performancePercent ?? 100;
-  const performanceHint = estimatePerformanceHint(performancePercent, field, echo);
+  const performanceHint = estimatePerformanceHint(performancePercent, field, echo, organism);
 
   // Prefer Echo’s stability/drift if present, fall back to Field/Halo
   const stability = {
@@ -216,17 +343,17 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     drift_pressure: field.driftPressure,
     resonance: field.resonance,
 
-    // v12.3 mode pressures
+    // mode pressures
     binary_mode_pressure: field.binaryModePressure,
     symbolic_mode_pressure: field.symbolicModePressure,
     dual_mode_resonance: field.dualModeResonance,
 
-    // v12.3 presence-band pressures
+    // presence-band pressures
     presence_binary_pressure: field.presenceBinaryPressure,
     presence_symbolic_pressure: field.presenceSymbolicPressure,
     presence_dual_pressure: field.presenceDualPressure,
 
-    // v15: echo flow/aura hints
+    // v15+ echo flow/aura hints
     flow_throttled: !!echo.flow?.throttled,
     flow_throttled_reason: echo.flow?.reason || null
   };
@@ -273,7 +400,7 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     mode: sdn.mode ?? "normal"
   };
 
-  // v15: mode + presence-band awareness (prefer Echo presence)
+  // v15+ mode + presence-band awareness (prefer Echo presence)
   const mode = {
     binary: echo.mode?.binary ?? false,
     symbolic: !echo.mode?.binary,
@@ -303,7 +430,9 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     mesh,
     sdn: sdnView,
     mode,
-    presence
+    presence,
+    organism,
+    presenceRelay
   });
 
   const narrative_for_ai = buildNarrativeForAI({
@@ -317,7 +446,9 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     mesh,
     sdn: sdnView,
     mode,
-    presence
+    presence,
+    organism,
+    presenceRelay
   });
 
   return {
@@ -333,22 +464,29 @@ function buildUnifiedAwareness({ meta, halo, field, echo, clinician, sdn }) {
     sdn: sdnView,
     mode,
     presence,
+    organism,
+    presenceRelay,
     clinician_view: clinician,
     narrative_for_you,
     narrative_for_ai
   };
 }
 
+// ============================================================================
+// NARRATIVE + PERFORMANCE HINTS (v24-IMMORTAL++)
+// ============================================================================
+function estimatePerformanceHint(perf, field, echo, organism) {
+  const arteryPressure = organism?.artery?.pressure ?? 0;
+  const arteryErrorRate = organism?.artery?.errorRate ?? 0;
 
-// ============================================================================
-// NARRATIVE + PERFORMANCE HINTS (v15-Evo-Immortal)
-// ============================================================================
-function estimatePerformanceHint(perf, field, echo) {
-  if (perf > 100) return "overperforming_compensated";
+  if (perf > 110) return "overperforming_compensated";
+  if (perf > 100 && arteryPressure < 0.3) return "organism_overperforming_low_pressure";
   if (perf > 95) return "stable_optimal";
-  if (perf > 85) return "stable_compensating";
+  if (perf > 85 && arteryErrorRate < 0.1) return "stable_compensating";
+
   if (field.driftPressure > 0.4 || echo.aura?.inLoop) return "drift_rising";
   if (field.meshStormPressure > 0.4) return "routing_turbulence";
+  if (arteryPressure > 0.6) return "organism_high_pressure";
   return "mixed_state";
 }
 
@@ -363,12 +501,19 @@ function buildNarrativeForYou({
   mesh,
   sdn,
   mode,
-  presence
+  presence,
+  organism,
+  presenceRelay
 }) {
   const perf = performancePercent.toFixed(1);
   const parts = [];
 
   parts.push(`We are at ${perf}% performance.`);
+
+  // Organism mode
+  if (organism?.mode && organism.mode !== "idle") {
+    parts.push(`Organism Mode: ${organism.mode}.`);
+  }
 
   if (mode.binary) parts.push("Binary Mode is active — reflex pathways are optimized.");
   if (mode.dual) parts.push("Dual Mode resonance detected — hybrid pathways engaged.");
@@ -414,6 +559,12 @@ function buildNarrativeForYou({
     parts.push("Mesh reports stalled segments — some pathways may be congested or paused.");
   }
 
+  // Presence relay narrative
+  const nearbyCount = presenceRelay?.nearbyPresence?.length ?? 0;
+  if (nearbyCount > 0) {
+    parts.push(`Mesh Presence: ${nearbyCount} nearby organisms detected in the presence window.`);
+  }
+
   return parts.join(" ");
 }
 
@@ -428,7 +579,9 @@ function buildNarrativeForAI({
   mesh,
   sdn,
   mode,
-  presence
+  presence,
+  organism,
+  presenceRelay
 }) {
   return {
     performance_percent: performancePercent,
@@ -457,6 +610,13 @@ function buildNarrativeForAI({
     presence_tag: presence.tag,
     presence_binary_pressure: presence.binary_pressure,
     presence_symbolic_pressure: presence.symbolic_pressure,
-    presence_dual_pressure: presence.dual_pressure
+    presence_dual_pressure: presence.dual_pressure,
+
+    organism_mode: organism?.mode ?? "unknown",
+    organism_artery: organism?.artery ?? null,
+    organism_consciousness: organism?.consciousness ?? null,
+
+    presence_relay_nearby_count: presenceRelay?.nearbyPresence?.length ?? 0,
+    presence_relay_band_stats: presenceRelay?.bandStats ?? {}
   };
 }

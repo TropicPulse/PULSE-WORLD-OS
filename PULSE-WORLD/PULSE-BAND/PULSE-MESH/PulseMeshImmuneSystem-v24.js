@@ -1,11 +1,12 @@
 // ============================================================================
-// FILE: /organs/immune/PulseMeshImmuneSystem.js
-// PULSE OS — v15-Evo-Immortal
+// FILE: /organs/immune/PulseMeshImmuneSystem-v24-IMMORTAL++.js
+// PULSE OS — v24-IMMORTAL++
 // MESH IMMUNE SYSTEM COMMANDER — “THE IMMUNE COMMANDER”
 // Deterministic • Declarative • Zero Drift • Pure Logic • Presence/Band-Aware
+// Bluetooth-Aware • Advantage-Aware • Mesh-Pressure-Aware
 // ============================================================================
 //
-// ROLE (v15-Evo-Immortal):
+// ROLE (v24-IMMORTAL++):
 //   • Receives diagnostic snapshots (Halo, Echo, Field, SDN).
 //   • Performs deterministic triage (no pressure thresholds).
 //   • Emits declarative repair directives for:
@@ -15,22 +16,22 @@
 //        - Mesh (pathway diagnostics)
 //   • Never heals directly — only commands healers.
 //   • Fully offline-capable (OFFLINE_MODE).
-//   • Presence-aware, binary-aware, dual-band-ready.
+//   • Presence-aware, binary-aware, dual-band-ready, bluetooth-aware.
 //   • Zero randomness, zero timestamps, zero mutation.
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
@@ -45,12 +46,12 @@ export function createPulseMeshImmuneSystem({
 }) {
 
   // ---------------------------------------------------------------------------
-  // META — v15-Evo-Immortal identity
+  // META — v24-IMMORTAL++ identity
   // ---------------------------------------------------------------------------
   const meta = {
     layer: "PulseMeshImmuneSystem",
     role: "IMMUNE_COMMANDER",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -79,40 +80,55 @@ export function createPulseMeshImmuneSystem({
 
       zeroCompute: true,
       zeroMutation: true,
-      zeroRoutingInfluence: true
+      zeroRoutingInfluence: true,
+
+      // v24++
+      bluetoothPresenceAware: true,
+      bluetoothMeshAware: true
     },
-    // optional: surface the underlying immunity engine meta for backend AI
     immunityEngine: PulseImmunity?.meta || null
   };
 
 
   // ---------------------------------------------------------------------------
-  // ISSUE ENRICHMENT (v15)
-  // Deterministic enrichment with mode/band + lineage hints.
+  // ISSUE ENRICHMENT (v24-IMMORTAL++)
+  // Deterministic enrichment with mode/band + lineage + bluetooth hints.
   // ---------------------------------------------------------------------------
   function enrichIssue(issue, context = {}) {
     const base = issue || {};
 
-    return {
+    const enriched = {
       ...base,
-      // mode/band awareness
       binaryMode: !!context.binaryMode,
       dualMode: !!context.dualMode,
       presenceBand: context.presenceBand || base.presenceBand || "symbolic",
 
-      // lineage hints (if present in diag snapshot issue)
       lineageDepth: typeof base.lineageDepth === "number"
         ? base.lineageDepth
         : null,
       meshNodeId: base.meshNodeId ?? null,
       factoringDepth: base.factoringDepth ?? null,
 
-      // severity normalization
       severity: normalizeSeverity(base.severity),
 
-      // stable tags
       tags: Array.isArray(base.tags) ? base.tags.slice() : []
     };
+
+    // v24++ bluetooth metadata (purely descriptive)
+    const bt = base.bluetooth || context.bluetooth || {};
+    if (bt.proximity != null || bt.linkQuality != null || bt.events != null) {
+      enriched.bluetooth = {
+        proximity: bt.proximity ?? null,
+        linkQuality: bt.linkQuality ?? null,
+        events: bt.events ?? 0
+      };
+
+      if (!enriched.tags.includes("bluetooth-aware")) {
+        enriched.tags.push("bluetooth-aware");
+      }
+    }
+
+    return enriched;
   }
 
   function normalizeSeverity(sev) {
@@ -125,8 +141,7 @@ export function createPulseMeshImmuneSystem({
 
 
   // ---------------------------------------------------------------------------
-  // HEALER REGISTRY (v15)
-  // Declarative — no direct mutation.
+  // HEALER REGISTRY (unchanged semantics, v24 meta)
   // ---------------------------------------------------------------------------
   const HEALER_REGISTRY = [
     {
@@ -142,7 +157,8 @@ export function createPulseMeshImmuneSystem({
           severity: issue.severity ?? 1,
           note: issue.message ?? null,
           presenceBand: issue.presenceBand ?? null,
-          lineageDepth: issue.lineageDepth ?? null
+          lineageDepth: issue.lineageDepth ?? null,
+          bluetooth: issue.bluetooth || null
         },
         result: GPUHealer?.repair
           ? GPUHealer.repair(issue)
@@ -172,7 +188,8 @@ export function createPulseMeshImmuneSystem({
             severity: issue.severity ?? 1,
             note: issue.message ?? null,
             presenceBand: issue.presenceBand ?? null,
-            lineageDepth: issue.lineageDepth ?? null
+            lineageDepth: issue.lineageDepth ?? null,
+            bluetooth: issue.bluetooth || null
           },
           result: RouteResponder
             ? RouteResponder(issue)
@@ -193,7 +210,8 @@ export function createPulseMeshImmuneSystem({
           driftType: issue.driftType ?? "unspecified",
           severity: issue.severity ?? 1,
           note: issue.message ?? null,
-          presenceBand: issue.presenceBand ?? null
+          presenceBand: issue.presenceBand ?? null,
+          bluetooth: issue.bluetooth || null
         },
         issue
       })
@@ -212,7 +230,8 @@ export function createPulseMeshImmuneSystem({
           meshNodeId: issue.meshNodeId ?? null,
           severity: issue.severity ?? 1,
           note: issue.message ?? null,
-          presenceBand: issue.presenceBand ?? null
+          presenceBand: issue.presenceBand ?? null,
+          bluetooth: issue.bluetooth || null
         },
         issue
       })
@@ -221,9 +240,9 @@ export function createPulseMeshImmuneSystem({
 
 
   // ---------------------------------------------------------------------------
-  // TRIAGE (v15)
-  // Deterministic ordering — no pressure thresholds.
-  // ---------------------------------------------------------------------------
+  // TRIAGE (v24-IMMORTAL++)
+  // Deterministic ordering — now also tags bluetooth-heavy issues, but no thresholds.
+// ---------------------------------------------------------------------------
   function triage(analysis) {
     const { issues } = analysis;
 
@@ -231,10 +250,8 @@ export function createPulseMeshImmuneSystem({
       const sa = a.severity || 1;
       const sb = b.severity || 1;
 
-      // Higher severity first
       if (sb !== sa) return sb - sa;
 
-      // Mesh issues prioritized secondarily
       const aMsg = a.message || "";
       const bMsg = b.message || "";
 
@@ -244,32 +261,40 @@ export function createPulseMeshImmuneSystem({
       if (aIsMesh && !bIsMesh) return -1;
       if (!aIsMesh && bIsMesh) return 1;
 
+      // v24++: bluetooth-heavy issues get slight priority, but still deterministic
+      const aBt = a.bluetooth && (a.bluetooth.events || 0) > 0;
+      const bBt = b.bluetooth && (b.bluetooth.events || 0) > 0;
+
+      if (aBt && !bBt) return -1;
+      if (!aBt && bBt) return 1;
+
       return 0;
     });
   }
 
 
   // ---------------------------------------------------------------------------
-  // DISPATCH (v15)
+  // DISPATCH (v24-IMMORTAL++)
   // Declarative — no direct healing.
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   async function dispatch(issue) {
     const msg = issue.message || "";
 
     for (const healer of HEALER_REGISTRY) {
       if (healer.match.test(msg)) {
         const res = healer.handler(issue);
-        log && log("[PulseMeshImmuneSystem] Dispatch", {
+        log && log("[PulseMeshImmuneSystem-v24] Dispatch", {
           healer: healer.name,
           issueMessage: msg,
           severity: issue.severity,
-          presenceBand: issue.presenceBand
+          presenceBand: issue.presenceBand,
+          bluetooth: issue.bluetooth || null
         });
         return res;
       }
     }
 
-    warn && warn("[PulseMeshImmuneSystem] No healer found for issue", {
+    warn && warn("[PulseMeshImmuneSystem-v24] No healer found for issue", {
       message: msg,
       severity: issue.severity
     });
@@ -283,14 +308,15 @@ export function createPulseMeshImmuneSystem({
 
 
   // ---------------------------------------------------------------------------
-  // COMMAND CYCLE (v15)
+  // COMMAND CYCLE (v24-IMMORTAL++)
   // Pure triage + directive emission.
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
   async function command(diagSnapshot, context = {}) {
     const analysis = PulseImmunity.analyze(diagSnapshot, {
       binaryMode: context.binaryMode,
       dualMode: context.dualMode,
-      presenceBand: context.presenceBand
+      presenceBand: context.presenceBand,
+      bluetooth: context.bluetooth || null
     });
 
     const enrichedIssues = (analysis.issues || []).map((issue) =>
@@ -312,6 +338,7 @@ export function createPulseMeshImmuneSystem({
       binaryMode: !!context.binaryMode,
       dualMode: !!context.dualMode,
       presenceBand: context.presenceBand || "symbolic",
+      bluetooth: context.bluetooth || null,
       meta,
       analysis: {
         ...analysis,

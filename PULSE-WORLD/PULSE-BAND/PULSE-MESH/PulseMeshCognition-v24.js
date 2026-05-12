@@ -1,24 +1,26 @@
 // ============================================================================
-// FILE: PulseMeshCognition-v15-Evo-Immortal.js
+// FILE: PulseMeshCognition-v24-IMMORTAL++.js
 // PULSE MESH COGNITION — META MEMORY / PATTERN-OF-PATTERNS
 // System-wide Mesh Cognition • Route / Earner / Organ / Reflex Patterns
-// Metadata-only • Zero Payload Mutation • Presence + Band + Advantage Aware
+// Metadata-only • Zero Payload Mutation
+// Presence + Band + Advantage + Bluetooth-Presence Aware
 // ============================================================================
 //
-// IDENTITY — THE COGNITION FIELD (v15-Evo-Immortal):
+// IDENTITY — THE COGNITION FIELD (v24-IMMORTAL++):
 //  -------------------------------------------------
 //  • Meta-memory for the mesh: patterns-of-patterns, not raw payloads.
 //  • Tracks routes, earners, organs, reflexes, mesh pressure, factoring,
-//    presence bands, and advantage fields — all as metadata only.
+//    presence bands, advantage fields, and bluetooth presence — all metadata.
 //  • Dual-band aware: symbolic / binary / dual mode + band classification.
 //  • Presence-aware: counts presence tags, never stores identity payloads.
 //  • Advantage-aware: binary preference, factored paths, advantage events.
+//  • Bluetooth-aware: proximity tiers + link quality as scalar metadata only.
 //  • Feeds dashboards, AI views, and long-horizon mesh tuning (offline).
 //  • Fully deterministic: same impulse sequence → same CognitionStore state.
 //  • Zero randomness, zero timestamps, zero async, zero network, zero FS.
 //
-// SAFETY CONTRACT (v15):
-//  ----------------------
+// SAFETY CONTRACT (v24-IMMORTAL++):
+//  --------------------------------
 //  • No randomness
 //  • No timestamps
 //  • No payload mutation (flags-only, counters, and arrays of scalars/labels)
@@ -26,7 +28,7 @@
 //  • No network, no filesystem, no env access
 //  • Fail-open: missing fields → safe defaults
 //  • Deterministic: same impulses → same cognition patterns
-//  • Presence-aware and band-aware only via metadata
+//  • Presence-aware, band-aware, bluetooth-aware only via metadata
 // ============================================================================
 import {
   OrganismIdentity,
@@ -53,7 +55,7 @@ export const CognitionStore = {
   organs: new Map(),   // key: organId, value: { count, anomalyCount }
   reflexes: new Map(), // key: reflex_flag, value: { triggered, drops }
 
-  // v15: dual-band + presence cognition (mode vs band)
+  // dual-band + presence cognition (mode vs band)
   mode: {
     symbolic: 0,
     binary: 0,
@@ -90,10 +92,21 @@ export const CognitionStore = {
     events: 0
   },
 
+  // bluetooth presence cognition (metadata-only)
+  bluetooth: {
+    events: 0,
+    near: 0,
+    mid: 0,
+    far: 0,
+    unknown: 0,
+    linkQualitySamples: 0,
+    linkQualitySum: 0
+  },
+
   meta: {
     layer: "PulseMeshCognition",
     role: "META_MEMORY",
-    version: "15-Evo-Immortal",
+    version: "24-IMMORTAL++",
     target: "full-mesh",
     selfRepairable: true,
     evo: {
@@ -118,6 +131,10 @@ export const CognitionStore = {
 
       presenceAware: true,
       bandAware: true,
+
+      // bluetooth / proximity awareness
+      bluetoothPresenceAware: true,
+      bluetoothMeshAware: true,
 
       zeroCompute: true,   // no heavy compute, only simple aggregation
       zeroMutation: true   // never mutates external objects
@@ -158,9 +175,48 @@ function recordPresenceTag(impulse) {
   CognitionStore.presence.tags.set(tag, count + 1);
 }
 
+function clamp01(v) {
+  if (!Number.isFinite(v)) return 0;
+  if (v <= 0) return 0;
+  if (v >= 1) return 1;
+  return v;
+}
+
+// bluetooth presence can come from impulse.bluetoothPresence or flags.bluetooth_presence
+function getBluetoothPresenceMeta(impulse) {
+  if (impulse && typeof impulse.bluetoothPresence === "object") {
+    return impulse.bluetoothPresence;
+  }
+  if (impulse?.flags && typeof impulse.flags.bluetooth_presence === "object") {
+    return impulse.flags.bluetooth_presence;
+  }
+  return null;
+}
+
+function recordBluetoothPresence(impulse) {
+  const bt = getBluetoothPresenceMeta(impulse);
+  if (!bt) return;
+
+  const store = CognitionStore.bluetooth;
+  store.events++;
+
+  const proximity = bt.proximityTier || bt.proximity || "unknown";
+  if (proximity === "near") store.near++;
+  else if (proximity === "mid" || proximity === "medium") store.mid++;
+  else if (proximity === "far") store.far++;
+  else store.unknown++;
+
+  const qRaw = Number(bt.linkQuality ?? bt.quality ?? bt.rssiRatio);
+  if (Number.isFinite(qRaw)) {
+    const q = clamp01(qRaw);
+    store.linkQualitySum += q;
+    store.linkQualitySamples++;
+  }
+}
+
 
 // -----------------------------------------------------------
-// Cognition Pack — pattern-of-patterns (v15)
+// Cognition Pack — pattern-of-patterns (v24-IMMORTAL++)
 //   • Each method is metadata-only, no payload storage.
 //   • Reads impulse flags + scalar fields, updates meta-memory.
 // -----------------------------------------------------------
@@ -171,6 +227,7 @@ export const PulseMeshCognition = {
     classifyMode(impulse);
     classifyBand(impulse);
     recordPresenceTag(impulse);
+    recordBluetoothPresence(impulse);
 
     const entry = impulse.entryNodeId ?? "unknown";
     const delivered = impulse.flags?.delivered_to ?? "none";
@@ -233,9 +290,7 @@ export const PulseMeshCognition = {
     }
   },
 
-  // ---------------------------------------------------------
-  // v15 — Mesh Pressure + Factoring + Presence Cognition
-  // ---------------------------------------------------------
+  // Mesh Pressure + Factoring + Presence + Advantage + Bluetooth Cognition
   recordMeshPattern(impulse) {
     const flags = impulse.flags || {};
 
@@ -294,12 +349,14 @@ export const PulseMeshCognition = {
       CognitionStore.advantage.binaryPreference.push(flags.aura_binary_mesh_bias);
       CognitionStore.advantage.events++;
     }
+
+    // Bluetooth presence already recorded in recordRoutePattern via recordBluetoothPresence
   }
 };
 
 
 // -----------------------------------------------------------
-// Cognition Engine (v15)
+// Cognition Engine (v24-IMMORTAL++)
 //   • Single entrypoint for the organism.
 //   • Attaches cognition_meta + records all cognition patterns.
 // -----------------------------------------------------------
@@ -324,6 +381,10 @@ export function applyPulseMeshCognition(impulse) {
 //   • Aggregated counts only, no raw arrays exposed.
 // -----------------------------------------------------------
 export function getCognitionSnapshot() {
+  const bt = CognitionStore.bluetooth;
+  const avgLinkQuality =
+    bt.linkQualitySamples > 0 ? bt.linkQualitySum / bt.linkQualitySamples : 0;
+
   return {
     meta: CognitionStore.meta,
     routes: CognitionStore.routes.size,
@@ -356,6 +417,15 @@ export function getCognitionSnapshot() {
       events: CognitionStore.advantage.events,
       binaryPreferenceSamples: CognitionStore.advantage.binaryPreference.length,
       factoredPaths: CognitionStore.advantage.factoredPaths
+    },
+
+    bluetooth: {
+      events: bt.events,
+      near: bt.near,
+      mid: bt.mid,
+      far: bt.far,
+      unknown: bt.unknown,
+      avgLinkQuality
     }
   };
 }

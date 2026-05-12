@@ -1,8 +1,10 @@
 // ============================================================================
-// FILE: OrganismMesh-v16.js
+// FILE: OrganismMesh-v24-IMMORTAL-PLUS.js
 // PULSE ORGANISM MESH — OVERMIND-PRIME ORGANISM BRAIN + GLOBAL MESH COORDINATOR
 // “One page. One route. Whole organism. One mesh that knows everything.”
+// v24++ IMMORTAL-PLUS: dual-mesh, presence-aware, advantage-aware, organism‑level artery + consciousness
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
@@ -10,41 +12,79 @@ import {
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 import { createPulseOrgans } from "./PulseMeshOrgans-V24.js";
 
 // ============================================================================
-// META — v16-IMMORTAL
+// META — v24++ IMMORTAL-PLUS
 // ============================================================================
+
 export const OrganismMeshMeta = Object.freeze({
   layer: "Organism",
   role: "OVERMIND_PRIME_ORGANISM_MESH_ROOT",
-  version: "v16-IMMORTAL",
-  identity: "OrganismMesh-v16-IMMORTAL",
+  version: "v24++-IMMORTAL-PLUS",
+  identity: "OrganismMesh-v24-IMMORTAL-PLUS",
   guarantees: Object.freeze({
     deterministic: true,
     driftProof: true,
     mutationSafe: true,
+
     presenceAware: true,
     bandAware: true,
     dualMesh: true,
+
     survivalOrgansAttached: true,
     meshCoordinatorAttached: true,
     meshStateAttached: true,
     meshEventsAttached: true,
+
     organismArteryAttached: true,
     organismConsciousnessAttached: true,
     organismModeEngineAttached: true,
+
     nodeAdminBridgeAttached: true,
-    overmindPrimeBridgeAttached: true
+    overmindPrimeBridgeAttached: true,
+
+    advantageAware: true,
+    meshPressureAware: true,
+    auraPressureAware: true,
+    flowAware: true,
+    driftAware: true
+  }),
+  evo: Object.freeze({
+    dualMode: true,
+    binaryAware: true,
+    symbolicAware: true,
+    localAware: true,
+    internetAware: true,
+
+    advantageCascadeAware: true,
+    pulseEfficiencyAware: true,
+    driftProof: true,
+    multiInstanceReady: true,
+
+    unifiedAdvantageField: true,
+    deterministicField: true,
+    futureEvolutionReady: true,
+
+    signalFactoringAware: true,
+    meshPressureAware: true,
+    auraPressureAware: true,
+    flowAware: true,
+    driftAware: true,
+
+    presenceAware: true,
+    bandAware: true,
+
+    zeroCompute: false,          // organism-level synthesis allowed
+    zeroMutation: true,          // never mutates external objects
+    zeroRoutingInfluence: true   // advisory-only at organism level
   })
 });
 
@@ -91,9 +131,9 @@ function bucketCost(v) {
 }
 
 // ============================================================================
-// ORGANISM ARTERY v4 — GLOBAL ORGANISM-LEVEL ARTERY
-//   • Synthesizes symbolic, binary, safety, service, earn, reproduction, presence.
-//   • Purely derived metrics; no side effects.
+// ORGANISM ARTERY v6 — GLOBAL ORGANISM-LEVEL ARTERY (24++)
+//   • Synthesizes symbolic, binary, safety, service, earn, reproduction, presence, mesh.
+//   • Purely derived metrics; no side effects on envs.
 // ============================================================================
 
 function createOrganismArtery({ trace, log }) {
@@ -247,9 +287,7 @@ function createOrganismArtery({ trace, log }) {
 }
 
 // ============================================================================
-// ORGANISM CONSCIOUSNESS SNAPSHOT — v16-IMMORTAL
-//   • Derived from organism artery + mesh state + presence + modes.
-//   • Purely descriptive; no side effects.
+// ORGANISM CONSCIOUSNESS SNAPSHOT — v24++ IMMORTAL-PLUS
 // ============================================================================
 
 function createOrganismConsciousness({ trace, log }) {
@@ -349,9 +387,7 @@ function createOrganismConsciousness({ trace, log }) {
 }
 
 // ============================================================================
-// ORGANISM MODE ENGINE — v16-IMMORTAL
-//   • Advisory-only organism-level mode.
-//   • Uses artery + consciousness to pick a mode.
+// ORGANISM MODE ENGINE — v24++ IMMORTAL-PLUS
 // ============================================================================
 
 function createOrganismModeEngine({ trace, log }) {
@@ -416,7 +452,7 @@ function createOrganismModeEngine({ trace, log }) {
 }
 
 // ============================================================================
-// MESH STATE v16 — RESOURCE / CHUNK / LANE STATE
+// MESH STATE v24++ — RESOURCE / CHUNK / LANE STATE
 // ============================================================================
 
 function createMeshState() {
@@ -536,7 +572,7 @@ function createMeshState() {
 }
 
 // ============================================================================
-// MESH EVENTS v16 — ORGANISM-LEVEL EVENT BUS
+// MESH EVENTS v24++ — ORGANISM-LEVEL EVENT BUS
 // ============================================================================
 
 function createMeshEvents({ warn }) {
@@ -575,7 +611,7 @@ function createMeshEvents({ warn }) {
 }
 
 // ============================================================================
-// MESH COORDINATOR v16 — GLOBAL CHUNK/RESOURCE COORDINATOR
+// MESH COORDINATOR v24++ — GLOBAL CHUNK/RESOURCE COORDINATOR
 // ============================================================================
 
 function createMeshCoordinator({ meshState, meshEvents, tlog }) {
@@ -668,15 +704,15 @@ function createMeshCoordinator({ meshState, meshEvents, tlog }) {
 }
 
 // ============================================================================
-// ORGANISM MESH FACTORY — v16-IMMORTAL
+// ORGANISM MESH FACTORY — v24++ IMMORTAL-PLUS
 // ============================================================================
 
 export function createOrganismMesh({
   context = {},
   symbolicMeshEnv,   // PASSED IN BY BARREL
   binaryMeshEnv,     // PASSED IN BY BARREL
-  nodeAdminBridge = null,   // { getArtery?, getSnapshot? }
-  overmindPrimeBridge = null, // { emit?, pullDirectives? }
+  nodeAdminBridge = null,      // { getArtery?, getSnapshot? }
+  overmindPrimeBridge = null,  // { emit?, pullDirectives? }
   serviceGatewayBridge = null, // { getArtery? }
   safetyFrameBridge = null,    // { getArtery? }
   earnBridge = null,           // { getArtery? }
@@ -689,21 +725,15 @@ export function createOrganismMesh({
 
   const tlog = trace ? (...args) => log("[OrganismMesh]", ...args) : () => {};
 
-  // -------------------------------------------------------------------------
   // 1) SURVIVAL ORGANS
-  // -------------------------------------------------------------------------
   const survivalOrgans = createPulseOrgans();
 
-  // -------------------------------------------------------------------------
   // 2) MESH STATE + EVENTS + COORDINATOR
-  // -------------------------------------------------------------------------
   const meshState = createMeshState();
   const meshEvents = createMeshEvents({ warn });
   const meshCoordinator = createMeshCoordinator({ meshState, meshEvents, tlog });
 
-  // -------------------------------------------------------------------------
   // 3) ORGANISM ARTERY + CONSCIOUSNESS + MODE ENGINE
-  // -------------------------------------------------------------------------
   const organismArtery = createOrganismArtery({ trace, log });
   const organismConsciousness = createOrganismConsciousness({ trace, log });
   const organismModeEngine = createOrganismModeEngine({ trace, log });
@@ -712,9 +742,7 @@ export function createOrganismMesh({
   let lastConsciousnessSnapshot = null;
   let lastOrganismMode = "idle";
 
-  // -------------------------------------------------------------------------
   // 4) PRESENCE / WORLD METRICS (symbolic-only, metadata-only)
-// -------------------------------------------------------------------------
   function computePresenceMetrics() {
     const presenceRelay = symbolicMeshEnv?.meshPresenceRelay;
     const socialGraph = symbolicMeshEnv?.socialGraph;
@@ -742,9 +770,7 @@ export function createOrganismMesh({
     });
   }
 
-  // -------------------------------------------------------------------------
-  // 5) SUBSYSTEM ARTERIES (NODEADMIN / SERVICE / SAFETY / EARN / REPRODUCTION)
-// -------------------------------------------------------------------------
+  // 5) SUBSYSTEM ARTERIES
   function getSubsystemArteries() {
     const symbolicArtery = symbolicMeshEnv?.meta?.artery || null;
     const binaryArtery = binaryMeshEnv?.meta?.artery || null;
@@ -765,9 +791,7 @@ export function createOrganismMesh({
     };
   }
 
-  // -------------------------------------------------------------------------
   // 6) ORGANISM SNAPSHOT PIPELINE
-  // -------------------------------------------------------------------------
   function computeOrganismSnapshots() {
     const meshStateMetrics = meshState.metrics();
     const presenceMetrics = computePresenceMetrics();
@@ -798,9 +822,7 @@ export function createOrganismMesh({
     return { artery, consciousness, mode };
   }
 
-  // -------------------------------------------------------------------------
   // 7) OVERMIND PRIME BRIDGE (ADVISORY-ONLY)
-// -------------------------------------------------------------------------
   function emitToOvermind(eventType, payload) {
     if (!overmindPrimeBridge || typeof overmindPrimeBridge.emit !== "function") return;
     const { artery, consciousness, mode } = computeOrganismSnapshots();
@@ -816,9 +838,7 @@ export function createOrganismMesh({
     });
   }
 
-  // -------------------------------------------------------------------------
   // 8) PREWARM — CALLS ONLY ENVS + SURVIVAL ORGANS
-  // -------------------------------------------------------------------------
   function prewarm() {
     log("[OrganismMesh] Prewarm start");
 
@@ -847,16 +867,13 @@ export function createOrganismMesh({
     log("[OrganismMesh] Prewarm complete");
   }
 
-  // -------------------------------------------------------------------------
   // 9) ORGANISM ROUTES (USE ONLY ENVS PASSED IN)
-// -------------------------------------------------------------------------
   function classifyImpulse(impulse) {
     return survivalOrgans.apply(impulse);
   }
 
   function transmitSymbolic(from, packet, options = {}) {
     const start = Date.now();
-    let error = null;
     try {
       const result = symbolicMeshEnv.transmit(from, packet, options);
       const duration = Date.now() - start;
@@ -865,7 +882,6 @@ export function createOrganismMesh({
     } catch (e) {
       const duration = Date.now() - start;
       organismArtery.recordCall(duration, true);
-      error = e;
       emitToOvermind("symbolic-transmit-error", {
         from,
         error: String(e?.message || e)
@@ -876,7 +892,6 @@ export function createOrganismMesh({
 
   function transmitBinary(from, bits, options = {}) {
     const start = Date.now();
-    let error = null;
     try {
       const result = binaryMeshEnv.binaryMesh.transmit(from, bits, options);
       const duration = Date.now() - start;
@@ -885,7 +900,6 @@ export function createOrganismMesh({
     } catch (e) {
       const duration = Date.now() - start;
       organismArtery.recordCall(duration, true);
-      error = e;
       emitToOvermind("binary-transmit-error", {
         from,
         error: String(e?.message || e)
@@ -894,9 +908,7 @@ export function createOrganismMesh({
     }
   }
 
-  // -------------------------------------------------------------------------
   // 10) PUBLIC ORGANISM FACADE
-  // -------------------------------------------------------------------------
   function getOrganismArtery() {
     if (!lastArterySnapshot) {
       computeOrganismSnapshots();

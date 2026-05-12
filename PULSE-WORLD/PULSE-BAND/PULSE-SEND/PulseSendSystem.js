@@ -48,15 +48,15 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS — Pulse v1 / v2 / v3 creators
 // ============================================================================
-import { createPulseV3 } from "./PulseSendV3UnifiedOrganism-v16.js";
-import { createPulseV2 } from "./PulseSendV2EvolutionEngine-v16.js";
-import { createLegacyPulse } from "./PulseSendLegacyPulse-v16.js";
+import { createPulseV3 } from "./PulseSendV3UnifiedOrganism-v24.js";
+import { createPulseV2 } from "./PulseSendV2EvolutionEngine-v24.js";
+import { createLegacyPulse } from "./PulseSendLegacyPulse-v24.js";
 
 // Router + Mesh + Send
 import { PulseRouter } from "../PULSE-ROUTER/PulseRouter-v24.js";
 import { PulseMesh } from "../PULSE-MESH/PulseMesh-v16.js";
-import { createPulseSendImpulse as createPulseSend } from "./PulseSendImpulse-v16.js";
-import { createPulseSendReturn } from "./PulseSendReturn.js";
+import { createPulseSendImpulse as createPulseSend } from "./PulseSendImpulse-v24.js";
+import { createPulseSendReturn } from "./PulseSendReturn-v24.js";
 
 
 // ============================================================================

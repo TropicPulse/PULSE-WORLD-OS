@@ -1,27 +1,27 @@
 // ============================================================================
-// FILE: PulseMeshPresenceRelay-v16.js
-// PULSE MESH PRESENCE RELAY — v16-IMMORTAL
-// Mesh-Level Presence • Nearby Scan • Advantage/Band/Region Aware
-// Metadata-Only • Membrane-Safe • NodeAdmin-Ready
+// FILE: PulseMeshPresenceRelay-v24-IMMORTAL++.js
+// PULSE MESH PRESENCE RELAY — v24-IMMORTAL++
+// Mesh-Level Presence • Nearby Scan • Region/Beacon/Band/Advantage Aware
+// Metadata-Only • Membrane-Safe • Deterministic • NodeAdmin-Ready
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-// FACTORY — v16-IMMORTAL
+// FACTORY — v24-IMMORTAL++
 // ============================================================================
 
 export function createPulseMeshPresenceRelay({
@@ -32,14 +32,15 @@ export function createPulseMeshPresenceRelay({
   warn,
   error
 }) {
-  // --------------------------------------------------------------------------
-  // IMMORTAL META
-  // --------------------------------------------------------------------------
+
+  // ==========================================================================
+  // META — v24-IMMORTAL++
+  // ==========================================================================
   const meta = Object.freeze({
     layer: "PulseMeshPresenceRelay",
     role: "MESH_PRESENCE_RELAY",
-    version: "v16-IMMORTAL",
-    lineage: "PulseMesh-v16",
+    version: "v24-IMMORTAL++",
+    lineage: "PulseMesh-v24",
     target: "full-mesh",
     selfRepairable: true,
 
@@ -57,7 +58,7 @@ export function createPulseMeshPresenceRelay({
       zeroNetworkFetch: true,
       safeRouteFree: true,
 
-      // IMMORTAL+ upgrades
+      // IMMORTAL++ upgrades
       presenceAware: true,
       bandAware: true,
       binaryAware: true,
@@ -68,6 +69,7 @@ export function createPulseMeshPresenceRelay({
       unifiedAdvantageField: true,
       regionAware: true,
       beaconAware: true,
+      bluetoothAware: true,
       multiInstanceReady: true,
       nodeAdminReady: true,
       futureEvolutionReady: true
@@ -92,36 +94,38 @@ export function createPulseMeshPresenceRelay({
     })
   });
 
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   // INTERNAL STATE — deterministic, drift-proof
-  // --------------------------------------------------------------------------
-  // nearbyMap: uid -> enriched presence packet
-  const nearbyMap = new Map();
-
-  // bandStats: band -> { count, lastSeen }
-  const bandStats = new Map();
+  // ==========================================================================
+  const nearbyMap = new Map();   // uid -> enriched presence packet
+  const bandStats = new Map();   // band -> { count, lastSeen }
+  const regionStats = new Map(); // regionTag -> { count, lastSeen }
+  const beaconStats = new Map(); // beaconId -> { count, lastSeen }
+  const bluetoothStats = new Map(); // proximityTier -> { count, lastSeen }
 
   let lastScanAt = 0;
 
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   // SAFE HELPERS
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   function safeNow() {
-    try {
-      return SystemClock?.now ? SystemClock.now() : Date.now();
-    } catch {
-      return Date.now();
-    }
+    try { return SystemClock?.now ? SystemClock.now() : Date.now(); }
+    catch { return Date.now(); }
   }
 
   function safeDisplayName(uid) {
-    try {
-      return IdentityDirectory?.safeName
-        ? IdentityDirectory.safeName(uid)
-        : uid;
-    } catch {
-      return uid;
-    }
+    try { return IdentityDirectory?.safeName ? IdentityDirectory.safeName(uid) : uid; }
+    catch { return uid; }
+  }
+
+  function normalizePresenceBand(band) {
+    if (!band) return "mesh";
+    const v = String(band).toLowerCase();
+    if (v.includes("binary")) return "binary";
+    if (v.includes("symbolic")) return "symbolic";
+    if (v.includes("dual")) return "dual";
+    if (v.includes("mesh")) return "mesh";
+    return "mesh";
   }
 
   function classifySystemAgeDays(days) {
@@ -132,32 +136,34 @@ export function createPulseMeshPresenceRelay({
     return "veteran";
   }
 
-  function normalizePresenceBand(band) {
-    if (!band) return "mesh";
-    const v = String(band).toUpperCase();
-    if (v.includes("BINARY")) return "binary";
-    if (v.includes("SYMBOLIC")) return "symbolic";
-    if (v.includes("DUAL")) return "dual";
-    if (v.includes("MESH")) return "mesh";
-    return "mesh";
-  }
-
   function updateBandStats(band, now) {
     const key = normalizePresenceBand(band);
     const prev = bandStats.get(key) || { count: 0, lastSeen: 0 };
-    bandStats.set(key, {
-      count: prev.count + 1,
-      lastSeen: now
-    });
+    bandStats.set(key, { count: prev.count + 1, lastSeen: now });
   }
 
-  // --------------------------------------------------------------------------
-  // IMMORTAL PRESENCE ENRICHMENT (v16+)
-// --------------------------------------------------------------------------
-// Accepts both legacy mesh presence packets and beacon-style packets:
-//   • { uid, distance, presenceBand, systemAgeDays, advantageHint, regionTag, meshStatus }
-//   • { presenceField, advantageField, bandSignature, regionTag, meshStatus, uid? }
-// --------------------------------------------------------------------------
+  function updateRegionStats(regionTag, now) {
+    if (!regionTag) return;
+    const prev = regionStats.get(regionTag) || { count: 0, lastSeen: 0 };
+    regionStats.set(regionTag, { count: prev.count + 1, lastSeen: now });
+  }
+
+  function updateBeaconStats(beaconId, now) {
+    if (!beaconId) return;
+    const prev = beaconStats.get(beaconId) || { count: 0, lastSeen: 0 };
+    beaconStats.set(beaconId, { count: prev.count + 1, lastSeen: now });
+  }
+
+  function updateBluetoothStats(bt, now) {
+    if (!bt) return;
+    const tier = bt.proximityTier || bt.proximity || "unknown";
+    const prev = bluetoothStats.get(tier) || { count: 0, lastSeen: 0 };
+    bluetoothStats.set(tier, { count: prev.count + 1, lastSeen: now });
+  }
+
+  // ==========================================================================
+  // IMMORTAL++ PRESENCE ENRICHMENT
+  // ==========================================================================
   function extractUid(packet) {
     if (!packet) return null;
     if (packet.uid) return packet.uid;
@@ -172,6 +178,7 @@ export function createPulseMeshPresenceRelay({
 
     const presenceField = packet.presenceField || packet.presence || null;
     const advantageField = packet.advantageField || null;
+    const bluetoothField = packet.bluetoothPresence || packet.bluetooth || null;
 
     const distance =
       packet.distance ??
@@ -197,6 +204,11 @@ export function createPulseMeshPresenceRelay({
       presenceField?.region ??
       null;
 
+    const beaconId =
+      packet.beaconId ??
+      presenceField?.beaconId ??
+      null;
+
     const meshStatus =
       packet.meshStatus ??
       presenceField?.meshStatus ??
@@ -215,35 +227,34 @@ export function createPulseMeshPresenceRelay({
       uid,
       displayName: safeDisplayName(uid),
 
-      // spatial-ish metadata (never trusted, never used for auth)
       distance,
       regionTag,
+      beaconId,
       meshStatus,
 
-      // band + age
       presenceBand,
       systemAgeDays,
       systemAgeBand,
 
-      // IMMORTAL additions
       lastSeen: now,
       presenceAgeMs: 0,
-      lineage: "presence-relay-v16",
-      stability: 1, // updated on scan
+      lineage: "presence-relay-v24",
+      stability: 1,
 
-      // advantage hints (symbolic only)
       advantageHint,
       advantageVector,
 
-      // raw fields (metadata-only, frozen on snapshot)
+      bluetooth: bluetoothField || null,
+
       _rawPresenceField: presenceField || null,
-      _rawAdvantageField: advantageField || null
+      _rawAdvantageField: advantageField || null,
+      _rawBluetoothField: bluetoothField || null
     };
   }
 
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   // MESH EVENT HANDLER
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   function handleMeshPresence(packet) {
     try {
       if (!packet) return;
@@ -252,44 +263,46 @@ export function createPulseMeshPresenceRelay({
       if (!enriched) return;
 
       nearbyMap.set(enriched.uid, enriched);
-      updateBandStats(enriched.presenceBand, enriched.lastSeen);
 
-      log?.("presence", "Mesh presence update (v16)", {
+      const now = enriched.lastSeen;
+      updateBandStats(enriched.presenceBand, now);
+      updateRegionStats(enriched.regionTag, now);
+      updateBeaconStats(enriched.beaconId, now);
+      updateBluetoothStats(enriched.bluetooth, now);
+
+      log?.("presence", "Mesh presence update (v24++)", {
         uid: enriched.uid,
         band: enriched.presenceBand,
-        region: enriched.regionTag
+        region: enriched.regionTag,
+        beacon: enriched.beaconId
       });
     } catch (err) {
       warn?.("presence", "Mesh presence handler failed", err);
     }
   }
 
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   // SUBSCRIBE TO MESH BUS
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   function subscribe() {
     try {
       if (!MeshBus || typeof MeshBus.on !== "function") return;
       MeshBus.on("presence", handleMeshPresence);
-      log?.("presence", "MeshPresenceRelay v16 subscribed to MeshBus");
+      log?.("presence", "MeshPresenceRelay v24++ subscribed to MeshBus");
     } catch (err) {
       warn?.("presence", "MeshPresenceRelay subscribe failed", err);
     }
   }
 
-  // --------------------------------------------------------------------------
-  // IMMORTAL PRESENCE WINDOW SCAN — v16+
-// --------------------------------------------------------------------------
-// OPTIONS:
-//   • maxAgeMs?: number (default 60_000)
-//   • band?: "binary" | "symbolic" | "dual" | "mesh" | "any"
-//   • regionTag?: string
-//   • limit?: number
-// --------------------------------------------------------------------------
+  // ==========================================================================
+  // IMMORTAL++ PRESENCE WINDOW SCAN
+  // ==========================================================================
   function scanNearby({
     maxAgeMs = 60_000,
     band = "any",
     regionTag = null,
+    beaconId = null,
+    bluetoothTier = null,
     limit = null
   } = {}) {
     try {
@@ -307,22 +320,23 @@ export function createPulseMeshPresenceRelay({
           continue;
         }
 
-        // IMMORTAL presence stability scoring
         const stability =
           age < 10_000 ? 1 :
           age < 20_000 ? 0.8 :
           age < 40_000 ? 0.6 :
           0.4;
 
-        if (bandFilter && normalizePresenceBand(p.presenceBand) !== bandFilter) {
-          continue;
+        if (bandFilter && normalizePresenceBand(p.presenceBand) !== bandFilter) continue;
+        if (regionTag && p.regionTag !== regionTag) continue;
+        if (beaconId && p.beaconId !== beaconId) continue;
+
+        if (bluetoothTier) {
+          const bt = p.bluetooth;
+          const tier = bt?.proximityTier || bt?.proximity || "unknown";
+          if (tier !== bluetoothTier) continue;
         }
 
-        if (regionTag && p.regionTag !== regionTag) {
-          continue;
-        }
-
-        const entry = {
+        result.push({
           uid: p.uid,
           displayName: p.displayName,
           distance: p.distance,
@@ -332,16 +346,14 @@ export function createPulseMeshPresenceRelay({
           presenceAgeMs: age,
           stability,
           regionTag: p.regionTag,
+          beaconId: p.beaconId,
           meshStatus: p.meshStatus,
           lineage: p.lineage,
-          advantageHint: p.advantageHint ?? null
-        };
+          advantageHint: p.advantageHint ?? null,
+          bluetooth: p.bluetooth || null
+        });
 
-        result.push(entry);
-
-        if (typeof limit === "number" && limit > 0 && result.length >= limit) {
-          break;
-        }
+        if (typeof limit === "number" && limit > 0 && result.length >= limit) break;
       }
 
       return Object.freeze(result);
@@ -351,50 +363,76 @@ export function createPulseMeshPresenceRelay({
     }
   }
 
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   // NODEADMIN / PRESENCE-JOB VIEW WINDOW
-  // --------------------------------------------------------------------------
-  // Shape tuned for PresenceJobView.build(...).nearbyPresence-style usage.
+  // ==========================================================================
   function getNearbyPresenceWindow(options = {}) {
     const nearby = scanNearby(options);
     return Object.freeze({
       nearbyPresence: nearby,
       bandStats: getBandStats(),
+      regionStats: getRegionStats(),
+      beaconStats: getBeaconStats(),
+      bluetoothStats: getBluetoothStats(),
       lastScanAt
     });
   }
 
-  // --------------------------------------------------------------------------
-  // BAND STATS SNAPSHOT
-  // --------------------------------------------------------------------------
+  // ==========================================================================
+  // STATS SNAPSHOTS
+  // ==========================================================================
   function getBandStats() {
     const out = {};
     for (const [band, s] of bandStats.entries()) {
-      out[band] = {
-        count: s.count,
-        lastSeen: s.lastSeen
-      };
+      out[band] = { count: s.count, lastSeen: s.lastSeen };
     }
     return Object.freeze(out);
   }
 
-  // --------------------------------------------------------------------------
-  // FULL SNAPSHOT (META + NEARBY + BANDS)
-// --------------------------------------------------------------------------
+  function getRegionStats() {
+    const out = {};
+    for (const [region, s] of regionStats.entries()) {
+      out[region] = { count: s.count, lastSeen: s.lastSeen };
+    }
+    return Object.freeze(out);
+  }
+
+  function getBeaconStats() {
+    const out = {};
+    for (const [beacon, s] of beaconStats.entries()) {
+      out[beacon] = { count: s.count, lastSeen: s.lastSeen };
+    }
+    return Object.freeze(out);
+  }
+
+  function getBluetoothStats() {
+    const out = {};
+    for (const [tier, s] of bluetoothStats.entries()) {
+      out[tier] = { count: s.count, lastSeen: s.lastSeen };
+    }
+    return Object.freeze(out);
+  }
+
+  // ==========================================================================
+  // FULL SNAPSHOT
+  // ==========================================================================
   function getPresenceSnapshot(options = {}) {
     const nearby = scanNearby(options);
     return Object.freeze({
       meta,
       count: nearby.length,
       bands: getBandStats(),
+      regions: getRegionStats(),
+      beacons: getBeaconStats(),
+      bluetooth: getBluetoothStats(),
       lastScanAt,
       nearby
     });
   }
 
-  // --------------------------------------------------------------------------
-  // BROADCAST SELF PRESENCE (optional, metadata-only)
-// --------------------------------------------------------------------------
+  // ==========================================================================
+  // BROADCAST SELF PRESENCE
+  // ==========================================================================
   function broadcastSelfPresence(selfPresencePacket) {
     try {
       if (!MeshBus || typeof MeshBus.emit !== "function") return;
@@ -407,31 +445,35 @@ export function createPulseMeshPresenceRelay({
         systemAgeDays: selfPresencePacket.organismAgeDays ?? null,
         advantageHint: selfPresencePacket.advantageHint ?? null,
         regionTag: selfPresencePacket.regionTag ?? null,
-        meshStatus: selfPresencePacket.meshStatus ?? null
+        beaconId: selfPresencePacket.beaconId ?? null,
+        meshStatus: selfPresencePacket.meshStatus ?? null,
+        bluetooth: selfPresencePacket.bluetooth ?? null
       });
     } catch (err) {
       warn?.("presence", "broadcastSelfPresence failed", err);
     }
   }
 
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   // BOOT
-  // --------------------------------------------------------------------------
+  // ==========================================================================
   subscribe();
 
-  // --------------------------------------------------------------------------
-  // PUBLIC API — v16-IMMORTAL
-  // --------------------------------------------------------------------------
+  // ==========================================================================
+  // PUBLIC API — v24-IMMORTAL++
+  // ==========================================================================
   return Object.freeze({
     meta,
 
-    // core presence window
     scanNearby,
     getNearbyPresenceWindow,
     getPresenceSnapshot,
-    getBandStats,
 
-    // broadcast
+    getBandStats,
+    getRegionStats,
+    getBeaconStats,
+    getBluetoothStats,
+
     broadcastSelfPresence
   });
 }

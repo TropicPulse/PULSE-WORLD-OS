@@ -1,42 +1,43 @@
 // ============================================================================
-//  PulseSendImpulse-v16-Immortal-ORGANISM.js
+//  PulseSendImpulse-v24-IMMORTAL-INTEL+++.js
 //  Nerve‑Spark • Pulse‑Agnostic Trigger Organ • Fires the Movement
-//  v16-Immortal-ORGANISM:
-//    - Binary + CacheChunk + Prewarm + Presence + Degradation + Advantage
-//    - DualBand + Immortal Meta Surfaces
-//    - DualHash on all surfaces
-//    - ImpulseIntelligence IMMORTAL-INTEL
+//  v24-IMMORTAL-INTEL+++:
+//    - Binary + CacheChunk v24 + Prewarm v24 + Presence v24
+//    - Degradation v24 + Advantage v24 + DualBand + ImmortalMeta v24
+//    - ImpulseSpeed / ImpulseBurst / ImpulsePriority surfaces
+//    - DualHash on all major surfaces
+//    - ImpulseIntelligence v24 IMMORTAL-INTEL+++
+//    - Pure, deterministic, zero IO, zero randomness, zero time
 // ============================================================================
 //
 //  ROLE:
 //    • Pulse‑agnostic spark organ (v1/v2/v3).
-//    • Fires the movement via the mover organ.
+//    • Fires the movement via the engine/mover organ.
 //    • Emits diagnostics + signatures for the impulse arc.
 //    • Binary‑aware + cacheChunk‑aware + prewarm‑aware + multi‑presence‑aware.
 //    • Degradation‑aware + advantage‑aware + dual‑band‑aware + immortal‑meta‑aware.
 //
-//  SAFETY CONTRACT (v16-Immortal-ORGANISM):
+//  SAFETY CONTRACT (v24-IMMORTAL-INTEL+++):
 //  ----------------------------------------
-//  • No imports.
 //  • No network.
-//  • No compute beyond local helpers.
-//  • Zero randomness.
-//  • Zero timestamps.
-//  • Zero mutation outside instance.
+//  • No async.
+//  • No randomness.
+//  • No timestamps.
+//  • No mutation outside instance.
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PulseWorldOrganismMap-v24.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
@@ -44,29 +45,34 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, tiny, pure
 // ============================================================================
+
+function stableStringify(v) {
+  if (v === null || typeof v !== "object") return JSON.stringify(v);
+  if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
+  const keys = Object.keys(v).sort();
+  return (
+    "{" +
+    keys.map(k => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") +
+    "}"
+  );
+}
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
-    h = (h + s.charCodeAt(i) * (i + 5)) % 131072;
+    h = (h + s.charCodeAt(i) * (i + 7)) % 262144; // 18-bit, v24
   }
-  return `h12_${h}`;
+  return `h24_${h}`;
 }
 
 function computeHashAlt(str) {
   let h = 1;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
-    h = (h * 131 + s.charCodeAt(i) * (i + 17)) % 262139;
+    h = (h * 131 + s.charCodeAt(i) * (i + 19)) % 524287; // 19-bit, v24
   }
-  return `h13_${h}`;
-}
-
-function stableStringify(v) {
-  if (v === null || typeof v !== "object") return JSON.stringify(v);
-  if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
-  const keys = Object.keys(v).sort();
-  return "{" + keys.map(k => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
+  return `h24b_${h}`;
 }
 
 function computeDualHash(value) {
@@ -114,10 +120,10 @@ function extractBinarySurfaceFromPulse(pulse) {
 
 function classifyDegradationTier(healthScore) {
   const h = typeof healthScore === "number" ? healthScore : 1.0;
-  if (h >= 0.95) return "microDegrade";
-  if (h >= 0.85) return "softDegrade";
-  if (h >= 0.50) return "midDegrade";
-  if (h >= 0.15) return "hardDegrade";
+  if (h >= 0.97) return "microDegrade";
+  if (h >= 0.88) return "softDegrade";
+  if (h >= 0.55) return "midDegrade";
+  if (h >= 0.18) return "hardDegrade";
   return "criticalDegrade";
 }
 
@@ -134,8 +140,9 @@ function extractImmortalMetaFromPulse(pulse) {
 
 
 // ============================================================================
-//  Surfaces — cacheChunk / prewarm / presence / degradation / immortal (v16)
+//  Surfaces — cacheChunk / prewarm / presence / degradation / immortal (v24)
 // ============================================================================
+
 function buildCacheChunkSurface({ pulse, targetOrgan, pathway, mode }) {
   const shape = {
     pattern: pulse.pattern || "",
@@ -151,7 +158,8 @@ function buildCacheChunkSurface({ pulse, targetOrgan, pathway, mode }) {
   return {
     cacheChunkKey,
     cacheChunkSignature: dual.primary,
-    cacheChunkSignatureDual: dual
+    cacheChunkSignatureDual: dual,
+    cacheChunkShape: shape
   };
 }
 
@@ -225,14 +233,15 @@ function buildImmortalSurface({ pulse }) {
 
 
 // ============================================================================
-//–  ADVANTAGE + DUAL-BAND SURFACE
+//  ADVANTAGE + DUAL-BAND SURFACE (v24)
 // ============================================================================
+
 function buildAdvantageSurface({ pulse }) {
   const advantageField = pulse?.advantageField || {};
   const band = pulse?.band || "symbolic";
 
-  const advantageScore = advantageField.advantageScore || 0;
-  const advantageTier  = advantageField.advantageTier  || 0;
+  const advantageScore = Number(advantageField.advantageScore || 0);
+  const advantageTier  = Number(advantageField.advantageTier  || 0);
 
   const shape = {
     advantageScore,
@@ -253,8 +262,88 @@ function buildAdvantageSurface({ pulse }) {
 
 
 // ============================================================================
-//  IMPULSE DIAGNOSTICS (symbolic + binary + v16 surfaces)
+//  IMPULSE SPEED / BURST SURFACES (v24)
 // ============================================================================
+
+function buildImpulseSpeedSurface({ pulse, advantageSurface, degradationSurface }) {
+  const priority = pulse.priority || "normal";
+  const advantageTier = advantageSurface.advantageTier || 0;
+  const degradationTier = degradationSurface.degradationTier || "midDegrade";
+
+  let baseSpeed =
+    priority === "critical" ? 1.0 :
+    priority === "high"     ? 0.85 :
+    priority === "normal"   ? 0.6 :
+    priority === "low"      ? 0.4 :
+    0.3;
+
+  if (advantageTier >= 2) baseSpeed += 0.15;
+  else if (advantageTier === 1) baseSpeed += 0.05;
+
+  if (degradationTier === "criticalDegrade") baseSpeed *= 0.4;
+  else if (degradationTier === "hardDegrade") baseSpeed *= 0.6;
+  else if (degradationTier === "midDegrade") baseSpeed *= 0.8;
+
+  const clampedSpeed = Math.max(0.1, Math.min(1.2, baseSpeed));
+
+  const shape = {
+    priority,
+    advantageTier,
+    degradationTier,
+    impulseSpeed: clampedSpeed
+  };
+
+  const dual = computeDualHash(shape);
+
+  return {
+    impulseSpeed: clampedSpeed,
+    impulseSpeedSignature: dual.primary,
+    impulseSpeedSignatureDual: dual
+  };
+}
+
+function buildImpulseBurstSurface({ pulse, binarySurface }) {
+  const hasBinary = binarySurface.hasBinary ? 1 : 0;
+  const binaryStrength = typeof binarySurface.binaryStrength === "number"
+    ? Math.max(0, Math.min(1, binarySurface.binaryStrength))
+    : 0;
+
+  const pattern = pulse.pattern || "";
+  const isGlobal = pattern.includes("/global");
+  const isPage   = pattern.includes("/page");
+
+  let burstMode = "burst-none";
+
+  if (hasBinary && binaryStrength >= 0.8 && isGlobal) {
+    burstMode = "burst-max";
+  } else if (hasBinary && binaryStrength >= 0.5 && (isGlobal || isPage)) {
+    burstMode = "burst-strong";
+  } else if (hasBinary && binaryStrength > 0) {
+    burstMode = "burst-light";
+  }
+
+  const shape = {
+    hasBinary: !!hasBinary,
+    binaryStrength,
+    isGlobal,
+    isPage,
+    burstMode
+  };
+
+  const dual = computeDualHash(shape);
+
+  return {
+    burstMode,
+    burstSignature: dual.primary,
+    burstSignatureDual: dual
+  };
+}
+
+
+// ============================================================================
+//  IMPULSE DIAGNOSTICS (symbolic + binary + v24 surfaces)
+// ============================================================================
+
 function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
   const pattern = pulse?.pattern || "NO_PATTERN";
   const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
@@ -314,8 +403,9 @@ function buildImpulseDiagnostics({ pulse, targetOrgan, pathway, mode }) {
 
 
 // ============================================================================
-//  IMPULSE INTELLIGENCE (IMMORTAL-INTEL)
+//  IMPULSE INTELLIGENCE (v24 IMMORTAL-INTEL+++)
 // ============================================================================
+
 function computeImpulseIntelligence({
   diagnostics,
   cacheChunkSurface,
@@ -323,7 +413,9 @@ function computeImpulseIntelligence({
   presenceSurface,
   degradationSurface,
   immortalSurface,
-  advantageSurface
+  advantageSurface,
+  impulseSpeedSurface,
+  impulseBurstSurface
 }) {
   const patternLen = (diagnostics.pattern || "").length;
   const lineageDepth = diagnostics.lineageDepth || 0;
@@ -347,10 +439,10 @@ function computeImpulseIntelligence({
 
   const healthScore = degradationSurface.healthScore ?? 1.0;
   const healthWeight =
-    healthScore >= 0.95 ? 1.0 :
-    healthScore >= 0.85 ? 0.8 :
-    healthScore >= 0.50 ? 0.5 :
-    healthScore >= 0.15 ? 0.3 :
+    healthScore >= 0.97 ? 1.0 :
+    healthScore >= 0.88 ? 0.8 :
+    healthScore >= 0.55 ? 0.5 :
+    healthScore >= 0.18 ? 0.3 :
     0.1;
 
   const coherenceScore = immortalSurface.immortalMeta?.coherenceScore ?? 1.0;
@@ -364,6 +456,14 @@ function computeImpulseIntelligence({
   const advantageTier  = advantageSurface.advantageTier  || 0;
   const bandIsBinary   = advantageSurface.band === "binary" ? 1 : 0;
 
+  const impulseSpeed = impulseSpeedSurface.impulseSpeed || 0.6;
+  const burstMode = impulseBurstSurface.burstMode || "burst-none";
+  const burstWeight =
+    burstMode === "burst-max"     ? 1.0 :
+    burstMode === "burst-strong"  ? 0.7 :
+    burstMode === "burst-light"   ? 0.4 :
+    0.1;
+
   const structuralScore =
     patternLen * 0.0005 +
     lineageDepth * 0.001 +
@@ -372,13 +472,15 @@ function computeImpulseIntelligence({
   const solvednessScore = Math.max(
     0,
     Math.min(
-      structuralScore * 0.3 +
+      structuralScore * 0.25 +
       presenceWeight * 0.15 +
       prewarmWeight * 0.15 +
       cacheWeight * 0.1 +
       healthWeight * 0.1 +
       coherenceWeight * 0.1 +
-      advantageScore * 0.1,
+      advantageScore * 0.1 +
+      impulseSpeed * 0.05 +
+      burstWeight * 0.05,
       1
     )
   );
@@ -401,6 +503,8 @@ function computeImpulseIntelligence({
   );
 
   const intelShape = {
+    layer: "PulseSendImpulse",
+    version: "v24-IMMORTAL-INTEL+++",
     solvednessScore,
     computeTier,
     readinessScore,
@@ -413,7 +517,9 @@ function computeImpulseIntelligence({
     coherenceScore,
     advantageScore,
     advantageTier,
-    band: advantageSurface.band
+    band: advantageSurface.band,
+    impulseSpeed,
+    burstMode
   };
 
   const dual = computeDualHash(intelShape);
@@ -427,14 +533,14 @@ function computeImpulseIntelligence({
 
 
 // ============================================================================
-//  FACTORY — Create the Impulse Organ (v16-Immortal-ORGANISM)
+//  FACTORY — Create the Impulse Organ (v24-IMMORTAL-INTEL+++)
 // ============================================================================
+
 export function createPulseSendImpulse({ mover, log }) {
   return {
     PulseRole,
 
     fire({ pulse, targetOrgan, pathway, mode = "normal" }) {
-
       const diagnostics = buildImpulseDiagnostics({
         pulse,
         targetOrgan,
@@ -463,6 +569,17 @@ export function createPulseSendImpulse({ mover, log }) {
       const immortalSurface = diagnostics.immortal;
       const advantageSurface = diagnostics.advantage;
 
+      const impulseSpeedSurface = buildImpulseSpeedSurface({
+        pulse,
+        advantageSurface,
+        degradationSurface
+      });
+
+      const impulseBurstSurface = buildImpulseBurstSurface({
+        pulse,
+        binarySurface: diagnostics.binary
+      });
+
       const impulseIntelligence = computeImpulseIntelligence({
         diagnostics,
         cacheChunkSurface,
@@ -470,19 +587,23 @@ export function createPulseSendImpulse({ mover, log }) {
         presenceSurface,
         degradationSurface,
         immortalSurface,
-        advantageSurface
+        advantageSurface,
+        impulseSpeedSurface,
+        impulseBurstSurface
       });
 
       const impulseShape = {
         pulse,
         targetOrgan,
         pathway,
-        mode
+        mode,
+        impulseSpeed: impulseSpeedSurface.impulseSpeed,
+        burstMode: impulseBurstSurface.burstMode
       };
       const impulseDual = computeDualHash(impulseShape);
       const impulseSignature = impulseDual.primary;
 
-      log && log("[PulseSendImpulse-v16-Immortal-ORGANISM] Spark fired", {
+      log && log("[PulseSendImpulse-v24-IMMORTAL-INTEL+++] Spark fired", {
         jobId: pulse.jobId,
         diagnostics,
         cacheChunkSurface,
@@ -491,6 +612,8 @@ export function createPulseSendImpulse({ mover, log }) {
         degradationSurface,
         immortalSurface,
         advantageSurface,
+        impulseSpeedSurface,
+        impulseBurstSurface,
         impulseIntelligence
       });
 
@@ -511,6 +634,8 @@ export function createPulseSendImpulse({ mover, log }) {
         degradationSurface,
         immortalSurface,
         advantageSurface,
+        impulseSpeedSurface,
+        impulseBurstSurface,
         impulseIntelligence,
         movement
       };
@@ -520,8 +645,9 @@ export function createPulseSendImpulse({ mover, log }) {
 
 
 // ============================================================================
-//  ORGAN EXPORT — ⭐ PulseSendImpulse (v16-Immortal-ORGANISM)
+//  ORGAN EXPORT — PulseSendImpulse (v24-IMMORTAL-INTEL+++)
 // ============================================================================
+
 export const PulseSendImpulse = {
   PulseRole,
 
@@ -531,7 +657,7 @@ export const PulseSendImpulse = {
     const lineageDepth = Array.isArray(pulse?.lineage) ? pulse.lineage.length : 0;
 
     throw new Error(
-      `[PulseSendImpulse-v16-Immortal-ORGANISM] fire() called before initialization.\n` +
+      `[PulseSendImpulse-v24-IMMORTAL-INTEL+++] fire() called before initialization.\n` +
       `• pulseType: ${pulseType}\n` +
       `• pattern: ${pattern}\n` +
       `• lineageDepth: ${lineageDepth}\n` +

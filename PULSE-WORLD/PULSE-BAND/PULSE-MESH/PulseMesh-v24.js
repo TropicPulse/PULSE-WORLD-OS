@@ -1,7 +1,7 @@
 // ============================================================================
-// FILE: PulseMesh-v16.js
-// PULSE SYMBOLIC MESH — v16-IMMORTAL
-// “PURE SYMBOLIC CONNECTIVE TISSUE / SEMANTIC PATH / BINARY-AWARE / CHUNK-AWARE”
+// FILE: PulseMesh-v24-IMMORTAL++.js
+// PULSE SYMBOLIC MESH — v24-IMMORTAL++
+// “PURE SYMBOLIC CONNECTIVE TISSUE / SEMANTIC PATH / BINARY-AWARE / CHUNK-AWARE / BLUETOOTH-PRESENCE-AWARE”
 // ============================================================================
 //
 // ROLE:
@@ -11,6 +11,7 @@
 //   • Dual-band aware (symbolic primary, binary-aware via metadata).
 //   • Falls back to a provided fallbackProxy when contract is violated.
 //   • Exposes IMMORTAL-grade mesh artery metrics (throughput, pressure, cost, budget).
+//   • Bluetooth presence metadata can be threaded through control path.
 //
 // ARCHITECTURAL POSITION:
 //   • Lives in SymbolicNervousSystem layer.
@@ -19,16 +20,15 @@
 //   • Never executes code, never routes by itself — only validates + passes.
 //   • Chunk/prewarm-aware only via metadata (never imperative).
 //
-// GUARANTEES (v16-IMMORTAL):
-//   • No randomness, no timing, no env access.
-//   • No dynamic imports, no eval.
+// GUARANTEES (v24-IMMORTAL++):
+//   • No randomness, no dynamic imports, no eval.
 //   • No network, no filesystem.
 //   • Zero mutation of input packets.
-//   • Presence-aware only via control metadata (band, presenceTag, bandSignature).
+//   • Presence-aware only via control metadata (band, presenceTag, bandSignature, bluetoothPresence).
 //   • Chunk/prewarm/cache hints are metadata-only, non-imperative.
 //   • Mesh artery metrics are deterministic, window-based, and read-only.
 //
-// CONTRACT (v16):
+// CONTRACT (v24):
 //   • INPUT (data path):
 //       - packet: object (symbolic, non-array)
 //   • INPUT (control path):
@@ -40,7 +40,13 @@
 //           trace?,
 //           chunkHint?,
 //           prewarmHint?,
-//           cacheHint?
+//           cacheHint?,
+//           bluetoothPresence?: {
+//             deviceId?: string,
+//             linkQuality?: number,   // 0..1
+//             proximityTier?: string, // "near" | "mid" | "far" | "unknown"
+//             transport?: "ble" | "wifi" | "wired" | "unknown"
+//           }
 //         }
 //   • OUTPUT:
 //       - packet (unchanged) OR fallback result from fallbackProxy.
@@ -65,6 +71,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 // export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // ============================================================================
 // IMPORTS — MESH SUBSYSTEMS (SYMBOLIC SIDE)
 // ============================================================================
@@ -82,7 +89,7 @@ import PulseMeshFlow from "./PulseMeshFlow-V24.js";
 import PulseMeshPresenceRelay from "./PulseMeshPresenceRelay-v16.js";
 
 // 4 — COGNITION (mesh-level cognition)
-import PulseMeshCognition from "./PulseMeshCognition.js";
+import PulseMeshCognition from "./PulseMeshCognition-v24.js";
 
 // 5 — ENDOCRINE (mesh hormones)
 import PulseMeshEndocrineSystem from "./PulseMeshEndocrineSystem.js";
@@ -110,7 +117,7 @@ import { applyPulseCortex } from "./PulseMeshCortex-V24.js";
 import { applyPulseMeshTendons } from "./PulseMeshTendons-V24.js";
 
 // ============================================================================
-// INTERNAL HELPERS — v16-IMMORTAL
+// INTERNAL HELPERS — v24-IMMORTAL++
 // ============================================================================
 function isSymbolicPacket(packet) {
   // Symbolic packets are plain objects (non-null, non-array).
@@ -191,14 +198,43 @@ function computeMeshArtery({
   });
 }
 
+// ---------------------------------------------------------------------------
+// BLUETOOTH PRESENCE NORMALIZATION — v24++
+// ---------------------------------------------------------------------------
+function normalizeBluetoothPresence(bt = {}) {
+  const deviceId = typeof bt.deviceId === "string" ? bt.deviceId : null;
+
+  const linkQualityRaw = Number(bt.linkQuality);
+  const linkQuality = Number.isFinite(linkQualityRaw)
+    ? Math.max(0, Math.min(1, linkQualityRaw))
+    : 0;
+
+  let proximityTier = bt.proximityTier || "unknown";
+  if (!["near", "mid", "far", "unknown"].includes(proximityTier)) {
+    proximityTier = "unknown";
+  }
+
+  let transport = bt.transport || "unknown";
+  if (!["ble", "wifi", "wired", "unknown"].includes(transport)) {
+    transport = "unknown";
+  }
+
+  return {
+    deviceId,
+    linkQuality,
+    proximityTier,
+    transport
+  };
+}
+
 // ============================================================================
-// PULSE MESH CORE — v16‑IMMORTAL
+// PULSE MESH CORE — v24‑IMMORTAL++
 // ============================================================================
 export function createPulseMesh({
   fallbackProxy,
   trace = false,
   defaultBand = "symbolic",
-  defaultPresenceTag = "PulseMesh-v16",
+  defaultPresenceTag = "PulseMesh-v24",
   windowMs = 60000
 } = {}) {
 
@@ -244,7 +280,7 @@ export function createPulseMesh({
   }
 
   // -------------------------------------------------------------------------
-  // SMART SYMBOLIC FALLBACK (presence-aware, artery-aware)
+  // SMART SYMBOLIC FALLBACK (presence-aware, artery-aware, bluetooth-aware)
   // -------------------------------------------------------------------------
   function fallback(reason, from, packet, {
     band = defaultBand,
@@ -252,22 +288,30 @@ export function createPulseMesh({
     bandSignature = null,
     chunkHint = null,
     prewarmHint = null,
-    cacheHint = null
+    cacheHint = null,
+    bluetoothPresence = null
   } = {}) {
 
     if (!fallbackProxy) {
       _errors++;
       throw new Error(
-        `PulseMesh v16 fallback triggered (${reason}) from:${from} but no fallbackProxy provided`
+        `PulseMesh v24 fallback triggered (${reason}) from:${from} but no fallbackProxy provided`
       );
     }
 
     _fallbacks++;
 
+    const now = Date.now();
+    rollWindow(now);
+    _total++;
+    _window++;
+
+    const bt = normalizeBluetoothPresence(bluetoothPresence || {});
+
     if (trace) {
       logWarn(
-        `[PulseMesh v16] FALLBACK (${reason}) from:${from} band:${band} presence:${presenceTag} bandSig:${bandSignature || "none"}`,
-        { packet, chunkHint, prewarmHint, cacheHint }
+        `[PulseMesh v24] FALLBACK (${reason}) from:${from} band:${band} presence:${presenceTag} bandSig:${bandSignature || "none"}`,
+        { packet, chunkHint, prewarmHint, cacheHint, bluetoothPresence: bt }
       );
     }
 
@@ -280,7 +324,8 @@ export function createPulseMesh({
       chunkHint,
       prewarmHint,
       cacheHint,
-      meshArtery: artery
+      meshArtery: artery,
+      bluetoothPresence: bt
     };
 
     return fallbackProxy.exchange
@@ -290,14 +335,15 @@ export function createPulseMesh({
 
   // -------------------------------------------------------------------------
   // PURE SYMBOLIC TRANSMISSION (semantic connective tissue)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function transmit(from, packet, {
     band = defaultBand,
     presenceTag = defaultPresenceTag,
     bandSignature = null,
     chunkHint = null,
     prewarmHint = null,
-    cacheHint = null
+    cacheHint = null,
+    bluetoothPresence = null
   } = {}) {
 
     const now = Date.now();
@@ -314,7 +360,8 @@ export function createPulseMesh({
         bandSignature,
         chunkHint,
         prewarmHint,
-        cacheHint
+        cacheHint,
+        bluetoothPresence
       });
     }
 
@@ -325,14 +372,17 @@ export function createPulseMesh({
         bandSignature,
         chunkHint,
         prewarmHint,
-        cacheHint
+        cacheHint,
+        bluetoothPresence
       });
     }
 
+    const bt = normalizeBluetoothPresence(bluetoothPresence || {});
+
     if (trace) {
       logInfo(
-        `[PulseMesh v16] ${from} → ${to} band:${band} presence:${presenceTag} bandSig:${bandSignature || "none"}`,
-        { packet, chunkHint, prewarmHint, cacheHint }
+        `[PulseMesh v24] ${from} → ${to} band:${band} presence:${presenceTag} bandSig:${bandSignature || "none"}`,
+        { packet, chunkHint, prewarmHint, cacheHint, bluetoothPresence: bt }
       );
     }
 
@@ -353,24 +403,23 @@ export function createPulseMesh({
 }
 
 // ============================================================================
-// PULSE MESH ENVIRONMENT — v16‑IMMORTAL
+// PULSE MESH ENVIRONMENT — v24‑IMMORTAL++
 //   LOAD ALL MESH SYSTEMS, WIRE, PREWARM, BOOT VIA ORGANISM
 // ============================================================================
 //
 //  ROLE:
-//    • Creates the symbolic mesh core (v16-IMMORTAL).
+//    • Creates the symbolic mesh core (v24-IMMORTAL++).
 //    • Boots OrganismMesh with Cortex + Tendons injected.
 //    • Wires symbolic mesh subsystems in correct IMMORTAL order.
 //    • Provides a single `prewarm` entrypoint for the symbolic mesh world.
 //    • Exposes mesh artery snapshot via meshCore.getMeshArtery().
 // ============================================================================
-
 export function createPulseMeshEnvironment({
   context = {},
   fallbackProxy,
   trace = false,
   defaultBand = "symbolic",
-  defaultPresenceTag = "PulseMesh-v16",
+  defaultPresenceTag = "PulseMesh-v24",
   windowMs = 60000
 } = {}) {
 
@@ -508,20 +557,20 @@ export function createPulseMeshEnvironment({
   // 10) UNIVERSAL PREWARM (IMMORTAL ORDER)
   // -------------------------------------------------------
   function prewarm() {
-    log("[PulseMesh v16] Prewarm start");
+    log("[PulseMesh v24] Prewarm start");
 
     for (const [name, system] of Object.entries(ALL_MESH_SYSTEMS)) {
       if (system?.prewarm) {
         try {
           system.prewarm();
-          log("[PulseMesh v16] Prewarmed mesh system", { name });
+          log("[PulseMesh v24] Prewarmed mesh system", { name });
         } catch (e) {
-          warn("[PulseMesh v16] Prewarm failed", { name, error: e?.message });
+          warn("[PulseMesh v24] Prewarm failed", { name, error: e?.message });
         }
       }
     }
 
-    log("[PulseMesh v16] Prewarm complete");
+    log("[PulseMesh v24] Prewarm complete");
   }
 
   // -------------------------------------------------------
@@ -557,6 +606,15 @@ export function createPulseMeshEnvironment({
     organism
   });
 }
+
+export const PulseMeshAbilities = {
+  v24Immortal: true,
+  bluetoothPresence: true,
+  cacheHints: true,
+  prewarmHints: true,
+  chunkAware: true,
+  arteryDeterministic: true
+};
 
 export default {
   PulseMeshMeta,
