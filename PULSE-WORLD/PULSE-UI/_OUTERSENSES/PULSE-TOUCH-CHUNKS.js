@@ -220,128 +220,120 @@ function isExpired(entry) {
   if (!entry) return true;
   return Date.now() - entry.ts > CACHE_TTL_MS;
 }
+// ============================================================================
+//  PULSECHUNKS STORAGE v27 — IndexedDB IMMORTAL++
+//  Replaces ALL localStorage-based load/persist/sync logic
+// ============================================================================
 
-// ---------------------------------------------------------------------------
-//  LOCALSTORAGE + GLOBAL MESH — LOAD / PERSIST / SYNC
-// ---------------------------------------------------------------------------
-function loadPulseChunksFromStorage() {
-  if (typeof localStorage === "undefined") return;
-  try {
-    const raw = localStorage.getItem(PULSECHUNKS_STORAGE_KEY);
-    if (!raw) return;
+const PULSECHUNKS_DB = "PulseChunksDB_v27";
+const PULSECHUNKS_STORE = "chunks";
 
-    const saved = JSON.parse(raw);
-    if (!saved || typeof saved !== "object") return;
+// Open or create IndexedDB
+function openPulseChunksDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(PULSECHUNKS_DB, 1);
 
-    const { cache, failures, degraded } = saved;
-
-    if (cache && typeof cache === "object") {
-      chunkCache.clear();
-      for (const [url, entry] of Object.entries(cache)) {
-        if (entry && entry.ts && entry.value !== undefined) {
-          chunkCache.set(url, entry);
-        }
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(PULSECHUNKS_STORE)) {
+        db.createObjectStore(PULSECHUNKS_STORE, { keyPath: "url" });
       }
-    }
-
-    if (failures && typeof failures === "object") {
-      chunkFailures.clear();
-      for (const [url, count] of Object.entries(failures)) {
-        if (typeof count === "number") {
-          chunkFailures.set(url, count);
-        }
-      }
-    }
-
-    if (typeof degraded === "boolean") {
-      chunksDegraded = degraded;
-    }
-
-    console.log("[PulseChunks v25++] Restored from localStorage snapshot");
-  } catch (err) {
-    console.warn("[PulseChunks v25++] Failed to restore from localStorage:", err);
-  }
-}
-
-function persistPulseChunksToStorage() {
-  if (typeof localStorage === "undefined") return;
-  try {
-    const cacheObj = {};
-    for (const [url, entry] of chunkCache.entries()) {
-      cacheObj[url] = entry;
-    }
-
-    const failuresObj = {};
-    for (const [url, count] of chunkFailures.entries()) {
-      failuresObj[url] = count;
-    }
-
-    const snapshot = {
-      cache: cacheObj,
-      failures: failuresObj,
-      degraded: chunksDegraded,
-      ts: Date.now(),
-      version: "v25++-Immortal"
     };
 
-    localStorage.setItem(PULSECHUNKS_STORAGE_KEY, JSON.stringify(snapshot));
-  } catch (err) {
-    console.warn("[PulseChunks v25++] Failed to persist to localStorage:", err);
-  }
-}
-
-function wirePulseChunksStorageEvents() {
-  if (typeof window === "undefined" || typeof window.addEventListener !== "function") return;
-
-  window.addEventListener("storage", (e) => {
-    if (e.key !== PULSECHUNKS_STORAGE_KEY || !e.newValue) return;
-    try {
-      const saved = JSON.parse(e.newValue);
-      if (!saved || typeof saved !== "object") return;
-
-      const { cache, failures, degraded } = saved;
-
-      if (cache && typeof cache === "object") {
-        chunkCache.clear();
-        for (const [url, entry] of Object.entries(cache)) {
-          if (entry && entry.ts && entry.value !== undefined) {
-            chunkCache.set(url, entry);
-          }
-        }
-      }
-
-      if (failures && typeof failures === "object") {
-        chunkFailures.clear();
-        for (const [url, count] of Object.entries(failures)) {
-          if (typeof count === "number") {
-            chunkFailures.set(url, count);
-          }
-        }
-      }
-
-      if (typeof degraded === "boolean") {
-        chunksDegraded = degraded;
-      }
-
-      console.log("[PulseChunks v25++] Synced from storage event");
-    } catch (err) {
-      console.warn("[PulseChunks v25++] Failed to sync from storage event:", err);
-    }
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
   });
 }
 
-// Initial load + pointer
-try {
-  loadPulseChunksFromStorage();
-  if (typeof localStorage !== "undefined") {
-    localStorage.setItem(PULSECHUNKS_STORAGE_POINTER, "__active__");
+// ============================================================================
+//  LOAD — Restore chunkCache + chunkFailures from IndexedDB
+// ============================================================================
+
+async function loadPulseChunksFromStorage() {
+  try {
+    const db = await openPulseChunksDB();
+    const tx = db.transaction(PULSECHUNKS_STORE, "readonly");
+    const store = tx.objectStore(PULSECHUNKS_STORE);
+
+    const req = store.getAll();
+
+    return new Promise((resolve) => {
+      req.onsuccess = () => {
+        const rows = req.result || [];
+
+        chunkCache.clear();
+        chunkFailures.clear();
+
+        for (const row of rows) {
+          if (row.entry) {
+            chunkCache.set(row.url, row.entry);
+          }
+          if (typeof row.failures === "number") {
+            chunkFailures.set(row.url, row.failures);
+          }
+        }
+
+        console.log("[PulseChunks v27] Loaded from IndexedDB");
+        resolve();
+      };
+
+      req.onerror = () => {
+        console.warn("[PulseChunks v27] Failed to load from IndexedDB:", req.error);
+        resolve();
+      };
+    });
+  } catch (err) {
+    console.warn("[PulseChunks v27] IndexedDB load error:", err);
   }
-} catch {}
+}
 
 // ============================================================================
-//  FAILURE + DEGRADATION MANAGEMENT
+//  PERSIST — Save a single chunk entry + failure count
 // ============================================================================
-function markChunkFailure(url, err) {
+
+async function persistPulseChunkToStorage(url, entry, failures = 0) {
+  try {
+    const db = await openPulseChunksDB();
+    const tx = db.transaction(PULSECHUNKS_STORE, "readwrite");
+    const store = tx.objectStore(PULSECHUNKS_STORE);
+
+    store.put({
+      url,
+      entry,
+      failures
+    });
+
+    tx.oncomplete = () => {};
+    tx.onerror = () => {
+      console.warn("[PulseChunks v27] Failed to persist chunk:", url, tx.error);
+    };
+  } catch (err) {
+    console.warn("[PulseChunks v27] IndexedDB persist error:", err);
+  }
+}
+
+// ============================================================================
+//  SYNC — No storage events needed (IndexedDB handles multi-tab automatically)
+// ============================================================================
+
+function wirePulseChunksStorageEvents() {
+  // No-op: IndexedDB does not use storage events
+  console.log("[PulseChunks v27] Storage events disabled (IndexedDB)");
+}
+
+// ============================================================================
+//  INITIAL LOAD — Replaces old localStorage pointer logic
+// ============================================================================
+
+(async function initPulseChunksStorage() {
+  await loadPulseChunksFromStorage();
+})();
+
+// ============================================================================
+//  FAILURE + DEGRADATION MANAGEMENT — v27 IMMORTAL++
+// ============================================================================
+
+async function markChunkFailure(url, err) {
   globalFailures++;
   const prev = chunkFailures.get(url) || 0;
   const next = prev + 1;
@@ -352,21 +344,24 @@ function markChunkFailure(url, err) {
   if (next >= MAX_FAILURES_PER_URL || globalFailures >= MAX_GLOBAL_FAILURES) {
     if (!chunksDegraded) {
       chunksDegraded = true;
-      console.warn(
-        "[PulseChunks] Entering DEGRADED mode — falling back to regular loading."
-      );
+      console.warn("[PulseChunks] Entering DEGRADED mode — falling back to regular loading.");
     }
   }
 
-  persistPulseChunksToStorage();
+  const entry = chunkCache.get(url) || null;
+  await persistPulseChunkToStorage(url, entry, next);
 }
 
-function resetChunksState() {
+async function resetChunksState() {
   chunksDegraded = false;
   globalFailures = 0;
   chunkFailures.clear();
   console.log("[PulseChunks] Chunks state reset — re-enabling advantages.");
-  persistPulseChunksToStorage();
+
+  // Persist reset state for all known chunks
+  for (const [url, entry] of chunkCache.entries()) {
+    await persistPulseChunkToStorage(url, entry, 0);
+  }
 }
 
 function isChunksDegraded() {
@@ -374,8 +369,9 @@ function isChunksDegraded() {
 }
 
 // ============================================================================
-//  PRESENCE / BAND ENVELOPE HELPERS — v25++ IMMORTAL FRONT
+//  PRESENCE / BAND ENVELOPE HELPERS — v25++ IMMORTAL FRONT (unchanged)
 // ============================================================================
+
 function buildChunkPresenceEnvelope({ url, fromCache, degraded, kind, laneIndex }) {
   const presence = degraded
     ? "degraded-fallback"
@@ -400,7 +396,7 @@ function buildChunkPresenceEnvelope({ url, fromCache, degraded, kind, laneIndex 
 }
 
 // ============================================================================
-//  32-LANE CNS ROUTER — HYBRID: GLOBAL CACHE + PER-LANE CNS/STATS
+//  32-LANE CNS ROUTER — HYBRID: GLOBAL CACHE + PER-LANE CNS/STATS (unchanged)
 // ============================================================================
 const LANE_COUNT = 32;
 const LANE_MASK = LANE_COUNT - 1;
@@ -469,6 +465,7 @@ function createLane(id) {
   };
 }
 
+
 const lanes = Array.from({ length: LANE_COUNT }, (_, i) => createLane(i));
 
 function getLaneStatsSnapshot() {
@@ -487,24 +484,67 @@ function unwrapImmortalDNA(value) {
   if (value.__chunk !== undefined) return value.__chunk;
   return value;
 }
+// ============================================================================
+//  SNAPSHOT PERSIST — v27 compatibility shim for legacy callers
+//  (used by fetchChunk(), markChunkFailure(), resetChunksState(), etc.)
+// ============================================================================
 
+function persistPulseChunksToStorage() {
+  // Fire-and-forget async snapshot; callers expect sync semantics
+  (async () => {
+    try {
+      const db = await openPulseChunksDB();
+      const tx = db.transaction(PULSECHUNKS_STORE, "readwrite");
+      const store = tx.objectStore(PULSECHUNKS_STORE);
+
+      // Optional: clear old entries to avoid stale URLs
+      const clearReq = store.clear();
+
+      await new Promise((resolve, reject) => {
+        clearReq.onsuccess = resolve;
+        clearReq.onerror = () => reject(clearReq.error);
+      });
+
+      // Re‑persist current cache + failures
+      for (const [url, entry] of chunkCache.entries()) {
+        const failures = chunkFailures.get(url) || 0;
+        store.put({ url, entry, failures });
+      }
+
+      tx.oncomplete = () => {
+        // snapshot done
+      };
+      tx.onerror = () => {
+        console.warn("[PulseChunks v27] Snapshot persist failed:", tx.error);
+      };
+    } catch (err) {
+      console.warn("[PulseChunks v27] Snapshot persist error:", err);
+    }
+  })();
+}
 // ============================================================================
-//  CORE CHUNK FETCHER — v25++ MULTILANE IMMORTAL, CACHE + PRESENCE AWARE
+//  CORE CHUNK FETCHER — v27 IMMORTAL++ MULTILANE, CACHE + PRESENCE + IDB
 // ============================================================================
+
 async function fetchChunk(url) {
+  // -------------------------------
+  // 1. VISIBILITY LOGGING (best-effort)
+  // -------------------------------
   try {
     fireAndForgetRoute("proxy.dnaVisibility", {
       url,
       timestamp: Date.now(),
       degraded: chunksDegraded,
       presence: "frontend-dna-request",
-      membrane: "PulseChunks-v25++-MULTILANE-Immortal"
+      membrane: "PulseChunks-v27-IMMORTAL"
     });
   } catch (err) {
     console.warn("[PulseDNA] Network visibility logging failed:", err);
   }
 
-  // ⭐ SKIP LOGIC — BEFORE ANYTHING ELSE
+  // -------------------------------
+  // 2. SKIP LOGIC
+  // -------------------------------
   if (shouldSkipChunk(url)) {
     return {
       ok: false,
@@ -533,7 +573,9 @@ async function fetchChunk(url) {
     };
   }
 
-  // ⭐ GLOBAL DEGRADATION — NEVER ATTEMPT NETWORK
+  // -------------------------------
+  // 3. GLOBAL DEGRADATION MODE
+  // -------------------------------
   if (chunksDegraded) {
     return {
       ok: false,
@@ -548,10 +590,14 @@ async function fetchChunk(url) {
     };
   }
 
-  // ⭐ CACHE FIRST — TTL AWARE
+  // -------------------------------
+  // 4. CACHE FIRST (TTL-AWARE)
+  // -------------------------------
   const cachedEntry = chunkCache.get(url);
+
   if (cachedEntry && !isExpired(cachedEntry)) {
     const { value, kind, presence } = cachedEntry;
+
     return {
       ok: true,
       value,
@@ -565,12 +611,17 @@ async function fetchChunk(url) {
           kind: kind || (typeof value === "string" ? "text-or-url" : "object")
         })
     };
-  } else if (cachedEntry && isExpired(cachedEntry)) {
-    chunkCache.delete(url);
-    persistPulseChunksToStorage();
   }
 
-  // ⭐ MULTILANE ROUTING
+  // expired → remove + async snapshot
+  if (cachedEntry && isExpired(cachedEntry)) {
+    chunkCache.delete(url);
+    persistPulseChunksToStorage(); // async, non-blocking
+  }
+
+  // -------------------------------
+  // 5. MULTILANE CNS ROUTING
+  // -------------------------------
   const laneIndex = pickLaneIndex(url);
   const lane = lanes[laneIndex];
 
@@ -582,7 +633,9 @@ async function fetchChunk(url) {
       throw new Error(routed?.error || `Chunk route failed for ${url}`);
     }
 
-    // v25++: prefer explicit dna/chunk fields, then fall back
+    // -------------------------------
+    // 6. DNA EXTRACTION
+    // -------------------------------
     const dna =
       routed.dna ??
       routed.chunk ??
@@ -603,13 +656,22 @@ async function fetchChunk(url) {
       laneIndex
     });
 
-    chunkCache.set(url, {
+    const entry = {
       value: dna,
       ts: Date.now(),
       kind,
       presence: envelope
-    });
+    };
 
+    // -------------------------------
+    // 7. UPDATE MEMORY + IDB
+    // -------------------------------
+    chunkCache.set(url, entry);
+
+    // async, non-blocking
+    persistPulseChunkToStorage(url, entry, chunkFailures.get(url) || 0);
+
+    // async snapshot (legacy compatibility)
     persistPulseChunksToStorage();
 
     return {
@@ -619,6 +681,9 @@ async function fetchChunk(url) {
       envelope
     };
   } catch (err) {
+    // -------------------------------
+    // 8. FAILURE HANDLING
+    // -------------------------------
     markChunkFailure(url, err);
 
     return {
@@ -636,21 +701,18 @@ async function fetchChunk(url) {
   }
 }
 
+
 // ============================================================================
 //  IMAGE-SPECIFIC CHUNKER — NORMALIZER-ALIGNED (v25++ MULTILANE IMMORTAL)
+// ============================================================================
+// ============================================================================
+//  IMAGE-SPECIFIC CHUNKER — NORMALIZER-ALIGNED (v27 IMMORTAL)
 // ============================================================================
 export async function getImage(url) {
   const { value, ok, error, envelope } = await fetchChunk(url);
 
   if (!ok) {
-    console.warn(
-      "[PulseChunks] getImage fallback — using raw URL due to chunk failure:",
-      {
-        url,
-        error,
-        envelope
-      }
-    );
+    console.warn("[PulseChunks] getImage fallback:", { url, error, envelope });
     return url;
   }
 
@@ -664,18 +726,13 @@ export async function getImage(url) {
     null;
 
   if (!src) {
-    console.warn(
-      "[PulseChunks] getImage unknown image format, falling back to URL:",
-      {
-        url,
-        value
-      }
-    );
+    console.warn("[PulseChunks] getImage unknown format, fallback:", { url, value });
     return url;
   }
 
   return src;
 }
+
 
 // Optional: sync-only image resolver from cache (no await, no network)
 export function getImageSync(url) {
@@ -686,13 +743,13 @@ export function getImageSync(url) {
   const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
   const binary = PulseChunkNormalizer.normalizeBinary(unwrapped);
 
-  const src =
+  return (
     PulseChunkNormalizer.normalizeImage(binary) ||
     PulseChunkNormalizer.normalizeChunkValue(binary, "image") ||
-    null;
-
-  return src || null;
+    null
+  );
 }
+
 
 // ============================================================================
 //  LORE ATTACHMENT — USED BY DNA MODE (FRONTEND-SIDE)
@@ -700,44 +757,39 @@ export function getImageSync(url) {
 function attachLore(chunk, metaPack) {
   const lore = generateLoreHeader(metaPack);
 
-  // Avoid double-lore on strings
   if (typeof chunk === "string") {
     if (chunk.startsWith(lore)) return chunk;
     return lore + "\n" + chunk;
   }
 
-  // Avoid double-lore on objects
   if (chunk && typeof chunk === "object" && chunk.__lore) {
     return chunk;
   }
 
-  return {
-    __lore: lore,
-    __chunk: chunk
-  };
+  return { __lore: lore, __chunk: chunk };
 }
+
 
 // ============================================================================
 //  PAGE RECONSTRUCTION HELPERS — MEMORY MESH ALIGNMENT
 // ============================================================================
 export function reconstructChunk(dnaOrValue) {
   const dnaUnwrapped = unwrapImmortalDNA(dnaOrValue);
-  const unwrapped = PulseChunkNormalizer.unwrap(dnaUnwrapped);
-  return unwrapped;
+  return PulseChunkNormalizer.unwrap(dnaUnwrapped);
 }
 
 export function reconstructRouteDescriptor(dnaOrValue) {
   const core = reconstructChunk(dnaOrValue);
   if (!core || typeof core !== "object") return core;
 
-  const { route, imports, assets, payloads } = core;
   return {
-    route: route || null,
-    imports: imports || [],
-    assets: assets || [],
-    payloads: payloads || []
+    route: core.route || null,
+    imports: core.imports || [],
+    assets: core.assets || [],
+    payloads: core.payloads || []
   };
 }
+
 
 // ============================================================================
 //  SYNC MEMORY SURFACE — NO AWAIT, NO NETWORK
@@ -751,29 +803,25 @@ export function getCachedDNA(url) {
 
 export function reconstructCachedChunk(url) {
   const dna = getCachedDNA(url);
-  if (!dna) return null;
-  return reconstructChunk(dna);
+  return dna ? reconstructChunk(dna) : null;
 }
 
 export function reconstructCachedRouteDescriptor(url) {
   const dna = getCachedDNA(url);
-  if (!dna) return null;
-  return reconstructRouteDescriptor(dna);
+  return dna ? reconstructRouteDescriptor(dna) : null;
 }
+
 
 // ============================================================================
 //  GENERIC CHUNKER ENTRY — WITH UNIVERSAL LORE INJECTION (DNA MODE)
 // ============================================================================
 export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
-  if (shouldSkipChunk(filePath, fileSize)) {
-    return null;
-  }
+  if (shouldSkipChunk(filePath, fileSize)) return null;
 
   console.log("[PulseChunks] DNA allowed:", filePath);
 
-  const { value: dna, envelope, ok, error } = await fetchChunk(filePath);
+  const { value: dna, envelope, ok } = await fetchChunk(filePath);
 
-  // If fetch failed or degraded, return raw
   if (!ok || chunksDegraded) {
     return {
       chunk: dna,
@@ -784,16 +832,10 @@ export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
     };
   }
 
-  // 1 — unwrap ONE layer
   const dnaCore = unwrapImmortalDNA(dna);
-
-  // 2 — normalize (pure data)
   const normalized = PulseChunkNormalizer.normalizeChunkValue(dnaCore);
-
-  // 3 — ⭐ add lore AFTER normalization (correct)
   const lore = metaPack ? generateLoreHeader(metaPack) : null;
 
-  // 4 — return clean data + lore as metadata
   return {
     chunk: normalized,
     lore,
@@ -802,9 +844,8 @@ export async function PulseChunker(filePath, fileSize = 0, metaPack = null) {
   };
 }
 
-
 // ============================================================================
-//  PREWARM ENGINE — NON-BLOCKING, ROUTED, TTL-AWARE + PERSISTENT
+//  PREWARM ENGINE — NON-BLOCKING, ROUTED, TTL-AWARE + PERSISTENT (v27 IMMORTAL++)
 // ============================================================================
 export function prewarm(urls = [], metaPack = null) {
   urls.forEach((url) => {
@@ -827,31 +868,36 @@ export function prewarm(urls = [], metaPack = null) {
       // normalize
       const normalized = PulseChunkNormalizer.normalizeChunkValue(dnaCore);
 
-      // lore AFTER normalization
-      const lore = metaPack ? generateLoreHeader(metaPack) : null;
+      // lore AFTER normalization (attach into the value itself)
+      const withLore = metaPack ? attachLore(normalized, metaPack) : normalized;
+
+      const kind =
+        typeof normalized === "string" ? "text-or-url" : "object";
+
+      const entry = {
+        value: withLore,
+        ts: Date.now(),
+        kind,
+        presence: envelope
+      };
 
       // store in cache
-      chunkCache.set(url, {
-        value: normalized,
-        ts: Date.now(),
-        kind: typeof normalized === "string" ? "text-or-url" : "object",
-        presence: envelope,
-        lore
-      });
+      chunkCache.set(url, entry);
 
-      // persist to localStorage mesh
+      // persist to IndexedDB + snapshot
+      persistPulseChunkToStorage(url, entry, chunkFailures.get(url) || 0);
       persistPulseChunksToStorage();
 
       // Touch/Portal future hook
       if (typeof window !== "undefined" && window.PulseTouchWarmup) {
         try {
-          window.PulseTouchWarmup.onPrewarm(url, normalized, lore);
+          window.PulseTouchWarmup.onPrewarm(url, withLore, metaPack);
         } catch {}
       }
 
       if (typeof window !== "undefined" && window.PulsePortalWarmup) {
         try {
-          window.PulsePortalWarmup.onPrewarm(url, normalized, lore);
+          window.PulsePortalWarmup.onPrewarm(url, withLore, metaPack);
         } catch {}
       }
     });
@@ -860,7 +906,7 @@ export function prewarm(urls = [], metaPack = null) {
 
 
 // ============================================================================
-//  PULSEBAND INTEGRATION — v25++-Evo
+//  PULSEBAND INTEGRATION — v27 IMMORTAL++
 // ============================================================================
 function handlePulseBandPacket(packet) {
   if (!packet || !packet.type) return;
@@ -869,14 +915,15 @@ function handlePulseBandPacket(packet) {
     case "chunk-manifest":
     case "chunk-prewarm":
       if (Array.isArray(packet.urls) && !chunksDegraded) {
-        prewarm(packet.urls);
+        prewarm(packet.urls, packet.metaPack || null);
       }
       break;
 
     case "chunk-bundle":
       if (packet.url && packet.data && !chunksDegraded) {
+        const baseValue = packet.data;
         const kind =
-          typeof packet.data === "string" ? "text-or-url" : "object";
+          typeof baseValue === "string" ? "text-or-url" : "object";
 
         const envelope = buildChunkPresenceEnvelope({
           url: packet.url,
@@ -886,21 +933,28 @@ function handlePulseBandPacket(packet) {
           laneIndex: packet.laneIndex
         });
 
-        chunkCache.set(packet.url, {
-          value: packet.data,
+        const valueWithLore = packet.metaPack
+          ? attachLore(baseValue, packet.metaPack)
+          : baseValue;
+
+        const entry = {
+          value: valueWithLore,
           ts: Date.now(),
           kind,
           presence: envelope
-        });
+        };
 
+        chunkCache.set(packet.url, entry);
+        persistPulseChunkToStorage(packet.url, entry, chunkFailures.get(packet.url) || 0);
         persistPulseChunksToStorage();
       }
       break;
 
     case "chunk-packet":
       if (packet.url && packet.chunk && !chunksDegraded) {
+        const baseValue = packet.chunk;
         const kind =
-          typeof packet.chunk === "string" ? "text-or-url" : "object";
+          typeof baseValue === "string" ? "text-or-url" : "object";
 
         const envelope = buildChunkPresenceEnvelope({
           url: packet.url,
@@ -910,13 +964,19 @@ function handlePulseBandPacket(packet) {
           laneIndex: packet.laneIndex
         });
 
-        chunkCache.set(packet.url, {
-          value: packet.chunk,
+        const valueWithLore = packet.metaPack
+          ? attachLore(baseValue, packet.metaPack)
+          : baseValue;
+
+        const entry = {
+          value: valueWithLore,
           ts: Date.now(),
           kind,
           presence: envelope
-        });
+        };
 
+        chunkCache.set(packet.url, entry);
+        persistPulseChunkToStorage(packet.url, entry, chunkFailures.get(packet.url) || 0);
         persistPulseChunksToStorage();
       }
       break;
@@ -960,7 +1020,7 @@ function dechunkAll() {
 }
 
 // ============================================================================
-//  UNIVERSAL FRONTEND AUTO-LOADER — v25++ IMMORTAL++
+//  UNIVERSAL FRONTEND AUTO-LOADER — v27 IMMORTAL++
 // ============================================================================
 async function autoLoadOfflineImages() {
   if (typeof document === "undefined" || typeof window === "undefined") return;
@@ -1000,11 +1060,7 @@ async function autoLoadOfflineImages() {
       if (!ok) {
         console.warn(
           "[PulseChunks] Asset chunk failed — using CNS fallback:",
-          {
-            url,
-            error,
-            envelope
-          }
+          { url, error, envelope }
         );
 
         if (typeof route === "function") {
@@ -1112,10 +1168,7 @@ async function autoLoadOfflineImages() {
       } catch (fallbackErr) {
         console.warn(
           "[PulseChunks] CNS fallback threw — leaving asset as-is:",
-          {
-            url,
-            fallbackErr
-          }
+          { url, fallbackErr }
         );
       }
     }
@@ -1127,7 +1180,7 @@ async function autoLoadOfflineImages() {
 }
 
 // ============================================================================
-//  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v25++ IMMORTAL)
+//  EXPOSE TO WINDOW — WITH STATE + CONTROLS + LANE STATS (v27 IMMORTAL++)
 // ============================================================================
 if (typeof window !== "undefined") {
   window.PulseChunks = {
@@ -1169,7 +1222,7 @@ if (typeof window !== "undefined") {
 
 export default typeof window !== "undefined" ? window.PulseChunks : undefined;
 
-// Wire DOM + PulseBand + storage events
+// Wire DOM + PulseBand + storage (IDB) events
 if (typeof window !== "undefined" && typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     autoLoadOfflineImages();
@@ -1182,10 +1235,11 @@ if (typeof window !== "undefined") {
   }
 }
 
+// v27: this is now an IndexedDB-backed no-op hook (logging only)
 wirePulseChunksStorageEvents();
 
 console.log(
-  "[PulseChunks-v25++-MULTILANE-Immortal] Ready — 32-lane membrane active, v25++ Immortal DNA-aware cache, TTL-bounded memory, localStorage mesh, reconstruction helpers online."
+  "[PulseChunks-v27-IMMORTAL++] Ready — 32-lane membrane active, v27 DNA-aware cache, TTL-bounded memory, IndexedDB-backed persistence, reconstruction helpers online."
 );
 
 try {
