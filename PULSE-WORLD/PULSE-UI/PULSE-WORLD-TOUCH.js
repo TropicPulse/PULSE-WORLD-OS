@@ -1315,17 +1315,45 @@ function applyGateDecision(gateDecision, skin) {
     }
 
     // ============================================================
-    // 4 — PREWARM ORGANISMMAP (if present)
+    // 4 — HYDRATE + SIGNAL ORGANISMMAP (from localStorage)
     // ============================================================
     try {
-      if (window.PulseOrganismMap) {
-        window.PulseChunks?.prewarm?.([
-          `${prefix}_CREATION_BARRIER/PULSE-ORGANISM-MAP.js`
-        ]);
-        appendTouchTimeline("organism_map_prewarm", { page });
+      // 4.1 — Hydrate window.PulseOrganismMap from localStorage (if present)
+      if (typeof window !== "undefined") {
+        try {
+          const rawMap = localStorage.getItem("PulseOrganismMap_v25");
+
+          // ⭐ MOST IMPORTANT PART:
+          // window.PulseOrganismMap becomes EXACTLY the object stored in localStorage
+          if (rawMap) {
+            window.PulseOrganismMap = JSON.parse(rawMap);
+          }
+        } catch {
+          // fail-open by IMMORTAL contract
+        }
+      }
+
+      // 4.2 — If the hydrated map exposes a signal function, send a touch_prewarm signal
+      const hasMapSignal =
+        typeof window !== "undefined" &&
+        window.PulseOrganismMap &&
+        typeof window.PulseOrganismMap.signal === "function";
+
+      if (hasMapSignal) {
+        window.PulseOrganismMap.signal({
+          type: "touch_prewarm",
+          page,
+          region: touch.region,
+          mode: touch.mode,
+          presence: touch.presence,
+          pulseStream: touch.pulseStream,
+          fastLane: touch.fastLane
+        });
+
+        appendTouchTimeline("organism_map_signal", { page });
       }
     } catch (err) {
-      console.error("[PulseTouch::OrganismMapPrewarm] FAILED →", err);
+      console.error("[PulseTouch::OrganismMapSignal] FAILED →", err);
     }
 
     // ============================================================

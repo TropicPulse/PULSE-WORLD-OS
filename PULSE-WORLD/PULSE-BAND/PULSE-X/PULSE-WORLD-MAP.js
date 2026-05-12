@@ -1387,7 +1387,9 @@ export async function buildPulseOrganismMap(baseDir = "/") {
 
   const { identities, identitiesByPath } = buildOrganIdentities(systems);
 
-  // ⭐ port-based routing tables for Signal
+  // ============================================================
+  // PORT‑BASED ROUTING TABLES (Signal v25++)
+  // ============================================================
   const portSystems = Object.create(null);
   const portAliases = Object.create(null);
 
@@ -1399,36 +1401,127 @@ export async function buildPulseOrganismMap(baseDir = "/") {
     const portName = port.portName;
     const aliases = port.aliases || [];
 
-    // store full identity under canonical port
     portSystems[portName] = identity;
 
-    // store aliases → canonical port
     for (const alias of aliases) {
       const key = alias.toLowerCase().replace(/[^a-z0-9]/g, "");
       portAliases[key] = portName;
     }
   }
 
-  // Identity resolver
+  // ============================================================
+  // IDENTITY RESOLVER
+  // ============================================================
   function resolveIdentity(metaUrl) {
     const normalized = metaUrl.replace("file://", "").split("?")[0];
     return identitiesByPath[normalized] || null;
   }
 
-  return Object.freeze({
+  // ============================================================
+  // SIGNAL BUS (Touch → OrganismMap)
+  // ============================================================
+  function signal(evt) {
+    if (!evt || typeof evt !== "object") return;
+
+    switch (evt.type) {
+      case "touch_prewarm":
+        handleTouchPrewarm(evt);
+        break;
+    }
+  }
+
+  // ============================================================
+  // TOUCH PREWARM HANDLER
+  // ============================================================
+  function handleTouchPrewarm(evt) {
+    try {
+      prewarm(evt.page, evt.region, evt.mode);
+    } catch {
+      // IMMORTAL: fail‑open
+    }
+  }
+
+  // ============================================================
+  // PREWARM LOGIC (backend/offline)
+  // ============================================================
+  function prewarm(page, region, mode) {
+  try {
+    // 1 — Warm route identity
+    const identity = this.resolveIdentity(`/PULSE/${page}.html`);
+    this._lastIdentity = identity;
+
+    // 2 — Warm UI clusters
+    const ui = this.systems?.UI?.pages?.[page];
+    this._lastUI = ui;
+
+    // 3 — Warm port routing
+    if (identity?.IDENTITY_META?.PORT_IDENTITY) {
+      const port = identity.IDENTITY_META.PORT_IDENTITY.portName;
+      this._lastPort = this.portSystems[port];
+    }
+
+    // 4 — Warm page → component → organ graph
+    this._lastGraph = ui?.GRAPH || null;
+
+    // 5 — Warm advantage routing hints
+    this._lastAdvantage = {
+      page,
+      region,
+      mode,
+      identity,
+      ui
+    };
+
+    // 6 — Warm chunk manifests (if present)
+    this._lastChunks = ui?.CHUNKS || null;
+
+  } catch {
+    // IMMORTAL: fail-open
+  }
+}
+
+
+  // ============================================================
+  // EXPORT SNAPSHOT TO LOCALSTORAGE (optional)
+  // ============================================================
+  function exportToLocalStorage() {
+    try {
+      const snapshot = {
+        systems,
+        identities,
+        identitiesByPath,
+        portSystems,
+        portAliases,
+        meta: {
+          version: "25.1‑IMMORTAL‑WORLD‑GENOME++",
+          generatedAt: new Date().toISOString()
+        }
+      };
+
+      localStorage.setItem("PulseOrganismMap_v25", JSON.stringify(snapshot));
+    } catch {
+      // fail‑open
+    }
+  }
+
+  // ============================================================
+  // FINAL IMMORTAL ORGANISMMAP OBJECT
+  // ============================================================
+  const organismMap = {
     version: "25.1‑IMMORTAL‑WORLD‑GENOME++",
     generatedAt: new Date().toISOString(),
 
-    // raw scan output
     systems,
     identities,
     identitiesByPath,
 
-    // port routing tables for Signal
     portSystems,
     portAliases,
 
     resolveIdentity,
+    signal,
+    prewarm,
+    exportToLocalStorage,
 
     adapters: {
       db: dbAdapter,
@@ -1438,8 +1531,11 @@ export async function buildPulseOrganismMap(baseDir = "/") {
       schema: schemaAdapter,
       cache: cacheOrgan
     }
-  });
+  };
+
+  return Object.freeze(organismMap);
 }
+
 
 // ============================================================================
 // EXPORT — IMMORTAL WORLD GENOME v25.1++
