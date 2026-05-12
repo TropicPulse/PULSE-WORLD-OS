@@ -14,7 +14,8 @@ Always include ALL layers, ALL overlays, ALL IMMORTAL++ structures.
 */
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
 } from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 

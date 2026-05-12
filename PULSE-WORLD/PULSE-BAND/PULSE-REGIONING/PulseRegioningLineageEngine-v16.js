@@ -6,7 +6,8 @@ LAYER: PULSE-WORLD / PULSE-LINEAGE + CORE MEMORY + MULTIVERSE COSMOS
 */
 import {
   OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
 } from "./PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
