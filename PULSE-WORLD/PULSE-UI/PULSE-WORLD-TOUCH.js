@@ -1212,24 +1212,10 @@ function applyGateDecision(gateDecision, skin) {
 // ============================================================
 (function autoIgnitePulseTouch() {
   try {
-      // ============================================================
-    // 0 — INSTALL GLOBAL→LOCALSTORAGE MIRROR (LIMITED + FIRST RUN CLEAR)
     // ============================================================
-    const G = (function installGlobalLocalStorageMirror(prefix = "__G__") {
-
-      // ⭐ FIRST RUN CLEAR (mirror-only keys)
-      const FLAG = prefix + "__CLEARED__";
-      if (!localStorage.getItem(FLAG)) {
-        const keys = Object.keys(localStorage);
-        for (const k of keys) {
-          if (k.startsWith(prefix)) {
-            localStorage.removeItem(k);
-            console.log("🧹 [Mirror] Cleared key →", k);
-          }
-        }
-        localStorage.setItem(FLAG, "1");
-        console.log("🔥 [Mirror] First-run mirror clear complete");
-      }
+    // 0 — INSTALL GLOBAL→INDEXEDDB MIRROR (WITH LOCALSTORAGE FALLBACK)
+    // ============================================================
+    const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeName = "GStore", prefix = "__G__") {
 
       // ⭐ DO NOT STORE THESE ORGANS (TOO LARGE / NON-SERIALIZABLE)
       const SKIP = new Set([
@@ -1238,31 +1224,150 @@ function applyGateDecision(gateDecision, skin) {
         "__PULSE_TOUCH__"
       ]);
 
-      // ⭐ MAX SIZE LIMIT (50KB)
+      // ⭐ SOFT MAX SIZE LIMIT (50KB) — can relax later
       const MAX_SIZE = 50 * 1024;
+
+      let idbAvailable = "indexedDB" in window;
+      let dbPromise = null;
+
+      function openDB() {
+        if (!idbAvailable) return Promise.resolve(null);
+        if (dbPromise) return dbPromise;
+
+        dbPromise = new Promise((resolve) => {
+          const req = indexedDB.open(dbName, 1);
+          req.onupgradeneeded = function (evt) {
+            const db = evt.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+              db.createObjectStore(storeName);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => {
+            console.error("[G::IDB] Failed to open IndexedDB, falling back to localStorage", req.error);
+            idbAvailable = false;
+            resolve(null);
+          };
+        });
+
+        return dbPromise;
+      }
+
+      async function idbGet(key) {
+        const db = await openDB();
+        if (!db) return localStorage.getItem(key);
+        return new Promise((resolve) => {
+          const tx = db.transaction(storeName, "readonly");
+          const store = tx.objectStore(storeName);
+          const req = store.get(key);
+          req.onsuccess = () => resolve(req.result ?? null);
+          req.onerror = () => {
+            console.error("[G::IDB] get failed", req.error);
+            resolve(null);
+          };
+        });
+      }
+
+      async function idbSet(key, value) {
+        const db = await openDB();
+        if (!db) {
+          try { localStorage.setItem(key, value); } catch (err) {
+            console.error("[G::LocalStorage] FAILED to store", key, err);
+          }
+          return;
+        }
+        return new Promise((resolve) => {
+          const tx = db.transaction(storeName, "readwrite");
+          const store = tx.objectStore(storeName);
+          const req = store.put(value, key);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => {
+            console.error("[G::IDB] set failed", req.error);
+            resolve(false);
+          };
+        });
+      }
+
+      async function idbDelete(key) {
+        const db = await openDB();
+        if (!db) {
+          localStorage.removeItem(key);
+          return;
+        }
+        return new Promise((resolve) => {
+          const tx = db.transaction(storeName, "readwrite");
+          const store = tx.objectStore(storeName);
+          const req = store.delete(key);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => {
+            console.error("[G::IDB] delete failed", req.error);
+            resolve(false);
+          };
+        });
+      }
+
+      // ⭐ FIRST RUN CLEAR (mirror-only keys, both IDB + localStorage)
+      (function firstRunClear() {
+        const FLAG = prefix + "__CLEARED__";
+        if (!localStorage.getItem(FLAG)) {
+          const keys = Object.keys(localStorage);
+          for (const k of keys) {
+            if (k.startsWith(prefix)) {
+              localStorage.removeItem(k);
+              console.log("🧹 [Mirror] Cleared localStorage key →", k);
+            }
+          }
+          localStorage.setItem(FLAG, "1");
+          console.log("🔥 [Mirror] First-run mirror clear complete (localStorage)");
+
+          openDB().then(db => {
+            if (!db) return;
+            const tx = db.transaction(storeName, "readwrite");
+            const store = tx.objectStore(storeName);
+            const req = store.clear();
+            req.onsuccess = () => console.log("🔥 [Mirror] First-run mirror clear complete (IndexedDB)");
+            req.onerror = () => console.error("[Mirror] IDB clear failed", req.error);
+          });
+        }
+      })();
 
       const mirror = new Proxy({}, {
         get(_, prop) {
           const key = prefix + String(prop);
+
+          // Fast path: localStorage cache
           const raw = localStorage.getItem(key);
-          if (raw === null) return undefined;
-          try { return JSON.parse(raw); } catch { return raw; }
+          if (raw !== null) {
+            try { return JSON.parse(raw); } catch { return raw; }
+          }
+
+          // Async hydrate from IDB (fire-and-forget)
+          idbGet(key).then(val => {
+            if (val != null) {
+              try {
+                const parsed = JSON.parse(val);
+                try { localStorage.setItem(key, val); } catch {}
+                mirror[prop] = parsed;
+              } catch {
+                mirror[prop] = val;
+              }
+            }
+          });
+
+          return undefined;
         },
 
         set(_, prop, value) {
-          // Skip forbidden keys
           if (SKIP.has(prop)) {
             console.warn(`[Mirror] Skipping ${prop} (not allowed in storage)`);
             return true;
           }
 
-          // Skip functions or objects containing functions
           if (typeof value === "function") {
             console.warn(`[Mirror] Skipping ${prop} (function)`);
             return true;
           }
 
-          // Try to serialize
           let json;
           try {
             json = JSON.stringify(value);
@@ -1271,24 +1376,28 @@ function applyGateDecision(gateDecision, skin) {
             return true;
           }
 
-          // Size check
           if (json.length > MAX_SIZE) {
             console.warn(`[Mirror] Skipping ${prop} (too large: ${json.length} bytes)`);
-            return true;
+            // You can relax/remove this later now that IDB can handle more.
           }
 
-          // Safe write
+          const key = prefix + String(prop);
+
+          // Write to both: localStorage (sync cache) + IDB (deep store)
           try {
-            localStorage.setItem(prefix + String(prop), json);
+            localStorage.setItem(key, json);
           } catch (err) {
-            console.error(`[Mirror] FAILED to store ${prop} →`, err);
+            console.error(`[Mirror] FAILED to store in localStorage ${prop} →`, err);
           }
 
+          idbSet(key, json);
           return true;
         },
 
         deleteProperty(_, prop) {
-          localStorage.removeItem(prefix + String(prop));
+          const key = prefix + String(prop);
+          localStorage.removeItem(key);
+          idbDelete(key);
           return true;
         }
       });
@@ -1314,7 +1423,7 @@ function applyGateDecision(gateDecision, skin) {
     })();
 
 
-    // ⭐ Prevent double‑boot (organism lives in G/localStorage)
+    // ⭐ Prevent double‑boot (organism lives in G/storage)
     if (G.__PULSE_TOUCH__) return;
 
     // ⭐ Detect current page
@@ -1325,7 +1434,7 @@ function applyGateDecision(gateDecision, skin) {
     const prefix = page === "index" ? "./" : "../";
 
     // ============================================================
-    // 1 — ENSURE DETECTOR + ORGANS EXIST (IN G / LOCALSTORAGE)
+    // 1 — ENSURE DETECTOR + ORGANS EXIST (IN G / STORAGE)
     // ============================================================
     if (!G.PulseDetector && typeof window.PulseTouchDetector === "function") {
       G.PulseDetector = window.PulseTouchDetector();
@@ -1399,7 +1508,6 @@ function applyGateDecision(gateDecision, skin) {
 
     // ============================================================
     // 3 — SEND BOOTSTRAP SIGNALS (MAP / CHUNKS / NORMALIZER)
-    //     THESE WRITE TO LOCALSTORAGE + CALL DETECTOR
     // ============================================================
     try {
       G.PulseOrganismMap.signal?.({
@@ -1562,6 +1670,7 @@ function applyGateDecision(gateDecision, skin) {
     console.error("PulseTouch auto‑ignite failed", err);
   }
 })();
+
 
 // ============================================================
 //  FOOTER — CONTINUOUS CONTACT LORE
