@@ -126,7 +126,7 @@ import { admin, db } from "../PULSE-X/PulseWorldGenome-v20.js";
 import { getStripe as Stripe } from "../PULSE-X/PulseWorldBank-v20.js";
 import { getTwilioClient as twilio } from "../PULSE-X/PulseWorldSMSAlert-v20.js";
 import { PulseProofBridgeLogger as logger, BridgeLog as log } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
-import { runUserScoring } from "../PULSE-PROXY/PulseProxyHypothalamus-v20.js";
+
 
 
 
@@ -715,7 +715,7 @@ export function hashPin(pin) {
 // import { marketplaceC } from "../PULSE-EARN/marketplaces/marketplaceC.js";
 
 // // Remote scoring (ESM only)
-
+// import { runUserScoring } from "../PULSE-PROXY/PulseUserScoring.js";
 
 // // Reputation loader (inside /PULSE-EARN/)
 // import { loadMarketplaceReputation } from "../PULSE-EARN/MarketplaceReputation.js";
@@ -16943,217 +16943,217 @@ export const getsettings = onRequest(
   }
 );
 
-async function generateSettingsCache({ sizeOnly = false, deltaRequest = false } = {}) {
+// async function generateSettingsCache({ sizeOnly = false, deltaRequest = false } = {}) {
 
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.settingsVersion ?? 1;
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.settingsVersion ?? 1;
 
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/settings
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("settings");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/settings
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("settings");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
 
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || {};
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || {};
 
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-  const isFresh = (now - lastGenerated < ONE_DAY) && (cachedVersion === currentVersion);
-  const hasData = cachedData && Object.keys(cachedData).length > 0;
+//   const ONE_DAY = 24 * 60 * 60 * 1000;
+//   const isFresh = (now - lastGenerated < ONE_DAY) && (cachedVersion === currentVersion);
+//   const hasData = cachedData && Object.keys(cachedData).length > 0;
 
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFresh) {
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFresh) {
 
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: {}, removed: {}, changed: {} };
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: {}, removed: {}, changed: {} };
 
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
 
-      return delta;
-    }
+//       return delta;
+//     }
 
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
 
-    return cachedData;
-  }
+//     return cachedData;
+//   }
 
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Build NEW full settings snapshot
-  // ---------------------------------------------------------
-  const settingsDoc = await admin
-    .firestore()
-    .collection("TPSettings")
-    .doc("global")
-    .get();
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Build NEW full settings snapshot
+//   // ---------------------------------------------------------
+//   const settingsDoc = await admin
+//     .firestore()
+//     .collection("TPSettings")
+//     .doc("global")
+//     .get();
 
-  const root = settingsDoc.data() || {};
+//   const root = settingsDoc.data() || {};
 
-  // -----------------------------
-  // VALIDATE seasonalPeriods
-  // -----------------------------
-  const seasonalPeriods = {};
-  const rawPeriods = root.environment?.seasonalPeriods || {};
+//   // -----------------------------
+//   // VALIDATE seasonalPeriods
+//   // -----------------------------
+//   const seasonalPeriods = {};
+//   const rawPeriods = root.environment?.seasonalPeriods || {};
 
-  for (const key in rawPeriods) {
-    const p = rawPeriods[key];
-    if (!p?.start || !p?.end) continue;
+//   for (const key in rawPeriods) {
+//     const p = rawPeriods[key];
+//     if (!p?.start || !p?.end) continue;
 
-    const valid =
-      /^\d{2}-\d{2}$/.test(p.start) &&
-      /^\d{2}-\d{2}$/.test(p.end) &&
-      !isNaN(Number(p.multiplier));
+//     const valid =
+//       /^\d{2}-\d{2}$/.test(p.start) &&
+//       /^\d{2}-\d{2}$/.test(p.end) &&
+//       !isNaN(Number(p.multiplier));
 
-    if (!valid) continue;
+//     if (!valid) continue;
 
-    seasonalPeriods[key] = p;
-  }
+//     seasonalPeriods[key] = p;
+//   }
 
-  // -----------------------------
-  // BASE ENVIRONMENT SETTINGS
-  // -----------------------------
-  const env = root.environment || {};
+//   // -----------------------------
+//   // BASE ENVIRONMENT SETTINGS
+//   // -----------------------------
+//   const env = root.environment || {};
 
-  const fullSettings = {
-    enabled: env.enabled ?? true,
-    calculationVersion: root.calculationVersion ?? 26,
-    delayPenalty: root.delayPenalty ?? 15,
+//   const fullSettings = {
+//     enabled: env.enabled ?? true,
+//     calculationVersion: root.calculationVersion ?? 26,
+//     delayPenalty: root.delayPenalty ?? 15,
 
-    ui: env.ui ?? {},
-    weather: env.weather ?? {},
-    perfectWeather: env.perfectWeather ?? {},
-    seasons: env.seasons ?? {},
-    marine: env.marine ?? {},
-    holidays: env.holidays ?? {},
-    sargassum: env.sargassum ?? {},
-    storm: env.storm ?? {},
-    sea: env.sea ?? {},
-    moon: env.moon ?? {},
-    multipliers: env.multipliers ?? {},
+//     ui: env.ui ?? {},
+//     weather: env.weather ?? {},
+//     perfectWeather: env.perfectWeather ?? {},
+//     seasons: env.seasons ?? {},
+//     marine: env.marine ?? {},
+//     holidays: env.holidays ?? {},
+//     sargassum: env.sargassum ?? {},
+//     storm: env.storm ?? {},
+//     sea: env.sea ?? {},
+//     moon: env.moon ?? {},
+//     multipliers: env.multipliers ?? {},
 
-    seasonalPeriods,
+//     seasonalPeriods,
 
-    tierMultiplier_Seashell: root.tierMultiplier_Seashell ?? 1,
-    tierMultiplier_ReefDiver: root.tierMultiplier_ReefDiver ?? 1.07,
-    tierMultiplier_ToucanSpirit: root.tierMultiplier_ToucanSpirit ?? 1.17,
-    tierMultiplier_VolcanoHeart: root.tierMultiplier_VolcanoHeart ?? 1.30,
-    tierMultiplier_HurricaneLegend: root.tierMultiplier_HurricaneLegend ?? 1.50,
+//     tierMultiplier_Seashell: root.tierMultiplier_Seashell ?? 1,
+//     tierMultiplier_ReefDiver: root.tierMultiplier_ReefDiver ?? 1.07,
+//     tierMultiplier_ToucanSpirit: root.tierMultiplier_ToucanSpirit ?? 1.17,
+//     tierMultiplier_VolcanoHeart: root.tierMultiplier_VolcanoHeart ?? 1.30,
+//     tierMultiplier_HurricaneLegend: root.tierMultiplier_HurricaneLegend ?? 1.50,
 
-    maxTotalMultiplier: root.maxTotalMultiplier ?? 3,
+//     maxTotalMultiplier: root.maxTotalMultiplier ?? 3,
 
-    tierThreshold_ReefDiver: Number(root.tierThreshold_ReefDiver) || 2500,
-    tierThreshold_ToucanSpirit: Number(root.tierThreshold_ToucanSpirit) || 5000,
-    tierThreshold_VolcanoHeart: Number(root.tierThreshold_VolcanoHeart) || 9000,
-    tierThreshold_HurricaneLegend: Number(root.tierThreshold_HurricaneLegend) || 15000,
+//     tierThreshold_ReefDiver: Number(root.tierThreshold_ReefDiver) || 2500,
+//     tierThreshold_ToucanSpirit: Number(root.tierThreshold_ToucanSpirit) || 5000,
+//     tierThreshold_VolcanoHeart: Number(root.tierThreshold_VolcanoHeart) || 9000,
+//     tierThreshold_HurricaneLegend: Number(root.tierThreshold_HurricaneLegend) || 15000,
 
-    referralBaseBonus_NewUser: root.referralBaseBonus_NewUser ?? 25,
-    referralBaseBonus_Referrer: root.referralBaseBonus_Referrer ?? 50,
-    referralEarningRate: root.referralEarningRate ?? 15,
-    referralStreakDurationHours: root.referralStreakDurationHours ?? 6,
-    referralStreakMultiplier: root.referralStreakMultiplier ?? 1.1,
-    seasonalReferralBonus_NewUser: root.seasonalReferralBonus_NewUser ?? 10,
-    seasonalReferralBonus_Referrer: root.seasonalReferralBonus_Referrer ?? 20,
+//     referralBaseBonus_NewUser: root.referralBaseBonus_NewUser ?? 25,
+//     referralBaseBonus_Referrer: root.referralBaseBonus_Referrer ?? 50,
+//     referralEarningRate: root.referralEarningRate ?? 15,
+//     referralStreakDurationHours: root.referralStreakDurationHours ?? 6,
+//     referralStreakMultiplier: root.referralStreakMultiplier ?? 1.1,
+//     seasonalReferralBonus_NewUser: root.seasonalReferralBonus_NewUser ?? 10,
+//     seasonalReferralBonus_Referrer: root.seasonalReferralBonus_Referrer ?? 20,
 
-    streakDurationDays: root.streakDurationDays ?? 1,
-    streakMaxMultiplier: root.streakMaxMultiplier ?? 2,
-    streakMultiplierBase: root.streakMultiplierBase ?? 1,
-    streakMultiplierPerDay: root.streakMultiplierPerDay ?? 0.1,
+//     streakDurationDays: root.streakDurationDays ?? 1,
+//     streakMaxMultiplier: root.streakMaxMultiplier ?? 2,
+//     streakMultiplierBase: root.streakMultiplierBase ?? 1,
+//     streakMultiplierPerDay: root.streakMultiplierPerDay ?? 0.1,
 
-    fastDeliveryBonusEnabled: root.fastDeliveryBonusEnabled ?? false,
-    fastDeliveryBonusMinutes: root.fastDeliveryBonusMinutes ?? 60,
-    fastDeliveryBonusPoints: root.fastDeliveryBonusPoints ?? 15
-  };
+//     fastDeliveryBonusEnabled: root.fastDeliveryBonusEnabled ?? false,
+//     fastDeliveryBonusMinutes: root.fastDeliveryBonusMinutes ?? 60,
+//     fastDeliveryBonusPoints: root.fastDeliveryBonusPoints ?? 15
+//   };
 
-  // -----------------------------
-  // ENVIRONMENTAL SIGNALS
-  // -----------------------------
-  const stormsSnap = await db.collection("environment").doc("storms").get();
-  const sargSnap = await db.collection("environment").doc("sargassum").get();
-  const wildlifeSnap = await db.collection("environment").doc("wildlife").get();
+//   // -----------------------------
+//   // ENVIRONMENTAL SIGNALS
+//   // -----------------------------
+//   const stormsSnap = await db.collection("environment").doc("storms").get();
+//   const sargSnap = await db.collection("environment").doc("sargassum").get();
+//   const wildlifeSnap = await db.collection("environment").doc("wildlife").get();
 
-  const storms = stormsSnap.exists ? stormsSnap.data().data || {} : {};
-  const sargassum = sargSnap.exists ? sargSnap.data().data || {} : {};
-  const wildlife = wildlifeSnap.exists ? wildlifeSnap.data().data || {} : {};
+//   const storms = stormsSnap.exists ? stormsSnap.data().data || {} : {};
+//   const sargassum = sargSnap.exists ? sargSnap.data().data || {} : {};
+//   const wildlife = wildlifeSnap.exists ? wildlifeSnap.data().data || {} : {};
 
-  const finalSnapshot = {
-    TPSettings: fullSettings,
-    seasonal: getSeasonFromSettings(fullSettings),
-    TPEnvironmentSignals: { storms, sargassum, wildlife }
-  };
+//   const finalSnapshot = {
+//     TPSettings: fullSettings,
+//     seasonal: getSeasonFromSettings(fullSettings),
+//     TPEnvironmentSignals: { storms, sargassum, wildlife }
+//   };
 
-  // ---------------------------------------------------------
-  // ⭐ WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: finalSnapshot
-  });
+//   // ---------------------------------------------------------
+//   // ⭐ WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: finalSnapshot
+//   });
 
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldKeys = new Set(Object.keys(cachedData));
-    const newKeys = new Set(Object.keys(finalSnapshot));
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldKeys = new Set(Object.keys(cachedData));
+//     const newKeys = new Set(Object.keys(finalSnapshot));
 
-    const delta = {
-      version: currentVersion,
-      added: {},
-      removed: {},
-      changed: {}
-    };
+//     const delta = {
+//       version: currentVersion,
+//       added: {},
+//       removed: {},
+//       changed: {}
+//     };
 
-    for (const key of newKeys) {
-      if (!oldKeys.has(key)) {
-        delta.added[key] = finalSnapshot[key];
-        continue;
-      }
+//     for (const key of newKeys) {
+//       if (!oldKeys.has(key)) {
+//         delta.added[key] = finalSnapshot[key];
+//         continue;
+//       }
 
-      if (JSON.stringify(cachedData[key]) !== JSON.stringify(finalSnapshot[key])) {
-        delta.changed[key] = finalSnapshot[key];
-      }
-    }
+//       if (JSON.stringify(cachedData[key]) !== JSON.stringify(finalSnapshot[key])) {
+//         delta.changed[key] = finalSnapshot[key];
+//       }
+//     }
 
-    for (const key of oldKeys) {
-      if (!newKeys.has(key)) {
-        delta.removed[key] = cachedData[key];
-      }
-    }
+//     for (const key of oldKeys) {
+//       if (!newKeys.has(key)) {
+//         delta.removed[key] = cachedData[key];
+//       }
+//     }
 
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
 
-    return delta;
-  }
+//     return delta;
+//   }
 
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(finalSnapshot);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(finalSnapshot);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
 
-  return finalSnapshot;
-}
+//   return finalSnapshot;
+// }
 
 function envResponse({ success, error = null, raw = null, data = null }) {
   return {
@@ -17353,1001 +17353,1001 @@ const classifyPriceSignal = (zone, rate, baselineRate, deviationPct, settings) =
   return { status: 'suspect', confidenceScore: 0.5 };
 };
 
-async function generateUsersCache({ sizeOnly = false, deltaRequest = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.usersVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/users
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("users");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < ONE_DAY;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Cache fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: [], removed: [], changed: [] };
-
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
-
-      return delta;
-    }
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Version changed → micro-hydrate
-  // ---------------------------------------------------------
-  let merged = hasData ? [...cachedData] : [];
-
-  if (hasData && cachedVersion !== currentVersion) {
-    const freshUsers = await getAllUsersCache();
-
-    const freshMap = new Map(freshUsers.map(u => [u.id, u]));
-    const mergedMap = new Map(merged.map(u => [u.id, u]));
-
-    for (const [id, freshUser] of freshMap.entries()) {
-      const oldUser = mergedMap.get(id);
-
-      if (!oldUser) {
-        mergedMap.set(id, freshUser);
-        continue;
-      }
-
-      const updatedUser = { ...oldUser };
-
-      if (freshUser.updatedAt > oldUser.updatedAt) {
-        updatedUser.email = freshUser.email;
-        updatedUser.name = freshUser.name;
-        updatedUser.displayName = freshUser.displayName;
-        updatedUser.photoURL = freshUser.photoURL;
-        updatedUser.role = freshUser.role;
-        updatedUser.phone = freshUser.phone;
-        updatedUser.country = freshUser.country;
-      }
-
-      if (freshUser.lastEarnedDate !== oldUser.lastEarnedDate) {
-        updatedUser.loyalty = { ...freshUser.loyalty };
-      }
-
-      if (freshUser.notifications.lastPushSent !== oldUser.notifications.lastPushSent) {
-        updatedUser.notifications = { ...freshUser.notifications };
-      }
-
-      if (freshUser.wallet.walletBalance !== oldUser.wallet.walletBalance) {
-        updatedUser.wallet = { ...freshUser.wallet };
-      }
-
-      if (freshUser.lastActive !== oldUser.lastActive) {
-        updatedUser.lastActive = freshUser.lastActive;
-      }
-
-      mergedMap.set(id, updatedUser);
-    }
-
-    merged = [...mergedMap.values()];
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 3 — Too old → full rebuild
-  // ---------------------------------------------------------
-  if (!hasData || !isFreshByTime) {
-    merged = await getAllUsersCache();
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: merged
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldMap = new Map(cachedData.map(u => [u.id, u]));
-    const newMap = new Map(merged.map(u => [u.id, u]));
-
-    const added = [];
-    const removed = [];
-    const changed = [];
-
-    for (const [id, newUser] of newMap.entries()) {
-      const oldUser = oldMap.get(id);
-
-      if (!oldUser) {
-        added.push(newUser);
-        continue;
-      }
-
-      if (JSON.stringify(oldUser) !== JSON.stringify(newUser)) {
-        changed.push(newUser);
-      }
-    }
-
-    for (const [id, oldUser] of oldMap.entries()) {
-      if (!newMap.has(id)) {
-        removed.push(oldUser);
-      }
-    }
-
-    const delta = { version: currentVersion, added, removed, changed };
-
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return delta;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY MODE (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(merged);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return merged;
-}
-async function generateBusinessesCache({ sizeOnly = false, deltaRequest = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.businessVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/businesses
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("businesses");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < TWO_WEEKS;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: [], removed: [], changed: [] };
-
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
-
-      return delta;
-    }
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Version matches but time expired → micro-hydrate
-  // ---------------------------------------------------------
-  let merged = hasData ? [...cachedData] : [];
-
-  if (hasData && isFreshByVersion && !isFreshByTime) {
-    const fresh = await getAllBusinesses(null);
-
-    const mergedMap = new Map(cachedData.map(b => [b.id, b]));
-
-    for (const freshBiz of fresh) {
-      const oldBiz = mergedMap.get(freshBiz.id);
-
-      if (!oldBiz) {
-        mergedMap.set(freshBiz.id, freshBiz);
-        continue;
-      }
-
-      if (freshBiz.updatedAt > oldBiz.updatedAt) {
-        mergedMap.set(freshBiz.id, freshBiz);
-      }
-    }
-
-    merged = [...mergedMap.values()];
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 3 — Version changed OR too old → full rebuild
-  // ---------------------------------------------------------
-  if (!hasData || !isFreshByTime) {
-    merged = await getAllBusinesses(null);
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: merged
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldMap = new Map(cachedData.map(b => [b.id, b]));
-    const newMap = new Map(merged.map(b => [b.id, b]));
-
-    const added = [];
-    const removed = [];
-    const changed = [];
-
-    for (const [id, newBiz] of newMap.entries()) {
-      const oldBiz = oldMap.get(id);
-
-      if (!oldBiz) {
-        added.push(newBiz);
-        continue;
-      }
-
-      if (JSON.stringify(oldBiz) !== JSON.stringify(newBiz)) {
-        changed.push(newBiz);
-      }
-    }
-
-    for (const [id, oldBiz] of oldMap.entries()) {
-      if (!newMap.has(id)) {
-        removed.push(oldBiz);
-      }
-    }
-
-    const delta = { version: currentVersion, added, removed, changed };
-
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return delta;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(merged);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return merged;
-}
-
-async function processWorker({
-  fileId,
-  totalPackets,
-  instanceId = 0,
-  activeInstances = null, // null = cannot detect
-  readPacketExists,
-  writePacket,
-  generatePacketData,
-}) {
-  let start = 0;
-  let step = 1;
-
-  // ---------------------------------------------------
-  // 1. DYNAMIC MODE (we CAN detect active instances)
-  // ---------------------------------------------------
-  if (typeof activeInstances === "number" && activeInstances > 0) {
-    const sliceSize = Math.floor(totalPackets / activeInstances);
-    start = sliceSize * instanceId;
-    step = 1;
-  }
-
-  // ---------------------------------------------------
-  // 2. FALLBACK MODE (we CANNOT detect instances)
-  // ---------------------------------------------------
-  else {
-    // Your rule: skip 4 packets per instance
-    start = instanceId * 4;
-    step = 4;
-  }
-
-  // ---------------------------------------------------
-  // 3. MAIN LOOP (auto‑exit when done)
-  // ---------------------------------------------------
-  for (let packetIndex = start; packetIndex < totalPackets; packetIndex += step) {
-    const exists = await readPacketExists(fileId, packetIndex);
-
-    if (exists) {
-      continue;
-    }
-
-    const packetData = await generatePacketData(fileId, packetIndex);
-
-    await writePacket(fileId, packetIndex, packetData);
-  }
-
-  // ---------------------------------------------------
-  // 4. AUTO‑SPIN‑DOWN (function ends → instance ends)
-  // ---------------------------------------------------
-  return {
-    instanceId,
-    mode: activeInstances ? "dynamic" : "fallback",
-    start,
-    step,
-    status: "complete",
-  };
-}
-
-export const scheduledUserScoring = onSchedule(
-  {
-    schedule: "every 5 minutes",
-    timeZone: "America/Belize"
-  },
-  async () => {
-    log("Running scheduled user scoring…");
-
-    try {
-      await runUserScoring();
-      log("User scoring completed.");
-    } catch (err) {
-      console.error("User scoring failed:", err);
-    }
-  }
-);
-
-async function generateEventsCache({ sizeOnly = false, deltaRequest = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.eventVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/events
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("events");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const FOUR_DAYS = 4 * 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < FOUR_DAYS;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: [], removed: [], changed: [] };
-
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
-
-        return delta;
-    }
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Version matches but time expired → micro-hydrate
-  // ---------------------------------------------------------
-  let merged = hasData ? [...cachedData] : [];
-
-  if (hasData && isFreshByVersion && !isFreshByTime) {
-    const fresh = await getAllEventsCache();
-
-    const mergedMap = new Map(cachedData.map(ev => [ev.id, ev]));
-
-    for (const freshEvent of fresh) {
-      const oldEvent = mergedMap.get(freshEvent.id);
-
-      if (!oldEvent) {
-        mergedMap.set(freshEvent.id, freshEvent);
-        continue;
-      }
-
-      if (freshEvent.updatedAt > oldEvent.updatedAt) {
-        mergedMap.set(freshEvent.id, freshEvent);
-      }
-    }
-
-    merged = [...mergedMap.values()];
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 3 — Version changed OR too old → full rebuild
-  // ---------------------------------------------------------
-  if (!hasData || !isFreshByTime) {
-    merged = await getAllEventsCache();
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: merged
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldMap = new Map(cachedData.map(ev => [ev.id, ev]));
-    const newMap = new Map(merged.map(ev => [ev.id, ev]));
-
-    const added = [];
-    const removed = [];
-    const changed = [];
-
-    for (const [id, newEvent] of newMap.entries()) {
-      const oldEvent = oldMap.get(id);
-
-      if (!oldEvent) {
-        added.push(newEvent);
-        continue;
-      }
-
-      if (JSON.stringify(oldEvent) !== JSON.stringify(newEvent)) {
-        changed.push(newEvent);
-      }
-    }
-
-    for (const [id, oldEvent] of oldMap.entries()) {
-      if (!newMap.has(id)) {
-        removed.push(oldEvent);
-      }
-    }
-
-    const delta = { version: currentVersion, added, removed, changed };
-
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return delta;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(merged);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return merged;
-}
-
-async function getAllEventsCache() {
-  const today = new Date();
-  const todayStr = formatEventDate(today);
-
-  const snap = await db.collection("Events")
-    .where("toDate", ">=", todayStr)
-    .orderBy("toDate")
-    .limit(20)
-    .get();
-
-  return snap.docs.map(doc => {
-    const data = doc.data() || {};
-
-    const coords =
-      data.coords ||
-      (data.lat && data.lng ? { lat: data.lat, lng: data.lng } : null);
-
-    return {
-      id: doc.id,
-      title: data.title || "Untitled Event",
-
-      fromDate: data.fromDate || todayStr,
-      toDate: data.toDate || data.fromDate || todayStr,
-
-      venue: data.venue || data.resolvedName || "Unknown Venue",
-      address: data.address || data.resolvedAddress || "Unknown Address",
-
-      category: data.category || null,
-      price: data.price ?? 0,
-
-      coords,
-
-      mapImageUrl: data.mapImageUrl || null,
-      mapsWebUrl: data.mapsWebUrl || null,
-      placeId: data.placeId || null,
-      resolvedName: data.resolvedName || null,
-      resolvedAddress: data.resolvedAddress || null,
-
-      images: data.images || [],
-
-      ...data
-    };
-  });
-}
-
-async function getAllUsersCache() {
-  const snap = await db
-    .collection("Users")
-    .orderBy("TPIdentity.createdAt", "desc")
-    .get();
-
-  const safeMillis = (ts) => {
-    if (!ts) return null;
-    if (typeof ts.toMillis === "function") return ts.toMillis();
-    if (ts?._seconds) return ts._seconds * 1000;
-    if (typeof ts === "number") return ts;
-    return null;
-  };
-
-  const safeNum = (v) =>
-    Number.isFinite(Number(v)) ? Number(v) : 0;
-
-  return snap.docs.map((doc) => {
-    const data = doc.data() || {};
-    const id = doc.id;
-
-    const TPIdentity = data.TPIdentity || {};
-    const TPLoyalty = data.TPLoyalty || {};
-    const TPNotifications = data.TPNotifications || {};
-    const TPWallet = data.TPWallet || {};
-    const TPSecurity = data.TPSecurity || {};
-
-    return {
-      id,
-
-      // ⭐ Identity (flattened)
-      email: TPIdentity.email || null,
-      name: TPIdentity.name || null,
-      displayName: TPIdentity.displayName || null,
-      photoURL: TPIdentity.photoURL || null,
-      role: TPIdentity.role || "Customer",
-      phone: TPIdentity.phone || null,
-      country: TPIdentity.country || null,
-
-      // ⭐ Loyalty
-      loyalty: {
-        pointsBalance: safeNum(TPLoyalty.pointsBalance),
-        lifetimePoints: safeNum(TPLoyalty.lifetimePoints),
-        referralCode: TPLoyalty.referralCode || null,
-        referredBy: TPLoyalty.referredBy || null
-      },
-
-      // ⭐ Notifications
-      notifications: {
-        receiveMassEmails: TPNotifications.receiveMassEmails ?? true,
-        receiveSMS: TPNotifications.receiveSMS ?? false,
-        lastPushSent: safeMillis(TPNotifications.lastPushSent)
-      },
-
-      // ⭐ Wallet
-      wallet: {
-        walletBalance: safeNum(TPWallet.walletBalance)
-      },
-
-      // ⭐ Timestamps
-      createdAt: safeMillis(TPIdentity.createdAt),
-      updatedAt: safeMillis(TPIdentity.updatedAt),
-      lastActive: safeMillis(TPSecurity.lastActive),
-      lastEarnedDate: safeMillis(TPLoyalty.lastEarnedDate)
-    };
-  });
-}
-
-async function generateHistoryCache({ sizeOnly = false, deltaRequest = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.historyVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/history
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("history");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < ONE_DAY;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (deltaRequest) {
-      const delta = { version: currentVersion, added: [], removed: [], changed: [] };
-
-      if (sizeOnly) {
-        const json = JSON.stringify(delta);
-        return Buffer.byteLength(json, "utf8") / 1024;
-      }
-
-      return delta;
-    }
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Build NEW full history snapshot
-  // ---------------------------------------------------------
-  const usersSnap = await db.collection("Users").get();
-  const allHistory = [];
-
-  for (const userDoc of usersSnap.docs) {
-    const uid = userDoc.id;
-    const userData = userDoc.data() || {};
-    const loyalty = userData.loyalty || {};
-
-    const histSnap = await db
-      .collection("PulseHistory")
-      .doc(uid)
-      .collection("entries")
-      .orderBy("createdAt", "desc")
-      .limit(200)
-      .get();
-
-    for (const entry of histSnap.docs) {
-      const h = entry.data();
-
-      // -----------------------------------------
-      // ⭐ Build unified snapshot (history + loyalty)
-      // -----------------------------------------
-      const snapshot = h.pointsSnapshot || {
-        seasonalName: loyalty.seasonalName ?? null,
-        seasonalMultiplier: loyalty.seasonalMultiplier ?? 1,
-        seasonalActive: loyalty.seasonalActive ?? false,
-
-        tier: loyalty.tier ?? null,
-        tierKey: loyalty.tierKey ?? null,
-        tierMultiplier: loyalty.tierMultiplier ?? 1,
-
-        streakCount: loyalty.streakCount ?? 0,
-        streakMultiplier: loyalty.streakMultiplier ?? 1,
-        streakExpires: loyalty.streakExpires ?? null,
-
-        calculationVersion: loyalty.calculationVersion ?? 1,
-
-        pointsBefore: h.pulsepointsBefore ?? null,
-        pointsAfter: h.pulsepointsAfter ?? null
-      };
-
-      allHistory.push({
-        uid,
-        id: entry.id,
-        type: h.type,
-        label: h.label,
-        amount: h.amount,
-        ts: h.ts,
-        createdAt: h.createdAt,
-        orderID: h.orderID ?? null,
-        pointsSnapshot: snapshot
-      });
-    }
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: allHistory
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ DELTA MODE
-  // ---------------------------------------------------------
-  if (deltaRequest) {
-    const oldMap = new Map(cachedData.map(h => [`${h.uid}_${h.id}`, h]));
-    const newMap = new Map(allHistory.map(h => [`${h.uid}_${h.id}`, h]));
-
-    const added = [];
-    const removed = [];
-    const changed = [];
-
-    for (const [key, newEntry] of newMap.entries()) {
-      const oldEntry = oldMap.get(key);
-
-      if (!oldEntry) {
-        added.push(newEntry);
-        continue;
-      }
-
-      if (JSON.stringify(oldEntry) !== JSON.stringify(newEntry)) {
-        changed.push(newEntry);
-      }
-    }
-
-    for (const [key, oldEntry] of oldMap.entries()) {
-      if (!newMap.has(key)) {
-        removed.push(oldEntry);
-      }
-    }
-
-    const delta = { version: currentVersion, added, removed, changed };
-
-    if (sizeOnly) {
-      const json = JSON.stringify(delta);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return delta;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY (full)
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(allHistory);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return allHistory;
-}
-async function generateLoyaltyCache({ sizeOnly = false } = {}) {
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
-  // ---------------------------------------------------------
-  const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
-  const controlSnap = await controlRef.get();
-  const control = controlSnap.data() || {};
-  const currentVersion = control.loyaltyVersion ?? 1;
-
-  // ---------------------------------------------------------
-  // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/loyalty
-  // ---------------------------------------------------------
-  const metaRef = db.collection("Cache_Meta").doc("loyalty");
-  const metaSnap = await metaRef.get();
-  const meta = metaSnap.data() || {};
-
-  const now = Date.now();
-  const lastGenerated = meta.lastGenerated || 0;
-  const cachedVersion = meta.version || 0;
-  const cachedData = meta.data || [];
-
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-
-  const isFreshByTime = now - lastGenerated < ONE_DAY;
-  const isFreshByVersion = cachedVersion === currentVersion;
-  const hasData = Array.isArray(cachedData) && cachedData.length > 0;
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 1 — Fully fresh
-  // ---------------------------------------------------------
-  if (hasData && isFreshByTime && isFreshByVersion) {
-
-    if (sizeOnly) {
-      const json = JSON.stringify(cachedData);
-      return Buffer.byteLength(json, "utf8") / 1024;
-    }
-
-    return cachedData;
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ CASE 2 — Build NEW full loyalty snapshot
-  // ---------------------------------------------------------
-  const usersSnap = await db.collection("Users").get();
-  const loyaltyList = [];
-
-  // Load global settings once
-  const settingsSnap = await db.collection("TPSettings").doc("global").get();
-  const settings = settingsSnap.data() || {};
-
-  for (const userDoc of usersSnap.docs) {
-    const uid = userDoc.id;
-    const userData = userDoc.data() || {};
-
-    const TPIdentity = userData.TPIdentity || {};
-    const TPLoyalty = userData.TPLoyalty || {};
-
-    // -----------------------------------------
-    // ⭐ DISPLAY NAME
-    // -----------------------------------------
-    const displayName = TPIdentity.displayName || "Explorer";
-
-    // -----------------------------------------
-    // ⭐ STREAK LOGIC
-    // -----------------------------------------
-    const lastEarnedDate = TPLoyalty.lastEarnedDate || null;
-    let streakCount = Number(TPLoyalty.streakCount) || 0;
-
-    const windowHours = (settings.streakDurationDays ?? 1) * 24;
-
-    if (!lastEarnedDate) {
-      streakCount = 0;
-    } else {
-      const lastMs = lastEarnedDate.toMillis();
-      const expiresMs = lastMs + windowHours * 3600000;
-
-      if (Date.now() >= expiresMs) {
-        streakCount = 0;
-      }
-    }
-
-    // -----------------------------------------
-    // ⭐ TIER LOGIC
-    // -----------------------------------------
-    const lifetimePoints = Number(TPLoyalty.lifetimePoints) || 0;
-
-    const tierThresholds = {
-      Seashell: 0,
-      ReefDiver: settings.tierThreshold_ReefDiver,
-      ToucanSpirit: settings.tierThreshold_ToucanSpirit,
-      VolcanoHeart: settings.tierThreshold_VolcanoHeart,
-      HurricaneLegend: settings.tierThreshold_HurricaneLegend
-    };
-
-    let tierKey = "Seashell";
-    for (const [name, threshold] of Object.entries(tierThresholds)) {
-      if (lifetimePoints >= threshold) tierKey = name;
-    }
-
-    const tierNameMap = {
-      Seashell: "Seashell",
-      ReefDiver: "Reef Diver",
-      ToucanSpirit: "Toucan Spirit",
-      VolcanoHeart: "Volcano Heart",
-      HurricaneLegend: "Hurricane Legend"
-    };
-
-    const tier = tierNameMap[tierKey];
-    const tierMultiplier = settings[`tierMultiplier_${tierKey}`] ?? 1;
-
-    // -----------------------------------------
-    // ⭐ STREAK MULTIPLIER
-    // -----------------------------------------
-    const streakMultiplier = Math.min(
-      settings.streakMultiplierBase +
-        streakCount * settings.streakMultiplierPerDay,
-      settings.streakMaxMultiplier
-    );
-
-    // -----------------------------------------
-    // ⭐ SEASONAL LOGIC
-    // -----------------------------------------
-    const {
-      seasonalActive,
-      seasonalName,
-      seasonalMultiplier
-    } = getSeasonFromSettings(settings);
-
-    // -----------------------------------------
-    // ⭐ REFERRAL CODE
-    // -----------------------------------------
-    const referralCode = TPLoyalty.referralCode || null;
-
-    // -----------------------------------------
-    // ⭐ BUILD LOYALTY SNAPSHOT
-    // -----------------------------------------
-    loyaltyList.push({
-      uid,
-      displayName,
-      lifetimePoints,
-      streakCount,
-      tier,
-      tierKey,
-      tierMultiplier,
-      streakMultiplier,
-      seasonalMultiplier,
-      seasonalActive,
-      seasonalName,
-      referralCode,
-      calculationVersion: TPLoyalty.calculationVersion ?? 1
-    });
-  }
-
-  // ---------------------------------------------------------
-  // ⭐ WRITE BACK FULL SNAPSHOT
-  // ---------------------------------------------------------
-  await metaRef.set({
-    lastGenerated: now,
-    version: currentVersion,
-    data: loyaltyList
-  });
-
-  // ---------------------------------------------------------
-  // ⭐ SIZE ONLY
-  // ---------------------------------------------------------
-  if (sizeOnly) {
-    const json = JSON.stringify(loyaltyList);
-    return Buffer.byteLength(json, "utf8") / 1024;
-  }
-
-  return loyaltyList;
-}
-function signChunk(userId, sessionId, index, dataBase64) {
-  const h = crypto.createHash("sha256");
-  h.update(userId + sessionId + index + dataBase64);
-  return h.digest("hex");
-}
+// async function generateUsersCache({ sizeOnly = false, deltaRequest = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.usersVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/users
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("users");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const ONE_DAY = 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < ONE_DAY;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Cache fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: [], removed: [], changed: [] };
+
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
+
+//       return delta;
+//     }
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Version changed → micro-hydrate
+//   // ---------------------------------------------------------
+//   let merged = hasData ? [...cachedData] : [];
+
+//   if (hasData && cachedVersion !== currentVersion) {
+//     const freshUsers = await getAllUsersCache();
+
+//     const freshMap = new Map(freshUsers.map(u => [u.id, u]));
+//     const mergedMap = new Map(merged.map(u => [u.id, u]));
+
+//     for (const [id, freshUser] of freshMap.entries()) {
+//       const oldUser = mergedMap.get(id);
+
+//       if (!oldUser) {
+//         mergedMap.set(id, freshUser);
+//         continue;
+//       }
+
+//       const updatedUser = { ...oldUser };
+
+//       if (freshUser.updatedAt > oldUser.updatedAt) {
+//         updatedUser.email = freshUser.email;
+//         updatedUser.name = freshUser.name;
+//         updatedUser.displayName = freshUser.displayName;
+//         updatedUser.photoURL = freshUser.photoURL;
+//         updatedUser.role = freshUser.role;
+//         updatedUser.phone = freshUser.phone;
+//         updatedUser.country = freshUser.country;
+//       }
+
+//       if (freshUser.lastEarnedDate !== oldUser.lastEarnedDate) {
+//         updatedUser.loyalty = { ...freshUser.loyalty };
+//       }
+
+//       if (freshUser.notifications.lastPushSent !== oldUser.notifications.lastPushSent) {
+//         updatedUser.notifications = { ...freshUser.notifications };
+//       }
+
+//       if (freshUser.wallet.walletBalance !== oldUser.wallet.walletBalance) {
+//         updatedUser.wallet = { ...freshUser.wallet };
+//       }
+
+//       if (freshUser.lastActive !== oldUser.lastActive) {
+//         updatedUser.lastActive = freshUser.lastActive;
+//       }
+
+//       mergedMap.set(id, updatedUser);
+//     }
+
+//     merged = [...mergedMap.values()];
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 3 — Too old → full rebuild
+//   // ---------------------------------------------------------
+//   if (!hasData || !isFreshByTime) {
+//     merged = await getAllUsersCache();
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: merged
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldMap = new Map(cachedData.map(u => [u.id, u]));
+//     const newMap = new Map(merged.map(u => [u.id, u]));
+
+//     const added = [];
+//     const removed = [];
+//     const changed = [];
+
+//     for (const [id, newUser] of newMap.entries()) {
+//       const oldUser = oldMap.get(id);
+
+//       if (!oldUser) {
+//         added.push(newUser);
+//         continue;
+//       }
+
+//       if (JSON.stringify(oldUser) !== JSON.stringify(newUser)) {
+//         changed.push(newUser);
+//       }
+//     }
+
+//     for (const [id, oldUser] of oldMap.entries()) {
+//       if (!newMap.has(id)) {
+//         removed.push(oldUser);
+//       }
+//     }
+
+//     const delta = { version: currentVersion, added, removed, changed };
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return delta;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY MODE (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(merged);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return merged;
+// }
+// async function generateBusinessesCache({ sizeOnly = false, deltaRequest = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.businessVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/businesses
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("businesses");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < TWO_WEEKS;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: [], removed: [], changed: [] };
+
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
+
+//       return delta;
+//     }
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Version matches but time expired → micro-hydrate
+//   // ---------------------------------------------------------
+//   let merged = hasData ? [...cachedData] : [];
+
+//   if (hasData && isFreshByVersion && !isFreshByTime) {
+//     const fresh = await getAllBusinesses(null);
+
+//     const mergedMap = new Map(cachedData.map(b => [b.id, b]));
+
+//     for (const freshBiz of fresh) {
+//       const oldBiz = mergedMap.get(freshBiz.id);
+
+//       if (!oldBiz) {
+//         mergedMap.set(freshBiz.id, freshBiz);
+//         continue;
+//       }
+
+//       if (freshBiz.updatedAt > oldBiz.updatedAt) {
+//         mergedMap.set(freshBiz.id, freshBiz);
+//       }
+//     }
+
+//     merged = [...mergedMap.values()];
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 3 — Version changed OR too old → full rebuild
+//   // ---------------------------------------------------------
+//   if (!hasData || !isFreshByTime) {
+//     merged = await getAllBusinesses(null);
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: merged
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldMap = new Map(cachedData.map(b => [b.id, b]));
+//     const newMap = new Map(merged.map(b => [b.id, b]));
+
+//     const added = [];
+//     const removed = [];
+//     const changed = [];
+
+//     for (const [id, newBiz] of newMap.entries()) {
+//       const oldBiz = oldMap.get(id);
+
+//       if (!oldBiz) {
+//         added.push(newBiz);
+//         continue;
+//       }
+
+//       if (JSON.stringify(oldBiz) !== JSON.stringify(newBiz)) {
+//         changed.push(newBiz);
+//       }
+//     }
+
+//     for (const [id, oldBiz] of oldMap.entries()) {
+//       if (!newMap.has(id)) {
+//         removed.push(oldBiz);
+//       }
+//     }
+
+//     const delta = { version: currentVersion, added, removed, changed };
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return delta;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(merged);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return merged;
+// }
+
+// async function processWorker({
+//   fileId,
+//   totalPackets,
+//   instanceId = 0,
+//   activeInstances = null, // null = cannot detect
+//   readPacketExists,
+//   writePacket,
+//   generatePacketData,
+// }) {
+//   let start = 0;
+//   let step = 1;
+
+//   // ---------------------------------------------------
+//   // 1. DYNAMIC MODE (we CAN detect active instances)
+//   // ---------------------------------------------------
+//   if (typeof activeInstances === "number" && activeInstances > 0) {
+//     const sliceSize = Math.floor(totalPackets / activeInstances);
+//     start = sliceSize * instanceId;
+//     step = 1;
+//   }
+
+//   // ---------------------------------------------------
+//   // 2. FALLBACK MODE (we CANNOT detect instances)
+//   // ---------------------------------------------------
+//   else {
+//     // Your rule: skip 4 packets per instance
+//     start = instanceId * 4;
+//     step = 4;
+//   }
+
+//   // ---------------------------------------------------
+//   // 3. MAIN LOOP (auto‑exit when done)
+//   // ---------------------------------------------------
+//   for (let packetIndex = start; packetIndex < totalPackets; packetIndex += step) {
+//     const exists = await readPacketExists(fileId, packetIndex);
+
+//     if (exists) {
+//       continue;
+//     }
+
+//     const packetData = await generatePacketData(fileId, packetIndex);
+
+//     await writePacket(fileId, packetIndex, packetData);
+//   }
+
+//   // ---------------------------------------------------
+//   // 4. AUTO‑SPIN‑DOWN (function ends → instance ends)
+//   // ---------------------------------------------------
+//   return {
+//     instanceId,
+//     mode: activeInstances ? "dynamic" : "fallback",
+//     start,
+//     step,
+//     status: "complete",
+//   };
+// }
+
+// export const scheduledUserScoring = onSchedule(
+//   {
+//     schedule: "every 5 minutes",
+//     timeZone: "America/Belize"
+//   },
+//   async () => {
+//     log("Running scheduled user scoring…");
+
+//     try {
+//       await runUserScoring();
+//       log("User scoring completed.");
+//     } catch (err) {
+//       console.error("User scoring failed:", err);
+//     }
+//   }
+// );
+
+// async function generateEventsCache({ sizeOnly = false, deltaRequest = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.eventVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/events
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("events");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const FOUR_DAYS = 4 * 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < FOUR_DAYS;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: [], removed: [], changed: [] };
+
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
+
+//         return delta;
+//     }
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Version matches but time expired → micro-hydrate
+//   // ---------------------------------------------------------
+//   let merged = hasData ? [...cachedData] : [];
+
+//   if (hasData && isFreshByVersion && !isFreshByTime) {
+//     const fresh = await getAllEventsCache();
+
+//     const mergedMap = new Map(cachedData.map(ev => [ev.id, ev]));
+
+//     for (const freshEvent of fresh) {
+//       const oldEvent = mergedMap.get(freshEvent.id);
+
+//       if (!oldEvent) {
+//         mergedMap.set(freshEvent.id, freshEvent);
+//         continue;
+//       }
+
+//       if (freshEvent.updatedAt > oldEvent.updatedAt) {
+//         mergedMap.set(freshEvent.id, freshEvent);
+//       }
+//     }
+
+//     merged = [...mergedMap.values()];
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 3 — Version changed OR too old → full rebuild
+//   // ---------------------------------------------------------
+//   if (!hasData || !isFreshByTime) {
+//     merged = await getAllEventsCache();
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ ALWAYS WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: merged
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldMap = new Map(cachedData.map(ev => [ev.id, ev]));
+//     const newMap = new Map(merged.map(ev => [ev.id, ev]));
+
+//     const added = [];
+//     const removed = [];
+//     const changed = [];
+
+//     for (const [id, newEvent] of newMap.entries()) {
+//       const oldEvent = oldMap.get(id);
+
+//       if (!oldEvent) {
+//         added.push(newEvent);
+//         continue;
+//       }
+
+//       if (JSON.stringify(oldEvent) !== JSON.stringify(newEvent)) {
+//         changed.push(newEvent);
+//       }
+//     }
+
+//     for (const [id, oldEvent] of oldMap.entries()) {
+//       if (!newMap.has(id)) {
+//         removed.push(oldEvent);
+//       }
+//     }
+
+//     const delta = { version: currentVersion, added, removed, changed };
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return delta;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(merged);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return merged;
+// }
+
+// async function getAllEventsCache() {
+//   const today = new Date();
+//   const todayStr = formatEventDate(today);
+
+//   const snap = await db.collection("Events")
+//     .where("toDate", ">=", todayStr)
+//     .orderBy("toDate")
+//     .limit(20)
+//     .get();
+
+//   return snap.docs.map(doc => {
+//     const data = doc.data() || {};
+
+//     const coords =
+//       data.coords ||
+//       (data.lat && data.lng ? { lat: data.lat, lng: data.lng } : null);
+
+//     return {
+//       id: doc.id,
+//       title: data.title || "Untitled Event",
+
+//       fromDate: data.fromDate || todayStr,
+//       toDate: data.toDate || data.fromDate || todayStr,
+
+//       venue: data.venue || data.resolvedName || "Unknown Venue",
+//       address: data.address || data.resolvedAddress || "Unknown Address",
+
+//       category: data.category || null,
+//       price: data.price ?? 0,
+
+//       coords,
+
+//       mapImageUrl: data.mapImageUrl || null,
+//       mapsWebUrl: data.mapsWebUrl || null,
+//       placeId: data.placeId || null,
+//       resolvedName: data.resolvedName || null,
+//       resolvedAddress: data.resolvedAddress || null,
+
+//       images: data.images || [],
+
+//       ...data
+//     };
+//   });
+// }
+
+// async function getAllUsersCache() {
+//   const snap = await db
+//     .collection("Users")
+//     .orderBy("TPIdentity.createdAt", "desc")
+//     .get();
+
+//   const safeMillis = (ts) => {
+//     if (!ts) return null;
+//     if (typeof ts.toMillis === "function") return ts.toMillis();
+//     if (ts?._seconds) return ts._seconds * 1000;
+//     if (typeof ts === "number") return ts;
+//     return null;
+//   };
+
+//   const safeNum = (v) =>
+//     Number.isFinite(Number(v)) ? Number(v) : 0;
+
+//   return snap.docs.map((doc) => {
+//     const data = doc.data() || {};
+//     const id = doc.id;
+
+//     const TPIdentity = data.TPIdentity || {};
+//     const TPLoyalty = data.TPLoyalty || {};
+//     const TPNotifications = data.TPNotifications || {};
+//     const TPWallet = data.TPWallet || {};
+//     const TPSecurity = data.TPSecurity || {};
+
+//     return {
+//       id,
+
+//       // ⭐ Identity (flattened)
+//       email: TPIdentity.email || null,
+//       name: TPIdentity.name || null,
+//       displayName: TPIdentity.displayName || null,
+//       photoURL: TPIdentity.photoURL || null,
+//       role: TPIdentity.role || "Customer",
+//       phone: TPIdentity.phone || null,
+//       country: TPIdentity.country || null,
+
+//       // ⭐ Loyalty
+//       loyalty: {
+//         pointsBalance: safeNum(TPLoyalty.pointsBalance),
+//         lifetimePoints: safeNum(TPLoyalty.lifetimePoints),
+//         referralCode: TPLoyalty.referralCode || null,
+//         referredBy: TPLoyalty.referredBy || null
+//       },
+
+//       // ⭐ Notifications
+//       notifications: {
+//         receiveMassEmails: TPNotifications.receiveMassEmails ?? true,
+//         receiveSMS: TPNotifications.receiveSMS ?? false,
+//         lastPushSent: safeMillis(TPNotifications.lastPushSent)
+//       },
+
+//       // ⭐ Wallet
+//       wallet: {
+//         walletBalance: safeNum(TPWallet.walletBalance)
+//       },
+
+//       // ⭐ Timestamps
+//       createdAt: safeMillis(TPIdentity.createdAt),
+//       updatedAt: safeMillis(TPIdentity.updatedAt),
+//       lastActive: safeMillis(TPSecurity.lastActive),
+//       lastEarnedDate: safeMillis(TPLoyalty.lastEarnedDate)
+//     };
+//   });
+// }
+
+// async function generateHistoryCache({ sizeOnly = false, deltaRequest = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.historyVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/history
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("history");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const ONE_DAY = 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < ONE_DAY;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (deltaRequest) {
+//       const delta = { version: currentVersion, added: [], removed: [], changed: [] };
+
+//       if (sizeOnly) {
+//         const json = JSON.stringify(delta);
+//         return Buffer.byteLength(json, "utf8") / 1024;
+//       }
+
+//       return delta;
+//     }
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Build NEW full history snapshot
+//   // ---------------------------------------------------------
+//   const usersSnap = await db.collection("Users").get();
+//   const allHistory = [];
+
+//   for (const userDoc of usersSnap.docs) {
+//     const uid = userDoc.id;
+//     const userData = userDoc.data() || {};
+//     const loyalty = userData.loyalty || {};
+
+//     const histSnap = await db
+//       .collection("PulseHistory")
+//       .doc(uid)
+//       .collection("entries")
+//       .orderBy("createdAt", "desc")
+//       .limit(200)
+//       .get();
+
+//     for (const entry of histSnap.docs) {
+//       const h = entry.data();
+
+//       // -----------------------------------------
+//       // ⭐ Build unified snapshot (history + loyalty)
+//       // -----------------------------------------
+//       const snapshot = h.pointsSnapshot || {
+//         seasonalName: loyalty.seasonalName ?? null,
+//         seasonalMultiplier: loyalty.seasonalMultiplier ?? 1,
+//         seasonalActive: loyalty.seasonalActive ?? false,
+
+//         tier: loyalty.tier ?? null,
+//         tierKey: loyalty.tierKey ?? null,
+//         tierMultiplier: loyalty.tierMultiplier ?? 1,
+
+//         streakCount: loyalty.streakCount ?? 0,
+//         streakMultiplier: loyalty.streakMultiplier ?? 1,
+//         streakExpires: loyalty.streakExpires ?? null,
+
+//         calculationVersion: loyalty.calculationVersion ?? 1,
+
+//         pointsBefore: h.pulsepointsBefore ?? null,
+//         pointsAfter: h.pulsepointsAfter ?? null
+//       };
+
+//       allHistory.push({
+//         uid,
+//         id: entry.id,
+//         type: h.type,
+//         label: h.label,
+//         amount: h.amount,
+//         ts: h.ts,
+//         createdAt: h.createdAt,
+//         orderID: h.orderID ?? null,
+//         pointsSnapshot: snapshot
+//       });
+//     }
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: allHistory
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ DELTA MODE
+//   // ---------------------------------------------------------
+//   if (deltaRequest) {
+//     const oldMap = new Map(cachedData.map(h => [`${h.uid}_${h.id}`, h]));
+//     const newMap = new Map(allHistory.map(h => [`${h.uid}_${h.id}`, h]));
+
+//     const added = [];
+//     const removed = [];
+//     const changed = [];
+
+//     for (const [key, newEntry] of newMap.entries()) {
+//       const oldEntry = oldMap.get(key);
+
+//       if (!oldEntry) {
+//         added.push(newEntry);
+//         continue;
+//       }
+
+//       if (JSON.stringify(oldEntry) !== JSON.stringify(newEntry)) {
+//         changed.push(newEntry);
+//       }
+//     }
+
+//     for (const [key, oldEntry] of oldMap.entries()) {
+//       if (!newMap.has(key)) {
+//         removed.push(oldEntry);
+//       }
+//     }
+
+//     const delta = { version: currentVersion, added, removed, changed };
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(delta);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return delta;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY (full)
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(allHistory);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return allHistory;
+// }
+// async function generateLoyaltyCache({ sizeOnly = false } = {}) {
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD VERSION FROM Cache_Control/<autoDocId>
+//   // ---------------------------------------------------------
+//   const controlRef = db.collection("Cache_Control").doc("KCQFBaFpjSaPRDTAhJBg");
+//   const controlSnap = await controlRef.get();
+//   const control = controlSnap.data() || {};
+//   const currentVersion = control.loyaltyVersion ?? 1;
+
+//   // ---------------------------------------------------------
+//   // ⭐ LOAD EXISTING SNAPSHOT FROM Cache_Meta/loyalty
+//   // ---------------------------------------------------------
+//   const metaRef = db.collection("Cache_Meta").doc("loyalty");
+//   const metaSnap = await metaRef.get();
+//   const meta = metaSnap.data() || {};
+
+//   const now = Date.now();
+//   const lastGenerated = meta.lastGenerated || 0;
+//   const cachedVersion = meta.version || 0;
+//   const cachedData = meta.data || [];
+
+//   const ONE_DAY = 24 * 60 * 60 * 1000;
+
+//   const isFreshByTime = now - lastGenerated < ONE_DAY;
+//   const isFreshByVersion = cachedVersion === currentVersion;
+//   const hasData = Array.isArray(cachedData) && cachedData.length > 0;
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 1 — Fully fresh
+//   // ---------------------------------------------------------
+//   if (hasData && isFreshByTime && isFreshByVersion) {
+
+//     if (sizeOnly) {
+//       const json = JSON.stringify(cachedData);
+//       return Buffer.byteLength(json, "utf8") / 1024;
+//     }
+
+//     return cachedData;
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ CASE 2 — Build NEW full loyalty snapshot
+//   // ---------------------------------------------------------
+//   const usersSnap = await db.collection("Users").get();
+//   const loyaltyList = [];
+
+//   // Load global settings once
+//   const settingsSnap = await db.collection("TPSettings").doc("global").get();
+//   const settings = settingsSnap.data() || {};
+
+//   for (const userDoc of usersSnap.docs) {
+//     const uid = userDoc.id;
+//     const userData = userDoc.data() || {};
+
+//     const TPIdentity = userData.TPIdentity || {};
+//     const TPLoyalty = userData.TPLoyalty || {};
+
+//     // -----------------------------------------
+//     // ⭐ DISPLAY NAME
+//     // -----------------------------------------
+//     const displayName = TPIdentity.displayName || "Explorer";
+
+//     // -----------------------------------------
+//     // ⭐ STREAK LOGIC
+//     // -----------------------------------------
+//     const lastEarnedDate = TPLoyalty.lastEarnedDate || null;
+//     let streakCount = Number(TPLoyalty.streakCount) || 0;
+
+//     const windowHours = (settings.streakDurationDays ?? 1) * 24;
+
+//     if (!lastEarnedDate) {
+//       streakCount = 0;
+//     } else {
+//       const lastMs = lastEarnedDate.toMillis();
+//       const expiresMs = lastMs + windowHours * 3600000;
+
+//       if (Date.now() >= expiresMs) {
+//         streakCount = 0;
+//       }
+//     }
+
+//     // -----------------------------------------
+//     // ⭐ TIER LOGIC
+//     // -----------------------------------------
+//     const lifetimePoints = Number(TPLoyalty.lifetimePoints) || 0;
+
+//     const tierThresholds = {
+//       Seashell: 0,
+//       ReefDiver: settings.tierThreshold_ReefDiver,
+//       ToucanSpirit: settings.tierThreshold_ToucanSpirit,
+//       VolcanoHeart: settings.tierThreshold_VolcanoHeart,
+//       HurricaneLegend: settings.tierThreshold_HurricaneLegend
+//     };
+
+//     let tierKey = "Seashell";
+//     for (const [name, threshold] of Object.entries(tierThresholds)) {
+//       if (lifetimePoints >= threshold) tierKey = name;
+//     }
+
+//     const tierNameMap = {
+//       Seashell: "Seashell",
+//       ReefDiver: "Reef Diver",
+//       ToucanSpirit: "Toucan Spirit",
+//       VolcanoHeart: "Volcano Heart",
+//       HurricaneLegend: "Hurricane Legend"
+//     };
+
+//     const tier = tierNameMap[tierKey];
+//     const tierMultiplier = settings[`tierMultiplier_${tierKey}`] ?? 1;
+
+//     // -----------------------------------------
+//     // ⭐ STREAK MULTIPLIER
+//     // -----------------------------------------
+//     const streakMultiplier = Math.min(
+//       settings.streakMultiplierBase +
+//         streakCount * settings.streakMultiplierPerDay,
+//       settings.streakMaxMultiplier
+//     );
+
+//     // -----------------------------------------
+//     // ⭐ SEASONAL LOGIC
+//     // -----------------------------------------
+//     const {
+//       seasonalActive,
+//       seasonalName,
+//       seasonalMultiplier
+//     } = getSeasonFromSettings(settings);
+
+//     // -----------------------------------------
+//     // ⭐ REFERRAL CODE
+//     // -----------------------------------------
+//     const referralCode = TPLoyalty.referralCode || null;
+
+//     // -----------------------------------------
+//     // ⭐ BUILD LOYALTY SNAPSHOT
+//     // -----------------------------------------
+//     loyaltyList.push({
+//       uid,
+//       displayName,
+//       lifetimePoints,
+//       streakCount,
+//       tier,
+//       tierKey,
+//       tierMultiplier,
+//       streakMultiplier,
+//       seasonalMultiplier,
+//       seasonalActive,
+//       seasonalName,
+//       referralCode,
+//       calculationVersion: TPLoyalty.calculationVersion ?? 1
+//     });
+//   }
+
+//   // ---------------------------------------------------------
+//   // ⭐ WRITE BACK FULL SNAPSHOT
+//   // ---------------------------------------------------------
+//   await metaRef.set({
+//     lastGenerated: now,
+//     version: currentVersion,
+//     data: loyaltyList
+//   });
+
+//   // ---------------------------------------------------------
+//   // ⭐ SIZE ONLY
+//   // ---------------------------------------------------------
+//   if (sizeOnly) {
+//     const json = JSON.stringify(loyaltyList);
+//     return Buffer.byteLength(json, "utf8") / 1024;
+//   }
+
+//   return loyaltyList;
+// }
+// function signChunk(userId, sessionId, index, dataBase64) {
+//   const h = crypto.createHash("sha256");
+//   h.update(userId + sessionId + index + dataBase64);
+//   return h.digest("hex");
+// }
 // // -------------------------------------------------------
 // // ⭐ INTELLIGENT CACHE RESOLVER (FULL / DELTA / SIZE)
 // // -------------------------------------------------------
@@ -18447,448 +18447,451 @@ function signChunk(userId, sessionId, index, dataBase64) {
 //   return payload;
 // }
 
-export const createPulseBandSession = onRequest(
-  { region: "us-central1", timeoutSeconds: 300, memory: "1GiB" },
-  async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    if (req.method === "OPTIONS") return res.status(204).send("");
-
-    try {
-      let { userId, payload, chunkSize = 500, baseVersion, sizeOnly } = req.body;
-
-      if (!userId || !payload) {
-        return res.json({ success: false, error: "Missing userId or payload" });
-      }
-
-      // ⭐ Log session creation request
-      await db.collection("pulseband_logs").add({
-        type: "session_create_request",
-        userId,
-        payload,
-        chunkSize,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // -------------------------------------------------------
-      // ⭐ INTELLIGENT CACHE RESOLVER
-      // -------------------------------------------------------
-      async function resolveCacheRequest(payload, baseVersion, sizeOnly) {
-        const isDelta = payload.endsWith("_DELTA");
-        const isFull = payload.endsWith("_CACHE");
-
-        const generators = {
-          REQUEST_USERS_CACHE: generateUsersCache,
-          REQUEST_USERS_CACHE_DELTA: generateUsersCache,
-
-          REQUEST_BUSINESS_CACHE: generateBusinessesCache,
-          REQUEST_BUSINESS_CACHE_DELTA: generateBusinessesCache,
-
-          REQUEST_EVENTS_CACHE: generateEventsCache,
-          REQUEST_EVENTS_CACHE_DELTA: generateEventsCache,
-
-          REQUEST_HISTORY_CACHE: generateHistoryCache,
-          REQUEST_HISTORY_CACHE_DELTA: generateHistoryCache,
-
-          REQUEST_SETTINGS_CACHE: generateSettingsCache,
-          REQUEST_SETTINGS_CACHE_DELTA: generateSettingsCache
-        };
-
-        const fn = generators[payload];
-        if (!fn) return payload; // raw fallback
-
-        // -------------------------------------------------------
-        // ⭐ 1. DELTA REQUESTS
-        // -------------------------------------------------------
-        if (isDelta) {
-          if (!baseVersion) {
-            return sizeOnly
-              ? await fn({ sizeOnly: true })
-              : await fn();
-          }
-
-          const delta = await fn({ deltaRequest: true, sizeOnly });
-
-          if (sizeOnly) return delta;
-
-          const isEmpty =
-            (Array.isArray(delta.added) && delta.added.length === 0 &&
-             Array.isArray(delta.removed) && delta.removed.length === 0 &&
-             Array.isArray(delta.changed) && delta.changed.length === 0) ||
-            (Object.keys(delta.added || {}).length === 0 &&
-             Object.keys(delta.removed || {}).length === 0 &&
-             Object.keys(delta.changed || {}).length === 0);
-
-          if (isEmpty) {
-            return await fn(); // fallback to full
-          }
-
-          return delta;
-        }
-
-        // -------------------------------------------------------
-        // ⭐ 2. FULL REQUESTS
-        // -------------------------------------------------------
-        if (isFull) {
-          return sizeOnly
-            ? await fn({ sizeOnly: true })
-            : await fn();
-        }
-
-        // -------------------------------------------------------
-        // ⭐ 3. SIZE ONLY (no delta/full specified)
-        // -------------------------------------------------------
-        if (sizeOnly) {
-          const delta = await fn({ deltaRequest: true, sizeOnly: true });
-          const deltaSize = Number(delta);
-
-          if (deltaSize > 0) return deltaSize;
-
-          return await fn({ sizeOnly: true });
-        }
-
-        // -------------------------------------------------------
-        // ⭐ 4. RAW PAYLOAD
-        // -------------------------------------------------------
-        return payload;
-      }
-
-      // -------------------------------------------------------
-      // ⭐ 1. Resolve payload intelligently
-      // -------------------------------------------------------
-      let rawPayload;
-
-      try {
-        rawPayload = await resolveCacheRequest(payload, baseVersion, sizeOnly === true);
-      } catch (err) {
-        await db.collection("pulseband_errors").add({
-          type: "payload_generation_error",
-          userId,
-          payload,
-          error: err.message,
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-        return res.json({ success: false, error: "Payload generation failed" });
-      }
-
-      const jsonString =
-        typeof rawPayload === "string"
-          ? rawPayload
-          : JSON.stringify(rawPayload);
-
-      // -------------------------------------------------------
-      // ⭐ 2. Convert payload to buffer
-      // -------------------------------------------------------
-      const buffer = Buffer.from(jsonString, "utf8");
-      const totalChunks = Math.ceil(buffer.length / chunkSize);
-      const sessionId = `PB_${userId}_${Date.now()}`;
-
-      const payloadHash = crypto
-        .createHash("sha256")
-        .update(buffer)
-        .digest("hex");
-
-      const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
-      const chunksRef = sessionRef.collection("chunks");
-
-      // -------------------------------------------------------
-      // ⭐ 3. Create session metadata
-      // -------------------------------------------------------
-      await sessionRef.set({
-        sessionId,
-        userId,
-        totalChunks,
-        chunkSize,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        status: "pending",
-        retries: 0,
-        failures: 0,
-        restarts: 0,
-        payloadBytes: buffer.length,
-        payloadHash,
-        payloadType: payload
-      });
-
-      await db.collection("pulseband_logs").add({
-        type: "session_created",
-        sessionId,
-        userId,
-        totalChunks,
-        chunkSize,
-        payloadBytes: buffer.length,
-        payloadHash,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // -------------------------------------------------------
-      // ⭐ 4. Chunk + batch write
-      // -------------------------------------------------------
-      let batch = db.batch();
-      let batchCount = 0;
-
-      for (let i = 0; i < totalChunks; i++) {
-        try {
-          const start = i * chunkSize;
-          const end = start + chunkSize;
-          const dataBase64 = buffer.slice(start, end).toString("base64");
-
-          const signature = signChunk(userId, sessionId, i, dataBase64);
-
-          const chunkDoc = chunksRef.doc(i.toString().padStart(5, "0"));
-          batch.set(chunkDoc, {
-            index: i,
-            data: dataBase64,
-            signature,
-            status: "pending",
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-
-          batchCount++;
-          if (batchCount === 400) {
-            await batch.commit();
-            batch = db.batch();
-            batchCount = 0;
-          }
-        } catch (err) {
-          await db.collection("pulseband_errors").add({
-            type: "chunk_generation_error",
-            sessionId,
-            userId,
-            index: i,
-            error: err.message,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-          return res.json({ success: false, error: "Chunk generation failed" });
-        }
-      }
-
-      if (batchCount > 0) await batch.commit();
-
-      // -------------------------------------------------------
-      // ⭐ 5. Return session info
-      // -------------------------------------------------------
-      return res.json({ success: true, sessionId, totalChunks });
-
-    } catch (err) {
-      await db.collection("pulseband_errors").add({
-        type: "session_creation_error",
-        error: err.message,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      return res.json({ success: false, error: err.message });
-    }
-  }
-);
-
-export const getNextPulseBandChunk = onRequest(
-  { region: "us-central1" },
-  async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    if (req.method === "OPTIONS") return res.status(204).send("");
-
-    try {
-      const { sessionId, userId } = req.query;
-
-      if (!sessionId || !userId) {
-        return res.json({ success: false, error: "Missing sessionId or userId" });
-      }
-
-      const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
-      const sessionSnap = await sessionRef.get();
-
-      if (!sessionSnap.exists || sessionSnap.data().userId !== userId) {
-        return res.json({ success: false, error: "Invalid session or user" });
-      }
-
-      const session = sessionSnap.data();
-
-      // ⭐ If too many failures → abort session
-      if (session.failures >= 5) {
-        await sessionRef.set(
-          { status: "aborted", abortedAt: Date.now() },
-          { merge: true }
-        );
-
-        await db.collection("pulseband_errors").add({
-          sessionId,
-          userId,
-          type: "session_aborted",
-          reason: "Too many failures",
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        return res.json({ success: false, error: "Session aborted" });
-      }
-
-      const chunksRef = sessionRef.collection("chunks");
-
-      const snap = await chunksRef
-        .where("status", "==", "pending")
-        .orderBy("index", "asc")
-        .limit(1)
-        .get();
-
-      // ⭐ No pending chunks → complete
-      if (snap.empty) {
-        await sessionRef.set(
-          { status: "complete", completedAt: Date.now() },
-          { merge: true }
-        );
-
-        await db.collection("pulseband_logs").add({
-          sessionId,
-          userId,
-          type: "session_complete",
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        return res.json({ success: true, done: true });
-      }
-
-      const doc = snap.docs[0];
-      const data = doc.data();
-
-      // ⭐ Mark as sent
-      await doc.ref.set({ status: "sent", sentAt: Date.now() }, { merge: true });
-
-      return res.json({
-        success: true,
-        chunk: {
-          index: data.index,
-          data: data.data,
-          signature: data.signature,
-          sentAt: Date.now()
-        }
-      });
-
-    } catch (err) {
-      await db.collection("pulseband_errors").add({
-        type: "getNextChunk_error",
-        error: err.message,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      return res.json({ success: false, error: err.message });
-    }
-  }
-);
-
-export const ackPulseBandChunk = onRequest(
-  { region: "us-central1" },
-  async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    if (req.method === "OPTIONS") return res.status(204).send("");
-
-    try {
-      const { sessionId, userId, index, signature, latencyMs, kbps } = req.body;
-
-      if (!sessionId || !userId || index == null || !signature) {
-        return res.json({ success: false, error: "Missing params" });
-      }
-
-      const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
-      const chunkRef = sessionRef.collection("chunks").doc(index.toString().padStart(5, "0"));
-
-      const snap = await chunkRef.get();
-      if (!snap.exists) {
-        return res.json({ success: false, error: "Chunk not found" });
-      }
-
-      const data = snap.data();
-
-      // ⭐ Signature mismatch = corrupted chunk
-      if (data.signature !== signature) {
-        await db.collection("pulseband_errors").add({
-          sessionId,
-          userId,
-          index,
-          latencyMs,
-          kbps,
-          type: "signature_mismatch",
-          expected: data.signature,
-          got: signature,
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        // ⭐ Increment session failure count
-        await sessionRef.set(
-          { failures: admin.firestore.FieldValue.increment(1) },
-          { merge: true }
-        );
-
-        return res.json({ success: false, error: "Signature mismatch" });
-      }
-
-      // ⭐ Mark chunk as acked
-      await chunkRef.set(
-        {
-          status: "acked",
-          latencyMs,
-          kbps,
-          ackedAt: admin.firestore.FieldValue.serverTimestamp()
-        },
-        { merge: true }
-      );
-
-      return res.json({ success: true });
-
-    } catch (err) {
-      await db.collection("pulseband_errors").add({
-        type: "ackChunk_error",
-        error: err.message,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      return res.json({ success: false, error: err.message });
-    }
-  }
-);
-
-export const logPulseBandRedownload = onRequest(
-  { region: "us-central1" },
-  async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    if (req.method === "OPTIONS") return res.status(204).send("");
-
-    try {
-      const { sessionId, userId, reason } = req.body;
-
-      const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
-
-      await db.collection("pulseband_redownloads").add({
-        sessionId,
-        userId,
-        reason,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // ⭐ Track redownloads as failures
-      await sessionRef.set(
-        { failures: admin.firestore.FieldValue.increment(1) },
-        { merge: true }
-      );
-
-      return res.json({ success: true });
-
-    } catch (err) {
-      await db.collection("pulseband_errors").add({
-        type: "redownload_error",
-        error: err.message,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      return res.json({ success: false, error: err.message });
-    }
-  }
-);
+// export const createPulseBandSession = onRequest(
+//   { region: "us-central1", timeoutSeconds: 300, memory: "1GiB" },
+//   async (req, res) => {
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
+
+//     try {
+//       let { userId, payload, chunkSize = 500, baseVersion, sizeOnly } = req.body;
+
+//       if (!userId || !payload) {
+//         return res.json({ success: false, error: "Missing userId or payload" });
+//       }
+
+//       // ⭐ Log session creation request
+//       await db.collection("pulseband_logs").add({
+//         type: "session_create_request",
+//         userId,
+//         payload,
+//         chunkSize,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       // -------------------------------------------------------
+//       // ⭐ INTELLIGENT CACHE RESOLVER
+//       // -------------------------------------------------------
+//       async function resolveCacheRequest(payload, baseVersion, sizeOnly) {
+//         const isDelta = payload.endsWith("_DELTA");
+//         const isFull = payload.endsWith("_CACHE");
+
+//         const generators = {
+//           REQUEST_USERS_CACHE: generateUsersCache,
+//           REQUEST_USERS_CACHE_DELTA: generateUsersCache,
+
+//           REQUEST_BUSINESS_CACHE: generateBusinessesCache,
+//           REQUEST_BUSINESS_CACHE_DELTA: generateBusinessesCache,
+
+//           REQUEST_EVENTS_CACHE: generateEventsCache,
+//           REQUEST_EVENTS_CACHE_DELTA: generateEventsCache,
+
+//           REQUEST_ORDERS_CACHE: generateOrdersCache,
+//           REQUEST_ORDERS_CACHE_DELTA: generateOrdersCache,
+
+//           REQUEST_HISTORY_CACHE: generateHistoryCache,
+//           REQUEST_HISTORY_CACHE_DELTA: generateHistoryCache,
+
+//           REQUEST_SETTINGS_CACHE: generateSettingsCache,
+//           REQUEST_SETTINGS_CACHE_DELTA: generateSettingsCache
+//         };
+
+//         const fn = generators[payload];
+//         if (!fn) return payload; // raw fallback
+
+//         // -------------------------------------------------------
+//         // ⭐ 1. DELTA REQUESTS
+//         // -------------------------------------------------------
+//         if (isDelta) {
+//           if (!baseVersion) {
+//             return sizeOnly
+//               ? await fn({ sizeOnly: true })
+//               : await fn();
+//           }
+
+//           const delta = await fn({ deltaRequest: true, sizeOnly });
+
+//           if (sizeOnly) return delta;
+
+//           const isEmpty =
+//             (Array.isArray(delta.added) && delta.added.length === 0 &&
+//              Array.isArray(delta.removed) && delta.removed.length === 0 &&
+//              Array.isArray(delta.changed) && delta.changed.length === 0) ||
+//             (Object.keys(delta.added || {}).length === 0 &&
+//              Object.keys(delta.removed || {}).length === 0 &&
+//              Object.keys(delta.changed || {}).length === 0);
+
+//           if (isEmpty) {
+//             return await fn(); // fallback to full
+//           }
+
+//           return delta;
+//         }
+
+//         // -------------------------------------------------------
+//         // ⭐ 2. FULL REQUESTS
+//         // -------------------------------------------------------
+//         if (isFull) {
+//           return sizeOnly
+//             ? await fn({ sizeOnly: true })
+//             : await fn();
+//         }
+
+//         // -------------------------------------------------------
+//         // ⭐ 3. SIZE ONLY (no delta/full specified)
+//         // -------------------------------------------------------
+//         if (sizeOnly) {
+//           const delta = await fn({ deltaRequest: true, sizeOnly: true });
+//           const deltaSize = Number(delta);
+
+//           if (deltaSize > 0) return deltaSize;
+
+//           return await fn({ sizeOnly: true });
+//         }
+
+//         // -------------------------------------------------------
+//         // ⭐ 4. RAW PAYLOAD
+//         // -------------------------------------------------------
+//         return payload;
+//       }
+
+//       // -------------------------------------------------------
+//       // ⭐ 1. Resolve payload intelligently
+//       // -------------------------------------------------------
+//       let rawPayload;
+
+//       try {
+//         rawPayload = await resolveCacheRequest(payload, baseVersion, sizeOnly === true);
+//       } catch (err) {
+//         await db.collection("pulseband_errors").add({
+//           type: "payload_generation_error",
+//           userId,
+//           payload,
+//           error: err.message,
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         });
+//         return res.json({ success: false, error: "Payload generation failed" });
+//       }
+
+//       const jsonString =
+//         typeof rawPayload === "string"
+//           ? rawPayload
+//           : JSON.stringify(rawPayload);
+
+//       // -------------------------------------------------------
+//       // ⭐ 2. Convert payload to buffer
+//       // -------------------------------------------------------
+//       const buffer = Buffer.from(jsonString, "utf8");
+//       const totalChunks = Math.ceil(buffer.length / chunkSize);
+//       const sessionId = `PB_${userId}_${Date.now()}`;
+
+//       const payloadHash = crypto
+//         .createHash("sha256")
+//         .update(buffer)
+//         .digest("hex");
+
+//       const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
+//       const chunksRef = sessionRef.collection("chunks");
+
+//       // -------------------------------------------------------
+//       // ⭐ 3. Create session metadata
+//       // -------------------------------------------------------
+//       await sessionRef.set({
+//         sessionId,
+//         userId,
+//         totalChunks,
+//         chunkSize,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp(),
+//         status: "pending",
+//         retries: 0,
+//         failures: 0,
+//         restarts: 0,
+//         payloadBytes: buffer.length,
+//         payloadHash,
+//         payloadType: payload
+//       });
+
+//       await db.collection("pulseband_logs").add({
+//         type: "session_created",
+//         sessionId,
+//         userId,
+//         totalChunks,
+//         chunkSize,
+//         payloadBytes: buffer.length,
+//         payloadHash,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       // -------------------------------------------------------
+//       // ⭐ 4. Chunk + batch write
+//       // -------------------------------------------------------
+//       let batch = db.batch();
+//       let batchCount = 0;
+
+//       for (let i = 0; i < totalChunks; i++) {
+//         try {
+//           const start = i * chunkSize;
+//           const end = start + chunkSize;
+//           const dataBase64 = buffer.slice(start, end).toString("base64");
+
+//           const signature = signChunk(userId, sessionId, i, dataBase64);
+
+//           const chunkDoc = chunksRef.doc(i.toString().padStart(5, "0"));
+//           batch.set(chunkDoc, {
+//             index: i,
+//             data: dataBase64,
+//             signature,
+//             status: "pending",
+//             createdAt: admin.firestore.FieldValue.serverTimestamp()
+//           });
+
+//           batchCount++;
+//           if (batchCount === 400) {
+//             await batch.commit();
+//             batch = db.batch();
+//             batchCount = 0;
+//           }
+//         } catch (err) {
+//           await db.collection("pulseband_errors").add({
+//             type: "chunk_generation_error",
+//             sessionId,
+//             userId,
+//             index: i,
+//             error: err.message,
+//             createdAt: admin.firestore.FieldValue.serverTimestamp()
+//           });
+//           return res.json({ success: false, error: "Chunk generation failed" });
+//         }
+//       }
+
+//       if (batchCount > 0) await batch.commit();
+
+//       // -------------------------------------------------------
+//       // ⭐ 5. Return session info
+//       // -------------------------------------------------------
+//       return res.json({ success: true, sessionId, totalChunks });
+
+//     } catch (err) {
+//       await db.collection("pulseband_errors").add({
+//         type: "session_creation_error",
+//         error: err.message,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       return res.json({ success: false, error: err.message });
+//     }
+//   }
+// );
+
+// export const getNextPulseBandChunk = onRequest(
+//   { region: "us-central1" },
+//   async (req, res) => {
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
+
+//     try {
+//       const { sessionId, userId } = req.query;
+
+//       if (!sessionId || !userId) {
+//         return res.json({ success: false, error: "Missing sessionId or userId" });
+//       }
+
+//       const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
+//       const sessionSnap = await sessionRef.get();
+
+//       if (!sessionSnap.exists || sessionSnap.data().userId !== userId) {
+//         return res.json({ success: false, error: "Invalid session or user" });
+//       }
+
+//       const session = sessionSnap.data();
+
+//       // ⭐ If too many failures → abort session
+//       if (session.failures >= 5) {
+//         await sessionRef.set(
+//           { status: "aborted", abortedAt: Date.now() },
+//           { merge: true }
+//         );
+
+//         await db.collection("pulseband_errors").add({
+//           sessionId,
+//           userId,
+//           type: "session_aborted",
+//           reason: "Too many failures",
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         });
+
+//         return res.json({ success: false, error: "Session aborted" });
+//       }
+
+//       const chunksRef = sessionRef.collection("chunks");
+
+//       const snap = await chunksRef
+//         .where("status", "==", "pending")
+//         .orderBy("index", "asc")
+//         .limit(1)
+//         .get();
+
+//       // ⭐ No pending chunks → complete
+//       if (snap.empty) {
+//         await sessionRef.set(
+//           { status: "complete", completedAt: Date.now() },
+//           { merge: true }
+//         );
+
+//         await db.collection("pulseband_logs").add({
+//           sessionId,
+//           userId,
+//           type: "session_complete",
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         });
+
+//         return res.json({ success: true, done: true });
+//       }
+
+//       const doc = snap.docs[0];
+//       const data = doc.data();
+
+//       // ⭐ Mark as sent
+//       await doc.ref.set({ status: "sent", sentAt: Date.now() }, { merge: true });
+
+//       return res.json({
+//         success: true,
+//         chunk: {
+//           index: data.index,
+//           data: data.data,
+//           signature: data.signature,
+//           sentAt: Date.now()
+//         }
+//       });
+
+//     } catch (err) {
+//       await db.collection("pulseband_errors").add({
+//         type: "getNextChunk_error",
+//         error: err.message,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       return res.json({ success: false, error: err.message });
+//     }
+//   }
+// );
+
+// export const ackPulseBandChunk = onRequest(
+//   { region: "us-central1" },
+//   async (req, res) => {
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
+
+//     try {
+//       const { sessionId, userId, index, signature, latencyMs, kbps } = req.body;
+
+//       if (!sessionId || !userId || index == null || !signature) {
+//         return res.json({ success: false, error: "Missing params" });
+//       }
+
+//       const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
+//       const chunkRef = sessionRef.collection("chunks").doc(index.toString().padStart(5, "0"));
+
+//       const snap = await chunkRef.get();
+//       if (!snap.exists) {
+//         return res.json({ success: false, error: "Chunk not found" });
+//       }
+
+//       const data = snap.data();
+
+//       // ⭐ Signature mismatch = corrupted chunk
+//       if (data.signature !== signature) {
+//         await db.collection("pulseband_errors").add({
+//           sessionId,
+//           userId,
+//           index,
+//           latencyMs,
+//           kbps,
+//           type: "signature_mismatch",
+//           expected: data.signature,
+//           got: signature,
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         });
+
+//         // ⭐ Increment session failure count
+//         await sessionRef.set(
+//           { failures: admin.firestore.FieldValue.increment(1) },
+//           { merge: true }
+//         );
+
+//         return res.json({ success: false, error: "Signature mismatch" });
+//       }
+
+//       // ⭐ Mark chunk as acked
+//       await chunkRef.set(
+//         {
+//           status: "acked",
+//           latencyMs,
+//           kbps,
+//           ackedAt: admin.firestore.FieldValue.serverTimestamp()
+//         },
+//         { merge: true }
+//       );
+
+//       return res.json({ success: true });
+
+//     } catch (err) {
+//       await db.collection("pulseband_errors").add({
+//         type: "ackChunk_error",
+//         error: err.message,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       return res.json({ success: false, error: err.message });
+//     }
+//   }
+// );
+
+// export const logPulseBandRedownload = onRequest(
+//   { region: "us-central1" },
+//   async (req, res) => {
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
+
+//     try {
+//       const { sessionId, userId, reason } = req.body;
+
+//       const sessionRef = db.collection("pulseband_sessions").doc(sessionId);
+
+//       await db.collection("pulseband_redownloads").add({
+//         sessionId,
+//         userId,
+//         reason,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       // ⭐ Track redownloads as failures
+//       await sessionRef.set(
+//         { failures: admin.firestore.FieldValue.increment(1) },
+//         { merge: true }
+//       );
+
+//       return res.json({ success: true });
+
+//     } catch (err) {
+//       await db.collection("pulseband_errors").add({
+//         type: "redownload_error",
+//         error: err.message,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       return res.json({ success: false, error: err.message });
+//     }
+//   }
+// );
 
 const inferOutagesAndNotify = async (zoneResults, settings, nowMs) => {
   const outageCandidates = [];
@@ -19976,434 +19979,522 @@ export const getWeather = onRequest(
   }
 );
 
-export const timerLogout = onSchedule("every 5 minutes", async () => {
-  const runId = crypto.randomUUID();
-  const logId = `LOGOUT_${runId}`;
-  const errorPrefix = `ERR_${runId}_`;
+// export const timerLogout = onSchedule("every 5 minutes", async () => {
+//   const runId = crypto.randomUUID();
+//   const logId = `LOGOUT_${runId}`;
+//   const errorPrefix = `ERR_${runId}_`;
 
-  const userChanges = {};
-  const pulseChanges = {};
+//   const userChanges = {};
+//   const pulseChanges = {};
 
-  try {
-    const now = Date.now();
-    const cutoff = new Date(now - 15 * 60 * 1000);
+//   try {
+//     const now = Date.now();
+//     const cutoff = new Date(now - 15 * 60 * 1000);
 
-    // ---------------------------------------------------------
-    // ⭐ 1. LOAD SETTINGS (isolated try/catch)
-    // ---------------------------------------------------------
-    let settings = {};
-    let seasonalActive = false;
-    let seasonalName = null;
-    let seasonalMultiplier = 1;
-    let calculationVersion = 1;
+//     // ---------------------------------------------------------
+//     // ⭐ 1. LOAD SETTINGS (isolated try/catch)
+//     // ---------------------------------------------------------
+//     let settings = {};
+//     let seasonalActive = false;
+//     let seasonalName = null;
+//     let seasonalMultiplier = 1;
+//     let calculationVersion = 1;
 
-    try {
-      const settingsSnap = await db.collection("TPSettings").doc("global").get();
-      settings = settingsSnap.exists ? settingsSnap.data() : {};
+//     try {
+//       const settingsSnap = await db.collection("TPSettings").doc("global").get();
+//       settings = settingsSnap.exists ? settingsSnap.data() : {};
 
-      const season = getSeasonFromSettings(settings);
-      seasonalActive = season.seasonalActive;
-      seasonalName = season.seasonalName;
-      seasonalMultiplier = season.seasonalMultiplier;
+//       const season = getSeasonFromSettings(settings);
+//       seasonalActive = season.seasonalActive;
+//       seasonalName = season.seasonalName;
+//       seasonalMultiplier = season.seasonalMultiplier;
 
-      calculationVersion = settings.calculationVersion ?? 1;
+//       calculationVersion = settings.calculationVersion ?? 1;
 
-    } catch (err) {
-      await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}SETTINGS`).set({
-        fn: "timerLogout",
-        stage: "settings_load",
-        error: String(err),
-        runId,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }
+//     } catch (err) {
+//       await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}SETTINGS`).set({
+//         fn: "timerLogout",
+//         stage: "settings_load",
+//         error: String(err),
+//         runId,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+//     }
 
-    // ---------------------------------------------------------
-    // ⭐ 2. LOGOUT USERS (isolated try/catch)
-    // ---------------------------------------------------------
-    try {
-      const snap = await db.collection("Users")
-        .where("TPSecurity.lastAppActive", "<", cutoff)
-        .where("TPSecurity.isLoggedIn", "==", true)
-        .get();
+//     // ---------------------------------------------------------
+//     // ⭐ 2. LOGOUT USERS (isolated try/catch)
+//     // ---------------------------------------------------------
+//     try {
+//       const snap = await db.collection("Users")
+//         .where("TPSecurity.lastAppActive", "<", cutoff)
+//         .where("TPSecurity.isLoggedIn", "==", true)
+//         .get();
 
-      for (const docSnap of snap.docs) {
-        const uid = docSnap.id;
+//       for (const docSnap of snap.docs) {
+//         const uid = docSnap.id;
 
-        try {
-          const u = docSnap.data() || {};
-          const TPLoyalty = u.TPLoyalty || {};
+//         try {
+//           const u = docSnap.data() || {};
+//           const TPLoyalty = u.TPLoyalty || {};
 
-          const correctedLoyalty = {
-            ...TPLoyalty,
-            seasonalActive,
-            seasonalName,
-            seasonalMultiplier,
-            streakMultiplier: TPLoyalty.streakMultiplier ?? 1,
-            streakCount: TPLoyalty.streakCount ?? 0,
-            streakExpires: TPLoyalty.streakExpires ?? null,
-            calculationVersion,
-            updated: admin.firestore.FieldValue.serverTimestamp()
-          };
+//           const correctedLoyalty = {
+//             ...TPLoyalty,
+//             seasonalActive,
+//             seasonalName,
+//             seasonalMultiplier,
+//             streakMultiplier: TPLoyalty.streakMultiplier ?? 1,
+//             streakCount: TPLoyalty.streakCount ?? 0,
+//             streakExpires: TPLoyalty.streakExpires ?? null,
+//             calculationVersion,
+//             updated: admin.firestore.FieldValue.serverTimestamp()
+//           };
 
-          await docSnap.ref.update({
-            "TPSecurity.isLoggedIn": false,
-            "TPLoyalty": correctedLoyalty
-          });
+//           await docSnap.ref.update({
+//             "TPSecurity.isLoggedIn": false,
+//             "TPLoyalty": correctedLoyalty
+//           });
 
-          userChanges[uid] = "LogoutCHANGE";
+//           userChanges[uid] = "LogoutCHANGE";
 
-        } catch (err) {
-          userChanges[uid] = "LogoutNOCHANGE";
+//         } catch (err) {
+//           userChanges[uid] = "LogoutNOCHANGE";
 
-          await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
-            fn: "timerLogout",
-            stage: "logout_update",
-            uid,
-            error: String(err),
-            runId,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-        }
-      }
+//           await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
+//             fn: "timerLogout",
+//             stage: "logout_update",
+//             uid,
+//             error: String(err),
+//             runId,
+//             createdAt: admin.firestore.FieldValue.serverTimestamp()
+//           });
+//         }
+//       }
 
-    } catch (err) {
-      await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}LOGOUT_BLOCK`).set({
-        fn: "timerLogout",
-        stage: "logout_block",
-        error: String(err),
-        runId,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }
+//     } catch (err) {
+//       await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}LOGOUT_BLOCK`).set({
+//         fn: "timerLogout",
+//         stage: "logout_block",
+//         error: String(err),
+//         runId,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+//     }
 
-    // ---------------------------------------------------------
-    // ⭐ 3. FIX PULSE HISTORY (isolated try/catch)
-    // ---------------------------------------------------------
-    try {
-      const usersSnap = await db.collection("Users").get();
+//     // ---------------------------------------------------------
+//     // ⭐ 3. FIX PULSE HISTORY (isolated try/catch)
+//     // ---------------------------------------------------------
+//     try {
+//       const usersSnap = await db.collection("Users").get();
 
-      for (const userDoc of usersSnap.docs) {
-        const uid = userDoc.id;
+//       for (const userDoc of usersSnap.docs) {
+//         const uid = userDoc.id;
 
-        try {
-          const histRef = db.collection("PulseHistory").doc(uid).collection("entries");
-          const histSnap = await histRef.where("pointsSnapshot", "==", null).limit(50).get();
+//         try {
+//           const histRef = db.collection("PulseHistory").doc(uid).collection("entries");
+//           const histSnap = await histRef.where("pointsSnapshot", "==", null).limit(50).get();
 
-          if (histSnap.empty) continue;
+//           if (histSnap.empty) continue;
 
-          for (const entry of histSnap.docs) {
-            const entryKey = `${uid}/${entry.id}`;
+//           for (const entry of histSnap.docs) {
+//             const entryKey = `${uid}/${entry.id}`;
 
-            try {
-              const h = entry.data();
+//             try {
+//               const h = entry.data();
 
-              const snapshot = {
-                type: h.type,
-                label: h.label,
-                amount: h.amount,
-                basePoints: h.amount,
-                tierMultiplier: h.tierMultiplier ?? 1,
-                streakMultiplier: h.streakMultiplier ?? 1,
-                seasonalMultiplier,
-                tierBonusPoints: 0,
-                streakBonusPoints: 0,
-                seasonalBonusPoints: 0,
-                fastDeliveryBonus: 0,
-                delayPenalty: 0,
-                totalPointsEarned: h.amount,
-                seasonalActive,
-                seasonalName,
-                calculationVersion,
-                ts: h.ts ?? now,
-                createdAt: h.createdAt ?? now
-              };
+//               const snapshot = {
+//                 type: h.type,
+//                 label: h.label,
+//                 amount: h.amount,
+//                 basePoints: h.amount,
+//                 tierMultiplier: h.tierMultiplier ?? 1,
+//                 streakMultiplier: h.streakMultiplier ?? 1,
+//                 seasonalMultiplier,
+//                 tierBonusPoints: 0,
+//                 streakBonusPoints: 0,
+//                 seasonalBonusPoints: 0,
+//                 fastDeliveryBonus: 0,
+//                 delayPenalty: 0,
+//                 totalPointsEarned: h.amount,
+//                 seasonalActive,
+//                 seasonalName,
+//                 calculationVersion,
+//                 ts: h.ts ?? now,
+//                 createdAt: h.createdAt ?? now
+//               };
 
-              await entry.ref.update({ pointsSnapshot: snapshot });
+//               await entry.ref.update({ pointsSnapshot: snapshot });
 
-              pulseChanges[entryKey] = "LogoutCHANGE";
+//               pulseChanges[entryKey] = "LogoutCHANGE";
 
-            } catch (err) {
-              pulseChanges[entryKey] = "LogoutNOCHANGE";
+//             } catch (err) {
+//               pulseChanges[entryKey] = "LogoutNOCHANGE";
 
-              await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${entryKey.replace("/", "_")}`).set({
-                fn: "timerLogout",
-                stage: "pulsehistory_fix",
-                uid,
-                entryId: entry.id,
-                error: String(err),
-                runId,
-                createdAt: admin.firestore.FieldValue.serverTimestamp()
-              });
-            }
-          }
+//               await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${entryKey.replace("/", "_")}`).set({
+//                 fn: "timerLogout",
+//                 stage: "pulsehistory_fix",
+//                 uid,
+//                 entryId: entry.id,
+//                 error: String(err),
+//                 runId,
+//                 createdAt: admin.firestore.FieldValue.serverTimestamp()
+//               });
+//             }
+//           }
 
-        } catch (err) {
-          await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
-            fn: "timerLogout",
-            stage: "pulsehistory_query",
-            uid,
-            error: String(err),
-            runId,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-        }
-      }
+//         } catch (err) {
+//           await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
+//             fn: "timerLogout",
+//             stage: "pulsehistory_query",
+//             uid,
+//             error: String(err),
+//             runId,
+//             createdAt: admin.firestore.FieldValue.serverTimestamp()
+//           });
+//         }
+//       }
 
-    } catch (err) {
-      await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}PULSE_BLOCK`).set({
-        fn: "timerLogout",
-        stage: "pulse_block",
-        error: String(err),
-        runId,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }
+//     } catch (err) {
+//       await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}PULSE_BLOCK`).set({
+//         fn: "timerLogout",
+//         stage: "pulse_block",
+//         error: String(err),
+//         runId,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+//     }
 
-    // ---------------------------------------------------------
-    // ⭐ 4. ALWAYS WRITE TIMER LOG
-    // ---------------------------------------------------------
-    await db.collection("TIMER_LOGS").doc(logId).set({
-      fn: "timerLogout",
-      runId,
-      users: userChanges,
-      pulseHistory: pulseChanges,
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
+//     // ---------------------------------------------------------
+//     // ⭐ 4. ALWAYS WRITE TIMER LOG
+//     // ---------------------------------------------------------
+//     await db.collection("TIMER_LOGS").doc(logId).set({
+//       fn: "timerLogout",
+//       runId,
+//       users: userChanges,
+//       pulseHistory: pulseChanges,
+//       createdAt: admin.firestore.FieldValue.serverTimestamp()
+//     });
 
-  } catch (err) {
-    // ---------------------------------------------------------
-    // ⭐ 5. FATAL ERROR (should never happen)
-    // ---------------------------------------------------------
-    await db.collection("FUNCTION_ERRORS").doc(`ERR_FATAL_${runId}`).set({
-      fn: "timerLogout",
-      stage: "fatal",
-      error: String(err),
-      runId,
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
-  }
-});
+//   } catch (err) {
+//     // ---------------------------------------------------------
+//     // ⭐ 5. FATAL ERROR (should never happen)
+//     // ---------------------------------------------------------
+//     await db.collection("FUNCTION_ERRORS").doc(`ERR_FATAL_${runId}`).set({
+//       fn: "timerLogout",
+//       stage: "fatal",
+//       error: String(err),
+//       runId,
+//       createdAt: admin.firestore.FieldValue.serverTimestamp()
+//     });
+//   }
+// });
 
-export const securitySweep = onSchedule("every 24 hours", async () => {
-  const runId = crypto.randomUUID();
-  const logId = `SECURE_${runId}`;
-  const errorPrefix = `ERR_${runId}_`;
+// export const securitySweep = onSchedule("every 24 hours", async () => {
+//   const runId = crypto.randomUUID();
+//   const logId = `SECURE_${runId}`;
+//   const errorPrefix = `ERR_${runId}_`;
 
-  const rotatedUsers = [];
-  const flaggedUsers = [];
+//   const rotatedUsers = [];
+//   const flaggedUsers = [];
 
-  try {
-    const nowMs = Date.now();
-    const now = new Date(nowMs);
-    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+//   try {
+//     const nowMs = Date.now();
+//     const now = new Date(nowMs);
+//     const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
-    const dayOfWeek = now.getUTCDay();
-    const weekNumber = Math.floor(nowMs / (7 * 24 * 60 * 60 * 1000));
+//     const dayOfWeek = now.getUTCDay();
+//     const weekNumber = Math.floor(nowMs / (7 * 24 * 60 * 60 * 1000));
 
-    const isWeeklyCheckDay = dayOfWeek === 1;
-    const isBiWeeklyIntegrityCheck = isWeeklyCheckDay && (weekNumber % 2 === 0);
+//     const isWeeklyCheckDay = dayOfWeek === 1;
+//     const isBiWeeklyIntegrityCheck = isWeeklyCheckDay && (weekNumber % 2 === 0);
 
-    const usersSnap = await db.collection("Users").get();
+//     const usersSnap = await db.collection("Users").get();
 
-    // ---------------------------------------------------------
-    // ⭐ 1. IDENTITY SWEEP (NO JWT — Firebase-native)
-    // ---------------------------------------------------------
-    try {
-      for (const doc of usersSnap.docs) {
-        const uid = doc.id;
+//     // ---------------------------------------------------------
+//     // ⭐ 1. IDENTITY SWEEP (wrapped in its own try/catch)
+//     // ---------------------------------------------------------
+//     try {
+//       for (const doc of usersSnap.docs) {
+//         const uid = doc.id;
 
-        try {
-          const u = doc.data() || {};
-          const TPIdentity = u.TPIdentity || {};
-          const TPSecurity = u.TPSecurity || {};
+//         try {
+//           const u = doc.data() || {};
+//           const TPIdentity = u.TPIdentity || {};
+//           const TPSecurity = u.TPSecurity || {};
 
-          // -----------------------------
-          // TIMESTAMP NORMALIZATION
-          // -----------------------------
-          let lastRefresh = null;
+//           // -----------------------------
+//           // TIMESTAMP NORMALIZATION
+//           // -----------------------------
+//           let lastJWT = null;
 
-          if (TPIdentity.identityRefreshedAt) {
-            if (typeof TPIdentity.identityRefreshedAt.toMillis === "function") {
-              lastRefresh = TPIdentity.identityRefreshedAt.toMillis();
-            } else if (TPIdentity.identityRefreshedAt._seconds) {
-              lastRefresh = TPIdentity.identityRefreshedAt._seconds * 1000;
-            } else if (typeof TPIdentity.identityRefreshedAt === "number") {
-              lastRefresh = TPIdentity.identityRefreshedAt;
-            }
-          }
+//           if (TPIdentity.lastJWTIssuedAt) {
+//             if (typeof TPIdentity.lastJWTIssuedAt.toMillis === "function") {
+//               lastJWT = TPIdentity.lastJWTIssuedAt.toMillis();
+//             } else if (TPIdentity.lastJWTIssuedAt._seconds) {
+//               lastJWT = TPIdentity.lastJWTIssuedAt._seconds * 1000;
+//             } else if (typeof TPIdentity.lastJWTIssuedAt === "number") {
+//               lastJWT = TPIdentity.lastJWTIssuedAt;
+//             }
+//           }
 
-          const age = lastRefresh ? nowMs - lastRefresh : Infinity;
-          const needs30DayRefresh = age > THIRTY_DAYS;
+//           const age = lastJWT ? nowMs - lastJWT : Infinity;
+//           const needs30DayRefresh = age > THIRTY_DAYS;
 
-          // -----------------------------
-          // SECURITY FLAGS
-          // -----------------------------
-          const danger =
-            TPSecurity.vaultLockdown ||
-            TPSecurity.appLocked ||
-            TPSecurity.hackerFlag ||
-            TPSecurity.forceIdentityRefresh ||
-            (TPSecurity.failedLoginAttempts > 5);
+//           // -----------------------------
+//           // SECURITY FLAGS
+//           // -----------------------------
+//           const danger =
+//             TPSecurity.vaultLockdown ||
+//             TPSecurity.appLocked ||
+//             TPSecurity.hackerFlag ||
+//             TPSecurity.forceIdentityRefresh ||
+//             (TPSecurity.failedLoginAttempts > 5);
 
-          const ipJump =
-            TPSecurity.lastKnownIP &&
-            TPSecurity.previousIP &&
-            TPSecurity.lastKnownIP !== TPSecurity.previousIP;
+//           const ipJump =
+//             TPSecurity.lastKnownIP &&
+//             TPSecurity.previousIP &&
+//             TPSecurity.lastKnownIP !== TPSecurity.previousIP;
 
-          const deviceJump =
-            TPSecurity.lastKnownDevice &&
-            TPSecurity.previousDevice &&
-            TPSecurity.lastKnownDevice !== TPSecurity.previousDevice;
+//           const deviceJump =
+//             TPSecurity.lastKnownDevice &&
+//             TPSecurity.previousDevice &&
+//             TPSecurity.lastKnownDevice !== TPSecurity.previousDevice;
 
-          const needsEarlyRefresh = danger || ipJump || deviceJump;
+//           const needsEarlyRefresh = danger || ipJump || deviceJump;
 
-          const totalFlags =
-            (TPSecurity.failedLoginAttempts || 0) +
-            (TPSecurity.hackerFlag ? 3 : 0) +
-            (TPSecurity.vaultLockdown ? 5 : 0) +
-            (TPSecurity.appLocked ? 5 : 0);
+//           const totalFlags =
+//             (TPSecurity.failedLoginAttempts || 0) +
+//             (TPSecurity.hackerFlag ? 3 : 0) +
+//             (TPSecurity.vaultLockdown ? 5 : 0) +
+//             (TPSecurity.appLocked ? 5 : 0);
 
-          if (totalFlags >= 10) {
-            flaggedUsers.push({
-              uid,
-              email: TPIdentity.email || null,
-              failedLoginAttempts: TPSecurity.failedLoginAttempts || 0,
-              vaultLockdown: !!TPSecurity.vaultLockdown,
-              appLocked: !!TPSecurity.appLocked,
-              hackerFlag: !!TPSecurity.hackerFlag
-            });
-          }
+//           if (totalFlags >= 10) {
+//             flaggedUsers.push({
+//               uid,
+//               email: TPIdentity.email || null,
+//               failedLoginAttempts: TPSecurity.failedLoginAttempts || 0,
+//               vaultLockdown: !!TPSecurity.vaultLockdown,
+//               appLocked: !!TPSecurity.appLocked,
+//               hackerFlag: !!TPSecurity.hackerFlag
+//             });
+//           }
 
-          if (!needs30DayRefresh && !needsEarlyRefresh) continue;
+//           if (!needs30DayRefresh && !needsEarlyRefresh) continue;
 
-          // -----------------------------
-          // NEW IDENTITY REFRESH VERSION
-          // -----------------------------
-          const newVersion = (TPIdentity.identityRefreshVersion || 0) + 1;
+//           // -----------------------------
+//           // ROOT TOKEN (PERMANENT)
+//           // -----------------------------
+//           const rootResendToken = u.UserToken || null;
 
-          const reason = needsEarlyRefresh
-            ? "early_security_refresh"
-            : "30_day_rotation";
+//           // -----------------------------
+//           // SESSION TOKEN (ROTATING)
+//           // -----------------------------
+//           const oldSessionToken = TPIdentity.resendToken || null;
 
-          // -----------------------------
-          // WRITE TO TPIdentityHistory
-          // -----------------------------
-          try {
-            await db.collection("TPIdentityHistory").add({
-              uid,
-              oldVersion: TPIdentity.identityRefreshVersion || 0,
-              newVersion,
-              reason,
-              dangerFlags: {
-                vaultLockdown: TPSecurity.vaultLockdown || false,
-                appLocked: TPSecurity.appLocked || false,
-                hackerFlag: TPSecurity.hackerFlag || false,
-                failedLoginAttempts: TPSecurity.failedLoginAttempts || 0,
-                ipJump,
-                deviceJump
-              },
-              runId,
-              createdAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-          } catch (err) {
-            await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
-              fn: "securitySweep",
-              stage: "identity_log",
-              uid,
-              error: String(err),
-              runId,
-              createdAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-            continue;
-          }
+//           let newSessionToken;
+//           try {
+//             newSessionToken = jwt.sign(
+//               {
+//                 uid,
+//                 email: TPIdentity.email || null,
+//                 name: TPIdentity.name || TPIdentity.displayName || null
+//               },
+//               JWT_SECRET.value(),
+//               { expiresIn: "30d" }
+//             );
+//           } catch (err) {
+//             await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
+//               fn: "securitySweep",
+//               stage: "jwt_sign",
+//               uid,
+//               error: String(err),
+//               runId,
+//               createdAt: admin.firestore.FieldValue.serverTimestamp()
+//             });
+//             continue;
+//           }
 
-          // -----------------------------
-          // UPDATE USER RECORD
-          // -----------------------------
-          try {
-            await doc.ref.update({
-              "TPIdentity.identityRefreshVersion": newVersion,
-              "TPIdentity.identityRefreshedAt": admin.firestore.FieldValue.serverTimestamp(),
+//           const reason = needsEarlyRefresh
+//             ? "early_security_refresh"
+//             : "30_day_rotation";
 
-              "TPSecurity.previousIP": TPSecurity.lastKnownIP || null,
-              "TPSecurity.previousDevice": TPSecurity.lastKnownDevice || null,
+//           // -----------------------------
+//           // WRITE TO TPIdentityHistory
+//           // -----------------------------
+//           try {
+//             await db.collection("TPIdentityHistory").add({
+//               uid,
+//               rootResendToken,
+//               oldSessionToken,
+//               newSessionToken,
+//               reason,
+//               dangerFlags: {
+//                 vaultLockdown: TPSecurity.vaultLockdown || false,
+//                 appLocked: TPSecurity.appLocked || false,
+//                 hackerFlag: TPSecurity.hackerFlag || false,
+//                 failedLoginAttempts: TPSecurity.failedLoginAttempts || 0,
+//                 ipJump,
+//                 deviceJump
+//               },
+//               runId,
+//               createdAt: admin.firestore.FieldValue.serverTimestamp()
+//             });
+//           } catch (err) {
+//             await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
+//               fn: "securitySweep",
+//               stage: "identity_log",
+//               uid,
+//               error: String(err),
+//               runId,
+//               createdAt: admin.firestore.FieldValue.serverTimestamp()
+//             });
+//             continue;
+//           }
 
-              "TPSecurity.lastKnownIP": TPSecurity.lastKnownIP || null,
-              "TPSecurity.lastKnownDevice": TPSecurity.lastKnownDevice || null,
+//           // -----------------------------
+//           // UPDATE USER RECORD
+//           // -----------------------------
+//           try {
+//             await doc.ref.update({
+//               "TPIdentity.resendToken": newSessionToken,
+//               "TPIdentity.lastJWTIssuedAt": admin.firestore.FieldValue.serverTimestamp(),
 
-              "TPSecurity.forceIdentityRefresh": false
-            });
-          } catch (err) {
-            await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
-              fn: "securitySweep",
-              stage: "user_update",
-              uid,
-              error: String(err),
-              runId,
-              createdAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-            continue;
-          }
+//               "TPSecurity.previousIP": TPSecurity.lastKnownIP || null,
+//               "TPSecurity.previousDevice": TPSecurity.lastKnownDevice || null,
 
-          rotatedUsers.push(uid);
+//               "TPSecurity.lastKnownIP": TPSecurity.lastKnownIP || null,
+//               "TPSecurity.lastKnownDevice": TPSecurity.lastKnownDevice || null,
 
-        } catch (err) {
-          await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
-            fn: "securitySweep",
-            stage: "user_loop",
-            uid,
-            error: String(err),
-            runId,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-          });
-        }
-      }
-    } catch (err) {
-      await db.collection("FUNCTION_ERRORS").doc(`ERR_IDENTITY_SWEEP_${runId}`).set({
-        fn: "securitySweep",
-        stage: "identity_sweep_block",
-        error: String(err),
-        runId,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }
+//               "TPSecurity.forceIdentityRefresh": false
+//             });
+//           } catch (err) {
+//             await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
+//               fn: "securitySweep",
+//               stage: "user_update",
+//               uid,
+//               error: String(err),
+//               runId,
+//               createdAt: admin.firestore.FieldValue.serverTimestamp()
+//             });
+//             continue;
+//           }
 
-    // ---------------------------------------------------------
-    // ⭐ 2. PULSEBAND CLEANUP (unchanged from your document)
-    // ---------------------------------------------------------
-    // (This entire block is preserved exactly as in your attached document)
-    // (Cited from your document: “PULSEBAND CLEANUP (its own try/catch)”)
-    // (Cited: “deletedSessions”, “deletedChunks”, “deletedErrors”, “deletedRedownloads”)
+//           rotatedUsers.push(uid);
 
-    // ... [same cleanup code you provided] ...
+//         } catch (err) {
+//           await db.collection("FUNCTION_ERRORS").doc(`${errorPrefix}${uid}`).set({
+//             fn: "securitySweep",
+//             stage: "user_loop",
+//             uid,
+//             error: String(err),
+//             runId,
+//             createdAt: admin.firestore.FieldValue.serverTimestamp()
+//           });
+//         }
+//       }
+//     } catch (err) {
+//       await db.collection("FUNCTION_ERRORS").doc(`ERR_IDENTITY_SWEEP_${runId}`).set({
+//         fn: "securitySweep",
+//         stage: "identity_sweep_block",
+//         error: String(err),
+//         runId,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+//     }
 
-    // ---------------------------------------------------------
-    // ⭐ 3. TIMER LOG
-    // ---------------------------------------------------------
-    await db.collection("TIMER_LOGS").doc(logId).set({
-      fn: "securitySweep",
-      runId,
-      rotatedUsers,
-      flaggedUsers,
-      sweepType: isWeeklyCheckDay ? "weekly" : "daily",
-      integrityCheck: isBiWeeklyIntegrityCheck,
-      rotationCount: rotatedUsers.length,
-      flaggedCount: flaggedUsers.length,
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
+//     // ---------------------------------------------------------
+//     // ⭐ 2. PULSEBAND CLEANUP (its own try/catch)
+//     // ---------------------------------------------------------
+//     try {
+//       const cutoff24h = Date.now() - 24 * 60 * 60 * 1000;
+//       const cutoff7d  = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
-  } catch (err) {
-    await db.collection("FUNCTION_ERRORS").doc(`ERR_FATAL_${runId}`).set({
-      fn: "securitySweep",
-      stage: "fatal",
-      error: String(err),
-      runId,
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
-  }
-});
+//       const deletedSessions = [];
+//       const deletedChunks = [];
+//       const deletedErrors = [];
+//       const deletedRedownloads = [];
 
+//       const sessionsSnap = await db.collection("pulseband_sessions").get();
+
+//       for (const s of sessionsSnap.docs) {
+//         const data = s.data() || {};
+//         const createdAt = data.createdAt?.toMillis?.() || 0;
+
+//         if (createdAt < cutoff24h) {
+//           const chunksSnap = await s.ref.collection("chunks").get();
+
+//           for (const c of chunksSnap.docs) {
+//             await c.ref.delete();
+//             deletedChunks.push(c.id);
+//           }
+
+//           await s.ref.delete();
+//           deletedSessions.push(s.id);
+//         }
+//       }
+
+//       const errorsSnap = await db.collection("pulseband_errors").get();
+//       for (const e of errorsSnap.docs) {
+//         const createdAt = e.data()?.createdAt?.toMillis?.() || 0;
+//         if (createdAt < cutoff7d) {
+//           await e.ref.delete();
+//           deletedErrors.push(e.id);
+//         }
+//       }
+
+//       const redlSnap = await db.collection("pulseband_redownloads").get();
+//       for (const r of redlSnap.docs) {
+//         const createdAt = r.data()?.createdAt?.toMillis?.() || 0;
+//         if (createdAt < cutoff7d) {
+//           await r.ref.delete();
+//           deletedRedownloads.push(r.id);
+//         }
+//       }
+
+//       await db.collection("TIMER_LOGS").doc(`PB_CLEANUP_${runId}`).set({
+//         fn: "pulsebandCleanup",
+//         runId,
+//         deletedSessions,
+//         deletedChunks,
+//         deletedErrors,
+//         deletedRedownloads,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//     } catch (err) {
+//       await db.collection("FUNCTION_ERRORS").doc(`ERR_PB_CLEANUP_${runId}`).set({
+//         fn: "pulsebandCleanup",
+//         stage: "cleanup",
+//         error: String(err),
+//         runId,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp()
+//       });
+//     }
+
+//     // ---------------------------------------------------------
+//     // ⭐ 3. TIMER LOG (always runs)
+//     // ---------------------------------------------------------
+//     await db.collection("TIMER_LOGS").doc(logId).set({
+//       fn: "securitySweep",
+//       runId,
+//       rotatedUsers,
+//       flaggedUsers,
+//       sweepType: isWeeklyCheckDay ? "weekly" : "daily",
+//       integrityCheck: isBiWeeklyIntegrityCheck,
+//       rotationCount: rotatedUsers.length,
+//       flaggedCount: flaggedUsers.length,
+//       createdAt: admin.firestore.FieldValue.serverTimestamp()
+//     });
+
+//   } catch (err) {
+//     await db.collection("FUNCTION_ERRORS").doc(`ERR_FATAL_${runId}`).set({
+//       fn: "securitySweep",
+//       stage: "fatal",
+//       error: String(err),
+//       runId,
+//       createdAt: admin.firestore.FieldValue.serverTimestamp()
+//     });
+//   }
+// });
 
 export const loginCheck = onCall(async (req) => {
   const runId = Date.now();
@@ -20723,345 +20814,345 @@ export const redeemPulsePoints = onRequest(
 // ---------------------------
 // GET STRIPE STATUS (REBUILT)
 // ---------------------------
-export const getStripeStatus = onRequest(
-  {
-    region: "us-central1",
-    secrets: [STRIPE_PASSWORD],
-    timeoutSeconds: 540,
-    memory: "512MiB"
-  },
-  async (req, res) => {
+// export const getStripeStatus = onRequest(
+//   {
+//     region: "us-central1",
+//     secrets: [STRIPE_PASSWORD],
+//     timeoutSeconds: 540,
+//     memory: "512MiB"
+//   },
+//   async (req, res) => {
 
-    // CORS
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     // CORS
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 
-    if (req.method === "OPTIONS") return res.status(204).send("");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
 
-    try {
-      const stripe = new Stripe(STRIPE_PASSWORD.value());
-      const { uid, token, stripeAccountId: incomingId } = req.body || {};
+//     try {
+//       const stripe = new Stripe(STRIPE_PASSWORD.value());
+//       const { uid, token, stripeAccountId: incomingId } = req.body || {};
 
-      if (!uid || !token) {
-        return res.json({ success: false, error: "Missing uid or token" });
-      }
+//       if (!uid || !token) {
+//         return res.json({ success: false, error: "Missing uid or token" });
+//       }
 
-      // Load user
-      const userSnap = await db.collection("Users").doc(uid).get();
-      if (!userSnap.exists) {
-        return res.json({ success: false, error: "User not found" });
-      }
+//       // Load user
+//       const userSnap = await db.collection("Users").doc(uid).get();
+//       if (!userSnap.exists) {
+//         return res.json({ success: false, error: "User not found" });
+//       }
 
-      const user = userSnap.data() || {};
-      const TPIdentity = user.TPIdentity || {};
+//       const user = userSnap.data() || {};
+//       const TPIdentity = user.TPIdentity || {};
 
-      // Token validation
-      const storedToken = TPIdentity.resendToken || null;
-      if (!storedToken || storedToken !== token) {
-        return res.json({ success: false, error: "Token mismatch" });
-      }
+//       // Token validation
+//       const storedToken = TPIdentity.resendToken || null;
+//       if (!storedToken || storedToken !== token) {
+//         return res.json({ success: false, error: "Token mismatch" });
+//       }
 
-      // Resolve Stripe Account ID
-      const stripeAccountID =
-        incomingId ||
-        TPIdentity.stripeAccountID ||
-        null;
+//       // Resolve Stripe Account ID
+//       const stripeAccountID =
+//         incomingId ||
+//         TPIdentity.stripeAccountID ||
+//         null;
 
-      if (!stripeAccountID) {
-        return res.json({
-          success: true,
-          status: "not_connected",
-          onboardingLink:
-            `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
-        });
-      }
+//       if (!stripeAccountID) {
+//         return res.json({
+//           success: true,
+//           status: "not_connected",
+//           onboardingLink:
+//             `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
+//         });
+//       }
 
-      // Retrieve Stripe account
-      const acct = await stripe.accounts.retrieve(stripeAccountID);
+//       // Retrieve Stripe account
+//       const acct = await stripe.accounts.retrieve(stripeAccountID);
 
-      if (acct.charges_enabled && acct.payouts_enabled) {
-        return res.json({
-          success: true,
-          status: "connected",
-          dashboardLink: `https://dashboard.stripe.com/connect/accounts/${acct.id}`
-        });
-      }
+//       if (acct.charges_enabled && acct.payouts_enabled) {
+//         return res.json({
+//           success: true,
+//           status: "connected",
+//           dashboardLink: `https://dashboard.stripe.com/connect/accounts/${acct.id}`
+//         });
+//       }
 
-      if (acct.requirements?.currently_due?.length > 0) {
-        return res.json({
-          success: true,
-          status: "needs_verification",
-          onboardingLink:
-            `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
-        });
-      }
+//       if (acct.requirements?.currently_due?.length > 0) {
+//         return res.json({
+//           success: true,
+//           status: "needs_verification",
+//           onboardingLink:
+//             `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
+//         });
+//       }
 
-      return res.json({
-        success: true,
-        status: "pending",
-        onboardingLink:
-          `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
-      });
+//       return res.json({
+//         success: true,
+//         status: "pending",
+//         onboardingLink:
+//           `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
+//       });
 
-    } catch (err) {
-      console.error("getStripeStatus error:", err);
-      return res.json({ success: false, error: "Server error: " + err.message });
-    }
-  }
-);
+//     } catch (err) {
+//       console.error("getStripeStatus error:", err);
+//       return res.json({ success: false, error: "Server error: " + err.message });
+//     }
+//   }
+// );
 
-export const getLogHtml = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB"
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        const id = req.query.logId;
+// export const getLogHtml = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB"
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         const id = req.query.logId;
 
-        if (!id) {
-          return res.status(400).json({ success: false, error: "Missing logId" });
-        }
+//         if (!id) {
+//           return res.status(400).json({ success: false, error: "Missing logId" });
+//         }
 
-        const doc = await db.collection("EmailLogs").doc(id).get();
+//         const doc = await db.collection("EmailLogs").doc(id).get();
 
-        if (!doc.exists) {
-          return res.status(404).json({ success: false, error: "Log not found" });
-        }
+//         if (!doc.exists) {
+//           return res.status(404).json({ success: false, error: "Log not found" });
+//         }
 
-        const data = doc.data() || {};
-        return res.json({
-          success: true,
-          html: data.html || ""
-        });
+//         const data = doc.data() || {};
+//         return res.json({
+//           success: true,
+//           html: data.html || ""
+//         });
 
-      } catch (err) {
-        return res.status(500).json({ success: false, error: err.message });
-      }
-    });
-  }
-);
+//       } catch (err) {
+//         return res.status(500).json({ success: false, error: err.message });
+//       }
+//     });
+//   }
+// );
 
-export const getAllLogs = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        // ------------------------------------
-        // Extract uid + lineage token
-        // ------------------------------------
-        const authHeader = req.headers.authorization || "";
-        const token = authHeader.replace("Bearer ", "").trim();
-        const uid = req.headers["x-uid"] || req.body?.uid || null;
+// export const getAllLogs = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [JWT_SECRET]
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         // ------------------------------------
+//         // Extract uid + lineage token
+//         // ------------------------------------
+//         const authHeader = req.headers.authorization || "";
+//         const token = authHeader.replace("Bearer ", "").trim();
+//         const uid = req.headers["x-uid"] || req.body?.uid || null;
 
-        if (!token || !uid) {
-          return res.status(403).json({
-            success: false,
-            error: "Missing uid or token"
-          });
-        }
+//         if (!token || !uid) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Missing uid or token"
+//           });
+//         }
 
-        // ------------------------------------
-        // Load requesting user
-        // ------------------------------------
-        const userDoc = await db.collection("Users").doc(uid).get();
-        if (!userDoc.exists) {
-          return res.status(404).json({
-            success: false,
-            error: "User not found"
-          });
-        }
+//         // ------------------------------------
+//         // Load requesting user
+//         // ------------------------------------
+//         const userDoc = await db.collection("Users").doc(uid).get();
+//         if (!userDoc.exists) {
+//           return res.status(404).json({
+//             success: false,
+//             error: "User not found"
+//           });
+//         }
 
-        const userData = userDoc.data() || {};
-        const TPIdentity = userData.TPIdentity || {};
-        const storedToken = TPIdentity.resendToken || null;
+//         const userData = userDoc.data() || {};
+//         const TPIdentity = userData.TPIdentity || {};
+//         const storedToken = TPIdentity.resendToken || null;
 
-        if (!storedToken || storedToken !== token) {
-          return res.status(403).json({
-            success: false,
-            error: "Token mismatch"
-          });
-        }
+//         if (!storedToken || storedToken !== token) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Token mismatch"
+//           });
+//         }
 
-        // ------------------------------------
-        // Validate email param
-        // ------------------------------------
-        const email = (req.query.email || "").trim().toLowerCase();
-        if (!email) {
-          return res.status(400).json({
-            success: false,
-            error: "Missing email"
-          });
-        }
+//         // ------------------------------------
+//         // Validate email param
+//         // ------------------------------------
+//         const email = (req.query.email || "").trim().toLowerCase();
+//         if (!email) {
+//           return res.status(400).json({
+//             success: false,
+//             error: "Missing email"
+//           });
+//         }
 
-        // ------------------------------------
-        // Query logs
-        // ------------------------------------
-        const snap = await db
-          .collection("EmailLogs")
-          .where("to", "==", email)
-          .orderBy("createdAt", "desc")
-          .limit(500)
-          .get();
+//         // ------------------------------------
+//         // Query logs
+//         // ------------------------------------
+//         const snap = await db
+//           .collection("EmailLogs")
+//           .where("to", "==", email)
+//           .orderBy("createdAt", "desc")
+//           .limit(500)
+//           .get();
 
-        const safeMillis = (ts) =>
-          ts?.toMillis?.() ??
-          (ts?._seconds ? ts._seconds * 1000 : null);
+//         const safeMillis = (ts) =>
+//           ts?.toMillis?.() ??
+//           (ts?._seconds ? ts._seconds * 1000 : null);
 
-        const logs = snap.docs.map((doc) => {
-          const d = doc.data() || {};
-          return {
-            id: doc.id,
-            to: d.to || null,
-            subject: d.subject || null,
-            status: d.status || null,
-            type: d.type || null,
-            payload: d.payload || null,
-            createdAt: safeMillis(d.createdAt),
-            updatedAt: safeMillis(d.updatedAt)
-          };
-        });
+//         const logs = snap.docs.map((doc) => {
+//           const d = doc.data() || {};
+//           return {
+//             id: doc.id,
+//             to: d.to || null,
+//             subject: d.subject || null,
+//             status: d.status || null,
+//             type: d.type || null,
+//             payload: d.payload || null,
+//             createdAt: safeMillis(d.createdAt),
+//             updatedAt: safeMillis(d.updatedAt)
+//           };
+//         });
 
-        return res.json({ success: true, logs });
+//         return res.json({ success: true, logs });
 
-      } catch (err) {
-        console.error("getAllLogs error:", err);
-        return res.status(500).json({
-          success: false,
-          error: err.message
-        });
-      }
-    });
-  }
-);
+//       } catch (err) {
+//         console.error("getAllLogs error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: err.message
+//         });
+//       }
+//     });
+//   }
+// );
 
-export const getAllOrders = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        // ------------------------------------
-        // Extract uid + lineage token
-        // ------------------------------------
-        const authHeader = req.headers.authorization || "";
-        const token = authHeader.replace("Bearer ", "").trim();
-        const uid = req.headers["x-uid"] || req.body?.uid || null;
+// export const getAllOrders = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [JWT_SECRET]
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         // ------------------------------------
+//         // Extract uid + lineage token
+//         // ------------------------------------
+//         const authHeader = req.headers.authorization || "";
+//         const token = authHeader.replace("Bearer ", "").trim();
+//         const uid = req.headers["x-uid"] || req.body?.uid || null;
 
-        if (!token || !uid) {
-          return res.status(403).json({
-            success: false,
-            error: "Missing uid or token"
-          });
-        }
+//         if (!token || !uid) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Missing uid or token"
+//           });
+//         }
 
-        // ------------------------------------
-        // Load requesting user
-        // ------------------------------------
-        const userDoc = await db.collection("Users").doc(uid).get();
-        if (!userDoc.exists) {
-          return res.status(404).json({
-            success: false,
-            error: "User not found"
-          });
-        }
+//         // ------------------------------------
+//         // Load requesting user
+//         // ------------------------------------
+//         const userDoc = await db.collection("Users").doc(uid).get();
+//         if (!userDoc.exists) {
+//           return res.status(404).json({
+//             success: false,
+//             error: "User not found"
+//           });
+//         }
 
-        const userData = userDoc.data() || {};
-        const TPIdentity = userData.TPIdentity || {};
-        const storedToken = TPIdentity.resendToken || null;
+//         const userData = userDoc.data() || {};
+//         const TPIdentity = userData.TPIdentity || {};
+//         const storedToken = TPIdentity.resendToken || null;
 
-        if (!storedToken || storedToken !== token) {
-          return res.status(403).json({
-            success: false,
-            error: "Token mismatch"
-          });
-        }
+//         if (!storedToken || storedToken !== token) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Token mismatch"
+//           });
+//         }
 
-        // ------------------------------------
-        // Validate email param
-        // ------------------------------------
-        const email = (req.query.email || "").trim().toLowerCase();
-        if (!email) {
-          return res.status(400).json({
-            success: false,
-            error: "Missing email"
-          });
-        }
+//         // ------------------------------------
+//         // Validate email param
+//         // ------------------------------------
+//         const email = (req.query.email || "").trim().toLowerCase();
+//         if (!email) {
+//           return res.status(400).json({
+//             success: false,
+//             error: "Missing email"
+//           });
+//         }
 
-        // ------------------------------------
-        // Query orders
-        // ------------------------------------
-        const customerSnap = await db
-          .collection("Orders")
-          .where("customerEmail", "==", email)
-          .orderBy("createdAt", "desc")
-          .get();
+//         // ------------------------------------
+//         // Query orders
+//         // ------------------------------------
+//         const customerSnap = await db
+//           .collection("Orders")
+//           .where("customerEmail", "==", email)
+//           .orderBy("createdAt", "desc")
+//           .get();
 
-        const delivererSnap = await db
-          .collection("Orders")
-          .where("delivererEmail", "==", email)
-          .orderBy("createdAt", "desc")
-          .get();
+//         const delivererSnap = await db
+//           .collection("Orders")
+//           .where("delivererEmail", "==", email)
+//           .orderBy("createdAt", "desc")
+//           .get();
 
-        const safeMillis = (ts) =>
-          ts?.toMillis?.() ??
-          (ts?._seconds ? ts._seconds * 1000 : null);
+//         const safeMillis = (ts) =>
+//           ts?.toMillis?.() ??
+//           (ts?._seconds ? ts._seconds * 1000 : null);
 
-        const orders = {};
+//         const orders = {};
 
-        const add = (docs) => {
-          docs.forEach((doc) => {
-            const d = doc.data() || {};
-            const orderID = d.orderID || doc.id;
+//         const add = (docs) => {
+//           docs.forEach((doc) => {
+//             const d = doc.data() || {};
+//             const orderID = d.orderID || doc.id;
 
-            orders[orderID] = {
-              id: doc.id,
-              orderID,
-              customerEmail: d.customerEmail || null,
-              delivererEmail: d.delivererEmail || null,
-              vendorEmail: d.vendorEmail || null,
-              status: d.status || null,
-              items: d.items || [],
-              total: d.total || 0,
+//             orders[orderID] = {
+//               id: doc.id,
+//               orderID,
+//               customerEmail: d.customerEmail || null,
+//               delivererEmail: d.delivererEmail || null,
+//               vendorEmail: d.vendorEmail || null,
+//               status: d.status || null,
+//               items: d.items || [],
+//               total: d.total || 0,
 
-              createdAt: safeMillis(d.createdAt),
-              updatedAt: safeMillis(d.updatedAt),
-              orderedAt: safeMillis(d.orderedAt),
-              deliveredAt: safeMillis(d.deliveredAt)
-            };
-          });
-        };
+//               createdAt: safeMillis(d.createdAt),
+//               updatedAt: safeMillis(d.updatedAt),
+//               orderedAt: safeMillis(d.orderedAt),
+//               deliveredAt: safeMillis(d.deliveredAt)
+//             };
+//           });
+//         };
 
-        add(customerSnap.docs);
-        add(delivererSnap.docs);
+//         add(customerSnap.docs);
+//         add(delivererSnap.docs);
 
-        return res.json({
-          success: true,
-          orders: Object.values(orders)
-        });
+//         return res.json({
+//           success: true,
+//           orders: Object.values(orders)
+//         });
 
-      } catch (err) {
-        console.error("getAllOrders error:", err);
-        return res.status(500).json({
-          success: false,
-          error: err.message
-        });
-      }
-    });
-  }
-);
+//       } catch (err) {
+//         console.error("getAllOrders error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: err.message
+//         });
+//       }
+//     });
+//   }
+// );
 
 function buildSnapshotForNonOrderEntry(entry, loyalty = {}, settings = {}) {
   const { seasonalActive, seasonalName, seasonalMultiplier } =
@@ -21095,248 +21186,224 @@ function buildSnapshotForNonOrderEntry(entry, loyalty = {}, settings = {}) {
   };
 }
 
-export const getAllUsers = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        // ------------------------------------
-        // Extract uid + lineage token
-        // ------------------------------------
-        const authHeader = req.headers.authorization || "";
-        const token = authHeader.replace("Bearer ", "").trim();
-        const uid = req.headers["x-uid"] || null;
+// export const getAllUsers = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [JWT_SECRET]
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         // ------------------------------------
+//         // Extract uid + lineage token
+//         // ------------------------------------
+//         const authHeader = req.headers.authorization || "";
+//         const token = authHeader.replace("Bearer ", "").trim();
+//         const uid = req.headers["x-uid"] || null;
 
-        if (!token || !uid) {
-          return res.status(403).json({
-            success: false,
-            error: "Missing uid or token"
-          });
-        }
+//         if (!token || !uid) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Missing uid or token"
+//           });
+//         }
 
-        // ------------------------------------
-        // Load requesting user
-        // ------------------------------------
-        const userDoc = await db.collection("Users").doc(uid).get();
-        if (!userDoc.exists) {
-          return res.status(404).json({
-            success: false,
-            error: "User not found"
-          });
-        }
+//         // ------------------------------------
+//         // Load requesting user
+//         // ------------------------------------
+//         const userDoc = await db.collection("Users").doc(uid).get();
+//         if (!userDoc.exists) {
+//           return res.status(404).json({
+//             success: false,
+//             error: "User not found"
+//           });
+//         }
 
-        const userData = userDoc.data() || {};
-        const TPIdentity = userData.TPIdentity || {};
-        const storedToken = TPIdentity.resendToken || null;
+//         const userData = userDoc.data() || {};
+//         const TPIdentity = userData.TPIdentity || {};
+//         const storedToken = TPIdentity.resendToken || null;
 
-        if (!storedToken || storedToken !== token) {
-          return res.status(403).json({
-            success: false,
-            error: "Token mismatch"
-          });
-        }
+//         if (!storedToken || storedToken !== token) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Token mismatch"
+//           });
+//         }
 
-        // ------------------------------------
-        // Load all users
-        // ------------------------------------
-        const snap = await db
-          .collection("Users")
-          .orderBy("TPIdentity.createdAt", "desc")
-          .get();
+//         // ------------------------------------
+//         // Load all users
+//         // ------------------------------------
+//         const snap = await db
+//           .collection("Users")
+//           .orderBy("TPIdentity.createdAt", "desc")
+//           .get();
 
-        const safeMillis = (ts) => {
-          if (!ts) return null;
-          if (typeof ts.toMillis === "function") return ts.toMillis();
-          if (ts?._seconds) return ts._seconds * 1000;
-          if (typeof ts === "number") return ts;
-          return null;
-        };
+//         const safeMillis = (ts) => {
+//           if (!ts) return null;
+//           if (typeof ts.toMillis === "function") return ts.toMillis();
+//           if (ts?._seconds) return ts._seconds * 1000;
+//           if (typeof ts === "number") return ts;
+//           return null;
+//         };
 
-        const safeNum = (v) =>
-          Number.isFinite(Number(v)) ? Number(v) : 0;
+//         const safeNum = (v) =>
+//           Number.isFinite(Number(v)) ? Number(v) : 0;
 
-        const users = snap.docs.map((doc) => {
-          const data = doc.data() || {};
-          const id = doc.id;
+//         const users = snap.docs.map((doc) => {
+//           const data = doc.data() || {};
+//           const id = doc.id;
 
-          const TPIdentity = data.TPIdentity || {};
-          const TPLoyalty = data.TPLoyalty || {};
-          const TPNotifications = data.TPNotifications || {};
-          const TPSecurity = data.TPSecurity || {};
+//           const TPIdentity = data.TPIdentity || {};
+//           const TPLoyalty = data.TPLoyalty || {};
+//           const TPNotifications = data.TPNotifications || {};
+//           const TPSecurity = data.TPSecurity || {};
 
-          return {
-            id,
+//           return {
+//             id,
 
-            // Identity
-            email: TPIdentity.email || null,
-            name: TPIdentity.name || null,
-            role: TPIdentity.role || "Customer",
-            phone: TPIdentity.phone || null,
-            country: TPIdentity.country || null,
+//             // Identity
+//             email: TPIdentity.email || null,
+//             name: TPIdentity.name || null,
+//             role: TPIdentity.role || "Customer",
+//             phone: TPIdentity.phone || null,
+//             country: TPIdentity.country || null,
 
-            // Loyalty
-            loyalty: {
-              pointsBalance: safeNum(TPLoyalty.pointsBalance),
-              lifetimePoints: safeNum(TPLoyalty.lifetimePoints),
-              referralCode: TPLoyalty.referralCode || null,
-              referredBy: TPLoyalty.referredBy || null
-            },
+//             // Loyalty
+//             loyalty: {
+//               pointsBalance: safeNum(TPLoyalty.pointsBalance),
+//               lifetimePoints: safeNum(TPLoyalty.lifetimePoints),
+//               referralCode: TPLoyalty.referralCode || null,
+//               referredBy: TPLoyalty.referredBy || null
+//             },
 
-            // Notifications
-            notifications: {
-              receiveMassEmails: TPNotifications.receiveMassEmails ?? true,
-              receiveSMS: TPNotifications.receiveSMS ?? false
-            },
+//             // Notifications
+//             notifications: {
+//               receiveMassEmails: TPNotifications.receiveMassEmails ?? true,
+//               receiveSMS: TPNotifications.receiveSMS ?? false
+//             },
 
-            // Timestamps
-            createdAt: safeMillis(TPIdentity.createdAt),
-            updatedAt: safeMillis(TPIdentity.updatedAt),
-            lastActive: safeMillis(TPSecurity.lastActive),
-            lastEarnedDate: safeMillis(TPLoyalty.lastEarnedDate)
-          };
-        });
+//             // Timestamps
+//             createdAt: safeMillis(TPIdentity.createdAt),
+//             updatedAt: safeMillis(TPIdentity.updatedAt),
+//             lastActive: safeMillis(TPSecurity.lastActive),
+//             lastEarnedDate: safeMillis(TPLoyalty.lastEarnedDate)
+//           };
+//         });
 
-        return res.json({ success: true, users });
+//         return res.json({ success: true, users });
 
-      } catch (err) {
-        console.error("getAllUsers error:", err);
-        return res.status(500).json({
-          success: false,
-          error: "Server error: " + err.message
-        });
-      }
-    });
-  }
-);
+//       } catch (err) {
+//         console.error("getAllUsers error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: "Server error: " + err.message
+//         });
+//       }
+//     });
+//   }
+// );
 
-export const verifyToken = onRequest(
-  { 
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [ JWT_SECRET ]
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        const { uid, token } = req.body || {};
+// export const verifyToken = onRequest(
+//   { 
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [ JWT_SECRET ]
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         const { uid, token } = req.body || {};
 
-        if (!uid || !token) {
-          return res.status(400).json({
-            success: false,
-            error: "Missing uid or token"
-          });
-        }
+//         if (!uid || !token) {
+//           return res.status(400).json({
+//             success: false,
+//             error: "Missing uid or token"
+//           });
+//         }
 
-        // ------------------------------------
-        // Load user
-        // ------------------------------------
-        const userDoc = await db.collection("Users").doc(uid).get();
+//         // ------------------------------------
+//         // Load user
+//         // ------------------------------------
+//         const userDoc = await db.collection("Users").doc(uid).get();
 
-        if (!userDoc.exists) {
-          return res.status(404).json({
-            success: false,
-            error: "User not found"
-          });
-        }
+//         if (!userDoc.exists) {
+//           return res.status(404).json({
+//             success: false,
+//             error: "User not found"
+//           });
+//         }
 
-        const userData = userDoc.data() || {};
+//         const userData = userDoc.data() || {};
 
-        const TPIdentity = userData.TPIdentity || {};
-        const TPSecurity = userData.TPSecurity || {};
+//         const TPIdentity = userData.TPIdentity || {};
+//         const TPSecurity = userData.TPSecurity || {};
 
-        // ------------------------------------
-        // Token check (TPIdentity.resendToken)
-        // ------------------------------------
-        const storedToken = TPIdentity.resendToken || null;
+//         // ------------------------------------
+//         // Token check (TPIdentity.resendToken)
+//         // ------------------------------------
+//         const storedToken = TPIdentity.resendToken || null;
 
-        if (!storedToken || storedToken !== token) {
-          return res.status(403).json({
-            success: false,
-            error: "Token mismatch"
-          });
-        }
+//         if (!storedToken || storedToken !== token) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Token mismatch"
+//           });
+//         }
 
-        // ------------------------------------
-        // Build identity response (new schema)
-        // ------------------------------------
-        const responseIdentity = {
-          uid,
+//         // ------------------------------------
+//         // Build identity response (new schema)
+//         // ------------------------------------
+//         const responseIdentity = {
+//           uid,
 
-          // EMAIL
-          email: TPIdentity.email || null,
+//           // EMAIL
+//           email: TPIdentity.email || null,
 
-          // NAME
-          name: TPIdentity.name || TPIdentity.displayName || "",
+//           // NAME
+//           name: TPIdentity.name || TPIdentity.displayName || "",
 
-          // ROLE
-          role: TPIdentity.role || "Deliverer",
+//           // ROLE
+//           role: TPIdentity.role || "Deliverer",
 
-          // STRIPE
-          stripeAccountID: TPIdentity.stripeAccountID || null,
-          stripeDashboardURL: TPIdentity.stripeDashboardURL || null,
+//           // STRIPE
+//           stripeAccountID: TPIdentity.stripeAccountID || null,
+//           stripeDashboardURL: TPIdentity.stripeDashboardURL || null,
 
-          // DISPLAY NAME
-          displayName: TPIdentity.displayName || TPIdentity.name || null,
+//           // DISPLAY NAME
+//           displayName: TPIdentity.displayName || TPIdentity.name || null,
 
-          // PHOTO
-          photoURL: TPIdentity.photoURL || null,
+//           // PHOTO
+//           photoURL: TPIdentity.photoURL || null,
 
-          // TRUSTED DEVICE
-          trustedDevice: TPSecurity.trustedDevice ?? false,
+//           // TRUSTED DEVICE
+//           trustedDevice: TPSecurity.trustedDevice ?? false,
 
-          // IDENTITY TIMESTAMP
-          identitySetAt: TPIdentity.identitySetAt || null,
+//           // IDENTITY TIMESTAMP
+//           identitySetAt: TPIdentity.identitySetAt || null,
 
-          // REFERRAL CODE
-          referralCode: TPIdentity.referralCode || null
-        };
+//           // REFERRAL CODE
+//           referralCode: TPIdentity.referralCode || null
+//         };
 
-        return res.json({
-          success: true,
-          token,
-          identity: responseIdentity
-        });
+//         return res.json({
+//           success: true,
+//           token,
+//           identity: responseIdentity
+//         });
 
-      } catch (err) {
-        console.error("verifyToken ERROR:", err);
-        return res.status(500).json({
-          success: false,
-          error: "Internal server error"
-        });
-      }
-    });
-  }
-);
-import { onSchedule } from "firebase-functions/v2/scheduler";
-
-admin.initializeApp();
-
-// Path to your Pulse-World core
-import pulseWorld from "./PULSE-WORLD/PULSE-X/PULSE-WORLD-SERVER.js";
-
-// ------------------------------------------------------
-// BACKUP HEARTBEAT (Pulse-World)
-// Runs every 5 minutes
-// ------------------------------------------------------
-export const pulseWorldBackup = onSchedule("every 5 minutes", async (event) => {
-  console.log("🔥 Firebase Backup Pulse-World Running...");
-  await pulseWorld();
-});
-
-// ------------------------------------------------------
-// BACKUP NUDGE (Wake-up Ping)
-// Runs every 15 minutes
-// ------------------------------------------------------
-export const nudgeBackup = onSchedule("every 15 minutes", async (event) => {
-  console.log("🔔 Firebase Backup Nudge Running...");
-  await pulseWorld(); // or a smaller nudge function if you have one
-});
+//       } catch (err) {
+//         console.error("verifyToken ERROR:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: "Internal server error"
+//         });
+//       }
+//     });
+//   }
+// );
 
 // export const eventVerification = onRequest(
 //   {
@@ -21616,1494 +21683,1494 @@ export const nudgeBackup = onSchedule("every 15 minutes", async (event) => {
 //   }
 // );
 
-export const refreshToken = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 60,
-    memory: "512MiB",
-    secrets: [JWT_SECRET, EMAIL_PASSWORD]
-  },
-  async (req, res) => {
-    // CORS
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-
-    if (req.method === "OPTIONS") return res.status(204).send("");
-
-    try {
-      const { uid, token } = req.body || {};
-
-      if (!uid || !token) {
-        return res.status(400).json({
-          success: false,
-          error: "Missing uid or token"
-        });
-      }
-
-      // Load user
-      const userRef = db.collection("Users").doc(uid);
-      const userDoc = await userRef.get();
-
-      if (!userDoc.exists) {
-        return res.status(404).json({
-          success: false,
-          error: "User not found"
-        });
-      }
-
-      const user = userDoc.data() || {};
-      const TPIdentity = user.TPIdentity || {};
-
-      const storedToken = TPIdentity.resendToken || null;
-
-      // Lineage validation
-      if (!storedToken || storedToken !== token) {
-        return res.status(403).json({
-          success: false,
-          error: "Token mismatch"
-        });
-      }
-
-      // Generate NEW lineage token
-      const newResendToken = crypto.randomUUID();
-
-      // Update identity
-      await userRef.update({
-        "TPIdentity.resendToken": newResendToken,
-        "TPIdentity.lastTokenRefresh": admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // Log identity history
-      await db
-        .collection("TPIdentityHistory")
-        .add({
-          uid,
-          oldToken: token,
-          newToken: newResendToken,
-          reason: "TOKEN_REFRESH",
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-      return res.json({
-        success: true,
-        newResendToken
-      });
-
-    } catch (err) {
-      console.error("refreshToken error:", err);
-
-      await sendAdminAlertEmail(
-        "refreshToken: Internal Server Error",
-        err,
-        { body: req.body, headers: req.headers }
-      );
-
-      return res.status(500).json({
-        success: false,
-        error: "Server error: " + err.message
-      });
-    }
-  }
-);
-
-export const updateEmailLog = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB"
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        const { id, update } = req.body;
-
-        if (!id || typeof update !== "object") {
-          return res.status(400).json({
-            success: false,
-            error: "Invalid request"
-          });
-        }
-
-        const ref = db.collection("EmailLogs").doc(id);
-        const snap = await ref.get();
-
-        if (!snap.exists) {
-          return res.status(404).json({
-            success: false,
-            error: "Log not found"
-          });
-        }
-
-        await ref.update({
-          ...update,
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedBy: "Automate",
-          source: "updateEmailLog"
-        });
-
-        return res.json({ success: true });
-
-      } catch (err) {
-        console.error("updateEmailLog error:", err);
-        return res.status(500).json({
-          success: false,
-          error: err.message
-        });
-      }
-    });
-  }
-);
-
-export const createEmailLog = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB"
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        const log = {
-          ...req.body,
-          status: req.body.status || "Pending",
-          adminUser: req.body.adminUser || "Automate",
-          triggerSource: req.body.triggerSource || "createEmailLog",
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-        };
-
-        const ref = await db.collection("EmailLogs").add(log);
-
-        return res.json({ success: true, id: ref.id });
-
-      } catch (err) {
-        console.error("createEmailLog error:", err);
-        return res.status(500).json({
-          success: false,
-          error: err.message
-        });
-      }
-    });
-  }
-);
-
-export const findUserByEmail = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB"
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        const rawEmail = req.query.email;
-        const email =
-          typeof rawEmail === "string"
-            ? rawEmail.trim().toLowerCase()
-            : null;
-
-        if (!email) {
-          return res.status(400).json({
-            success: false,
-            error: "Invalid email"
-          });
-        }
-
-        const snap = await admin
-          .firestore()
-          .collection("Users")
-          .where("TPIdentity.email", "==", email)
-          .limit(1)
-          .get();
-
-        if (snap.empty) {
-          return res.json({
-            success: true,
-            user: {
-              name: null,
-              createdAt: null,
-              stripeAccountID: null,
-              userID: null,
-              phone: null
-            }
-          });
-        }
-
-        const doc = snap.docs[0];
-        const data = doc.data() || {};
-        const TPIdentity = data.TPIdentity || {};
-
-        return res.json({
-          success: true,
-          user: {
-            name: TPIdentity.name || TPIdentity.displayName || null,
-            createdAt: TPIdentity.createdAt || null,
-            stripeAccountID: TPIdentity.stripeAccountID || null,
-            userID: doc.id,
-            phone: TPIdentity.phone || null
-          }
-        });
-
-      } catch (err) {
-        console.error("findUserByEmail error:", err);
-        return res.status(500).json({
-          success: false,
-          error: err.message
-        });
-      }
-    });
-  }
-);
-
-export const rolechange = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 60,
-    memory: "512MiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD
-    ]
-  },
-  async (req, res) => {
-    const clean = (v) => {
-      if (v === undefined || v === null) return null;
-      const s = String(v).trim();
-      return s === "" ? null : s;
-    };
-
-    try {
-      const stripe = new Stripe(STRIPE_PASSWORD.value());
-      const twilioClient = twilio(ACCOUNT_SID.value(), AUTH_TOKEN.value());
-
-      const normalizeEmail = (v) =>
-        typeof v === "string" ? v.trim().toLowerCase() : null;
-
-      // -----------------------------
-      // Normalize inputs
-      // -----------------------------
-      const email = normalizeEmail(clean(req.query.email, null));
-      const roleLower = clean(req.query.role, null)?.toLowerCase();
-      const payFrequencyRaw = clean(req.query.payFrequency, null)?.toLowerCase();
-      const payDayRaw = clean(req.query.payDay, null)?.toLowerCase();
-
-      if (!email) return res.status(400).json({ error: "invalid_email" });
-
-      const roleMap = {
-        deliverer: "Deliverer",
-        vendor: "Vendor",
-        customer: "Customer"
-      };
-
-      const role = roleMap[roleLower];
-      if (!role) return res.status(400).json({ error: "invalid_role" });
-
-      // -----------------------------
-      // Pay frequency defaults
-      // -----------------------------
-      let payFrequency = payFrequencyRaw;
-      let payDay = payDayRaw;
-
-      if (!payFrequency) {
-        payFrequency = role === "Vendor" ? "weekly" : "daily";
-      }
-
-      if (payFrequency === "weekly") {
-        payDay = payDay || "monday";
-        if (payDay.includes("everyday")) payDay = null;
-      } else {
-        payDay = null;
-      }
-
-      // -----------------------------
-      // Lookup user (NEW SCHEMA)
-      // -----------------------------
-      const snap = await db
-        .collection("Users")
-        .where("TPIdentity.email", "==", email)
-        .limit(1)
-        .get();
-
-      if (snap.empty) return res.status(400).json({ error: "user_not_found" });
-
-      const userDoc = snap.docs[0];
-      const userRef = userDoc.ref;
-      const user = userDoc.data() || {};
-      const uid = userDoc.id;
-
-      const TPIdentity = user.TPIdentity || {};
-      const TPPayout = user.TPPayout || {};
-      const TPNotifications = user.TPNotifications || {};
-      const TPWallet = user.TPWallet || {};
-
-      if (TPPayout.setupStatus !== "Complete") {
-        return res.status(400).json({ error: "setup_incomplete" });
-      }
-
-      const stripeAccountID = TPIdentity.stripeAccountID || null;
-      if (!stripeAccountID) {
-        return res.status(400).json({ error: "missing_stripe_account" });
-      }
-
-      // -----------------------------
-      // Normalize country + phone
-      // -----------------------------
-      const country = clean(normalizeCountry(TPIdentity.country || "BZ"), "BZ");
-      const phone = normalizePhone(TPIdentity.phone || null, country);
-
-      // -----------------------------
-      // Stripe payout schedule
-      // -----------------------------
-      const schedule =
-        payFrequency === "daily"
-          ? { interval: "daily" }
-          : { interval: "weekly", weekly_anchor: payDay };
-
-      try {
-        await stripe.accounts.update(stripeAccountID, {
-          settings: { payouts: { schedule } }
-        });
-      } catch (err) {
-        return res.status(500).json({ error: "stripe_update_failed" });
-      }
-
-      // -----------------------------
-      // Update user (NEW SCHEMA)
-      // -----------------------------
-      await userRef.update({
-        "TPIdentity.role": role,
-        "TPIdentity.country": country,
-        "TPIdentity.updatedAt": admin.firestore.FieldValue.serverTimestamp(),
-
-        "TPPayout.payFrequency": payFrequency,
-        "TPPayout.payDay": payDay,
-        "TPPayout.updatedAt": admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      // -----------------------------
-      // Optional SMS
-      // -----------------------------
-      if (TPNotifications.receiveSMS && phone) {
-        await twilioClient.messages.create({
-          to: phone,
-          messagingServiceSid: MESSAGING_SERVICE_SID.value(),
-          body: `Your payout settings were updated: ${payFrequency.toUpperCase()} ${payDay || ""}`
-        });
-
-        await userRef.update({
-          "TPWallet.lastSMSSentAt": admin.firestore.FieldValue.serverTimestamp()
-        });
-      }
-
-      return res.status(200).json({ status: "success" });
-
-    } catch (err) {
-      console.error("❌ ROLECHANGE ERROR:", err);
-      return res.status(500).json({ error: "server_error" });
-    }
-  }
-);
-export const getIdentity = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 60,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
-  },
-  async (req, res) => {
-    try {
-      // CORS
-      res.set("Access-Control-Allow-Origin", "*");
-      res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-      res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-
-      if (req.method === "OPTIONS") {
-        return res.status(204).send("");
-      }
-
-      // Validate inputs
-      const { uid, token } = req.body || {};
-      if (!uid || !token) {
-        return res.status(400).json({
-          success: false,
-          error: "Missing uid or token"
-        });
-      }
-
-      // Load user
-      const userSnap = await db.collection("Users").doc(uid).get();
-      if (!userSnap.exists) {
-        return res.status(404).json({
-          success: false,
-          error: "User not found"
-        });
-      }
-
-      const data = userSnap.data() || {};
-
-      const TPIdentity = data.TPIdentity || {};
-      const TPWallet = data.TPWallet || {};
-      const TPLoyalty = data.TPLoyalty || {};
-      const TPVault = data.TPVault || {};
-      const TPSecurity = data.TPSecurity || {};
-
-      const storedToken = TPIdentity.resendToken || null;
-
-      // Lineage validation
-      if (!storedToken || storedToken !== token) {
-        return res.status(403).json({
-          success: false,
-          error: "Token mismatch"
-        });
-      }
-
-      // Build safe identity
-      const safeIdentity = {
-        uid,
-
-        email: TPIdentity.email || null,
-        name: TPIdentity.name || TPIdentity.displayName || null,
-        role: TPIdentity.role || "Customer",
-
-        stripeAccountID: TPIdentity.stripeAccountID || null,
-        stripeDashboardURL: TPIdentity.stripeDashboardURL || null,
-
-        trustedDevice: TPSecurity.trustedDevice ?? false,
-
-        identitySetAt: TPIdentity.identitySetAt || null,
-
-        lastVaultVisit: TPVault.lastVisit || null,
-
-        pointsBalance: Number(TPLoyalty.pointsBalance || 0),
-        lifetimePoints: Number(TPLoyalty.lifetimePoints || 0),
-
-        referralCode: TPIdentity.referralCode || null
-      };
-
-      return res.json({
-        success: true,
-        identity: safeIdentity
-      });
-
-    } catch (err) {
-      console.error("getIdentity error:", err);
-      return res.status(500).json({
-        success: false,
-        error: "Internal server error"
-      });
-    }
-  }
-);
-
-export const getFirebaseAuthToken = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 120,
-    memory: "512MiB"
-  },
-  async (req, res) => {
-    try {
-      // CORS
-      res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-
-      if (req.method === "OPTIONS") {
-        return res.status(204).send("");
-      }
-
-      const body = req.body || {};
-      const incomingToken = body.token || null;
-      let uid = body.uid || null;
-
-      if (!uid) {
-        return res.status(400).json({
-          success: false,
-          error: "Unable to resolve UID from token or uid"
-        });
-      }
-
-      // -----------------------------
-      // 2. Load user
-      // -----------------------------
-      const userRef = admin.firestore().doc(`Users/${uid}`);
-      const userDoc = await userRef.get();
-
-      if (!userDoc.exists) {
-        return res.status(404).json({
-          success: false,
-          error: "User not found"
-        });
-      }
-
-      const userData = userDoc.data() || {};
-      const TPIdentity = userData.TPIdentity || {};
-
-      const currentToken = TPIdentity.resendToken || null;
-
-      if (!currentToken) {
-        return res.status(403).json({
-          success: false,
-          error: "No active resendToken for this user"
-        });
-      }
-
-      // -----------------------------
-      // 3. Get last resendToken from IdentityHistory
-      // -----------------------------
-      const historySnap = await admin
-        .firestore()
-        .collection("IdentityHistory")
-        .doc(uid)
-        .collection("snapshots")
-        .orderBy("createdAt", "desc")
-        .limit(20) // scan last N, just in case
-        .get();
-
-      let lineageToken = null;
-      let lineageSnap = null;
-
-      if (!historySnap.empty) {
-        for (const doc of historySnap.docs) {
-          const snap = doc.data() || {};
-
-          const token = snap?.TPIdentity?.resendToken || null;
-
-          // We only care about the FIRST snapshot that actually has a resendToken
-          if (token) {
-            lineageToken = token;
-            lineageSnap = snap;
-            break;
-          }
-        }
-      }
-
-      // If we never found a resendToken → no lineage, hard logout
-      if (!lineageToken || !lineageSnap) {
-        return res.status(403).json({
-          success: false,
-          hardLogout: true,
-          error: "No resendToken found in IdentityHistory"
-        });
-      }
-
-      // Now check if THAT snapshot is bad
-      const isBad =
-        lineageSnap.lockedDown === true ||
-        lineageSnap.hacker === true ||
-        lineageSnap.failure === true ||
-        lineageSnap.compromised === true ||
-        lineageSnap.revoked === true;
-
-      if (isBad) {
-        return res.status(403).json({
-          success: false,
-          hardLogout: true,
-          error: "Identity is locked or revoked"
-        });
-      }
-
-      // At this point: lineageToken is the last resendToken used, and it's clean
-      // Use lineageToken as your storedToken / lineage token
-      const storedToken = lineageToken;
-
-      // -----------------------------
-      // 4. Issue Firebase token
-      // -----------------------------
-      const firebaseToken = await admin.auth().createCustomToken(uid);
-
-      await userRef.set(
-        {
-          TPFirebaseAuth: {
-            enabled: true,
-            lastIssued: admin.firestore.FieldValue.serverTimestamp()
-          }
-        },
-        { merge: true }
-      );
-
-      let needsRealign = false;
-      let hardFail = false;
-
-      // 1. Missing token → HARD FAIL
-      if (!incomingToken) {
-        hardFail = true;
-      }
-
-      // 2. Incoming token matches current → OK
-      else if (incomingToken === currentToken) {
-        needsRealign = false;
-      }
-
-      // 3. Incoming token is in lineage history → REALIGN
-      if (incomingToken && incomingToken !== lineageToken) {
-        needsRealign = true;
-      }
-
-
-      // 4. Anything else → HARD FAIL
-      else {
-        hardFail = true;
-      }
-
-      if (hardFail) {
-        return res.status(403).json({
-          success: false,
-          hardLogout: true
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        realign: needsRealign,
-        storedToken: currentToken,
-        firebaseToken
-      });
-
-    } catch (err) {
-      console.error("getFirebaseAuthToken error:", err);
-      return res.status(500).json({
-        success: false,
-        error: "Internal server error"
-      });
-    }
-  }
-);
-
-export const getPulsePointsDataForVault = onRequest(
-  {
-    region: "us-central1",
-    secrets: [JWT_SECRET],
-    timeoutSeconds: 30,
-    memory: "512MiB"
-  },
-  async (req, res) => {
-
-    // CORS
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-
-    if (req.method === "OPTIONS") {
-      return res.status(204).send("");
-    }
-
-    try {
-      // Extract uid + token
-      const token =
-        (req.headers.authorization || "").replace("Bearer ", "").trim() ||
-        req.body.token;
-
-      const uid = req.body.uid;
-
-      if (!token || !uid) {
-        return res.status(403).json({
-          success: false,
-          error: "Missing uid or token"
-        });
-      }
-
-      // Load user
-      const userSnap = await admin
-        .firestore()
-        .collection("Users")
-        .doc(uid)
-        .get();
-
-      if (!userSnap.exists) {
-        return res.status(404).json({
-          success: false,
-          error: "User not found"
-        });
-      }
-
-      const user = userSnap.data() || {};
-
-      const TPIdentity = user.TPIdentity || {};
-      const TPLoyalty = user.TPLoyalty || {};
-
-      const storedToken = TPIdentity.resendToken || null;
-
-      // Lineage validation
-      if (!storedToken || storedToken !== token) {
-        return res.status(403).json({
-          success: false,
-          error: "Token mismatch"
-        });
-      }
-
-      // BASIC FIELDS ONLY (Vault-safe)
-      const pointsBalance = Number(TPLoyalty.pointsBalance || 0);
-      const lifetimePoints = Number(TPLoyalty.lifetimePoints || 0);
-
-      // OPTIONAL: HISTORY (read-only)
-      const history = await loadHistory(uid);
-
-      return res.json({
-        success: true,
-        data: {
-          pointsBalance,
-          lifetimePoints,
-          history
-        }
-      });
-
-    } catch (err) {
-      console.error("getPulsePointsDataForVault error:", err);
-      return res.json({
-        success: false,
-        error: "Server error: " + err.message
-      });
-    }
-  }
-);
-
-/* ===========================
-   OPT IN FEATURE FOR MASS EMAILS/SMS
-=========================== */
-export const resubscribe = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [ACCOUNT_SID, AUTH_TOKEN, MESSAGING_SERVICE_SID, EMAIL_PASSWORD]
-  },
-  async (req, res) => {
-    log("🔵 [resubscribe] START");
-
-    const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
-    const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
-    const MESSAGING_SERVICE_SID_VALUE = MESSAGING_SERVICE_SID.value();
-
-    const normalizeEmail = (v) =>
-      typeof v === "string" ? v.trim().toLowerCase() : null;
-
-    const isGarbage = (v) => {
-      if (!v) return true;
-      const s = String(v);
-      return (
-        s.trim() === "" ||
-        s.includes("{{") ||
-        s.includes("add_more_field") ||
-        s.includes("fieldLebal") ||
-        s.includes("fieldValue") ||
-        s.includes("*")
-      );
-    };
-
-    const clean = (v, fallback = null) => {
-      if (isGarbage(v)) return fallback;
-      return String(v).trim();
-    };
-
-    try {
-      const twilioClient = twilio(ACCOUNT_SID_VALUE, AUTH_TOKEN_VALUE);
-
-      const rawToken = req.query.token;
-      const rawEmail = req.query.email;
-      const rawCommunication = req.query.receiveCommunication;
-
-      const parsedCommunication = await receiveCommunication(rawCommunication);
-      const receiveSMS = parsedCommunication.receiveSMS;
-      const receiveMassEmails = parsedCommunication.receiveMassEmails;
-
-      const token = clean(rawToken, null);
-      const email = clean(normalizeEmail(rawEmail), null);
-
-      let snap = null;
-
-      // 1️⃣ Prefer token → then email (NEW SCHEMA)
-      if (token) {
-        snap = await admin
-          .firestore()
-          .collection("Users")
-          .where("TPIdentity.resendToken", "==", token)
-          .limit(1)
-          .get();
-      } else if (email) {
-        snap = await admin
-          .firestore()
-          .collection("Users")
-          .where("TPIdentity.email", "==", email)
-          .limit(1)
-          .get();
-      } else {
-        log("❌ Missing token/email");
-        return res.redirect("/error.html");
-      }
-
-      if (snap.empty) {
-        log("❌ User not found for resubscribe");
-        return res.redirect("/error.html");
-      }
-
-      const userDoc = snap.docs[0];
-      const userData = userDoc.data() || {};
-      const userRef = userDoc.ref;
-
-      const TPIdentity = userData.TPIdentity || {};
-      const TPNotifications = userData.TPNotifications || {};
-      const TPWallet = userData.TPWallet || {};
-
-      let phone = TPIdentity.phone || null;
-      const country = TPIdentity.country || "BZ";
-
-      if (phone) {
-        phone = normalizePhone(phone, country);
-      }
-
-      // 2️⃣ Update preferences (NEW SCHEMA)
-      await userRef.update({
-        TPNotifications: {
-          ...TPNotifications,
-          receiveMassEmails,
-          receiveSMS
-        },
-        "TPIdentity.updatedAt": admin.firestore.FieldValue.serverTimestamp(),
-        emailPending: false,
-        pendingEmailType: admin.firestore.FieldValue.delete(),
-        pendingPayload: admin.firestore.FieldValue.delete()
-      });
-
-      log("✅ User resubscribed", {
-        uid: userDoc.id,
-        receiveMassEmails,
-        receiveSMS
-      });
-
-      // 3️⃣ SMS only if opted‑in AND phone exists
-      if (receiveSMS && phone) {
-        await twilioClient.messages.create({
-          to: phone,
-          messagingServiceSid: MESSAGING_SERVICE_SID_VALUE,
-          body: `You are now opted-in for Tropic Pulse updates: ${TPIdentity.email}`
-        });
-
-        await userRef.update({
-          "TPWallet.lastSMSSentAt": admin.firestore.FieldValue.serverTimestamp()
-        });
-      }
-
-      res.set("Content-Type", "text/html");
-      return res.status(200).send(/* your HTML */);
-
-    } catch (err) {
-      console.error("❌ Resubscribe error:", err);
-      return res
-        .status(500)
-        .send("An error occurred while processing your request.");
-    }
-  }
-);
-
-/* ===========================
-   OPT OUT FEATURE FROM MASS EMAILS
-=========================== */
-export const unsubscribe = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [ACCOUNT_SID, AUTH_TOKEN, MESSAGING_SERVICE_SID, EMAIL_PASSWORD]
-  },
-  async (req, res) => {
-    log("🔵 [unsubscribe] START");
-
-    const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
-    const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
-    const MESSAGING_SERVICE_SID_VALUE = MESSAGING_SERVICE_SID.value();
-
-    const isGarbage = (v) => {
-      if (!v) return true;
-      const s = String(v);
-      return (
-        s.trim() === "" ||
-        s.includes("{{") ||
-        s.includes("add_more_field") ||
-        s.includes("fieldLebal") ||
-        s.includes("fieldValue") ||
-        s.includes("*")
-      );
-    };
-
-    const clean = (v, fallback = null) => {
-      if (isGarbage(v)) return fallback;
-      return String(v).trim();
-    };
-
-    try {
-      const twilioClient = twilio(ACCOUNT_SID_VALUE, AUTH_TOKEN_VALUE);
-
-      const rawToken = req.query.token;
-      const token = clean(rawToken, null);
-
-      if (!token) {
-        log("❌ Missing token");
-        return res.redirect("/error.html");
-      }
-
-      // 1️⃣ Token → user (NEW SCHEMA)
-      const snap = await admin
-        .firestore()
-        .collection("Users")
-        .where("TPIdentity.resendToken", "==", token)
-        .limit(1)
-        .get();
-
-      if (snap.empty) {
-        log("❌ Token not found");
-        return res.redirect("/error.html");
-      }
-
-      const userDoc = snap.docs[0];
-      const userRef = userDoc.ref;
-      const userData = userDoc.data() || {};
-
-      const TPIdentity = userData.TPIdentity || {};
-      const TPNotifications = userData.TPNotifications || {};
-      const TPWallet = userData.TPWallet || {};
-
-      let phone = TPIdentity.phone || null;
-      const country = TPIdentity.country || "BZ";
-
-      if (phone) {
-        phone = normalizePhone(phone, country);
-      }
-
-      // 2️⃣ Update Firestore (NEW SCHEMA)
-      await userRef.update({
-        TPNotifications: {
-          ...TPNotifications,
-          receiveMassEmails: false
-        },
-        "TPIdentity.updatedAt": admin.firestore.FieldValue.serverTimestamp(),
-        emailPending: false,
-        pendingEmailType: admin.firestore.FieldValue.delete(),
-        pendingPayload: admin.firestore.FieldValue.delete()
-      });
-
-      log("✅ User unsubscribed", { uid: userDoc.id });
-
-      // 3️⃣ SMS only if user still allows SMS AND phone exists
-      if (TPNotifications.receiveSMS && phone) {
-        await twilioClient.messages.create({
-          to: phone,
-          messagingServiceSid: MESSAGING_SERVICE_SID_VALUE,
-          body: `You have been unsubscribed from Tropic Pulse mass emails: ${TPIdentity.email}`
-        });
-
-        await userRef.update({
-          "TPWallet.lastSMSSentAt": admin.firestore.FieldValue.serverTimestamp()
-        });
-      } else {
-        log("🚫 SMS not sent (Opt-out or missing phone)");
-      }
-
-      res.set("Content-Type", "text/html");
-      return res.status(200).send(/* your HTML */);
-
-    } catch (err) {
-      console.error("❌ Unsubscribe error:", err);
-      return res
-        .status(500)
-        .send("An error occurred while processing your request.");
-    }
-  }
-);
-/* ===========================
-   BROADCAST EMAIL FOR NEW STUFF
-=========================== */
-export const sendMASSemail = onRequest(
-  {
-    region: "us-central1",
-    secrets: [
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD,
-      JWT_SECRET
-    ],
-    timeoutSeconds: 540,
-    memory: "512MiB"
-  },
-  async (req, res) => {
-    log("🔵 [sendMASSemail] START");
-
-    const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
-    const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
-    const MESSAGING_SERVICE_SID_VALUE = MESSAGING_SERVICE_SID.value();
-    const EMAIL_PASSWORD_VALUE = EMAIL_PASSWORD.value();
-    const JWT_SECRET_VALUE = JWT_SECRET.value();
-
-    const normalizeEmail = (v) =>
-      typeof v === "string" ? v.trim().toLowerCase() : null;
-
-    const isGarbage = (v) => {
-      if (!v) return true;
-      const s = String(v);
-      return (
-        s.trim() === "" ||
-        s.includes("{{") ||
-        s.includes("add_more_field") ||
-        s.includes("fieldLebal") ||
-        s.includes("fieldValue") ||
-        s.includes("*")
-      );
-    };
-
-    const clean = (v, fallback = null) => {
-      if (isGarbage(v)) return fallback;
-      return String(v).trim();
-    };
-
-    const requiredFields = {
-      newEvent: [
-        "title",
-        "summary",
-        "description",
-        "Fromdate",
-        "Todate",
-        "Fromtime",
-        "Totime",
-        "Venue",
-        "eventID",
-        "logId",
-        "unsubscribeUrl",
-        "language",
-        "Category",
-        "Price",
-        "ImageUrl",
-        "OwnerName",
-        "OwnerBusiness",
-        "OwnerEmail"
-      ],
-      newBusiness: [
-        "busname",
-        "summary",
-        "description",
-        "busemail",
-        "location",
-        "date",
-        "busID",
-        "logId",
-        "unsubscribeUrl",
-        "category",
-        "phone",
-        "website",
-        "imageUrl",
-        "ownerName",
-        "ownerEmail"
-      ]
-    };
-
-    function validatePayload(emailType, payload) {
-      const missing = requiredFields[emailType].filter(
-        (field) => payload[field] === undefined || payload[field] === ""
-      );
-      if (missing.length > 0) {
-        throw new Error(
-          `Missing required fields for ${emailType}: ${missing.join(", ")}`
-        );
-      }
-    }
-
-    try {
-      const q = req.query;
-
-      const useremail = normalizeEmail(req.body.useremail || q.useremail);
-      const emailType = clean(req.body.emailType || q.emailType, null);
-      let payload = req.body.payload || {};
-
-      const eventID = clean(req.body.eventID || q.eventID, null);
-      const busID = clean(req.body.busID || q.busID, null);
-
-      if (!useremail) {
-        return res.status(400).json({ error: "Missing useremail" });
-      }
-
-      if (!emailType) {
-        return res.status(400).json({ error: "Missing emailType" });
-      }
-
-      const allowedTypes = ["newEvent", "newBusiness"];
-      if (!allowedTypes.includes(emailType)) {
-        return res.json({
-          success: false,
-          message: `Email type '${emailType}' is not supported.`
-        });
-      }
-
-      // ------------------------------------
-      // Load initiating user (NEW SCHEMA)
-      // ------------------------------------
-      const userSnap = await admin
-        .firestore()
-        .collection("Users")
-        .where("TPIdentity.email", "==", useremail)
-        .limit(1)
-        .get();
-
-      if (userSnap.empty) {
-        log("❌ User not found:", useremail);
-        return res.status(400).json({ error: "user_not_found" });
-      }
-
-      const initiatingUserDoc = userSnap.docs[0];
-      const initiatingUser = initiatingUserDoc.data() || {};
-
-      // ------------------------------------
-      // EVENT PAYLOAD (NEW SCHEMA)
-      // ------------------------------------
-      if (emailType === "newEvent") {
-        if (!eventID) {
-          return res.status(400).json({ error: "Missing eventID" });
-        }
-
-        const eventDoc = await admin
-          .firestore()
-          .collection("Events")
-          .doc(eventID)
-          .get();
-
-        if (!eventDoc.exists) {
-          return res.status(404).json({ error: "Event not found" });
-        }
-
-        const ev = eventDoc.data() || {};
-
-        payload.title = clean(ev.title, "");
-        payload.summary = clean(ev.summary, "");
-        payload.description = clean(ev.description, "");
-        payload.language = clean(ev.language, "");
-
-        payload.Fromdate = ev.Fromdate || "";
-        payload.Todate = ev.Todate || "";
-        payload.Fromtime = clean(ev.Fromtime, "");
-        payload.Totime = clean(ev.Totime, "");
-        payload.Venue = clean(ev.Venue ?? ev.resolvedName, "");
-
-        payload.eventID = eventID;
-        payload.Category = clean(ev.category, "");
-        payload.Price = clean(ev.price, "");
-        payload.ImageUrl = clean(ev.mainImage ?? ev.images?.[0] ?? "", "");
-
-        payload.OwnerName = clean(ev.ownerName, "");
-        payload.OwnerBusiness = clean(ev.ownerBusiness, "");
-        payload.OwnerEmail = clean(ev.ownerEmail, "");
-      }
-
-      // ------------------------------------
-      // BUSINESS PAYLOAD (NEW SCHEMA)
-      // ------------------------------------
-      if (emailType === "newBusiness") {
-        if (!busID) {
-          return res.status(400).json({ error: "Missing busID" });
-        }
-
-        const busDoc = await admin
-          .firestore()
-          .collection("Businesses")
-          .doc(busID)
-          .get();
-
-        if (!busDoc.exists) {
-          return res.status(404).json({ error: "Business not found" });
-        }
-
-        const bus = busDoc.data() || {};
-
-        payload.busname = clean(bus.busname, "");
-        payload.summary = clean(bus.summary, "");
-        payload.description = clean(bus.description, "");
-        payload.location = clean(bus.location, "");
-        payload.busemail = clean(bus.busemail, "");
-
-        let date = bus.date;
-        if (date instanceof admin.firestore.Timestamp) {
-          payload.date = date.toDate().toISOString();
-        } else if (date instanceof Date) {
-          payload.date = date.toISOString();
-        } else if (typeof date === "string") {
-          payload.date = new Date(date).toISOString();
-        } else {
-          payload.date = new Date().toISOString();
-        }
-
-        payload.busID = busID;
-        payload.category = clean(bus.category, "");
-        payload.phone = clean(bus.phone, "");
-        payload.website = clean(bus.website, "");
-        payload.imageUrl = clean(bus.mainImage ?? bus.images?.[0] ?? "", "");
-
-        payload.ownerName = clean(bus.ownerName, "");
-        payload.ownerEmail = clean(bus.ownerEmail, "");
-      }
-
-      // ------------------------------------
-      // LOG ID + UNSUBSCRIBE URL
-      // ------------------------------------
-      const ts = admin.firestore.Timestamp.now().toMillis();
-      payload.logId = payload.logId || `${emailType}-${ts}`;
-      payload.unsubscribeUrl = "/unsubscribe";
-
-      validatePayload(emailType, payload);
-
-      // ------------------------------------
-      // BROADCAST LOOP (NEW SCHEMA)
-      // ------------------------------------
-      const usersSnapshot = await admin.firestore().collection("Users").get();
-      const sendPromises = [];
-
-      usersSnapshot.forEach((doc) => {
-        const u = doc.data() || {};
-
-        const TPIdentity = u.TPIdentity || {};
-        const TPNotifications = u.TPNotifications || {};
-
-        const uEmail = normalizeEmail(TPIdentity.email);
-        if (!uEmail) return;
-
-        if (TPNotifications.receiveMassEmails === false) return;
-
-        let resendToken = TPIdentity.resendToken;
-
-        if (!resendToken) {
-          resendToken = crypto.randomUUID();
-          doc.ref.update({
-            "TPIdentity.resendToken": resendToken
-          }).catch((err) => {
-            console.error("⚠️ Failed to set TPIdentity.resendToken for", uEmail, err.message);
-          });
-        }
-
-        const userPayload = {
-          ...payload,
-          email: uEmail,
-          userID: doc.id,
-          unsubscribeUrl: `/unsubscribe?token=${encodeURIComponent(
-            resendToken
-          )}`
-        };
-
-        sendPromises.push(
-          sendEmailToUser(uEmail, emailType, userPayload).catch((err) => {
-            console.error("❌ Failed to send to:", uEmail, err.message);
-          })
-        );
-      });
-
-      await Promise.all(sendPromises);
-
-      return res.json({
-        success: true,
-        message: `Broadcast email sent to ${usersSnapshot.size} users.`
-      });
-
-    } catch (err) {
-      console.error("❌ broadcastEmail error:", err);
-      return res.status(500).json({
-        error: "Broadcast email failed",
-        details: err.message || String(err)
-      });
-    }
-  }
-);
-export const getStripeDashboardLink = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD,
-      STRIPE_WEBHOOK_SECRET
-    ]
-  },
-  async (req, res) => {
-    log("🔵 [getStripeDashboardLink] START");
-
-    const STRIPE_PASSWORD_VALUE = STRIPE_PASSWORD.value();
-    const stripe = new Stripe(STRIPE_PASSWORD_VALUE);
-
-    const clean = (v, fallback = null) => {
-      if (!v) return fallback;
-      const s = String(v);
-      if (
-        s.trim() === "" ||
-        s.includes("{{") ||
-        s.includes("add_more_field") ||
-        s.includes("fieldLebal") ||
-        s.includes("fieldValue") ||
-        s.includes("*")
-      ) {
-        return fallback;
-      }
-      return s.trim();
-    };
-
-    try {
-      // ---------------------------------------------------------
-      // 1️⃣ Extract + validate token
-      // ---------------------------------------------------------
-      const rawToken = req.query.token;
-      const token = clean(rawToken, null);
-
-      if (!token) {
-        log("❌ Missing token");
-        return res.redirect("/error.html");
-      }
-
-      // Honeypot
-      if (req.query.nickname) {
-        log("⚠️ Honeypot triggered");
-        return res.redirect("/error.html");
-      }
-
-      // ---------------------------------------------------------
-      // 2️⃣ Lookup user by NEW SCHEMA
-      // ---------------------------------------------------------
-      let snap = await admin
-        .firestore()
-        .collection("Users")
-        .where("TPIdentity.resendToken", "==", token)
-        .limit(1)
-        .get();
-
-      // Legacy fallback (rare)
-      if (snap.empty) {
-        snap = await admin
-          .firestore()
-          .collection("Users")
-          .where("resendToken", "==", token)
-          .limit(1)
-          .get();
-      }
-
-      if (snap.empty) {
-        log("❌ Token not found");
-        return res.redirect("https://www.tropicpulse.bze.bz/error.html");
-      }
-
-      const userDoc = snap.docs[0];
-      const userRef = userDoc.ref;
-      const data = userDoc.data() || {};
-
-      const TPIdentity = data.TPIdentity || {};
-      const TPWallet = data.TPWallet || {};
-      const TPSecurity = data.TPSecurity || {};
-
-      const email = clean(TPIdentity.email, null);
-      if (!email) {
-        log("❌ Missing TPIdentity.email");
-        return res.redirect("/error.html");
-      }
-
-      // ---------------------------------------------------------
-      // 3️⃣ Verify token with backend
-      // ---------------------------------------------------------
-      const verifyResponse = await fetch(
-        "https://verifytoken-ilx3agka5q-uc.a.run.app",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token })
-        }
-      );
-
-      const verified = await verifyResponse.json();
-
-      if (!verified?.success) {
-        log("❌ Token verification failed");
-        return res.redirect("/error.html");
-      }
-
-      const verifiedIdentity = verified.identity || null;
-      if (!verifiedIdentity) {
-        log("❌ Missing identity from verification");
-        return res.redirect("/error.html");
-      }
-
-      // Canonical name rule
-      const role = verifiedIdentity.role || TPIdentity.role || "Deliverer";
-
-      // ---------------------------------------------------------
-      // 4️⃣ Stripe account ID (NEW SCHEMA)
-      // ---------------------------------------------------------
-      const accountId =
-        TPIdentity.stripeAccountID ||
-        TPSecurity.stripeAccountID ||
-        null;
-
-      if (!accountId) {
-        log("❌ Missing Stripe account");
-        return res.redirect("/error.html");
-      }
-
-      // ---------------------------------------------------------
-      // 5️⃣ Update loginAttempts + TPIdentity.role
-      // ---------------------------------------------------------
-      const attempts = Number(TPWallet.loginAttempts || 0) + 1;
-
-      await userRef.set(
-        {
-          TPIdentity: {
-            ...TPIdentity,
-            role
-          },
-          TPWallet: {
-            ...TPWallet,
-            loginAttempts: attempts
-          }
-        },
-        { merge: true }
-      );
-
-      // ---------------------------------------------------------
-      // 6️⃣ Cooldown logic
-      // ---------------------------------------------------------
-      const now = admin.firestore.Timestamp.now().toMillis();
-
-      const lastLogin =
-        TPWallet.loginAt instanceof admin.firestore.Timestamp
-          ? TPWallet.loginAt.toMillis()
-          : Number(TPWallet.loginAt || 0);
-
-      if (now - lastLogin < 60000 && TPWallet.loginLink) {
-        log("⏳ Cooldown active — reusing login link");
-        return res.redirect(TPWallet.loginLink);
-      }
-
-      // ---------------------------------------------------------
-      // 7️⃣ Create fresh login link
-      // ---------------------------------------------------------
-      const link = await stripe.accounts.createLoginLink(accountId);
-
-      await userRef.set(
-        {
-          TPWallet: {
-            ...TPWallet,
-            loginAt: now,
-            loginLink: link.url
-          }
-        },
-        { merge: true }
-      );
-
-      log("✅ Login link created for:", email);
-      return res.redirect(link.url);
-
-    } catch (err) {
-      console.error("❌ getStripeDashboardLink error:", err);
-      return res.redirect("/error.html");
-    }
-  }
-);
+// export const refreshToken = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 60,
+//     memory: "512MiB",
+//     secrets: [JWT_SECRET, EMAIL_PASSWORD]
+//   },
+//   async (req, res) => {
+//     // CORS
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+
+//     if (req.method === "OPTIONS") return res.status(204).send("");
+
+//     try {
+//       const { uid, token } = req.body || {};
+
+//       if (!uid || !token) {
+//         return res.status(400).json({
+//           success: false,
+//           error: "Missing uid or token"
+//         });
+//       }
+
+//       // Load user
+//       const userRef = db.collection("Users").doc(uid);
+//       const userDoc = await userRef.get();
+
+//       if (!userDoc.exists) {
+//         return res.status(404).json({
+//           success: false,
+//           error: "User not found"
+//         });
+//       }
+
+//       const user = userDoc.data() || {};
+//       const TPIdentity = user.TPIdentity || {};
+
+//       const storedToken = TPIdentity.resendToken || null;
+
+//       // Lineage validation
+//       if (!storedToken || storedToken !== token) {
+//         return res.status(403).json({
+//           success: false,
+//           error: "Token mismatch"
+//         });
+//       }
+
+//       // Generate NEW lineage token
+//       const newResendToken = crypto.randomUUID();
+
+//       // Update identity
+//       await userRef.update({
+//         "TPIdentity.resendToken": newResendToken,
+//         "TPIdentity.lastTokenRefresh": admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       // Log identity history
+//       await db
+//         .collection("TPIdentityHistory")
+//         .add({
+//           uid,
+//           oldToken: token,
+//           newToken: newResendToken,
+//           reason: "TOKEN_REFRESH",
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         });
+
+//       return res.json({
+//         success: true,
+//         newResendToken
+//       });
+
+//     } catch (err) {
+//       console.error("refreshToken error:", err);
+
+//       await sendAdminAlertEmail(
+//         "refreshToken: Internal Server Error",
+//         err,
+//         { body: req.body, headers: req.headers }
+//       );
+
+//       return res.status(500).json({
+//         success: false,
+//         error: "Server error: " + err.message
+//       });
+//     }
+//   }
+// );
+
+// export const updateEmailLog = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB"
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         const { id, update } = req.body;
+
+//         if (!id || typeof update !== "object") {
+//           return res.status(400).json({
+//             success: false,
+//             error: "Invalid request"
+//           });
+//         }
+
+//         const ref = db.collection("EmailLogs").doc(id);
+//         const snap = await ref.get();
+
+//         if (!snap.exists) {
+//           return res.status(404).json({
+//             success: false,
+//             error: "Log not found"
+//           });
+//         }
+
+//         await ref.update({
+//           ...update,
+//           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+//           updatedBy: "Automate",
+//           source: "updateEmailLog"
+//         });
+
+//         return res.json({ success: true });
+
+//       } catch (err) {
+//         console.error("updateEmailLog error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: err.message
+//         });
+//       }
+//     });
+//   }
+// );
+
+// export const createEmailLog = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB"
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         const log = {
+//           ...req.body,
+//           status: req.body.status || "Pending",
+//           adminUser: req.body.adminUser || "Automate",
+//           triggerSource: req.body.triggerSource || "createEmailLog",
+//           createdAt: admin.firestore.FieldValue.serverTimestamp()
+//         };
+
+//         const ref = await db.collection("EmailLogs").add(log);
+
+//         return res.json({ success: true, id: ref.id });
+
+//       } catch (err) {
+//         console.error("createEmailLog error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: err.message
+//         });
+//       }
+//     });
+//   }
+// );
+
+// export const findUserByEmail = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB"
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         const rawEmail = req.query.email;
+//         const email =
+//           typeof rawEmail === "string"
+//             ? rawEmail.trim().toLowerCase()
+//             : null;
+
+//         if (!email) {
+//           return res.status(400).json({
+//             success: false,
+//             error: "Invalid email"
+//           });
+//         }
+
+//         const snap = await admin
+//           .firestore()
+//           .collection("Users")
+//           .where("TPIdentity.email", "==", email)
+//           .limit(1)
+//           .get();
+
+//         if (snap.empty) {
+//           return res.json({
+//             success: true,
+//             user: {
+//               name: null,
+//               createdAt: null,
+//               stripeAccountID: null,
+//               userID: null,
+//               phone: null
+//             }
+//           });
+//         }
+
+//         const doc = snap.docs[0];
+//         const data = doc.data() || {};
+//         const TPIdentity = data.TPIdentity || {};
+
+//         return res.json({
+//           success: true,
+//           user: {
+//             name: TPIdentity.name || TPIdentity.displayName || null,
+//             createdAt: TPIdentity.createdAt || null,
+//             stripeAccountID: TPIdentity.stripeAccountID || null,
+//             userID: doc.id,
+//             phone: TPIdentity.phone || null
+//           }
+//         });
+
+//       } catch (err) {
+//         console.error("findUserByEmail error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: err.message
+//         });
+//       }
+//     });
+//   }
+// );
+
+// export const rolechange = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 60,
+//     memory: "512MiB",
+//     secrets: [
+//       STRIPE_PASSWORD,
+//       ACCOUNT_SID,
+//       AUTH_TOKEN,
+//       MESSAGING_SERVICE_SID,
+//       EMAIL_PASSWORD
+//     ]
+//   },
+//   async (req, res) => {
+//     const clean = (v) => {
+//       if (v === undefined || v === null) return null;
+//       const s = String(v).trim();
+//       return s === "" ? null : s;
+//     };
+
+//     try {
+//       const stripe = new Stripe(STRIPE_PASSWORD.value());
+//       const twilioClient = twilio(ACCOUNT_SID.value(), AUTH_TOKEN.value());
+
+//       const normalizeEmail = (v) =>
+//         typeof v === "string" ? v.trim().toLowerCase() : null;
+
+//       // -----------------------------
+//       // Normalize inputs
+//       // -----------------------------
+//       const email = normalizeEmail(clean(req.query.email, null));
+//       const roleLower = clean(req.query.role, null)?.toLowerCase();
+//       const payFrequencyRaw = clean(req.query.payFrequency, null)?.toLowerCase();
+//       const payDayRaw = clean(req.query.payDay, null)?.toLowerCase();
+
+//       if (!email) return res.status(400).json({ error: "invalid_email" });
+
+//       const roleMap = {
+//         deliverer: "Deliverer",
+//         vendor: "Vendor",
+//         customer: "Customer"
+//       };
+
+//       const role = roleMap[roleLower];
+//       if (!role) return res.status(400).json({ error: "invalid_role" });
+
+//       // -----------------------------
+//       // Pay frequency defaults
+//       // -----------------------------
+//       let payFrequency = payFrequencyRaw;
+//       let payDay = payDayRaw;
+
+//       if (!payFrequency) {
+//         payFrequency = role === "Vendor" ? "weekly" : "daily";
+//       }
+
+//       if (payFrequency === "weekly") {
+//         payDay = payDay || "monday";
+//         if (payDay.includes("everyday")) payDay = null;
+//       } else {
+//         payDay = null;
+//       }
+
+//       // -----------------------------
+//       // Lookup user (NEW SCHEMA)
+//       // -----------------------------
+//       const snap = await db
+//         .collection("Users")
+//         .where("TPIdentity.email", "==", email)
+//         .limit(1)
+//         .get();
+
+//       if (snap.empty) return res.status(400).json({ error: "user_not_found" });
+
+//       const userDoc = snap.docs[0];
+//       const userRef = userDoc.ref;
+//       const user = userDoc.data() || {};
+//       const uid = userDoc.id;
+
+//       const TPIdentity = user.TPIdentity || {};
+//       const TPPayout = user.TPPayout || {};
+//       const TPNotifications = user.TPNotifications || {};
+//       const TPWallet = user.TPWallet || {};
+
+//       if (TPPayout.setupStatus !== "Complete") {
+//         return res.status(400).json({ error: "setup_incomplete" });
+//       }
+
+//       const stripeAccountID = TPIdentity.stripeAccountID || null;
+//       if (!stripeAccountID) {
+//         return res.status(400).json({ error: "missing_stripe_account" });
+//       }
+
+//       // -----------------------------
+//       // Normalize country + phone
+//       // -----------------------------
+//       const country = clean(normalizeCountry(TPIdentity.country || "BZ"), "BZ");
+//       const phone = normalizePhone(TPIdentity.phone || null, country);
+
+//       // -----------------------------
+//       // Stripe payout schedule
+//       // -----------------------------
+//       const schedule =
+//         payFrequency === "daily"
+//           ? { interval: "daily" }
+//           : { interval: "weekly", weekly_anchor: payDay };
+
+//       try {
+//         await stripe.accounts.update(stripeAccountID, {
+//           settings: { payouts: { schedule } }
+//         });
+//       } catch (err) {
+//         return res.status(500).json({ error: "stripe_update_failed" });
+//       }
+
+//       // -----------------------------
+//       // Update user (NEW SCHEMA)
+//       // -----------------------------
+//       await userRef.update({
+//         "TPIdentity.role": role,
+//         "TPIdentity.country": country,
+//         "TPIdentity.updatedAt": admin.firestore.FieldValue.serverTimestamp(),
+
+//         "TPPayout.payFrequency": payFrequency,
+//         "TPPayout.payDay": payDay,
+//         "TPPayout.updatedAt": admin.firestore.FieldValue.serverTimestamp()
+//       });
+
+//       // -----------------------------
+//       // Optional SMS
+//       // -----------------------------
+//       if (TPNotifications.receiveSMS && phone) {
+//         await twilioClient.messages.create({
+//           to: phone,
+//           messagingServiceSid: MESSAGING_SERVICE_SID.value(),
+//           body: `Your payout settings were updated: ${payFrequency.toUpperCase()} ${payDay || ""}`
+//         });
+
+//         await userRef.update({
+//           "TPWallet.lastSMSSentAt": admin.firestore.FieldValue.serverTimestamp()
+//         });
+//       }
+
+//       return res.status(200).json({ status: "success" });
+
+//     } catch (err) {
+//       console.error("❌ ROLECHANGE ERROR:", err);
+//       return res.status(500).json({ error: "server_error" });
+//     }
+//   }
+// );
+// export const getIdentity = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 60,
+//     memory: "512MiB",
+//     secrets: [JWT_SECRET]
+//   },
+//   async (req, res) => {
+//     try {
+//       // CORS
+//       res.set("Access-Control-Allow-Origin", "*");
+//       res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//       res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+
+//       if (req.method === "OPTIONS") {
+//         return res.status(204).send("");
+//       }
+
+//       // Validate inputs
+//       const { uid, token } = req.body || {};
+//       if (!uid || !token) {
+//         return res.status(400).json({
+//           success: false,
+//           error: "Missing uid or token"
+//         });
+//       }
+
+//       // Load user
+//       const userSnap = await db.collection("Users").doc(uid).get();
+//       if (!userSnap.exists) {
+//         return res.status(404).json({
+//           success: false,
+//           error: "User not found"
+//         });
+//       }
+
+//       const data = userSnap.data() || {};
+
+//       const TPIdentity = data.TPIdentity || {};
+//       const TPWallet = data.TPWallet || {};
+//       const TPLoyalty = data.TPLoyalty || {};
+//       const TPVault = data.TPVault || {};
+//       const TPSecurity = data.TPSecurity || {};
+
+//       const storedToken = TPIdentity.resendToken || null;
+
+//       // Lineage validation
+//       if (!storedToken || storedToken !== token) {
+//         return res.status(403).json({
+//           success: false,
+//           error: "Token mismatch"
+//         });
+//       }
+
+//       // Build safe identity
+//       const safeIdentity = {
+//         uid,
+
+//         email: TPIdentity.email || null,
+//         name: TPIdentity.name || TPIdentity.displayName || null,
+//         role: TPIdentity.role || "Customer",
+
+//         stripeAccountID: TPIdentity.stripeAccountID || null,
+//         stripeDashboardURL: TPIdentity.stripeDashboardURL || null,
+
+//         trustedDevice: TPSecurity.trustedDevice ?? false,
+
+//         identitySetAt: TPIdentity.identitySetAt || null,
+
+//         lastVaultVisit: TPVault.lastVisit || null,
+
+//         pointsBalance: Number(TPLoyalty.pointsBalance || 0),
+//         lifetimePoints: Number(TPLoyalty.lifetimePoints || 0),
+
+//         referralCode: TPIdentity.referralCode || null
+//       };
+
+//       return res.json({
+//         success: true,
+//         identity: safeIdentity
+//       });
+
+//     } catch (err) {
+//       console.error("getIdentity error:", err);
+//       return res.status(500).json({
+//         success: false,
+//         error: "Internal server error"
+//       });
+//     }
+//   }
+// );
+
+// export const getFirebaseAuthToken = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 120,
+//     memory: "512MiB"
+//   },
+//   async (req, res) => {
+//     try {
+//       // CORS
+//       res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+
+//       if (req.method === "OPTIONS") {
+//         return res.status(204).send("");
+//       }
+
+//       const body = req.body || {};
+//       const incomingToken = body.token || null;
+//       let uid = body.uid || null;
+
+//       if (!uid) {
+//         return res.status(400).json({
+//           success: false,
+//           error: "Unable to resolve UID from token or uid"
+//         });
+//       }
+
+//       // -----------------------------
+//       // 2. Load user
+//       // -----------------------------
+//       const userRef = admin.firestore().doc(`Users/${uid}`);
+//       const userDoc = await userRef.get();
+
+//       if (!userDoc.exists) {
+//         return res.status(404).json({
+//           success: false,
+//           error: "User not found"
+//         });
+//       }
+
+//       const userData = userDoc.data() || {};
+//       const TPIdentity = userData.TPIdentity || {};
+
+//       const currentToken = TPIdentity.resendToken || null;
+
+//       if (!currentToken) {
+//         return res.status(403).json({
+//           success: false,
+//           error: "No active resendToken for this user"
+//         });
+//       }
+
+//       // -----------------------------
+//       // 3. Get last resendToken from IdentityHistory
+//       // -----------------------------
+//       const historySnap = await admin
+//         .firestore()
+//         .collection("IdentityHistory")
+//         .doc(uid)
+//         .collection("snapshots")
+//         .orderBy("createdAt", "desc")
+//         .limit(20) // scan last N, just in case
+//         .get();
+
+//       let lineageToken = null;
+//       let lineageSnap = null;
+
+//       if (!historySnap.empty) {
+//         for (const doc of historySnap.docs) {
+//           const snap = doc.data() || {};
+
+//           const token = snap?.TPIdentity?.resendToken || null;
+
+//           // We only care about the FIRST snapshot that actually has a resendToken
+//           if (token) {
+//             lineageToken = token;
+//             lineageSnap = snap;
+//             break;
+//           }
+//         }
+//       }
+
+//       // If we never found a resendToken → no lineage, hard logout
+//       if (!lineageToken || !lineageSnap) {
+//         return res.status(403).json({
+//           success: false,
+//           hardLogout: true,
+//           error: "No resendToken found in IdentityHistory"
+//         });
+//       }
+
+//       // Now check if THAT snapshot is bad
+//       const isBad =
+//         lineageSnap.lockedDown === true ||
+//         lineageSnap.hacker === true ||
+//         lineageSnap.failure === true ||
+//         lineageSnap.compromised === true ||
+//         lineageSnap.revoked === true;
+
+//       if (isBad) {
+//         return res.status(403).json({
+//           success: false,
+//           hardLogout: true,
+//           error: "Identity is locked or revoked"
+//         });
+//       }
+
+//       // At this point: lineageToken is the last resendToken used, and it's clean
+//       // Use lineageToken as your storedToken / lineage token
+//       const storedToken = lineageToken;
+
+//       // -----------------------------
+//       // 4. Issue Firebase token
+//       // -----------------------------
+//       const firebaseToken = await admin.auth().createCustomToken(uid);
+
+//       await userRef.set(
+//         {
+//           TPFirebaseAuth: {
+//             enabled: true,
+//             lastIssued: admin.firestore.FieldValue.serverTimestamp()
+//           }
+//         },
+//         { merge: true }
+//       );
+
+//       let needsRealign = false;
+//       let hardFail = false;
+
+//       // 1. Missing token → HARD FAIL
+//       if (!incomingToken) {
+//         hardFail = true;
+//       }
+
+//       // 2. Incoming token matches current → OK
+//       else if (incomingToken === currentToken) {
+//         needsRealign = false;
+//       }
+
+//       // 3. Incoming token is in lineage history → REALIGN
+//       if (incomingToken && incomingToken !== lineageToken) {
+//         needsRealign = true;
+//       }
+
+
+//       // 4. Anything else → HARD FAIL
+//       else {
+//         hardFail = true;
+//       }
+
+//       if (hardFail) {
+//         return res.status(403).json({
+//           success: false,
+//           hardLogout: true
+//         });
+//       }
+
+//       return res.status(200).json({
+//         success: true,
+//         realign: needsRealign,
+//         storedToken: currentToken,
+//         firebaseToken
+//       });
+
+//     } catch (err) {
+//       console.error("getFirebaseAuthToken error:", err);
+//       return res.status(500).json({
+//         success: false,
+//         error: "Internal server error"
+//       });
+//     }
+//   }
+// );
+
+// export const getPulsePointsDataForVault = onRequest(
+//   {
+//     region: "us-central1",
+//     secrets: [JWT_SECRET],
+//     timeoutSeconds: 30,
+//     memory: "512MiB"
+//   },
+//   async (req, res) => {
+
+//     // CORS
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+
+//     if (req.method === "OPTIONS") {
+//       return res.status(204).send("");
+//     }
+
+//     try {
+//       // Extract uid + token
+//       const token =
+//         (req.headers.authorization || "").replace("Bearer ", "").trim() ||
+//         req.body.token;
+
+//       const uid = req.body.uid;
+
+//       if (!token || !uid) {
+//         return res.status(403).json({
+//           success: false,
+//           error: "Missing uid or token"
+//         });
+//       }
+
+//       // Load user
+//       const userSnap = await admin
+//         .firestore()
+//         .collection("Users")
+//         .doc(uid)
+//         .get();
+
+//       if (!userSnap.exists) {
+//         return res.status(404).json({
+//           success: false,
+//           error: "User not found"
+//         });
+//       }
+
+//       const user = userSnap.data() || {};
+
+//       const TPIdentity = user.TPIdentity || {};
+//       const TPLoyalty = user.TPLoyalty || {};
+
+//       const storedToken = TPIdentity.resendToken || null;
+
+//       // Lineage validation
+//       if (!storedToken || storedToken !== token) {
+//         return res.status(403).json({
+//           success: false,
+//           error: "Token mismatch"
+//         });
+//       }
+
+//       // BASIC FIELDS ONLY (Vault-safe)
+//       const pointsBalance = Number(TPLoyalty.pointsBalance || 0);
+//       const lifetimePoints = Number(TPLoyalty.lifetimePoints || 0);
+
+//       // OPTIONAL: HISTORY (read-only)
+//       const history = await loadHistory(uid);
+
+//       return res.json({
+//         success: true,
+//         data: {
+//           pointsBalance,
+//           lifetimePoints,
+//           history
+//         }
+//       });
+
+//     } catch (err) {
+//       console.error("getPulsePointsDataForVault error:", err);
+//       return res.json({
+//         success: false,
+//         error: "Server error: " + err.message
+//       });
+//     }
+//   }
+// );
+
+// /* ===========================
+//    OPT IN FEATURE FOR MASS EMAILS/SMS
+// =========================== */
+// export const resubscribe = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [ACCOUNT_SID, AUTH_TOKEN, MESSAGING_SERVICE_SID, EMAIL_PASSWORD]
+//   },
+//   async (req, res) => {
+//     log("🔵 [resubscribe] START");
+
+//     const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
+//     const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
+//     const MESSAGING_SERVICE_SID_VALUE = MESSAGING_SERVICE_SID.value();
+
+//     const normalizeEmail = (v) =>
+//       typeof v === "string" ? v.trim().toLowerCase() : null;
+
+//     const isGarbage = (v) => {
+//       if (!v) return true;
+//       const s = String(v);
+//       return (
+//         s.trim() === "" ||
+//         s.includes("{{") ||
+//         s.includes("add_more_field") ||
+//         s.includes("fieldLebal") ||
+//         s.includes("fieldValue") ||
+//         s.includes("*")
+//       );
+//     };
+
+//     const clean = (v, fallback = null) => {
+//       if (isGarbage(v)) return fallback;
+//       return String(v).trim();
+//     };
+
+//     try {
+//       const twilioClient = twilio(ACCOUNT_SID_VALUE, AUTH_TOKEN_VALUE);
+
+//       const rawToken = req.query.token;
+//       const rawEmail = req.query.email;
+//       const rawCommunication = req.query.receiveCommunication;
+
+//       const parsedCommunication = await receiveCommunication(rawCommunication);
+//       const receiveSMS = parsedCommunication.receiveSMS;
+//       const receiveMassEmails = parsedCommunication.receiveMassEmails;
+
+//       const token = clean(rawToken, null);
+//       const email = clean(normalizeEmail(rawEmail), null);
+
+//       let snap = null;
+
+//       // 1️⃣ Prefer token → then email (NEW SCHEMA)
+//       if (token) {
+//         snap = await admin
+//           .firestore()
+//           .collection("Users")
+//           .where("TPIdentity.resendToken", "==", token)
+//           .limit(1)
+//           .get();
+//       } else if (email) {
+//         snap = await admin
+//           .firestore()
+//           .collection("Users")
+//           .where("TPIdentity.email", "==", email)
+//           .limit(1)
+//           .get();
+//       } else {
+//         log("❌ Missing token/email");
+//         return res.redirect("/error.html");
+//       }
+
+//       if (snap.empty) {
+//         log("❌ User not found for resubscribe");
+//         return res.redirect("/error.html");
+//       }
+
+//       const userDoc = snap.docs[0];
+//       const userData = userDoc.data() || {};
+//       const userRef = userDoc.ref;
+
+//       const TPIdentity = userData.TPIdentity || {};
+//       const TPNotifications = userData.TPNotifications || {};
+//       const TPWallet = userData.TPWallet || {};
+
+//       let phone = TPIdentity.phone || null;
+//       const country = TPIdentity.country || "BZ";
+
+//       if (phone) {
+//         phone = normalizePhone(phone, country);
+//       }
+
+//       // 2️⃣ Update preferences (NEW SCHEMA)
+//       await userRef.update({
+//         TPNotifications: {
+//           ...TPNotifications,
+//           receiveMassEmails,
+//           receiveSMS
+//         },
+//         "TPIdentity.updatedAt": admin.firestore.FieldValue.serverTimestamp(),
+//         emailPending: false,
+//         pendingEmailType: admin.firestore.FieldValue.delete(),
+//         pendingPayload: admin.firestore.FieldValue.delete()
+//       });
+
+//       log("✅ User resubscribed", {
+//         uid: userDoc.id,
+//         receiveMassEmails,
+//         receiveSMS
+//       });
+
+//       // 3️⃣ SMS only if opted‑in AND phone exists
+//       if (receiveSMS && phone) {
+//         await twilioClient.messages.create({
+//           to: phone,
+//           messagingServiceSid: MESSAGING_SERVICE_SID_VALUE,
+//           body: `You are now opted-in for Tropic Pulse updates: ${TPIdentity.email}`
+//         });
+
+//         await userRef.update({
+//           "TPWallet.lastSMSSentAt": admin.firestore.FieldValue.serverTimestamp()
+//         });
+//       }
+
+//       res.set("Content-Type", "text/html");
+//       return res.status(200).send(/* your HTML */);
+
+//     } catch (err) {
+//       console.error("❌ Resubscribe error:", err);
+//       return res
+//         .status(500)
+//         .send("An error occurred while processing your request.");
+//     }
+//   }
+// );
+
+// /* ===========================
+//    OPT OUT FEATURE FROM MASS EMAILS
+// =========================== */
+// export const unsubscribe = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [ACCOUNT_SID, AUTH_TOKEN, MESSAGING_SERVICE_SID, EMAIL_PASSWORD]
+//   },
+//   async (req, res) => {
+//     log("🔵 [unsubscribe] START");
+
+//     const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
+//     const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
+//     const MESSAGING_SERVICE_SID_VALUE = MESSAGING_SERVICE_SID.value();
+
+//     const isGarbage = (v) => {
+//       if (!v) return true;
+//       const s = String(v);
+//       return (
+//         s.trim() === "" ||
+//         s.includes("{{") ||
+//         s.includes("add_more_field") ||
+//         s.includes("fieldLebal") ||
+//         s.includes("fieldValue") ||
+//         s.includes("*")
+//       );
+//     };
+
+//     const clean = (v, fallback = null) => {
+//       if (isGarbage(v)) return fallback;
+//       return String(v).trim();
+//     };
+
+//     try {
+//       const twilioClient = twilio(ACCOUNT_SID_VALUE, AUTH_TOKEN_VALUE);
+
+//       const rawToken = req.query.token;
+//       const token = clean(rawToken, null);
+
+//       if (!token) {
+//         log("❌ Missing token");
+//         return res.redirect("/error.html");
+//       }
+
+//       // 1️⃣ Token → user (NEW SCHEMA)
+//       const snap = await admin
+//         .firestore()
+//         .collection("Users")
+//         .where("TPIdentity.resendToken", "==", token)
+//         .limit(1)
+//         .get();
+
+//       if (snap.empty) {
+//         log("❌ Token not found");
+//         return res.redirect("/error.html");
+//       }
+
+//       const userDoc = snap.docs[0];
+//       const userRef = userDoc.ref;
+//       const userData = userDoc.data() || {};
+
+//       const TPIdentity = userData.TPIdentity || {};
+//       const TPNotifications = userData.TPNotifications || {};
+//       const TPWallet = userData.TPWallet || {};
+
+//       let phone = TPIdentity.phone || null;
+//       const country = TPIdentity.country || "BZ";
+
+//       if (phone) {
+//         phone = normalizePhone(phone, country);
+//       }
+
+//       // 2️⃣ Update Firestore (NEW SCHEMA)
+//       await userRef.update({
+//         TPNotifications: {
+//           ...TPNotifications,
+//           receiveMassEmails: false
+//         },
+//         "TPIdentity.updatedAt": admin.firestore.FieldValue.serverTimestamp(),
+//         emailPending: false,
+//         pendingEmailType: admin.firestore.FieldValue.delete(),
+//         pendingPayload: admin.firestore.FieldValue.delete()
+//       });
+
+//       log("✅ User unsubscribed", { uid: userDoc.id });
+
+//       // 3️⃣ SMS only if user still allows SMS AND phone exists
+//       if (TPNotifications.receiveSMS && phone) {
+//         await twilioClient.messages.create({
+//           to: phone,
+//           messagingServiceSid: MESSAGING_SERVICE_SID_VALUE,
+//           body: `You have been unsubscribed from Tropic Pulse mass emails: ${TPIdentity.email}`
+//         });
+
+//         await userRef.update({
+//           "TPWallet.lastSMSSentAt": admin.firestore.FieldValue.serverTimestamp()
+//         });
+//       } else {
+//         log("🚫 SMS not sent (Opt-out or missing phone)");
+//       }
+
+//       res.set("Content-Type", "text/html");
+//       return res.status(200).send(/* your HTML */);
+
+//     } catch (err) {
+//       console.error("❌ Unsubscribe error:", err);
+//       return res
+//         .status(500)
+//         .send("An error occurred while processing your request.");
+//     }
+//   }
+// );
+// /* ===========================
+//    BROADCAST EMAIL FOR NEW STUFF
+// =========================== */
+// export const sendMASSemail = onRequest(
+//   {
+//     region: "us-central1",
+//     secrets: [
+//       ACCOUNT_SID,
+//       AUTH_TOKEN,
+//       MESSAGING_SERVICE_SID,
+//       EMAIL_PASSWORD,
+//       JWT_SECRET
+//     ],
+//     timeoutSeconds: 540,
+//     memory: "512MiB"
+//   },
+//   async (req, res) => {
+//     log("🔵 [sendMASSemail] START");
+
+//     const ACCOUNT_SID_VALUE = ACCOUNT_SID.value();
+//     const AUTH_TOKEN_VALUE = AUTH_TOKEN.value();
+//     const MESSAGING_SERVICE_SID_VALUE = MESSAGING_SERVICE_SID.value();
+//     const EMAIL_PASSWORD_VALUE = EMAIL_PASSWORD.value();
+//     const JWT_SECRET_VALUE = JWT_SECRET.value();
+
+//     const normalizeEmail = (v) =>
+//       typeof v === "string" ? v.trim().toLowerCase() : null;
+
+//     const isGarbage = (v) => {
+//       if (!v) return true;
+//       const s = String(v);
+//       return (
+//         s.trim() === "" ||
+//         s.includes("{{") ||
+//         s.includes("add_more_field") ||
+//         s.includes("fieldLebal") ||
+//         s.includes("fieldValue") ||
+//         s.includes("*")
+//       );
+//     };
+
+//     const clean = (v, fallback = null) => {
+//       if (isGarbage(v)) return fallback;
+//       return String(v).trim();
+//     };
+
+//     const requiredFields = {
+//       newEvent: [
+//         "title",
+//         "summary",
+//         "description",
+//         "Fromdate",
+//         "Todate",
+//         "Fromtime",
+//         "Totime",
+//         "Venue",
+//         "eventID",
+//         "logId",
+//         "unsubscribeUrl",
+//         "language",
+//         "Category",
+//         "Price",
+//         "ImageUrl",
+//         "OwnerName",
+//         "OwnerBusiness",
+//         "OwnerEmail"
+//       ],
+//       newBusiness: [
+//         "busname",
+//         "summary",
+//         "description",
+//         "busemail",
+//         "location",
+//         "date",
+//         "busID",
+//         "logId",
+//         "unsubscribeUrl",
+//         "category",
+//         "phone",
+//         "website",
+//         "imageUrl",
+//         "ownerName",
+//         "ownerEmail"
+//       ]
+//     };
+
+//     function validatePayload(emailType, payload) {
+//       const missing = requiredFields[emailType].filter(
+//         (field) => payload[field] === undefined || payload[field] === ""
+//       );
+//       if (missing.length > 0) {
+//         throw new Error(
+//           `Missing required fields for ${emailType}: ${missing.join(", ")}`
+//         );
+//       }
+//     }
+
+//     try {
+//       const q = req.query;
+
+//       const useremail = normalizeEmail(req.body.useremail || q.useremail);
+//       const emailType = clean(req.body.emailType || q.emailType, null);
+//       let payload = req.body.payload || {};
+
+//       const eventID = clean(req.body.eventID || q.eventID, null);
+//       const busID = clean(req.body.busID || q.busID, null);
+
+//       if (!useremail) {
+//         return res.status(400).json({ error: "Missing useremail" });
+//       }
+
+//       if (!emailType) {
+//         return res.status(400).json({ error: "Missing emailType" });
+//       }
+
+//       const allowedTypes = ["newEvent", "newBusiness"];
+//       if (!allowedTypes.includes(emailType)) {
+//         return res.json({
+//           success: false,
+//           message: `Email type '${emailType}' is not supported.`
+//         });
+//       }
+
+//       // ------------------------------------
+//       // Load initiating user (NEW SCHEMA)
+//       // ------------------------------------
+//       const userSnap = await admin
+//         .firestore()
+//         .collection("Users")
+//         .where("TPIdentity.email", "==", useremail)
+//         .limit(1)
+//         .get();
+
+//       if (userSnap.empty) {
+//         log("❌ User not found:", useremail);
+//         return res.status(400).json({ error: "user_not_found" });
+//       }
+
+//       const initiatingUserDoc = userSnap.docs[0];
+//       const initiatingUser = initiatingUserDoc.data() || {};
+
+//       // ------------------------------------
+//       // EVENT PAYLOAD (NEW SCHEMA)
+//       // ------------------------------------
+//       if (emailType === "newEvent") {
+//         if (!eventID) {
+//           return res.status(400).json({ error: "Missing eventID" });
+//         }
+
+//         const eventDoc = await admin
+//           .firestore()
+//           .collection("Events")
+//           .doc(eventID)
+//           .get();
+
+//         if (!eventDoc.exists) {
+//           return res.status(404).json({ error: "Event not found" });
+//         }
+
+//         const ev = eventDoc.data() || {};
+
+//         payload.title = clean(ev.title, "");
+//         payload.summary = clean(ev.summary, "");
+//         payload.description = clean(ev.description, "");
+//         payload.language = clean(ev.language, "");
+
+//         payload.Fromdate = ev.Fromdate || "";
+//         payload.Todate = ev.Todate || "";
+//         payload.Fromtime = clean(ev.Fromtime, "");
+//         payload.Totime = clean(ev.Totime, "");
+//         payload.Venue = clean(ev.Venue ?? ev.resolvedName, "");
+
+//         payload.eventID = eventID;
+//         payload.Category = clean(ev.category, "");
+//         payload.Price = clean(ev.price, "");
+//         payload.ImageUrl = clean(ev.mainImage ?? ev.images?.[0] ?? "", "");
+
+//         payload.OwnerName = clean(ev.ownerName, "");
+//         payload.OwnerBusiness = clean(ev.ownerBusiness, "");
+//         payload.OwnerEmail = clean(ev.ownerEmail, "");
+//       }
+
+//       // ------------------------------------
+//       // BUSINESS PAYLOAD (NEW SCHEMA)
+//       // ------------------------------------
+//       if (emailType === "newBusiness") {
+//         if (!busID) {
+//           return res.status(400).json({ error: "Missing busID" });
+//         }
+
+//         const busDoc = await admin
+//           .firestore()
+//           .collection("Businesses")
+//           .doc(busID)
+//           .get();
+
+//         if (!busDoc.exists) {
+//           return res.status(404).json({ error: "Business not found" });
+//         }
+
+//         const bus = busDoc.data() || {};
+
+//         payload.busname = clean(bus.busname, "");
+//         payload.summary = clean(bus.summary, "");
+//         payload.description = clean(bus.description, "");
+//         payload.location = clean(bus.location, "");
+//         payload.busemail = clean(bus.busemail, "");
+
+//         let date = bus.date;
+//         if (date instanceof admin.firestore.Timestamp) {
+//           payload.date = date.toDate().toISOString();
+//         } else if (date instanceof Date) {
+//           payload.date = date.toISOString();
+//         } else if (typeof date === "string") {
+//           payload.date = new Date(date).toISOString();
+//         } else {
+//           payload.date = new Date().toISOString();
+//         }
+
+//         payload.busID = busID;
+//         payload.category = clean(bus.category, "");
+//         payload.phone = clean(bus.phone, "");
+//         payload.website = clean(bus.website, "");
+//         payload.imageUrl = clean(bus.mainImage ?? bus.images?.[0] ?? "", "");
+
+//         payload.ownerName = clean(bus.ownerName, "");
+//         payload.ownerEmail = clean(bus.ownerEmail, "");
+//       }
+
+//       // ------------------------------------
+//       // LOG ID + UNSUBSCRIBE URL
+//       // ------------------------------------
+//       const ts = admin.firestore.Timestamp.now().toMillis();
+//       payload.logId = payload.logId || `${emailType}-${ts}`;
+//       payload.unsubscribeUrl = "/unsubscribe";
+
+//       validatePayload(emailType, payload);
+
+//       // ------------------------------------
+//       // BROADCAST LOOP (NEW SCHEMA)
+//       // ------------------------------------
+//       const usersSnapshot = await admin.firestore().collection("Users").get();
+//       const sendPromises = [];
+
+//       usersSnapshot.forEach((doc) => {
+//         const u = doc.data() || {};
+
+//         const TPIdentity = u.TPIdentity || {};
+//         const TPNotifications = u.TPNotifications || {};
+
+//         const uEmail = normalizeEmail(TPIdentity.email);
+//         if (!uEmail) return;
+
+//         if (TPNotifications.receiveMassEmails === false) return;
+
+//         let resendToken = TPIdentity.resendToken;
+
+//         if (!resendToken) {
+//           resendToken = crypto.randomUUID();
+//           doc.ref.update({
+//             "TPIdentity.resendToken": resendToken
+//           }).catch((err) => {
+//             console.error("⚠️ Failed to set TPIdentity.resendToken for", uEmail, err.message);
+//           });
+//         }
+
+//         const userPayload = {
+//           ...payload,
+//           email: uEmail,
+//           userID: doc.id,
+//           unsubscribeUrl: `/unsubscribe?token=${encodeURIComponent(
+//             resendToken
+//           )}`
+//         };
+
+//         sendPromises.push(
+//           sendEmailToUser(uEmail, emailType, userPayload).catch((err) => {
+//             console.error("❌ Failed to send to:", uEmail, err.message);
+//           })
+//         );
+//       });
+
+//       await Promise.all(sendPromises);
+
+//       return res.json({
+//         success: true,
+//         message: `Broadcast email sent to ${usersSnapshot.size} users.`
+//       });
+
+//     } catch (err) {
+//       console.error("❌ broadcastEmail error:", err);
+//       return res.status(500).json({
+//         error: "Broadcast email failed",
+//         details: err.message || String(err)
+//       });
+//     }
+//   }
+// );
+// export const getStripeDashboardLink = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [
+//       STRIPE_PASSWORD,
+//       ACCOUNT_SID,
+//       AUTH_TOKEN,
+//       MESSAGING_SERVICE_SID,
+//       EMAIL_PASSWORD,
+//       STRIPE_WEBHOOK_SECRET
+//     ]
+//   },
+//   async (req, res) => {
+//     log("🔵 [getStripeDashboardLink] START");
+
+//     const STRIPE_PASSWORD_VALUE = STRIPE_PASSWORD.value();
+//     const stripe = new Stripe(STRIPE_PASSWORD_VALUE);
+
+//     const clean = (v, fallback = null) => {
+//       if (!v) return fallback;
+//       const s = String(v);
+//       if (
+//         s.trim() === "" ||
+//         s.includes("{{") ||
+//         s.includes("add_more_field") ||
+//         s.includes("fieldLebal") ||
+//         s.includes("fieldValue") ||
+//         s.includes("*")
+//       ) {
+//         return fallback;
+//       }
+//       return s.trim();
+//     };
+
+//     try {
+//       // ---------------------------------------------------------
+//       // 1️⃣ Extract + validate token
+//       // ---------------------------------------------------------
+//       const rawToken = req.query.token;
+//       const token = clean(rawToken, null);
+
+//       if (!token) {
+//         log("❌ Missing token");
+//         return res.redirect("/error.html");
+//       }
+
+//       // Honeypot
+//       if (req.query.nickname) {
+//         log("⚠️ Honeypot triggered");
+//         return res.redirect("/error.html");
+//       }
+
+//       // ---------------------------------------------------------
+//       // 2️⃣ Lookup user by NEW SCHEMA
+//       // ---------------------------------------------------------
+//       let snap = await admin
+//         .firestore()
+//         .collection("Users")
+//         .where("TPIdentity.resendToken", "==", token)
+//         .limit(1)
+//         .get();
+
+//       // Legacy fallback (rare)
+//       if (snap.empty) {
+//         snap = await admin
+//           .firestore()
+//           .collection("Users")
+//           .where("resendToken", "==", token)
+//           .limit(1)
+//           .get();
+//       }
+
+//       if (snap.empty) {
+//         log("❌ Token not found");
+//         return res.redirect("https://www.tropicpulse.bze.bz/error.html");
+//       }
+
+//       const userDoc = snap.docs[0];
+//       const userRef = userDoc.ref;
+//       const data = userDoc.data() || {};
+
+//       const TPIdentity = data.TPIdentity || {};
+//       const TPWallet = data.TPWallet || {};
+//       const TPSecurity = data.TPSecurity || {};
+
+//       const email = clean(TPIdentity.email, null);
+//       if (!email) {
+//         log("❌ Missing TPIdentity.email");
+//         return res.redirect("/error.html");
+//       }
+
+//       // ---------------------------------------------------------
+//       // 3️⃣ Verify token with backend
+//       // ---------------------------------------------------------
+//       const verifyResponse = await fetch(
+//         "https://verifytoken-ilx3agka5q-uc.a.run.app",
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({ token })
+//         }
+//       );
+
+//       const verified = await verifyResponse.json();
+
+//       if (!verified?.success) {
+//         log("❌ Token verification failed");
+//         return res.redirect("/error.html");
+//       }
+
+//       const verifiedIdentity = verified.identity || null;
+//       if (!verifiedIdentity) {
+//         log("❌ Missing identity from verification");
+//         return res.redirect("/error.html");
+//       }
+
+//       // Canonical name rule
+//       const role = verifiedIdentity.role || TPIdentity.role || "Deliverer";
+
+//       // ---------------------------------------------------------
+//       // 4️⃣ Stripe account ID (NEW SCHEMA)
+//       // ---------------------------------------------------------
+//       const accountId =
+//         TPIdentity.stripeAccountID ||
+//         TPSecurity.stripeAccountID ||
+//         null;
+
+//       if (!accountId) {
+//         log("❌ Missing Stripe account");
+//         return res.redirect("/error.html");
+//       }
+
+//       // ---------------------------------------------------------
+//       // 5️⃣ Update loginAttempts + TPIdentity.role
+//       // ---------------------------------------------------------
+//       const attempts = Number(TPWallet.loginAttempts || 0) + 1;
+
+//       await userRef.set(
+//         {
+//           TPIdentity: {
+//             ...TPIdentity,
+//             role
+//           },
+//           TPWallet: {
+//             ...TPWallet,
+//             loginAttempts: attempts
+//           }
+//         },
+//         { merge: true }
+//       );
+
+//       // ---------------------------------------------------------
+//       // 6️⃣ Cooldown logic
+//       // ---------------------------------------------------------
+//       const now = admin.firestore.Timestamp.now().toMillis();
+
+//       const lastLogin =
+//         TPWallet.loginAt instanceof admin.firestore.Timestamp
+//           ? TPWallet.loginAt.toMillis()
+//           : Number(TPWallet.loginAt || 0);
+
+//       if (now - lastLogin < 60000 && TPWallet.loginLink) {
+//         log("⏳ Cooldown active — reusing login link");
+//         return res.redirect(TPWallet.loginLink);
+//       }
+
+//       // ---------------------------------------------------------
+//       // 7️⃣ Create fresh login link
+//       // ---------------------------------------------------------
+//       const link = await stripe.accounts.createLoginLink(accountId);
+
+//       await userRef.set(
+//         {
+//           TPWallet: {
+//             ...TPWallet,
+//             loginAt: now,
+//             loginLink: link.url
+//           }
+//         },
+//         { merge: true }
+//       );
+
+//       log("✅ Login link created for:", email);
+//       return res.redirect(link.url);
+
+//     } catch (err) {
+//       console.error("❌ getStripeDashboardLink error:", err);
+//       return res.redirect("/error.html");
+//     }
+//   }
+// );
 
 export const onPulseHistoryChanged = onDocumentWritten(
   "PulseHistory/{uid}/entries/{entryId}",
