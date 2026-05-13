@@ -2,14 +2,5 @@
   "projects": {
     "default": "tropic-pulse"
   },
-  "targets": {
-    "tropic-pulse": {
-      "hosting": {
-        "tropic-pulse": [
-          "tropic-pulse"
-        ]
-      }
-    }
-  },
   "etags": {}
 }
