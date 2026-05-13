@@ -1,42 +1,37 @@
 // ============================================================================
-//  PULSE OS — OUTER SENSE ORGAN (UPGRADED v25++ IMMORTAL ROUTER)
-//  FILE: _OUTERSENSES/PULSE-TOUCH-DETECTOR-v25++.js
-//  ORGAN: PulseTouchDetector (v25++ IMMORTAL)
-//  ROLE: Edge SKIN + Cookie Reader + IMMORTAL ROUTER
-// ============================================================================
-// ============================================================================
-// PulseTouchDetector — Route History (IndexedDB v25++)
+//  PULSE OS — OUTER SENSE ORGAN (v27++ IMMORTAL SKIN)
+//  FILE: _OUTERSENSES/PULSE-TOUCH-DETECTOR-v27++.js
+//  ORGAN: PulseTouchDetector
+//  ROLE: Pure SKIN + Cookie Reader + IMMORTAL Router
+//  NOTE: v27++ — Detector stays PURE. No module/import/export logic here.
+//        But it exposes a soft surface for Predictor/Warmup to attach
+//        pulseModuleRisk if they want.
 // ============================================================================
 
+// (Route history block unchanged — still IMMORTAL)
 (function PulseTouchRouteHistory() {
-
   const DB_NAME = "PulseDB_v25";
   const STORE = "route_history";
 
-  // Open or create IndexedDB
   function openDB() {
     return new Promise((resolve, reject) => {
       const req = indexedDB.open(DB_NAME, 1);
-
       req.onupgradeneeded = (e) => {
         const db = e.target.result;
         if (!db.objectStoreNames.contains(STORE)) {
           db.createObjectStore(STORE, { keyPath: "id", autoIncrement: true });
         }
       };
-
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
     });
   }
 
-  // Read last route
   async function getLastRoute(db) {
     return new Promise((resolve) => {
       const tx = db.transaction(STORE, "readonly");
       const store = tx.objectStore(STORE);
-
-      const req = store.openCursor(null, "prev"); // last entry
+      const req = store.openCursor(null, "prev");
       req.onsuccess = (e) => {
         const cursor = e.target.result;
         resolve(cursor ? cursor.value.route : null);
@@ -45,7 +40,6 @@
     });
   }
 
-  // Add new route
   async function addRoute(db, route) {
     return new Promise((resolve) => {
       const tx = db.transaction(STORE, "readwrite");
@@ -56,20 +50,16 @@
     });
   }
 
-  // Trim to last 100 entries
   async function trimHistory(db) {
     return new Promise((resolve) => {
       const tx = db.transaction(STORE, "readwrite");
       const store = tx.objectStore(STORE);
-
       const req = store.getAllKeys();
       req.onsuccess = () => {
         const keys = req.result;
         const excess = keys.length - 100;
         if (excess > 0) {
-          for (let i = 0; i < excess; i++) {
-            store.delete(keys[i]);
-          }
+          for (let i = 0; i < excess; i++) store.delete(keys[i]);
         }
         resolve(true);
       };
@@ -77,20 +67,17 @@
     });
   }
 
-  // MAIN EXECUTION
   (async () => {
     try {
       const db = await openDB();
       const current = window.location.pathname;
       const last = await getLastRoute(db);
 
-      // CSS-style merge
       if (current !== last) {
         await addRoute(db, current);
         await trimHistory(db);
       }
 
-      // Expose to Pulse
       window.__PULSE__ = window.__PULSE__ || {};
       window.__PULSE__.continuity = localStorage.getItem("pulse_continuity") || null;
       window.__PULSE__.routeHistoryIndexedDB = true;
@@ -99,129 +86,7 @@
       console.warn("[PulseTouchDetector] IndexedDB route history failed:", err);
     }
   })();
-
 })();
-
-export const AI_EXPERIENCE_META_PulseTouchDetector = {
-  id: "pulsetouch.detector",
-  kind: "edge_skin",
-  version: "v25++-IMMORTAL",
-  role: "Pulse‑Touch skin signal reader + IMMORTAL router",
-  surfaces: {
-    band: ["touch", "edge", "skin", "fastlane", "advantage", "routing"],
-    wave: ["clinical", "precise", "sensory"],
-    binary: ["cookie_present", "cookie_missing"],
-    presence: ["touch_state", "region_hint", "mode_hint"],
-    advantage: [
-      "safe_defaults",
-      "schema_stable",
-      "fastlane_hints",
-      "continuous_pulse_hints",
-      "hydration_tier_hints",
-      "animation_tier_hints",
-      "chunk_profile_hints",
-      "presence_intensity_hints"
-    ],
-    speed: "instant_compute"
-  },
-  routes: {
-    warmup: "pulsetouch.warmup",
-    security: "pulsetouch.security",
-    gate: "pulsetouch.gate",
-    advantage: "pulsetouch.advantage"
-  },
-  consumers: [
-    "PulseTouchWarmup",
-    "PulseTouchSecurity",
-    "PulseTouchGate",
-    "PulseTouchAdvantageCortex",
-    "PulseTouchPreflight",
-    "PulseTouchChunkEngine",
-    "PulseTouchAnalytics"
-  ],
-  invariants: {
-    networkCalls: "none",
-    sideEffects: "none",
-    determinism: "strict",
-    mutation: "forbidden_at_runtime"
-  }
-};
-
-export const ORGAN_META_PulseTouchDetector = {
-  id: "organ.pulsetouch.detector",
-  organism: "PulseTouch",
-  layer: "edge.skin",
-  tier: "IMMORTAL",
-  evoFlags: {
-    deterministic: true,
-    driftProof: true,
-    safeDefaults: true,
-    schemaStable: true,
-    presenceAware: true,
-    regionAware: true,
-    trustAware: true,
-    identityHintAware: true,
-    dualBandAware: true,
-    chunkProfileAware: true,
-    pageHintAware: true,
-    warmupAware: true,
-    prePulseAware: true,
-    preflightAware: true,
-    hydrationTierAware: true,
-    animationTierAware: true,
-    advantageRouting: true,
-    regionClusterAware: true,
-    modeAware: true,
-    presenceIntensityAware: true,
-    cookieVersionAware: true,
-    cookieIntegrityAware: true,
-    cookieEvolutionAware: true,
-    pulseStreamAware: true,
-    fastLaneAware: true,
-    temporalHintAware: true
-  },
-  lineage: {
-    family: "pulsetouch_skin",
-    generation: 6,
-    osVersion: "v25++",
-    history: [
-      "Pulse‑Touch v1 (Skin Hint)",
-      "Pulse‑Touch v2 (Pre‑Pulse)",
-      "Pulse‑Touch v3 (IMMORTAL Sensory Organ)",
-      "Pulse‑Touch v14 (Immortal Advantage Skin)",
-      "Pulse‑Touch v17 (Continuous FastLane Skin)",
-      "Pulse‑Touch v24 (IMMORTAL++ Edge Skin)",
-      "Pulse‑Touch v25++ (IMMORTAL Advantage Skin + Tiers)"
-    ]
-  }
-};
-
-export const ORGAN_CONTRACT_PulseTouchDetector = {
-  inputs: {
-    event: "edge request event with headers"
-  },
-  outputs: {
-    skinState: "normalized pulse_touch state object (v25++ schema)"
-  },
-  consumers: [
-    "PulseTouchWarmup",
-    "PulseTouchSecurity",
-    "PulseTouchGate",
-    "PulseTouchAdvantageCortex",
-    "PulseTouchPreflight",
-    "PulseTouchChunkEngine",
-    "PulseTouchAnalytics"
-  ],
-  guarantees: {
-    deterministic: true,
-    noNetwork: true,
-    noSideEffects: true,
-    zeroPII: true,
-    zeroTracking: true,
-    zeroGuessing: true,
-    zeroAssumptions: true
-  }
-};
 
 export const IMMORTAL_OVERLAYS_PulseTouchDetector = {
   drift: {
@@ -264,22 +129,104 @@ export const IMMORTAL_OVERLAYS_PulseTouchDetector = {
     enabled: false
   }
 };
+// ============================================================================
+//  META / CONTRACT / OVERLAYS — v27++
+// ============================================================================
+
+export const AI_EXPERIENCE_META_PulseTouchDetector = {
+  id: "pulsetouch.detector",
+  kind: "edge_skin",
+  version: "v27++-IMMORTAL",
+  role: "Pulse‑Touch skin signal reader",
+  surfaces: {
+    band: ["touch", "edge", "skin", "fastlane", "advantage", "routing"],
+    wave: ["clinical", "precise", "sensory"],
+    binary: ["cookie_present", "cookie_missing"],
+    presence: ["touch_state", "region_hint", "mode_hint"],
+    advantage: [
+      "safe_defaults",
+      "schema_stable",
+      "fastlane_hints",
+      "continuous_pulse_hints",
+      "hydration_tier_hints",
+      "animation_tier_hints",
+      "chunk_profile_hints",
+      "presence_intensity_hints",
+
+      // v27++ — soft surface for Predictor/Warmup
+      "module_risk_hint"
+    ],
+    speed: "instant_compute"
+  }
+};
+
+export const ORGAN_META_PulseTouchDetector = {
+  id: "organ.pulsetouch.detector",
+  organism: "PulseTouch",
+  layer: "edge.skin",
+  tier: "IMMORTAL",
+  evoFlags: {
+    deterministic: true,
+    driftProof: true,
+    safeDefaults: true,
+    schemaStable: true,
+    presenceAware: true,
+    regionAware: true,
+    trustAware: true,
+    identityHintAware: true,
+    dualBandAware: true,
+    chunkProfileAware: true,
+    pageHintAware: true,
+    warmupAware: true,
+    prePulseAware: true,
+    preflightAware: true,
+    hydrationTierAware: true,
+    animationTierAware: true,
+    advantageRouting: true,
+    regionClusterAware: true,
+    modeAware: true,
+    presenceIntensityAware: true,
+    cookieVersionAware: true,
+    cookieIntegrityAware: true,
+    cookieEvolutionAware: true,
+    pulseStreamAware: true,
+    fastLaneAware: true,
+    temporalHintAware: true,
+
+    // v27++ — Detector does NOT detect module issues,
+    // but it ALLOWS module_risk to be attached by Predictor/Warmup.
+    moduleRiskAware: true
+  }
+};
+
+export const ORGAN_CONTRACT_PulseTouchDetector = {
+  inputs: { event: "edge request event with headers" },
+  outputs: {
+    skinState: "normalized pulse_touch state object (v27++ schema)"
+  },
+  guarantees: {
+    deterministic: true,
+    noNetwork: true,
+    noSideEffects: true,
+    zeroPII: true,
+    zeroTracking: true,
+    zeroGuessing: true,
+    zeroAssumptions: true
+  }
+};
 
 // ============================================================================
-// HELPERS — v25++
+// HELPERS — unchanged (IMMORTAL)
 // ============================================================================
 
 function safeNumber(str, fallback = null) {
-  if (str == null) return fallback;
   const n = Number(str);
   return Number.isFinite(n) ? n : fallback;
 }
 
 function parseCookieHeader(cookieHeader) {
   if (!cookieHeader || typeof cookieHeader !== "string") return null;
-  const raw = cookieHeader
-    .split("; ")
-    .find((c) => c.startsWith("pulse_touch="));
+  const raw = cookieHeader.split("; ").find((c) => c.startsWith("pulse_touch="));
   if (!raw) return null;
 
   const value = raw.replace("pulse_touch=", "");
@@ -288,8 +235,7 @@ function parseCookieHeader(cookieHeader) {
   const parsed = {};
   for (const part of parts) {
     const [k, v] = part.split("=");
-    if (!k) continue;
-    parsed[k] = v;
+    if (k) parsed[k] = v;
   }
   return parsed;
 }
@@ -297,13 +243,10 @@ function parseCookieHeader(cookieHeader) {
 function derivePresenceIntensity(presence) {
   switch (presence) {
     case "high":
-    case "engaged":
-      return "high";
+    case "engaged": return "high";
     case "low":
-    case "idle":
-      return "low";
-    default:
-      return "medium";
+    case "idle": return "low";
+    default: return "medium";
   }
 }
 
@@ -311,71 +254,43 @@ function deriveRegionCluster(region) {
   switch (region) {
     case "us":
     case "us-east":
-    case "us-west":
-      return "clusterA";
+    case "us-west": return "clusterA";
     case "eu":
     case "eu-west":
-    case "eu-central":
-      return "clusterB";
+    case "eu-central": return "clusterB";
     case "apac":
-    case "asia":
-      return "clusterC";
-    default:
-      return "clusterUnknown";
+    case "asia": return "clusterC";
+    default: return "clusterUnknown";
   }
 }
 
-function deriveHydrationTier(hydration) {
-  switch (hydration) {
-    case "minimal":
-    case "low":
-      return "minimal";
-    case "full":
-      return "full";
-    default:
-      return "safe";
-  }
+function deriveHydrationTier(h) {
+  return h === "minimal" || h === "low" ? "minimal" :
+         h === "full" ? "full" : "safe";
 }
 
-function deriveAnimationTier(animation) {
-  switch (animation) {
-    case "none":
-    case "reduced":
-      return "reduced";
-    default:
-      return "smooth";
-  }
+function deriveAnimationTier(a) {
+  return a === "none" || a === "reduced" ? "reduced" : "smooth";
 }
 
-function deriveMode(mode) {
-  switch (mode) {
-    case "fast":
-    case "turbo":
-      return "fast";
-    case "safe":
-    case "normal":
-      return "safe";
-    default:
-      return "safe";
-  }
+function deriveMode(m) {
+  return m === "fast" || m === "turbo" ? "fast" : "safe";
 }
 
-function deriveTrustLevel(trusted) {
-  if (trusted === "2") return "trusted";
-  if (trusted === "1") return "suspicious";
-  return "unknown";
+function deriveTrustLevel(t) {
+  return t === "2" ? "trusted" :
+         t === "1" ? "suspicious" : "unknown";
 }
 
 function deriveCookieIntegrity(parsed) {
   const required = ["region", "mode", "presence", "page"];
   const missing = required.filter((k) => !parsed[k]);
-  if (missing.length === 0) return "intact";
-  if (missing.length <= 2) return "partial";
-  return "unknown";
+  return missing.length === 0 ? "intact" :
+         missing.length <= 2 ? "partial" : "unknown";
 }
 
 // ============================================================================
-// COOKIE DETECTION — v25++ IMMORTAL
+// COOKIE DETECTION — v27++ IMMORTAL
 // ============================================================================
 
 export function detectPulseTouch(event) {
@@ -387,9 +302,7 @@ export function detectPulseTouch(event) {
     "";
 
   const parsed = parseCookieHeader(cookieHeader);
-  if (!parsed) {
-    return defaultPulseTouchState();
-  }
+  if (!parsed) return defaultPulseTouchState();
 
   const version = parsed.v || parsed.version || "0";
   const presence = parsed.presence || "unknown";
@@ -410,6 +323,9 @@ export function detectPulseTouch(event) {
 
   const originTs = safeNumber(parsed.originTs, null);
   const lastPulseTs = safeNumber(parsed.lastPulseTs, null);
+
+  // v27++ — allow Predictor/Warmup to attach module risk later
+  const moduleRisk = null;
 
   return {
     region,
@@ -440,7 +356,10 @@ export function detectPulseTouch(event) {
     originTs,
     lastPulseTs,
 
-    regionCluster
+    regionCluster,
+
+    // v27++ soft surface
+    pulseModuleRisk: moduleRisk
   };
 }
 
@@ -482,12 +401,15 @@ export function defaultPulseTouchState() {
     originTs: null,
     lastPulseTs: null,
 
-    regionCluster
+    regionCluster,
+
+    // v27++ soft surface
+    pulseModuleRisk: null
   };
 }
 
 // ============================================================================
-// IMMORTAL ROUTER — NEW v25++
+// IMMORTAL ROUTER CALLBACKS — unchanged
 // ============================================================================
 
 export function PulseTouchDetector() {
@@ -498,49 +420,30 @@ export function PulseTouchDetector() {
     detect: detectPulseTouch,
     defaultState: defaultPulseTouchState,
 
-    // ============================================================
-    // NEW IMMORTAL ROUTER CALLBACKS
-    // ============================================================
-
     onMapReady(evt) {
-      try {
-        localStorage.setItem("PulseOrganismMap_v25", JSON.stringify(evt.map));
-      } catch {}
-
+      try { localStorage.setItem("PulseOrganismMap_v25", JSON.stringify(evt.map)); } catch {}
       window.__PULSE_TOUCH__?.onDetectorUpdate?.({
         type: evt.type || "map_ready",
         map: evt.map,
         page: evt.page,
         prefix: evt.prefix
       });
-
-      console.log("[Detector] Map → localStorage → Touch");
     },
 
     onChunksReady(evt) {
-      try {
-        localStorage.setItem("PulseChunks_v25", JSON.stringify(evt.chunks));
-      } catch {}
-
+      try { localStorage.setItem("PulseChunks_v25", JSON.stringify(evt.chunks)); } catch {}
       window.__PULSE_TOUCH__?.onDetectorUpdate?.({
         type: evt.type || "chunks_ready",
         chunks: evt.chunks
       });
-
-      console.log("[Detector] Chunks → localStorage → Touch");
     },
 
     onNormalizerReady(evt) {
-      try {
-        localStorage.setItem("PulseNormalizer_v25", JSON.stringify(evt.normalizer));
-      } catch {}
-
+      try { localStorage.setItem("PulseNormalizer_v25", JSON.stringify(evt.normalizer)); } catch {}
       window.__PULSE_TOUCH__?.onDetectorUpdate?.({
         type: evt.type || "normalizer_ready",
         normalizer: evt.normalizer
       });
-
-      console.log("[Detector] Normalizer → localStorage → Touch");
     }
   };
 }

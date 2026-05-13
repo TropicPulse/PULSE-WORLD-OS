@@ -104,7 +104,7 @@ import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
+} from "../PULSE-BAND/PULSE-X/PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
@@ -122,11 +122,11 @@ import nodemailer from "nodemailer";
 import { onRequest, onCall } from "firebase-functions/v2/https";
 import { onDocumentWritten, onDocumentWrittenWithAuthContext} from "firebase-functions/v2/firestore";
 import express from "express";
-import { admin, db } from "../PULSE-X/PulseWorldGenome-v20.js";
-import { getStripe as Stripe } from "../PULSE-X/PulseWorldBank-v20.js";
-import { getTwilioClient as twilio } from "../PULSE-X/PulseWorldSMSAlert-v20.js";
-import { PulseProofBridgeLogger as logger, BridgeLog as log } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
-import { runUserScoring } from "../PULSE-PROXY/PulseProxyHypothalamus-v20.js";
+import { admin, db } from "../PULSE-BAND/PULSE-X/PulseWorldGenome-v20.js";
+import { getStripe as Stripe } from "../PULSE-BAND/PULSE-X/PulseWorldBank-v20.js";
+import { getTwilioClient as twilio } from "../PULSE-BAND/PULSE-X/PulseWorldSMSAlert-v20.js";
+import { PulseProofBridgeLogger as logger, BridgeLog as log } from "../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { runUserScoring } from "../PULSE-BAND/PULSE-PROXY/PulseProxyHypothalamus-v20.js";
 
 
 
@@ -21288,7 +21288,7 @@ import { onSchedule } from "firebase-functions/v2/scheduler";
 admin.initializeApp();
 
 // Path to your Pulse-World core
-import pulseWorld from "./PULSE-WORLD/PULSE-X/PULSE-WORLD-SERVER.js";
+import pulseWorld from "../PULSE-BAND/PULSE-X/PULSE-WORLD-SERVER.js";
 
 // ------------------------------------------------------
 // BACKUP HEARTBEAT (Pulse-World)

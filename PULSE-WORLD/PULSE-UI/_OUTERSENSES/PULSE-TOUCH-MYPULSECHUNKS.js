@@ -5,6 +5,7 @@
 //  Fully aligned with PulseChunks-v27-IMMORTAL
 //  v27 IMMORTAL++: IndexedDB + in-memory mesh of ALL normalization events
 //  + Session-aware, replay-aware, route-aware, organ-aware
+//  + PulseImport / PulseExport / subimport / tier-aware module normalization
 // ============================================================================
 
 /*
@@ -34,7 +35,15 @@ AI_EXPERIENCE_META = {
     sessionAware: true,
     routeAware: true,
     organAware: true,
-    crossTabSynced: true
+    crossTabSynced: true,
+
+    // NEW v27+++
+    pulseImportAware: true,
+    pulseExportAware: true,
+    subimportAware: true,
+    tierAware: true,
+    chunkProfileAware: true,
+    moduleMeshAware: true
   },
 
   contract: {
@@ -56,7 +65,6 @@ AI_EXPERIENCE_META = {
 }
 */
 
-
 const G =
   (typeof window !== "undefined" && window) ||
   (typeof globalThis !== "undefined" && globalThis) ||
@@ -64,6 +72,7 @@ const G =
   (typeof global !== "undefined" && global) ||
   {};
 const g = G;
+
 // ============================================================================
 // UNIVERSAL TIMESTAMP (Shadow or Admin)
 // ============================================================================
@@ -101,7 +110,7 @@ const dblog =
 const dberror =
   (G.error && G.error) ||
   console.error;
-  
+
 const fetchFn =
   (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
   (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
@@ -526,6 +535,212 @@ export function normalizeChunkValue(value, typeHint = null, options = {}) {
 }
 
 // ============================================================================
+//  PULSEIMPORT / PULSEEXPORT / MODULE NORMALIZATION — v27 IMMORTAL++
+// ============================================================================
+
+// Expected chunk envelope shape (example, not enforced here):
+// {
+//   module: <any>,                // raw module body (function, object, etc.)
+//   meta: {
+//     typeHint: "js" | "json" | ...,
+//     exports: [
+//       { name, tier: "local"|"organism"|"global"|"system", kind: "value"|"function"|"class" },
+//       ...
+//     ],
+//     imports: [
+//       { name, from, layer, required: true|false },
+//       ...
+//     ],
+//     subimports: { ... },        // optional subimport map
+//     chunkProfile: { ... },      // optional chunk profile
+//     lineage: { ... }            // optional lineage
+//   }
+// }
+
+const VALID_EXPORT_TIERS = ["local", "organism", "global", "system"];
+
+function normalizeExportTier(tier) {
+  if (!tier || typeof tier !== "string") return "local";
+  const lower = tier.toLowerCase();
+  return VALID_EXPORT_TIERS.includes(lower) ? lower : "local";
+}
+
+function normalizeExportsMeta(exportsMetaRaw) {
+  if (!exportsMetaRaw || !Array.isArray(exportsMetaRaw)) return [];
+
+  const normalized = exportsMetaRaw.map((e) => {
+    const name = typeof e?.name === "string" ? e.name : null;
+    if (!name) return null;
+
+    return {
+      name,
+      tier: normalizeExportTier(e.tier),
+      kind: typeof e.kind === "string" ? e.kind : "value"
+    };
+  }).filter(Boolean);
+
+  appendPresenceRecord("normalizeExportsMeta", {
+    count: normalized.length
+  });
+
+  return normalized;
+}
+
+function normalizeImportsMeta(importsMetaRaw) {
+  if (!importsMetaRaw || !Array.isArray(importsMetaRaw)) return [];
+
+  const normalized = importsMetaRaw.map((i) => {
+    const name = typeof i?.name === "string" ? i.name : null;
+    const from = typeof i?.from === "string" ? i.from : null;
+    if (!name || !from) return null;
+
+    return {
+      name,
+      from,
+      layer: typeof i.layer === "string" ? i.layer : null,
+      required: i.required === true
+    };
+  }).filter(Boolean);
+
+  appendPresenceRecord("normalizeImportsMeta", {
+    count: normalized.length
+  });
+
+  return normalized;
+}
+
+function normalizeSubimportsMap(subimportsRaw) {
+  if (!subimportsRaw || typeof subimportsRaw !== "object") return null;
+  appendPresenceRecord("normalizeSubimportsMap", {
+    keys: Object.keys(subimportsRaw || {})
+  });
+  return subimportsRaw;
+}
+
+function normalizeChunkProfile(profileRaw) {
+  if (!profileRaw || typeof profileRaw !== "object") return null;
+  appendPresenceRecord("normalizeChunkProfile", {
+    keys: Object.keys(profileRaw || {})
+  });
+  return profileRaw;
+}
+
+// Core: normalize a module chunk for PulseImport
+export function normalizeModuleChunk(chunkEnvelope) {
+  appendPresenceRecord("normalizeModuleChunk_in", {
+    type: describeValueType(chunkEnvelope)
+  });
+
+  if (!chunkEnvelope || typeof chunkEnvelope !== "object") {
+    appendPresenceRecord("normalizeModuleChunk_out", {
+      error: "invalid_envelope"
+    });
+    return {
+      module: null,
+      exportsMeta: [],
+      importsMeta: [],
+      subimports: null,
+      chunkProfile: null,
+      lineage: null
+    };
+  }
+
+  const meta = chunkEnvelope.meta || {};
+  const typeHint = meta.typeHint || null;
+
+  // 1) Normalize raw module body (one-layer unwrap + type-aware)
+  const rawModule = chunkEnvelope.module !== undefined
+    ? chunkEnvelope.module
+    : chunkEnvelope.value !== undefined
+    ? chunkEnvelope.value
+    : chunkEnvelope;
+
+  const normalizedModule = normalizeChunkValue(rawModule, typeHint, meta.options || {});
+
+  // 2) Normalize exports / imports / subimports / chunkProfile
+  const exportsMeta = normalizeExportsMeta(meta.exports);
+  const importsMeta = normalizeImportsMeta(meta.imports);
+  const subimports = normalizeSubimportsMap(meta.subimports);
+  const chunkProfile = normalizeChunkProfile(meta.chunkProfile);
+  const lineage = typeof meta.lineage === "object" ? meta.lineage : null;
+
+  appendPresenceRecord("normalizeModuleChunk_out", {
+    moduleType: describeValueType(normalizedModule),
+    exportsCount: exportsMeta.length,
+    importsCount: importsMeta.length,
+    hasSubimports: !!subimports,
+    hasChunkProfile: !!chunkProfile
+  });
+
+  return {
+    module: normalizedModule,
+    exportsMeta,
+    importsMeta,
+    subimports,
+    chunkProfile,
+    lineage
+  };
+}
+
+// Helper: extract export tier map for PulseImport / Portal / Bridge
+export function extractPulseExportTiers(exportsMeta) {
+  const tiers = {
+    local: [],
+    organism: [],
+    global: [],
+    system: []
+  };
+
+  (exportsMeta || []).forEach((e) => {
+    const tier = normalizeExportTier(e.tier);
+    tiers[tier].push(e.name);
+  });
+
+  appendPresenceRecord("extractPulseExportTiers", {
+    local: tiers.local.length,
+    organism: tiers.organism.length,
+    global: tiers.global.length,
+    system: tiers.system.length
+  });
+
+  return tiers;
+}
+
+// Helper: validate imports vs subimports (no auto-heal here, just reporting)
+export function validateSubimports(importsMeta, subimportsMap, layerHint = null) {
+  const missing = [];
+  const moved = [];
+  const ok = [];
+
+  const subKeys = subimportsMap ? Object.keys(subimportsMap) : [];
+
+  (importsMeta || []).forEach((imp) => {
+    if (!imp || !imp.name) return;
+
+    if (subKeys.includes(imp.name)) {
+      ok.push(imp.name);
+    } else {
+      // We don't know if it's truly missing or moved; we just flag it.
+      missing.push(imp.name);
+    }
+  });
+
+  appendPresenceRecord("validateSubimports", {
+    layerHint,
+    okCount: ok.length,
+    missingCount: missing.length,
+    subKeysCount: subKeys.length
+  });
+
+  return {
+    ok,
+    missing,
+    moved, // reserved for future when we track cross-layer moves
+    layer: layerHint || null
+  };
+}
+
+// ============================================================================
 //  EXPORTS — v27 IMMORTAL++
 // ============================================================================
 export const PulseChunkNormalizer = {
@@ -536,13 +751,19 @@ export const PulseChunkNormalizer = {
   normalizeJS: normalizeText,
   normalizeJSON,
   normalizeBinary,
-  unwrap
+  unwrap,
+
+  // NEW module-level helpers
+  normalizeModuleChunk,
+  extractPulseExportTiers,
+  validateSubimports
 };
 
 export default PulseChunkNormalizer;
 
 // ============================================================================
 //  GLOBAL EXPOSURE OF IMMORTAL STORE + NORMALIZER — v27 IMMORTAL++
+//  (No auto-attach of export tiers; we only expose the normalizer + store)
 // ============================================================================
 try {
   if (typeof window !== "undefined") {
@@ -550,12 +771,12 @@ try {
     window.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
   }
   if (typeof globalThis !== "undefined") {
-    window.PulseChunkNormalizer = PulseChunkNormalizer;
-    window.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
+    globalThis.PulseChunkNormalizer = PulseChunkNormalizer;
+    globalThis.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
   }
   if (typeof global !== "undefined") {
-    window.PulseChunkNormalizer = PulseChunkNormalizer;
-    window.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
+    global.PulseChunkNormalizer = PulseChunkNormalizer;
+    global.PulsePresenceNormalizerStore = PulsePresenceNormalizerStore;
   }
   if (typeof g !== "undefined") {
     g.PulseChunkNormalizer = PulseChunkNormalizer;

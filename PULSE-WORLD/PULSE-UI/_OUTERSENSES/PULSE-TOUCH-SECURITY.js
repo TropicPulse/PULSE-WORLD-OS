@@ -1,18 +1,22 @@
 // ============================================================================
-// FILE: /PULSE-TOUCH/PULSE-TOUCH-SECURITY-v25++.js
-// PULSE OS — v25++ IMMORTAL
+// FILE: /PULSE-TOUCH/PULSE-TOUCH-SECURITY-v27++.js
+// PULSE OS — v27++ IMMORTAL
 // PULSE‑TOUCH SECURITY CORTEX — RISK ENGINE + TRUST CLASSIFIER + THREATSHAPE
+// + MODULE / SUBIMPORT / PULSEIMPORT / PULSEEXPORT RISK HINTS
 // ============================================================================
 
-import { buildThreatShape as PulseTouchThreatShape } from "./PULSE-TOUCH-THREATSHAPE.js";
+import {
+  buildThreatShape as PulseTouchThreatShape,
+  threatShapeToSecurityDecision as PulseThreatShapeToDecision
+} from "./PULSE-TOUCH-THREATSHAPE.js";
 
 export const AI_EXPERIENCE_META_PulseTouchSecurity = {
   id: "pulsetouch.security",
   kind: "cortex_organ",
-  version: "v25++-IMMORTAL",
+  version: "v27++-IMMORTAL",
   role: "risk_engine",
   surfaces: {
-    band: ["security", "trust", "risk", "shape", "headers"],
+    band: ["security", "trust", "risk", "shape", "headers", "module"],
     wave: ["analytical", "cold", "precise"],
     binary: ["allow", "challenge", "deny"],
     presence: ["security_state"],
@@ -29,7 +33,14 @@ export const AI_EXPERIENCE_META_PulseTouchSecurity = {
       "header_shape",
       "method_shape",
       "geo_shape",
-      "ua_shape"
+      "ua_shape",
+
+      // v27++ module surfaces
+      "module_risk_score",
+      "module_missing_subimports",
+      "module_wrong_tier_exports",
+      "module_global_exposure_risk",
+      "module_chunkprofile_anomaly"
     ],
     speed: "instant_compute"
   },
@@ -92,7 +103,14 @@ export const ORGAN_META_PulseTouchSecurity = {
     headerShapeAware: true,
     methodShapeAware: true,
     geoShapeAware: true,
-    uaShapeAware: true
+    uaShapeAware: true,
+
+    // v27++
+    moduleRiskAware: true,
+    pulseImportAware: true,
+    pulseExportAware: true,
+    subimportAware: true,
+    tierAware: true
   }
 };
 
@@ -106,11 +124,14 @@ export const ORGAN_CONTRACT_PulseTouchSecurity = {
     trustLevel: "trusted | neutral | suspicious | hostile",
     action: "allow | challenge | hellno",
     advantage: "advantage profile for Gate / Warmup / Chunk",
-    threatShape: "shape classification",
+    threatShape: "ThreatShape object",
     headerShape: "header profile classification",
     methodShape: "method classification",
     geoShape: "geo classification",
-    uaShape: "user-agent classification"
+    uaShape: "user-agent classification",
+
+    // v27++
+    moduleRisk: "module-level risk hints (subimports / exports / tiers)"
   },
   consumers: [
     "PulseTouchGate",
@@ -152,7 +173,7 @@ export const IMMORTAL_OVERLAYS_PulseTouchSecurity = {
 };
 
 // ============================================================================
-// HELPERS — v25++
+// HELPERS — v27++
 // ============================================================================
 
 function getHeader(headers, key) {
@@ -213,8 +234,71 @@ function classifyHeaderShape(headers) {
   return "heavy";
 }
 
+// Module risk extraction from pulseTouch / warmup cache (soft contract)
+function extractModuleRisk(pulseTouch) {
+  // Primary: explicit module risk hint on skinState
+  const explicit = pulseTouch?.pulseModuleRisk;
+  if (explicit && typeof explicit === "object") {
+    return {
+      hasMissingSubimports: !!explicit.hasMissingSubimports,
+      hasWrongTierExports: !!explicit.hasWrongTierExports,
+      hasGlobalExposureRisk: !!explicit.hasGlobalExposureRisk,
+      hasChunkProfileAnomaly: !!explicit.hasChunkProfileAnomaly,
+      score: typeof explicit.score === "number" ? explicit.score : null,
+      source: "skinState"
+    };
+  }
+
+  // Secondary: look into PulseImportWarmupCache if present (same page)
+  try {
+    if (typeof window !== "undefined" && window.PulseImportWarmupCache) {
+      const page = pulseTouch?.page || "index";
+      const entry = window.PulseImportWarmupCache[page];
+      if (entry && typeof entry === "object") {
+        const missing = Array.isArray(entry.subimportValidation?.missing)
+          ? entry.subimportValidation.missing.length
+          : 0;
+
+        const wrongTierExports = Array.isArray(entry.exportsMeta)
+          ? entry.exportsMeta.filter((e) =>
+              e.tier === "global" || e.tier === "system"
+            ).length
+          : 0;
+
+        const hasMissingSubimports = missing > 0;
+        const hasWrongTierExports = wrongTierExports > 0;
+
+        // Very conservative, bounded score
+        let score = 0;
+        if (hasMissingSubimports) score += 10;
+        if (hasWrongTierExports) score += 10;
+
+        return {
+          hasMissingSubimports,
+          hasWrongTierExports,
+          hasGlobalExposureRisk: hasWrongTierExports,
+          hasChunkProfileAnomaly: false,
+          score,
+          source: "warmup_cache"
+        };
+      }
+    }
+  } catch {
+    // silent
+  }
+
+  return {
+    hasMissingSubimports: false,
+    hasWrongTierExports: false,
+    hasGlobalExposureRisk: false,
+    hasChunkProfileAnomaly: false,
+    score: 0,
+    source: "none"
+  };
+}
+
 // ============================================================================
-// IMPLEMENTATION — v25++ IMMORTAL
+// IMPLEMENTATION — v27++ IMMORTAL
 // ============================================================================
 
 export function evaluateSecurity(pulseTouch, event) {
@@ -248,10 +332,13 @@ export function evaluateSecurity(pulseTouch, event) {
   if (pulseTouch.presence === "unknown") riskScore += 10;
   if (ip === "unknown") riskScore += 10;
 
-  // ThreatShape
-  const threatShape = PulseTouchThreatShape(pulseTouch);
-  if (threatShape === "SPIKE") riskScore += 25;
-  if (threatShape === "WAVE") riskScore += 10;
+  // ThreatShape (v27++: full object, not string)
+  const threatShapeObj = PulseTouchThreatShape(pulseTouch, event || {});
+  const threatDecision = PulseThreatShapeToDecision(threatShapeObj);
+
+  // Map ThreatShape into additive risk (bounded)
+  if (threatShapeObj.shape === "MAJOR_THREAT") riskScore += 25;
+  else if (threatShapeObj.shape === "POSSIBLE_THREAT") riskScore += 10;
 
   // FastLane / continuous pulse
   if (pulseTouch.presence === "inactive") riskScore += 5;
@@ -290,7 +377,15 @@ export function evaluateSecurity(pulseTouch, event) {
     riskScore += 5;
   }
 
-  // Trust classification
+  // v27++ MODULE RISK (PulseImport / PulseExport / Subimports)
+  const moduleRisk = extractModuleRisk(pulseTouch);
+  if (moduleRisk.score && moduleRisk.score > 0) {
+    // Bounded contribution: max +20 from module system
+    const bounded = Math.min(20, Math.max(0, moduleRisk.score));
+    riskScore += bounded;
+  }
+
+  // Trust classification (IMMORTAL thresholds preserved)
   let trustLevel = "trusted";
   let action = "allow";
 
@@ -332,11 +427,14 @@ export function evaluateSecurity(pulseTouch, event) {
       lastPulseTs: pulseTouch.lastPulseTs || null
     },
 
-    threatShape,
+    threatShape: threatShapeObj,
     headerShape,
     methodShape,
     geoShape,
-    uaShape
+    uaShape,
+
+    // v27++ module surfaces
+    moduleRisk
   };
 
   return {
@@ -344,11 +442,12 @@ export function evaluateSecurity(pulseTouch, event) {
     trustLevel,
     action,
     advantage,
-    threatShape,
+    threatShape: threatShapeObj,
     headerShape,
     methodShape,
     geoShape,
-    uaShape
+    uaShape,
+    moduleRisk
   };
 }
 

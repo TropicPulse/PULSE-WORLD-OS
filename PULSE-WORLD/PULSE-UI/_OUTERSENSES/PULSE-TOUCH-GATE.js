@@ -4,13 +4,15 @@
 // PULSE‑TOUCH EVOLUTIONARY GATE — ROUTING + ADVANTAGE CORTEX + FASTLANE
 // ============================================================================
 
+import { PulseTouchPredictor } from "./PULSE-TOUCH-PREDICTOR.js";
 import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR.js";
 import { PulseTouchWarmup } from "./PULSE-TOUCH-WARMUP.js";
 import { pulseTouchSecurity } from "./PULSE-TOUCH-SECURITY.js";
 import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE.js";
 import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS.js";
-import { PulseTouchPredictor } from "./PULSE-TOUCH-PREDICTOR.js";
+
 import { PulsePresenceOracle } from "./PULSE-TOUCH-PRESENCE-ORACLE.js";
+import { PulseChunker } from "./PULSE-TOUCH-CHUNKS.js";
 
 export const AI_EXPERIENCE_META_PulseTouchGate = {
   id: "pulsetouch.gate",
@@ -255,6 +257,16 @@ export async function PulseTouchGate(event) {
 
   // 2) Security
   const securityDecision = pulseTouchSecurity(touchState);
+  // 2.5) Chunk Profile (read-only, deterministic)
+  let chunkProfile = null;
+  try {
+    const chunker = PulseChunker?.();
+    if (chunker && typeof chunker.profile === "function") {
+      chunkProfile = chunker.profile(touchState.page);
+    }
+  } catch {
+    chunkProfile = null;
+  }
 
   // 3) Warmup (organ factory)
   const warmupOrgan = PulseTouchWarmup();
@@ -296,11 +308,13 @@ export async function PulseTouchGate(event) {
     {
       page: touchState.page,
       advantageHints,
-      metrics
+      metrics,
+      chunkProfile
     },
     predictorView,
     oracleView
   );
+
 
   // 8) Sacred route
   const route = evolutionaryGate(securityDecision);
@@ -315,11 +329,13 @@ export async function PulseTouchGate(event) {
   };
 
   return {
-    route,
-    advantage,
-    touchState,
-    securityDecision,
-    analytics: { metrics, advantageHints },
-    advantageView
-  };
+  route,
+  advantage,
+  touchState,
+  securityDecision,
+  analytics: { metrics, advantageHints },
+  advantageView,
+  chunkProfile
+};
+
 }

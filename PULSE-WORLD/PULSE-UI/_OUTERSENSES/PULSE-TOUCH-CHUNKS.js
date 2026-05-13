@@ -113,7 +113,7 @@ console.log("Presence v25++");
 console.log("[PulseChunks-v25++-MULTILANE-Immortal] Membrane chunker loading...");
 
 import { safeRoute as route, fireAndForgetRoute } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-import PulseChunkNormalizer from "./PULSE-TOUCH-CHUNKSMY.js";
+import PulseChunkNormalizer from "./PULSE-TOUCH-MYPULSECHUNKS.js";
 
 // ============================================================================
 //  LORE TRANSLATOR — Evolvable, deterministic, metadata-driven

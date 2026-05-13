@@ -1,17 +1,17 @@
 // ============================================================================
 //  PULSE OS — OUTER SENSE ORGAN
-//  FILE: _OUTERSENSES/PULSE-TOUCH-ANALYTICS-v25++.js
-//  ORGAN: PulseTouchAnalytics (v25++ IMMORTAL)
-//  ROLE: Metrics / Advantage Hints / Pulse Analysis / Signal Awareness
+//  FILE: _OUTERSENSES/PULSE-TOUCH-ANALYTICS-v27++.js
+//  ORGAN: PulseTouchAnalytics (v27++ IMMORTAL)
+//  ROLE: Metrics / Advantage Hints / Pulse Analysis / Module Health Awareness
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulseTouchAnalytics = {
   id: "pulsetouch.analytics",
   kind: "outer_sense",
-  version: "v25++-IMMORTAL",
+  version: "v27++-IMMORTAL",
   role: "pulse_analytics",
   surfaces: {
-    band: ["analytics", "metrics", "advantage", "signal", "presence", "genome"],
+    band: ["analytics", "metrics", "advantage", "signal", "presence", "genome", "module"],
     wave: ["cold", "numerical", "deterministic"],
     presence: ["analytics_state"],
     speed: "sync"
@@ -36,7 +36,14 @@ export const ORGAN_META_PulseTouchAnalytics = {
     signalAware: true,
     genomeAware: true,
     warmupAware: true,
-    chunkAware: true
+    chunkAware: true,
+
+    // v27++
+    moduleAware: true,
+    pulseImportAware: true,
+    pulseExportAware: true,
+    subimportAware: true,
+    tierAware: true
   }
 };
 
@@ -46,7 +53,8 @@ export const ORGAN_CONTRACT_PulseTouchAnalytics = {
     security: "Optional security evaluation result",
     warmup: "Optional warmup state",
     portal: "Optional Portal warmup state",
-    chunks: "Optional PulseChunks state"
+    chunks: "Optional PulseChunks state",
+    predictor: "Optional Predictor output (modulePrediction)"
   },
   outputs: {
     metrics: "Aggregated numeric + symbolic metrics",
@@ -67,7 +75,7 @@ export const IMMORTAL_OVERLAYS_PulseTouchAnalytics = {
 };
 
 // ============================================================================
-//  SIGNAL + GENOME HELPERS — v25++
+// HELPERS — unchanged
 // ============================================================================
 
 function getSignalHints() {
@@ -84,16 +92,10 @@ function getSignalHints() {
 
 function getGenomeHints() {
   try {
-    if (window.PulseGenome && typeof window.PulseGenome.snapshot === "function") {
-      return window.PulseGenome.snapshot();
-    }
+    if (window.PulseGenome?.snapshot) return window.PulseGenome.snapshot();
   } catch {}
   return {};
 }
-
-// ============================================================================
-//  DEVICE + PERFORMANCE HELPERS — v25++
-// ============================================================================
 
 function getDeviceMetrics() {
   try {
@@ -110,8 +112,9 @@ function getDeviceMetrics() {
 
 function getAnimationTier() {
   try {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    return prefersReduced ? "reduced" : "smooth";
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "reduced"
+      : "smooth";
   } catch {
     return "smooth";
   }
@@ -119,19 +122,25 @@ function getAnimationTier() {
 
 function getHydrationTier() {
   try {
-    const saveData = navigator.connection?.saveData;
-    return saveData ? "minimal" : "full";
+    return navigator.connection?.saveData ? "minimal" : "full";
   } catch {
     return "safe";
   }
 }
 
 // ============================================================================
-//  MAIN ORGAN — v25++ IMMORTAL
+//  MAIN ORGAN — v27++ IMMORTAL
 // ============================================================================
 
 export function PulseTouchAnalytics() {
-  function analyze(pulseTouch, security = null, warmup = null, portal = null, chunks = null) {
+  function analyze(
+    pulseTouch,
+    security = null,
+    warmup = null,
+    portal = null,
+    chunks = null,
+    predictor = null
+  ) {
     // -----------------------------------------------------------------------
     // 1. BASE METRICS (Touch state)
     // -----------------------------------------------------------------------
@@ -141,6 +150,7 @@ export function PulseTouchAnalytics() {
       mode: pulseTouch?.mode || "safe",
       pulseStream: pulseTouch?.pulseStream || "single",
       fastLane: pulseTouch?.fastLane || "disabled",
+
       warmed: warmup?.warmed ?? null,
       portalWarm: portal?.warmed ?? null,
       chunkDegraded: chunks?.isDegraded?.() ?? null,
@@ -158,11 +168,24 @@ export function PulseTouchAnalytics() {
       signals: getSignalHints(),
 
       // Genome
-      genome: getGenomeHints()
+      genome: getGenomeHints(),
+
+      // -------------------------------------------------------------------
+      // 2. MODULE HEALTH (v27++)
+      // -------------------------------------------------------------------
+      module: {
+        // From Predictor (preferred)
+        stabilityScore: predictor?.modulePrediction?.stabilityScore ?? null,
+        hasMissingSubimports: predictor?.modulePrediction?.hasMissingSubimports ?? null,
+        hasWrongTierExports: predictor?.modulePrediction?.hasWrongTierExports ?? null,
+        hasGlobalExposureRisk: predictor?.modulePrediction?.hasGlobalExposureRisk ?? null,
+        hasChunkProfileAnomaly: predictor?.modulePrediction?.hasChunkProfileAnomaly ?? null,
+        source: predictor?.modulePrediction?.source ?? "none"
+      }
     };
 
     // -----------------------------------------------------------------------
-    // 2. ADVANTAGE HINTS (IMMORTAL++ deterministic)
+    // 3. ADVANTAGE HINTS (IMMORTAL++ deterministic)
     // -----------------------------------------------------------------------
     const advantageHints = {
       // Hydration bias
@@ -199,12 +222,34 @@ export function PulseTouchAnalytics() {
         "clusterUnknown",
 
       // Genome → advantage
-      genomeMode:
-        metrics.genome?.mode ?? "default",
+      genomeMode: metrics.genome?.mode ?? "default",
 
       // Signals → advantage
-      signalMode:
-        metrics.signals?.pulse ? "active" : "idle"
+      signalMode: metrics.signals?.pulse ? "active" : "idle",
+
+      // -------------------------------------------------------------------
+      // 4. MODULE HEALTH ADVANTAGE HINTS (v27++)
+      // -------------------------------------------------------------------
+      moduleBias:
+        metrics.module.stabilityScore == null
+          ? "unknown"
+          : metrics.module.stabilityScore >= 0.9
+          ? "stable"
+          : metrics.module.stabilityScore >= 0.7
+          ? "mostly_stable"
+          : metrics.module.stabilityScore >= 0.4
+          ? "unstable"
+          : "critical",
+
+      subimportBias:
+        metrics.module.hasMissingSubimports
+          ? "missing"
+          : "ok",
+
+      exportTierBias:
+        metrics.module.hasWrongTierExports
+          ? "unsafe"
+          : "safe"
     };
 
     return { metrics, advantageHints };

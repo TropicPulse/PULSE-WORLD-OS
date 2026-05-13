@@ -177,6 +177,16 @@ export function buildThreatShape(pulseTouch, event = {}) {
   const uaShape = classifyUA(ua);
   const geoShape = classifyGeo(headers);
   const integrityRisk = classifyCookieIntegrity(pulseTouch);
+  // inside buildThreatShape, after reading pulseTouch:
+  const moduleRisk = pulseTouch.pulseModuleRisk || null;
+  if (moduleRisk?.hasMissingSubimports) {
+    riskScore += 10;
+    reasons.push("module_missing_subimports");
+  }
+  if (moduleRisk?.hasWrongTierExports) {
+    riskScore += 10;
+    reasons.push("module_wrong_tier_exports");
+  }
 
   let riskScore = 0;
   const reasons = [];

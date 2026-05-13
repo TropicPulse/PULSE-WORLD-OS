@@ -10,12 +10,17 @@
 //
 //   It never blocks routing, never touches PII, never reaches the network.
 //   It only prepares local, in‑memory hints for downstream organs.
+//
+// v27++ UPGRADE:
+//   + PulseImport / PulseExport / subimport / chunkProfile warmup
+//   + Uses PulseChunkNormalizer (if present) to pre-normalize module envelopes
+//   + Populates a local PulseImportWarmupCache for the current page/layer
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulseTouchWarmup = {
   id: "pulsetouch.warmup",
   kind: "metabolic_organ",
-  version: "v25++-IMMORTAL",
+  version: "v27++-IMMORTAL",
   role: "pre_pulse_warmup_engine",
   surfaces: {
     band: ["warmup", "metabolism", "advantage"],
@@ -39,7 +44,13 @@ export const AI_EXPERIENCE_META_PulseTouchWarmup = {
       "presence_intensity_warmup",
       "region_cluster_warmup",
       "metabolic_profile",
-      "nextpage_warmup"
+      "nextpage_warmup",
+
+      // v27++ PulseImport / PulseExport
+      "pulseimport_warmup",
+      "pulseexport_tier_warmup",
+      "subimport_validation_warmup",
+      "chunkprofile_warmup"
     ],
     speed: "async_parallel"
   },
@@ -92,12 +103,19 @@ export const ORGAN_META_PulseTouchWarmup = {
     presenceIntensityAware: true,
 
     metabolicProfileAware: true,
-    nextPageWarmupAware: true
+    nextPageWarmupAware: true,
+
+    // v27++
+    pulseImportAware: true,
+    pulseExportAware: true,
+    subimportAware: true,
+    tierAware: true,
+    moduleWarmupAware: true
   },
   lineage: {
     family: "pulsetouch_warmup",
-    generation: 7,
-    osVersion: "v25++",
+    generation: 8,
+    osVersion: "v27++",
     history: [
       "Warmup v1 (No‑op)",
       "Warmup v2 (Parallel Preload)",
@@ -105,7 +123,8 @@ export const ORGAN_META_PulseTouchWarmup = {
       "Warmup v14 (Advantage Cortex)",
       "Warmup v17 (FastLane + Continuous Pulse Metabolism)",
       "Warmup v24 (IMMORTAL++ Metabolic Engine)",
-      "Warmup v25++ (Metabolic Profile + NextPage Warmup)"
+      "Warmup v25++ (Metabolic Profile + NextPage Warmup)",
+      "Warmup v27++ (PulseImport / PulseExport / Subimport Warmup)"
     ]
   }
 };
@@ -117,7 +136,7 @@ export const ORGAN_CONTRACT_PulseTouchWarmup = {
   outputs: {
     warmed: "boolean",
     tasks: "string[] of completed warmup task ids",
-    advantageWarmup: "summary of warmup‑relevant hints + metabolic profile"
+    advantageWarmup: "summary of warmup‑relevant hints + metabolic profile + module warmup"
   },
   consumers: [
     "PulseTouchGate",
@@ -161,7 +180,7 @@ export const IMMORTAL_OVERLAYS_PulseTouchWarmup = {
 };
 
 // ============================================================================
-// IMPLEMENTATION — v25++ IMMORTAL METABOLIC ENGINE
+// IMPLEMENTATION — v27++ IMMORTAL METABOLIC ENGINE
 // ============================================================================
 
 export async function warmupOrganism(pulseTouch) {
@@ -175,7 +194,8 @@ export async function warmupOrganism(pulseTouch) {
     fastLane,
     hydration,
     animation,
-    identity
+    identity,
+    layer // optional, if detector provides layer
   } = pulseTouch || {};
 
   const tasks = [];
@@ -190,7 +210,7 @@ export async function warmupOrganism(pulseTouch) {
       window.PulseChunks.prewarm(urls, {
         meta: {
           identity: "PulseTouchWarmup",
-          version: "v25++",
+          version: "v27++",
           layer: "metabolic"
         },
         context: { page, region, mode }
@@ -302,7 +322,71 @@ export async function warmupOrganism(pulseTouch) {
   ]);
 
   // ============================================================
-  // 9. METABOLIC PROFILE (v25++)
+  // 9. PULSEIMPORT / PULSEEXPORT / SUBIMPORT WARMUP (v27++)
+  // ============================================================
+  let moduleWarmup = null;
+
+  if (hasWindow && window.PulseChunkNormalizer && window.PulseChunks) {
+    try {
+      // Optional: a way for PulseChunks to expose a module envelope for this page/layer
+      // This is intentionally soft-contract: if not present, we silently skip.
+      const getEnvelope =
+        typeof window.PulseChunks.getModuleEnvelope === "function"
+          ? window.PulseChunks.getModuleEnvelope
+          : null;
+
+      if (getEnvelope) {
+        const envelope = getEnvelope({ page, layer, chunkProfile });
+        if (envelope) {
+          const {
+            normalizeModuleChunk,
+            extractPulseExportTiers,
+            validateSubimports
+          } = window.PulseChunkNormalizer;
+
+          if (typeof normalizeModuleChunk === "function") {
+            const normalized = normalizeModuleChunk(envelope);
+            const tiers = extractPulseExportTiers
+              ? extractPulseExportTiers(normalized.exportsMeta)
+              : { local: [], organism: [], global: [], system: [] };
+
+            const subimportValidation = validateSubimports
+              ? validateSubimports(normalized.importsMeta, normalized.subimports, layer || null)
+              : { ok: [], missing: [], moved: [], layer: layer || null };
+
+            // Local, in-memory warmup cache for PulseImport / Portal / Bridge
+            if (!window.PulseImportWarmupCache) {
+              window.PulseImportWarmupCache = Object.create(null);
+            }
+
+            window.PulseImportWarmupCache[page || "index"] = {
+              module: normalized.module,
+              exportsMeta: normalized.exportsMeta,
+              importsMeta: normalized.importsMeta,
+              exportTiers: tiers,
+              subimports: normalized.subimports,
+              subimportValidation,
+              chunkProfile: normalized.chunkProfile || chunkProfile || null,
+              lineage: normalized.lineage || null
+            };
+
+            moduleWarmup = window.PulseImportWarmupCache[page || "index"];
+
+            tasks.push("pulseimport_warmup");
+            tasks.push("pulseexport_tier_warmup");
+            tasks.push("subimport_validation_warmup");
+            tasks.push("chunkprofile_warmup");
+          }
+        }
+      }
+    } catch {
+      // silent by contract
+      moduleWarmup = null;
+    }
+  }
+
+  // ============================================================
+  // 10. METABOLIC PROFILE (v27++)
   // ============================================================
   const warmupDensity = tasks.length;
   const warmupCostHint =
@@ -329,7 +413,10 @@ export async function warmupOrganism(pulseTouch) {
     warmupDensity,
     warmupCostHint,
     readyForFastLane,
-    nextPageWarmup: nextPageWarmup || null
+    nextPageWarmup: nextPageWarmup || null,
+
+    // v27++ module warmup surfaces
+    moduleWarmup
   };
 
   return {
