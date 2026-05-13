@@ -27,7 +27,7 @@
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 import {db as firebase} from "./PulseWorldFirebaseGenome-v20.js"
 // ⭐ NEW: Import upgraded CSS‑merged signal engine
-import { PulseProofSignal, PulseColors, PulseIcons, PulseColorFallback, PulseIconFallback, PulseRoleFallback, PulseRoles,PulseVersion,PulseVersionFallback } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-SIGNAL.js";
+import { PulseProofSignal, PulseColors, PulseIcons, PulseColorFallback, PulseIconFallback, PulseRoleFallback, PulseRoles,PulseVersion,PulseVersionFallback } from "./PULSE-WORLD-SIGNAL.js";
 
 
 let fs = null;

@@ -12,7 +12,7 @@
 //      - v25++ chunk pipeline (string or JSON)
 //      - PulseProofSignal integration
 // ============================================================================
-import { PulseProofSignal } from "./PULSE-WORLD-SIGNAL.js";
+import { PulseProofSignal } from "../../PULSE-BAND/PULSE-X/PULSE-WORLD-SIGNAL.js";
 
 // ----------------------------------------------------------------------------
 // SIGNAL INTEGRATION
