@@ -208,7 +208,7 @@ const pulseTouchHooks = {
   onPresenceOracle: []
 };
 
-
+window.createPulseTouch = createPulseTouch;
 
 // ============================================================
 // GLOBAL STATE SNAPSHOT (BROWSER‑SAFE)
@@ -654,7 +654,7 @@ function createPulseTouch(options = {}) {
         ? window.pulseTouchAdvantageCortex()
         : null;
   } catch {}
-
+  
   // ------------------------------------------------------------
   // 1. DEFAULT METADATA (Organism‑Safe, Non‑PII)
   // ------------------------------------------------------------
