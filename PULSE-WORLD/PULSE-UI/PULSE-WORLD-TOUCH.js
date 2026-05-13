@@ -1215,213 +1215,131 @@ function applyGateDecision(gateDecision, skin) {
     // ============================================================
     // 0 — INSTALL GLOBAL→INDEXEDDB MIRROR (WITH LOCALSTORAGE FALLBACK)
     // ============================================================
-    const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeName = "GStore", prefix = "__G__") {
+    // ============================================================
+// 0 — INSTALL GLOBAL→INDEXEDDB MIRROR (PURE, NO LOCALSTORAGE)
+// ============================================================
+const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeName = "GStore", prefix = "__G__") {
 
-      // ⭐ DO NOT STORE THESE ORGANS (TOO LARGE / NON-SERIALIZABLE)
-      const SKIP = new Set([
-        "PulseWorldFirebaseShadow",
-        "PulseDetector",
-        "__PULSE_TOUCH__"
-      ]);
+  const SKIP = new Set([
+    "PulseWorldFirebaseShadow",
+    "PulseDetector",
+    "__PULSE_TOUCH__"
+  ]);
 
-      // ⭐ SOFT MAX SIZE LIMIT (50KB) — can relax later
-      const MAX_SIZE = 50 * 1024;
+  let dbPromise = null;
 
-      let idbAvailable = "indexedDB" in window;
-      let dbPromise = null;
+  function openDB() {
+    if (dbPromise) return dbPromise;
 
-      function openDB() {
-        if (!idbAvailable) return Promise.resolve(null);
-        if (dbPromise) return dbPromise;
-
-        dbPromise = new Promise((resolve) => {
-          const req = indexedDB.open(dbName, 1);
-          req.onupgradeneeded = function (evt) {
-            const db = evt.target.result;
-            if (!db.objectStoreNames.contains(storeName)) {
-              db.createObjectStore(storeName);
-            }
-          };
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => {
-            console.error("[G::IDB] Failed to open IndexedDB, falling back to localStorage", req.error);
-            idbAvailable = false;
-            resolve(null);
-          };
-        });
-
-        return dbPromise;
-      }
-
-      async function idbGet(key) {
-        const db = await openDB();
-        if (!db) return localStorage.getItem(key);
-        return new Promise((resolve) => {
-          const tx = db.transaction(storeName, "readonly");
-          const store = tx.objectStore(storeName);
-          const req = store.get(key);
-          req.onsuccess = () => resolve(req.result ?? null);
-          req.onerror = () => {
-            console.error("[G::IDB] get failed", req.error);
-            resolve(null);
-          };
-        });
-      }
-
-      async function idbSet(key, value) {
-        const db = await openDB();
-        if (!db) {
-          try { localStorage.setItem(key, value); } catch (err) {
-            console.error("[G::LocalStorage] FAILED to store", key, err);
-          }
-          return;
+    dbPromise = new Promise((resolve) => {
+      const req = indexedDB.open(dbName, 1);
+      req.onupgradeneeded = function (evt) {
+        const db = evt.target.result;
+        if (!db.objectStoreNames.contains(storeName)) {
+          db.createObjectStore(storeName);
         }
-        return new Promise((resolve) => {
-          const tx = db.transaction(storeName, "readwrite");
-          const store = tx.objectStore(storeName);
-          const req = store.put(value, key);
-          req.onsuccess = () => resolve(true);
-          req.onerror = () => {
-            console.error("[G::IDB] set failed", req.error);
-            resolve(false);
-          };
-        });
-      }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => {
+        console.error("[G::IDB] Failed to open IndexedDB", req.error);
+        resolve(null);
+      };
+    });
 
-      async function idbDelete(key) {
-        const db = await openDB();
-        if (!db) {
-          localStorage.removeItem(key);
-          return;
-        }
-        return new Promise((resolve) => {
-          const tx = db.transaction(storeName, "readwrite");
-          const store = tx.objectStore(storeName);
-          const req = store.delete(key);
-          req.onsuccess = () => resolve(true);
-          req.onerror = () => {
-            console.error("[G::IDB] delete failed", req.error);
-            resolve(false);
-          };
-        });
-      }
+    return dbPromise;
+  }
 
-      // ⭐ FIRST RUN CLEAR (mirror-only keys, both IDB + localStorage)
-      (function firstRunClear() {
-        const FLAG = prefix + "__CLEARED__";
-        if (!localStorage.getItem(FLAG)) {
-          const keys = Object.keys(localStorage);
-          for (const k of keys) {
-            if (k.startsWith(prefix)) {
-              localStorage.removeItem(k);
-              console.log("🧹 [Mirror] Cleared localStorage key →", k);
-            }
-          }
-          localStorage.setItem(FLAG, "1");
-          console.log("🔥 [Mirror] First-run mirror clear complete (localStorage)");
+  async function idbGet(key) {
+    const db = await openDB();
+    if (!db) return null;
+    return new Promise((resolve) => {
+      const tx = db.transaction(storeName, "readonly");
+      const store = tx.objectStore(storeName);
+      const req = store.get(key);
+      req.onsuccess = () => resolve(req.result ?? null);
+      req.onerror = () => {
+        console.error("[G::IDB] get failed", req.error);
+        resolve(null);
+      };
+    });
+  }
 
-          openDB().then(db => {
-            if (!db) return;
-            const tx = db.transaction(storeName, "readwrite");
-            const store = tx.objectStore(storeName);
-            const req = store.clear();
-            req.onsuccess = () => console.log("🔥 [Mirror] First-run mirror clear complete (IndexedDB)");
-            req.onerror = () => console.error("[Mirror] IDB clear failed", req.error);
-          });
-        }
-      })();
+  async function idbSet(key, value) {
+    const db = await openDB();
+    if (!db) return;
+    return new Promise((resolve) => {
+      const tx = db.transaction(storeName, "readwrite");
+      const store = tx.objectStore(storeName);
+      const req = store.put(value, key);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => {
+        console.error("[G::IDB] set failed", req.error);
+        resolve(false);
+      };
+    });
+  }
 
-      const mirror = new Proxy({}, {
-        get(_, prop) {
-          const key = prefix + String(prop);
+  async function idbDelete(key) {
+    const db = await openDB();
+    if (!db) return;
+    return new Promise((resolve) => {
+      const tx = db.transaction(storeName, "readwrite");
+      const store = tx.objectStore(storeName);
+      const req = store.delete(key);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => {
+        console.error("[G::IDB] delete failed", req.error);
+        resolve(false);
+      };
+    });
+  }
 
-          // Fast path: localStorage cache
-          const raw = localStorage.getItem(key);
-          if (raw !== null) {
-            try { return JSON.parse(raw); } catch { return raw; }
-          }
+  // ⭐ PURE INDEXEDDB MIRROR
+  const mirror = new Proxy({}, {
+    get(_, prop) {
+      const key = prefix + String(prop);
 
-          // Async hydrate from IDB (fire-and-forget)
-          idbGet(key).then(val => {
-            if (val != null) {
-              try {
-                const parsed = JSON.parse(val);
-                try { localStorage.setItem(key, val); } catch {}
-                mirror[prop] = parsed;
-              } catch {
-                mirror[prop] = val;
-              }
-            }
-          });
-
-          return undefined;
-        },
-
-        set(_, prop, value) {
-          if (SKIP.has(prop)) {
-            console.warn(`[Mirror] Skipping ${prop} (not allowed in storage)`);
-            return true;
-          }
-
-          if (typeof value === "function") {
-            console.warn(`[Mirror] Skipping ${prop} (function)`);
-            return true;
-          }
-
-          let json;
+      // Async hydrate
+      idbGet(key).then(val => {
+        if (val != null) {
           try {
-            json = JSON.stringify(value);
+            mirror[prop] = JSON.parse(val);
           } catch {
-            console.warn(`[Mirror] Skipping ${prop} (non-serializable)`);
-            return true;
+            mirror[prop] = val;
           }
-
-          if (json.length > MAX_SIZE) {
-            console.warn(`[Mirror] Skipping ${prop} (too large: ${json.length} bytes)`);
-            // You can relax/remove this later now that IDB can handle more.
-          }
-
-          const key = prefix + String(prop);
-
-          // Write to both: localStorage (sync cache) + IDB (deep store)
-          try {
-            localStorage.setItem(key, json);
-          } catch (err) {
-            console.error(`[Mirror] FAILED to store in localStorage ${prop} →`, err);
-          }
-
-          idbSet(key, json);
-          return true;
-        },
-
-        deleteProperty(_, prop) {
-          const key = prefix + String(prop);
-          localStorage.removeItem(key);
-          idbDelete(key);
-          return true;
         }
       });
 
-      // expose mirror
-      window.G = mirror;
-      window.g = mirror;
+      return undefined;
+    },
 
-      // ⭐ SAFE SEEDING (SKIPS SHADOW + TOUCH)
-      const seedKeys = [
-        "PulseOrganismMap",
-        "PulseChunks",
-        "PulseChunksNormalizer"
-      ];
+    set(_, prop, value) {
+      if (SKIP.has(prop)) return true;
+      if (typeof value === "function") return true;
 
-      for (const k of seedKeys) {
-        if (Object.prototype.hasOwnProperty.call(window, k) && window[k] != null) {
-          mirror[k] = window[k];
-        }
+      let json;
+      try {
+        json = JSON.stringify(value);
+      } catch {
+        console.warn(`[Mirror] Skipping ${prop} (non-serializable)`);
+        return true;
       }
 
-      return mirror;
-    })();
+      idbSet(prefix + String(prop), json);
+      return true;
+    },
 
+    deleteProperty(_, prop) {
+      idbDelete(prefix + String(prop));
+      return true;
+    }
+  });
+
+  window.G = mirror;
+  window.g = mirror;
+
+  return mirror;
+})();
 
     // ⭐ Prevent double‑boot (organism lives in G/storage)
     if (G.__PULSE_TOUCH__) return;
