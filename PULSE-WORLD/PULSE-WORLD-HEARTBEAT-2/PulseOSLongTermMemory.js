@@ -839,8 +839,7 @@ export async function applyTwilightPatch(uid, reason = "auto") {
 export const stripeWebhook = onRequest(
   {
     region: "us-central1",
-    memory: "512MiB",
-    secrets: [STRIPE_PASSWORD, STRIPE_WEBHOOK_SECRET],
+    memory: "512MiB"
     rawBody: true
   },
   async (req, res) => {
@@ -1370,16 +1369,7 @@ app.post("/alerts/system-earn-failure", async (req, res) => {
 export const api = onRequest(
   {
     region: "us-central1",
-    memory: "512MiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      STRIPE_WEBHOOK_SECRET,
-      EMAIL_PASSWORD,
-      JWT_SECRET,
-      MESSAGING_SERVICE_SID,
-      ACCOUNT_SID,
-      AUTH_TOKEN
-    ]
+    memory: "512MiB"
   },
   (req, res) => {
     try {
@@ -6963,8 +6953,7 @@ export const setSecurityState = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 30,
-    memory: "256MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "256MiB"
   },
   async (req, res) => {
     let uid = null;
@@ -11307,7 +11296,6 @@ async function getAllEventsUnified(userLocation = null) {
 export const getEvents = onRequest(
   {
     region: "us-central1",
-    secrets: [JWT_SECRET],
     timeoutSeconds: 120,
     memory: "512MiB"
   },
@@ -11372,7 +11360,6 @@ export async function businessLookup(query, userLocation) {
 export const getBusinesses = onRequest(
   {
     region: "us-central1",
-    secrets: [JWT_SECRET],
     timeoutSeconds: 120,
     memory: "512MiB"
   },
@@ -16166,8 +16153,7 @@ export const aiAssistant = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "1GiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "1GiB"
   },
   async (req, res) => {
 
@@ -16505,7 +16491,6 @@ export async function sendAdminInfoEmail(subject, payload = {}) {
 export const getPulsePointsData = onRequest(
   {
     region: "us-central1",
-    secrets: [JWT_SECRET, EMAIL_PASSWORD],
     timeoutSeconds: 540,
     memory: "512MiB"
   },
@@ -16778,8 +16763,7 @@ export const getsettings = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
@@ -19121,8 +19105,7 @@ export const getPowerOutages = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 240,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
@@ -19305,8 +19288,7 @@ export const getStorms = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 240,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
@@ -19415,8 +19397,7 @@ export const getSargassum = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 240,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
@@ -19538,8 +19519,7 @@ export const getHeatIndex = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 240,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
@@ -19654,8 +19634,7 @@ export const getWildlife = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 240,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
@@ -19850,8 +19829,7 @@ export const getMoonPhase = onRequest(
   { 
     region: "us-central1",
      timeoutSeconds: 240,
-      memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+      memory: "512MiB"
      },
   async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
@@ -19895,8 +19873,7 @@ export const getWaves = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 240,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
@@ -19938,8 +19915,7 @@ export const getWeather = onRequest(
   {
      region: "us-central1",
      timeoutSeconds: 240,
-     memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+     memory: "512MiB"
   },
   async (req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
@@ -20531,7 +20507,6 @@ function getWildlifeLocation(animal) {
 export const redeemPulsePoints = onRequest(
   {
     region: "us-central1",
-    secrets: [JWT_SECRET],
     timeoutSeconds: 540,
     memory: "512MiB"
   },
@@ -20726,7 +20701,6 @@ export const redeemPulsePoints = onRequest(
 export const getStripeStatus = onRequest(
   {
     region: "us-central1",
-    secrets: [STRIPE_PASSWORD],
     timeoutSeconds: 540,
     memory: "512MiB"
   },
@@ -20849,8 +20823,7 @@ export const getAllLogs = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
+    memory: "512MiB"
   },
   (req, res) => {
     corsHandler(req, res, async () => {
@@ -20947,8 +20920,7 @@ export const getAllOrders = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
+    memory: "512MiB"
   },
   (req, res) => {
     corsHandler(req, res, async () => {
@@ -21099,8 +21071,7 @@ export const getAllUsers = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
+    memory: "512MiB"
   },
   (req, res) => {
     corsHandler(req, res, async () => {
@@ -21218,8 +21189,7 @@ export const verifyToken = onRequest(
   { 
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [ JWT_SECRET ]
+    memory: "512MiB"
   },
   (req, res) => {
     corsHandler(req, res, async () => {
@@ -21342,8 +21312,7 @@ export const nudgeBackup = onSchedule("every 15 minutes", async (event) => {
 //   {
 //     region: "us-central1",
 //     timeoutSeconds: 540,
-//     memory: "512MiB",
-//     secrets: [MESSAGING_SERVICE_SID, EMAIL_PASSWORD]
+//     memory: "512MiB"
 //   },
 //   (req, res) => {
 //     corsHandler(req, res, async () => {
@@ -21620,8 +21589,7 @@ export const refreshToken = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 60,
-    memory: "512MiB",
-    secrets: [JWT_SECRET, EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     // CORS
@@ -21859,14 +21827,7 @@ export const rolechange = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 60,
-    memory: "512MiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD
-    ]
+    memory: "512MiB"
   },
   async (req, res) => {
     const clean = (v) => {
@@ -22010,8 +21971,7 @@ export const getIdentity = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 60,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
+    memory: "512MiB"
   },
   async (req, res) => {
     try {
@@ -22276,7 +22236,6 @@ export const getFirebaseAuthToken = onRequest(
 export const getPulsePointsDataForVault = onRequest(
   {
     region: "us-central1",
-    secrets: [JWT_SECRET],
     timeoutSeconds: 30,
     memory: "512MiB"
   },
@@ -22368,8 +22327,7 @@ export const resubscribe = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [ACCOUNT_SID, AUTH_TOKEN, MESSAGING_SERVICE_SID, EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     log("🔵 [resubscribe] START");
@@ -22506,8 +22464,7 @@ export const unsubscribe = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [ACCOUNT_SID, AUTH_TOKEN, MESSAGING_SERVICE_SID, EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     log("🔵 [unsubscribe] START");
@@ -22619,13 +22576,6 @@ export const unsubscribe = onRequest(
 export const sendMASSemail = onRequest(
   {
     region: "us-central1",
-    secrets: [
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD,
-      JWT_SECRET
-    ],
     timeoutSeconds: 540,
     memory: "512MiB"
   },
@@ -22915,15 +22865,7 @@ export const getStripeDashboardLink = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD,
-      STRIPE_WEBHOOK_SECRET
-    ]
+    memory: "512MiB"
   },
   async (req, res) => {
     log("🔵 [getStripeDashboardLink] START");
@@ -24095,15 +24037,7 @@ export const stripeSetupComplete = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD,
-      STRIPE_WEBHOOK_SECRET
-    ]
+    memory: "512MiB"
   },
   async (req, res) => {
     log("🔵 [stripeSetupComplete] START");
@@ -24237,15 +24171,7 @@ export const massEmailWebhook = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD,
-      STRIPE_WEBHOOK_SECRET
-    ]
+    memory: "512MiB"
   },
   (req, res) => {
     corsHandler(req, res, async () => {
@@ -24429,8 +24355,7 @@ export const getOrCreateUserByEmail = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     log("🔵 [getOrCreateUserByEmail] START");
@@ -24715,16 +24640,7 @@ export const createOrGetStripeAccount = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD,
-      JWT_SECRET,
-      STRIPE_WEBHOOK_SECRET
-    ]
+    memory: "512MiB"
   },
   async (req, res) => {
     log("🔵 [createOrGetStripeAccount] START");
@@ -25039,16 +24955,7 @@ export const resendStripeLink = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD,
-      JWT_SECRET,
-      STRIPE_WEBHOOK_SECRET
-    ]
+    memory: "512MiB"
   },
   async (req, res) => {
     log("🔵 [resendStripeLink] START");
@@ -25290,14 +25197,7 @@ export const sendPayout = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "1GiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD
-    ]
+    memory: "1GiB"
   },
   async (req, res) => {
     log("🔵 [sendPayout] START");
@@ -25983,15 +25883,7 @@ export const sendDynamicEmail = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "1GiB",
-    secrets: [
-      STRIPE_PASSWORD,
-      ACCOUNT_SID,
-      AUTH_TOKEN,
-      MESSAGING_SERVICE_SID,
-      EMAIL_PASSWORD,
-      JWT_SECRET
-    ]
+    memory: "1GiB"
   },
   (req, res) => {
     corsHandler(req, res, async () => {
@@ -26800,7 +26692,6 @@ export const sendDynamicEmail = onRequest(
 export const resolveVenue = onRequest(
   {
     region: "us-central1",
-    secrets: [ EMAIL_PASSWORD],
     timeoutSeconds: 45,
     memory: "256MiB"
   },
@@ -27254,8 +27145,7 @@ export const sendPin = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   (req, res) => {
     corsHandler(req, res, async () => {
@@ -27494,9 +27384,7 @@ export const verifyPin = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 120,
-    memory: "512MiB",
-    // JWT_SECRET removed – no JWT generation anymore
-    secrets: [EMAIL_PASSWORD, MESSAGING_SERVICE_SID]
+    memory: "512MiB"
   },
   (req, res) => {
     corsHandler(req, res, async () => {
@@ -27998,8 +27886,7 @@ export const setPin = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     // CORS
@@ -28086,8 +27973,7 @@ export const verifyOwnerPin = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     // CORS
@@ -28223,8 +28109,7 @@ export const requestPinReset = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     // CORS
@@ -28302,8 +28187,7 @@ export const confirmPinReset = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     // CORS
@@ -28395,8 +28279,7 @@ export const updateSecurityState = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     // CORS
@@ -28465,8 +28348,7 @@ export const triggerDangerMode = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     // CORS
@@ -28539,8 +28421,7 @@ export const unlockApp = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     // CORS
@@ -28611,8 +28492,7 @@ export const unlockVault = onRequest(
   {
     region: "us-central1",
     timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [EMAIL_PASSWORD]
+    memory: "512MiB"
   },
   async (req, res) => {
     // CORS
