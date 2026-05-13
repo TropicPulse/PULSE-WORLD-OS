@@ -160,7 +160,7 @@
 //   window.PulseTouchWarmup
 //   window.PulseTouchSecurity
 //   window.PulseTouchGate
-//   window.pulseTouchAdvantageCortex
+//   window.PulseTouchAdvantageCortex
 //   window.PulseTouchThreatShape
 //   window.PulseTouchPredictor
 //   window.PulseTouchAnalytics
@@ -208,7 +208,6 @@ const pulseTouchHooks = {
   onPresenceOracle: []
 };
 
-window.createPulseTouch = createPulseTouch;
 
 // ============================================================
 // GLOBAL STATE SNAPSHOT (BROWSER‑SAFE)
@@ -650,8 +649,8 @@ function createPulseTouch(options = {}) {
 
   try {
     advantageCortex =
-      typeof window.pulseTouchAdvantageCortex === "function"
-        ? window.pulseTouchAdvantageCortex()
+      typeof window.PulseTouchAdvantageCortex === "function"
+        ? window.PulseTouchAdvantageCortex()
         : null;
   } catch {}
   
@@ -1429,7 +1428,7 @@ function applyGateDecision(gateDecision, skin) {
     // ============================================================
     // 4 — IGNITE TOUCH (SYNC ONLY, AFTER SIGNALS)
     // ============================================================
-    const touch = window.createPulseTouch({
+    const touch = createPulseTouch({
       page,
       mode: "fast",
       presence: "active",
@@ -1474,7 +1473,7 @@ function applyGateDecision(gateDecision, skin) {
       touch.chunker?.preloadChunksForPage?.(page);
       touch.advantage?.prewarmLight?.();
 
-      window.appendTouchTimeline?.("touch_page_warm", { page });
+      appendTouchTimeline?.("touch_page_warm", { page });
 
       G.PulseChunks.prewarm?.([
         `${prefix}_CREATION_BARRIER/PULSE-WORLD-PORTAL.js`,
@@ -1492,7 +1491,7 @@ function applyGateDecision(gateDecision, skin) {
         window.__PULSE_SCAN_ROUTE_IMAGES__?.(`${page}.html`);
       }
 
-      window.appendTouchTimeline?.("portal_prewarm", {
+      appendTouchTimeline?.("portal_prewarm", {
         page,
         portal: "PULSE-WORLD-PORTAL"
       });
@@ -1520,7 +1519,7 @@ function applyGateDecision(gateDecision, skin) {
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-ADVANTAGE.js`
       ]);
 
-      window.appendTouchTimeline?.("touch_cortex_prewarm", { page });
+      appendTouchTimeline?.("touch_cortex_prewarm", { page });
     } catch (err) {
       console.error("[PulseTouch::CortexPrewarm] FAILED →", err);
     }
@@ -1544,7 +1543,7 @@ function applyGateDecision(gateDecision, skin) {
           fastLane: touch.fastLane
         });
 
-        window.appendTouchTimeline?.("organism_map_signal", { page });
+        appendTouchTimeline?.("organism_map_signal", { page });
       }
     } catch (err) {
       console.error("[PulseTouch::OrganismMapSignal] FAILED →", err);
