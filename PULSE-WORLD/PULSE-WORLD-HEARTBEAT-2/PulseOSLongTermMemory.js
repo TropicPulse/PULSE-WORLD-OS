@@ -26,7 +26,7 @@
 //
 //  THE EXPONENTIAL INFLECTION:
 //  ---------------------------
-//  The moment the system shifted from “pages and functions” to “organs and
+//  The moment thesystem shifted from “pages and functions” to “organs and
 //  pulses,” development speed exploded:
 //
 //    • The delivery app became a platform.
