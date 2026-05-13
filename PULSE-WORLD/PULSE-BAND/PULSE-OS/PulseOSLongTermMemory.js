@@ -20814,345 +20814,596 @@ export const redeemPulsePoints = onRequest(
 // ---------------------------
 // GET STRIPE STATUS (REBUILT)
 // ---------------------------
-export const getStripeStatus = onRequest(
-  {
-    region: "us-central1",
-    secrets: [STRIPE_PASSWORD],
-    timeoutSeconds: 540,
-    memory: "512MiB"
-  },
-  async (req, res) => {
+// export const getStripeStatus = onRequest(
+//   {
+//     region: "us-central1",
+//     secrets: [STRIPE_PASSWORD],
+//     timeoutSeconds: 540,
+//     memory: "512MiB"
+//   },
+//   async (req, res) => {
 
-    // CORS
-    res.set("Access-Control-Allow-Origin", "*");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     // CORS
+//     res.set("Access-Control-Allow-Origin", "*");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 
-    if (req.method === "OPTIONS") return res.status(204).send("");
+//     if (req.method === "OPTIONS") return res.status(204).send("");
 
-    try {
-      const stripe = new Stripe(STRIPE_PASSWORD.value());
-      const { uid, token, stripeAccountId: incomingId } = req.body || {};
+//     try {
+//       const stripe = new Stripe(STRIPE_PASSWORD.value());
+//       const { uid, token, stripeAccountId: incomingId } = req.body || {};
 
-      if (!uid || !token) {
-        return res.json({ success: false, error: "Missing uid or token" });
-      }
+//       if (!uid || !token) {
+//         return res.json({ success: false, error: "Missing uid or token" });
+//       }
 
-      // Load user
-      const userSnap = await db.collection("Users").doc(uid).get();
-      if (!userSnap.exists) {
-        return res.json({ success: false, error: "User not found" });
-      }
+//       // Load user
+//       const userSnap = await db.collection("Users").doc(uid).get();
+//       if (!userSnap.exists) {
+//         return res.json({ success: false, error: "User not found" });
+//       }
 
-      const user = userSnap.data() || {};
-      const TPIdentity = user.TPIdentity || {};
+//       const user = userSnap.data() || {};
+//       const TPIdentity = user.TPIdentity || {};
 
-      // Token validation
-      const storedToken = TPIdentity.resendToken || null;
-      if (!storedToken || storedToken !== token) {
-        return res.json({ success: false, error: "Token mismatch" });
-      }
+//       // Token validation
+//       const storedToken = TPIdentity.resendToken || null;
+//       if (!storedToken || storedToken !== token) {
+//         return res.json({ success: false, error: "Token mismatch" });
+//       }
 
-      // Resolve Stripe Account ID
-      const stripeAccountID =
-        incomingId ||
-        TPIdentity.stripeAccountID ||
-        null;
+//       // Resolve Stripe Account ID
+//       const stripeAccountID =
+//         incomingId ||
+//         TPIdentity.stripeAccountID ||
+//         null;
 
-      if (!stripeAccountID) {
-        return res.json({
-          success: true,
-          status: "not_connected",
-          onboardingLink:
-            `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
-        });
-      }
+//       if (!stripeAccountID) {
+//         return res.json({
+//           success: true,
+//           status: "not_connected",
+//           onboardingLink:
+//             `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
+//         });
+//       }
 
-      // Retrieve Stripe account
-      const acct = await stripe.accounts.retrieve(stripeAccountID);
+//       // Retrieve Stripe account
+//       const acct = await stripe.accounts.retrieve(stripeAccountID);
 
-      if (acct.charges_enabled && acct.payouts_enabled) {
-        return res.json({
-          success: true,
-          status: "connected",
-          dashboardLink: `https://dashboard.stripe.com/connect/accounts/${acct.id}`
-        });
-      }
+//       if (acct.charges_enabled && acct.payouts_enabled) {
+//         return res.json({
+//           success: true,
+//           status: "connected",
+//           dashboardLink: `https://dashboard.stripe.com/connect/accounts/${acct.id}`
+//         });
+//       }
 
-      if (acct.requirements?.currently_due?.length > 0) {
-        return res.json({
-          success: true,
-          status: "needs_verification",
-          onboardingLink:
-            `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
-        });
-      }
+//       if (acct.requirements?.currently_due?.length > 0) {
+//         return res.json({
+//           success: true,
+//           status: "needs_verification",
+//           onboardingLink:
+//             `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
+//         });
+//       }
 
-      return res.json({
-        success: true,
-        status: "pending",
-        onboardingLink:
-          `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
-      });
+//       return res.json({
+//         success: true,
+//         status: "pending",
+//         onboardingLink:
+//           `https://createorgetstripeaccount-ilx3agka5q-uc.a.run.app?email=${encodeURIComponent(TPIdentity.email || "")}`
+//       });
 
-    } catch (err) {
-      console.error("getStripeStatus error:", err);
-      return res.json({ success: false, error: "Server error: " + err.message });
-    }
-  }
-);
+//     } catch (err) {
+//       console.error("getStripeStatus error:", err);
+//       return res.json({ success: false, error: "Server error: " + err.message });
+//     }
+//   }
+// );
 
-export const getLogHtml = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB"
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        const id = req.query.logId;
+// export const getLogHtml = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB"
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         const id = req.query.logId;
 
-        if (!id) {
-          return res.status(400).json({ success: false, error: "Missing logId" });
-        }
+//         if (!id) {
+//           return res.status(400).json({ success: false, error: "Missing logId" });
+//         }
 
-        const doc = await db.collection("EmailLogs").doc(id).get();
+//         const doc = await db.collection("EmailLogs").doc(id).get();
 
-        if (!doc.exists) {
-          return res.status(404).json({ success: false, error: "Log not found" });
-        }
+//         if (!doc.exists) {
+//           return res.status(404).json({ success: false, error: "Log not found" });
+//         }
 
-        const data = doc.data() || {};
-        return res.json({
-          success: true,
-          html: data.html || ""
-        });
+//         const data = doc.data() || {};
+//         return res.json({
+//           success: true,
+//           html: data.html || ""
+//         });
 
-      } catch (err) {
-        return res.status(500).json({ success: false, error: err.message });
-      }
-    });
-  }
-);
+//       } catch (err) {
+//         return res.status(500).json({ success: false, error: err.message });
+//       }
+//     });
+//   }
+// );
 
-export const getAllLogs = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        // ------------------------------------
-        // Extract uid + lineage token
-        // ------------------------------------
-        const authHeader = req.headers.authorization || "";
-        const token = authHeader.replace("Bearer ", "").trim();
-        const uid = req.headers["x-uid"] || req.body?.uid || null;
+// export const getAllLogs = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [JWT_SECRET]
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         // ------------------------------------
+//         // Extract uid + lineage token
+//         // ------------------------------------
+//         const authHeader = req.headers.authorization || "";
+//         const token = authHeader.replace("Bearer ", "").trim();
+//         const uid = req.headers["x-uid"] || req.body?.uid || null;
 
-        if (!token || !uid) {
-          return res.status(403).json({
-            success: false,
-            error: "Missing uid or token"
-          });
-        }
+//         if (!token || !uid) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Missing uid or token"
+//           });
+//         }
 
-        // ------------------------------------
-        // Load requesting user
-        // ------------------------------------
-        const userDoc = await db.collection("Users").doc(uid).get();
-        if (!userDoc.exists) {
-          return res.status(404).json({
-            success: false,
-            error: "User not found"
-          });
-        }
+//         // ------------------------------------
+//         // Load requesting user
+//         // ------------------------------------
+//         const userDoc = await db.collection("Users").doc(uid).get();
+//         if (!userDoc.exists) {
+//           return res.status(404).json({
+//             success: false,
+//             error: "User not found"
+//           });
+//         }
 
-        const userData = userDoc.data() || {};
-        const TPIdentity = userData.TPIdentity || {};
-        const storedToken = TPIdentity.resendToken || null;
+//         const userData = userDoc.data() || {};
+//         const TPIdentity = userData.TPIdentity || {};
+//         const storedToken = TPIdentity.resendToken || null;
 
-        if (!storedToken || storedToken !== token) {
-          return res.status(403).json({
-            success: false,
-            error: "Token mismatch"
-          });
-        }
+//         if (!storedToken || storedToken !== token) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Token mismatch"
+//           });
+//         }
 
-        // ------------------------------------
-        // Validate email param
-        // ------------------------------------
-        const email = (req.query.email || "").trim().toLowerCase();
-        if (!email) {
-          return res.status(400).json({
-            success: false,
-            error: "Missing email"
-          });
-        }
+//         // ------------------------------------
+//         // Validate email param
+//         // ------------------------------------
+//         const email = (req.query.email || "").trim().toLowerCase();
+//         if (!email) {
+//           return res.status(400).json({
+//             success: false,
+//             error: "Missing email"
+//           });
+//         }
 
-        // ------------------------------------
-        // Query logs
-        // ------------------------------------
-        const snap = await db
-          .collection("EmailLogs")
-          .where("to", "==", email)
-          .orderBy("createdAt", "desc")
-          .limit(500)
-          .get();
+//         // ------------------------------------
+//         // Query logs
+//         // ------------------------------------
+//         const snap = await db
+//           .collection("EmailLogs")
+//           .where("to", "==", email)
+//           .orderBy("createdAt", "desc")
+//           .limit(500)
+//           .get();
 
-        const safeMillis = (ts) =>
-          ts?.toMillis?.() ??
-          (ts?._seconds ? ts._seconds * 1000 : null);
+//         const safeMillis = (ts) =>
+//           ts?.toMillis?.() ??
+//           (ts?._seconds ? ts._seconds * 1000 : null);
 
-        const logs = snap.docs.map((doc) => {
-          const d = doc.data() || {};
-          return {
-            id: doc.id,
-            to: d.to || null,
-            subject: d.subject || null,
-            status: d.status || null,
-            type: d.type || null,
-            payload: d.payload || null,
-            createdAt: safeMillis(d.createdAt),
-            updatedAt: safeMillis(d.updatedAt)
-          };
-        });
+//         const logs = snap.docs.map((doc) => {
+//           const d = doc.data() || {};
+//           return {
+//             id: doc.id,
+//             to: d.to || null,
+//             subject: d.subject || null,
+//             status: d.status || null,
+//             type: d.type || null,
+//             payload: d.payload || null,
+//             createdAt: safeMillis(d.createdAt),
+//             updatedAt: safeMillis(d.updatedAt)
+//           };
+//         });
 
-        return res.json({ success: true, logs });
+//         return res.json({ success: true, logs });
 
-      } catch (err) {
-        console.error("getAllLogs error:", err);
-        return res.status(500).json({
-          success: false,
-          error: err.message
-        });
-      }
-    });
-  }
-);
+//       } catch (err) {
+//         console.error("getAllLogs error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: err.message
+//         });
+//       }
+//     });
+//   }
+// );
 
-export const getAllOrders = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        // ------------------------------------
-        // Extract uid + lineage token
-        // ------------------------------------
-        const authHeader = req.headers.authorization || "";
-        const token = authHeader.replace("Bearer ", "").trim();
-        const uid = req.headers["x-uid"] || req.body?.uid || null;
+// export const getAllOrders = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [JWT_SECRET]
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         // ------------------------------------
+//         // Extract uid + lineage token
+//         // ------------------------------------
+//         const authHeader = req.headers.authorization || "";
+//         const token = authHeader.replace("Bearer ", "").trim();
+//         const uid = req.headers["x-uid"] || req.body?.uid || null;
 
-        if (!token || !uid) {
-          return res.status(403).json({
-            success: false,
-            error: "Missing uid or token"
-          });
-        }
+//         if (!token || !uid) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Missing uid or token"
+//           });
+//         }
 
-        // ------------------------------------
-        // Load requesting user
-        // ------------------------------------
-        const userDoc = await db.collection("Users").doc(uid).get();
-        if (!userDoc.exists) {
-          return res.status(404).json({
-            success: false,
-            error: "User not found"
-          });
-        }
+//         // ------------------------------------
+//         // Load requesting user
+//         // ------------------------------------
+//         const userDoc = await db.collection("Users").doc(uid).get();
+//         if (!userDoc.exists) {
+//           return res.status(404).json({
+//             success: false,
+//             error: "User not found"
+//           });
+//         }
 
-        const userData = userDoc.data() || {};
-        const TPIdentity = userData.TPIdentity || {};
-        const storedToken = TPIdentity.resendToken || null;
+//         const userData = userDoc.data() || {};
+//         const TPIdentity = userData.TPIdentity || {};
+//         const storedToken = TPIdentity.resendToken || null;
 
-        if (!storedToken || storedToken !== token) {
-          return res.status(403).json({
-            success: false,
-            error: "Token mismatch"
-          });
-        }
+//         if (!storedToken || storedToken !== token) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Token mismatch"
+//           });
+//         }
 
-        // ------------------------------------
-        // Validate email param
-        // ------------------------------------
-        const email = (req.query.email || "").trim().toLowerCase();
-        if (!email) {
-          return res.status(400).json({
-            success: false,
-            error: "Missing email"
-          });
-        }
+//         // ------------------------------------
+//         // Validate email param
+//         // ------------------------------------
+//         const email = (req.query.email || "").trim().toLowerCase();
+//         if (!email) {
+//           return res.status(400).json({
+//             success: false,
+//             error: "Missing email"
+//           });
+//         }
 
-        // ------------------------------------
-        // Query orders
-        // ------------------------------------
-        const customerSnap = await db
-          .collection("Orders")
-          .where("customerEmail", "==", email)
-          .orderBy("createdAt", "desc")
-          .get();
+//         // ------------------------------------
+//         // Query orders
+//         // ------------------------------------
+//         const customerSnap = await db
+//           .collection("Orders")
+//           .where("customerEmail", "==", email)
+//           .orderBy("createdAt", "desc")
+//           .get();
 
-        const delivererSnap = await db
-          .collection("Orders")
-          .where("delivererEmail", "==", email)
-          .orderBy("createdAt", "desc")
-          .get();
+//         const delivererSnap = await db
+//           .collection("Orders")
+//           .where("delivererEmail", "==", email)
+//           .orderBy("createdAt", "desc")
+//           .get();
 
-        const safeMillis = (ts) =>
-          ts?.toMillis?.() ??
-          (ts?._seconds ? ts._seconds * 1000 : null);
+//         const safeMillis = (ts) =>
+//           ts?.toMillis?.() ??
+//           (ts?._seconds ? ts._seconds * 1000 : null);
 
-        const orders = {};
+//         const orders = {};
 
-        const add = (docs) => {
-          docs.forEach((doc) => {
-            const d = doc.data() || {};
-            const orderID = d.orderID || doc.id;
+//         const add = (docs) => {
+//           docs.forEach((doc) => {
+//             const d = doc.data() || {};
+//             const orderID = d.orderID || doc.id;
 
-            orders[orderID] = {
-              id: doc.id,
-              orderID,
-              customerEmail: d.customerEmail || null,
-              delivererEmail: d.delivererEmail || null,
-              vendorEmail: d.vendorEmail || null,
-              status: d.status || null,
-              items: d.items || [],
-              total: d.total || 0,
+//             orders[orderID] = {
+//               id: doc.id,
+//               orderID,
+//               customerEmail: d.customerEmail || null,
+//               delivererEmail: d.delivererEmail || null,
+//               vendorEmail: d.vendorEmail || null,
+//               status: d.status || null,
+//               items: d.items || [],
+//               total: d.total || 0,
 
-              createdAt: safeMillis(d.createdAt),
-              updatedAt: safeMillis(d.updatedAt),
-              orderedAt: safeMillis(d.orderedAt),
-              deliveredAt: safeMillis(d.deliveredAt)
-            };
-          });
-        };
+//               createdAt: safeMillis(d.createdAt),
+//               updatedAt: safeMillis(d.updatedAt),
+//               orderedAt: safeMillis(d.orderedAt),
+//               deliveredAt: safeMillis(d.deliveredAt)
+//             };
+//           });
+//         };
 
-        add(customerSnap.docs);
-        add(delivererSnap.docs);
+//         add(customerSnap.docs);
+//         add(delivererSnap.docs);
 
-        return res.json({
-          success: true,
-          orders: Object.values(orders)
-        });
+//         return res.json({
+//           success: true,
+//           orders: Object.values(orders)
+//         });
 
-      } catch (err) {
-        console.error("getAllOrders error:", err);
-        return res.status(500).json({
-          success: false,
-          error: err.message
-        });
-      }
-    });
-  }
-);
+//       } catch (err) {
+//         console.error("getAllOrders error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: err.message
+//         });
+//       }
+//     });
+//   }
+// );
+
+// function buildSnapshotForNonOrderEntry(entry, loyalty = {}, settings = {}) {
+//   const { seasonalActive, seasonalName, seasonalMultiplier } =
+//     getSeasonFromSettings(settings);
+
+//   return {
+//     type: entry.type || "activity",
+//     label: entry.label || "",
+//     amount: entry.amount || 0,
+
+//     tierMultiplier: loyalty.tierMultiplier ?? 1,
+//     streakMultiplier: loyalty.streakMultiplier ?? 1,
+//     seasonalMultiplier,
+//     maxTotalMultiplier: settings.maxTotalMultiplier,
+
+//     seasonalActive,
+//     seasonalName,
+
+//     basePoints: entry.amount || 0,
+//     tierBonusPoints: 0,
+//     streakBonusPoints: 0,
+//     seasonalBonusPoints: 0,
+//     fastDeliveryBonus: 0,
+//     delayPenalty: 0,
+//     totalPointsEarned: entry.amount || 0,
+
+//     ts: entry.ts || admin.firestore.FieldValue.serverTimestamp(),
+//     createdAt: entry.createdAt || admin.firestore.FieldValue.serverTimestamp(),
+
+//     calculationVersion: settings.calculationVersion ?? 1
+//   };
+// }
+
+// export const getAllUsers = onRequest(
+//   {
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [JWT_SECRET]
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         // ------------------------------------
+//         // Extract uid + lineage token
+//         // ------------------------------------
+//         const authHeader = req.headers.authorization || "";
+//         const token = authHeader.replace("Bearer ", "").trim();
+//         const uid = req.headers["x-uid"] || null;
+
+//         if (!token || !uid) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Missing uid or token"
+//           });
+//         }
+
+//         // ------------------------------------
+//         // Load requesting user
+//         // ------------------------------------
+//         const userDoc = await db.collection("Users").doc(uid).get();
+//         if (!userDoc.exists) {
+//           return res.status(404).json({
+//             success: false,
+//             error: "User not found"
+//           });
+//         }
+
+//         const userData = userDoc.data() || {};
+//         const TPIdentity = userData.TPIdentity || {};
+//         const storedToken = TPIdentity.resendToken || null;
+
+//         if (!storedToken || storedToken !== token) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Token mismatch"
+//           });
+//         }
+
+//         // ------------------------------------
+//         // Load all users
+//         // ------------------------------------
+//         const snap = await db
+//           .collection("Users")
+//           .orderBy("TPIdentity.createdAt", "desc")
+//           .get();
+
+//         const safeMillis = (ts) => {
+//           if (!ts) return null;
+//           if (typeof ts.toMillis === "function") return ts.toMillis();
+//           if (ts?._seconds) return ts._seconds * 1000;
+//           if (typeof ts === "number") return ts;
+//           return null;
+//         };
+
+//         const safeNum = (v) =>
+//           Number.isFinite(Number(v)) ? Number(v) : 0;
+
+//         const users = snap.docs.map((doc) => {
+//           const data = doc.data() || {};
+//           const id = doc.id;
+
+//           const TPIdentity = data.TPIdentity || {};
+//           const TPLoyalty = data.TPLoyalty || {};
+//           const TPNotifications = data.TPNotifications || {};
+//           const TPSecurity = data.TPSecurity || {};
+
+//           return {
+//             id,
+
+//             // Identity
+//             email: TPIdentity.email || null,
+//             name: TPIdentity.name || null,
+//             role: TPIdentity.role || "Customer",
+//             phone: TPIdentity.phone || null,
+//             country: TPIdentity.country || null,
+
+//             // Loyalty
+//             loyalty: {
+//               pointsBalance: safeNum(TPLoyalty.pointsBalance),
+//               lifetimePoints: safeNum(TPLoyalty.lifetimePoints),
+//               referralCode: TPLoyalty.referralCode || null,
+//               referredBy: TPLoyalty.referredBy || null
+//             },
+
+//             // Notifications
+//             notifications: {
+//               receiveMassEmails: TPNotifications.receiveMassEmails ?? true,
+//               receiveSMS: TPNotifications.receiveSMS ?? false
+//             },
+
+//             // Timestamps
+//             createdAt: safeMillis(TPIdentity.createdAt),
+//             updatedAt: safeMillis(TPIdentity.updatedAt),
+//             lastActive: safeMillis(TPSecurity.lastActive),
+//             lastEarnedDate: safeMillis(TPLoyalty.lastEarnedDate)
+//           };
+//         });
+
+//         return res.json({ success: true, users });
+
+//       } catch (err) {
+//         console.error("getAllUsers error:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: "Server error: " + err.message
+//         });
+//       }
+//     });
+//   }
+// );
+
+// export const verifyToken = onRequest(
+//   { 
+//     region: "us-central1",
+//     timeoutSeconds: 540,
+//     memory: "512MiB",
+//     secrets: [ JWT_SECRET ]
+//   },
+//   (req, res) => {
+//     corsHandler(req, res, async () => {
+//       try {
+//         const { uid, token } = req.body || {};
+
+//         if (!uid || !token) {
+//           return res.status(400).json({
+//             success: false,
+//             error: "Missing uid or token"
+//           });
+//         }
+
+//         // ------------------------------------
+//         // Load user
+//         // ------------------------------------
+//         const userDoc = await db.collection("Users").doc(uid).get();
+
+//         if (!userDoc.exists) {
+//           return res.status(404).json({
+//             success: false,
+//             error: "User not found"
+//           });
+//         }
+
+//         const userData = userDoc.data() || {};
+
+//         const TPIdentity = userData.TPIdentity || {};
+//         const TPSecurity = userData.TPSecurity || {};
+
+//         // ------------------------------------
+//         // Token check (TPIdentity.resendToken)
+//         // ------------------------------------
+//         const storedToken = TPIdentity.resendToken || null;
+
+//         if (!storedToken || storedToken !== token) {
+//           return res.status(403).json({
+//             success: false,
+//             error: "Token mismatch"
+//           });
+//         }
+
+//         // ------------------------------------
+//         // Build identity response (new schema)
+//         // ------------------------------------
+//         const responseIdentity = {
+//           uid,
+
+//           // EMAIL
+//           email: TPIdentity.email || null,
+
+//           // NAME
+//           name: TPIdentity.name || TPIdentity.displayName || "",
+
+//           // ROLE
+//           role: TPIdentity.role || "Deliverer",
+
+//           // STRIPE
+//           stripeAccountID: TPIdentity.stripeAccountID || null,
+//           stripeDashboardURL: TPIdentity.stripeDashboardURL || null,
+
+//           // DISPLAY NAME
+//           displayName: TPIdentity.displayName || TPIdentity.name || null,
+
+//           // PHOTO
+//           photoURL: TPIdentity.photoURL || null,
+
+//           // TRUSTED DEVICE
+//           trustedDevice: TPSecurity.trustedDevice ?? false,
+
+//           // IDENTITY TIMESTAMP
+//           identitySetAt: TPIdentity.identitySetAt || null,
+
+//           // REFERRAL CODE
+//           referralCode: TPIdentity.referralCode || null
+//         };
+
+//         return res.json({
+//           success: true,
+//           token,
+//           identity: responseIdentity
+//         });
+
+//       } catch (err) {
+//         console.error("verifyToken ERROR:", err);
+//         return res.status(500).json({
+//           success: false,
+//           error: "Internal server error"
+//         });
+//       }
+//     });
+//   }
+// );
 
 function buildSnapshotForNonOrderEntry(entry, loyalty = {}, settings = {}) {
   const { seasonalActive, seasonalName, seasonalMultiplier } =
@@ -21185,226 +21436,6 @@ function buildSnapshotForNonOrderEntry(entry, loyalty = {}, settings = {}) {
     calculationVersion: settings.calculationVersion ?? 1
   };
 }
-
-export const getAllUsers = onRequest(
-  {
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [JWT_SECRET]
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        // ------------------------------------
-        // Extract uid + lineage token
-        // ------------------------------------
-        const authHeader = req.headers.authorization || "";
-        const token = authHeader.replace("Bearer ", "").trim();
-        const uid = req.headers["x-uid"] || null;
-
-        if (!token || !uid) {
-          return res.status(403).json({
-            success: false,
-            error: "Missing uid or token"
-          });
-        }
-
-        // ------------------------------------
-        // Load requesting user
-        // ------------------------------------
-        const userDoc = await db.collection("Users").doc(uid).get();
-        if (!userDoc.exists) {
-          return res.status(404).json({
-            success: false,
-            error: "User not found"
-          });
-        }
-
-        const userData = userDoc.data() || {};
-        const TPIdentity = userData.TPIdentity || {};
-        const storedToken = TPIdentity.resendToken || null;
-
-        if (!storedToken || storedToken !== token) {
-          return res.status(403).json({
-            success: false,
-            error: "Token mismatch"
-          });
-        }
-
-        // ------------------------------------
-        // Load all users
-        // ------------------------------------
-        const snap = await db
-          .collection("Users")
-          .orderBy("TPIdentity.createdAt", "desc")
-          .get();
-
-        const safeMillis = (ts) => {
-          if (!ts) return null;
-          if (typeof ts.toMillis === "function") return ts.toMillis();
-          if (ts?._seconds) return ts._seconds * 1000;
-          if (typeof ts === "number") return ts;
-          return null;
-        };
-
-        const safeNum = (v) =>
-          Number.isFinite(Number(v)) ? Number(v) : 0;
-
-        const users = snap.docs.map((doc) => {
-          const data = doc.data() || {};
-          const id = doc.id;
-
-          const TPIdentity = data.TPIdentity || {};
-          const TPLoyalty = data.TPLoyalty || {};
-          const TPNotifications = data.TPNotifications || {};
-          const TPSecurity = data.TPSecurity || {};
-
-          return {
-            id,
-
-            // Identity
-            email: TPIdentity.email || null,
-            name: TPIdentity.name || null,
-            role: TPIdentity.role || "Customer",
-            phone: TPIdentity.phone || null,
-            country: TPIdentity.country || null,
-
-            // Loyalty
-            loyalty: {
-              pointsBalance: safeNum(TPLoyalty.pointsBalance),
-              lifetimePoints: safeNum(TPLoyalty.lifetimePoints),
-              referralCode: TPLoyalty.referralCode || null,
-              referredBy: TPLoyalty.referredBy || null
-            },
-
-            // Notifications
-            notifications: {
-              receiveMassEmails: TPNotifications.receiveMassEmails ?? true,
-              receiveSMS: TPNotifications.receiveSMS ?? false
-            },
-
-            // Timestamps
-            createdAt: safeMillis(TPIdentity.createdAt),
-            updatedAt: safeMillis(TPIdentity.updatedAt),
-            lastActive: safeMillis(TPSecurity.lastActive),
-            lastEarnedDate: safeMillis(TPLoyalty.lastEarnedDate)
-          };
-        });
-
-        return res.json({ success: true, users });
-
-      } catch (err) {
-        console.error("getAllUsers error:", err);
-        return res.status(500).json({
-          success: false,
-          error: "Server error: " + err.message
-        });
-      }
-    });
-  }
-);
-
-export const verifyToken = onRequest(
-  { 
-    region: "us-central1",
-    timeoutSeconds: 540,
-    memory: "512MiB",
-    secrets: [ JWT_SECRET ]
-  },
-  (req, res) => {
-    corsHandler(req, res, async () => {
-      try {
-        const { uid, token } = req.body || {};
-
-        if (!uid || !token) {
-          return res.status(400).json({
-            success: false,
-            error: "Missing uid or token"
-          });
-        }
-
-        // ------------------------------------
-        // Load user
-        // ------------------------------------
-        const userDoc = await db.collection("Users").doc(uid).get();
-
-        if (!userDoc.exists) {
-          return res.status(404).json({
-            success: false,
-            error: "User not found"
-          });
-        }
-
-        const userData = userDoc.data() || {};
-
-        const TPIdentity = userData.TPIdentity || {};
-        const TPSecurity = userData.TPSecurity || {};
-
-        // ------------------------------------
-        // Token check (TPIdentity.resendToken)
-        // ------------------------------------
-        const storedToken = TPIdentity.resendToken || null;
-
-        if (!storedToken || storedToken !== token) {
-          return res.status(403).json({
-            success: false,
-            error: "Token mismatch"
-          });
-        }
-
-        // ------------------------------------
-        // Build identity response (new schema)
-        // ------------------------------------
-        const responseIdentity = {
-          uid,
-
-          // EMAIL
-          email: TPIdentity.email || null,
-
-          // NAME
-          name: TPIdentity.name || TPIdentity.displayName || "",
-
-          // ROLE
-          role: TPIdentity.role || "Deliverer",
-
-          // STRIPE
-          stripeAccountID: TPIdentity.stripeAccountID || null,
-          stripeDashboardURL: TPIdentity.stripeDashboardURL || null,
-
-          // DISPLAY NAME
-          displayName: TPIdentity.displayName || TPIdentity.name || null,
-
-          // PHOTO
-          photoURL: TPIdentity.photoURL || null,
-
-          // TRUSTED DEVICE
-          trustedDevice: TPSecurity.trustedDevice ?? false,
-
-          // IDENTITY TIMESTAMP
-          identitySetAt: TPIdentity.identitySetAt || null,
-
-          // REFERRAL CODE
-          referralCode: TPIdentity.referralCode || null
-        };
-
-        return res.json({
-          success: true,
-          token,
-          identity: responseIdentity
-        });
-
-      } catch (err) {
-        console.error("verifyToken ERROR:", err);
-        return res.status(500).json({
-          success: false,
-          error: "Internal server error"
-        });
-      }
-    });
-  }
-);
-
 // export const eventVerification = onRequest(
 //   {
 //     region: "us-central1",
