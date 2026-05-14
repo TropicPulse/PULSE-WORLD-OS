@@ -42,7 +42,12 @@ AI_EXPERIENCE_META = {
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "./PULSE-WORLD-MAP.js";
+const Identity = OrganismIdentity(import.meta.url);
 // 2 — EXPORT GENOME METADATA
 export const OvermindPrimeMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;

@@ -166,9 +166,8 @@ export const IMMORTAL_OVERLAYS_PulseSignalPort = {
   stability: { semantics: "stable" },
   load: { maxComponents: 1 }
 };
-
 // ============================================================================
-//  INTERNAL REGISTRY — IMMORTAL++ SAFE
+//  INTERNAL REGISTRY — IMMORTAL++ SAFE (v29 ORGANISM-AWARE)
 // ============================================================================
 //
 //  Registry is *local* to this tab/process, with optional localStorage echo.
@@ -244,6 +243,13 @@ function normalizeModuleEnvelope(rawEnvelope = {}, context = {}) {
     G.PULSE_SIGNAL_KEY ||
     null;
 
+  // NEW v29: soft tier hint for organism preload
+  const tier =
+    rawEnvelope.tier ||
+    context.tier ||
+    rawEnvelope.layer ||
+    "default";
+
   return {
     id: rawEnvelope.id || `module::${page}`,
     page,
@@ -254,6 +260,7 @@ function normalizeModuleEnvelope(rawEnvelope = {}, context = {}) {
     chunkProfile,
     lineage,
     pulseSignalKey,
+    tier,
     ts: Date.now()
   };
 }
@@ -292,11 +299,13 @@ function registerModule(state, envelope) {
   if (!state.modules[key]) {
     state.order.push(key);
   }
+
   state.modules[key] = {
     exports: {},
     imports: envelope.importsMeta || {},
     meta: {
       page: envelope.page,
+      tier: envelope.tier || "default",
       exportTiers: envelope.exportTiers || {},
       subimports: envelope.subimports || {},
       chunkProfile: envelope.chunkProfile || null,
@@ -368,7 +377,6 @@ function buildPulseFunctionOrgan(fnId) {
     };
   }
 
-  // Wrap in a tiny organ shell if you ever want to extend
   const organFn = function PulseFunctionWrapper(...args) {
     try {
       return fn(...args);
@@ -390,7 +398,6 @@ function stringSimilarity(a, b) {
   b = String(b);
   if (a === b) return 1;
 
-  // Simple character overlap heuristic (fast, good enough for CNS/PNS style)
   const aSet = new Set(a.split(""));
   const bSet = new Set(b.split(""));
   let overlap = 0;
@@ -432,7 +439,11 @@ function resolveExportIdWithFuzzy(record, requestedId, options = {}) {
       if (!G.PULSE_PUBLIC_MODE) {
         console.warn(
           "[PulseSignalPort] Fuzzy signal match:",
-          { requestedId, resolvedId: bestId, score: bestScore.toFixed(2) }
+          {
+            requestedId,
+            resolvedId: bestId,
+            score: Number.isFinite(bestScore) ? bestScore.toFixed(2) : String(bestScore)
+          }
         );
       }
     } catch {}
@@ -673,6 +684,10 @@ function createKillSwitch(secretsHost, runtimeFreeze) {
 // ============================================================================
 //  PULSEIMPORT / PULSEEXPORT / SUBIMPORT
 // ============================================================================
+// ============================================================================
+//  PULSEIMPORT / PULSEEXPORT / SUBIMPORT / ORGANISM PRELOAD (v28++ IMMORTAL)
+// ============================================================================
+
 function createPulseExport(state, envelope) {
   const moduleId = envelope.id;
 
@@ -682,7 +697,6 @@ function createPulseExport(state, envelope) {
     const record = getModuleRecord(state, moduleId);
     if (!record) return;
 
-    // Normalize value once (no guessing)
     const normalized = unwrapOnce(value);
 
     record.exports[exportId] = {
@@ -702,8 +716,14 @@ function createPulseImport(state, envelope) {
   // NOTE:
   //   PulseImport(exportId)          → normal export (relational + fuzzy)
   //   PulseImport(exportId, true)   → PulseFunction (memory-only)
+  //   PulseImport("ORGANISM")       → organism-level preload handle (v28++)
   return function PulseImport(exportId, pulseFlag = false) {
     if (!exportId) return null;
+
+    // ORGANISM preload handle (single entry point)
+    if (exportId === "ORGANISM" && pulseFlag === false) {
+      return createOrganismPreloader(state);
+    }
 
     // PulseFunction path (no objects, no pulse:true, just literal true)
     if (pulseFlag === true) {
@@ -725,7 +745,7 @@ function createPulseImport(state, envelope) {
         if (!G.PULSE_PUBLIC_MODE) {
           console.warn(
             "[PulseSignalPort] Signal not found:",
-            { requestedId: exportId, moduleId, bestScore: score.toFixed(2) }
+            { requestedId: exportId, moduleId, bestScore: score?.toFixed?.(2) }
           );
         }
       } catch {}
@@ -744,7 +764,7 @@ function createPulseImport(state, envelope) {
               requestedId: exportId,
               resolvedId,
               moduleId,
-              score: score.toFixed(2)
+              score: score?.toFixed?.(2)
             }
           );
         }
@@ -782,6 +802,156 @@ function createPulseSubimport(state, envelope) {
 }
 
 // ============================================================================
+//  MODULE-LEVEL PRELOAD (single module, tier-aware, safe) — v28++
+// ============================================================================
+
+async function preloadModuleExports(state, moduleId) {
+  const record = getModuleRecord(state, moduleId);
+  if (!record) return false;
+
+  // 1) Run module warmup if present (sequential, deterministic)
+  try {
+    if (typeof record.warmup === "function") {
+      await record.warmup();
+    }
+  } catch {}
+
+  // 2) Touch all exports (functions + objects)
+  try {
+    const exports = record.exports || {};
+    for (const key of Object.keys(exports)) {
+      const entry = exports[key];
+      if (!entry) continue;
+
+      const v = entry.value;
+
+      // Functions: just touch
+      if (typeof v === "function") {
+        void v;
+      }
+
+      // Objects: shallow walk to wake subimports
+      if (v && typeof v === "object") {
+        for (const subKey of Object.keys(v)) {
+          try {
+            void v[subKey];
+          } catch {}
+        }
+      }
+    }
+  } catch {}
+
+  // 3) Touch tiers + lineage (no semantics, just wake)
+  try {
+    if (record.exportTiers) {
+      for (const tierName of Object.keys(record.exportTiers)) {
+        const tierList = record.exportTiers[tierName] || [];
+        for (const t of tierList) {
+          void t;
+        }
+      }
+    }
+  } catch {}
+
+  try {
+    if (record.lineage) {
+      void record.lineage;
+    }
+  } catch {}
+
+  return true;
+}
+
+// ============================================================================
+//  ORGANISM-LEVEL PRELOAD (ALL MODULES, TIERED) — v28++
+// ============================================================================
+
+async function preloadAllModules(state, options = {}) {
+  const modules = Object.values(state.modules || {});
+  if (!modules.length) return false;
+
+  const {
+    mode = "auto",          // "auto" | "sequential" | "parallel"
+    firstTier = "core",     // tier name to prioritize
+    maxParallel = Infinity  // optional cap
+  } = options;
+
+  // Partition by tier (best-effort, non-fatal)
+  const core = [];
+  const rest = [];
+
+  for (const mod of modules) {
+    const metaTier = mod.meta?.tier || mod.meta?.layer || "default";
+    if (metaTier === firstTier) core.push(mod);
+    else rest.push(mod);
+  }
+
+  // 1) Always warm "core" sequentially first (touches / main path)
+  for (const mod of core) {
+    try {
+      await preloadModuleExports(state, mod.id);
+    } catch {}
+  }
+
+  // 2) Decide strategy for the rest
+  const remaining = rest.slice();
+
+  if (mode === "sequential") {
+    for (const mod of remaining) {
+      try {
+        await preloadModuleExports(state, mod.id);
+      } catch {}
+    }
+    return true;
+  }
+
+  // "auto" / "parallel" → parallel with optional cap
+  const parallelLimit = Number.isFinite(maxParallel) ? Math.max(1, maxParallel) : remaining.length;
+
+  let index = 0;
+  async function worker() {
+    while (index < remaining.length) {
+      const mod = remaining[index++];
+      try {
+        await preloadModuleExports(state, mod.id);
+      } catch {}
+    }
+  }
+
+  const workers = [];
+  for (let i = 0; i < parallelLimit; i++) {
+    workers.push(worker());
+  }
+
+  await Promise.all(workers);
+  return true;
+}
+
+// ============================================================================
+//  ORGANISM PRELOADER HANDLE — PulseImport("ORGANISM") — v28++
+// ============================================================================
+
+function createOrganismPreloader(state) {
+  // Single object, no globals, no names, just behavior.
+  return {
+    // Fire-and-forget best-effort preload (auto mode)
+    preloadAll(options = {}) {
+      return preloadAllModules(state, { mode: "auto", ...options });
+    },
+
+    // Explicit modes if you ever want them:
+    preloadSequential(options = {}) {
+      return preloadAllModules(state, { mode: "sequential", ...options });
+    },
+
+    preloadParallel(options = {}) {
+      return preloadAllModules(state, { mode: "parallel", ...options });
+    }
+  };
+}
+
+
+// ============================================================================
 //  REGISTRY SNAPSHOT
 // ============================================================================
 function registrySnapshot(state) {
@@ -796,16 +966,22 @@ function registrySnapshot(state) {
   }
   return out;
 }
-
 // ============================================================================
-//  AUTO-GENERATED FINALITY FLOW ORGAN (MEMORY ONLY)
+//  AUTO-GENERATED FINALITY FLOW ORGAN (v29 IMMORTAL, ORGANISM-AWARE)
 // ============================================================================
-function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExport, PulseSubimport, signalBridge) {
-  // DEV MODE: full real JS (commented)
+function buildPulseFinalityFlowOrgan(
+  envelope,
+  snapshot,
+  PulseImport,
+  PulseExport,
+  PulseSubimport,
+  signalBridge
+) {
+  // DEV MODE COMMENTS
   const devComments = `
     /*
     ============================================================================
-      PULSE-FINALITY-FLOW.js (AUTO-GENERATED, MEMORY-ONLY)
+      PULSE-FINALITY-FLOW.js (AUTO-GENERATED, MEMORY-ONLY) — v29 IMMORTAL
       ROLE:
         - Initialize PulseImport / PulseExport / PulseSubimport
         - Initialize PulseGlobal registry
@@ -815,29 +991,54 @@ function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExpor
         - Start Schema normalization
         - Start Sonar warm-path
         - Start Finality boot sequence
-        - Attach Approval / Secrets / KillSwitch / RuntimeFreeze (v29+)
+        - Attach Approval / Secrets / KillSwitch / RuntimeFreeze
         - Attach PulseSignalKey bridge (PulseIO + Binary projection)
+        - NEW (v29):
+            * Organism-level preload (tier-aware, parallel-aware)
+            * Preload decision engine (excellent/safe/minimal)
+            * PulseImport("ORGANISM") integration
+            * Warmup-aware preload scheduling
     ============================================================================
-
-    export function PulseFinalityFlow() {
-      const registry = PulseGlobal.registry;
-      const warmPath = Continuance.getWarmPath();
-      const sonar = PulseSonar.scanCurrentPage();
-
-      // Boot sequence
-      Schema.normalize(envelope);
-      OmniHosting.attach(envelope.page);
-      Continuance.start(warmPath);
-      PulseSonar.warm(sonar);
-    }
     */
   `;
 
   const comments = G.PULSE_PUBLIC_MODE ? "" : devComments;
 
-  // SKIP LOGIC: only one FinalityFlow per page per session
+  // Prevent duplicate FinalityFlow on same page
   if (G.PulseFinalityFlow && G.PulseFinalityFlow.__page === envelope.page) {
     return G.PulseFinalityFlow;
+  }
+
+  // ORGANISM PRELOADER HANDLE (PulseImport("ORGANISM"))
+  let organismPreloader = null;
+  try {
+    organismPreloader = PulseImport("ORGANISM");
+  } catch {
+    organismPreloader = null;
+  }
+
+  // PRELOAD DECISION ENGINE (v29)
+  function decidePreloadMode() {
+    try {
+      const perf = performance.now();
+      const mem = navigator.deviceMemory || 4;
+      const cores = navigator.hardwareConcurrency || 4;
+
+      // Excellent conditions → full parallel preload
+      if (perf < 20 && mem >= 4 && cores >= 4) {
+        return { mode: "parallel", maxParallel: Infinity, tier: "core" };
+      }
+
+      // Safe conditions → tiered preload
+      if (perf < 50 && mem >= 2) {
+        return { mode: "auto", maxParallel: 16, tier: "core" };
+      }
+
+      // Minimal conditions → sequential preload
+      return { mode: "sequential", maxParallel: 1, tier: "core" };
+    } catch {
+      return { mode: "auto", maxParallel: 8, tier: "core" };
+    }
   }
 
   const organ = {
@@ -854,51 +1055,64 @@ function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExpor
 
     booted: false,
 
-    boot() {
+    async boot() {
       if (this.booted) return;
       this.booted = true;
 
       try {
         const PulseGlobal = ensurePulseGlobal();
 
-        // Warm PulseGlobal registry
+        // Warm registry
         PulseGlobal.registry = this.snapshot;
 
-        // Attach signal bridge into PulseGlobal
+        // Attach signal bridge
         PulseGlobal.signal.bridge = this.signalBridge || null;
 
-        // PulseFunctions already live on PulseGlobal.pulseFunctions
-        // (buildPulseFunctionOrgan populates them on demand)
-
         // Warm Continuance
-        if (G.PulseContinuance && typeof G.PulseContinuance.start === "function") {
+        if (G.PulseContinuance?.start) {
           G.PulseContinuance.start(this.envelope.page);
         }
 
         // Warm OmniHosting
-        if (G.PulseOmniHosting && typeof G.PulseOmniHosting.attach === "function") {
+        if (G.PulseOmniHosting?.attach) {
           G.PulseOmniHosting.attach(this.envelope.page);
         }
 
         // Warm Schema
-        if (G.PulseSchema && typeof G.PulseSchema.normalize === "function") {
+        if (G.PulseSchema?.normalize) {
           G.PulseSchema.normalize(this.envelope);
         }
 
         // Warm Sonar
-        if (G.PulseSonar && typeof G.PulseSonar.warm === "function") {
+        if (G.PulseSonar?.warm) {
           G.PulseSonar.warm(this.envelope.page);
         }
 
-        // Approval organ (soft)
+        // Approval organ
         try {
-          if (PulseApproval && typeof PulseApproval.attach === "function") {
+          if (PulseApproval?.attach) {
             PulseApproval.attach({
               page: this.envelope.page,
               pulseSignalKey: this.signalBridge?.key || null
             });
           }
         } catch {}
+
+        // ====================================================================
+        //  ORGANISM PRELOAD (v29 IMMORTAL)
+        // ====================================================================
+        if (organismPreloader) {
+          const decision = decidePreloadMode();
+
+          // Fire-and-forget preload
+          try {
+            organismPreloader.preloadAll({
+              mode: decision.mode,
+              firstTier: decision.tier,
+              maxParallel: decision.maxParallel
+            });
+          } catch {}
+        }
 
       } catch (err) {
         try {
@@ -911,9 +1125,8 @@ function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExpor
   G.PulseFinalityFlow = organ;
   return organ;
 }
-
 // ============================================================================
-//  FACTORY — PULSE SIGNAL PORT ORGAN
+//  FACTORY — PULSE SIGNAL PORT ORGAN (v29 IMMORTAL, PRELOAD-WAVE AWARE)
 // ============================================================================
 export function PulseSignalPort() {
   const state = createRegistry();
@@ -940,7 +1153,7 @@ export function PulseSignalPort() {
       }
     } catch {}
 
-    // 6) Build Finality Flow organ (memory-only, reflex)
+    // 6) Build Finality Flow organ (memory-only, reflex, organism-aware)
     const snapshot = registrySnapshot(state);
     const PulseFinalityFlow = buildPulseFinalityFlowOrgan(
       envelope,
@@ -956,7 +1169,52 @@ export function PulseSignalPort() {
     const runtimeFreeze = createRuntimeFreeze(envelope);
     const killSwitch = createKillSwitch(secretsHost, runtimeFreeze);
 
-    // 8) Auto-boot (skin reflex)
+    // 8) Organism preloader handle (if available)
+    let organismPreloader = null;
+    try {
+      organismPreloader = PulseImport("ORGANISM");
+    } catch {
+      organismPreloader = null;
+    }
+
+    // 9) Preload metrics (local, soft)
+    const preloadMetrics = {
+      lastMode: null,
+      lastDurationMs: null,
+      lastError: null,
+      totalWaves: 0
+    };
+
+    async function preloadWave(options = {}) {
+      if (!organismPreloader || typeof organismPreloader.preloadAll !== "function") {
+        return false;
+      }
+
+      const start = Date.now();
+      let error = null;
+
+      try {
+        const decision = {
+          mode: options.mode || "auto",
+          firstTier: options.firstTier || "core",
+          maxParallel: options.maxParallel ?? 16
+        };
+
+        preloadMetrics.lastMode = decision.mode;
+        preloadMetrics.totalWaves += 1;
+
+        await organismPreloader.preloadAll(decision);
+      } catch (err) {
+        error = err;
+        preloadMetrics.lastError = String(err);
+      } finally {
+        preloadMetrics.lastDurationMs = Date.now() - start;
+      }
+
+      return !error;
+    }
+
+    // 10) Auto-boot (skin reflex)
     try {
       PulseFinalityFlow.boot();
     } catch {}
@@ -967,6 +1225,8 @@ export function PulseSignalPort() {
       PulseSubimport,
       registrySnapshot: () => registrySnapshot(state),
       moduleEnvelope: envelope,
+
+      // Secrets / KillSwitch / Runtime
       secrets: {
         get active() {
           return secretsHost.state.active;
@@ -984,11 +1244,21 @@ export function PulseSignalPort() {
         },
         freeze: (reason) => killSwitch.freezeExecution(reason)
       },
+
+      // Signal bridge
       signal: {
         key: signalBridge.key,
         source: signalBridge.source,
         pulseIO: signalBridge.pulseIO,
         binary: signalBridge.binary
+      },
+
+      // Organism-level preload (waves)
+      preload: {
+        wave: preloadWave,
+        get metrics() {
+          return { ...preloadMetrics };
+        }
       }
     };
   }

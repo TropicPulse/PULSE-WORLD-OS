@@ -57,7 +57,7 @@ import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/a
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v24.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v24.js";
-
+import { createBinaryPulse } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 // PROXY CONTEXT — v24 IMMORTAL ORGANISM
 import {
   getProxyContext,
@@ -77,7 +77,7 @@ import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
 
 // Universe-aware AIWorldCore
-import { pulseWorldCore } from "../PULSE-AI/PulseWorldCore-v24-Immortal-UNIVERSE.js";
+import { pulseWorldCore } from "../PULSE-EXPANSION/PULSE-EXPANSION-AI.js";
 
 // ============================================================================
 // FACTORY: createPulseUser — v24 IMMORTAL UNIVERSE ORGANISM JURY-READY

@@ -123,7 +123,7 @@ import { getConsoleContext } from "./PULSE-EXPANSION-BEACON-CONSOLE.js";
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
   PulseMeshMeta
-} from "../PULSE-MESH/PulseMesh-v24-Immortal++.js";
+} from "../PULSE-MESH/PulseMesh-v24.js";
 import createBinaryMesh, {
   BinaryMeshMeta
 } from "../PULSE-MESH/PulseMeshBinary-v24.js";

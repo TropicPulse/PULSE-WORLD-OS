@@ -72,7 +72,7 @@ import {
   createPulseExpansion,
   pulseExpansion,
   PulseExpansionMeta
-} from "../PULSE-EXPANSION/PULSE-EXPANSION-INTERNET.js";
+} from "../PULSE-EXPANSION/PULSE-EXPANSION-WORLD.js";
 
 const Expansion = pulseExpansion;
 const ExpansionMeta = PulseExpansionMeta;

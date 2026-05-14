@@ -68,7 +68,7 @@ import {
 // v16 mesh + binary mesh metas
 import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v24.js";
 import { BinaryMeshMeta } from "../PULSE-MESH/PulseMeshBinary-v24.js";
-
+import { createBinaryPulse } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
 
@@ -91,6 +91,7 @@ import {
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
+
 
 // ============================================================================
 //  PULSE-NET BRIDGE CONTRACT (NO IMPORTS, PURELY INJECTED)
