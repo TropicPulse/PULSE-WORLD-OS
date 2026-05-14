@@ -293,6 +293,10 @@ function deriveCookieIntegrity(parsed) {
 // COOKIE DETECTION — v27++ IMMORTAL
 // ============================================================================
 
+// ============================================================================
+// COOKIE DETECTION — v27++ IMMORTAL (UPGRADED MODULE RISK SURFACE)
+// ============================================================================
+
 export function detectPulseTouch(event) {
   const headers = event?.headers || {};
   const cookieHeader =
@@ -324,8 +328,8 @@ export function detectPulseTouch(event) {
   const originTs = safeNumber(parsed.originTs, null);
   const lastPulseTs = safeNumber(parsed.lastPulseTs, null);
 
-  // v27++ — allow Predictor/Warmup to attach module risk later
-  const moduleRisk = null;
+  // v27++ — module risk can be hinted via cookie, then refined by Warmup/Security/Predictor
+  const pulseModuleRisk = deriveInitialModuleRiskFromCookie(parsed);
 
   return {
     region,
@@ -358,8 +362,8 @@ export function detectPulseTouch(event) {
 
     regionCluster,
 
-    // v27++ soft surface
-    pulseModuleRisk: moduleRisk
+    // v27++ soft surface — now structured, not null
+    pulseModuleRisk
   };
 }
 
@@ -403,10 +407,60 @@ export function defaultPulseTouchState() {
 
     regionCluster,
 
-    // v27++ soft surface
-    pulseModuleRisk: null
+    // v27++ soft surface — safe default, no risk
+    pulseModuleRisk: {
+      hasMissingSubimports: false,
+      hasWrongTierExports: false,
+      hasGlobalExposureRisk: false,
+      hasChunkProfileAnomaly: false,
+      score: 0,
+      source: "none"
+    }
   };
 }
+
+// ============================================================================
+// v27++ MODULE RISK DERIVATION FROM COOKIE (SOFT CONTRACT)
+// ============================================================================
+//
+// This is intentionally conservative and optional: if the cookie never
+// encodes these fields, we stay at "no risk" and let Warmup/Security
+// populate richer hints later.
+//
+function deriveInitialModuleRiskFromCookie(parsed) {
+  if (!parsed || typeof parsed !== "object") {
+    return {
+      hasMissingSubimports: false,
+      hasWrongTierExports: false,
+      hasGlobalExposureRisk: false,
+      hasChunkProfileAnomaly: false,
+      score: 0,
+      source: "none"
+    };
+  }
+
+  // Soft cookie hints (all optional, future‑proof)
+  const hasMissingSubimports = parsed.moduleMissingSubimports === "1";
+  const hasWrongTierExports = parsed.moduleWrongTierExports === "1";
+  const hasGlobalExposureRisk = parsed.moduleGlobalExposureRisk === "1" || hasWrongTierExports;
+  const hasChunkProfileAnomaly = parsed.moduleChunkProfileAnomaly === "1";
+
+  let score = 0;
+  if (hasMissingSubimports) score += 10;
+  if (hasWrongTierExports) score += 10;
+  if (hasGlobalExposureRisk) score += 5;
+  if (hasChunkProfileAnomaly) score += 5;
+
+  return {
+    hasMissingSubimports,
+    hasWrongTierExports,
+    hasGlobalExposureRisk,
+    hasChunkProfileAnomaly,
+    score,
+    source: score > 0 ? "cookie_hint" : "none"
+  };
+}
+
 
 // ============================================================================
 // IMMORTAL ROUTER CALLBACKS — unchanged
