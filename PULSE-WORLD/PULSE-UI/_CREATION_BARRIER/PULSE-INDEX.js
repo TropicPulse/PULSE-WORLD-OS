@@ -4,6 +4,7 @@
 //  Reads from window.PulsePortal.getSignal() but DOES NOT depend on old signals
 // ============================================================================
 
+
 // IMMORTAL COLOR CONSTANTS
 const C_ID   = "color:#26C6DA; font-weight:bold; font-family:monospace;";
 const C_OK   = "color:#00FF9C; font-family:monospace;";
