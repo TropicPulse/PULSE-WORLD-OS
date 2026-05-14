@@ -1,21 +1,20 @@
 // ============================================================================
-// FILE: /PULSE-CORE/PulseCoreMemoryManager-v24.js
-// PULSE OS — v24 IMMORTAL
+// FILE: /PULSE-CORE/PulseCoreMemoryManager-v30.js
+// PULSE OS — v30 IMMORTAL++
 // MEMORY MANAGER ORGAN — ORCHESTRATOR FOR MEMORY MODE + PULSE-BAND MODE
+// BINARY‑FIRST • MAP‑STRIPPED • ZERO META
 // ============================================================================
 //
 // ROLE:
-//   The Memory Manager is the *governor* of memory in Pulse‑World OS.
+//   The Memory Manager is the governor of memory in Pulse‑World OS.
 //   It orchestrates:
 //     • Pulse‑Band Memory Mode (normal browser memory)
 //     • Memory Mode (future OS-level takeover mode)
 //     • Memory flushing
-//     • Memory hydration
-//     • Memory prewarming
+//     • Memory hydration (lightweight in v30)
 //     • Memory healing
-//     • Drift-proof snapshots
+//     • Drift‑proof snapshots (via CoreMemory snapshots)
 //     • Memory pressure detection
-//     • Memory routing for GPU / Proxy / Daemon
 //
 //   It does NOT replace CoreMemory.
 //   It CONTROLS CoreMemory.
@@ -24,44 +23,23 @@
 //   • Pure orchestrator (no DOM, no UI)
 //   • Zero network
 //   • Deterministic
-//   • Evolvable to OS-level memory control
+//   • v30 binary spine compatible
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
-const Identity = OrganismIdentity(import.meta.url);
+import { PulseProofBridge } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
-//  META BLOCK — v24 IMMORTAL (from genome)
+// BRIDGE INTEGRATION — REQUIRED (v30)
 // ============================================================================
-export const PulseCoreMemoryManagerMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-// BRIDGE INTEGRATION — REQUIRED
-// ============================================================================
-const CoreMemory   = PulseProofBridge.corememory;
+const CoreMemory   = PulseProofBridge.corememory;   // expected: v30 API (create/read/write/snapshot/clear*)
 const CoreSpeech   = PulseProofBridge.corespeech;
 const CorePresence = PulseProofBridge.corepresence;
 const CoreDaemon   = PulseProofBridge.coredaemon;
 
 // ============================================================================
-// IMPLEMENTATION — v24 IMMORTAL++
+// IMPLEMENTATION — v30 IMMORTAL++
 // ============================================================================
-export function PulseCoreMemoryManager() {
+export function PulseCoreMemoryManager_v30() {
 
   // ---------------------------------------------------------
   // INTERNAL STATE
@@ -79,34 +57,51 @@ export function PulseCoreMemoryManager() {
   // ---------------------------------------------------------
   function detectPressure() {
     try {
-      const used = performance.memory?.usedJSHeapSize || 0;
+      const used  = performance.memory?.usedJSHeapSize || 0;
       const total = performance.memory?.jsHeapSizeLimit || 1;
-      const pct = used / total;
+      const pct   = used / total;
 
       state.pressure = pct;
       return pct;
     } catch {
+      state.pressure = 0;
       return 0;
     }
   }
 
   // ---------------------------------------------------------
   // FLUSH — Clear CoreMemory (Pulse‑Band mode)
-  // ---------------------------------------------------------
+// ---------------------------------------------------------
   function flush() {
-    CoreMemory.clearAll();
+    try {
+      // v30 CoreMemory API: clearAll() on the bridge surface
+      CoreMemory.clearAll?.();
+    } catch {}
     state.lastFlush = Date.now();
   }
 
   // ---------------------------------------------------------
-  // HYDRATE — Rebuild semantic memory from speech + daemon
-  // ---------------------------------------------------------
+  // HYDRATE — v30 (lightweight, no semantic engine)
+// ---------------------------------------------------------
   function hydrate() {
-    CoreMemory.engine.fullScan({
-      speech: CoreSpeech.messages(),
-      presence: CorePresence.snapshot(),
-      daemon: CoreDaemon.snapshot()
-    });
+    // In v24 this rebuilt semantic memory from speech + daemon.
+    // In v30, CoreMemory is binary spine only, so hydration is
+    // a light touch: ensure memory is prewarmed and optionally
+    // store a minimal presence snapshot if desired.
+
+    try {
+      const presenceSnapshot = CorePresence.snapshot?.();
+      const daemonSnapshot   = CoreDaemon.snapshot?.();
+      const speechMessages   = CoreSpeech.messages?.() || [];
+
+      // Optional: store a tiny hydration marker route
+      const inst = CoreMemory.create?.();
+      if (inst) {
+        inst.set("memory-hydration", "lastPresence", presenceSnapshot || {});
+        inst.set("memory-hydration", "lastDaemon", daemonSnapshot || {});
+        inst.set("memory-hydration", "lastSpeechCount", speechMessages.length);
+      }
+    } catch {}
 
     state.lastHydrate = Date.now();
   }
@@ -117,29 +112,36 @@ export function PulseCoreMemoryManager() {
   function heal() {
     const pressure = detectPressure();
 
-    // If memory pressure is high, flush old routes
+    // If memory pressure is high, flush all routes
     if (pressure > 0.75) {
-      CoreMemory.clearAll();
+      try {
+        CoreMemory.clearAll?.();
+      } catch {}
     }
 
-    // Rehydrate semantic memory
+    // Rehydrate lightweight state
     hydrate();
 
     state.lastHeal = Date.now();
   }
 
   // ---------------------------------------------------------
-  // SNAPSHOT — Return full memory state
+  // SNAPSHOT — Return memory manager + core snapshot
   // ---------------------------------------------------------
   function snapshot() {
+    let coreSnapshot = {};
+    try {
+      // v30 CoreMemory API: snapshot(routeId)
+      coreSnapshot = CoreMemory.snapshot?.("global") || {};
+    } catch {}
+
     return {
       mode: state.mode,
       pressure: state.pressure,
       lastFlush: state.lastFlush,
       lastHeal: state.lastHeal,
       lastHydrate: state.lastHydrate,
-      semantic: CoreMemory.graph(),
-      timeline: CoreMemory.timeline()
+      core: coreSnapshot
     };
   }
 
@@ -152,30 +154,25 @@ export function PulseCoreMemoryManager() {
     state.mode = mode;
 
     if (mode === "pulseband") {
-      // Normal browser memory
+      // Normal browser memory: heal in place
       heal();
     }
 
     if (mode === "memorymode") {
-      // Future OS-level memory takeover
+      // Future OS-level memory takeover:
+      // clear, then hydrate fresh
       flush();
       hydrate();
     }
   }
 
   // ---------------------------------------------------------
-  // PUBLIC API
-  // ---------------------------------------------------------
+  // PUBLIC API — v30 (META‑STRIPPED, BINARY‑ALIGNED)
+// ---------------------------------------------------------
   return {
-    meta: PulseCoreMemoryManagerMeta,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META,
-
     mode: () => state.mode,
     pressure: () => state.pressure,
+
     flush,
     hydrate,
     heal,
@@ -183,3 +180,5 @@ export function PulseCoreMemoryManager() {
     switchMode
   };
 }
+
+export default PulseCoreMemoryManager_v30;

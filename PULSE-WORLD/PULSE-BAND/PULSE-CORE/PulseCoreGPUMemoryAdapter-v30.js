@@ -1,37 +1,13 @@
 // ============================================================================
-//  PulseCoreGPUMemoryAdapter-v20.js — v20‑IMMORTAL‑GPU‑SPINE
+//  PulseCoreGPUMemoryAdapter-v30.js — v30‑IMMORTAL‑GPU‑SPINE
 //  GPU SPINE / BRAINSTEM • AUTONOMIC NERVOUS SYSTEM
 //  “ROUTE SIGNALS. REGULATE PRESSURE. NEVER TOUCH THE HARDWARE.”
+//  META‑STRIPPED • NO OVERLAY MAP • NO BAND MAP
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
 // ============================================================================
-//  META BLOCK — v20 IMMORTAL (from genome)
+//  SIGNAL DEFINITIONS (unchanged)
 // ============================================================================
-export const PulseGPUOrchestratorMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v20 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  SIGNAL DEFINITIONS
-// ============================================================================
-
-// deterministic epoch for GPU orchestrator events
 let GPU_EPOCH = 0;
 function nextGPUEpoch() {
   GPU_EPOCH += 1;
@@ -59,7 +35,7 @@ export const GPUOrchestratorSignals = {
 };
 
 // ============================================================================
-//  ROUTING MAP (v20)
+//  ROUTING TABLE (functional, not meta‑map)
 // ============================================================================
 export const GPUOrchestratorRoutes = {
   [GPUOrchestratorSignals.SESSION_START]: {
@@ -113,19 +89,13 @@ export const GPUOrchestratorRoutes = {
 };
 
 // ============================================================================
-//  FACTORY — PURE, DETERMINISTIC DISPATCHER (v20 IMMORTAL)
+//  FACTORY — PURE, DETERMINISTIC DISPATCHER (v30 IMMORTAL)
 // ============================================================================
-import { createPulseBinaryOverlay } from "./PulseCoreBinaryOverlay-v20.js";
-
 export function createPulseGPUOrchestrator({
-  overlay = createPulseBinaryOverlay(),
-  dnaTag = "default-dna",
-  version = "20.0-IMMORTAL-GPU-ORCHESTRATOR",
   log = console.log
 } = {}) {
-
   function safeLog(stage, details = {}) {
-    try { log("[PulseGPUOrchestrator-v20]", stage, JSON.stringify(details)); }
+    try { log("[PulseGPUOrchestrator-v30]", stage, JSON.stringify(details)); }
     catch {}
   }
 
@@ -140,55 +110,21 @@ export function createPulseGPUOrchestrator({
         payload,
         targets: [],
         notes: "",
-        metaBlock: PulseGPUOrchestratorMeta,
-        dnaTag,
-        version,
         epoch,
-        band: "symbolic",
-        pressure: null,
-        mode: null,
-        session: null,
-        routeId: payload.routeId || "gpu",
-        hiccupSeverity: null
+        routeId: payload.routeId || "gpu"
       };
     }
-
-    const band =
-      signal === GPUOrchestratorSignals.LOAD_KERNEL ||
-      signal === GPUOrchestratorSignals.UNLOAD_KERNEL ||
-      signal === GPUOrchestratorSignals.EXECUTE_GRAPH ||
-      signal === GPUOrchestratorSignals.WARM_GRAPH
-        ? "binary"
-        : "symbolic";
 
     const hiccupSeverity =
       typeof payload.hiccupSeverity === "number"
         ? payload.hiccupSeverity
         : null;
 
-    const meta = {
-      metaBlock: PulseGPUOrchestratorMeta,
-      dnaTag,
-      version,
-      epoch,
-      band,
-      pressure: payload.pressure ?? null,
-      mode: payload.mode ?? null,
-      session: payload.session ?? null,
-      routeId: payload.routeId || "gpu",
-      hiccupSeverity
-    };
-
-    try {
-      overlay.touch?.(meta.routeId, epoch, meta);
-    } catch {}
-
     safeLog("ROUTE", {
       signal,
       targets: route.to,
-      band,
-      pressure: meta.pressure,
-      hiccupSeverity: meta.hiccupSeverity
+      pressure: payload.pressure ?? null,
+      hiccupSeverity
     });
 
     return {
@@ -196,25 +132,18 @@ export function createPulseGPUOrchestrator({
       payload,
       targets: route.to,
       notes: route.notes || "",
-      ...meta
+      epoch,
+      routeId: payload.routeId || "gpu",
+      pressure: payload.pressure ?? null,
+      mode: payload.mode ?? null,
+      session: payload.session ?? null,
+      hiccupSeverity
     };
   }
 
-  safeLog("INIT", {
-    identity: PulseGPUOrchestratorMeta.identity,
-    version: PulseGPUOrchestratorMeta.version,
-    dnaTag
-  });
+  safeLog("INIT", { version: "30.0-IMMORTAL-GPU-ORCHESTRATOR" });
 
   return {
-    // genome-driven identity + surface
-    meta: PulseGPUOrchestratorMeta,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META,
-
     GPUOrchestratorSignals,
     GPUOrchestratorRoutes,
     routeSignal
