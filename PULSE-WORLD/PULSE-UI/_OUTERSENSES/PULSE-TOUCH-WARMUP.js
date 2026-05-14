@@ -1,7 +1,7 @@
 // ============================================================================
 // FILE: /PULSE-TOUCH/PULSE-TOUCH-WARMUP.js
 // PULSE OS — v27++ IMMORTAL
-// PULSE‑TOUCH WARMUP — METABOLIC PRE‑PULSE ENGINE
+// PULSE‑TOUCH WARMUP — METABOLIC PRE‑PULSE ENGINE + BINARY STORAGE
 // ============================================================================
 //
 // ROLE:
@@ -16,7 +16,10 @@
 //   + Uses PulseChunkNormalizer (if present) to pre-normalize module envelopes
 //   + Populates a local PulseImportWarmupCache for the current page/layer
 //   + Exposes moduleWarmupRisk + moduleWarmupScore for Security / Predictor / Oracle
+//   + Writes a compact binary warmup snapshot into Pulse‑Touch Storage (IndexedDB)
 // ============================================================================
+
+import { PulseTouchStorage } from "./PULSE-TOUCH-STORAGE.js";
 
 export const AI_EXPERIENCE_META_PulseTouchWarmup = {
   id: "pulsetouch.warmup",
@@ -55,7 +58,10 @@ export const AI_EXPERIENCE_META_PulseTouchWarmup = {
 
       // v27++ module warmup risk surfaces
       "module_warmup_risk",
-      "module_warmup_score"
+      "module_warmup_score",
+
+      // v27++ storage surfaces
+      "warmup_snapshot_persisted"
     ],
     speed: "async_parallel"
   },
@@ -115,7 +121,12 @@ export const ORGAN_META_PulseTouchWarmup = {
     pulseExportAware: true,
     subimportAware: true,
     tierAware: true,
-    moduleWarmupAware: true
+    moduleWarmupAware: true,
+
+    // storage
+    storageAware: true,
+    indexedDBAware: true,
+    warmupSnapshotAware: true
   },
   lineage: {
     family: "pulsetouch_warmup",
@@ -129,7 +140,7 @@ export const ORGAN_META_PulseTouchWarmup = {
       "Warmup v17 (FastLane + Continuous Pulse Metabolism)",
       "Warmup v24 (IMMORTAL++ Metabolic Engine)",
       "Warmup v25++ (Metabolic Profile + NextPage Warmup)",
-      "Warmup v27++ (PulseImport / PulseExport / Subimport Warmup)"
+      "Warmup v27++ (PulseImport / PulseExport / Subimport Warmup + Binary Warmup Snapshot)"
     ]
   }
 };
@@ -456,6 +467,37 @@ export async function warmupOrganism(pulseTouch) {
     moduleWarmupScore: moduleWarmupRisk ? moduleWarmupRisk.score : 0
   };
 
+  // ============================================================
+  // 11. BINARY WARMUP SNAPSHOT → PULSE‑TOUCH STORAGE (IndexedDB)
+  // ============================================================
+  try {
+    if (typeof indexedDB !== "undefined") {
+      const storageOrgan = PulseTouchStorage();
+
+      const key = buildWarmupSnapshotKey(page, layer);
+      const value = buildWarmupSnapshotBinary({
+        warmupDensity,
+        warmupCostHint,
+        readyForFastLane,
+        moduleWarmupRisk,
+        page,
+        region,
+        mode
+      });
+
+      // Fire-and-forget; we don't let storage failures affect warmup result
+      storageOrgan.put("warmup", key, value).then((res) => {
+        if (res && res.ok) {
+          tasks.push("warmup_snapshot_persisted");
+        }
+      }).catch(() => {
+        // silent
+      });
+    }
+  } catch {
+    // silent
+  }
+
   return {
     warmed: true,
     tasks,
@@ -516,6 +558,70 @@ function normalizeNextPageWarmup(hint, currentPage) {
   const chunks = Array.isArray(hint.chunks) ? hint.chunks.slice() : [];
 
   return { page, assets, chunks };
+}
+
+// ============================================================================
+// BINARY SNAPSHOT HELPERS — INDEXEDDB‑FRIENDLY, NO JSON
+// ============================================================================
+
+function buildWarmupSnapshotKey(page, layer) {
+  const base = `${layer || "edge.metabolic"}::${page || "index"}`;
+  return new TextEncoder().encode(base).buffer;
+}
+
+// Layout (little‑endian):
+//   byte 0: version (1)
+//   byte 1: warmupDensity (0‑255, clamped)
+//   byte 2: warmupCostHint (0=none,1=low,2=medium,3=high)
+//   byte 3: readyForFastLane (0/1)
+//   byte 4: moduleWarmupRisk.score (0‑255, clamped)
+//   byte 5: hasMissingSubimports (0/1)
+//   byte 6: hasWrongTierExports (0/1)
+//   byte 7: hasGlobalExposureRisk (0/1)
+//   byte 8: reserved
+//   byte 9: reserved
+function buildWarmupSnapshotBinary({
+  warmupDensity,
+  warmupCostHint,
+  readyForFastLane,
+  moduleWarmupRisk,
+  page,
+  region,
+  mode
+}) {
+  void page;
+  void region;
+  void mode;
+
+  const buf = new ArrayBuffer(10);
+  const view = new DataView(buf);
+
+  const density = Math.max(0, Math.min(255, warmupDensity || 0));
+  const costCode =
+    warmupCostHint === "none" ? 0 :
+    warmupCostHint === "low" ? 1 :
+    warmupCostHint === "medium" ? 2 :
+    warmupCostHint === "high" ? 3 : 0;
+
+  const score = moduleWarmupRisk ? moduleWarmupRisk.score || 0 : 0;
+  const clampedScore = Math.max(0, Math.min(255, score));
+
+  const hasMissingSubimports = moduleWarmupRisk?.hasMissingSubimports ? 1 : 0;
+  const hasWrongTierExports = moduleWarmupRisk?.hasWrongTierExports ? 1 : 0;
+  const hasGlobalExposureRisk = moduleWarmupRisk?.hasGlobalExposureRisk ? 1 : 0;
+
+  view.setUint8(0, 1); // version
+  view.setUint8(1, density);
+  view.setUint8(2, costCode);
+  view.setUint8(3, readyForFastLane ? 1 : 0);
+  view.setUint8(4, clampedScore);
+  view.setUint8(5, hasMissingSubimports);
+  view.setUint8(6, hasWrongTierExports);
+  view.setUint8(7, hasGlobalExposureRisk);
+  view.setUint8(8, 0);
+  view.setUint8(9, 0);
+
+  return buf;
 }
 
 // ============================================================================

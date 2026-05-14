@@ -1,26 +1,31 @@
 // ============================================================================
-// PulseWorldEndpoint-v25++.js
+// PulseWorldEndpoint-v27++-IMMORTAL-FINALITY.js
 // ============================================================================
-// CENTRAL NERVOUS ENDPOINT FOR PULSE ARCHITECTURE — v25++ IMMORTAL
+// CENTRAL NERVOUS ENDPOINT FOR PULSE ARCHITECTURE — v27++ IMMORTAL
 // ----------------------------------------------------------------------------
 //  • Single canonical endpoint for CNS, CheckBand, PulseNet, Transport, PulseBand
 //  • Deterministic, chunk-aware, cache-aware, prewarmable, pulse-aware, versioned
-//  • Supports:
-//      - path or type (safeRoute-style)
-//      - unified route registry (no giant switch)
-//      - explicit Expansion / Internet routes
-//      - v25++ chunk pipeline (string or JSON)
-//      - PulseProofSignal integration
+//  • v27++: Finality-aware via PulseSignalPort, richer metrics
 // ============================================================================
+
 import { PulseProofSignal } from "../../PULSE-BAND/PULSE-X/PULSE-WORLD-SIGNAL.js";
+import { PulseSignalPort } from "../../PULSE-BAND/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
 
 // ----------------------------------------------------------------------------
 // SIGNAL INTEGRATION
 // ----------------------------------------------------------------------------
 
 const EndpointSignal =
-  (typeof PulseProofSignal === "function" && PulseProofSignal.for?.("PulseWorldEndpoint-v25")) ||
-  (typeof PulseProofSignal === "function" && new PulseProofSignal("PulseWorldEndpoint-v25")) ||
+  (typeof PulseProofSignal === "function" &&
+    PulseProofSignal.for?.("PulseWorldEndpoint-v27")) ||
+  (typeof PulseProofSignal === "function" &&
+    new PulseProofSignal("PulseWorldEndpoint-v27")) ||
+  null;
+
+const EndpointFinalityPort =
+  (typeof PulseSignalPort === "function" &&
+    (PulseSignalPort.for?.("PulseWorldEndpoint-v27") ||
+      new PulseSignalPort("PulseWorldEndpoint-v27"))) ||
   null;
 
 function emitSignal(event, payload) {
@@ -33,6 +38,19 @@ function emitSignal(event, payload) {
     }
   } catch {
     // endpoint must never crash from telemetry
+  }
+}
+
+function emitFinality(event, payload) {
+  try {
+    if (!EndpointFinalityPort) return;
+    if (typeof EndpointFinalityPort.emit === "function") {
+      EndpointFinalityPort.emit(event, payload);
+    } else if (typeof EndpointFinalityPort.dispatch === "function") {
+      EndpointFinalityPort.dispatch(event, payload);
+    }
+  } catch {
+    // never crash
   }
 }
 
@@ -85,11 +103,20 @@ function recordLatency(type, durationMs, error = null) {
   const prevAvg = endpointMetrics.avgLatencyMs;
   endpointMetrics.avgLatencyMs = prevAvg + (durationMs - prevAvg) / n;
 
+  const snapshot = { ...endpointMetrics };
+
   emitSignal("endpoint.metrics", {
     type,
     durationMs,
     error: error ? String(error) : null,
-    snapshot: { ...endpointMetrics }
+    snapshot
+  });
+
+  emitFinality("endpoint.metrics", {
+    type,
+    durationMs,
+    error: error ? String(error) : null,
+    snapshot
   });
 }
 
@@ -130,6 +157,7 @@ function applySpeedBoost(bandId, boost, reason, ttlMs = 30_000) {
   state.speedBoostExpiresAt = expiresAt;
 
   emitSignal("band.speedBoost", { bandId: key, entry });
+  emitFinality("band.speedBoost", { bandId: key, entry });
 
   return entry;
 }
@@ -145,7 +173,14 @@ function getEffectiveSpeedBoost(bandId) {
     state.speedBoost = 1.0;
     state.speedBoostReason = "neutral";
     state.speedBoostExpiresAt = 0;
-    return { bandId: key, boost: 1.0, reason: "neutral", expiresAt: 0 };
+    const neutral = {
+      bandId: key,
+      boost: 1.0,
+      reason: "neutral",
+      expiresAt: 0
+    };
+    emitFinality("band.speedBoost.expired", { bandId: key, entry: neutral });
+    return neutral;
   }
 
   const state = getBandState(key);
@@ -157,14 +192,10 @@ function getEffectiveSpeedBoost(bandId) {
 }
 
 // ----------------------------------------------------------------------------
-// v25++ CHUNK PIPELINE
+// v27++ CHUNK PIPELINE (same semantics as v25++, finality-aware)
 // ----------------------------------------------------------------------------
-// Supports:
-//   • string chunks
-//   • JSON chunks (assembled then parsed)
-//   • falls back gracefully if parse fails
 
-function handleChunkedPayloadV25(chunkMeta) {
+function handleChunkedPayloadV27(chunkMeta) {
   const { chunkId, chunkIndex, totalChunks, data, isJson } = chunkMeta || {};
   if (!chunkId || typeof totalChunks !== "number") {
     return { complete: true, payload: chunkMeta }; // not chunked
@@ -192,12 +223,16 @@ function handleChunkedPayloadV25(chunkMeta) {
   }
 
   if (entry.receivedCount < entry.totalChunks) {
-    emitSignal("endpoint.chunk.partial", {
+    const partial = {
       chunkId,
       chunkIndex,
       totalChunks,
       receivedCount: entry.receivedCount
-    });
+    };
+
+    emitSignal("endpoint.chunk.partial", partial);
+    emitFinality("endpoint.chunk.partial", partial);
+
     return { complete: false };
   }
 
@@ -215,11 +250,14 @@ function handleChunkedPayloadV25(chunkMeta) {
 
   chunkBuffer.delete(chunkId);
 
-  emitSignal("endpoint.chunk.complete", {
+  const complete = {
     chunkId,
     totalChunks: entry.totalChunks,
     isJson: entry.isJson
-  });
+  };
+
+  emitSignal("endpoint.chunk.complete", complete);
+  emitFinality("endpoint.chunk.complete", complete);
 
   return { complete: true, payload: assembled };
 }
@@ -259,11 +297,12 @@ async function handleCheckBand(payload) {
     authoritativeBand: state.authoritativeBand,
     meta: {
       source: "PulseWorldEndpoint.CheckBand",
-      version: 25
+      version: 27
     }
   };
 
   emitSignal("band.check", { bandId, stability, result });
+  emitFinality("band.check", { bandId, stability, result });
 
   return result;
 }
@@ -302,11 +341,20 @@ async function handleVitalsSample(payload) {
     speedBoost: boostEntry,
     meta: {
       source: "PulseWorldEndpoint.VitalsSample",
-      version: 25
+      version: 27
     }
   };
 
   emitSignal("band.vitals", {
+    bandId,
+    latencyMs,
+    stability,
+    baseAdvantage,
+    effectiveAdvantage,
+    result
+  });
+
+  emitFinality("band.vitals", {
     bandId,
     latencyMs,
     stability,
@@ -330,11 +378,12 @@ async function handlePulseNetRoute(payload) {
     receivedAt: nowMs(),
     meta: {
       source: "PulseWorldEndpoint.PulseNetRoute",
-      version: 25
+      version: 27
     }
   };
 
   emitSignal("pulsenet.route", { bandId, kind, payload, result });
+  emitFinality("pulsenet.route", { bandId, kind, payload, result });
 
   return result;
 }
@@ -349,11 +398,12 @@ async function handleCheckRouterMemory(payload) {
     suggestions: [],
     meta: {
       source: "PulseWorldEndpoint.CheckRouterMemory",
-      version: 25
+      version: 27
     }
   };
 
   emitSignal("router.memory.check", { logsCount: logs.length, result });
+  emitFinality("router.memory.check", { logsCount: logs.length, result });
 
   return result;
 }
@@ -368,11 +418,12 @@ async function handleRouteDownAlert(payload) {
     error: String(error || "unknown"),
     meta: {
       source: "PulseWorldEndpoint.RouteDownAlert",
-      version: 25
+      version: 27
     }
   };
 
   emitSignal("route.down", { payload, result });
+  emitFinality("route.down", { payload, result });
 
   return result;
 }
@@ -393,16 +444,16 @@ async function handlePulseBandMetrics(payload) {
     speedBoost: boostEntry,
     meta: {
       source: "PulseWorldEndpoint.PulseBandMetrics",
-      version: 25
+      version: 27
     }
   };
 
   emitSignal("band.metrics", { bandId, payload, result });
+  emitFinality("band.metrics", { bandId, payload, result });
 
   return result;
 }
 
-// v25++: explicit Expansion / Internet entry
 async function handleExpansionRoute(payload) {
   const channel = payload?.channel || payload?.kind || "internet";
   const route = payload?.route ?? payload;
@@ -414,17 +465,18 @@ async function handleExpansionRoute(payload) {
     routeEcho: route,
     meta: {
       source: "PulseWorldEndpoint.ExpansionRoute",
-      version: 25
+      version: 27
     }
   };
 
   emitSignal("expansion.route", { channel, route, result });
+  emitFinality("expansion.route", { channel, route, result });
 
   return result;
 }
 
 // ----------------------------------------------------------------------------
-// ROUTE REGISTRY (v25++)
+// ROUTE REGISTRY (v27++)
 // ----------------------------------------------------------------------------
 
 const routeHandlers = {
@@ -446,7 +498,6 @@ const routeHandlers = {
   RouteDownAlert: handleRouteDownAlert,
   PulseBandMetrics: handlePulseBandMetrics,
 
-  // v25++ explicit internet/expansion entry
   ExpansionRoute: handleExpansionRoute,
   InternetRoute: handleExpansionRoute
 };
@@ -473,17 +524,18 @@ export function prewarmPulseWorldEndpoint() {
   }
 
   emitSignal("endpoint.prewarm", { bands: defaultBands });
+  emitFinality("endpoint.prewarm", { bands: defaultBands });
 }
 
 // ----------------------------------------------------------------------------
-// CENTRAL DISPATCH — v25++
+// CENTRAL DISPATCH — v27++
 // ----------------------------------------------------------------------------
 
-const C_ID   = "color:#FFA726; font-weight:bold; font-family:monospace;";
-const C_OK   = "color:#00FF9C; font-family:monospace;";
+const C_ID = "color:#FFA726; font-weight:bold; font-family:monospace;";
+const C_OK = "color:#00FF9C; font-family:monospace;";
 const C_INFO = "color:#E8F8FF; font-family:monospace;";
 const C_WARN = "color:#FFE066; font-family:monospace;";
-const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;";
+const C_ERR = "color:#FF3B3B; font-weight:bold; font-family:monospace;";
 
 export const PulseWorldEndpoint = Object.freeze({
   async handle(route) {
@@ -493,10 +545,14 @@ export const PulseWorldEndpoint = Object.freeze({
 
     console.log(
       "%c[PulseWorldEndpoint] %chandle() %c→ %s",
-      C_ID, C_INFO, C_OK, rawType
+      C_ID,
+      C_INFO,
+      C_OK,
+      rawType
     );
 
     emitSignal("endpoint.call", { type: rawType, route });
+    emitFinality("endpoint.call", { type: rawType, route });
 
     try {
       try {
@@ -508,10 +564,13 @@ export const PulseWorldEndpoint = Object.freeze({
       if (payload && payload.chunkId) {
         console.log(
           "%c[PulseWorldEndpoint] %cchunk assembly %c→ chunkId:%s",
-          C_ID, C_WARN, C_INFO, payload.chunkId
+          C_ID,
+          C_WARN,
+          C_INFO,
+          payload.chunkId
         );
 
-        const chunkResult = handleChunkedPayloadV25(payload);
+        const chunkResult = handleChunkedPayloadV27(payload);
 
         if (!chunkResult.complete) {
           const duration = nowMs() - start;
@@ -519,7 +578,9 @@ export const PulseWorldEndpoint = Object.freeze({
 
           console.log(
             "%c[PulseWorldEndpoint] %cchunk incomplete %c→ waiting",
-            C_ID, C_WARN, C_INFO
+            C_ID,
+            C_WARN,
+            C_INFO
           );
 
           const partial = {
@@ -528,11 +589,12 @@ export const PulseWorldEndpoint = Object.freeze({
             chunkId: payload.chunkId,
             meta: {
               source: "PulseWorldEndpoint.Chunk",
-              version: 25
+              version: 27
             }
           };
 
           emitSignal("endpoint.chunk.inProgress", partial);
+          emitFinality("endpoint.chunk.inProgress", partial);
           return partial;
         }
 
@@ -542,7 +604,10 @@ export const PulseWorldEndpoint = Object.freeze({
 
       console.log(
         "%c[PulseWorldEndpoint] %cdispatch %c→ %s",
-        C_ID, C_INFO, C_OK, rawType
+        C_ID,
+        C_INFO,
+        C_OK,
+        rawType
       );
 
       const handler = routeHandlers[rawType];
@@ -550,7 +615,10 @@ export const PulseWorldEndpoint = Object.freeze({
       if (!handler) {
         console.log(
           "%c[PulseWorldEndpoint] %cUnknown route %c→ %s",
-          C_ID, C_WARN, C_INFO, rawType
+          C_ID,
+          C_WARN,
+          C_INFO,
+          rawType
         );
 
         const duration = nowMs() - start;
@@ -562,11 +630,12 @@ export const PulseWorldEndpoint = Object.freeze({
           routeType: rawType,
           meta: {
             source: "PulseWorldEndpoint.Unknown",
-            version: 25
+            version: 27
           }
         };
 
         emitSignal("endpoint.unknownRoute", unknown);
+        emitFinality("endpoint.unknownRoute", unknown);
         return unknown;
       }
 
@@ -575,20 +644,26 @@ export const PulseWorldEndpoint = Object.freeze({
 
       console.log(
         "%c[PulseWorldEndpoint] %clatency %c→ %dms",
-        C_ID, C_INFO, C_OK, duration
+        C_ID,
+        C_INFO,
+        C_OK,
+        duration
       );
 
       recordLatency(rawType, duration, null);
       emitSignal("endpoint.result", { type: rawType, durationMs: duration, result });
+      emitFinality("endpoint.result", { type: rawType, durationMs: duration, result });
 
       return result;
-
     } catch (err) {
       error = err;
 
       console.error(
         "%c[PulseWorldEndpoint] %cERROR %c→ %s",
-        C_ID, C_ERR, C_WARN, String(err)
+        C_ID,
+        C_ERR,
+        C_WARN,
+        String(err)
       );
 
       const duration = nowMs() - start;
@@ -600,11 +675,21 @@ export const PulseWorldEndpoint = Object.freeze({
         message: String(err),
         meta: {
           source: "PulseWorldEndpoint.handle",
-          version: 25
+          version: 27
         }
       };
 
-      emitSignal("endpoint.error", { type: rawType, durationMs: duration, error: String(err) });
+      emitSignal("endpoint.error", {
+        type: rawType,
+        durationMs: duration,
+        error: String(err)
+      });
+
+      emitFinality("endpoint.error", {
+        type: rawType,
+        durationMs: duration,
+        error: String(err)
+      });
 
       return failure;
     }
@@ -614,26 +699,35 @@ export const PulseWorldEndpoint = Object.freeze({
     console.log("%c[PulseWorldEndpoint] %cgetMetrics()", C_ID, C_INFO);
     const snapshot = safeJsonClone(endpointMetrics);
     emitSignal("endpoint.metrics.read", snapshot);
+    emitFinality("endpoint.metrics.read", snapshot);
     return snapshot;
   },
 
   getBandState(bandId) {
     console.log(
       "%c[PulseWorldEndpoint] %cgetBandState() %c→ %s",
-      C_ID, C_INFO, C_OK, bandId
+      C_ID,
+      C_INFO,
+      C_OK,
+      bandId
     );
     const snapshot = safeJsonClone(getBandState(bandId));
     emitSignal("band.state.read", { bandId, snapshot });
+    emitFinality("band.state.read", { bandId, snapshot });
     return snapshot;
   },
 
   getSpeedBoost(bandId) {
     console.log(
       "%c[PulseWorldEndpoint] %cgetSpeedBoost() %c→ %s",
-      C_ID, C_INFO, C_OK, bandId
+      C_ID,
+      C_INFO,
+      C_OK,
+      bandId
     );
     const snapshot = safeJsonClone(getEffectiveSpeedBoost(bandId));
     emitSignal("band.speedBoost.read", { bandId, snapshot });
+    emitFinality("band.speedBoost.read", { bandId, snapshot });
     return snapshot;
   }
 });
@@ -643,15 +737,17 @@ export const PulseWorldEndpoint = Object.freeze({
 // ----------------------------------------------------------------------------
 
 console.log(
-  "%c[PulseWorldEndpoint] %cauto-prewarm on import (v25++)",
-  C_ID, C_OK
+  "%c[PulseWorldEndpoint] %cauto-prewarm on import (v27++)",
+  C_ID,
+  C_OK
 );
 
 prewarmPulseWorldEndpoint();
 
 console.log(
-  "%c[PulseWorldEndpoint] %cexposed to window (v25++)",
-  C_ID, C_OK
+  "%c[PulseWorldEndpoint] %cexposed to window (v27++)",
+  C_ID,
+  C_OK
 );
 
 if (typeof window !== "undefined") {

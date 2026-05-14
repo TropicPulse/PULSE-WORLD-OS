@@ -63,7 +63,8 @@ export const ORGAN_CONTRACT_PulseTouchPredictor = {
     structural: "Structural route prediction details",
 
     // v27++
-    modulePrediction: "Module health + import/export/subimport stability prediction"
+    modulePrediction: "Module health + import/export/subimport stability prediction",
+    moduleRisk: "Soft module risk surface for Gate / Security / Oracle"
   },
   guarantees: {
     deterministic: true,
@@ -253,8 +254,18 @@ export function PulseTouchPredictor() {
     // 5) Final deterministic nextPage
     const nextPage = structuralNext || cortexNext || portalNext || currentPage;
 
-    // 6) Module health prediction (the “detector” you wanted)
+    // 6) Module health prediction
     const modulePrediction = predictModuleHealth(pulseTouch);
+
+    // 6.5) Soft module risk surface (what Gate / Security / Oracle consume)
+    const moduleRisk = {
+      hasMissingSubimports: modulePrediction.hasMissingSubimports,
+      hasWrongTierExports: modulePrediction.hasWrongTierExports,
+      hasGlobalExposureRisk: modulePrediction.hasGlobalExposureRisk,
+      hasChunkProfileAnomaly: modulePrediction.hasChunkProfileAnomaly,
+      score: 1 - modulePrediction.stabilityScore, // 0 = no risk, 1 = max risk
+      source: modulePrediction.source || "predictor"
+    };
 
     // 7) Confidence scoring
     let confidence = 0.5;
@@ -281,6 +292,7 @@ export function PulseTouchPredictor() {
         portalNext
       },
       modulePrediction,
+      moduleRisk,
       confidence
     };
   }

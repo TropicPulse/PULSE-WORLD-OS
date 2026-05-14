@@ -1,7 +1,43 @@
 // ============================================================================
-//  PulseProofBridge-v24-IMMORTAL-ADV++ (UPGRADED: SIGNAL/LOGGER DIFFERENTIAL)
+//  PulseProofBridge-v27-IMMORTAL-FINALITY++
+//  ROLE: Portal Trust Bridge + Local Buffer + Finality / Approval Layer
+//        + CNS / Binary / DualBand / Remote Endpoint
 // ============================================================================
 
+import {
+  VitalsLogger as PulseProofLogger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../_MONITOR/PULSE-PROOF-LOGGER.js";
+import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PULSE-PROOF-MONITOR.js";
+import { initUIFlow as PulseProofFlow } from "../_MONITOR/PULSE-PROOF-FLOW.js";
+import PulseUIErrors from "../_MONITOR/PULSE-PROOF-ERRORS.js";
+import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
+
+import { createPulseSkinReflex as PulseProofReflex } from "../_COMPONENTS_EVOLUTION/PulseUISkinReflex-v24.js";
+import PulsePageScanner from "../_COMPONENTS_EVOLUTION/PulseUIPageScanner-v24.js";
+import { createPulseRouteMemory as PulseUIRouteMemory } from "../_COMPONENTS_EVOLUTION/PulseUIRouteMemory-v24.js";
+
+// NEW: Finality / Signal Port (IMMORTAL FINALITY LAYER)
+import { PulseSignalPort } from "../PULSE-BAND/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
+
+const G =
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+
+// ============================================================================
+// PulseProofBridge CORE SURFACE
+// ============================================================================
 
 const PulseProofBridge = {
   route: null,
@@ -52,7 +88,9 @@ export function attachRealBridge(real) {
   PulseProofBridge.ready = true;
 
   for (const fn of PulseProofBridge.queue) {
-    try { fn(PulseProofBridge); } catch {}
+    try {
+      fn(PulseProofBridge);
+    } catch {}
   }
   PulseProofBridge.queue = [];
 }
@@ -60,73 +98,40 @@ export function attachRealBridge(real) {
 export { PulseProofBridge };
 
 // ============================================================================
-//  GLOBAL + DB + LOGGER — IMMORTAL SNAPSHOT
-// ============================================================================
-
-import { VitalsLogger as PulseProofLogger, log, warn, error, comment, makeTelemetryPacket as emitTelemetry, PulseVersion, PulseColors, PulseIcons} from "../_MONITOR/PULSE-PROOF-LOGGER.js";
-import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PULSE-PROOF-MONITOR.js";
-import { initUIFlow as PulseProofFlow } from "../_MONITOR/PULSE-PROOF-FLOW.js";
-import PulseUIErrors from "../_MONITOR/PULSE-PROOF-ERRORS.js";
-import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
-
-
-import { createPulseSkinReflex as PulseProofReflex } from "../_COMPONENTS_EVOLUTION/PulseUISkinReflex-v24.js";
-import PulsePageScanner from "../_COMPONENTS_EVOLUTION/PulseUIPageScanner-v24.js";
-import { createPulseRouteMemory as PulseUIRouteMemory } from "../_COMPONENTS_EVOLUTION/PulseUIRouteMemory-v24.js";
-
-
-const G =
-  (typeof window !== "undefined" && window) ||
-  (typeof globalThis !== "undefined" && globalThis) ||
-  (typeof self !== "undefined" && self) ||
-  (typeof global !== "undefined" && global) ||
-  {};
-const g = G;
-// ============================================================================
-// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// UNIVERSAL TIMESTAMP / ADMIN / DB
 // ============================================================================
 
 const Timestamp =
-  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
+  (G.firebaseAdmin &&
+    G.firebaseAdmin.firestore &&
+    G.firebaseAdmin.firestore.Timestamp) ||
   (G.Timestamp && G.Timestamp) ||
   null;
-
-// ============================================================================
-// UNIVERSAL ADMIN (Shadow or Admin)
-// ============================================================================
 
 const admin =
   (G.firebaseAdmin && G.firebaseAdmin) ||
   (G.admin && G.admin) ||
   null;
 
-// ============================================================================
-// UNIVERSAL DB (Shadow DB ALWAYS wins)
-// ============================================================================
 const db =
-  (G.db && G.db) ||                 // Shadow DB (v25++)
+  (G.db && G.db) || // Shadow DB (v25++)
   (admin && admin.firestore && admin.firestore()) || // Admin fallback
   null;
 
 // ============================================================================
-// UNIVERSAL LOGGING
+// UNIVERSAL LOGGING / FETCH
 // ============================================================================
 
-const dblog =
-  (G.log && G.log) ||
-  console.log;
+const dblog = (G.log && G.log) || console.log;
+const dberror = (G.error && G.error) || console.error;
 
-const dberror =
-  (G.error && G.error) ||
-  console.error;
-  
 const fetchFn =
-  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
-  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||
   null;
 
 // ============================================================================
-//  ENVIRONMENT SNAPSHOT — IMMORTAL, PORTAL-AWARE, ADV++
+// ENVIRONMENT SNAPSHOT — IMMORTAL, PORTAL-AWARE, ADV++
 // ============================================================================
 
 function safeGet(fn, fallback = null) {
@@ -155,7 +160,8 @@ function buildBridgeEnvironment() {
 
   const surfaceEnv = window.PulseSurface?.environment;
 
-  const ua = surfaceEnv?.userAgent ?? window.navigator?.userAgent ?? null;
+  const ua =
+    surfaceEnv?.userAgent ?? window.navigator?.userAgent ?? null;
   const screenInfo = {
     width: safeGet(() => window.screen?.width, null),
     height: safeGet(() => window.screen?.height, null),
@@ -190,7 +196,7 @@ function buildBridgeEnvironment() {
 const BRIDGE_ENV = buildBridgeEnvironment();
 
 // ============================================================================
-//  USER SNAPSHOT — IDENTITY v20 HOOK (metadata only)
+// IDENTITY SNAPSHOT — IMMORTAL
 // ============================================================================
 
 let CURRENT_IDENTITY_SNAPSHOT = null;
@@ -224,7 +230,7 @@ function getBridgeIdentitySnapshot() {
 }
 
 // ============================================================================
-//  ONLINE FLAG
+// ONLINE FLAG
 // ============================================================================
 
 function isOnline() {
@@ -239,7 +245,7 @@ function isOnline() {
 }
 
 // ============================================================================
-//  IMMORTAL LOCALSTORAGE MIRROR — PulseBridgeStore
+// IMMORTAL LOCALSTORAGE MIRROR — PulseBridgeStore
 // ============================================================================
 
 const BRIDGE_LS_KEY = "PulseBridge.v24.buffer";
@@ -281,7 +287,7 @@ function saveBridgeBuffer(buf) {
 }
 
 // ============================================================================
-//  ARTERY-LIKE METRICS
+// ARTERY-LIKE METRICS
 // ============================================================================
 
 let arteryWindowStart = Date.now();
@@ -311,7 +317,89 @@ function buildArterySnapshot(kind) {
 }
 
 // ============================================================================
-//  APPEND BRIDGE RECORD — IMMORTAL + IDENTITY + ENV + COMMENT
+// FINALITY / APPROVAL LAYER — v27++ IMMORTAL
+// ============================================================================
+
+const FINALITY_CHANNEL_ID = "portal.trust.bridge";
+
+function emitFinalityEvent(kind, payload) {
+  try {
+    if (!PulseSignalPort || typeof PulseSignalPort.emit !== "function") return;
+    PulseSignalPort.emit("bridge.finality", {
+      channel: FINALITY_CHANNEL_ID,
+      kind,
+      env: BRIDGE_ENV,
+      identity: getBridgeIdentitySnapshot(),
+      payload
+    });
+  } catch {
+    // finality is advisory; never break bridge
+  }
+}
+
+function approveBridgeMessage(kind, msg) {
+  // Default: allow
+  let allowed = true;
+
+  try {
+    if (!PulseSignalPort) return true;
+
+    const fn =
+      PulseSignalPort.requestApproval ||
+      PulseSignalPort.approve ||
+      null;
+
+    if (typeof fn !== "function") {
+      emitFinalityEvent("bridge_observe", { kind, msg });
+      return true;
+    }
+
+    const decision = fn({
+      channel: FINALITY_CHANNEL_ID,
+      kind,
+      path: msg.path || msg.payload?.path || null,
+      env: BRIDGE_ENV,
+      identity: getBridgeIdentitySnapshot(),
+      msg
+    });
+
+    // Support sync or promise; if promise, we don't block, we just observe
+    if (decision && typeof decision.then === "function") {
+      decision.then((res) => {
+        emitFinalityEvent("bridge_async_decision", {
+          kind,
+          msg,
+          decision: res
+        });
+      });
+      // For determinism, treat async as "allow" but still observed
+      emitFinalityEvent("bridge_async_observe", { kind, msg });
+      return true;
+    }
+
+    const action = typeof decision === "string" ? decision : decision?.action;
+
+    if (action === "deny") {
+      allowed = false;
+      emitFinalityEvent("bridge_denied", { kind, msg, decision });
+    } else if (action === "logOnly") {
+      allowed = true;
+      emitFinalityEvent("bridge_log_only", { kind, msg, decision });
+    } else {
+      allowed = true;
+      emitFinalityEvent("bridge_allowed", { kind, msg, decision });
+    }
+  } catch {
+    // On any failure, we fall back to allow but still emit an error event
+    emitFinalityEvent("bridge_finality_error", { kind, msg });
+    allowed = true;
+  }
+
+  return allowed;
+}
+
+// ============================================================================
+// APPEND BRIDGE RECORD — IMMORTAL + IDENTITY + ENV + FINALITY TAP
 // ============================================================================
 
 function appendBridgeRecord(kind, payload) {
@@ -332,13 +420,13 @@ function appendBridgeRecord(kind, payload) {
   buf.push(entry);
   saveBridgeBuffer(buf);
 
-  // Human-facing: logger + comment (differential from CNS signal)
+  // Human-facing: logger + comment
   try {
     log({
       subsystem: "bridge",
       system: "PortalTrustLayer",
       organ: "PulseProofBridge",
-      layer: "PulseProofBridge-v24",
+      layer: "PulseProofBridge-v27-FINALITY",
       message: `[Bridge] ${kind}`,
       extra: entry,
       level: "log",
@@ -349,12 +437,13 @@ function appendBridgeRecord(kind, payload) {
       experienceField: payload?.experienceField || "portal-trust-layer"
     });
 
-    // COMMENT for every bridge event so you can see the membrane breathing
     comment("bridge", `[Bridge] ${kind}`, entry);
   } catch {
-    // If logger/comment are broken, at least show raw
     console.log("[Bridge]", kind, entry);
   }
+
+  // Tap into Finality stream (non-blocking)
+  emitFinalityEvent("bridge_record", { kind, entry });
 }
 
 export const PulseBridgeStore = {
@@ -371,7 +460,7 @@ export const PulseBridgeStore = {
 };
 
 // ============================================================================
-//  FIREBASE FLUSH
+// FIREBASE FLUSH
 // ============================================================================
 
 async function flushBridgeToFirebase() {
@@ -405,7 +494,7 @@ if (typeof window !== "undefined") {
 }
 
 // ============================================================================
-//  BROADCAST CHANNEL + DEV TRACING
+// BROADCAST CHANNEL + DEV TRACING
 // ============================================================================
 
 const DEV = true;
@@ -426,7 +515,7 @@ const FIRE_AND_FORGET_PATHS = new Set([
 function trace(label, data) {
   if (!DEV) return;
   console.log(
-    `%c[PORTAL TRUST BRIDGE v24] → ${label}`,
+    `%c[PORTAL TRUST BRIDGE v27] → ${label}`,
     "color:#7FDBFF; font-weight:bold;",
     data
   );
@@ -435,14 +524,14 @@ function trace(label, data) {
 function traceInbound(label, data) {
   if (!DEV) return;
   console.log(
-    `%c[PORTAL TRUST BRIDGE v24] ← ${label}`,
+    `%c[PORTAL TRUST BRIDGE v27] ← ${label}`,
     "color:#39CCCC; font-weight:bold;",
     data
   );
 }
 
 // ============================================================================
-//  CALLBACK REGISTRIES
+// CALLBACK REGISTRIES
 // ============================================================================
 
 let dualBandBootHandler = null;
@@ -462,7 +551,7 @@ export function onPortalEvent(fn) {
 }
 
 // ============================================================================
-//  MARK 404
+// MARK 404
 // ============================================================================
 
 function mark404(result) {
@@ -474,7 +563,7 @@ function mark404(result) {
 }
 
 // ============================================================================
-//  ENVELOPE + SEND (CNS SIGNAL SIDE)
+// ENVELOPE + SEND (CNS SIGNAL SIDE) + FINALITY APPROVAL
 // ============================================================================
 
 function envelope(type, extra = {}) {
@@ -488,16 +577,24 @@ function envelope(type, extra = {}) {
 }
 
 function send(msg) {
+  // Finality / Approval gate
+  const kind = msg.type || "unknown";
+  if (!approveBridgeMessage(kind, msg)) {
+    appendBridgeRecord("bridge_outbound_denied", { msg });
+    return;
+  }
+
   if (!channel) {
     appendBridgeRecord("bridge_noop", msg);
     return;
   }
+
   channel.postMessage(msg);
   appendBridgeRecord("bridge_outbound", msg);
 }
 
 // ============================================================================
-//  BRIDGE HEALTH
+// BRIDGE HEALTH
 // ============================================================================
 
 const BRIDGE_HEALTH = {
@@ -536,29 +633,33 @@ function recordBridgeFailure(path, reason) {
   appendBridgeRecord("bridge_failure", payload);
 
   try {
-    send(envelope("CNS_SIGNAL", {
-      path: "monitor.bridgeFailure",
-      payload
-    }));
+    send(
+      envelope("CNS_SIGNAL", {
+        path: "monitor.bridgeFailure",
+        payload
+      })
+    );
   } catch {}
 
   if (BRIDGE_HEALTH.consecutiveFailures >= BRIDGE_FAILURE_EMAIL_THRESHOLD) {
     try {
-      send(envelope("CNS_SIGNAL", {
-        path: "monitor.bridgeFailureEmail",
-        payload: {
-          ...payload,
-          severity: "critical",
-          channel: "email"
-        }
-      }));
+      send(
+        envelope("CNS_SIGNAL", {
+          path: "monitor.bridgeFailureEmail",
+          payload: {
+            ...payload,
+            severity: "critical",
+            channel: "email"
+          }
+        })
+      );
       appendBridgeRecord("bridge_failure_email_requested", payload);
     } catch {}
   }
 }
 
 // ============================================================================
-//  INBOUND HANDLER
+// INBOUND HANDLER
 // ============================================================================
 
 function handleInbound(event) {
@@ -588,24 +689,27 @@ function handleInbound(event) {
   }
 }
 
-if (channel && !channel.__PULSE_BRIDGE_BOUND_V24__) {
-  channel.__PULSE_BRIDGE_BOUND_V24__ = true;
+if (channel && !channel.__PULSE_BRIDGE_BOUND_V27__) {
+  channel.__PULSE_BRIDGE_BOUND_V27__ = true;
   channel.addEventListener("message", handleInbound);
 }
 
 const pending = Object.create(null);
 const imagePending = Object.create(null);
+
 // ============================================================================
-//  SAFE ROUTE — v24 DIRECT ENDPOINT MODE (NO BRIDGE, NO TIMEOUTS)
+// SAFE ROUTE — DIRECT ENDPOINT MODE (NO BRIDGE, NO TIMEOUTS)
 // ============================================================================
+
 export function safeRoute(path, payload = {}, timeoutMs = 10000) {
   trace("SAFE_ROUTE", { path, payload });
 
-  // 1 — Direct frontend hooks (keep this)
-  if (typeof window !== "undefined" &&
-      window.PulseHooks &&
-      typeof window.PulseHooks[path] === "function") {
-
+  // 1 — Direct frontend hooks
+  if (
+    typeof window !== "undefined" &&
+    window.PulseHooks &&
+    typeof window.PulseHooks[path] === "function"
+  ) {
     appendBridgeRecord("safeRoute_direct_call", { path, payload });
 
     try {
@@ -616,19 +720,24 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
     }
   }
 
-  // 2 — DIRECT ENDPOINT ROUTE (NO BRIDGE, NO CNS, NO TIMEOUT)
+  // 2 — DIRECT ENDPOINT ROUTE
   return new Promise(async (resolve) => {
     try {
-      if (typeof window !== "undefined" &&
-          window.PulseRemoteEndpoint &&
-          typeof window.PulseRemoteEndpoint.handle === "function") {
-
+      if (
+        typeof window !== "undefined" &&
+        window.PulseRemoteEndpoint &&
+        typeof window.PulseRemoteEndpoint.handle === "function"
+      ) {
         const result = await window.PulseRemoteEndpoint.handle({
           path,
           payload
         });
 
-        appendBridgeRecord("safeRoute_endpoint_call", { path, payload, result });
+        appendBridgeRecord("safeRoute_endpoint_call", {
+          path,
+          payload,
+          result
+        });
         resolve(result);
         return;
       }
@@ -642,23 +751,31 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
   });
 }
 
-
 // ============================================================================
-//  SIGNAL (CNS side, not PulseProofSignal)
+// SIGNAL (CNS side, not PulseProofSignal)
 // ============================================================================
 
 export function signal(path, payload = {}) {
   trace("SIGNAL", { path, payload });
-  send(envelope("CNS_SIGNAL", { path, payload }));
+  send(
+    envelope("CNS_SIGNAL", {
+      path,
+      payload
+    })
+  );
 }
 
 // ============================================================================
-//  PREWARM
+// PREWARM
 // ============================================================================
 
 export function prewarmBridge(hints = {}) {
   try {
-    if (typeof window !== "undefined" && window.prewarmAssets && Array.isArray(hints.assets)) {
+    if (
+      typeof window !== "undefined" &&
+      window.prewarmAssets &&
+      Array.isArray(hints.assets)
+    ) {
       window.prewarmAssets(hints.assets);
       appendBridgeRecord("prewarm_assets", { urls: hints.assets });
     }
@@ -674,7 +791,7 @@ export function prewarmBridge(hints = {}) {
 }
 
 // ============================================================================
-//  CORE MEMORY / SPEECH BRIDGES
+// CORE MEMORY / SPEECH BRIDGES
 // ============================================================================
 
 export const coreMemoryBridge = {
@@ -692,32 +809,31 @@ export const coreSpeechBridge = {
 };
 
 // ============================================================================
-//  FIRE-AND-FORGET ROUTE
+// FIRE-AND-FORGET ROUTE
 // ============================================================================
 
 export function fireAndForgetRoute(path, payload = {}) {
   trace("FIRE_AND_FORGET", { path, payload });
-  send(envelope("CNS_REQUEST", {
-    requestId: "ff-" + Date.now().toString(36),
-    path,
-    payload
-  }));
+  send(
+    envelope("CNS_REQUEST", {
+      requestId: "ff-" + Date.now().toString(36),
+      path,
+      payload
+    })
+  );
 }
 
 // ============================================================================
-//  STARTERS
+// STARTERS
 // ============================================================================
 
 export function startDualBandAI(options = {}) {
-  // Signal 1 — Start DualBand AI
   trace("DUALBAND_AI_START", options);
   send(envelope("DUALBAND_AI_START", { options }));
 
-  // Signal 2 — Start BinaryOS (completely separate)
   trace("BINARY_OS_BOOT", options);
   send(envelope("BINARY_OS_BOOT", { options }));
 }
-
 
 export function fetchImageThroughBridge(url) {
   trace("IMAGE_FETCH", { url });
@@ -727,7 +843,12 @@ export function fetchImageThroughBridge(url) {
 
   return new Promise((resolve) => {
     imagePending[requestId] = { resolve };
-    send(envelope("IMAGE_REQUEST", { requestId, url }));
+    send(
+      envelope("IMAGE_REQUEST", {
+        requestId,
+        url
+      })
+    );
   });
 }
 
@@ -757,8 +878,9 @@ export function requestCompiler(reason = "touch", meta = {}) {
 }
 
 // ============================================================================
-//  INBOUND PORTAL / AI / BOOT EVENTS
+// INBOUND PORTAL / AI / BOOT EVENTS
 // ============================================================================
+
 if (channel) {
   channel.addEventListener("message", (event) => {
     const msg = event?.data;
@@ -869,7 +991,7 @@ import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdm
 import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 
 // ============================================================================
-//  EXPORT SURFACE
+// EXPORT SURFACE
 // ============================================================================
 
 export const route = safeRoute;
@@ -897,7 +1019,7 @@ export const PulseProofBridgeWorldAdminPanel = createPulseWorldAdminPanel;
 export const PulseProofBridgeAdminDiagnostics = createAdminDiagnosticsOrgan;
 
 // ============================================================================
-//  IMMORTAL++ GLOBAL MIRROR
+// IMMORTAL++ GLOBAL MIRROR
 // ============================================================================
 
 (function exposeBridgeGlobally() {
@@ -932,13 +1054,15 @@ export const PulseProofBridgeAdminDiagnostics = createAdminDiagnosticsOrgan;
       }
     }
   } catch (err) {
-    console.error("[PulseProofBridge v24] Global exposure failed:", err);
+    console.error("[PulseProofBridge v27-FINALITY] Global exposure failed:", err);
   }
 })();
 
 // ⭐ THIS IS THE WHOLE POINT OF THIS PAGE
-window.PulseRemoteEndpoint = {
-  async handle(route) {
-    return PulseWorldEndpoint.handle(route);
-  }
-};
+if (typeof window !== "undefined") {
+  window.PulseRemoteEndpoint = {
+    async handle(route) {
+      return PulseWorldEndpoint.handle(route);
+    }
+  };
+}

@@ -3,6 +3,7 @@
 //  FILE: _OUTERSENSES/PULSE-TOUCH-ANALYTICS-v27-IMMORTAL-BINARY++.js
 //  ORGAN: PulseTouchAnalytics (v27++ IMMORTAL BINARY-AWARE)
 //  ROLE: Metrics / Advantage Hints / Pulse Analysis / Module + Binary Health
+//        + Warmup Module Risk Integration
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulseTouchAnalytics = {
@@ -19,7 +20,8 @@ export const AI_EXPERIENCE_META_PulseTouchAnalytics = {
       "presence",
       "genome",
       "module",
-      "binary"
+      "binary",
+      "risk"
     ],
     wave: ["cold", "numerical", "deterministic"],
     presence: ["analytics_state"],
@@ -53,6 +55,7 @@ export const ORGAN_META_PulseTouchAnalytics = {
     pulseExportAware: true,
     subimportAware: true,
     tierAware: true,
+    moduleRiskAware: true,
 
     // v27++ BINARY
     binaryAware: true,
@@ -89,7 +92,7 @@ export const IMMORTAL_OVERLAYS_PulseTouchAnalytics = {
 };
 
 // ============================================================================
-// HELPERS — unchanged core, extended where needed
+// HELPERS — core + v27++ module/binary integration
 // ============================================================================
 
 function getSignalHints() {
@@ -147,19 +150,55 @@ function getBinaryMetrics(binary, predictor) {
   const p = predictor?.binaryPrediction || {};
   const b = binary || {};
 
+  const riskBand = b.riskBand || p.riskBand || "low";
+
   return {
-    // lane / mode are symbolic only, no IO
     lane: b.lane || p.lane || "default",
     mode: b.mode || p.mode || "normal",
-    // size + churn are hints, not exact bytes
     sizeHint: b.sizeHint ?? p.sizeHint ?? null,
     churnHint: b.churnHint ?? p.churnHint ?? null,
-    // delta health
     hasDelta: b.hasDelta ?? p.hasDelta ?? null,
     deltaAddedBits: b.deltaAddedBits ?? p.deltaAddedBits ?? 0,
     deltaRemovedBits: b.deltaRemovedBits ?? p.deltaRemovedBits ?? 0,
-    // risk
-    riskBand: b.riskBand || p.riskBand || "low"
+    riskBand
+  };
+}
+
+// Module helper: merge Predictor + Warmup + skinState risk
+function getModuleMetrics(pulseTouch, warmup, predictor) {
+  const fromPredictor = predictor?.modulePrediction || null;
+  const fromWarmup = warmup?.advantageWarmup?.moduleWarmupRisk || null;
+  const fromSkin = pulseTouch?.pulseModuleRisk || null;
+
+  const base = fromPredictor || fromWarmup || fromSkin || null;
+
+  if (!base) {
+    return {
+      stabilityScore: 1.0,
+      hasMissingSubimports: false,
+      hasWrongTierExports: false,
+      hasGlobalExposureRisk: false,
+      hasChunkProfileAnomaly: false,
+      source: "none"
+    };
+  }
+
+  const stabilityScore =
+    typeof base.stabilityScore === "number"
+      ? Math.max(0, Math.min(1, base.stabilityScore))
+      : typeof base.score === "number"
+      ? Math.max(0, Math.min(1, base.score / 30)) // warmup’s 0–30 → 0–1
+      : 1.0;
+
+  return {
+    stabilityScore,
+    hasMissingSubimports: !!base.hasMissingSubimports,
+    hasWrongTierExports: !!base.hasWrongTierExports,
+    hasGlobalExposureRisk: !!base.hasGlobalExposureRisk,
+    hasChunkProfileAnomaly: !!base.hasChunkProfileAnomaly,
+    source:
+      base.source ||
+      (fromPredictor ? "predictor" : fromWarmup ? "warmup" : "skinState")
   };
 }
 
@@ -180,6 +219,9 @@ export function PulseTouchAnalytics() {
     // -----------------------------------------------------------------------
     // 1. BASE METRICS (Touch state)
     // -----------------------------------------------------------------------
+    const moduleMetrics = getModuleMetrics(pulseTouch, warmup, predictor);
+    const binaryMetrics = getBinaryMetrics(binary, predictor);
+
     const metrics = {
       region: pulseTouch?.region || "unknown",
       presence: pulseTouch?.presence || "unknown",
@@ -206,61 +248,62 @@ export function PulseTouchAnalytics() {
       // Genome
       genome: getGenomeHints(),
 
-      // -------------------------------------------------------------------
-      // 2. MODULE HEALTH (v27++)
-      // -------------------------------------------------------------------
-      module: {
-        // From Predictor (preferred)
-        stabilityScore: predictor?.modulePrediction?.stabilityScore ?? null,
-        hasMissingSubimports: predictor?.modulePrediction?.hasMissingSubimports ?? null,
-        hasWrongTierExports: predictor?.modulePrediction?.hasWrongTierExports ?? null,
-        hasGlobalExposureRisk: predictor?.modulePrediction?.hasGlobalExposureRisk ?? null,
-        hasChunkProfileAnomaly: predictor?.modulePrediction?.hasChunkProfileAnomaly ?? null,
-        source: predictor?.modulePrediction?.source ?? "none"
-      },
+      // MODULE HEALTH (merged)
+      module: moduleMetrics,
 
-      // -------------------------------------------------------------------
-      // 3. BINARY HEALTH (v27++ BINARY-AWARE)
-      // -------------------------------------------------------------------
-      binary: getBinaryMetrics(binary, predictor)
+      // BINARY HEALTH
+      binary: binaryMetrics
     };
 
     // -----------------------------------------------------------------------
-    // 4. ADVANTAGE HINTS (IMMORTAL++ deterministic, module + binary aware)
-// -----------------------------------------------------------------------
+    // 2. ADVANTAGE HINTS (IMMORTAL++ deterministic, module + binary aware)
+    // -----------------------------------------------------------------------
     const advantageHints = {
       // Hydration bias
       hydrationBias:
-        metrics.trustLevel === "hostile" ? "minimal" :
-        metrics.trustLevel === "suspicious" ? "safe" :
-        metrics.hydrationTier === "minimal" ? "minimal" :
-        "full",
+        metrics.trustLevel === "hostile"
+          ? "minimal"
+          : metrics.trustLevel === "suspicious"
+          ? "safe"
+          : metrics.hydrationTier === "minimal"
+          ? "minimal"
+          : "full",
 
       // Animation bias
       animationBias:
-        metrics.trustLevel === "hostile" ? "none" :
-        metrics.trustLevel === "suspicious" ? "reduced" :
-        metrics.animationTier === "reduced" ? "reduced" :
-        "smooth",
+        metrics.trustLevel === "hostile"
+          ? "none"
+          : metrics.trustLevel === "suspicious"
+          ? "reduced"
+          : metrics.animationTier === "reduced"
+          ? "reduced"
+          : "smooth",
 
       // Chunk bias
       chunkBias:
-        metrics.mode === "fast" ? "aggressive" :
-        metrics.fastLane === "enabled" ? "aggressive" :
-        metrics.chunkDegraded ? "safe" :
-        "safe",
+        metrics.mode === "fast"
+          ? "aggressive"
+          : metrics.fastLane === "enabled"
+          ? "aggressive"
+          : metrics.chunkDegraded
+          ? "safe"
+          : "safe",
 
       // Presence intensity → advantage
       presenceIntensity:
-        metrics.presence === "high" ? "boost" :
-        metrics.presence === "low" ? "conserve" :
-        "neutral",
+        metrics.presence === "high"
+          ? "boost"
+          : metrics.presence === "low"
+          ? "conserve"
+          : "neutral",
 
       // Region → advantage
       regionCluster:
-        metrics.region === "us" ? "clusterA" :
-        metrics.region === "eu" ? "clusterB" :
-        "clusterUnknown",
+        metrics.region === "us"
+          ? "clusterA"
+          : metrics.region === "eu"
+          ? "clusterB"
+          : "clusterUnknown",
 
       // Genome → advantage
       genomeMode: metrics.genome?.mode ?? "default",
@@ -268,9 +311,7 @@ export function PulseTouchAnalytics() {
       // Signals → advantage
       signalMode: metrics.signals?.pulse ? "active" : "idle",
 
-      // -------------------------------------------------------------------
       // MODULE HEALTH ADVANTAGE HINTS (v27++)
-      // -------------------------------------------------------------------
       moduleBias:
         metrics.module.stabilityScore == null
           ? "unknown"
@@ -283,18 +324,12 @@ export function PulseTouchAnalytics() {
           : "critical",
 
       subimportBias:
-        metrics.module.hasMissingSubimports
-          ? "missing"
-          : "ok",
+        metrics.module.hasMissingSubimports ? "missing" : "ok",
 
       exportTierBias:
-        metrics.module.hasWrongTierExports
-          ? "unsafe"
-          : "safe",
+        metrics.module.hasWrongTierExports ? "unsafe" : "safe",
 
-      // -------------------------------------------------------------------
       // BINARY HEALTH ADVANTAGE HINTS (v27++ BINARY-AWARE)
-      // -------------------------------------------------------------------
       binaryBias:
         metrics.binary.riskBand === "high"
           ? "conserve"
@@ -303,9 +338,7 @@ export function PulseTouchAnalytics() {
           : "aggressive",
 
       binaryPrewarmBias:
-        metrics.binary.hasDelta
-          ? "prewarm_delta"
-          : "none"
+        metrics.binary.hasDelta ? "prewarm_delta" : "none"
     };
 
     return { metrics, advantageHints };

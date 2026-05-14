@@ -4,6 +4,7 @@
 //  ORGAN: PulseTouchPresenceOracle (v27++ IMMORTAL INTEL)
 //  ROLE: Presence Intensity / Stability / Volatility / Trend / Module Stability
 //        + Binary Awareness + Predictor Alignment + Analytics Integration
+//        + Module Risk Intel (Warmup / Predictor / Gate aligned)
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulsePresenceOracle = {
@@ -19,7 +20,8 @@ export const AI_EXPERIENCE_META_PulsePresenceOracle = {
       "volatility",
       "trend",
       "module",
-      "binary"
+      "binary",
+      "risk"
     ],
     wave: ["quiet", "stabilizing", "predictive"],
     presence: ["presence_state"],
@@ -60,7 +62,8 @@ export const ORGAN_META_PulsePresenceOracle = {
     // v27++ INTEL
     binaryAware: true,
     binaryDeltaAware: true,
-    predictorAware: true
+    predictorAware: true,
+    moduleRiskAware: true
   }
 };
 
@@ -78,7 +81,11 @@ export const ORGAN_CONTRACT_PulsePresenceOracle = {
     volatility: "low | medium | high",
     trend: "rising | falling | steady",
     confidence: "0–1 numeric",
-    oracleHints: "Hints for Warmup / Security / Advantage / Gate / Predictor"
+    oracleHints: "Hints for Warmup / Security / Advantage / Gate / Predictor",
+
+    // v27++ INTEL
+    moduleRisk: "Soft module risk view (merged from Warmup / Predictor / Gate)",
+    binaryRiskView: "Binary risk + bias view for downstream organs"
   },
   guarantees: {
     deterministic: true,
@@ -159,6 +166,42 @@ function computeConfidence(intensity, stability, volatility, moduleStability, bi
   return Math.min(1, Math.max(0, base));
 }
 
+// Merge module risk from pulseTouch + predictor
+function mergeModuleRisk(pulseTouch, predictor) {
+  const fromPredictor = predictor?.moduleRisk || null;
+  const fromSkin = pulseTouch?.pulseModuleRisk || null;
+
+  const base = fromPredictor || fromSkin || null;
+  if (!base) {
+    return {
+      hasMissingSubimports: false,
+      hasWrongTierExports: false,
+      hasGlobalExposureRisk: false,
+      hasChunkProfileAnomaly: false,
+      score: 0,
+      source: "none"
+    };
+  }
+
+  return {
+    hasMissingSubimports: !!base.hasMissingSubimports,
+    hasWrongTierExports: !!base.hasWrongTierExports,
+    hasGlobalExposureRisk: !!base.hasGlobalExposureRisk,
+    hasChunkProfileAnomaly: !!base.hasChunkProfileAnomaly,
+    score: typeof base.score === "number" ? Math.max(0, Math.min(1, base.score)) : 0,
+    source: base.source || (fromPredictor ? "predictor" : "skinState")
+  };
+}
+
+function deriveBinaryRisk(analytics, predictor) {
+  const band =
+    analytics?.metrics?.binary?.riskBand ||
+    predictor?.binaryPrediction?.riskBand ||
+    "low";
+
+  return band === "high" || band === "medium" || band === "low" ? band : "low";
+}
+
 // ============================================================================
 // FACTORY — v27++ IMMORTAL INTEL
 // ============================================================================
@@ -189,10 +232,7 @@ export function PulsePresenceOracle() {
     const moduleStability = predictor?.modulePrediction?.stabilityScore ?? null;
 
     // 6) Binary risk (v27++ INTEL)
-    const binaryRisk =
-      analytics?.metrics?.binary?.riskBand ||
-      predictor?.binaryPrediction?.riskBand ||
-      "low";
+    const binaryRisk = deriveBinaryRisk(analytics, predictor);
 
     // 7) Confidence
     const confidence = computeConfidence(
@@ -203,7 +243,21 @@ export function PulsePresenceOracle() {
       binaryRisk
     );
 
-    // 8) Oracle Hints (IMMORTAL++)
+    // 8) Module risk view (merged)
+    const moduleRisk = mergeModuleRisk(pulseTouch, predictor);
+
+    // 9) Binary risk view
+    const binaryRiskView = {
+      riskBand: binaryRisk,
+      bias:
+        binaryRisk === "high"
+          ? "conserve"
+          : binaryRisk === "medium"
+          ? "balanced"
+          : "aggressive"
+    };
+
+    // 10) Oracle Hints (IMMORTAL++)
     const oracleHints = {
       warmupBias:
         presenceIntensity === "high"
@@ -256,12 +310,7 @@ export function PulsePresenceOracle() {
           : "critical",
 
       // v27++ binary influence
-      binaryBias:
-        binaryRisk === "high"
-          ? "conserve"
-          : binaryRisk === "medium"
-          ? "balanced"
-          : "aggressive"
+      binaryBias: binaryRiskView.bias
     };
 
     return {
@@ -270,7 +319,9 @@ export function PulsePresenceOracle() {
       volatility,
       trend,
       confidence,
-      oracleHints
+      oracleHints,
+      moduleRisk,
+      binaryRiskView
     };
   }
 

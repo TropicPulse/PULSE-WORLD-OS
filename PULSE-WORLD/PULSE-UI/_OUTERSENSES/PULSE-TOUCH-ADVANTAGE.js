@@ -1,16 +1,10 @@
-// Gate:
-// const advantageOrgan = pulseTouchAdvantageCortex();
-// const advantageView = advantageOrgan.compute(
-//   { page: touchState.page, advantageHints, metrics },
-//   predictorView,
-//   oracleView
-// );
-
 // ============================================================================
 //  PULSE OS — INNER‑PLUS ORGAN
 //  FILE: PULSE-TOUCH-ADVANTAGE-v27++-BINARY-INTEL.js
-//  ORGAN: pulseTouchAdvantageCortex (v27++ IMMORTAL, Binary‑Aware)
+//  ORGAN: pulseTouchAdvantageCortex (v27++ IMMORTAL, Binary‑Aware, Storage‑Aware)
 // ============================================================================
+
+import { PulseTouchStorage } from "./PULSE-TOUCH-STORAGE.js";
 
 export const AI_EXPERIENCE_META_PulseTouchAdvantage = {
   id: "pulsetouch.advantage",
@@ -30,7 +24,8 @@ export const AI_EXPERIENCE_META_PulseTouchAdvantage = {
       "presence",
       "genome",
       "module",
-      "binary"
+      "binary",
+      "storage"
     ],
     wave: ["quiet", "adaptive"],
     presence: ["advantage_state", "routing_state", "memory_state", "binary_state"],
@@ -38,7 +33,8 @@ export const AI_EXPERIENCE_META_PulseTouchAdvantage = {
   },
   evo: {
     binaryAware: true,
-    pulseBinaryAware: true
+    pulseBinaryAware: true,
+    storageAware: true
   }
 };
 
@@ -73,7 +69,11 @@ export const ORGAN_META_PulseTouchAdvantage = {
 
     // v27++ BINARY
     binaryAware: true,
-    pulseBinaryAware: true
+    pulseBinaryAware: true,
+
+    // v27++ STORAGE
+    storageAware: true,
+    indexedDBAware: true
   }
 };
 
@@ -99,7 +99,10 @@ export const ORGAN_CONTRACT_PulseTouchAdvantage = {
     binaryPlan: "binary lanes + assets to keep hot/prewarm",
     signalHints: "PulseSignal hints",
     genomeHints: "PulseGenome hints",
-    modulePlan: "module‑aware plan (biases + stability)"
+    modulePlan: "module‑aware plan (biases + stability)",
+
+    // v27++ STORAGE
+    storageFrameKey: "binary key used for last advantage frame (optional)"
   },
   guarantees: {
     deterministic: true,
@@ -118,6 +121,7 @@ export const IMMORTAL_OVERLAYS_PulseTouchAdvantage = {
 // ============================================================================
 // INTERNAL STATE — LOCAL ROUTE + PAGE MEMORY (IMMORTAL++ SAFE)
 // ============================================================================
+
 const MAX_HISTORY = 64;
 
 function createAdvantageState() {
@@ -130,6 +134,7 @@ function createAdvantageState() {
 // ============================================================================
 // CHUNK PROFILES — v25++ (kept IMMORTAL)
 // ============================================================================
+
 const CHUNK_PROFILES = {
   index: {
     safe: ["hero", "nav", "aboveFold"],
@@ -206,14 +211,13 @@ function getBinaryProfileForPage(page, binaryBias) {
 // ============================================================================
 // ROUTING LOGIC — v27++ (uses Predictor when available)
 // ============================================================================
+
 function computeRouting(state, analytics, predictor) {
   const currentPage = analytics?.page || "index";
 
-  // 1) Predictor‑driven nextPage if present
   const predictorNext = predictor?.prediction?.nextPage || null;
   let nextPage = predictorNext || currentPage;
 
-  // 2) Fallback deterministic route graph (IMMORTAL)
   if (!predictorNext) {
     const routes = ["index", "dashboard", "scanner", "rewards", "profile"];
     const idx = routes.indexOf(currentPage);
@@ -239,6 +243,7 @@ function computeRouting(state, analytics, predictor) {
 // ============================================================================
 // CHUNK PLAN + PREWARM PLAN — v25++
 // ============================================================================
+
 function computeChunkPlan(page, nextPage, chunkBias) {
   const currentPageChunks = getChunkProfileForPage(page, chunkBias);
   const nextPageChunks = getChunkProfileForPage(nextPage, chunkBias);
@@ -259,9 +264,15 @@ function computePrewarmPlan(nextAssets, nextPageChunks) {
 // ============================================================================
 // BINARY PLAN — v27++ BINARY‑AWARE
 // ============================================================================
+
 function computeBinaryBias(metrics = {}, advantageHints = {}, oracle = null) {
   const hintBias = advantageHints.binaryBias;
-  if (hintBias === "cold" || hintBias === "normal" || hintBias === "hot" || hintBias === "critical") {
+  if (
+    hintBias === "cold" ||
+    hintBias === "normal" ||
+    hintBias === "hot" ||
+    hintBias === "critical"
+  ) {
     return hintBias;
   }
 
@@ -269,11 +280,9 @@ function computeBinaryBias(metrics = {}, advantageHints = {}, oracle = null) {
   const load = typeof m.load === "number" ? m.load : null;
   const errorRate = typeof m.errorRate === "number" ? m.errorRate : null;
 
-  // Oracle can force safety
-  if (oracle?.binaryIntensity === "low") return "cold";
-  if (oracle?.binaryIntensity === "high") return "hot";
+  if (oracle?.binaryRiskView?.riskBand === "high") return "critical";
+  if (oracle?.binaryRiskView?.riskBand === "medium") return "hot";
 
-  // Deterministic thresholds
   if (errorRate != null && errorRate > 0.2) return "cold";
   if (load == null) return "normal";
   if (load >= 0.9) return "critical";
@@ -296,6 +305,7 @@ function computeBinaryPlan(page, nextPage, binaryBias) {
 // ============================================================================
 // SIGNAL + GENOME HINTS — v25++
 // ============================================================================
+
 function getSignalHints() {
   try {
     return {
@@ -320,6 +330,7 @@ function getGenomeHints() {
 // ============================================================================
 // MODULE PLAN — v27++
 // ============================================================================
+
 function computeModulePlan(analytics, predictor, oracle) {
   const moduleBiasFromAnalytics = analytics?.advantageHints?.moduleBias || "unknown";
   const moduleBiasFromOracle = oracle?.oracleHints?.moduleBias || "unknown";
@@ -349,7 +360,6 @@ function computeModulePlan(analytics, predictor, oracle) {
     analytics?.metrics?.module?.hasChunkProfileAnomaly ??
     null;
 
-  // Final moduleBias resolution (deterministic)
   const moduleBias =
     moduleBiasFromOracle !== "unknown"
       ? moduleBiasFromOracle
@@ -366,8 +376,71 @@ function computeModulePlan(analytics, predictor, oracle) {
 }
 
 // ============================================================================
-// FACTORY — ADVANTAGE + ROUTING + MEMORY + CHUNK + PREWARM + MODULE + BINARY
+// STORAGE INTEGRATION — PULSE‑TOUCH STORAGE (BINARY INDEXEDDB)
 // ============================================================================
+
+function encodeAdvantageFrameKey(page, ts) {
+  const keyStr = `adv:${page || "index"}:${ts}`;
+  return new TextEncoder().encode(keyStr);
+}
+
+function encodeAdvantageFrameValue(frame) {
+  const {
+    page,
+    advantageScore,
+    hydrationBias,
+    animationBias,
+    chunkBias,
+    binaryBias,
+    nextPage,
+    routeConfidence,
+    modulePlan
+  } = frame;
+
+  const valueStr = [
+    page || "index",
+    advantageScore.toFixed(3),
+    hydrationBias,
+    animationBias,
+    chunkBias,
+    binaryBias,
+    nextPage || "index",
+    routeConfidence.toFixed(3),
+    modulePlan?.moduleBias || "unknown"
+  ].join("|");
+
+  return new TextEncoder().encode(valueStr);
+}
+
+function writeAdvantageFrameToStorage(page, frame) {
+  try {
+    const storageOrgan = PulseTouchStorage?.();
+    if (!storageOrgan || typeof storageOrgan.put !== "function") return;
+
+    const ts = Date.now();
+    const key = encodeAdvantageFrameKey(page, ts);
+    const value = encodeAdvantageFrameValue({ page, ...frame });
+
+    // Fire‑and‑forget to keep compute() sync by contract
+    void (async () => {
+      try {
+        await storageOrgan.put("analytics", key, value);
+      } catch {
+        // silent by contract
+      }
+    })();
+
+    return key;
+  } catch {
+    return null;
+  }
+}
+
+// ============================================================================
+// FACTORY — ADVANTAGE + ROUTING + MEMORY + CHUNK + PREWARM + MODULE + BINARY
+//           + BINARY INDEXEDDB STORAGE (IMMORTAL)
+// ============================================================================
+
 export function pulseTouchAdvantageCortex() {
   const state = createAdvantageState();
 
@@ -392,20 +465,16 @@ export function pulseTouchAdvantageCortex() {
     const metrics = analyticsInput?.metrics || {};
     const advantageHints = analyticsInput?.advantageHints || {};
 
-    // 1) Route memory
     recordPageVisit(page);
 
-    // 2) Base biases from Analytics
     let hydrationBias = advantageHints.hydrationBias || "safe";
     let animationBias = advantageHints.animationBias || "smooth";
     let chunkBias = advantageHints.chunkBias || "safe";
 
-    // 3) Predictor influence
     if (predictor?.prediction?.nextMode === "fast") {
       chunkBias = "aggressive";
     }
 
-    // 4) Oracle influence
     if (oracle?.presenceIntensity === "high") {
       hydrationBias = "full";
     } else if (oracle?.presenceIntensity === "low") {
@@ -416,7 +485,6 @@ export function pulseTouchAdvantageCortex() {
       animationBias = "reduced";
     }
 
-    // 5) Module influence (v27++)
     const modulePlan = computeModulePlan(
       { metrics, advantageHints },
       predictor,
@@ -424,57 +492,72 @@ export function pulseTouchAdvantageCortex() {
     );
 
     if (modulePlan.moduleBias === "critical" || modulePlan.moduleBias === "unstable") {
-      // When modules are unstable, bias toward safety
       chunkBias = "safe";
       hydrationBias = hydrationBias === "full" ? "safe" : hydrationBias;
       animationBias = "reduced";
     }
 
-    // 6) Binary bias + plan (v27++ BINARY)
     const binaryBias = computeBinaryBias(metrics, advantageHints, oracle);
 
-    // 7) Advantage score
     const hydrationScore =
-      hydrationBias === "full" ? 0.4 :
-      hydrationBias === "safe" ? 0.3 :
-      hydrationBias === "minimal" ? 0.2 : 0.1;
+      hydrationBias === "full"
+        ? 0.4
+        : hydrationBias === "safe"
+        ? 0.3
+        : hydrationBias === "minimal"
+        ? 0.2
+        : 0.1;
 
     const animationScore =
-      animationBias === "smooth" ? 0.3 :
-      animationBias === "reduced" ? 0.2 : 0.1;
+      animationBias === "smooth"
+        ? 0.3
+        : animationBias === "reduced"
+        ? 0.2
+        : 0.1;
 
-    const chunkScore =
-      chunkBias === "aggressive" ? 0.3 : 0.2;
+    const chunkScore = chunkBias === "aggressive" ? 0.3 : 0.2;
 
     const binaryScore =
-      binaryBias === "critical" ? 0.3 :
-      binaryBias === "hot" ? 0.25 :
-      binaryBias === "normal" ? 0.2 : 0.1;
+      binaryBias === "critical"
+        ? 0.3
+        : binaryBias === "hot"
+        ? 0.25
+        : binaryBias === "normal"
+        ? 0.2
+        : 0.1;
 
-    const advantageScoreRaw = hydrationScore + animationScore + chunkScore + binaryScore;
+    const advantageScoreRaw =
+      hydrationScore + animationScore + chunkScore + binaryScore;
     const advantageScore = Math.min(1, Math.max(0, advantageScoreRaw));
 
-    // 8) Routing
     const routing = computeRouting(state, { page }, predictor);
 
-    // 9) Chunk plan
     const chunkPlan = computeChunkPlan(page, routing.nextPage, chunkBias);
 
-    // 10) Prewarm plan
     const prewarmPlan = computePrewarmPlan(
       routing.nextAssets,
       chunkPlan.nextPageChunks
     );
 
-    // 11) Binary plan
     const binaryPlan = computeBinaryPlan(page, routing.nextPage, binaryBias);
 
-    // 12) Signal + Genome hints
     const signalHints = getSignalHints();
     const genomeHints = getGenomeHints();
 
-    // 13) Snapshot
     const snapshot = getPageSnapshot(page);
+
+    const frame = {
+      hydrationBias,
+      animationBias,
+      chunkBias,
+      binaryBias,
+      advantageScore,
+      nextPage: routing.nextPage,
+      routeConfidence: routing.routeConfidence,
+      modulePlan
+    };
+
+    const storageFrameKey = writeAdvantageFrameToStorage(page, frame);
 
     return {
       hydrationBias,
@@ -492,7 +575,8 @@ export function pulseTouchAdvantageCortex() {
       binaryPlan,
       signalHints,
       genomeHints,
-      modulePlan
+      modulePlan,
+      storageFrameKey
     };
   }
 

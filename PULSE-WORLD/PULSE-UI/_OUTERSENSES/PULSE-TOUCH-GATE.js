@@ -11,6 +11,7 @@ import { PulseChunker } from "./PULSE-TOUCH-CHUNKS.js";
 import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS-v27++.js";
 import { pulseTouchSecurity } from "./PULSE-TOUCH-SECURITY.js";
 import { PulsePresenceOracle } from "./PULSE-TOUCH-PRESENCE-ORACLE.js";
+import { PulseTouchStorage } from "./PULSE-TOUCH-STORAGE.js";
 
 
 export const AI_EXPERIENCE_META_PulseTouchGate = {
@@ -287,24 +288,55 @@ export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
 export async function PulseTouchGate(event) {
   // 1) Skin
   const touchState = detectPulseTouch(event);
+  
+  // v27++ STORAGE ORGAN
+  const storage = PulseTouchStorage();
+
+  // v27++ store presence frame (binary ring buffer)
+  try {
+    const ts = Date.now();
+    const presenceCode =
+      touchState.presence === "active" ? 2 :
+      touchState.presence === "idle" ? 1 :
+      0;
+
+    await storage.appendPresence(ts, presenceCode);
+  } catch {}
+
 
   // 2) Security
   const securityDecision = pulseTouchSecurity(touchState);
 
   // 2.5) Chunk Profile (read-only, deterministic)
   let chunkProfile = null;
+
   try {
-    const chunker = PulseChunker?.();
-    if (chunker && typeof chunker.profile === "function") {
-      chunkProfile = chunker.profile(touchState.page);
+    // try storage first
+    const stored = await storage.get("chunks", touchState.page);
+    if (stored) {
+      chunkProfile = new TextDecoder().decode(stored);
+    } else {
+      // fallback to chunker
+      const chunker = PulseChunker?.();
+      if (chunker && typeof chunker.profile === "function") {
+        chunkProfile = chunker.profile(touchState.page);
+      }
     }
-  } catch {
-    chunkProfile = null;
-  }
+  } catch {}
+
 
   // 3) Warmup (organ factory)
   const warmupOrgan = PulseTouchWarmup();
   const warmup = await warmupOrgan.warmup(touchState);
+
+  // v27++ store warmup cache (binary)
+  try {
+    if (warmup?.moduleWarmup) {
+      const json = JSON.stringify(warmup.moduleWarmup);
+      const buf = new TextEncoder().encode(json).buffer;
+      await storage.put("warmup", touchState.page, buf);
+    }
+  } catch {}
 
   // 4) Predictor (optional, before analytics so analytics can see modulePrediction)
   let predictorView = null;
@@ -316,6 +348,37 @@ export async function PulseTouchGate(event) {
   } catch {
     predictorView = null;
   }
+  // v27++ store predictor nextPage + modulePrediction
+  try {
+    if (predictorView) {
+      const json = JSON.stringify({
+        nextPage: predictorView.prediction?.nextPage,
+        module: predictorView.modulePrediction
+      });
+      const buf = new TextEncoder().encode(json).buffer;
+      await storage.put("analytics", "predictor", buf);
+    }
+  } catch {}
+
+  // v27++ store module risk (predictor or warmup or detector)
+  try {
+    const risk = predictorView?.modulePrediction ||
+                touchState.pulseModuleRisk ||
+                null;
+
+    if (risk) {
+      const buf = new Uint8Array([
+        risk.hasMissingSubimports ? 1 : 0,
+        risk.hasWrongTierExports ? 1 : 0,
+        risk.hasGlobalExposureRisk ? 1 : 0,
+        risk.hasChunkProfileAnomaly ? 1 : 0,
+        Math.min(255, Math.max(0, Math.floor((risk.stabilityScore ?? 1) * 255)))
+      ]).buffer;
+
+      await storage.put("modules", touchState.page, buf);
+    }
+  } catch {}
+
 
   // v27++ — enrich touchState with soft module risk surface (no mutation of original)
   const enrichedTouchState = {
@@ -336,6 +399,18 @@ export async function PulseTouchGate(event) {
     null,          // chunks (optional)
     predictorView  // predictor (for modulePrediction)
   );
+  // v27++ store analytics frame
+  try {
+    const json = JSON.stringify({ metrics, advantageHints });
+    const buf = new TextEncoder().encode(json).buffer;
+    await storage.put("analytics", "frame", buf);
+  } catch {}
+
+  try {
+    const pulse = touchState.pulse || "none";
+    const buf = new TextEncoder().encode(pulse).buffer;
+    await storage.put("signals", "pulse", buf);
+  } catch {}
 
   // 6) Presence Oracle (optional)
   let oracleView = null;
@@ -377,14 +452,16 @@ export async function PulseTouchGate(event) {
   };
 
   return {
-    route,
-    advantage,
-    touchState: enrichedTouchState,
-    securityDecision,
-    analytics: { metrics, advantageHints },
-    advantageView,
-    predictorView,
-    oracleView,
-    chunkProfile
-  };
+  route,
+  advantage,
+  touchState: enrichedTouchState,
+  securityDecision,
+  analytics: { metrics, advantageHints },
+  advantageView,
+  predictorView,
+  oracleView,
+  chunkProfile,
+  storage: true // indicates storage was used
+};
+
 }
