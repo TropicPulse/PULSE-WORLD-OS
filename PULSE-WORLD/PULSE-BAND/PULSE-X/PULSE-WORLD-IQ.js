@@ -156,7 +156,7 @@ import {
   BridgeWarn as warn,
   BridgeError as error,
   BridgeError as logError
-} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+} from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // -----------------------------------------------------------------------------
 // VERSION MAP — CENTRALIZED VERSION TAGS FOR ALL SUB‑COMPONENTS (v24++)

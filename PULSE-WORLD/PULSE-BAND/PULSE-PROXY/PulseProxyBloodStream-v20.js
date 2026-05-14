@@ -33,7 +33,7 @@ import {
   PulseVersion,
   PulseRoles,
   PulseLineage
-} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+} from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 // INTERNAL STATE — Telemetry Bloodstream (bounded, observational only)

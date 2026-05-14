@@ -24,7 +24,7 @@
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 
-import { PulseProofBridge as PulseCoreMemoryBridge, BridgeError as error, BridgeWarn as warn, BridgeLog as log, PulseProofBridgeLogger as PulseLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge as PulseCoreMemoryBridge, BridgeError as error, BridgeWarn as warn, BridgeLog as log, PulseProofBridgeLogger as PulseLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const G =
   (typeof window !== "undefined" && window) ||

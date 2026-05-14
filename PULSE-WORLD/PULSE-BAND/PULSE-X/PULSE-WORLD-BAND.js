@@ -56,7 +56,7 @@ const db = window.db;
 
 import {
   PulseProofBridgeLogger as logger
-} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+} from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 import { PulseLineage } from "../PULSE-PROXY/PulseProxyBBB-v20.js";
 
 // ============================================================================

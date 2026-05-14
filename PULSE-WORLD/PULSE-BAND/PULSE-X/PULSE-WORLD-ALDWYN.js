@@ -57,7 +57,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 // export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
-import { PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 //  GLOBAL MAPS

@@ -68,7 +68,7 @@ import {
   PulseNetBoot,
   PulseNet,
   PulseProofBridge
-} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+} from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
 import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory-v24.js";

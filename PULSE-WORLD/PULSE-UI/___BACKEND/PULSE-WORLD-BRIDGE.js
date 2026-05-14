@@ -20,9 +20,9 @@ import { initUIFlow as PulseProofFlow } from "../_MONITOR/PULSE-PROOF-FLOW.js";
 import PulseUIErrors from "../_MONITOR/PULSE-PROOF-ERRORS.js";
 import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
 
-import { createPulseSkinReflex as PulseProofReflex } from "../_COMPONENTS_EVOLUTION/PulseUISkinReflex-v24.js";
-import PulsePageScanner from "../_COMPONENTS_EVOLUTION/PulseUIPageScanner-v24.js";
-import { createPulseRouteMemory as PulseUIRouteMemory } from "../_COMPONENTS_EVOLUTION/PulseUIRouteMemory-v24.js";
+import { createPulseSkinReflex as PulseProofReflex } from "../__COMPONENTS_EVOLUTION/PulseUISkinReflex-v24.js";
+import PulsePageScanner from "../__COMPONENTS_EVOLUTION/PulseUIPageScanner-v24.js";
+import { createPulseRouteMemory as PulseUIRouteMemory } from "../__COMPONENTS_EVOLUTION/PulseUIRouteMemory-v24.js";
 
 // NEW: Finality / Signal Port (IMMORTAL FINALITY LAYER)
 import { PulseSignalPort, PulsePort } from "../../PULSE-BAND/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
@@ -990,8 +990,8 @@ if (channel) {
   });
 }
 
-import { createAdminDiagnosticsOrgan } from "../_COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
-import { createPulseWorldAdminPanel } from "../_COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
+import { createAdminDiagnosticsOrgan } from "../__COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
+import { createPulseWorldAdminPanel } from "../__COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
 
 // ============================================================================
 // EXPORT SURFACE

@@ -37,7 +37,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 // ============================================================================
 //  IMPORTS (backend-safe, organism-aware)
 // ============================================================================
-import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 
 import {
   PulseExpansionMeta,

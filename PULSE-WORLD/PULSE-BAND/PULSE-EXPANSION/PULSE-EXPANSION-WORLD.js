@@ -30,7 +30,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // v24 Castle + v24 world core
 import {

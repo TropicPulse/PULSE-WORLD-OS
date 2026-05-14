@@ -41,7 +41,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 //  IMPORTS — Organs it feeds and orchestrates
 // ============================================================================
 
-import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // v24 Expansion / Castle
 import {

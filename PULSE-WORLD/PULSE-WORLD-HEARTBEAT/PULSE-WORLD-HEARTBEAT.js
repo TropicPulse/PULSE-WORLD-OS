@@ -79,7 +79,7 @@ const fetchFn =
   (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
   null;
 
-import { safeRoute as route, PulseProofBridgeLogger as logger } from "../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { safeRoute as route, PulseProofBridgeLogger as logger } from "../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 import { PulseLineage } from "../PULSE-BAND/PULSE-PROXY/PulseProxyBBB-v20.js";
 
 

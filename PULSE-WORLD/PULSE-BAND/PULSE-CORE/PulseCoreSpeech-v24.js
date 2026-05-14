@@ -9,7 +9,7 @@ import {
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PULSE-WORLD-MAP.js";
-import { PulseProofBridge } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
