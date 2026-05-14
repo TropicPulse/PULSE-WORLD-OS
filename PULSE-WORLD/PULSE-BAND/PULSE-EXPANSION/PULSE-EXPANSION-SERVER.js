@@ -14,13 +14,19 @@
 //    - v16+ / v24: Castle-aware, Expansion-aware, can act as Castle-General fallback
 //      when Castle is absent or degraded (server-as-central-castle).
 // ============================================================================
+//
+//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
+//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
+//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
+//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
+//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
+//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
-
 // 2 — EXPORT GENOME METADATA
 export const PulseServerMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
@@ -30,6 +36,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 // export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // ============================================================================
 //  IMPORTS — Organs it feeds and orchestrates
 // ============================================================================
@@ -41,7 +48,7 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   summarizeCastlePresence
-} from "./PULSE-EXPANSION-INTERNET.js";
+} from "./PULSE-EXPANSION-WORLD.js";
 
 import {
   PulseCastleMeta,
@@ -58,7 +65,7 @@ import {
 import {
   getPulseUserContext,
   createPulseWorldCore
-} from "./PulseExpansionUser-v24.js";
+} from "./PULSE-EXPANSION-USER.js";
 
 // Adrenal (compute starter / circulation governor)
 import {
@@ -118,6 +125,7 @@ import {
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
+import { createBinaryPulse } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 
 // ============================================================================
 //  TYPES
@@ -233,6 +241,8 @@ function emitBridgeSafe(bridge, method, payload) {
 //  CORE SERVER ENGINE — worldCore/user/mesh/PulseNet-bridge/dualBand aware
 // ============================================================================
 
+const DEFAULT_BOOT_USERS_PER_SERVER = 10; // symbolic demo users spun with server, NOT a hard cap
+
 export class PulseServerPresenceExec {
   constructor(config = {}) {
     this.config = {
@@ -262,6 +272,10 @@ export class PulseServerPresenceExec {
       dualBandEngine: null,
       binarySend: null,
 
+      // Demo / boot users
+      demoUsersOnBoot: true,
+      demoUsersPerServer: DEFAULT_BOOT_USERS_PER_SERVER,
+
       ...config
     };
 
@@ -285,7 +299,7 @@ export class PulseServerPresenceExec {
         ? createPulseNetBridge()
         : null);
 
-    // DualBand / binary
+        // DualBand / binary
     this.dualBandEngine =
       this.config.dualBandEngine ||
       (typeof PulseBinaryOrganismBoot === "function"
@@ -297,6 +311,20 @@ export class PulseServerPresenceExec {
       (typeof PulseSendBin === "function"
         ? PulseSendBin({ source: "PulseServer-v24" })
         : null);
+
+    // NEW: BinaryTech carrier (pure waveform)
+    this.binaryTech =
+      this.config.binaryTech ||
+      (typeof createBinaryPulse === "function"
+        ? createBinaryPulse({
+            regionId: this.regionId || "unknown-region",
+            hostName: this.hostName || "unknown-host",
+            worldRouterHint: { source: "PulseServer-v24" },
+            schedulerHint: { mode: "server_exec" },
+            pulseTouch: getPulseTouchContext?.() || null
+          })
+        : null);
+
 
     // Scheduler
     this.scheduler = createPulseScheduler({
@@ -347,6 +375,80 @@ export class PulseServerPresenceExec {
         });
       }
     }
+
+    // Optional: spin demo users alongside this server (symbolic only)
+    if (this.config.demoUsersOnBoot) {
+      this._bootstrapDemoUsersForServer();
+    }
+  }
+
+    _nextBinaryCarrier(mode = "base") {
+    if (!this.binaryTech) return null;
+    try {
+      switch (mode) {
+        case "fast":   return this.binaryTech.nextPulseFast();
+        case "slow":   return this.binaryTech.nextPulseSlow();
+        case "deep":   return this.binaryTech.nextPulseDeep();
+        case "multi":  return this.binaryTech.nextPulseMulti();
+        case "echo":   return this.binaryTech.nextPulseEcho();
+        case "reflect":return this.binaryTech.nextPulseReflect();
+        case "burst":  return this.binaryTech.nextPulseBurst();
+        default:       return this.binaryTech.nextPulse();
+      }
+    } catch {
+      return null;
+    }
+  }
+
+
+  // --------------------------------------------------------------------------
+  // Demo users per server (symbolic, not a hard cap)
+  // --------------------------------------------------------------------------
+  _bootstrapDemoUsersForServer() {
+    const regionId = this.regionId || "server-demo-region";
+    const hostName = this.hostName || "server-demo-host";
+    const count = this.config.demoUsersPerServer || DEFAULT_BOOT_USERS_PER_SERVER;
+
+    const demoUsers = [];
+    for (let i = 0; i < count; i++) {
+      const userKey = `server-demo-user-${i + 1}`;
+      try {
+        const worldCore =
+          typeof createPulseWorldCore === "function"
+            ? createPulseWorldCore({
+                regionID: regionId,
+                serverMode: true,
+                demo: true,
+                userKey
+              })
+            : null;
+
+        const snapshot = worldCore?.getSnapshot?.() || null;
+
+        demoUsers.push({
+          userKey,
+          regionId,
+          hostName,
+          worldCoreSnapshot: snapshot
+        });
+      } catch (err) {
+        logger?.log?.("server", "demo_user_boot_error", {
+          regionId,
+          hostName,
+          userKey,
+          error: String(err)
+        });
+      }
+    }
+
+    logger?.log?.("server", "demo_users_booted_for_server", {
+      regionId,
+      hostName,
+      serverId: this.serverId || null,
+      count: demoUsers.length
+    });
+
+    return demoUsers;
   }
 
   // --------------------------------------------------------------------------
@@ -865,8 +967,21 @@ export class PulseServerPresenceExec {
     cacheKey = null
   } = {}) {
     const notes = [];
-
     notes.push("PulseServer-v24-Immortal-ORGANISM-EXEC: starting job.");
+
+    // Optional: per-job binary carrier (symbolic only)
+    let binaryCarrier = null;
+    try {
+      const binary = createBinaryPulse({
+        spins: 10,
+        regionId: this.regionId || "unknown-region",
+        hostName: this.hostName || "unknown-host"
+      });
+      binaryCarrier = binary.nextPulseMulti(); // multi-spin waveform
+      notes.push("BinaryTech carrier attached (multi-spin).");
+    } catch {
+      notes.push("BinaryTech carrier unavailable or failed; continuing without it.");
+    }
 
     const cached = this.maybeGetCachedJob(cacheKey);
     if (cached) {
@@ -971,108 +1086,31 @@ export class PulseServerPresenceExec {
 
     // 5) Build job result
     const baseResult = new PulseServerJobResult({
-      serverMeta: PulseServerMeta,
-      schedulerPipeline,
-      runtimeStateV2,
-      adrenalMeta: adrenalResult.adrenalMeta,
-      adrenalTickAccepted: adrenalResult.adrenalTickAccepted,
-      cacheHit: false,
-      castleFallback,
-      meta: {
-        notes
-      }
-    });
-
-    const evolvedResult = this._evolveServerPacket
-      ? this._evolveServerPacket(baseResult, {
-          mode: "server_job_completed"
-        })
-      : baseResult;
-
-    // 6) Cache store (if enabled)
-    this.maybeStoreCachedJob(cacheKey, evolvedResult);
-
-    return evolvedResult;
-  }
-
-  // --------------------------------------------------------------------------
-  // Snapshot — introspection surface
-  // --------------------------------------------------------------------------
-  getSnapshot() {
-    const runtimeState = getRuntimeStateV2?.() || null;
-
-    const base = {
-      organId: PulseServerMeta.identity,
-      meta: PulseServerMeta,
-      config: this.config,
-      regionId: this.regionId,
-      hostName: this.hostName,
-      serverId: this.serverId,
-      proxy: {
-        mode: getProxyMode(),
-        pressure: getProxyPressure(),
-        boost: getProxyBoost(),
-        fallback: getProxyFallback(),
-        lineage: getProxyLineage()
-      },
-      runtimeStateV2: runtimeState,
-      worldCoreAttached: !!this.worldCore,
-      meshAttached: !!this.mesh,
-      pulseNetBridgeAttached: !!this.pulseNetBridge,
-      dualBandAttached: !!this.dualBandEngine,
-      binarySendAttached: !!this.binarySend
-    };
-
-    return this._evolveServerPacket
-      ? this._evolveServerPacket(base, { mode: "server_snapshot" })
-      : base;
-  }
-}
-
-// ============================================================================
-// FACTORY — createPulseServer v24
-// ============================================================================
-
-export function createPulseServer(config = {}) {
-  const core = new PulseServerPresenceExec(config);
-
-  return Object.freeze({
-    meta: PulseServerMeta,
-    core,
-
-    // integration
-    attachWorldCore(worldCore) {
-      return core.attachWorldCore(worldCore);
-    },
-    attachMesh(mesh) {
-      return core.attachMesh(mesh);
-    },
-    attachUserContext(userContext) {
-      return core.attachUserContext(userContext);
-    },
-    attachPulseNetBridge(bridge) {
-      return core.attachPulseNetBridge(bridge);
-    },
-    attachDualBandEngine(engine) {
-      return core.attachDualBandEngine(engine);
-    },
-    attachBinarySend(binarySend) {
-      return core.attachBinarySend(binarySend);
-    },
-
-    // jobs
-    runServerJob(payload) {
-      return core.runServerJob(payload);
-    },
-    runBrainNetworkJob(payload) {
-      return core.runBrainNetworkJob(payload);
-    },
-
-    // snapshot
-    getSnapshot() {
-      return core.getSnapshot();
+    serverMeta: PulseServerMeta,
+    schedulerPipeline,
+    runtimeStateV2,
+    adrenalMeta: adrenalResult.adrenalMeta,
+    adrenalTickAccepted: adrenalResult.adrenalTickAccepted,
+    cacheHit: false,
+    castleFallback,
+    meta: {
+      notes,
+      binaryCarrier // purely symbolic, safe to ignore downstream
     }
   });
+
+  const evolved = this._evolveServerPacket
+    ? this._evolveServerPacket(baseResult, { mode: "server_job_complete" })
+    : baseResult;
+
+  this.maybeStoreCachedJob(cacheKey, evolved);
+  return evolved;
+}
 }
 
-export default createPulseServer;
+// Convenience factory
+export function createPulseServer(config = {}) {
+  return new PulseServerPresenceExec(config);
+}
+
+export default PulseServerPresenceExec;

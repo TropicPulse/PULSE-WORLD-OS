@@ -35,12 +35,13 @@ AI_EXPERIENCE_META = {
   }
 }
 */
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-const Identity = OrganismIdentity(import.meta.url);
+//
+//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
+//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
+//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
+//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
+//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
+//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 // 2 — EXPORT GENOME METADATA
 export const OvermindPrimeMeta = Identity.OrganMeta;
@@ -69,7 +70,7 @@ import { aiOrganism } from "../PULSE-AI/aiOrganism-v24.js";
 //  CORE ORGANISM LAYERS
 // ============================================================================
 import { NodeAdmin } from "../PULSE-TOOLS/PulseToolsNodeAdmin-v20.js";
-import { BeaconEngine } from "../PULSE-EXPANSION/PulseExpansionBeaconEngine-v20.js";
+import { BeaconEngine } from "../PULSE-EXPANSION/PULSE-EXPANSION-BEACON-ENGINE.js";
 
 // ============================================================================
 //  ROUTING + MESH (Presence-Aware)
@@ -108,7 +109,7 @@ import {
 
 import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
 import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor-v24.js";
-import { PulseBinaryTech } from "../PULSE-TECH/PulseTechBinary-v20.js";
+import { PulseBinaryTech } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 
 // ============================================================================
 //  1. CORE CROWN CONTRACTS

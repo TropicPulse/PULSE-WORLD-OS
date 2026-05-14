@@ -1,17 +1,17 @@
 /**
  * ============================================================================
- *  PULSE-WORLD : PulseBeaconMesh-v20-Immortal-NET.js
+ *  PULSE-WORLD : PulseBeaconMesh-v24-Immortal-NET++.js
  *  ROLE: Local membrane simulator + density/mode/advantage/network debugger
- *  VERSION: v20-Immortal-NET (v16→v18→v20 Every-Advantage, Shifter+Continuance+OmniHosting-Aware)
+ *  VERSION: v24-Immortal-NET++ (v16→v18→v20→v24 Every-Advantage, Shifter+Continuance+OmniHosting+Mesh24-Aware)
  *  LAYER: BeaconMesh
- *  IDENTITY: PulseBeaconMesh-v20-Immortal-NET
+ *  IDENTITY: PulseBeaconMesh-v24-Immortal-NET++
  * ============================================================================
  *
  *  PURPOSE:
  *    This organ simulates local world conditions and feeds them into the
  *    PulseBeaconEngine IMMORTAL chain. It does NOT compute signal physics.
  *
- *    In v20-Immortal-NET, BeaconMesh is the LOCAL MEMBRANE of the organism,
+ *    In v24-Immortal-NET++, BeaconMesh is the LOCAL MEMBRANE of the organism,
  *    wired symbolically into:
  *
  *      - PulseExpansion (world / region / cluster)
@@ -21,7 +21,7 @@
  *      - PulseUser (user lanes)
  *      - PulseTouch (presence / mode / page / chunkProfile / trust / identity)
  *      - PulseNet (mesh family / ingress / pressure)
- *      - PulseMesh (symbolic mesh organism)
+ *      - PulseMesh-v24 (symbolic mesh organism, presence/advantage/density/pressure)
  *      - PulseBinaryMesh (binary mesh organism)
  *      - PulseRuntime (hot instances / regions / presence / modes / pages)
  *      - PulseScheduler (macro tick orchestration)
@@ -31,7 +31,7 @@
  *      - PulseOmniHosting (hosting physics / artery metrics)
  *      - PulseProxy (dual-band proxy envelope)
  *
- *    v16→v18→v20 upgrades:
+ *    v16→v18→v20→v24 upgrades:
  *      - Every‑Advantage overlays (mesh + user + proxy + continuance + omnihosting).
  *      - Shifter‑aware presence tiers and band shifts.
  *      - Chunk‑prewarm + chunk‑plan hints surfaced to Beacon Engine.
@@ -40,6 +40,7 @@
  *      - OmniHosting artery metrics surfaced as mesh pressure / expansion hints.
  *      - Multi‑radio profile awareness (Bluetooth + LTE‑assist symbolic fields).
  *      - Ultra‑low‑power “signal mode” lanes (symbolic only, no physics).
+ *      - Mesh‑v24 presence/advantage/density/pressure awareness (no physics).
  *
  *    CONTRACT:
  *      - Never mutate the Beacon Engine.
@@ -49,20 +50,30 @@
  *      - Always deterministic.
  *      - Pure membrane surface (symbolic composition only).
  */
+//
+//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
+//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
+//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
+//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
+//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
+//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
-
 // 2 — EXPORT GENOME METADATA
-export const PulseBeaconMeshMeta = Identity.OrganMeta;
+export const PulseBeaconMeshMeta = {
+  ...Identity.OrganMeta,
+  organId: "PulseBeaconMesh-v24-Immortal-NET++",
+  version: "v24-Immortal-NET++",
+  role: "LOCAL_MEMBRANE_SIMULATOR"
+};
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
@@ -75,7 +86,7 @@ import {
   PulseExpansionMeta,
   createPulseExpansion,
   getPulseExpansionContext
-} from "./PULSE-EXPANSION-INTERNET.js";
+} from "./PULSE-EXPANSION-WORLD.js";
 
 // Castle / beacon / console
 import {
@@ -94,25 +105,25 @@ import {
 } from "../PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 
 // User lanes
-import { getPulseUserContext } from "./PulseExpansionUser-v24.js";
+import { getPulseUserContext } from "./PULSE-EXPANSION-USER.js";
 
 // WorldCore (AI mirror)
 import {
   createPulseWorldCore,
   pulseWorldCore
-} from "./PulseExpansionAIWorldCore-v20.js";
+} from "./PULSE-EXPANSION-AI.js";
 
 // Beacon Engine + Console
 import {
   getBeaconEngineContext,
   PulseBeaconEngine
-} from "./PulseExpansionBeaconEngine-v20.js";
-import { getConsoleContext } from "./PulseExpansionBeaconConsole-v20.js";
+} from "./PULSE-EXPANSION-BEACON-ENGINE.js";
+import { getConsoleContext } from "./PULSE-EXPANSION-BEACON-CONSOLE.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
   PulseMeshMeta
-} from "../PULSE-MESH/PulseMesh-v24.js";
+} from "../PULSE-MESH/PulseMesh-v24-Immortal++.js";
 import createBinaryMesh, {
   BinaryMeshMeta
 } from "../PULSE-MESH/PulseMeshBinary-v24.js";
@@ -148,7 +159,6 @@ import {
   getProxyMode,
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
-
 
 function stableHash(str) {
   let h = 0;
@@ -336,7 +346,7 @@ function buildContinuanceOmniHostingOverlay(continuanceState, omniHostingState) 
 }
 
 // ============================================================================
-// ORGAN: PulseBeaconMesh (v20-Immortal-NET, Every-Advantage / Shifter / NET)
+// ORGAN: PulseBeaconMesh (v24-Immortal-NET++, Every-Advantage / Shifter / NET)
 // ============================================================================
 
 export function PulseBeaconMesh({
@@ -349,7 +359,7 @@ export function PulseBeaconMesh({
     throw new Error("PulseBeaconMesh requires a Beacon Engine instance");
   }
 
-  const log = (...args) => trace && console.log("[PulseBeaconMesh v20]", ...args);
+  const log = (...args) => trace && console.log("[PulseBeaconMesh v24]", ...args);
 
   const snapshotMeta = Object.freeze({
     engineIdentity: beacon?.meta?.identity ?? null,
@@ -373,7 +383,7 @@ export function PulseBeaconMesh({
     }) || null;
 
   // ---------------------------------------------------------------------------
-  // 1. Presence / Advantage Fields (Every-Advantage + Shifter-aware)
+  // 1. Presence / Advantage Fields (Every-Advantage + Shifter-aware + Mesh24)
   // ---------------------------------------------------------------------------
   function buildPresenceField() {
     const ctx = buildOrganismContext();
@@ -384,9 +394,12 @@ export function PulseBeaconMesh({
     const proxyMeta = ctx.proxyMeta || {};
 
     const meshSnapshot = localMesh?.getSnapshot?.() || null;
+    const meshPresenceField = meshSnapshot?.presenceField || {};
+    const meshMetrics = meshSnapshot?.densityHealth?.metrics || {};
+
     const meshPresence =
-      meshSnapshot?.presenceField?.meshPresence ||
-      meshSnapshot?.densityHealth?.metrics?.meshStrength ||
+      meshPresenceField.meshPresence ||
+      meshMetrics.meshStrength ||
       "unknown";
 
     const presenceTier =
@@ -395,10 +408,12 @@ export function PulseBeaconMesh({
       "normal";
 
     return Object.freeze({
-      bandPresence: touch.bandPresence || "unknown",
-      devicePresence: touch.devicePresence || "unknown",
+      bandPresence: touch.bandPresence || meshPresenceField.bandPresence || "unknown",
+      devicePresence: touch.devicePresence || meshPresenceField.devicePresence || "unknown",
       routerPresence: expansion.routerPresence || "unknown",
       meshPresence,
+      meshStrength: meshMetrics.meshStrength || "unknown",
+      meshPressureIndex: meshMetrics.meshPressureIndex ?? 0,
       regionPresence: expansion.regionPresence || regionID || "unknown",
 
       touchPresence: touch.presence || "unknown",
@@ -461,9 +476,9 @@ export function PulseBeaconMesh({
       userContributionScore: user.contributionScore ?? null,
       expansionTier: expansion.tier || null,
 
-      proxyPressure: proxyMeta.pressure ?? 0,
-      proxyBoost: proxyMeta.boost ?? 0,
-      proxyFallback: !!proxyMeta.fallback,
+      proxyPressure: proxyMeta.pressure ?? meshAdvantage.proxyPressure ?? 0,
+      proxyBoost: proxyMeta.boost ?? meshAdvantage.proxyBoost ?? 0,
+      proxyFallback: !!(proxyMeta.fallback ?? meshAdvantage.proxyFallback),
 
       continuanceGlobalRisk: continuanceOverlay.arteryOverlay.globalRisk,
       arteryPressure: continuanceOverlay.arteryOverlay.arteryPressure,
@@ -591,7 +606,7 @@ export function PulseBeaconMesh({
 
   // ---------------------------------------------------------------------------
   // 4. Beacon Engine Surface (no mutation, pure calls)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function buildBeaconRequest() {
     const membraneInput = buildMembraneInput();
 
@@ -603,7 +618,7 @@ export function PulseBeaconMesh({
 
   // ---------------------------------------------------------------------------
   // 5. Composite Field (presence/band/advantage/chunk + proxy + multi-radio)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function buildCompositeField() {
     const membraneInput = buildMembraneInput();
     const presenceField = membraneInput.presenceField;
@@ -689,7 +704,7 @@ export function PulseBeaconMesh({
 
   // ---------------------------------------------------------------------------
   // 7. Simulation (symbolic only, delegates to beacon)
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   function simulate({
     densityHint = "medium",
     demandHint = "medium",
@@ -812,7 +827,7 @@ export function PulseBeaconMesh({
     const membraneInput = buildMembraneInput();
 
     return Object.freeze({
-      organId: PulseBeaconMeshMeta.identity,
+      organId: PulseBeaconMeshMeta.organId,
       meta: PulseBeaconMeshMeta,
       snapshotMeta,
       regionID,

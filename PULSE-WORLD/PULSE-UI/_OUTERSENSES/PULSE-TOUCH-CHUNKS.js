@@ -1444,25 +1444,37 @@ try {
 
 } catch {}
 
-
-window.PulseChunks.signal = function (evt) {
+window.PulseChunks.signal = async function (evt) {
   try {
-    // ⭐ ALWAYS WRITE TO LOCALSTORAGE FIRST
-    localStorage.setItem(
-      "PulseChunks_v25",
-      JSON.stringify(window.PulseChunks)
-    );
+    const key = "__G__PulseChunks";
 
-    // ⭐ ALWAYS HYDRATE FROM LOCALSTORAGE (SELF-HEAL)
-    const raw = localStorage.getItem("PulseChunks_v25");
-    if (raw) Object.assign(window.PulseChunks, JSON.parse(raw));
+    // ⭐ ALWAYS WRITE TO INDEXEDDB
+    if (window.G && window.G.PulseChunks !== undefined) {
+      // G-mirror will automatically persist to IndexedDB
+      window.G.PulseChunks = window.PulseChunks;
+    }
+
+    // ⭐ ALWAYS HYDRATE FROM INDEXEDDB (SELF-HEAL)
+    const stored = await (async () => {
+      const db = await indexedDB.open("PulseTouchDB", 1);
+      return new Promise(resolve => {
+        const tx = db.result.transaction("GStore", "readonly");
+        const store = tx.objectStore("GStore");
+        const req = store.get(key);
+        req.onsuccess = () => resolve(req.result ? JSON.parse(req.result) : null);
+        req.onerror = () => resolve(null);
+      });
+    })();
+
+    if (stored) {
+      Object.assign(window.PulseChunks, stored);
+    }
 
     // ⭐ TOUCH BOOTSTRAP
     if (evt.type === "touch_bootstrap") {
       this.prewarm?.();
       this.ready = true;
 
-      // ⭐ SEND TO DETECTOR (NOT TOUCH DIRECTLY)
       window.PulseDetector?.onChunksReady?.({
         type: "chunks_ready",
         page: evt.page,

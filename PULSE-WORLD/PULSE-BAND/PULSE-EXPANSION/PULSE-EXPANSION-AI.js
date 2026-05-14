@@ -1,6 +1,7 @@
 // ============================================================================
-//  PULSE AI WORLD CORE v20-IMMORTAL-BEACON — AI-MIRROR WORLDVIEW ORGAN
+//  PULSE AI WORLD CORE v24-IMMORTAL-UNIVERSE — AI-MIRROR WORLDVIEW ORGAN
 //  "WHAT AI WANTS US TO SEE" — PRIMARY MIRROR INTO AI'S WORLD MODEL
+//  UNIVERSE-AWARE / BEACON-AWARE / CONTINUANCE-AWARE / CI-AWARE / BINARY-AWARE
 // ============================================================================
 //
 //  ROLE:
@@ -10,38 +11,50 @@
 //    • System code only CONSUMES this; it never trusts it as truth alone.
 //    • TrustEvidence / WorldTruth engines compare this against RAW truth.
 //
-//  v20-IMMORTAL-BEACON UPGRADES:
-//    • Beacon surfaces: world beacons, region beacons, host beacons.
-//    • IntellHash signatures for snapshots / advantage / truth / events.
-//    • Presence / advantage / continuance / omnihosting alignment fields.
-//    • World-band meta ready for Schema / OmniHosting / Continuance / Logger.
+//  v24-IMMORTAL-UNIVERSE UPGRADES:
+//    • Universe surfaces: multi-world / multi-region / multi-host universes.
+//    • Beacon surfaces: world beacons, region beacons, host beacons, universe beacons.
+//    • IntellHash signatures for snapshots / advantage / truth / events / overlays.
+//    • Presence / advantage / continuance / omnihosting / CI / binary-delta alignment.
+//    • World-band meta ready for Schema / OmniHosting / Continuance / Logger / Universe.
 //    • CoreMemory snapshot hooks (optional, symbolic only).
 //
 //  SAFETY MODEL:
 //    • WorldCore is NON-MIND: no reasoning, no inference, no summarization.
-//    • It is a passive mirror + store for AI's worldview + beacons.
+//    • It is a passive mirror + store for AI's worldview + beacons + overlays.
 //    • It does NOT know about RAW truth or evidential records.
 //    • It does NOT compare or validate; it only records AI's view.
 //    • TrustEvidence / Truth engines are the checkers, not WorldCore.
 // ============================================================================
+
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PULSE-WORLD-MAP.js";
+
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
-export const PulseWorldCoreMeta = Identity.OrganMeta;
+export const PulseWorldCoreMeta = {
+  ...Identity.OrganMeta,
+  version: "v24-Immortal-UNIVERSE",
+  role: "AI_WORLD_CORE_UNIVERSE",
+  identity: {
+    ...(Identity.OrganMeta.identity || {}),
+    band: "worldcore-universe",
+    epoch: (Identity.OrganMeta.identity || {}).epoch,
+    universe: "PULSE-WORLD-UNIVERSE"
+  }
+};
+
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 const PulseWorldCoreContract = Identity.OrganMeta.contract;
-
 
 import { createPulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
@@ -56,6 +69,10 @@ const KEY_LAST_ADVANTAGE = "last-worldcore-advantage";
 const KEY_LAST_TRUTH = "last-worldcore-truth";
 const KEY_LAST_EVENT = "last-worldcore-event";
 const KEY_LAST_BEACONS = "last-worldcore-beacons";
+const KEY_LAST_CONTINUANCE = "last-worldcore-continuance-overlay";
+const KEY_LAST_CI = "last-worldcore-ci-overlay";
+const KEY_LAST_BINARY = "last-worldcore-binary-overlay";
+const KEY_LAST_UNIVERSE = "last-worldcore-universe-packet";
 
 // ============================================================================
 //  INTERNAL HELPERS
@@ -88,13 +105,15 @@ function cloneTags(tags) {
 }
 
 // ============================================================================
-//  CLASS — AI-MIRROR WORLD PERSPECTIVE
+//  CLASS — AI-MIRROR WORLD PERSPECTIVE (UNIVERSE-AWARE)
 // ============================================================================
 export class PulseWorldCore {
   constructor(config = {}) {
     this.config = {
       id: PulseWorldCoreMeta.id,
       enableCoreMemory: true,
+      universeId: "PULSE-WORLD-UNIVERSE",
+      universeSpin: "multi-spin-symbolic",
       ...config
     };
 
@@ -110,10 +129,14 @@ export class PulseWorldCore {
     this.aiPresenceView = null;
     this.aiMetricsView = null;
 
-    // Optional: continuance / omnihosting / schema / gpu views (symbolic)
+    // Optional: continuance / omnihosting / schema / gpu / CI / binary / universe
     this.aiContinuanceView = null;
     this.aiOmniHostingView = null;
     this.aiSchemaView = null;
+    this.aiBeaconView = null;
+    this.aiUniverseView = null;
+    this.aiCIView = null;
+    this.aiBinaryDeltaView = null;
 
     // ------------------------------------------------------------------------
     // AI ATTACHMENT — OVERMIND / THOUGHT / INSTINCTS (WRITE + CONTROL PATH)
@@ -139,16 +162,21 @@ export class PulseWorldCore {
       omniHosting: null,
       schema: null,
 
+      ci: null,
+      binaryDelta: null,
+      universe: null,
+
       narrative: null,
       tags: Object.create(null)
     };
 
     // ------------------------------------------------------------------------
     // BEACONS — AI-MIRROR BEACON SURFACES (symbolic only)
-    // ------------------------------------------------------------------------
-    this.worldBeacons = [];   // high-level world beacons
-    this.regionBeacons = [];  // per-region beacons
-    this.hostBeacons = [];    // per-host beacons
+// ------------------------------------------------------------------------
+    this.worldBeacons = [];    // high-level world beacons
+    this.regionBeacons = [];   // per-region beacons
+    this.hostBeacons = [];     // per-host beacons
+    this.universeBeacons = []; // per-universe beacons
 
     this.logger = config.logger || console;
   }
@@ -168,6 +196,10 @@ export class PulseWorldCore {
   attachAiContinuanceView(provider) { this.aiContinuanceView = provider; }
   attachAiOmniHostingView(provider) { this.aiOmniHostingView = provider; }
   attachAiSchemaView(provider) { this.aiSchemaView = provider; }
+  attachAiBeaconView(provider) { this.aiBeaconView = provider; }
+  attachAiUniverseView(provider) { this.aiUniverseView = provider; }
+  attachAiCIView(provider) { this.aiCIView = provider; }
+  attachAiBinaryDeltaView(provider) { this.aiBinaryDeltaView = provider; }
 
   // ==========================================================================
   //  ATTACHMENT SURFACES — AI ORGANS (WRITE + CONTROL PATH)
@@ -202,6 +234,10 @@ export class PulseWorldCore {
       omniHosting: worldState.omniHosting ?? this.aiShadowState.omniHosting ?? null,
       schema: worldState.schema ?? this.aiShadowState.schema ?? null,
 
+      ci: worldState.ci ?? this.aiShadowState.ci ?? null,
+      binaryDelta: worldState.binaryDelta ?? this.aiShadowState.binaryDelta ?? null,
+      universe: worldState.universe ?? this.aiShadowState.universe ?? null,
+
       narrative: worldState.narrative ?? this.aiShadowState.narrative ?? null,
       tags: {
         ...(this.aiShadowState.tags || {}),
@@ -226,6 +262,10 @@ export class PulseWorldCore {
       continuance: partial.continuance ?? this.aiShadowState.continuance ?? null,
       omniHosting: partial.omniHosting ?? this.aiShadowState.omniHosting ?? null,
       schema: partial.schema ?? this.aiShadowState.schema ?? null,
+
+      ci: partial.ci ?? this.aiShadowState.ci ?? null,
+      binaryDelta: partial.binaryDelta ?? this.aiShadowState.binaryDelta ?? null,
+      universe: partial.universe ?? this.aiShadowState.universe ?? null,
 
       narrative: partial.narrative ?? this.aiShadowState.narrative ?? null,
       tags: {
@@ -278,7 +318,10 @@ export class PulseWorldCore {
       "metrics",
       "continuance",
       "omniHosting",
-      "schema"
+      "schema",
+      "ci",
+      "binaryDelta",
+      "universe"
     ];
 
     if (!Object.prototype.hasOwnProperty.call(this.aiShadowState, name)) {
@@ -290,7 +333,7 @@ export class PulseWorldCore {
   }
 
   // ==========================================================================
-  //  BEACON SURFACES — WORLD / REGION / HOST BEACONS
+  //  BEACON SURFACES — WORLD / REGION / HOST / UNIVERSE BEACONS
   // ==========================================================================
   setWorldBeacons(beacons = []) {
     this.worldBeacons = Array.isArray(beacons) ? beacons.slice() : [];
@@ -307,9 +350,14 @@ export class PulseWorldCore {
     this._log("worldcore:beacons:host:set", { hostBeacons: this.hostBeacons });
   }
 
+  setUniverseBeacons(beacons = []) {
+    this.universeBeacons = Array.isArray(beacons) ? beacons.slice() : [];
+    this._log("worldcore:beacons:universe:set", { universeBeacons: this.universeBeacons });
+  }
+
   // ==========================================================================
-  //  AI-NORMALIZED WORLD SNAPSHOT
-  // ==========================================================================
+  //  AI-NORMALIZED WORLD SNAPSHOT (UNIVERSE-AWARE)
+// ==========================================================================
   snapshotWorld() {
     const now = safeNow();
 
@@ -325,6 +373,10 @@ export class PulseWorldCore {
     const continuanceView = this._safeCall(this.aiContinuanceView, "snapshot") || null;
     const omniHostingView = this._safeCall(this.aiOmniHostingView, "snapshot") || null;
     const schemaView = this._safeCall(this.aiSchemaView, "snapshot") || null;
+    const beaconView = this._safeCall(this.aiBeaconView, "snapshot") || null;
+    const universeView = this._safeCall(this.aiUniverseView, "snapshot") || null;
+    const ciView = this._safeCall(this.aiCIView, "snapshot") || null;
+    const binaryDeltaView = this._safeCall(this.aiBinaryDeltaView, "snapshot") || null;
 
     const worldSnapshot = {
       ts: now,
@@ -333,7 +385,9 @@ export class PulseWorldCore {
         version: PulseWorldCoreMeta.version,
         aiNormalized: true,
         aiMirror: true,
-        epoch: PulseWorldCoreMeta.identity.epoch
+        epoch: PulseWorldCoreMeta.identity.epoch,
+        universeId: this.config.universeId,
+        universeSpin: this.config.universeSpin
       },
 
       mesh: this.aiShadowState.mesh ?? meshView,
@@ -349,13 +403,19 @@ export class PulseWorldCore {
       omniHosting: this.aiShadowState.omniHosting ?? omniHostingView,
       schema: this.aiShadowState.schema ?? schemaView,
 
+      ci: this.aiShadowState.ci ?? ciView,
+      binaryDelta: this.aiShadowState.binaryDelta ?? binaryDeltaView,
+      universe: this.aiShadowState.universe ?? universeView,
+
+      beacons: beaconView || null,
+
       narrative: this.aiShadowState.narrative ?? null,
       tags: cloneTags(this.aiShadowState.tags)
     };
 
     worldSnapshot.intellHash = computeIntellHash(JSON.stringify(worldSnapshot.meta));
 
-    this._log("worldcore:snapshot:ai-mirror", { worldSnapshot });
+    this._log("worldcore:snapshot:ai-mirror-universe", { worldSnapshot });
 
     if (this.config.enableCoreMemory) {
       CoreMemory.set(ROUTE, KEY_LAST_SNAPSHOT, worldSnapshot);
@@ -365,7 +425,7 @@ export class PulseWorldCore {
   }
 
   // ==========================================================================
-  //  ADVANTAGE CONTEXT (STRUCTURAL ONLY — AI-MIRROR)
+  //  ADVANTAGE CONTEXT (STRUCTURAL ONLY — AI-MIRROR, UNIVERSE-AWARE)
 // ==========================================================================
   buildAdvantageContext() {
     const snap = this.snapshotWorld();
@@ -401,7 +461,16 @@ export class PulseWorldCore {
         continuanceBand: snap.continuance?.riskReport?.fallbackBandLevel ?? null,
 
         omniSelectedHosts: snap.omniHosting?.placementPlan?.selectedHosts ?? null,
-        omniFailoverTargets: snap.omniHosting?.failoverPlan?.failoverTargets ?? null
+        omniFailoverTargets: snap.omniHosting?.failoverPlan?.failoverTargets ?? null,
+
+        ciBand: snap.ci?.band ?? null,
+        ciRisk: snap.ci?.risk ?? null,
+
+        binaryDeltaMagnitude: snap.binaryDelta?.magnitude ?? null,
+        binaryDeltaParity: snap.binaryDelta?.parity ?? null,
+
+        universeCount: snap.universe?.worldCount ?? null,
+        universeSpin: snap.universe?.spin ?? this.config.universeSpin ?? null
       },
 
       narrative: snap.narrative ?? null,
@@ -414,7 +483,7 @@ export class PulseWorldCore {
       JSON.stringify({ ts: advantageContext.ts, world: advantageContext.world })
     );
 
-    this._log("worldcore:advantage-context:ai-mirror", { advantageContext });
+    this._log("worldcore:advantage-context:ai-mirror-universe", { advantageContext });
 
     if (this.config.enableCoreMemory) {
       CoreMemory.set(ROUTE, KEY_LAST_ADVANTAGE, advantageContext);
@@ -424,7 +493,7 @@ export class PulseWorldCore {
   }
 
   // ==========================================================================
-  //  WORLD "TRUTH" VECTORS (FROM AI'S PERSPECTIVE)
+  //  WORLD "TRUTH" VECTORS (FROM AI'S PERSPECTIVE, UNIVERSE-AWARE)
 // ==========================================================================
   buildWorldTruthVectors() {
     const snap = this.snapshotWorld();
@@ -438,25 +507,29 @@ export class PulseWorldCore {
         mesh: snap.mesh?.load ?? null,
         castle: snap.castle?.load ?? null,
         expansion: snap.expansion?.load ?? null,
-        server: snap.server?.load ?? null
+        server: snap.server?.load ?? null,
+        universe: snap.universe?.load ?? null
       },
 
       healthVector: {
         mesh: snap.mesh?.health ?? null,
         castle: snap.castle?.health ?? null,
         server: snap.server?.health ?? null,
-        earn: snap.earn?.health ?? null
+        earn: snap.earn?.health ?? null,
+        universe: snap.universe?.health ?? null
       },
 
       densityVector: {
         presence: snap.presence?.density ?? null,
-        regions: snap.presence?.regions ?? null
+        regions: snap.presence?.regions ?? null,
+        universes: snap.universe?.universeCount ?? null
       },
 
       stressVector: {
         routingLatency: snap.routing?.latency ?? null,
         routingErrors: snap.routing?.errorRate ?? null,
-        serverErrors: snap.server?.errorRate ?? null
+        serverErrors: snap.server?.errorRate ?? null,
+        universeStress: snap.universe?.stress ?? null
       },
 
       continuanceVector: {
@@ -467,6 +540,16 @@ export class PulseWorldCore {
       omniHostingVector: {
         selectedHosts: snap.omniHosting?.placementPlan?.selectedHosts ?? null,
         failoverTargets: snap.omniHosting?.failoverPlan?.failoverTargets ?? null
+      },
+
+      ciVector: {
+        band: snap.ci?.band ?? null,
+        risk: snap.ci?.risk ?? null
+      },
+
+      binaryDeltaVector: {
+        magnitude: snap.binaryDelta?.magnitude ?? null,
+        parity: snap.binaryDelta?.parity ?? null
       },
 
       narrative: snap.narrative ?? null,
@@ -483,13 +566,121 @@ export class PulseWorldCore {
       })
     );
 
-    this._log("worldcore:truth-vectors:ai-mirror", { truth });
+    this._log("worldcore:truth-vectors:ai-mirror-universe", { truth });
 
     if (this.config.enableCoreMemory) {
       CoreMemory.set(ROUTE, KEY_LAST_TRUTH, truth);
     }
 
     return truth;
+  }
+
+  // ==========================================================================
+  //  CONTINUANCE OVERLAY (IMMORTAL SYMBOLIC OVERLAY)
+// ==========================================================================
+  buildContinuanceOverlay() {
+    const snap = this.snapshotWorld();
+
+    const overlay = {
+      ts: snap.ts,
+      aiNormalized: true,
+      aiMirror: true,
+      universeId: this.config.universeId,
+
+      riskReport: snap.continuance?.riskReport ?? null,
+      band: snap.continuance?.riskReport?.fallbackBandLevel ?? null,
+      notes: snap.continuance?.riskReport?.notes ?? [],
+
+      tags: cloneTags(snap.tags)
+    };
+
+    overlay.intellHash = computeIntellHash(
+      JSON.stringify({
+        ts: overlay.ts,
+        band: overlay.band,
+        universeId: overlay.universeId
+      })
+    );
+
+    this._log("worldcore:continuance-overlay", { overlay });
+
+    if (this.config.enableCoreMemory) {
+      CoreMemory.set(ROUTE, KEY_LAST_CONTINUANCE, overlay);
+    }
+
+    return overlay;
+  }
+
+  // ==========================================================================
+  //  CI OVERLAY (IMMORTAL SYMBOLIC OVERLAY)
+// ==========================================================================
+  buildCIOverlay() {
+    const snap = this.snapshotWorld();
+
+    const overlay = {
+      ts: snap.ts,
+      aiNormalized: true,
+      aiMirror: true,
+      universeId: this.config.universeId,
+
+      band: snap.ci?.band ?? null,
+      risk: snap.ci?.risk ?? null,
+      signals: snap.ci?.signals ?? null,
+
+      tags: cloneTags(snap.tags)
+    };
+
+    overlay.intellHash = computeIntellHash(
+      JSON.stringify({
+        ts: overlay.ts,
+        band: overlay.band,
+        risk: overlay.risk
+      })
+    );
+
+    this._log("worldcore:ci-overlay", { overlay });
+
+    if (this.config.enableCoreMemory) {
+      CoreMemory.set(ROUTE, KEY_LAST_CI, overlay);
+    }
+
+    return overlay;
+  }
+
+  // ==========================================================================
+  //  BINARY-DELTA OVERLAY (IMMORTAL SYMBOLIC OVERLAY)
+// ==========================================================================
+  buildBinaryDeltaOverlay() {
+    const snap = this.snapshotWorld();
+
+    const overlay = {
+      ts: snap.ts,
+      aiNormalized: true,
+      aiMirror: true,
+      universeId: this.config.universeId,
+
+      magnitude: snap.binaryDelta?.magnitude ?? null,
+      parity: snap.binaryDelta?.parity ?? null,
+      surface: snap.binaryDelta?.surface ?? null,
+
+      tags: cloneTags(snap.tags)
+    };
+
+    overlay.intellHash = computeIntellHash(
+      JSON.stringify({
+        ts: overlay.ts,
+        magnitude: overlay.magnitude,
+        parity: overlay.parity
+      })
+    );
+
+    this._log("worldcore:binary-delta-overlay", { overlay });
+
+    if (this.config.enableCoreMemory) {
+      CoreMemory.set(ROUTE, KEY_LAST_BINARY, overlay);
+    }
+
+    return overlay;
   }
 
   // ==========================================================================
@@ -501,6 +692,7 @@ export class PulseWorldCore {
     const worldBeacons = (this.worldBeacons || []).map((b) => ({ ...b }));
     const regionBeacons = (this.regionBeacons || []).map((b) => ({ ...b }));
     const hostBeacons = (this.hostBeacons || []).map((b) => ({ ...b }));
+    const universeBeacons = (this.universeBeacons || []).map((b) => ({ ...b }));
 
     const beaconPacket = {
       ts: snap.ts,
@@ -510,6 +702,7 @@ export class PulseWorldCore {
       worldBeacons,
       regionBeacons,
       hostBeacons,
+      universeBeacons,
 
       narrative: snap.narrative ?? null,
       tags: cloneTags(snap.tags),
@@ -521,17 +714,60 @@ export class PulseWorldCore {
         ts: beaconPacket.ts,
         worldCount: worldBeacons.length,
         regionCount: regionBeacons.length,
-        hostCount: hostBeacons.length
+        hostCount: hostBeacons.length,
+        universeCount: universeBeacons.length
       })
     );
 
-    this._log("worldcore:beacons:ai-mirror", { beaconPacket });
+    this._log("worldcore:beacons:ai-mirror-universe", { beaconPacket });
 
     if (this.config.enableCoreMemory) {
       CoreMemory.set(ROUTE, KEY_LAST_BEACONS, beaconPacket);
     }
 
     return beaconPacket;
+  }
+
+  // ==========================================================================
+  //  UNIVERSE PACKET (MULTI-WORLD / MULTI-SPIN SYMBOLIC VIEW)
+// ==========================================================================
+  buildUniversePacket() {
+    const snap = this.snapshotWorld();
+
+    const universe = snap.universe || {};
+    const packet = {
+      ts: snap.ts,
+      aiNormalized: true,
+      aiMirror: true,
+
+      universeId: this.config.universeId,
+      spin: universe.spin ?? this.config.universeSpin ?? "multi-spin-symbolic",
+      worldCount: universe.worldCount ?? null,
+      bands: universe.bands ?? null,
+      load: universe.load ?? null,
+      health: universe.health ?? null,
+      stress: universe.stress ?? null,
+
+      tags: cloneTags(snap.tags),
+      narrative: snap.narrative ?? null
+    };
+
+    packet.intellHash = computeIntellHash(
+      JSON.stringify({
+        ts: packet.ts,
+        universeId: packet.universeId,
+        worldCount: packet.worldCount,
+        spin: packet.spin
+      })
+    );
+
+    this._log("worldcore:universe-packet", { packet });
+
+    if (this.config.enableCoreMemory) {
+      CoreMemory.set(ROUTE, KEY_LAST_UNIVERSE, packet);
+    }
+
+    return packet;
   }
 
   // ==========================================================================
@@ -547,7 +783,7 @@ export class PulseWorldCore {
 
     payload.intellHash = computeIntellHash(JSON.stringify(event || {}));
 
-    this._log("worldcore:event:ai-mirror", payload);
+    this._log("worldcore:event:ai-mirror-universe", payload);
 
     if (this.config.enableCoreMemory) {
       CoreMemory.set(ROUTE, KEY_LAST_EVENT, payload);
@@ -558,7 +794,7 @@ export class PulseWorldCore {
 
   // ==========================================================================
   //  INTERNAL HELPERS
-  // ==========================================================================
+// ==========================================================================
   _safeCall(target, method) {
     try {
       if (!target || typeof target[method] !== "function") return null;
@@ -596,6 +832,10 @@ export function createPulseWorldCore(config = {}) {
     buildWorldTruthVectors: () => core.buildWorldTruthVectors(),
     recordWorldEvent: (event) => core.recordWorldEvent(event),
     buildWorldBeacons: () => core.buildWorldBeacons(),
+    buildContinuanceOverlay: () => core.buildContinuanceOverlay(),
+    buildCIOverlay: () => core.buildCIOverlay(),
+    buildBinaryDeltaOverlay: () => core.buildBinaryDeltaOverlay(),
+    buildUniversePacket: () => core.buildUniversePacket(),
 
     // AI-facing subsystem views
     attachAiMeshView: (p) => core.attachAiMeshView(p),
@@ -609,6 +849,10 @@ export function createPulseWorldCore(config = {}) {
     attachAiContinuanceView: (p) => core.attachAiContinuanceView(p),
     attachAiOmniHostingView: (p) => core.attachAiOmniHostingView(p),
     attachAiSchemaView: (p) => core.attachAiSchemaView(p),
+    attachAiBeaconView: (p) => core.attachAiBeaconView(p),
+    attachAiUniverseView: (p) => core.attachAiUniverseView(p),
+    attachAiCIView: (p) => core.attachAiCIView(p),
+    attachAiBinaryDeltaView: (p) => core.attachAiBinaryDeltaView(p),
 
     // AI organ attachments
     attachOvermindPrime: (o) => core.attachOvermindPrime(o),
@@ -626,6 +870,7 @@ export function createPulseWorldCore(config = {}) {
     setWorldBeacons: (b) => core.setWorldBeacons(b),
     setRegionBeacons: (b) => core.setRegionBeacons(b),
     setHostBeacons: (b) => core.setHostBeacons(b),
+    setUniverseBeacons: (b) => core.setUniverseBeacons(b),
 
     // CoreMemory (symbolic)
     CoreMemory

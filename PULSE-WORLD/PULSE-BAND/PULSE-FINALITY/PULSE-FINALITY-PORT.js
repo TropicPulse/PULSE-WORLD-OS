@@ -1,9 +1,12 @@
 // ============================================================================
-//  PULSE OS — SIGNAL PORT ORGAN
+//  PULSE OS — SIGNAL PORT ORGAN (v30 IMMORTAL++)
 //  FILE: /PULSE-SIGNAL/PULSE-FINALITY-PORT.js
-//  ORGAN: PulseSignalPort (v29 IMMORTAL)
-//  ROLE: PulseImport / PulseExport / Subimport / Module Envelope Bridge
-//        + Secrets host + Kill-switch dispatch + Runtime freeze surface
+//  ORGAN: PulseSignalPort
+//  ROLE:
+//    - PulseImport / PulseExport / Subimport / Module Envelope Bridge
+//    - PulseSignalKey bridge → PulseIO (offline .env-style file, backend-prepared)
+//    - Secrets host + Kill-switch dispatch + Runtime freeze surface
+//    - Optional binary key projection (advantage-only, no raw secret storage)
 // ============================================================================
 //
 //  This organ is the *bridge* between:
@@ -11,13 +14,16 @@
 //    - PulsePresenceNormalizer (value normalizer / unwrap)
 //    - PulseTouch* organs (analytics, predictor, advantage, presence)
 //    - Local in-memory + localStorage module registry
+//    - PulseSignalKey → PulseIO (offline, backend-prepared, non-network)
+//    - Optional binary key codec (symbolic / advantage-only)
 //
 //  It does NOT:
 //    - Reach the network
-//    - Guess shapes
-//    - Obfuscate or handle secrets directly (that lives in SecretsLayer)
-//    - Own authority (that lives in Approval / Overmind)
+//    - Parse files directly
+//    - Store real secrets
+//    - Own authority (that lives in Approval / Overmind / SecretsLayer)
 // ============================================================================
+
 
 // Soft globals
 const G =
@@ -40,13 +46,29 @@ const PulseSecretsLayer = G.PulseSecretsLayer || null;   // secure enclave (exte
 const PulseOvermind = G.PulseOvermind || null;           // execution brain (external)
 const PulseApproval = G.PulseApproval || null;           // authority organ (external)
 
+// NEW: PulseIO + Binary codec (backend/offline, soft)
+// - PulseIO: backend-prepared view of your PulseIO file (old .env, parsed offline)
+//   Shape suggestion (soft, not required):
+//     G.PulseIO = {
+//       getSnapshot(pulseSignalKey) → { metaOnlyConfig },
+//       getMeta(pulseSignalKey) → { source, keys, tags }
+//     }
+// - PulseBinaryKeyCodec: optional binary projection of the key (advantage-only)
+//   Shape suggestion:
+//     G.PulseBinaryKeyCodec = {
+//       toBits(pulseSignalKey) → number[] (0/1 only),
+//       meta(pulseSignalKey) → { band, tier, hint }
+//     }
+const PulseIO = G.PulseIO || null;
+const PulseBinaryKeyCodec = G.PulseBinaryKeyCodec || null;
+
 // ============================================================================
 //  AI EXPERIENCE META
 // ============================================================================
 export const AI_EXPERIENCE_META_PulseSignalPort = {
   id: "pulse.signal_port",
   kind: "bridge_organ",
-  version: "v29-IMMORTAL",
+  version: "v30-IMMORTAL++",
   role: "pulse_import_export_bridge",
   surfaces: {
     band: [
@@ -59,7 +81,10 @@ export const AI_EXPERIENCE_META_PulseSignalPort = {
       "memory",
       "secrets_host",
       "kill_switch",
-      "runtime_freeze"
+      "runtime_freeze",
+      "pulse_signal_key",
+      "pulse_io_bridge",
+      "binary_key_projection"
     ],
     wave: ["quiet", "structural", "deterministic"],
     presence: ["signal_port_state"],
@@ -98,7 +123,12 @@ export const ORGAN_META_PulseSignalPort = {
 
     secretsHostAware: true,
     killSwitchAware: true,
-    runtimeFreezeAware: true
+    runtimeFreezeAware: true,
+
+    // NEW
+    pulseSignalKeyAware: true,
+    pulseIOAware: true,
+    binaryKeyAware: true
   }
 };
 
@@ -108,7 +138,7 @@ export const ORGAN_META_PulseSignalPort = {
 export const ORGAN_CONTRACT_PulseSignalPort = {
   inputs: {
     moduleEnvelope: "Optional pre-normalized module envelope (from Warmup / Chunks)",
-    context: "Optional context: { page, region, mode, advantage, predictor, analytics }"
+    context: "Optional context: { page, region, mode, advantage, predictor, analytics, pulseSignalKey }"
   },
   outputs: {
     PulseImport: "Function: (id: string) => any | null",
@@ -117,7 +147,8 @@ export const ORGAN_CONTRACT_PulseSignalPort = {
     registrySnapshot: "Current module registry snapshot",
     moduleEnvelope: "Normalized module envelope for current page/context",
     secrets: "Secrets host surface: { active, authority, softKill, stripKeys }",
-    runtime: "Runtime control surface: { freeze, frozen }"
+    runtime: "Runtime control surface: { freeze, frozen }",
+    signal: "PulseSignalKey bridge surface: { key, source, pulseIO, binary }"
   },
   guarantees: {
     deterministic: true,
@@ -173,7 +204,6 @@ function trimRegistry(state) {
 // ============================================================================
 //  NORMALIZATION HELPERS
 // ============================================================================
-
 function safeNormalize(value, typeHint = null, options = {}) {
   if (!PulseChunkNormalizer || typeof PulseChunkNormalizer.normalizeChunkValue !== "function") {
     return value;
@@ -207,6 +237,13 @@ function normalizeModuleEnvelope(rawEnvelope = {}, context = {}) {
   const chunkProfile = rawEnvelope.chunkProfile || null;
   const lineage = rawEnvelope.lineage || null;
 
+  // NEW: allow pulseSignalKey to be carried on envelope (soft)
+  const pulseSignalKey =
+    rawEnvelope.pulseSignalKey ||
+    context.pulseSignalKey ||
+    G.PULSE_SIGNAL_KEY ||
+    null;
+
   return {
     id: rawEnvelope.id || `module::${page}`,
     page,
@@ -216,6 +253,7 @@ function normalizeModuleEnvelope(rawEnvelope = {}, context = {}) {
     subimports,
     chunkProfile,
     lineage,
+    pulseSignalKey,
     ts: Date.now()
   };
 }
@@ -263,19 +301,20 @@ function registerModule(state, envelope) {
       subimports: envelope.subimports || {},
       chunkProfile: envelope.chunkProfile || null,
       lineage: envelope.lineage || null,
+      pulseSignalKey: envelope.pulseSignalKey || null,
       ts: envelope.ts
     }
   };
 
   trimRegistry(state);
 
-  // Optional echo to localStorage (non-critical)
+  // Optional echo to localStorage (non-critical, meta only)
   try {
     const snapshot = {
       key,
       meta: state.modules[key].meta
     };
-    localStorage.setItem("PulseSignalPortRegistry_v27", JSON.stringify(snapshot));
+    localStorage.setItem("PulseSignalPortRegistry_v30", JSON.stringify(snapshot));
   } catch {}
 }
 
@@ -286,18 +325,12 @@ function getModuleRecord(state, moduleId) {
 // ============================================================================
 //  PULSE FUNCTION ORGAN (MEMORY-ONLY, OPTIONAL)
 // ============================================================================
-//
-//  PulseImport(id, true) → PulseFunction
-//  - No pulse:true
-//  - No objects
-//  - Just literal `true`
-//
-
 function ensurePulseGlobal() {
   if (!G.PulseGlobal) G.PulseGlobal = {};
   if (!G.PulseGlobal.pulseFunctions) G.PulseGlobal.pulseFunctions = {};
   if (!G.PulseGlobal.secrets) G.PulseGlobal.secrets = {};
   if (!G.PulseGlobal.runtime) G.PulseGlobal.runtime = {};
+  if (!G.PulseGlobal.signal) G.PulseGlobal.signal = {};
   return G.PulseGlobal;
 }
 
@@ -351,7 +384,6 @@ function buildPulseFunctionOrgan(fnId) {
 // ============================================================================
 //  RELATIONAL / FUZZY SIGNAL RESOLUTION HELPERS (v28++)
 // ============================================================================
-
 function stringSimilarity(a, b) {
   if (!a || !b) return 0;
   a = String(a);
@@ -411,7 +443,102 @@ function resolveExportIdWithFuzzy(record, requestedId, options = {}) {
 }
 
 // ============================================================================
-//  SECRETS HOST + KILL SWITCH + RUNTIME FREEZE (v29)
+//  PULSE SIGNAL KEY BRIDGE (PulseIO + Binary projection)
+// ============================================================================
+//
+//  This is the heart of what you asked for:
+//    - One pulseSignalKey per page/context
+//    - Read *by key* from PulseIO (backend-prepared, offline)
+//    - Optionally project key into binary bits (advantage-only)
+//    - No raw secret storage here; only meta/snapshot surfaces
+// ============================================================================
+
+function resolvePulseSignalKey(envelope, context = {}) {
+  // Priority:
+  //   1) context.pulseSignalKey
+  //   2) envelope.pulseSignalKey
+  //   3) G.PULSE_SIGNAL_KEY (global soft)
+  const key =
+    context.pulseSignalKey ||
+    envelope.pulseSignalKey ||
+    G.PULSE_SIGNAL_KEY ||
+    null;
+
+  let source = "none";
+  if (context.pulseSignalKey) source = "context";
+  else if (envelope.pulseSignalKey) source = "envelope";
+  else if (G.PULSE_SIGNAL_KEY) source = "global";
+
+  return { key, source };
+}
+
+function buildPulseSignalKeyBridge(envelope, context = {}) {
+  const { key, source } = resolvePulseSignalKey(envelope, context);
+
+  const PulseGlobal = ensurePulseGlobal();
+  PulseGlobal.signal.key = key;
+  PulseGlobal.signal.source = source;
+
+  // PulseIO snapshot (meta-only, backend-prepared)
+  let pulseIOSnapshot = null;
+  let pulseIOMeta = null;
+
+  try {
+    if (key && PulseIO) {
+      if (typeof PulseIO.getSnapshot === "function") {
+        pulseIOSnapshot = PulseIO.getSnapshot(key) || null;
+      }
+      if (typeof PulseIO.getMeta === "function") {
+        pulseIOMeta = PulseIO.getMeta(key) || null;
+      }
+    }
+  } catch {
+    pulseIOSnapshot = null;
+    pulseIOMeta = null;
+  }
+
+  // Optional binary projection of the key (advantage-only)
+  let binaryBits = null;
+  let binaryMeta = null;
+
+  try {
+    if (key && PulseBinaryKeyCodec) {
+      if (typeof PulseBinaryKeyCodec.toBits === "function") {
+        const bits = PulseBinaryKeyCodec.toBits(key);
+        if (Array.isArray(bits)) {
+          binaryBits = bits.filter(b => b === 0 || b === 1);
+        }
+      }
+      if (typeof PulseBinaryKeyCodec.meta === "function") {
+        binaryMeta = PulseBinaryKeyCodec.meta(key) || null;
+      }
+    }
+  } catch {
+    binaryBits = null;
+    binaryMeta = null;
+  }
+
+  PulseGlobal.signal.pulseIO = pulseIOSnapshot;
+  PulseGlobal.signal.pulseIOMeta = pulseIOMeta;
+  PulseGlobal.signal.binaryBits = binaryBits;
+  PulseGlobal.signal.binaryMeta = binaryMeta;
+
+  return {
+    key,
+    source,
+    pulseIO: {
+      snapshot: pulseIOSnapshot,
+      meta: pulseIOMeta
+    },
+    binary: {
+      bits: binaryBits,
+      meta: binaryMeta
+    }
+  };
+}
+
+// ============================================================================
+//  SECRETS HOST + KILL SWITCH + RUNTIME FREEZE (v29+)
 // ============================================================================
 //
 //  NOTE:
@@ -419,9 +546,10 @@ function resolveExportIdWithFuzzy(record, requestedId, options = {}) {
 //    - It only exposes a host surface for an external SecretsLayer.
 //    - All kill-switches are routed to external organs if present.
 //    - Defaults are inert and safe.
+//    - We now *optionally* pass pulseSignalKey into SecretsLayer.activate.
 // ============================================================================
 
-function createPulseSecretsHost(envelope) {
+function createPulseSecretsHost(envelope, signalBridge) {
   const PulseGlobal = ensurePulseGlobal();
 
   const state = {
@@ -433,13 +561,15 @@ function createPulseSecretsHost(envelope) {
   PulseGlobal.secrets.state = state;
 
   function activate(externalKey = null) {
+    const keyToUse = externalKey || signalBridge?.key || null;
+
     // Delegate to external SecretsLayer if present
     try {
       if (PulseSecretsLayer && typeof PulseSecretsLayer.activate === "function") {
         const result = PulseSecretsLayer.activate({
           page: envelope.page,
           moduleId: envelope.id,
-          key: externalKey
+          pulseSignalKey: keyToUse
         });
         state.active = !!result?.active;
         state.authority = result?.authority || (state.active ? "approved" : "denied");
@@ -458,7 +588,11 @@ function createPulseSecretsHost(envelope) {
     // Soft kill: wipe secrets from memory via external layer
     try {
       if (PulseSecretsLayer && typeof PulseSecretsLayer.strip === "function") {
-        PulseSecretsLayer.strip({ page: envelope.page, moduleId: envelope.id });
+        PulseSecretsLayer.strip({
+          page: envelope.page,
+          moduleId: envelope.id,
+          pulseSignalKey: signalBridge?.key || null
+        });
       }
     } catch {}
     state.active = false;
@@ -468,7 +602,11 @@ function createPulseSecretsHost(envelope) {
     // Hard kill: revoke authority via external layer
     try {
       if (PulseSecretsLayer && typeof PulseSecretsLayer.stripKeys === "function") {
-        PulseSecretsLayer.stripKeys({ page: envelope.page, moduleId: envelope.id });
+        PulseSecretsLayer.stripKeys({
+          page: envelope.page,
+          moduleId: envelope.id,
+          pulseSignalKey: signalBridge?.key || null
+        });
       }
     } catch {}
     state.active = false;
@@ -661,13 +799,8 @@ function registrySnapshot(state) {
 
 // ============================================================================
 //  AUTO-GENERATED FINALITY FLOW ORGAN (MEMORY ONLY)
-//  - Full real JS inside comments (Option C)
-//  - Auto-attaches
-//  - Auto-boots
-//  - Skips repeated loads
-//  - Aware of PulseGlobal / pulseFunctions
 // ============================================================================
-function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExport, PulseSubimport) {
+function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExport, PulseSubimport, signalBridge) {
   // DEV MODE: full real JS (commented)
   const devComments = `
     /*
@@ -682,8 +815,8 @@ function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExpor
         - Start Schema normalization
         - Start Sonar warm-path
         - Start Finality boot sequence
-        - Skip repeated loads intelligently
-        - Attach Approval / Secrets / KillSwitch / RuntimeFreeze (v29)
+        - Attach Approval / Secrets / KillSwitch / RuntimeFreeze (v29+)
+        - Attach PulseSignalKey bridge (PulseIO + Binary projection)
     ============================================================================
 
     export function PulseFinalityFlow() {
@@ -717,6 +850,7 @@ function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExpor
     PulseImport,
     PulseExport,
     PulseSubimport,
+    signalBridge,
 
     booted: false,
 
@@ -729,6 +863,9 @@ function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExpor
 
         // Warm PulseGlobal registry
         PulseGlobal.registry = this.snapshot;
+
+        // Attach signal bridge into PulseGlobal
+        PulseGlobal.signal.bridge = this.signalBridge || null;
 
         // PulseFunctions already live on PulseGlobal.pulseFunctions
         // (buildPulseFunctionOrgan populates them on demand)
@@ -756,7 +893,10 @@ function buildPulseFinalityFlowOrgan(envelope, snapshot, PulseImport, PulseExpor
         // Approval organ (soft)
         try {
           if (PulseApproval && typeof PulseApproval.attach === "function") {
-            PulseApproval.attach({ page: this.envelope.page });
+            PulseApproval.attach({
+              page: this.envelope.page,
+              pulseSignalKey: this.signalBridge?.key || null
+            });
           }
         } catch {}
 
@@ -785,34 +925,38 @@ export function PulseSignalPort() {
     // 2) Register module
     registerModule(state, envelope);
 
-    // 3) Create functions bound to this module
+    // 3) Build PulseSignalKey bridge (PulseIO + Binary)
+    const signalBridge = buildPulseSignalKeyBridge(envelope, context);
+
+    // 4) Create functions bound to this module
     const PulseExport = createPulseExport(state, envelope);
     const PulseImport = createPulseImport(state, envelope);
     const PulseSubimport = createPulseSubimport(state, envelope);
 
-    // 4) Optional presence trace (non-critical)
+    // 5) Optional presence trace (non-critical)
     try {
       if (PulsePresenceNormalizerStore && typeof PulsePresenceNormalizerStore.tail === "function") {
         PulsePresenceNormalizerStore.tail(10);
       }
     } catch {}
 
-    // 5) Build Finality Flow organ (memory-only, reflex)
+    // 6) Build Finality Flow organ (memory-only, reflex)
     const snapshot = registrySnapshot(state);
     const PulseFinalityFlow = buildPulseFinalityFlowOrgan(
       envelope,
       snapshot,
       PulseImport,
       PulseExport,
-      PulseSubimport
+      PulseSubimport,
+      signalBridge
     );
 
-    // 6) Secrets host + runtime freeze + kill-switch (v29)
-    const secretsHost = createPulseSecretsHost(envelope);
+    // 7) Secrets host + runtime freeze + kill-switch (v29+)
+    const secretsHost = createPulseSecretsHost(envelope, signalBridge);
     const runtimeFreeze = createRuntimeFreeze(envelope);
     const killSwitch = createKillSwitch(secretsHost, runtimeFreeze);
 
-    // 7) Auto-boot (skin reflex)
+    // 8) Auto-boot (skin reflex)
     try {
       PulseFinalityFlow.boot();
     } catch {}
@@ -830,6 +974,7 @@ export function PulseSignalPort() {
         get authority() {
           return secretsHost.state.authority;
         },
+        activate: (externalKey) => secretsHost.activate(externalKey),
         softKill: () => killSwitch.softKill(),
         stripKeys: () => killSwitch.stripKeys()
       },
@@ -838,6 +983,12 @@ export function PulseSignalPort() {
           return runtimeFreeze.state.frozen;
         },
         freeze: (reason) => killSwitch.freezeExecution(reason)
+      },
+      signal: {
+        key: signalBridge.key,
+        source: signalBridge.source,
+        pulseIO: signalBridge.pulseIO,
+        binary: signalBridge.binary
       }
     };
   }

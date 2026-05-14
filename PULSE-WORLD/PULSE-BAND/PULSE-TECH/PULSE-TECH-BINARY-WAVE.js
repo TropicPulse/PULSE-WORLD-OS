@@ -5,7 +5,15 @@
 // v20: TriHash + IntellHash + BinaryFrame + WorldRouterHint + SchedulerHint
 //      Snapshot/Chunk/Prewarm-friendly, no randomness, no IO, no time.
 //      Region/Host/Touch-aware, DualBand, Presence/Harmonics/Coherence v20.
+//      v20++: Bluetooth-aware immortalMeta, extended spins default (10), meta export.
 // ============================================================================
+//
+//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
+//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
+//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
+//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
+//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
+//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
 //  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
@@ -19,14 +27,12 @@ import {
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
-
 // 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
+export const PulseBinaryTechMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
 export const PulseRole = Identity.pulseRole;
 export const surfaceMeta = Identity.surfaceMeta;
 export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 // ---------------------------------------------------------------------------
@@ -124,7 +130,10 @@ function createBinaryFrame(bits, mode, sequenceId, immortalMeta) {
     bitsLength: len,
     band,
     shifterBand: immortalMeta?.shifterBand ?? "regular",
-    epoch: "v20-IMMORTAL"
+    epoch: "v20-IMMORTAL",
+    regionId: immortalMeta?.regionId ?? "unknown",
+    hostName: immortalMeta?.hostName ?? "unknown",
+    bluetoothContext: immortalMeta?.bluetoothContext ?? null
   };
 }
 
@@ -142,6 +151,7 @@ function createPresencePulse() {
       sequenceId,
       bitsLength: len,
       presenceBandState: immortalMeta?.presenceBandState ?? null,
+      bluetoothContext: immortalMeta?.bluetoothContext ?? null,
       epoch: "v20-IMMORTAL"
     };
   };
@@ -156,6 +166,7 @@ function createHarmonicsPulse() {
       sequenceId,
       bitsLength: len,
       harmonicDrift: immortalMeta?.harmonicDrift ?? null,
+      bluetoothContext: immortalMeta?.bluetoothContext ?? null,
       epoch: "v20-IMMORTAL"
     };
   };
@@ -170,6 +181,7 @@ function createCoherencePulse() {
       sequenceId,
       bitsLength: len,
       coherenceScore: immortalMeta?.coherenceScore ?? null,
+      bluetoothContext: immortalMeta?.bluetoothContext ?? null,
       epoch: "v20-IMMORTAL"
     };
   };
@@ -185,6 +197,7 @@ function createBandPulse() {
       bitsLength: len,
       dualBandMode: immortalMeta?.dualBandMode ?? "binary",
       shifterBand: immortalMeta?.shifterBand ?? "regular",
+      bluetoothContext: immortalMeta?.bluetoothContext ?? null,
       epoch: "v20-IMMORTAL"
     };
   };
@@ -200,6 +213,7 @@ function createContinuancePulse() {
       bitsLength: len,
       continuitySignature: `cont-${sequenceId}-${len}`,
       presenceBandState: immortalMeta?.presenceBandState ?? null,
+      bluetoothContext: immortalMeta?.bluetoothContext ?? null,
       epoch: "v20-IMMORTAL"
     };
   };
@@ -226,6 +240,7 @@ function createSendLegacyPulse() {
       presenceBandState: immortalMeta?.presenceBandState ?? null,
       healthDualHash,
       tierDualHash,
+      bluetoothContext: immortalMeta?.bluetoothContext ?? null,
       epoch: "v20-IMMORTAL"
     };
   };
@@ -251,6 +266,7 @@ function createSendEarnPulse() {
       coherenceScore: immortalMeta?.coherenceScore ?? null,
       advantageDualHash,
       healthDualHash,
+      bluetoothContext: immortalMeta?.bluetoothContext ?? null,
       epoch: "v20-IMMORTAL"
     };
   };
@@ -280,7 +296,7 @@ export function createBinaryPulse({
   fallbackProxy,
   fallbackMesh,
   fallbackNode,
-  spins = 3,
+  spins = 10,              // v20++: default 10 spins (was 3)
   trace = false,
   maxBitsLength = 64,
 
@@ -295,7 +311,10 @@ export function createBinaryPulse({
   hostName = "unknown",
   worldRouterHint = null,
   schedulerHint = null,
-  pulseTouch = null
+  pulseTouch = null,
+
+  // v20++ bluetooth symbolic context
+  bluetoothContext = null
 } = {}) {
   // -------------------------------------------------------------------------
   // INTERNAL STATE
@@ -314,12 +333,13 @@ export function createBinaryPulse({
     worldRouterHint,
     schedulerHint,
     pulseTouch,
+    bluetoothContext,
     epoch: "v20-IMMORTAL"
   };
 
   // -------------------------------------------------------------------------
   // ORGAN INSTANTIATION — ALL PULSE FAMILIES (PURE SURFACES ONLY)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   const shifterBinary     = createPulseBinaryShifterEvolutionaryPulse();
   const v1LegacySurface   = createPulseV1Legacy();
   const v3ContinuanceSurf = createPulseV3Continuance();
@@ -430,7 +450,7 @@ export function createBinaryPulse({
 
   // -------------------------------------------------------------------------
   // PULSE SURFACES (ALL FAMILIES)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function surfaceV2Shifter(bits, mode) {
     try {
       return createPulseV2Shifter({
@@ -612,7 +632,7 @@ export function createBinaryPulse({
 
   // -------------------------------------------------------------------------
   // WRAPPER — UNIFIED CARRIER PACKET (v20 TriHash + IntellHash + Frame)
-// -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
   function wrap(mode, bitsOrMulti) {
     const primaryBits =
       Array.isArray(bitsOrMulti) && typeof bitsOrMulti[0] === "number"

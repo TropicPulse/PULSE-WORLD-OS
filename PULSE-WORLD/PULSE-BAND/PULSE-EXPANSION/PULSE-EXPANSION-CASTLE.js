@@ -19,13 +19,19 @@
 //    - v24++: snapshot‑aware, artery‑aware, chunk/cache/prewarm aware,
 //      engine‑local tick space, governance‑aware, treasury‑pressure aware.
 // ============================================================================
+//
+//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
+//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
+//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
+//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
+//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
+//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
 } from "../PULSE-X/PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
-
 // 2 — EXPORT GENOME METADATA
 export const PulseCastleMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
@@ -35,18 +41,18 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 // export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
+
 // ============================================================================
 //  IMPORTS (backend-safe, organism-aware)
 // ============================================================================
-
 import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // Expansion / world
 import {
   PulseExpansionMeta,
-  createPulseExpansion,
+  PulseExpansion,
   getPulseExpansionContext
-} from "./PULSE-EXPANSION-INTERNET.js";
+} from "./PULSE-EXPANSION-WORLD.js";
 
 // Server
 import {
@@ -62,9 +68,10 @@ import {
 
 // User lanes / WorldCore (v16 IMMORTAL ORGANISM)
 import {
-  PulseWorldCoreMeta, PulseUserMeta,
+  PulseWorldCoreMeta,
+  PulseUserMeta,
   createPulseWorldCore
-} from "./PulseExpansionUser-v24.js";
+} from "./PULSE-EXPANSION-USER.js";
 
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
@@ -75,10 +82,10 @@ import createBinaryMesh, {
 } from "../PULSE-MESH/PulseMeshBinary-v24.js";
 
 // Beacon engine + membrane
-import PulseBeaconEngine from "./PulseExpansionBeaconEngine-v20.js";
+import PulseBeaconEngine from "./PULSE-EXPANSION-BEACON-ENGINE.js";
 import PulseBeaconMesh, {
   PulseBeaconMeshMeta
-} from "./PulseExpansionBeaconMesh-v20.js";
+} from "./PULSE-EXPANSION-BEACON-MESH.js";
 
 // Touch / presence
 import { getPulseTouchContext } from "../../PULSE-UI/PULSE-WORLD-TOUCH.js";
@@ -104,7 +111,9 @@ import {
   getProxyMode,
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
+
 import { createPulseNodeEvolutionV16 } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
+import { createBinaryPulse } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 
 const _castleEvolution = createPulseNodeEvolutionV16({
   nodeType: "castle",
@@ -114,7 +123,6 @@ const _castleEvolution = createPulseNodeEvolutionV16({
 // ============================================================================
 //  TYPES
 // ============================================================================
-
 export class CastleRegistrationResult {
   constructor({ castleId, regionId, hostName, presenceField, meta = {} }) {
     this.castleId = castleId;
@@ -208,7 +216,6 @@ export class CastleNodeAdminLoopState {
 // ============================================================================
 //  INTERNAL STATE (symbolic, deterministic)
 // ============================================================================
-
 const castlesById = Object.create(null);
 const meshLinksByCastleId = Object.create(null);
 
@@ -218,10 +225,11 @@ const userBindingsByServerId = Object.create(null);
 const expansionRoutesById = Object.create(null);
 const nodeAdminLoopsById = Object.create(null);
 
+const castleArteriesById = Object.create(null);
+
 // ============================================================================
 //  HELPERS + ORGANISM CONTEXT
 // ============================================================================
-
 function createCastleArtery(castleId) {
   const artery = {
     castleId,
@@ -259,9 +267,6 @@ function createCastleArtery(castleId) {
   };
   return artery;
 }
-
-const castleArteriesById = Object.create(null);
-
 
 function stableHash(str) {
   let h = 0;
@@ -335,7 +340,6 @@ function buildLoopId({ routeId, originCastleId }) {
 // ============================================================================
 //  PROXY-AWARE PRESENCE COMPUTE
 // ============================================================================
-
 export function computeCastlePresence(castle) {
   const serverCount = Object.keys(castle.serversById || {}).length;
   const soldierCount = Object.keys(castle.soldiersById || {}).length;
@@ -371,6 +375,28 @@ export function computeCastlePresence(castle) {
   if (presenceScore >= 0.7) tier = "high";
   else if (presenceScore >= 0.4) tier = "normal";
   else tier = "low";
+
+  // ⭐ Binary waveform injection
+  let binaryWave = null;
+  try {
+    binaryWave = castle.binaryPulse?.nextPulse?.();
+  } catch {}
+
+  // ⭐ Presence boost from binary presence band
+  if (binaryWave?.presencePulse?.presenceBandState) {
+    presenceScore = clamp01(presenceScore + 0.05);
+  }
+
+  // ⭐ Stress reduction from binary harmonics
+  if (binaryWave?.harmonicsPulse?.harmonicDrift) {
+    stressIndex = clamp01(stressIndex - 0.03);
+  }
+
+  // ⭐ Governance stability from binary coherence
+  if (binaryWave?.coherencePulse?.coherenceScore) {
+    presenceScore = clamp01(presenceScore + 0.02);
+  }
+
 
   return {
     loadIndex,
@@ -435,31 +461,40 @@ export function summarizeCastlePresence(castles = castlesById) {
 
 function ensureCastle(castleId, regionId, hostName, presenceField) {
   if (!castlesById[castleId]) {
-    castlesById[castleId] = {
-      castleId,
+  castlesById[castleId] = {
+    castleId,
+    regionId,
+    hostName,
+    presenceField: {
       regionId,
       hostName,
-      presenceField: {
-        regionId,
-        hostName,
-        tier: "normal",
-        capacityHint: 1,
-        tags: [],
-        loadIndex: 0,
-        stressIndex: 0,
-        presenceScore: 0,
-        ...(presenceField || {})
-      },
-      serversById: Object.create(null),
-      soldiersById: Object.create(null),
-      treasury: {
-        balance: 0,
-        lastDelta: 0,
-        proxyPressure: 0,
-        proxyBoost: 0
-      }
-    };
-    castleArteriesById[castleId] = createCastleArtery(castleId);
+      tier: "normal",
+      capacityHint: 1,
+      tags: [],
+      loadIndex: 0,
+      stressIndex: 0,
+      presenceScore: 0,
+      ...(presenceField || {})
+    },
+    serversById: Object.create(null),
+    soldiersById: Object.create(null),
+    treasury: {
+      balance: 0,
+      lastDelta: 0,
+      proxyPressure: 0,
+      proxyBoost: 0
+    },
+
+    // ⭐ NEW: attach binary waveform engine
+    binaryPulse: createBinaryPulse({
+      spins: 10,
+      regionId,
+      hostName,
+      bluetoothContext: getPulseTouchContext()?.bluetooth || null
+    })
+  };
+
+  castleArteriesById[castleId] = createCastleArtery(castleId);
   } else if (presenceField) {
     castlesById[castleId].presenceField = {
       ...castlesById[castleId].presenceField,
@@ -488,7 +523,6 @@ function ensureCastle(castleId, regionId, hostName, presenceField) {
 
   return castlesById[castleId];
 }
-
 
 function linkCastles(aId, bId) {
   if (!meshLinksByCastleId[aId]) meshLinksByCastleId[aId] = new Set();
@@ -591,6 +625,7 @@ function snapshotMesh() {
       presenceField: c.presenceField,
       servers: Object.keys(c.serversById),
       soldiers: Object.keys(c.soldiersById || {}),
+      binaryWave: castlesById[id].binaryPulse?.nextPulseEcho?.() || null,
       treasury: {
         balance: c.treasury.balance,
         lastDelta: c.treasury.lastDelta,
@@ -636,7 +671,6 @@ function snapshotUsersForCastle(castleId) {
 // ---------------------------------------------------------------------------
 // Expansion routes + NodeAdmin loops (symbolic only)
 // ---------------------------------------------------------------------------
-
 function registerExpansionRouteInternal({
   fromCastleId,
   toServerId = null,
@@ -740,7 +774,6 @@ function snapshotNodeAdminLoops() {
 // ---------------------------------------------------------------------------
 // Beacon Engine singleton for Castle + BeaconMesh
 // ---------------------------------------------------------------------------
-
 let _beaconEngineInstance = null;
 
 export function setBeaconEngineInstance(engine) {
@@ -760,10 +793,10 @@ export function getBeaconEngineContext() {
   }
   return _beaconEngineInstance;
 }
+
 // ============================================================================
 //  EXECUTOR HELPERS — APPLY EXPANSION PLAN (v16 IMMORTAL ORGANISM)
 // ============================================================================
-
 function spawnCastleInternal({ regionId, hostName, presenceField = null }) {
   const rId = regionId || "unknown-region";
   const hName = hostName || "unknown-host";
@@ -887,7 +920,6 @@ function applyMeshRebalanceInternal(actions = []) {
 // ============================================================================
 //  ROUTE DEFENSE + NODEADMIN ORBITS (v16 IMMORTAL ORGANISM)
 // ============================================================================
-
 function defendRouteInternal({ routeId, soldierCount = 2 }) {
   const route = expansionRoutesById[routeId];
   if (!route) {
@@ -937,7 +969,6 @@ function spawnNodeAdminOrbitInternal({
     return { ok: false, reason: "castle_not_found" };
   }
 
-  // orbit loop is just a NodeAdmin loop with no specific route target
   const loopId = stableHash(`ORBIT::${castleId}::${intervalHint}::${pressureHint}`);
 
   nodeAdminLoopsById[loopId] = {
@@ -965,12 +996,11 @@ function spawnNodeAdminOrbitInternal({
   return { ok: true, loopId };
 }
 
-
+// ============================================================================
+//  CASTLE ORGAN — createPulseCastle (v24-Immortal++)
+// ============================================================================
 export function createPulseCastle(config = {}) {
-  // ------------------------------------------------------------
-  // MERGE CONFIG
-  // ------------------------------------------------------------
-  const castle = {
+  const castleOrgan = {
     config: {
       autoMeshByRegion: true,
       autoMeshAll: false,
@@ -986,20 +1016,16 @@ export function createPulseCastle(config = {}) {
     localMesh: null,
     binaryMesh: null,
 
-    // dynamic registries
-    castlesById: {},
-    usersById: {},
-    serversById: {},
-    userBindingsByServerId: {},
-    expansionRoutesById: {},
-    nodeAdminLoopsById: {},
-    castleArteriesById: {},
-
-    // ------------------------------------------------------------
-    // PREWARM
-    // ------------------------------------------------------------
     prewarm() {
       if (this.prewarmed) return true;
+      try {
+        this.binaryWarm = createBinaryPulse({
+          spins: 10,
+          regionId: this.config.regionId,
+          hostName: "castle-prewarm",
+          bluetoothContext: getPulseTouchContext()?.bluetooth || null
+        }).nextPulseMulti();
+      } catch {}
 
       const ctx = buildOrganismContext();
       void ctx.expansion;
@@ -1011,7 +1037,7 @@ export function createPulseCastle(config = {}) {
 
       this.prewarmed = true;
 
-      for (const artery of Object.values(this.castleArteriesById)) {
+      for (const artery of Object.values(castleArteriesById)) {
         artery.prewarms += 1;
       }
 
@@ -1019,17 +1045,18 @@ export function createPulseCastle(config = {}) {
         regionId: this.config.regionId || null
       });
 
+      if (this.config.demoUsersOnBoot) {
+        this._bootstrapDemoUsers();
+      }
+
       return true;
     },
 
-    // ------------------------------------------------------------
-    // DEMO USERS
-    // ------------------------------------------------------------
     _bootstrapDemoUsers() {
       const regionId = this.config.regionId || "demo-region";
       const hostName = "demo-host";
 
-      this.registerCastle({ regionId, hostName });
+      const reg = this.registerCastle({ regionId, hostName });
 
       this.registerUserAtCastle({
         regionId,
@@ -1044,819 +1071,430 @@ export function createPulseCastle(config = {}) {
         userKey: "demo-user-2",
         worldCoreConfig: { demo: true }
       });
+
+      logger?.log?.("castle", "bootstrap_demo_users", {
+        regionId,
+        hostName,
+        castleId: reg.castleId
+      });
     },
 
-    // ------------------------------------------------------------
-    // REGISTER CASTLE
-    // ------------------------------------------------------------
-    registerCastle({ regionId, hostName, presenceField = null }) {
-      const rId = regionId || this.config.regionId || "unknown-region";
-      const hName = hostName || "unknown-host";
-
-      const castleId = buildCastleId({ regionId: rId, hostName: hName });
-      const castle = ensureCastle(castleId, rId, hName, presenceField);
+    // -----------------------------------------------------------------------
+    // REGISTRATION + PRESENCE
+    // -----------------------------------------------------------------------
+    registerCastle({ regionId, hostName, presenceField = {} }) {
+      const castle = spawnCastleInternal({ regionId, hostName, presenceField });
+      const artery = castleArteriesById[castle.castleId];
+      if (artery) artery.ticks += 1;
 
       if (this.config.autoMeshByRegion) {
-        for (const [otherId, otherCastle] of Object.entries(this.castlesById)) {
-          if (otherId === castleId) continue;
-          if (otherCastle.regionId === rId) {
-            linkCastles(castleId, otherId);
+        for (const otherId in castlesById) {
+          const other = castlesById[otherId];
+          if (other.regionId === castle.regionId && other.castleId !== castle.castleId) {
+            linkCastles(castle.castleId, other.castleId);
           }
         }
       }
 
       if (this.config.autoMeshAll) {
-        for (const otherId of Object.keys(this.castlesById)) {
-          if (otherId === castleId) continue;
-          linkCastles(castleId, otherId);
+        for (const otherId in castlesById) {
+          if (otherId !== castle.castleId) {
+            linkCastles(castle.castleId, otherId);
+          }
         }
       }
 
-      logger?.log?.("castle", "register", {
+      logger?.log?.("castle", "register_castle", {
+        castleId: castle.castleId,
+        regionId: castle.regionId,
+        hostName: castle.hostName
+      });
+
+      return new CastleRegistrationResult({
+        castleId: castle.castleId,
+        regionId: castle.regionId,
+        hostName: castle.hostName,
+        presenceField: castle.presenceField,
+        meta: {
+          proxyMode: getProxyMode?.() || "normal",
+          proxyPressure: getProxyPressure?.() ?? 0
+        }
+      });
+    },
+
+    updateCastlePresence({ castleId, presenceField = {} }) {
+      const castle = castlesById[castleId];
+      if (!castle) {
+        return { ok: false, reason: "castle_not_found" };
+      }
+
+      castle.presenceField = {
+        ...castle.presenceField,
+        ...presenceField
+      };
+
+      const metrics = computeCastlePresence(castle);
+      castle.presenceField = {
+        ...castle.presenceField,
+        ...metrics
+      };
+
+      const artery = castleArteriesById[castleId];
+      if (artery) {
+        artery.presenceUpdates += 1;
+        artery.lastPresenceScore = metrics.presenceScore;
+        artery.lastLoadIndex = metrics.loadIndex;
+        artery.lastStressIndex = metrics.stressIndex;
+      }
+
+      logger?.log?.("castle", "update_presence", {
         castleId,
-        regionId: rId,
-        hostName: hName,
         presenceField: castle.presenceField
       });
 
-      return this._evolveCastlePacket(
-        new CastleRegistrationResult({
+      return { ok: true, presenceField: castle.presenceField };
+    },
+
+    // -----------------------------------------------------------------------
+    // SERVER ATTACH / DETACH
+    // -----------------------------------------------------------------------
+    attachServerToCastle({ castleId, serverConfig = {} }) {
+      const castle = castlesById[castleId];
+      if (!castle) {
+        return new ServerAttachResult({
           castleId,
-          regionId: rId,
-          hostName: hName,
-          presenceField: castle.presenceField,
-          meta: {
-            castleMeta: PulseCastleMeta,
-            organismContext: buildOrganismContext({
-              localMesh: !!this.localMesh,
-              binaryMesh: !!this.binaryMesh,
-              beaconMesh: !!this.beaconMesh,
-              dualBandOrganism: !!this.dualBandOrganism,
-              binarySend: !!this.binarySend
-            })
-          }
-        })
-      );
-    },
-
-    // ------------------------------------------------------------
-    // GOVERNANCE (submit, yield, warn, needs, stress, help)
-    // ------------------------------------------------------------
-    submitToGeneral(generalId, reason = "castle_submits") {
-      try {
-        this.pulseNetBridge?.routeCastle({
-          mode: "castle_submits_to_general",
-          castleId: this.castleId,
-          regionId: this.regionId,
-          generalId,
-          reason,
-          presenceField: this.presenceField,
-          proxy: {
-            mode: getProxyMode(),
-            pressure: getProxyPressure(),
-            boost: getProxyBoost(),
-            fallback: getProxyFallback(),
-            lineage: getProxyLineage()
-          }
-        });
-      } catch (err) {
-        logger?.log?.("castle", "submit_to_general_error", {
-          castleId: this.castleId,
-          error: String(err)
-        });
-      }
-    },
-
-    yieldAuthorityGracefully(generalId) {
-      try {
-        this.pulseNetBridge?.routeCastle({
-          mode: "castle_yields_authority",
-          castleId: this.castleId,
-          regionId: this.regionId,
-          generalId,
-          presenceField: this.presenceField
-        });
-      } catch (err) {
-        logger?.log?.("castle", "yield_authority_error", {
-          castleId: this.castleId,
-          error: String(err)
-        });
-      }
-    },
-
-    warnGeneralOfOverreach(generalId, metrics = {}) {
-      try {
-        this.pulseNetBridge?.routeCastle({
-          mode: "castle_warns_general",
-          castleId: this.castleId,
-          regionId: this.regionId,
-          generalId,
-          metrics,
-          presenceField: this.presenceField
-        });
-      } catch (err) {
-        logger?.log?.("castle", "warn_general_error", {
-          castleId: this.castleId,
-          error: String(err)
-        });
-      }
-    },
-
-    reportPeopleNeeds() {
-      const needs = {
-        population: this.population || 0,
-        morale: this.moraleIndex || 0,
-        stress: this.presenceField?.stressIndex ?? 0,
-        load: this.presenceField?.loadIndex ?? 0,
-        needScore:
-          (this.moraleIndex ?? 0) * 0.4 +
-          (this.presenceField?.stressIndex ?? 0) * 0.4 +
-          (this.presenceField?.loadIndex ?? 0) * 0.2
-      };
-
-      try {
-        this.pulseNetBridge?.routeCastle({
-          mode: "castle_reports_people_needs",
-          castleId: this.castleId,
-          regionId: this.regionId,
-          needs,
-          presenceField: this.presenceField
-        });
-      } catch (err) {
-        logger?.log?.("castle", "report_people_needs_error", {
-          castleId: this.castleId,
-          error: String(err)
+          serverId: null,
+          serverMeta: null,
+          attached: false,
+          meta: { reason: "castle_not_found" }
         });
       }
 
-      return needs;
-    },
-
-    reportStressToGeneral(generalId) {
-      const stressPayload = {
-        stressIndex: this.presenceField?.stressIndex ?? 0,
-        loadIndex: this.presenceField?.loadIndex ?? 0,
-        moraleIndex: this.moraleIndex ?? 0
-      };
-
-      try {
-        this.pulseNetBridge?.routeCastle({
-          mode: "castle_reports_stress",
-          castleId: this.castleId,
-          regionId: this.regionId,
-          generalId,
-          stress: stressPayload,
-          presenceField: this.presenceField
-        });
-      } catch (err) {
-        logger?.log?.("castle", "report_stress_error", {
-          castleId: this.castleId,
-          error: String(err)
-        });
-      }
-
-      return stressPayload;
-    },
-
-    requestExpansionHelp(reason = "castle_requests_help") {
-      try {
-        this.pulseNetBridge?.routeCastle({
-          mode: "castle_requests_expansion_help",
-          castleId: this.castleId,
-          regionId: this.regionId,
-          reason,
-          presenceField: this.presenceField
-        });
-      } catch (err) {
-        logger?.log?.("castle", "request_expansion_help_error", {
-          castleId: this.castleId,
-          error: String(err)
-        });
-      }
-    },
-
-    // ------------------------------------------------------------
-    // EVOLUTION WRAPPER
-    // ------------------------------------------------------------
-    _evolveCastlePacket(packet, extraCtx = {}) {
-      if (!_castleEvolution || typeof _castleEvolution.evolveNodePulse !== "function") {
-        return packet;
-      }
-
-      const context = {
-        regionId: this.config.regionId,
-        meshMeta: PulseMeshMeta,
-        beaconMeshMeta: PulseBeaconMeshMeta,
-        binaryMeshMeta: BinaryMeshMeta,
-        proxyMode: getProxyMode?.() || "normal",
-        proxyPressure: getProxyPressure?.() ?? 0,
-        proxyBoost: getProxyBoost?.() ?? 0,
-        ...extraCtx
-      };
-
-      return _castleEvolution.evolveNodePulse({
-        nodeType: "castle",
-        pulse: packet,
-        context
-      });
-    },
-
-    // ------------------------------------------------------------
-    // APPLY EXPANSION PLAN
-    // ------------------------------------------------------------
-    applyExpansionPlan(plan) {
-      if (!plan) {
-        return {
-          ok: false,
-          reason: "no_plan",
-          meta: { castleMeta: PulseCastleMeta }
-        };
-      }
-
-      const {
-        expansions = [],
-        contractions = [],
-        soldierDelegation = [],
-        rebalanceLinks = [],
-        regionPresence = {}
-      } = plan;
-
-      // expansions
-      for (const exp of expansions) {
-        const regionId = exp.regionId;
-        const hostName = `auto-host-${regionId || "unknown"}`;
-
-        const castle = spawnCastleInternal({
-          regionId,
-          hostName,
-          presenceField: {
-            tier: exp.tier || "normal",
-            reason: exp.reason || "expansion"
-          }
-        });
-
-        const serverIds = spawnServersForCastleInternal({
-          castleId: castle.castleId,
-          count: exp.desiredServers || 1,
-          serverConfig: { tier: exp.tier || "normal" }
-        });
-
-        const userIds = spawnUsersForCastleInternal({
-          castleId: castle.castleId,
-          regionId: castle.regionId,
-          hostName: castle.hostName,
-          count: exp.desiredSoldiers || 0,
-          worldCoreConfig: { regionID: castle.regionId }
-        });
-
-        logger?.log?.("castle", "apply_expansion", {
-          regionId,
-          castleId: castle.castleId,
-          servers: serverIds,
-          users: userIds,
-          tier: exp.tier,
-          reason: exp.reason
-        });
-      }
-
-      // contractions
-      for (const con of contractions) {
-        const castle = this.castlesById[con.castleId];
-        if (!castle) continue;
-
-        const serverIds = Object.keys(castle.serversById || {});
-        if (serverIds.length > 0) {
-          const victim = serverIds[serverIds.length - 1];
-          delete castle.serversById[victim];
-          logger?.log?.("castle", "contract_server_auto", {
-            castleId: con.castleId,
-            serverId: victim,
-            reason: con.reason
-          });
-        }
-
-        const soldierIds = Object.keys(castle.soldiersById || {});
-        if (soldierIds.length > 0) {
-          const victim = soldierIds[soldierIds.length - 1];
-          delete castle.soldiersById[victim];
-          logger?.log?.("castle", "contract_soldier_auto", {
-            castleId: con.castleId,
-            soldierId: victim,
-            reason: con.reason
-          });
-        }
-      }
-
-      // soldier delegation
-      applySoldierDelegationInternal(soldierDelegation);
-
-      // mesh rebalance
-      applyMeshRebalanceInternal(rebalanceLinks);
-
-      // recompute presence
-      for (const [castleId, castle] of Object.entries(this.castlesById)) {
-        const metrics = computeCastlePresence(castle);
-        const needs = computePeopleNeedsForCastle({
-          ...castle,
-          presenceField: { ...(castle.presenceField || {}), ...metrics }
-        });
-
-        castle.presenceField = {
-          ...(castle.presenceField || {}),
-          ...metrics,
-          peopleNeedIndex: needs.needScore,
-          populationStressIndex: needs.stress,
-          governanceStabilityIndex: needs.governanceStabilityIndex
-        };
-      }
-
-      const { castlesSnapshot, meshSnapshot } = snapshotMesh();
-
-      return this._evolveCastlePacket(
-        new CastlePresenceState({
-          castlesById: castlesSnapshot,
-          meshLinksByCastleId: meshSnapshot,
-          meta: {
-            castleMeta: PulseCastleMeta,
-            regionPresence,
-            appliedExpansions: expansions.length,
-            appliedContractions: contractions.length,
-            appliedSoldierDelegations: soldierDelegation.length,
-            appliedMeshRebalances: rebalanceLinks.length,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
-    },
-
-    // ------------------------------------------------------------
-    // DEFEND ROUTE
-    // ------------------------------------------------------------
-    defendRoute({ routeId, soldierCount = 2 }) {
-      const result = defendRouteInternal({ routeId, soldierCount });
-
-      return this._evolveCastlePacket(
-        new CastleExpansionRouteState({
-          routesById: snapshotExpansionRoutes(),
-          meta: {
-            castleMeta: PulseCastleMeta,
-            ok: result.ok,
-            reason: result.reason || null,
-            defendedRouteId: routeId,
-            soldiers: result.soldiers || soldierCount,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
-    },
-
-    // ------------------------------------------------------------
-    // NODEADMIN ORBIT
-    // ------------------------------------------------------------
-    spawnNodeAdminOrbit({ castleId, intervalHint = "steady", pressureHint = "normal" }) {
-      const result = spawnNodeAdminOrbitInternal({
+      const created = spawnServersForCastleInternal({
         castleId,
-        intervalHint,
-        pressureHint
+        count: 1,
+        serverConfig
       });
 
-      return this._evolveCastlePacket(
-        new CastleNodeAdminLoopState({
-          loopsById: snapshotNodeAdminLoops(),
-          meta: {
-            castleMeta: PulseCastleMeta,
-            ok: result.ok,
-            reason: result.reason || null,
-            orbitCastleId: castleId,
-            orbitLoopId: result.loopId || null,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
-    },
+      const serverId = created[0] || null;
+      const artery = castleArteriesById[castleId];
+      if (artery && serverId) artery.serversAttached += 1;
 
-    // ------------------------------------------------------------
-    // REGISTER USER AT CASTLE
-    // ------------------------------------------------------------
-    registerUserAtCastle({
-      regionId,
-      hostName,
-      castleId = null,
-      userId = null,
-      userKey = null,
-      worldCoreConfig = {},
-      attachServerId = null
-    }) {
-      const rId = regionId || this.config.regionId || "unknown-region";
-      const hName = hostName || "unknown-host";
-
-      const effectiveCastleId =
-        castleId || buildCastleId({ regionId: rId, hostName: hName });
-
-      ensureCastle(effectiveCastleId, rId, hName, null);
-
-      const user = ensureUser({
-        castleId: effectiveCastleId,
-        regionId: rId,
-        hostName: hName,
-        userId,
-        userKey,
-        worldCoreConfig
-      });
-
-      if (attachServerId) {
-        bindServerToUserInternal({
-          castleId: effectiveCastleId,
-          serverId: attachServerId,
-          userId: user.userId
-        });
-      }
-
-      const boundServers = Array.from(user.servers);
-
-      return this._evolveCastlePacket(
-        new CastleUserRegistrationResult({
-          castleId: effectiveCastleId,
-          userId: user.userId,
-          regionId: rId,
-          hostName: hName,
-          userMeta: user.userMeta,
-          worldCoreSnapshot: user.worldCoreSnapshot,
-          boundServers,
-          meta: {
-            castleMeta: PulseCastleMeta,
-            userMeta: PulseUserMeta,
-            worldCoreMeta: PulseWorldCoreMeta,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
-    },
-
-    // ------------------------------------------------------------
-    // BIND SERVER TO USER
-    // ------------------------------------------------------------
-    bindServerToUser({ castleId, serverId, userId }) {
-      const result = bindServerToUserInternal({ castleId, serverId, userId });
-
-      const { users, bindings } = snapshotUsersForCastle(castleId);
-
-      return this._evolveCastlePacket(
-        new CastleUserBindingState({
-          castleId,
-          usersById: users,
-          bindingsByServerId: bindings,
-          meta: {
-            castleMeta: PulseCastleMeta,
-            ok: result.ok,
-            reason: result.reason || null,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
-    },
-
-    // ------------------------------------------------------------
-    // ATTACH SERVER TO CASTLE
-    // ------------------------------------------------------------
-    attachServerToCastle({
-      regionId,
-      hostName,
-      presenceField = null,
-      serverConfig = {},
-      serverId = null,
-      userId = null,
-      userKey = null,
-      worldCoreConfig = {}
-    }) {
-      const rId = regionId || this.config.regionId || "unknown-region";
-      const hName = hostName || "unknown-host";
-
-      const castleId = buildCastleId({ regionId: rId, hostName: hName });
-      const castle = ensureCastle(castleId, rId, hName, presenceField);
-
-      const effectiveServerId =
-        serverId ||
-        stableHash(`SERVER::${castleId}::${JSON.stringify(serverConfig)}`);
-
-      if (!castle.serversById[effectiveServerId]) {
-        const serverInstance = createPulseServer(serverConfig);
-
-        if (serverInstance?.attachCastle) {
-          serverInstance.attachCastle({
-            castleId,
-            regionId: rId,
-            hostName: hName,
-            getCastleSnapshot: () => this.getSnapshot()
-          });
-        }
-
-                castle.serversById[effectiveServerId] = {
-          serverId: effectiveServerId,
-          instance: serverInstance,
-          meta: PulseServerMeta
-        };
-      }
-
-      let boundUserId = userId || null;
-
-      if (this.config.autoBindServerToUser || userId || userKey) {
-        const user = ensureUser({
-          castleId,
-          regionId: rId,
-          hostName: hName,
-          userId,
-          userKey,
-          worldCoreConfig
-        });
-
-        boundUserId = user.userId;
-
-        bindServerToUserInternal({
-          castleId,
-          serverId: effectiveServerId,
-          userId: boundUserId
-        });
-      }
-
-      logger?.log?.("castle", "attach_server", {
+      return new ServerAttachResult({
         castleId,
-        serverId: effectiveServerId,
-        regionId: rId,
-        hostName: hName,
-        boundUserId,
-        role: "general_candidate"
+        serverId,
+        serverMeta: PulseServerMeta,
+        attached: !!serverId,
+        meta: {}
       });
-
-      return this._evolveCastlePacket(
-        new ServerAttachResult({
-          castleId,
-          serverId: effectiveServerId,
-          serverMeta: PulseServerMeta,
-          attached: true,
-          meta: {
-            castleMeta: PulseCastleMeta,
-            boundUserId,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
     },
 
-    // ------------------------------------------------------------
-    // DETACH SERVER FROM CASTLE
-    // ------------------------------------------------------------
     detachServerFromCastle({ castleId, serverId }) {
-      const castle = this.castlesById[castleId];
+      const castle = castlesById[castleId];
       if (!castle || !castle.serversById[serverId]) {
-        return this._evolveCastlePacket(
-          new ServerDetachResult({
-            castleId,
-            serverId,
-            detached: false,
-            meta: {
-              castleMeta: PulseCastleMeta,
-              reason: "server_not_found",
-              organismContext: buildOrganismContext()
-            }
-          })
-        );
-      }
-
-      const serverEntry = castle.serversById[serverId];
-      if (serverEntry?.instance?.detachCastle) {
-        try {
-          serverEntry.instance.detachCastle({ castleId });
-        } catch {
-          // never throw
-        }
+        return new ServerDetachResult({
+          castleId,
+          serverId,
+          detached: false,
+          meta: { reason: "castle_or_server_not_found" }
+        });
       }
 
       delete castle.serversById[serverId];
+      delete userBindingsByServerId[serverId];
 
-      if (this.userBindingsByServerId[serverId]) {
-        const uid = this.userBindingsByServerId[serverId];
-        delete this.userBindingsByServerId[serverId];
-        const u = this.usersById[uid];
-        if (u && u.servers) {
-          u.servers.delete(serverId);
-        }
-      }
+      const artery = castleArteriesById[castleId];
+      if (artery) artery.serversDetached += 1;
 
       logger?.log?.("castle", "detach_server", {
         castleId,
         serverId
       });
 
-      return this._evolveCastlePacket(
-        new ServerDetachResult({
-          castleId,
-          serverId,
-          detached: true,
-          meta: {
-            castleMeta: PulseCastleMeta,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
+      return new ServerDetachResult({
+        castleId,
+        serverId,
+        detached: true,
+        meta: {}
+      });
     },
 
-    // ------------------------------------------------------------
-    // MESH SNAPSHOT
-    // ------------------------------------------------------------
-    getMeshState() {
+    // -----------------------------------------------------------------------
+    // USER REGISTRATION + BINDINGS
+    // -----------------------------------------------------------------------
+    registerUserAtCastle({
+      regionId,
+      hostName,
+      castleId = null,
+      userId = null,
+      userKey = null,
+      worldCoreConfig = {}
+    }) {
+      const effectiveRegionId = regionId || this.config.regionId || "unknown-region";
+      const effectiveHostName = hostName || "unknown-host";
+
+      let targetCastleId = castleId;
+      if (!targetCastleId) {
+        const builtId = buildCastleId({
+          regionId: effectiveRegionId,
+          hostName: effectiveHostName
+        });
+        if (!castlesById[builtId]) {
+          this.registerCastle({
+            regionId: effectiveRegionId,
+            hostName: effectiveHostName
+          });
+        }
+        targetCastleId = builtId;
+      }
+
+      const castle = castlesById[targetCastleId];
+      if (!castle) {
+        return new CastleUserRegistrationResult({
+          castleId: targetCastleId,
+          userId: null,
+          regionId: effectiveRegionId,
+          hostName: effectiveHostName,
+          userMeta: null,
+          worldCoreSnapshot: null,
+          boundServers: [],
+          meta: { reason: "castle_not_found" }
+        });
+      }
+
+      const user = ensureUser({
+        castleId: targetCastleId,
+        regionId: effectiveRegionId,
+        hostName: effectiveHostName,
+        userId,
+        userKey,
+        worldCoreConfig
+      });
+
+      const artery = castleArteriesById[targetCastleId];
+      if (artery) artery.usersRegistered += 1;
+
+      const boundServers = [];
+      if (this.config.autoBindServerToUser) {
+        const serverIds = Object.keys(castle.serversById);
+        for (const sid of serverIds) {
+          const res = bindServerToUserInternal({
+            castleId: targetCastleId,
+            serverId: sid,
+            userId: user.userId
+          });
+          if (res.ok) boundServers.push(sid);
+        }
+      }
+
+      return new CastleUserRegistrationResult({
+        castleId: targetCastleId,
+        userId: user.userId,
+        regionId: effectiveRegionId,
+        hostName: effectiveHostName,
+        userMeta: user.userMeta,
+        worldCoreSnapshot: user.worldCoreSnapshot,
+        boundServers,
+        meta: {}
+      });
+    },
+
+    // -----------------------------------------------------------------------
+    // EXPANSION ROUTES + NODEADMIN LOOPS (public surface)
+// -----------------------------------------------------------------------
+    registerExpansionRoute({
+      fromCastleId,
+      toServerId = null,
+      toServerUrl = null,
+      hops = [],
+      loopHint = {}
+    }) {
+      const res = registerExpansionRouteInternal({
+        fromCastleId,
+        toServerId,
+        toServerUrl,
+        hops,
+        loopHint
+      });
+
+      if (res.ok) {
+        const artery = castleArteriesById[fromCastleId];
+        if (artery) artery.routesRegistered += 1;
+      }
+
+      return res;
+    },
+
+    spawnNodeAdminLoop({
+      routeId,
+      originCastleId,
+      intervalHint = "steady",
+      pressureHint = "normal"
+    }) {
+      const res = spawnNodeAdminLoopInternal({
+        routeId,
+        originCastleId,
+        intervalHint,
+        pressureHint
+      });
+
+      if (res.ok) {
+        const castleId = originCastleId || expansionRoutesById[routeId]?.fromCastleId;
+        const artery = castleId ? castleArteriesById[castleId] : null;
+        if (artery) artery.loopsSpawned += 1;
+      }
+
+      return res;
+    },
+
+    spawnNodeAdminOrbit({
+      castleId,
+      intervalHint = "steady",
+      pressureHint = "normal"
+    }) {
+      const res = spawnNodeAdminOrbitInternal({
+        castleId,
+        intervalHint,
+        pressureHint
+      });
+
+      if (res.ok) {
+        const artery = castleArteriesById[castleId];
+        if (artery) artery.loopsSpawned += 1;
+      }
+
+      return res;
+    },
+
+    defendRoute({ routeId, soldierCount = 2 }) {
+      return defendRouteInternal({ routeId, soldierCount });
+    },
+
+    // -----------------------------------------------------------------------
+    // SNAPSHOTS
+    // -----------------------------------------------------------------------
+    getCastlePresenceSnapshot() {
+      const { byRegion, meshLinksByCastleId: meshLinks } =
+        summarizeCastlePresence();
+      return new CastlePresenceState({
+        castlesById: { ...castlesById },
+        meshLinksByCastleId: meshLinks,
+        meta: {
+          proxyMode: getProxyMode?.() || "normal",
+          proxyPressure: getProxyPressure?.() ?? 0
+        }
+      });
+    },
+
+    getCastleMeshSnapshot() {
       const { castlesSnapshot, meshSnapshot } = snapshotMesh();
-      return this._evolveCastlePacket(
-        new CastleMeshState({
-          castlesById: castlesSnapshot,
-          meshLinksByCastleId: meshSnapshot,
-          meta: {
-            castleMeta: PulseCastleMeta,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
-    },
-
-    // ------------------------------------------------------------
-    // EXPANSION ROUTES + NODEADMIN LOOPS
-    // ------------------------------------------------------------
-    registerExpansionRoute(payload) {
-      const result = registerExpansionRouteInternal(payload);
-      return this._evolveCastlePacket(
-        new CastleExpansionRouteState({
-          routesById: snapshotExpansionRoutes(),
-          meta: {
-            castleMeta: PulseCastleMeta,
-            ok: result.ok,
-            routeId: result.routeId || null,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
-    },
-
-    spawnNodeAdminLoop(payload) {
-      const result = spawnNodeAdminLoopInternal(payload);
-      return this._evolveCastlePacket(
-        new CastleNodeAdminLoopState({
-          loopsById: snapshotNodeAdminLoops(),
-          meta: {
-            castleMeta: PulseCastleMeta,
-            ok: result.ok,
-            loopId: result.loopId || null,
-            organismContext: buildOrganismContext()
-          }
-        })
-      );
-    },
-
-    // ------------------------------------------------------------
-    // SNAPSHOT (FULL)
-    // ------------------------------------------------------------
-    getSnapshot() {
-      const { castlesSnapshot, meshSnapshot } = snapshotMesh();
-
-      return Object.freeze({
-        meta: PulseCastleMeta,
+      return new CastleMeshState({
         castlesById: castlesSnapshot,
         meshLinksByCastleId: meshSnapshot,
-        usersById: (() => {
-          const out = {};
-          for (const [id, u] of Object.entries(this.usersById)) {
-            out[id] = {
-              userId: u.userId,
-              castleId: u.castleId,
-              regionId: u.regionId,
-              hostName: u.hostName,
-              userMeta: u.userMeta,
-              worldCoreSnapshot: u.worldCoreSnapshot,
-              servers: Array.from(u.servers)
-            };
-          }
-          return out;
-        })(),
-        userBindingsByServerId: { ...this.userBindingsByServerId },
-        expansionRoutesById: snapshotExpansionRoutes(),
-        nodeAdminLoopsById: snapshotNodeAdminLoops(),
-        organismContext: buildOrganismContext({
-          localMesh: !!this.localMesh,
-          binaryMesh: !!this.binaryMesh,
-          beaconMesh: !!this.beaconMesh,
-          dualBandOrganism: !!this.dualBandOrganism,
-          binarySend: !!this.binarySend
-        })
+        meta: {}
       });
     },
 
-    // ------------------------------------------------------------
-    // CASTLE PULSE TICK
-    // ------------------------------------------------------------
-    castlePulseTick() {
-      const expansionCtx = getPulseExpansionContext?.() || {};
-      const latestPlan = expansionCtx.latestPlan || null;
+    getCastleUsersSnapshot({ castleId }) {
+      const { users, bindings } = snapshotUsersForCastle(castleId);
+      return new CastleUserBindingState({
+        castleId,
+        usersById: users,
+        bindingsByServerId: bindings,
+        meta: {}
+      });
+    },
 
-      if (latestPlan) {
-        this.applyExpansionPlan(latestPlan);
-      }
+    getExpansionRoutesSnapshot() {
+      return new CastleExpansionRouteState({
+        routesById: snapshotExpansionRoutes(),
+        meta: {}
+      });
+    },
 
-      for (const [loopId, loop] of Object.entries(this.nodeAdminLoopsById)) {
-        if (!loop.active) continue;
-        loop.lastPulse = Date.now();
-        loop.proxyPressure = getProxyPressure?.() ?? 0;
-        loop.proxyMode = getProxyMode?.() || "normal";
-      }
+    getNodeAdminLoopsSnapshot() {
+      return new CastleNodeAdminLoopState({
+        loopsById: snapshotNodeAdminLoops(),
+        meta: {}
+      });
+    },
 
-      for (const [castleId, castle] of Object.entries(this.castlesById)) {
-        const metrics = computeCastlePresence(castle);
-        const needs = computePeopleNeedsForCastle({
-          ...castle,
-          presenceField: { ...(castle.presenceField || {}), ...metrics }
+    getCastleArterySnapshot({ castleId }) {
+      const artery = castleArteriesById[castleId];
+      return artery ? artery.snapshot() : null;
+    },
+
+    // -----------------------------------------------------------------------
+    // EXPANSION PLAN EXECUTION (bridge from PulseExpansion)
+// -----------------------------------------------------------------------
+    applyExpansionPlan(plan) {
+      if (!plan) return { ok: false, reason: "no_plan" };
+
+      applyMeshRebalanceInternal(plan.rebalanceLinks || []);
+      applySoldierDelegationInternal(plan.soldierDelegation || []);
+
+      for (const exp of plan.expansions || []) {
+        const castle = spawnCastleInternal({
+          regionId: exp.regionId,
+          hostName: exp.hostHint || "auto-host",
+          presenceField: { tier: exp.tier || "normal" }
         });
 
-        castle.presenceField = {
-          ...(castle.presenceField || {}),
-          ...metrics,
-          peopleNeedIndex: needs.needScore,
-          populationStressIndex: needs.stress,
-          governanceStabilityIndex: needs.governanceStabilityIndex
-        };
+        spawnServersForCastleInternal({
+          castleId: castle.castleId,
+          count: exp.desiredServers || 1
+        });
+
+        spawnUsersForCastleInternal({
+          castleId: castle.castleId,
+          regionId: castle.regionId,
+          hostName: castle.hostName,
+          count: exp.desiredSoldiers || 0,
+          worldCoreConfig: { expansionSpawn: true }
+        });
       }
 
-      const presenceSnapshot = summarizeCastlePresence();
-      expansionCtx.castlePresence = presenceSnapshot;
-
-      logger?.log?.("castle", "pulse_tick", {
-        castles: Object.keys(this.castlesById).length,
-        loops: Object.keys(this.nodeAdminLoopsById).length,
-        routes: Object.keys(this.expansionRoutesById).length
-      });
-
-      return presenceSnapshot;
-    },
-
-    // ------------------------------------------------------------
-    // ATTACH WORLD CORE
-    // ------------------------------------------------------------
-    attachWorldCore(worldCore) {
-      if (!worldCore || typeof worldCore.attachCastle !== "function") {
-        return { ok: false, reason: "worldcore_attach_not_supported" };
+      for (const con of plan.contractions || []) {
+        const castle = castlesById[con.castleId];
+        if (!castle) continue;
+        const serverIds = Object.keys(castle.serversById);
+        const soldierIds = Object.keys(castle.soldiersById || {});
+        if (con.removeServers > 0 && serverIds.length) {
+          const sid = serverIds[0];
+          this.detachServerFromCastle({ castleId: con.castleId, serverId: sid });
+        }
+        if (con.removeSoldiers > 0 && soldierIds.length) {
+          const victim = soldierIds[0];
+          delete castle.soldiersById[victim];
+        }
       }
 
-      worldCore.attachCastle({
-        castleMeta: PulseCastleMeta,
-        getCastleSnapshot: () => this.getSnapshot()
-      });
+      for (const rd of plan.routeDefenseActions || []) {
+        const routeId = Object.keys(expansionRoutesById).find(
+          (id) => expansionRoutesById[id].fromCastleId === rd.castleId
+        );
+        if (routeId) {
+          defendRouteInternal({
+            routeId,
+            soldierCount: rd.desiredDefenders || 2
+          });
+        }
+      }
+
+      for (const na of plan.nodeAdminOrbitActions || []) {
+        spawnNodeAdminOrbitInternal({
+          castleId: na.castleId,
+          intervalHint: na.intervalHint,
+          pressureHint: na.pressureHint
+        });
+      }
 
       return { ok: true };
-    },
-
-    // ------------------------------------------------------------
-    // SNAPSHOT (SHORT FORM)
-    // ------------------------------------------------------------
-    snapshot() {
-      const { castlesSnapshot, meshSnapshot } = snapshotMesh();
-      const routes = snapshotExpansionRoutes();
-      const loops = snapshotNodeAdminLoops();
-
-      const arteries = {};
-      for (const [id, artery] of Object.entries(this.castleArteriesById)) {
-        arteries[id] = artery.snapshot();
-      }
-
-      return Object.freeze({
-        meta: PulseCastleMeta,
-        engineTickId: this.engineTickId,
-        prewarmed: this.prewarmed,
-        castles: castlesSnapshot,
-        mesh: meshSnapshot,
-        routes,
-        loops,
-        arteries
-      });
     }
   };
 
-  // ------------------------------------------------------------
-  // INITIALIZE MESHES + PREWARM
-  // ------------------------------------------------------------
-  castle.localMesh =
-    createPulseMesh?.({
-      meshID: "castle-mesh",
-      regionID: castle.config.regionId || null,
-      trace: false
-    }) || null;
-
-  castle.binaryMesh =
-    createBinaryMesh?.({
-      meshID: "castle-binary-mesh",
-      regionID: castle.config.regionId || null,
-      trace: false
-    }) || null;
-
-  castle.prewarm();
-
-  return castle;
+  castleOrgan.prewarm();
+  return castleOrgan;
 }
 
 export default createPulseCastle;

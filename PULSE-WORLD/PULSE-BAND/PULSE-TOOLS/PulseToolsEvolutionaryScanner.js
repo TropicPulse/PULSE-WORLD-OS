@@ -11,12 +11,13 @@
 //   - Balanced adaptive mode: stable unless meaningful change detected.
 //   - Advantage/artery-aware: can surface “where to look” without IO.
 // ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-const Identity = OrganismIdentity(import.meta.url);
+//
+//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
+//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
+//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
+//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
+//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
+//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 // 2 — EXPORT GENOME METADATA
 // export const PulseMeshMeta = Identity.OrganMeta;
@@ -28,7 +29,7 @@ export const pulseLoreContext = Identity.pulseLoreContext;
 export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
-import { createBinaryPulse } from "../PULSE-TECH/PulseTechBinary-v20.js";
+import { createBinaryPulse } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 import { createBinaryWaveScanner } from "./PulseToolsWaveScanner.js";
 import { createBinaryLoopScanner } from "./PulseToolsLoopScanner.js";
 import { createPulseAdminInspector } from "./PulseToolsAdminInspector.js";
