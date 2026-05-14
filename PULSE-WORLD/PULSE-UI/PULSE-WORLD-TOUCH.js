@@ -1213,151 +1213,277 @@ function applyGateDecision(gateDecision, skin) {
 (function autoIgnitePulseTouch() {
   try {
     // ============================================================
-    // 0 — INSTALL GLOBAL→INDEXEDDB MIRROR (WITH LOCALSTORAGE FALLBACK)
+    // PulseBinary v1 — Minimal Binary Encoder/Decoder
     // ============================================================
-    // ============================================================
-// 0 — INSTALL GLOBAL→INDEXEDDB MIRROR (PURE, NO LOCALSTORAGE)
-// ============================================================
-const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeName = "GStore", prefix = "__G__") {
+    const PulseBinary = {
+      encode(value) {
+        return PulseBinary._encodeValue(value).buffer;
+      },
 
-  const SKIP = new Set([
-    "PulseWorldFirebaseShadow",
-    "PulseDetector",
-    "__PULSE_TOUCH__"
-  ]);
+      decode(buffer) {
+        const view = new DataView(buffer);
+        return PulseBinary._decodeValue(view, 0).value;
+      },
 
-  let dbPromise = null;
+      _encodeValue(value) {
+        if (value === null) return new Uint8Array([0]);
 
-  function openDB() {
-    if (dbPromise) return dbPromise;
-
-    dbPromise = new Promise((resolve) => {
-      const req = indexedDB.open(dbName, 1);
-      req.onupgradeneeded = function (evt) {
-        const db = evt.target.result;
-        if (!db.objectStoreNames.contains(storeName)) {
-          db.createObjectStore(storeName);
+        if (typeof value === "number") {
+          const buf = new ArrayBuffer(9);
+          const view = new DataView(buf);
+          view.setUint8(0, 1);
+          view.setFloat64(1, value);
+          return new Uint8Array(buf);
         }
-      };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => {
-        console.error("[G::IDB] Failed to open IndexedDB", req.error);
-        resolve(null);
-      };
-    });
 
-    return dbPromise;
-  }
+        if (typeof value === "boolean") {
+          return new Uint8Array([value ? 2 : 3]);
+        }
 
-  async function idbGet(key) {
-    const db = await openDB();
-    if (!db) return null;
-    return new Promise((resolve) => {
-      const tx = db.transaction(storeName, "readonly");
-      const store = tx.objectStore(storeName);
-      const req = store.get(key);
-      req.onsuccess = () => resolve(req.result ?? null);
-      req.onerror = () => {
-        console.error("[G::IDB] get failed", req.error);
-        resolve(null);
-      };
-    });
-  }
-
-  async function idbSet(key, value) {
-    const db = await openDB();
-    if (!db) return;
-    return new Promise((resolve) => {
-      const tx = db.transaction(storeName, "readwrite");
-      const store = tx.objectStore(storeName);
-      const req = store.put(value, key);
-      req.onsuccess = () => resolve(true);
-      req.onerror = () => {
-        console.error("[G::IDB] set failed", req.error);
-        resolve(false);
-      };
-    });
-  }
-
-  async function idbDelete(key) {
-    const db = await openDB();
-    if (!db) return;
-    return new Promise((resolve) => {
-      const tx = db.transaction(storeName, "readwrite");
-      const store = tx.objectStore(storeName);
-      const req = store.delete(key);
-      req.onsuccess = () => resolve(true);
-      req.onerror = () => {
-        console.error("[G::IDB] delete failed", req.error);
-        resolve(false);
-      };
-    });
-  }
-
-  // ⭐ PURE INDEXEDDB MIRROR
-  const mirror = new Proxy({}, {
-    get(_, prop) {
-      const key = prefix + String(prop);
-
-      // Async hydrate
-      idbGet(key).then(val => {
-        if (val != null) {
-          try {
-            mirror[prop] = JSON.parse(val);
-          } catch {
-            mirror[prop] = val;
+        if (Array.isArray(value)) {
+          const parts = value.map(v => PulseBinary._encodeValue(v));
+          const total = parts.reduce((a, p) => a + p.length, 0);
+          const out = new Uint8Array(2 + total);
+          out[0] = 4;
+          out[1] = parts.length;
+          let offset = 2;
+          for (const p of parts) {
+            out.set(p, offset);
+            offset += p.length;
           }
+          return out;
+        }
+
+        if (typeof value === "object") {
+          const keys = Object.keys(value);
+          const encoded = [];
+          let total = 2;
+
+          for (const k of keys) {
+            const keyBytes = new TextEncoder().encode(k);
+            const valBytes = PulseBinary._encodeValue(value[k]);
+            encoded.push({ keyBytes, valBytes });
+            total += 1 + keyBytes.length + valBytes.length;
+          }
+
+          const out = new Uint8Array(total);
+          out[0] = 5;
+          out[1] = keys.length;
+
+          let offset = 2;
+          for (const { keyBytes, valBytes } of encoded) {
+            out[offset++] = keyBytes.length;
+            out.set(keyBytes, offset);
+            offset += keyBytes.length;
+            out.set(valBytes, offset);
+            offset += valBytes.length;
+          }
+
+          return out;
+        }
+
+        throw new Error("Unsupported type in PulseBinary");
+      },
+
+      _decodeValue(view, offset) {
+        const type = view.getUint8(offset);
+
+        if (type === 0) return { value: null, offset: offset + 1 };
+
+        if (type === 1) {
+          const num = view.getFloat64(offset + 1);
+          return { value: num, offset: offset + 9 };
+        }
+
+        if (type === 2) return { value: true, offset: offset + 1 };
+        if (type === 3) return { value: false, offset: offset + 1 };
+
+        if (type === 4) {
+          const length = view.getUint8(offset + 1);
+          let cursor = offset + 2;
+          const arr = [];
+          for (let i = 0; i < length; i++) {
+            const decoded = PulseBinary._decodeValue(view, cursor);
+            arr.push(decoded.value);
+            cursor = decoded.offset;
+          }
+          return { value: arr, offset: cursor };
+        }
+
+        if (type === 5) {
+          const length = view.getUint8(offset + 1);
+          let cursor = offset + 2;
+          const obj = {};
+          for (let i = 0; i < length; i++) {
+            const keyLen = view.getUint8(cursor++);
+            const keyBytes = new Uint8Array(view.buffer, cursor, keyLen);
+            const key = new TextDecoder().decode(keyBytes);
+            cursor += keyLen;
+
+            const decoded = PulseBinary._decodeValue(view, cursor);
+            obj[key] = decoded.value;
+            cursor = decoded.offset;
+          }
+          return { value: obj, offset: cursor };
+        }
+
+        throw new Error("Unknown PulseBinary type: " + type);
+      }
+    };
+
+    // ============================================================
+    // BINARY INDEXEDDB MIRROR (PulseBinary-Based)
+    // ============================================================
+    const G = (function installGlobalIndexedDBMirror(
+      dbName = "PulseTouchDB",
+      storeName = "GStore",
+      prefix = "__G__"
+    ) {
+
+      const SKIP = new Set([
+        "PulseWorldFirebaseShadow",
+        "PulseDetector",
+        "__PULSE_TOUCH__"
+      ]);
+
+      let dbPromise = null;
+
+      function openDB() {
+        if (dbPromise) return dbPromise;
+
+        dbPromise = new Promise((resolve) => {
+          const req = indexedDB.open(dbName, 1);
+          req.onupgradeneeded = function (evt) {
+            const db = evt.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+              db.createObjectStore(storeName);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => {
+            console.error("[G::IDB] Failed to open IndexedDB", req.error);
+            resolve(null);
+          };
+        });
+
+        return dbPromise;
+      }
+
+      async function idbGet(key) {
+        const db = await openDB();
+        if (!db) return null;
+        return new Promise((resolve) => {
+          const tx = db.transaction(storeName, "readonly");
+          const store = tx.objectStore(storeName);
+          const req = store.get(key);
+          req.onsuccess = () => {
+            const val = req.result;
+            if (!val) return resolve(null);
+            try {
+              resolve(PulseBinary.decode(val));
+            } catch (err) {
+              console.error("[G::IDB] PulseBinary decode failed", err);
+              resolve(null);
+            }
+          };
+          req.onerror = () => {
+            console.error("[G::IDB] get failed", req.error);
+            resolve(null);
+          };
+        });
+      }
+
+      async function idbSet(key, value) {
+        const db = await openDB();
+        if (!db) return;
+        return new Promise((resolve) => {
+          let encoded;
+          try {
+            encoded = PulseBinary.encode(value);
+          } catch (err) {
+            console.error("[G::IDB] PulseBinary encode failed", err);
+            return resolve(false);
+          }
+
+          const tx = db.transaction(storeName, "readwrite");
+          const store = tx.objectStore(storeName);
+          const req = store.put(encoded, key);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => {
+            console.error("[G::IDB] set failed", req.error);
+            resolve(false);
+          };
+        });
+      }
+
+      async function idbDelete(key) {
+        const db = await openDB();
+        if (!db) return;
+        return new Promise((resolve) => {
+          const tx = db.transaction(storeName, "readwrite");
+          const store = tx.objectStore(storeName);
+          const req = store.delete(key);
+          req.onsuccess = () => resolve(true);
+          req.onerror = () => {
+            console.error("[G::IDB] delete failed", req.error);
+            resolve(false);
+          };
+        });
+      }
+
+      const mirror = new Proxy({}, {
+        get(_, prop) {
+          const key = prefix + String(prop);
+
+          idbGet(key).then(val => {
+            if (val != null) {
+              mirror[prop] = val;
+            }
+          });
+
+          return undefined;
+        },
+
+        set(_, prop, value) {
+          if (SKIP.has(prop)) return true;
+          if (typeof value === "function") return true;
+
+          idbSet(prefix + String(prop), value);
+          return true;
+        },
+
+        deleteProperty(_, prop) {
+          idbDelete(prefix + String(prop));
+          return true;
         }
       });
 
-      return undefined;
-    },
+      window.G = mirror;
+      window.g = mirror;
 
-    set(_, prop, value) {
-      if (SKIP.has(prop)) return true;
-      if (typeof value === "function") return true;
+      return mirror;
+    })();
 
-      let json;
-      try {
-        json = JSON.stringify(value);
-      } catch {
-        console.warn(`[Mirror] Skipping ${prop} (non-serializable)`);
-        return true;
-      }
+    // ============================================================
+    // PulseTouch ignition (binary-backed via G)
+    // ============================================================
 
-      idbSet(prefix + String(prop), json);
-      return true;
-    },
-
-    deleteProperty(_, prop) {
-      idbDelete(prefix + String(prop));
-      return true;
-    }
-  });
-
-  window.G = mirror;
-  window.g = mirror;
-
-  return mirror;
-})();
-
-    // ⭐ Prevent double‑boot (organism lives in G/storage)
+    // Prevent double‑boot (organism lives in G/storage → now binary-backed)
     if (G.__PULSE_TOUCH__) return;
 
-    // ⭐ Detect current page
+    // Detect current page
     const page =
       window.location.pathname.split("/").pop().replace(".html", "") || "index";
 
-    // ⭐ Determine prefix: index = "./", all other pages = "../"
+    // Determine prefix: index = "./", all other pages = "../"
     const prefix = page === "index" ? "./" : "../";
 
-    // ============================================================
-    // 1 — ENSURE DETECTOR + ORGANS EXIST (IN G / STORAGE)
-    // ============================================================
+    // Ensure Detector is wired into G (so any state it writes is binary-backed)
     if (!G.PulseDetector && typeof window.PulseTouchDetector === "function") {
       G.PulseDetector = window.PulseTouchDetector();
     }
 
+    // Shadow: lives on G → now binary-backed if mutated
     if (!G.PulseWorldFirebaseShadow) {
       console.warn("[PulseTouch] Shadow missing → creating safe no-op Shadow");
       G.PulseWorldFirebaseShadow = {
@@ -1370,6 +1496,7 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
       };
     }
 
+    // Chunks: lives on G → any future state is binary-backed
     if (!G.PulseChunks) {
       console.warn("[PulseTouch] PulseChunks missing → creating safe no-op");
       G.PulseChunks = {
@@ -1379,6 +1506,7 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
       };
     }
 
+    // Normalizer: lives on G → any config/state is binary-backed
     if (!G.PulseChunksNormalizer) {
       console.warn("[PulseTouch] PulseChunksNormalizer missing → identity normalizer");
       G.PulseChunksNormalizer = {
@@ -1389,13 +1517,12 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
       };
     }
 
+    // Organism map: lives on G → world map is binary-backed
     if (!G.PulseOrganismMap) {
       G.PulseOrganismMap = { ready: false, signal() {} };
     }
 
-    // ============================================================
     // 2 — WIRE DETECTOR → TOUCH CALLBACK CHANNEL (ALL VIA G)
-    // ============================================================
     if (G.PulseDetector) {
       G.PulseDetector.onMapReady = function (evt) {
         G.PulseOrganismMap = evt.map;
@@ -1424,9 +1551,6 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
       };
     }
 
-    // ============================================================
-    // 3 — SEND BOOTSTRAP SIGNALS (MAP / CHUNKS / NORMALIZER)
-    // ============================================================
     try {
       G.PulseOrganismMap.signal?.({
         type: "touch_bootstrap",
@@ -1451,9 +1575,6 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
       console.error("[PulseTouch] SIGNAL BROADCAST FAILED →", err);
     }
 
-    // ============================================================
-    // 4 — IGNITE TOUCH (SYNC ONLY, AFTER SIGNALS)
-    // ============================================================
     const touch = createPulseTouch({
       page,
       mode: "fast",
@@ -1484,11 +1605,8 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
     );
 
     G.__PULSE_TOUCH__ = touch;
-    window.__PULSE_TOUCH__ = touch; // legacy surface if you still need it
+    window.__PULSE_TOUCH__ = touch;
 
-    // ============================================================
-    // 5 — PRELOAD + PREWARM PORTAL (THE CORTEX)
-    // ============================================================
     try {
       const portalScript = document.createElement("link");
       portalScript.rel = "modulepreload";
@@ -1531,9 +1649,6 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
       console.error("[PulseTouch::PortalPrewarm] FAILED →", err);
     }
 
-    // ============================================================
-    // 6 — PREWARM TOUCH CORTEX
-    // ============================================================
     try {
       G.PulseChunks.prewarm?.([
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-WARMUP.js`,
@@ -1550,9 +1665,6 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
       console.error("[PulseTouch::CortexPrewarm] FAILED →", err);
     }
 
-    // ============================================================
-    // 7 — ORGANISMMAP PREWARM SIGNAL (SAME LOOP, VIA G)
-    // ============================================================
     try {
       const hasMapSignal =
         G.PulseOrganismMap &&
@@ -1575,9 +1687,6 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
       console.error("[PulseTouch::OrganismMapSignal] FAILED →", err);
     }
 
-    // ============================================================
-    // 8 — PURE SYNC IGNITION
-    // ============================================================
     console.log(
       "%c[PulseTouch::ignition] %cportal-first warm + cortex prewarm complete.",
       "color:#90CAF9; font-weight:bold; font-family:monospace;",
@@ -1588,6 +1697,7 @@ const G = (function installGlobalIndexedDBMirror(dbName = "PulseTouchDB", storeN
     console.error("PulseTouch auto‑ignite failed", err);
   }
 })();
+
 
 
 // ============================================================
