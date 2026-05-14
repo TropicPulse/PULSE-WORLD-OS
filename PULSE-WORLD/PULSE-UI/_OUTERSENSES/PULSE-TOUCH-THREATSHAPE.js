@@ -1,17 +1,28 @@
 // ============================================================================
 //  PULSE OS — EDGE SECURITY ORGAN
-//  FILE: /PULSE-TOUCH/PULSE-TOUCH-THREATSHAPE-v25++.js
-//  ORGAN: PulseTouchThreatShape (v25++ IMMORTAL)
+//  FILE: /PULSE-TOUCH/PULSE-TOUCH-THREATSHAPE-v27++-IMMORTAL-INTEL.js
+//  ORGAN: PulseTouchThreatShape (v27++ IMMORTAL INTEL)
 //  ROLE: Multi‑Dimensional Threat Classification / Early Firewall Cortex
+//        + Module Risk + Binary Risk + Cookie Integrity + PulseImport Awareness
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulseTouchThreatShape = {
   id: "pulsetouch.threatshape",
   kind: "cortex_organ",
-  version: "v25++-IMMORTAL",
+  version: "v27++-IMMORTAL-INTEL",
   role: "threat_shape_engine",
   surfaces: {
-    band: ["security", "threatshape", "risk", "headers", "geo", "ua"],
+    band: [
+      "security",
+      "threatshape",
+      "risk",
+      "headers",
+      "geo",
+      "ua",
+      "module",
+      "binary",
+      "cookie"
+    ],
     wave: ["analytical", "cold", "early_firewall"],
     binary: ["not_a_threat", "possible_threat", "major_threat"],
     presence: ["threatshape_state"],
@@ -26,6 +37,8 @@ export const AI_EXPERIENCE_META_PulseTouchThreatShape = {
       "geo_risk",
       "cookie_risk",
       "integrity_risk",
+      "binary_risk",
+      "module_risk",
       "shape_hint"
     ],
     speed: "instant_compute"
@@ -64,7 +77,16 @@ export const ORGAN_META_PulseTouchThreatShape = {
     failOpenAware: true,
     threeShapeModel: true,
     operatorAlertAware: true,
-    hellnoAware: true
+    hellnoAware: true,
+
+    // v27++ INTEL
+    moduleAware: true,
+    pulseImportAware: true,
+    pulseExportAware: true,
+    subimportAware: true,
+    tierAware: true,
+    binaryAware: true,
+    cookieIntegrityBandAware: true
   }
 };
 
@@ -102,7 +124,7 @@ export const IMMORTAL_OVERLAYS_PulseTouchThreatShape = {
 };
 
 // ============================================================================
-// HELPERS — v25++
+// HELPERS — v27++ IMMORTAL-INTEL
 // ============================================================================
 
 function getHeader(headers, key) {
@@ -157,8 +179,81 @@ function classifyCookieIntegrity(pulseTouch) {
   return "unknown";
 }
 
+// v27++ INTEL — binary risk
+function computeBinaryRisk(pulseTouch) {
+  const integrity = pulseTouch?.integrity || "unknown";
+  const version = pulseTouch?.v || "0";
+  const band = pulseTouch?.band || "dual";
+  const evo = pulseTouch?.evo || "IMMORTAL";
+
+  let score = 0;
+
+  if (integrity === "unknown") score += 15;
+  else if (integrity === "partial") score += 5;
+
+  if (version === "0") score += 10;
+  if (band !== "dual") score += 3;
+  if (evo !== "IMMORTAL") score += 5;
+
+  let riskBand = "low";
+  if (score >= 25) riskBand = "high";
+  else if (score >= 10) riskBand = "medium";
+
+  return { score, riskBand, integrity };
+}
+
+// v27++ INTEL — module risk
+function extractModuleRisk(pulseTouch) {
+  const explicit = pulseTouch?.pulseModuleRisk;
+  if (explicit && typeof explicit === "object") {
+    return {
+      hasMissingSubimports: !!explicit.hasMissingSubimports,
+      hasWrongTierExports: !!explicit.hasWrongTierExports,
+      hasGlobalExposureRisk: !!explicit.hasGlobalExposureRisk,
+      hasChunkProfileAnomaly: !!explicit.hasChunkProfileAnomaly,
+      score: explicit.score ?? 0,
+      source: "skinState"
+    };
+  }
+
+  try {
+    if (typeof window !== "undefined" && window.PulseImportWarmupCache) {
+      const page = pulseTouch?.page || "index";
+      const entry = window.PulseImportWarmupCache[page];
+      if (entry) {
+        const missing = entry.subimportValidation?.missing?.length || 0;
+        const wrongTier = entry.exportsMeta?.filter(
+          (e) => e.tier === "global" || e.tier === "system"
+        ).length || 0;
+
+        let score = 0;
+        if (missing > 0) score += 10;
+        if (wrongTier > 0) score += 10;
+
+        return {
+          hasMissingSubimports: missing > 0,
+          hasWrongTierExports: wrongTier > 0,
+          hasGlobalExposureRisk: wrongTier > 0,
+          hasChunkProfileAnomaly: false,
+          score,
+          source: "warmup_cache"
+        };
+      }
+    }
+  } catch {}
+
+  return {
+    hasMissingSubimports: false,
+    hasWrongTierExports: false,
+    hasGlobalExposureRisk: false,
+    hasChunkProfileAnomaly: false,
+    score: 0,
+    source: "none"
+  };
+}
+
 // ============================================================================
-// CORE IMPLEMENTATION — v25++ IMMORTAL
+// CORE IMPLEMENTATION — v27++ IMMORTAL-INTEL
 // ============================================================================
 
 export function buildThreatShape(pulseTouch, event = {}) {
@@ -169,7 +264,6 @@ export function buildThreatShape(pulseTouch, event = {}) {
   const referer = getHeader(headers, "referer") || "";
   const host = getHeader(headers, "host") || "";
   const scheme = getHeader(headers, "x-forwarded-proto") || "https";
-  const acceptLang = getHeader(headers, "accept-language") || "";
   const cfBot = getHeader(headers, "cf-bot-score") || null;
 
   const headerShape = classifyHeaderShape(headers);
@@ -177,27 +271,20 @@ export function buildThreatShape(pulseTouch, event = {}) {
   const uaShape = classifyUA(ua);
   const geoShape = classifyGeo(headers);
   const integrityRisk = classifyCookieIntegrity(pulseTouch);
-  // inside buildThreatShape, after reading pulseTouch:
-  const moduleRisk = pulseTouch.pulseModuleRisk || null;
-  if (moduleRisk?.hasMissingSubimports) {
-    riskScore += 10;
-    reasons.push("module_missing_subimports");
-  }
-  if (moduleRisk?.hasWrongTierExports) {
-    riskScore += 10;
-    reasons.push("module_wrong_tier_exports");
-  }
+
+  const moduleRisk = extractModuleRisk(pulseTouch);
+  const binaryRisk = computeBinaryRisk(pulseTouch);
 
   let riskScore = 0;
   const reasons = [];
 
-  // REGION RISK
+  // REGION
   const region = pulseTouch.region || "unknown";
   if (region === "kp") { riskScore += 80; reasons.push("region_blocked"); }
   else if (region === "ng") { riskScore += 40; reasons.push("region_restricted"); }
   else if (region === "unknown") { riskScore += 10; reasons.push("region_unknown"); }
 
-  // PULSE RISK
+  // PULSE
   const pulseStream = pulseTouch.pulseStream || "continuous";
   if (pulseStream === "single") { riskScore += 10; reasons.push("pulse_single"); }
   if (pulseStream === "burst") { riskScore += 5; reasons.push("pulse_burst"); }
@@ -205,7 +292,7 @@ export function buildThreatShape(pulseTouch, event = {}) {
   // FASTLANE
   if (pulseTouch.fastLane === "disabled") { riskScore += 5; reasons.push("fastlane_disabled"); }
 
-  // TEMPORAL RISK
+  // TEMPORAL
   const { originTs, lastPulseTs } = pulseTouch;
   if (originTs && lastPulseTs && lastPulseTs > originTs) {
     const delta = lastPulseTs - originTs;
@@ -219,24 +306,24 @@ export function buildThreatShape(pulseTouch, event = {}) {
     riskScore += 5; reasons.push(`presence_${pulseTouch.presence}`);
   }
 
-  // HEADER SHAPE
+  // HEADER
   if (headerShape === "empty") { riskScore += 15; reasons.push("header_empty"); }
   if (headerShape === "heavy") { riskScore += 5; reasons.push("header_heavy"); }
 
-  // METHOD SHAPE
+  // METHOD
   if (methodShape === "mutating") { riskScore += 15; reasons.push("method_mutating"); }
   if (methodShape === "write") { riskScore += 8; reasons.push("method_write"); }
 
-  // UA SHAPE
+  // UA
   if (uaShape === "script") { riskScore += 15; reasons.push("ua_script"); }
   if (uaShape === "bot") { riskScore += 10; reasons.push("ua_bot"); }
   if (!ua) { riskScore += 5; reasons.push("ua_missing"); }
 
-  // GEO SHAPE
+  // GEO
   if (geoShape === "tor") { riskScore += 20; reasons.push("geo_tor"); }
   if (geoShape === "unknown") { riskScore += 5; reasons.push("geo_unknown"); }
 
-  // TLS / SCHEME
+  // TLS
   if (scheme !== "https") { riskScore += 10; reasons.push("scheme_insecure"); }
 
   // REFERER
@@ -253,6 +340,20 @@ export function buildThreatShape(pulseTouch, event = {}) {
   if (cfBot && Number(cfBot) < 30) {
     riskScore += 15;
     reasons.push("cfbot_low");
+  }
+
+  // MODULE RISK
+  if (moduleRisk.score > 0) {
+    const bounded = Math.min(20, moduleRisk.score);
+    riskScore += bounded;
+    reasons.push("module_risk");
+  }
+
+  // BINARY RISK
+  if (binaryRisk.score > 0) {
+    const bounded = Math.min(15, binaryRisk.score);
+    riskScore += bounded;
+    reasons.push("binary_risk");
   }
 
   // NORMALIZE
@@ -275,15 +376,21 @@ export function buildThreatShape(pulseTouch, event = {}) {
     recommendedAction,
     riskScore,
     reasons,
+
     regionRisk: region,
     pulseRisk: pulseStream,
     temporalRisk: originTs && lastPulseTs ? "evaluated" : "none",
     clusterRisk: pulseTouch.regionCluster || "unknown",
+
     headerShape,
     methodShape,
     uaShape,
     geoShape,
     integrityRisk,
+
+    binaryRisk,
+    moduleRisk,
+
     meta: {
       region,
       pulseStream,

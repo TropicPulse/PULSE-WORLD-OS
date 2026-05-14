@@ -1,17 +1,26 @@
 // ============================================================================
 //  PULSE OS — OUTER SENSE ORGAN
-//  FILE: _OUTERSENSES/PULSE-TOUCH-PRESENCE-ORACLE-v27++.js
-//  ORGAN: PulseTouchPresenceOracle (v27++ IMMORTAL)
+//  FILE: _OUTERSENSES/PULSE-TOUCH-PRESENCE-ORACLE-v27++-IMMORTAL-INTEL.js
+//  ORGAN: PulseTouchPresenceOracle (v27++ IMMORTAL INTEL)
 //  ROLE: Presence Intensity / Stability / Volatility / Trend / Module Stability
+//        + Binary Awareness + Predictor Alignment + Analytics Integration
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulsePresenceOracle = {
   id: "pulsetouch.presence_oracle",
   kind: "outer_sense",
-  version: "v27++-IMMORTAL",
+  version: "v27++-IMMORTAL-INTEL",
   role: "presence_oracle",
   surfaces: {
-    band: ["presence", "intensity", "stability", "volatility", "trend", "module"],
+    band: [
+      "presence",
+      "intensity",
+      "stability",
+      "volatility",
+      "trend",
+      "module",
+      "binary"
+    ],
     wave: ["quiet", "stabilizing", "predictive"],
     presence: ["presence_state"],
     speed: "sync"
@@ -29,10 +38,12 @@ export const ORGAN_META_PulsePresenceOracle = {
     asyncSafe: true,
     zeroPII: true,
     zeroTracking: true,
+
     presenceAware: true,
     presenceIntensityAware: true,
     presenceTrendAware: true,
     presenceVolatilityAware: true,
+
     regionClusterAware: true,
     signalAware: true,
     genomeAware: true,
@@ -44,7 +55,12 @@ export const ORGAN_META_PulsePresenceOracle = {
     pulseImportAware: true,
     pulseExportAware: true,
     subimportAware: true,
-    tierAware: true
+    tierAware: true,
+
+    // v27++ INTEL
+    binaryAware: true,
+    binaryDeltaAware: true,
+    predictorAware: true
   }
 };
 
@@ -62,7 +78,7 @@ export const ORGAN_CONTRACT_PulsePresenceOracle = {
     volatility: "low | medium | high",
     trend: "rising | falling | steady",
     confidence: "0–1 numeric",
-    oracleHints: "Hints for Warmup / Security / Advantage / Gate"
+    oracleHints: "Hints for Warmup / Security / Advantage / Gate / Predictor"
   },
   guarantees: {
     deterministic: true,
@@ -79,17 +95,20 @@ export const IMMORTAL_OVERLAYS_PulsePresenceOracle = {
 };
 
 // ============================================================================
-// HELPERS — unchanged
+// HELPERS — IMMORTAL
 // ============================================================================
 
 function deriveIntensity(presence) {
   switch (presence) {
     case "active":
     case "engaged":
-    case "focused": return "high";
+    case "focused":
+      return "high";
     case "idle":
-    case "background": return "medium";
-    default: return "low";
+    case "background":
+      return "medium";
+    default:
+      return "low";
   }
 }
 
@@ -120,28 +139,38 @@ function computeTrend(history) {
   return "steady";
 }
 
-function computeConfidence(intensity, stability, volatility, moduleStability) {
+function computeConfidence(intensity, stability, volatility, moduleStability, binaryRisk) {
   let base = 0.5;
 
   if (intensity === "high") base += 0.2;
   if (stability === "stable") base += 0.2;
   if (volatility === "low") base += 0.1;
 
-  // v27++ module stability influences confidence
+  // module stability
   if (moduleStability != null) {
     if (moduleStability >= 0.9) base += 0.1;
     else if (moduleStability < 0.5) base -= 0.1;
   }
 
+  // binary risk
+  if (binaryRisk === "high") base -= 0.1;
+  if (binaryRisk === "low") base += 0.05;
+
   return Math.min(1, Math.max(0, base));
 }
 
 // ============================================================================
-// FACTORY — v27++ IMMORTAL
+// FACTORY — v27++ IMMORTAL INTEL
 // ============================================================================
 
 export function PulsePresenceOracle() {
-  function evaluate({ pulseTouch, history = [], analytics = {}, predictor = {}, organismMap = null }) {
+  function evaluate({
+    pulseTouch,
+    history = [],
+    analytics = {},
+    predictor = {},
+    organismMap = null
+  }) {
     const presence = pulseTouch?.presence || "unknown";
 
     // 1) Intensity
@@ -159,34 +188,52 @@ export function PulsePresenceOracle() {
     // 5) Module stability (v27++)
     const moduleStability = predictor?.modulePrediction?.stabilityScore ?? null;
 
-    // 6) Confidence
+    // 6) Binary risk (v27++ INTEL)
+    const binaryRisk =
+      analytics?.metrics?.binary?.riskBand ||
+      predictor?.binaryPrediction?.riskBand ||
+      "low";
+
+    // 7) Confidence
     const confidence = computeConfidence(
       presenceIntensity,
       stability,
       volatility,
-      moduleStability
+      moduleStability,
+      binaryRisk
     );
 
-    // 7) Oracle Hints (IMMORTAL++)
+    // 8) Oracle Hints (IMMORTAL++)
     const oracleHints = {
       warmupBias:
-        presenceIntensity === "high" ? "full" :
-        presenceIntensity === "medium" ? "safe" : "minimal",
+        presenceIntensity === "high"
+          ? "full"
+          : presenceIntensity === "medium"
+          ? "safe"
+          : "minimal",
 
-      animationBias:
-        stability === "unstable" ? "reduced" : "smooth",
+      animationBias: stability === "unstable" ? "reduced" : "smooth",
 
       hydrationBias:
-        volatility === "high" ? "minimal" :
-        presenceIntensity === "high" ? "full" : "safe",
+        volatility === "high"
+          ? "minimal"
+          : presenceIntensity === "high"
+          ? "full"
+          : "safe",
 
       chunkBias:
-        presenceIntensity === "high" ? "aggressive" :
-        stability === "unstable" ? "safe" : "safe",
+        presenceIntensity === "high"
+          ? "aggressive"
+          : stability === "unstable"
+          ? "safe"
+          : "safe",
 
       routingBias:
-        trend === "rising" ? "forward" :
-        trend === "falling" ? "conservative" : "neutral",
+        trend === "rising"
+          ? "forward"
+          : trend === "falling"
+          ? "conservative"
+          : "neutral",
 
       // Signals + Genome
       signalMode: analytics?.metrics?.signals?.pulse ? "active" : "idle",
@@ -194,6 +241,7 @@ export function PulsePresenceOracle() {
 
       // Predictor influence
       predictedNextPage: predictor?.prediction?.nextPage || null,
+      predictedNextMode: predictor?.prediction?.nextMode || null,
 
       // v27++ module influence
       moduleBias:
@@ -205,7 +253,15 @@ export function PulsePresenceOracle() {
           ? "mostly_stable"
           : moduleStability >= 0.4
           ? "unstable"
-          : "critical"
+          : "critical",
+
+      // v27++ binary influence
+      binaryBias:
+        binaryRisk === "high"
+          ? "conserve"
+          : binaryRisk === "medium"
+          ? "balanced"
+          : "aggressive"
     };
 
     return {

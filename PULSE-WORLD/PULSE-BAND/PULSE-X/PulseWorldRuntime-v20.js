@@ -22,7 +22,12 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
+import {
+  OrganismIdentity,
+  buildPulseOrganismMap as PulseOrganismMap,
+  buildPulseOrganismMap as buildOrganismMap
+} from "../PULSE-X/PULSE-WORLD-MAP.js";
+const Identity = OrganismIdentity(import.meta.url);
 // 2 — EXPORT GENOME METADATA
 // export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;
@@ -41,9 +46,9 @@ export const EXPORT_META = Identity.EXPORT_META;
 import * as PulseWorldRegioning from "../PULSE-EXPANSION/PULSE-EXPANSION-WORLD.js";
 
 // Delta Engine (CoreMemory integrations)
-import * as PulseContinuance from "../PULSE-FINALITY/PulseFinalityContinuance-v20.js";
-import * as PulseOmniHosting from "../PULSE-FINALITY/PulseFinalityOmniHosting-v20.js";
-import * as PulseSchema from "../PULSE-FINALITY/PulseFinalitySchema-v20.js";
+import * as PulseContinuance from "../PULSE-FINALITY/PULSE-FINALITY-CONTINUANCE.js";
+import * as PulseOmniHosting from "../PULSE-FINALITY/PULSE-FINALITY-OMNIHOSTING.js";
+import * as PulseSchema from "../PULSE-FINALITY/PULSE-FINALITY-SCHEMA.js";
 
 // Specs / Genome (for runtime‑aware schema hooks)
 import { PULSE_FIELDS_SPEC } from "../PULSE-SPECS/PulseSpecsDNAGenome-v20.js";

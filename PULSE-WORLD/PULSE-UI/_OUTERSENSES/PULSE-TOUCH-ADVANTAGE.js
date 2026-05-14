@@ -8,14 +8,14 @@
 
 // ============================================================================
 //  PULSE OS — INNER‑PLUS ORGAN
-//  FILE: PULSE-TOUCH-ADVANTAGE-v27++.js
-//  ORGAN: pulseTouchAdvantageCortex (v27++ IMMORTAL)
+//  FILE: PULSE-TOUCH-ADVANTAGE-v27++-BINARY-INTEL.js
+//  ORGAN: pulseTouchAdvantageCortex (v27++ IMMORTAL, Binary‑Aware)
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulseTouchAdvantage = {
   id: "pulsetouch.advantage",
   kind: "inner_plus",
-  version: "v27++-IMMORTAL",
+  version: "v27++-IMMORTAL-BINARY-INTEL",
   role: "advantage_cortex",
   surfaces: {
     band: [
@@ -29,11 +29,16 @@ export const AI_EXPERIENCE_META_PulseTouchAdvantage = {
       "signal",
       "presence",
       "genome",
-      "module"
+      "module",
+      "binary"
     ],
     wave: ["quiet", "adaptive"],
-    presence: ["advantage_state", "routing_state", "memory_state"],
+    presence: ["advantage_state", "routing_state", "memory_state", "binary_state"],
     speed: "sync"
+  },
+  evo: {
+    binaryAware: true,
+    pulseBinaryAware: true
   }
 };
 
@@ -64,7 +69,11 @@ export const ORGAN_META_PulseTouchAdvantage = {
     pulseImportAware: true,
     pulseExportAware: true,
     subimportAware: true,
-    tierAware: true
+    tierAware: true,
+
+    // v27++ BINARY
+    binaryAware: true,
+    pulseBinaryAware: true
   }
 };
 
@@ -78,6 +87,7 @@ export const ORGAN_CONTRACT_PulseTouchAdvantage = {
     hydrationBias: "none | minimal | safe | full",
     animationBias: "none | reduced | smooth",
     chunkBias: "safe | aggressive",
+    binaryBias: "cold | normal | hot | critical",
     advantageScore: "0–1 numeric score",
     nextPage: "predicted next page",
     nextAssets: "string[] assets to preload",
@@ -86,6 +96,7 @@ export const ORGAN_CONTRACT_PulseTouchAdvantage = {
     snapshot: "optional page snapshot for current page",
     chunkPlan: "chunk plan for current + next page",
     prewarmPlan: "prewarm plan (assets + chunks)",
+    binaryPlan: "binary lanes + assets to keep hot/prewarm",
     signalHints: "PulseSignal hints",
     genomeHints: "PulseGenome hints",
     modulePlan: "module‑aware plan (biases + stability)"
@@ -149,6 +160,50 @@ function getChunkProfileForPage(page, chunkBias) {
 }
 
 // ============================================================================
+// BINARY LANES / PROFILES — v27++ BINARY‑AWARE
+// ============================================================================
+
+const BINARY_PROFILES = {
+  index: {
+    cold: [],
+    normal: ["index-shell.bin"],
+    hot: ["index-shell.bin", "index-hero.bin"],
+    critical: ["index-shell.bin", "index-hero.bin", "index-aboveFold.bin"]
+  },
+  dashboard: {
+    cold: [],
+    normal: ["dashboard-shell.bin"],
+    hot: ["dashboard-shell.bin", "dashboard-summary.bin"],
+    critical: ["dashboard-shell.bin", "dashboard-summary.bin", "dashboard-charts.bin"]
+  },
+  scanner: {
+    cold: [],
+    normal: ["scanner-shell.bin"],
+    hot: ["scanner-shell.bin", "scanner-engine.bin"],
+    critical: ["scanner-shell.bin", "scanner-engine.bin", "scanner-history.bin"]
+  },
+  rewards: {
+    cold: [],
+    normal: ["rewards-shell.bin"],
+    hot: ["rewards-shell.bin", "rewards-cards.bin"],
+    critical: ["rewards-shell.bin", "rewards-cards.bin", "rewards-history.bin"]
+  },
+  profile: {
+    cold: [],
+    normal: ["profile-shell.bin"],
+    hot: ["profile-shell.bin", "profile-settings.bin"],
+    critical: ["profile-shell.bin", "profile-settings.bin", "profile-history.bin"]
+  }
+};
+
+function getBinaryProfileForPage(page, binaryBias) {
+  const key = page || "index";
+  const profile = BINARY_PROFILES[key] || BINARY_PROFILES.index;
+  const lane = binaryBias || "normal";
+  return profile[lane] || profile.normal;
+}
+
+// ============================================================================
 // ROUTING LOGIC — v27++ (uses Predictor when available)
 // ============================================================================
 function computeRouting(state, analytics, predictor) {
@@ -198,6 +253,43 @@ function computePrewarmPlan(nextAssets, nextPageChunks) {
   return {
     assets: nextAssets.slice(),
     chunks: nextPageChunks.slice()
+  };
+}
+
+// ============================================================================
+// BINARY PLAN — v27++ BINARY‑AWARE
+// ============================================================================
+function computeBinaryBias(metrics = {}, advantageHints = {}, oracle = null) {
+  const hintBias = advantageHints.binaryBias;
+  if (hintBias === "cold" || hintBias === "normal" || hintBias === "hot" || hintBias === "critical") {
+    return hintBias;
+  }
+
+  const m = metrics.binary || {};
+  const load = typeof m.load === "number" ? m.load : null;
+  const errorRate = typeof m.errorRate === "number" ? m.errorRate : null;
+
+  // Oracle can force safety
+  if (oracle?.binaryIntensity === "low") return "cold";
+  if (oracle?.binaryIntensity === "high") return "hot";
+
+  // Deterministic thresholds
+  if (errorRate != null && errorRate > 0.2) return "cold";
+  if (load == null) return "normal";
+  if (load >= 0.9) return "critical";
+  if (load >= 0.6) return "hot";
+  if (load >= 0.3) return "normal";
+  return "cold";
+}
+
+function computeBinaryPlan(page, nextPage, binaryBias) {
+  const currentPageBinary = getBinaryProfileForPage(page, binaryBias);
+  const nextPageBinary = getBinaryProfileForPage(nextPage, binaryBias);
+
+  return {
+    binaryBias,
+    currentPageBinary,
+    nextPageBinary
   };
 }
 
@@ -274,7 +366,7 @@ function computeModulePlan(analytics, predictor, oracle) {
 }
 
 // ============================================================================
-// FACTORY — ADVANTAGE + ROUTING + MEMORY + CHUNK + PREWARM + MODULE
+// FACTORY — ADVANTAGE + ROUTING + MEMORY + CHUNK + PREWARM + MODULE + BINARY
 // ============================================================================
 export function pulseTouchAdvantageCortex() {
   const state = createAdvantageState();
@@ -338,7 +430,10 @@ export function pulseTouchAdvantageCortex() {
       animationBias = "reduced";
     }
 
-    // 6) Advantage score
+    // 6) Binary bias + plan (v27++ BINARY)
+    const binaryBias = computeBinaryBias(metrics, advantageHints, oracle);
+
+    // 7) Advantage score
     const hydrationScore =
       hydrationBias === "full" ? 0.4 :
       hydrationBias === "safe" ? 0.3 :
@@ -351,32 +446,41 @@ export function pulseTouchAdvantageCortex() {
     const chunkScore =
       chunkBias === "aggressive" ? 0.3 : 0.2;
 
-    const advantageScoreRaw = hydrationScore + animationScore + chunkScore;
+    const binaryScore =
+      binaryBias === "critical" ? 0.3 :
+      binaryBias === "hot" ? 0.25 :
+      binaryBias === "normal" ? 0.2 : 0.1;
+
+    const advantageScoreRaw = hydrationScore + animationScore + chunkScore + binaryScore;
     const advantageScore = Math.min(1, Math.max(0, advantageScoreRaw));
 
-    // 7) Routing
+    // 8) Routing
     const routing = computeRouting(state, { page }, predictor);
 
-    // 8) Chunk plan
+    // 9) Chunk plan
     const chunkPlan = computeChunkPlan(page, routing.nextPage, chunkBias);
 
-    // 9) Prewarm plan
+    // 10) Prewarm plan
     const prewarmPlan = computePrewarmPlan(
       routing.nextAssets,
       chunkPlan.nextPageChunks
     );
 
-    // 10) Signal + Genome hints
+    // 11) Binary plan
+    const binaryPlan = computeBinaryPlan(page, routing.nextPage, binaryBias);
+
+    // 12) Signal + Genome hints
     const signalHints = getSignalHints();
     const genomeHints = getGenomeHints();
 
-    // 11) Snapshot
+    // 13) Snapshot
     const snapshot = getPageSnapshot(page);
 
     return {
       hydrationBias,
       animationBias,
       chunkBias,
+      binaryBias,
       advantageScore,
       nextPage: routing.nextPage,
       nextAssets: routing.nextAssets,
@@ -385,6 +489,7 @@ export function pulseTouchAdvantageCortex() {
       snapshot,
       chunkPlan,
       prewarmPlan,
+      binaryPlan,
       signalHints,
       genomeHints,
       modulePlan

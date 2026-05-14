@@ -88,20 +88,22 @@ function extractPageRoutesFromDOM() {
 
   const routes = new Set();
 
-  document.querySelectorAll("a[href], button[data-route], [data-route]").forEach((el) => {
-    const href = el.getAttribute("href") || el.getAttribute("data-route");
+  document
+    .querySelectorAll("a[href], button[data-route], [data-route]")
+    .forEach((el) => {
+      const href = el.getAttribute("href") || el.getAttribute("data-route");
 
-    if (!href) return;
+      if (!href) return;
 
-    // ignore external
-    if (href.startsWith("http")) return;
-    if (href.startsWith("mailto:")) return;
-    if (href.startsWith("tel:")) return;
+      // ignore external
+      if (href.startsWith("http")) return;
+      if (href.startsWith("mailto:")) return;
+      if (href.startsWith("tel:")) return;
 
-    // normalize
-    const clean = href.replace("./", "").replace("/", "").replace(".html", "");
-    if (clean) routes.add(clean);
-  });
+      // normalize
+      const clean = href.replace("./", "").replace("/", "").replace(".html", "");
+      if (clean) routes.add(clean);
+    });
 
   return [...routes];
 }
@@ -169,8 +171,8 @@ function predictModuleHealth(pulseTouch) {
           : 0;
 
         const wrongTierExportsCount = Array.isArray(entry.exportsMeta)
-          ? entry.exportsMeta.filter((e) =>
-              e.tier === "global" || e.tier === "system"
+          ? entry.exportsMeta.filter(
+              (e) => e.tier === "global" || e.tier === "system"
             ).length
           : 0;
 
@@ -219,7 +221,13 @@ function predictModuleHealth(pulseTouch) {
 // ============================================================================
 
 export function PulseTouchPredictor() {
-  function predict({ pulseTouch, history = [], analytics = {}, advantage = {}, organismMap = null }) {
+  function predict({
+    pulseTouch,
+    history = [],
+    analytics = {},
+    advantage = {},
+    organismMap = null
+  }) {
     const mode = pulseTouch?.mode || "safe";
     const presence = pulseTouch?.presence || "unknown";
     const pulseStream = pulseTouch?.pulseStream || "single";
@@ -243,11 +251,7 @@ export function PulseTouchPredictor() {
     const portalNext = analytics?.metrics?.portalWarm || null;
 
     // 5) Final deterministic nextPage
-    const nextPage =
-      structuralNext ||
-      cortexNext ||
-      portalNext ||
-      currentPage;
+    const nextPage = structuralNext || cortexNext || portalNext || currentPage;
 
     // 6) Module health prediction (the “detector” you wanted)
     const modulePrediction = predictModuleHealth(pulseTouch);

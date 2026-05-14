@@ -143,12 +143,12 @@ import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 // Continuance (GPU continuance physics)
 import {
   getLastContinuanceState
-} from "../PULSE-FINALITY/PulseFinalityContinuance-v20.js";
+} from "../PULSE-FINALITY/PULSE-FINALITY-CONTINUANCE.js";
 
 // OmniHosting (hosting physics / artery metrics)
 import {
   getLastOmniHostingState
-} from "../PULSE-FINALITY/PulseFinalityOmniHosting-v20.js";
+} from "../PULSE-FINALITY/PULSE-FINALITY-OMNIHOSTING.js";
 
 // Proxy context (IMMORTAL dual-band envelope)
 import {

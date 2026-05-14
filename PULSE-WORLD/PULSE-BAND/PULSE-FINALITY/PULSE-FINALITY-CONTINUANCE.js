@@ -855,7 +855,10 @@ export function buildReplicationPlan(
 // ============================================================================
 //  HIGH-LEVEL CONTINUANCE COMPUTE (GPU-first, packet-emitting + CoreMemory)
 // ============================================================================
+const KEY_LAST_PULSE_SIGNAL_KEY = "last-pulse-signal-key";
+  const KEY_LAST_PULSE_IO = "last-pulse-io-descriptor";
 
+  
 export function computeContinuance({
   regionSignals,
   gridSignals,
@@ -868,7 +871,11 @@ export function computeContinuance({
   worldRegion = null,
   tenantId = null,
   geoGrid = null,
-  omniPlacementId = null
+  omniPlacementId = null,
+
+  // NEW: secrets / key surfaces (symbolic only)
+  pulseSignalKey = null,      // e.g. "PULSE::TENANT::WORLD"
+  pulseIODescriptor = null    // e.g. { path: "backend/offline/PulseIO", format: "env", binary: false }
 }) {
   const start = Date.now();
 
@@ -933,12 +940,17 @@ export function computeContinuance({
     geoGrid,
     omniPlacementId,
     artery,
-    durationMs
+    durationMs,
+
+    // NEW: symbolic secrets surfaces
+    pulseSignalKey,
+    pulseIODescriptor
   };
 
   const packet = emitContinuancePacket("gpu-world-compute", packetPayload);
 
-  // CoreMemory integration — hot symbolic snapshot
+  
+
   CoreMemory.set(ROUTE, KEY_LAST_RISK, riskReport);
   CoreMemory.set(ROUTE, KEY_LAST_PREEMPTIVE, preemptivePlan);
   CoreMemory.set(ROUTE, KEY_LAST_REPLICATION, replicationPlan);
@@ -952,7 +964,9 @@ export function computeContinuance({
   });
   CoreMemory.set(ROUTE, KEY_LAST_ARTERY, artery);
   CoreMemory.set(ROUTE, KEY_LAST_PACKET, packet);
-
+  
+  CoreMemory.set(ROUTE, KEY_LAST_PULSE_SIGNAL_KEY, pulseSignalKey);
+  CoreMemory.set(ROUTE, KEY_LAST_PULSE_IO, pulseIODescriptor);
   _bumpArtery("packet", {
     regionCount: Object.keys(riskReport.perRegion || {}).length,
     hostCount: hosts.length
@@ -977,9 +991,14 @@ export function getLastContinuanceState() {
     presenceField: CoreMemory.get(ROUTE, KEY_LAST_PRESENCE),
     advantageField: CoreMemory.get(ROUTE, KEY_LAST_ADVANTAGE),
     worldOverlay: CoreMemory.get(ROUTE, KEY_LAST_WORLD),
-    artery: CoreMemory.get(ROUTE, KEY_LAST_ARTERY)
+    artery: CoreMemory.get(ROUTE, KEY_LAST_ARTERY),
+
+    // NEW
+    pulseSignalKey: CoreMemory.get(ROUTE, KEY_LAST_PULSE_SIGNAL_KEY),
+    pulseIODescriptor: CoreMemory.get(ROUTE, KEY_LAST_PULSE_IO)
   };
 }
+
 
 // ============================================================================
 //  Exported API

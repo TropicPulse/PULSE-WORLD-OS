@@ -1,26 +1,34 @@
 // ============================================================================
-// FILE: /PULSE-TOUCH/PULSE-TOUCH-GATE-v25++.js
-// PULSE OS — v25++ IMMORTAL
-// PULSE‑TOUCH EVOLUTIONARY GATE — ROUTING + ADVANTAGE CORTEX + FASTLANE
+// FILE: /PULSE-TOUCH/PULSE-TOUCH-GATE-v27++.js
+// PULSE OS — v27++ IMMORTAL
+// PULSE‑TOUCH EVOLUTIONARY GATE — ROUTING + ADVANTAGE CORTEX + FASTLANE + MODULE AWARE
 // ============================================================================
-
-import { PulseTouchPredictor } from "./PULSE-TOUCH-PREDICTOR.js";
-import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR.js";
 import { PulseTouchWarmup } from "./PULSE-TOUCH-WARMUP.js";
-import { pulseTouchSecurity } from "./PULSE-TOUCH-SECURITY.js";
-import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE.js";
-import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS.js";
-
-import { PulsePresenceOracle } from "./PULSE-TOUCH-PRESENCE-ORACLE.js";
+import { PulseTouchPredictor } from "./PULSE-TOUCH-PREDICTOR.js";
+import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR-v27++.js";
+import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE-v27++.js";
 import { PulseChunker } from "./PULSE-TOUCH-CHUNKS.js";
+import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS-v27++.js";
+import { pulseTouchSecurity } from "./PULSE-TOUCH-SECURITY.js";
+import { PulsePresenceOracle } from "./PULSE-TOUCH-PRESENCE-ORACLE.js";
+
 
 export const AI_EXPERIENCE_META_PulseTouchGate = {
   id: "pulsetouch.gate",
   kind: "routing_organ",
-  version: "v25++-IMMORTAL",
+  version: "v27++-IMMORTAL",
   role: "evolutionary_page_selector",
   surfaces: {
-    band: ["routing", "trust", "evolution", "advantage", "fastlane"],
+    band: [
+      "routing",
+      "trust",
+      "evolution",
+      "advantage",
+      "fastlane",
+      "module",
+      "chunk",
+      "presence"
+    ],
     wave: ["decisive", "final", "absolute"],
     binary: ["allow", "challenge", "deny"],
     presence: ["routing_state"],
@@ -32,7 +40,10 @@ export const AI_EXPERIENCE_META_PulseTouchGate = {
       "region_cluster",
       "presence_intensity",
       "chunk_bias",
-      "prewarm_plan"
+      "prewarm_plan",
+      "chunk_profile",
+      "module_bias",
+      "module_risk_hint"
     ],
     speed: "instant_compute"
   },
@@ -45,7 +56,9 @@ export const AI_EXPERIENCE_META_PulseTouchGate = {
     "PulseTouchSecurity",
     "PulseTouchWarmup",
     "PulseTouchAdvantageCortex",
-    "PulseTouchAnalytics"
+    "PulseTouchAnalytics",
+    "PulseTouchPredictor",
+    "PulsePresenceOracle"
   ],
   invariants: {
     networkCalls: "none",
@@ -84,12 +97,20 @@ export const ORGAN_META_PulseTouchGate = {
     pulseStreamAware: true,
     fastLaneAware: true,
     temporalHintAware: true,
-    cookieEvolutionAware: true
+    cookieEvolutionAware: true,
+
+    // v27++
+    moduleAware: true,
+    moduleRiskAware: true,
+    pulseImportAware: true,
+    pulseExportAware: true,
+    subimportAware: true,
+    tierAware: true
   },
   lineage: {
     family: "pulsetouch_gate",
-    generation: 7,
-    osVersion: "v25++",
+    generation: 8,
+    osVersion: "v27++",
     history: [
       "Gate v1 (Basic Routing)",
       "Gate v2 (Trust‑Based Evolution)",
@@ -97,7 +118,8 @@ export const ORGAN_META_PulseTouchGate = {
       "Gate v14 (Advantage Cortex)",
       "Gate v17 (FastLane + Continuous Pulse Aware)",
       "Gate v24 (IMMORTAL++ Evolutionary Router)",
-      "Gate v25++ (Full Advantage + Analytics + Warmup Orchestrator)"
+      "Gate v25++ (Full Advantage + Analytics + Warmup Orchestrator)",
+      "Gate v27++ (Module‑aware, Analytics v27++, Advantage v27++, Detector v27++)"
     ]
   }
 };
@@ -109,14 +131,20 @@ export const ORGAN_CONTRACT_PulseTouchGate = {
   outputs: {
     route: "string",
     advantage: "object",
-    touchState: "PulseTouchDetector skinState",
+    touchState: "PulseTouchDetector skinState (v27++)",
     securityDecision: "PulseTouchSecurity decision",
     analytics: "PulseTouchAnalytics view",
-    advantageView: "Advantage Cortex view"
+    advantageView: "Advantage Cortex view",
+    predictorView: "PulseTouchPredictor view (optional)",
+    oracleView: "PulsePresenceOracle view (optional)",
+    chunkProfile: "Chunk profile for current page (optional)"
   },
   consumers: [
     "PulseTouchWarmup",
-    "PulseTouchAdvantageCortex"
+    "PulseTouchAdvantageCortex",
+    "PulseTouchAnalytics",
+    "PulseTouchPredictor",
+    "PulsePresenceOracle"
   ],
   guarantees: {
     deterministic: true,
@@ -166,7 +194,7 @@ export const IMMORTAL_OVERLAYS_PulseTouchGate = {
 };
 
 // ============================================================================
-// SACRED ROUTING CORE — v17/v24/v25++ (UNCHANGED)
+// SACRED ROUTING CORE — IMMORTAL (UNCHANGED)
 // ============================================================================
 
 export function evolutionaryGate(securityDecision) {
@@ -190,6 +218,9 @@ export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
   const fastLane = touchState.fastLane || "enabled";
   const presenceIntensity = touchState.presenceIntensity || "medium";
   const regionCluster = touchState.regionCluster || "clusterUnknown";
+
+  // v27++ soft module risk hint (if Predictor/Warmup attached it)
+  const moduleRisk = touchState.pulseModuleRisk ?? null;
 
   return {
     hydrationTier:
@@ -232,21 +263,23 @@ export function evolutionaryGateAdvantages(securityDecision, touchState = {}) {
     fastLane,
     presenceIntensity,
     originTs: touchState.originTs || null,
-    lastPulseTs: touchState.lastPulseTs || null
+    lastPulseTs: touchState.lastPulseTs || null,
+
+    // v27++ module surface
+    moduleRisk
   };
 }
 
 // ============================================================================
-// FULL ORCHESTRATOR — v25++ IMMORTAL
-// ============================================================================
+// FULL ORCHESTRATOR — v27++ IMMORTAL
 //
-// 1) Detect skinState (Detector)
+// 1) Detect skinState (Detector v27++)
 // 2) Run Security
 // 3) Run Warmup (non‑blocking, but we still record warmed flag)
-// 4) Run Analytics (metrics + advantageHints)
-// 5) Run Predictor (optional)
+// 4) Run Predictor (optional, modulePrediction + moduleRisk)
+// 5) Run Analytics v27++ (metrics + advantageHints + module health)
 // 6) Run Presence Oracle (optional)
-// 7) Run Advantage Cortex (chunkPlan + prewarmPlan + biases)
+// 7) Run Advantage Cortex v27++ (chunkPlan + prewarmPlan + biases + modulePlan)
 // 8) Compute final route (sacred core)
 // 9) Return full routing + advantage bundle
 // ============================================================================
@@ -257,6 +290,7 @@ export async function PulseTouchGate(event) {
 
   // 2) Security
   const securityDecision = pulseTouchSecurity(touchState);
+
   // 2.5) Chunk Profile (read-only, deterministic)
   let chunkProfile = null;
   try {
@@ -272,41 +306,53 @@ export async function PulseTouchGate(event) {
   const warmupOrgan = PulseTouchWarmup();
   const warmup = await warmupOrgan.warmup(touchState);
 
-  // 4) Analytics
-  const analyticsOrgan = PulseTouchAnalytics();
-  const { metrics, advantageHints } = analyticsOrgan.analyze(
-    touchState,
-    securityDecision,
-    warmup
-  );
-
-  // 5) Predictor (optional)
+  // 4) Predictor (optional, before analytics so analytics can see modulePrediction)
   let predictorView = null;
   try {
     const predictor = PulseTouchPredictor?.();
     if (predictor && typeof predictor.predict === "function") {
-      predictorView = predictor.predict({ touchState, metrics });
+      predictorView = predictor.predict({ touchState, warmup });
     }
   } catch {
     predictorView = null;
   }
+
+  // v27++ — enrich touchState with soft module risk surface (no mutation of original)
+  const enrichedTouchState = {
+    ...touchState,
+    pulseModuleRisk:
+      predictorView?.moduleRisk ??
+      touchState.pulseModuleRisk ??
+      null
+  };
+
+  // 5) Analytics v27++
+  const analyticsOrgan = PulseTouchAnalytics();
+  const { metrics, advantageHints } = analyticsOrgan.analyze(
+    enrichedTouchState,
+    securityDecision,
+    warmup,
+    null,          // portal (optional)
+    null,          // chunks (optional)
+    predictorView  // predictor (for modulePrediction)
+  );
 
   // 6) Presence Oracle (optional)
   let oracleView = null;
   try {
     const oracle = PulsePresenceOracle?.();
     if (oracle && typeof oracle.evaluate === "function") {
-      oracleView = oracle.evaluate({ touchState, metrics });
+      oracleView = oracle.evaluate({ touchState: enrichedTouchState, metrics });
     }
   } catch {
     oracleView = null;
   }
 
-  // 7) Advantage Cortex
+  // 7) Advantage Cortex v27++
   const advantageOrgan = pulseTouchAdvantageCortex();
   const advantageView = advantageOrgan.compute(
     {
-      page: touchState.page,
+      page: enrichedTouchState.page,
       advantageHints,
       metrics,
       chunkProfile
@@ -315,12 +361,14 @@ export async function PulseTouchGate(event) {
     oracleView
   );
 
-
   // 8) Sacred route
   const route = evolutionaryGate(securityDecision);
 
   // 9) Edge‑level advantage profile (for quick consumers)
-  const edgeAdvantage = evolutionaryGateAdvantages(securityDecision, touchState);
+  const edgeAdvantage = evolutionaryGateAdvantages(
+    securityDecision,
+    enrichedTouchState
+  );
 
   const advantage = {
     edge: edgeAdvantage,
@@ -329,13 +377,14 @@ export async function PulseTouchGate(event) {
   };
 
   return {
-  route,
-  advantage,
-  touchState,
-  securityDecision,
-  analytics: { metrics, advantageHints },
-  advantageView,
-  chunkProfile
-};
-
+    route,
+    advantage,
+    touchState: enrichedTouchState,
+    securityDecision,
+    analytics: { metrics, advantageHints },
+    advantageView,
+    predictorView,
+    oracleView,
+    chunkProfile
+  };
 }

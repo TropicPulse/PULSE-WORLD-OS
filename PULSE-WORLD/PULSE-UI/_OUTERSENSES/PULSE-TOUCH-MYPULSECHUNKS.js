@@ -1,17 +1,18 @@
 // ============================================================================
-//  PulsePresenceNormalizer-SMART v3.0++ (v27 IMMORTAL UPGRADE)
+//  PulsePresenceNormalizer-SMART v3.0++ (v27 IMMORTAL UPGRADE + BINARY LANES)
 //  Contract-driven bridge: A → Z
 //  No guessing. No heuristics. No fallback decoding.
 //  Fully aligned with PulseChunks-v27-IMMORTAL
 //  v27 IMMORTAL++: IndexedDB + in-memory mesh of ALL normalization events
 //  + Session-aware, replay-aware, route-aware, organ-aware
 //  + PulseImport / PulseExport / subimport / tier-aware module normalization
+//  + Binary-aware lanes + optional PulseBinary integration
 // ============================================================================
 
 /*
 AI_EXPERIENCE_META = {
   identity: "PulsePresenceNormalizer",
-  version: "v27-Immortal-SMART-HYBRID++",
+  version: "v27-Immortal-SMART-HYBRID++-BINARYLANES",
   layer: "frontend",
   role: "chunk_normalizer",
   lineage: "PulseOS-v27++",
@@ -37,13 +38,17 @@ AI_EXPERIENCE_META = {
     organAware: true,
     crossTabSynced: true,
 
-    // NEW v27+++
+    // v27+++
     pulseImportAware: true,
     pulseExportAware: true,
     subimportAware: true,
     tierAware: true,
     chunkProfileAware: true,
-    moduleMeshAware: true
+    moduleMeshAware: true,
+
+    // v27+++ BINARY LANES
+    binaryLaneAware: true,
+    pulseBinaryAware: true
   },
 
   contract: {
@@ -287,6 +292,40 @@ function clearPresenceDB() {
   }
 })();
 
+// Optional: binary lane tail (in-memory only, symbolic)
+const BINARY_LANE_MAX = 256;
+let binaryLaneTail = [];
+
+function pushBinaryLane(kind, mime, size, extra = {}) {
+  const entry = {
+    ts: Date.now(),
+    kind,
+    mime,
+    size: typeof size === "number" ? size : null,
+    sessionId: PN_SESSION_ID,
+    route: getCurrentRouteTag(),
+    ...extra
+  };
+  binaryLaneTail.push(entry);
+  if (binaryLaneTail.length > BINARY_LANE_MAX) {
+    binaryLaneTail = binaryLaneTail.slice(binaryLaneTail.length - BINARY_LANE_MAX);
+  }
+
+  // Optional PulseBinary integration (symbolic only)
+  try {
+    if (g.PulseBinary && typeof g.PulseBinary.feed === "function") {
+      g.PulseBinary.feed({
+        lane: kind,
+        mime,
+        size: entry.size,
+        meta: extra
+      });
+    }
+  } catch {
+    // never throw
+  }
+}
+
 // No storage events needed: IndexedDB is multi-tab safe by design
 
 function appendPresenceRecord(kind, payload) {
@@ -297,7 +336,7 @@ function appendPresenceRecord(kind, payload) {
     sessionId: PN_SESSION_ID,
     route: getCurrentRouteTag(),
     organ: "PulsePresenceNormalizer",
-    version: "v27++"
+    version: "v27++-BINARYLANES"
   };
 
   // In-memory
@@ -333,6 +372,10 @@ export const PulsePresenceNormalizerStore = {
   },
   sessionId() {
     return PN_SESSION_ID;
+  },
+  binaryLaneTail(n = 128) {
+    const buf = binaryLaneTail || [];
+    return buf.slice(Math.max(0, buf.length - n));
   }
 };
 
@@ -345,6 +388,8 @@ function describeValueType(value) {
   if (t !== "object") return t;
   if (value instanceof Uint8Array) return "Uint8Array";
   if (value instanceof ArrayBuffer) return "ArrayBuffer";
+  if (typeof DataView !== "undefined" && value instanceof DataView) return "DataView";
+  if (typeof File !== "undefined" && value instanceof File) return "File";
   if (value instanceof Blob) return "Blob";
   if (Array.isArray(value)) return "array";
   return "object";
@@ -395,19 +440,26 @@ export function normalizeImage(value, mime = "image/png") {
     out = `data:${mime};base64,${value.base64}`;
   } else if (value instanceof Uint8Array) {
     try {
-      out = URL.createObjectURL(new Blob([value], { type: mime }));
+      const blob = new Blob([value], { type: mime });
+      out = URL.createObjectURL(blob);
+      pushBinaryLane("image-blob", mime, blob.size, { source: "Uint8Array" });
     } catch {
       out = null;
     }
   } else if (value instanceof ArrayBuffer) {
     try {
-      out = URL.createObjectURL(new Blob([new Uint8Array(value)], { type: mime }));
+      const blob = new Blob([new Uint8Array(value)], { type: mime });
+      out = URL.createObjectURL(blob);
+      pushBinaryLane("image-blob", mime, blob.size, { source: "ArrayBuffer" });
     } catch {
       out = null;
     }
   } else if (value instanceof Blob) {
     try {
       out = URL.createObjectURL(value);
+      pushBinaryLane("image-blob", mime || value.type || "application/octet-stream", value.size, {
+        source: "Blob"
+      });
     } catch {
       out = null;
     }
@@ -457,7 +509,7 @@ function normalizeJSON(value) {
 }
 
 // ============================================================================
-//  SMART BINARY — v27 IMMORTAL++
+//  SMART BINARY — v27 IMMORTAL++ + BINARY LANES
 // ============================================================================
 function normalizeBinary(value, mime = "application/octet-stream") {
   appendPresenceRecord("normalizeBinary_in", {
@@ -472,23 +524,74 @@ function normalizeBinary(value, mime = "application/octet-stream") {
   if (value instanceof Uint8Array) {
     try {
       out = new Blob([value], { type: mime });
+      pushBinaryLane("binary-blob", mime, out.size, { source: "Uint8Array" });
     } catch {
       out = null;
     }
   } else if (value instanceof ArrayBuffer) {
     try {
-      out = new Blob([new Uint8Array(value)], { type: mime });
+      const blob = new Blob([new Uint8Array(value)], { type: mime });
+      out = blob;
+      pushBinaryLane("binary-blob", mime, blob.size, { source: "ArrayBuffer" });
+    } catch {
+      out = null;
+    }
+  } else if (typeof DataView !== "undefined" && value instanceof DataView) {
+    try {
+      const blob = new Blob([new Uint8Array(value.buffer)], { type: mime });
+      out = blob;
+      pushBinaryLane("binary-blob", mime, blob.size, { source: "DataView" });
     } catch {
       out = null;
     }
   } else if (value instanceof Blob) {
     out = value;
+    pushBinaryLane("binary-blob", mime || value.type || "application/octet-stream", value.size, {
+      source: "Blob"
+    });
+  } else if (typeof value === "string") {
+    // Optional: base64 string → Blob (best-effort, no guessing beyond base64)
+    try {
+      const parts = value.split(",");
+      const base64 = parts.length > 1 ? parts[1] : parts[0];
+      if (typeof atob === "function") {
+        const bin = atob(base64);
+        const len = bin.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = bin.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: mime });
+        out = blob;
+        pushBinaryLane("binary-blob", mime, blob.size, { source: "base64-string" });
+      }
+    } catch {
+      out = null;
+    }
   }
 
   appendPresenceRecord("normalizeBinary_out", {
     outType: describeValueType(out)
   });
   return out;
+}
+
+// Optional: binary → object URL helper
+function normalizeBinaryToURL(value, mime = "application/octet-stream") {
+  const blob = normalizeBinary(value, mime);
+  if (!blob) return null;
+  try {
+    const url = URL.createObjectURL(blob);
+    appendPresenceRecord("normalizeBinaryToURL_out", {
+      outType: describeValueType(url),
+      mime,
+      size: blob.size
+    });
+    pushBinaryLane("binary-url", mime, blob.size, { source: "normalizeBinaryToURL" });
+    return url;
+  } catch {
+    return null;
+  }
 }
 
 // ============================================================================
@@ -509,6 +612,10 @@ export function normalizeChunkValue(value, typeHint = null, options = {}) {
       out = normalizeImage(value, mime);
       break;
 
+    case "image-url":
+      out = normalizeImage(value, mime);
+      break;
+
     case "html":
     case "css":
     case "js":
@@ -521,6 +628,10 @@ export function normalizeChunkValue(value, typeHint = null, options = {}) {
 
     case "binary":
       out = normalizeBinary(value, mime);
+      break;
+
+    case "binary-url":
+      out = normalizeBinaryToURL(value, mime);
       break;
 
     default:
@@ -568,16 +679,18 @@ function normalizeExportTier(tier) {
 function normalizeExportsMeta(exportsMetaRaw) {
   if (!exportsMetaRaw || !Array.isArray(exportsMetaRaw)) return [];
 
-  const normalized = exportsMetaRaw.map((e) => {
-    const name = typeof e?.name === "string" ? e.name : null;
-    if (!name) return null;
+  const normalized = exportsMetaRaw
+    .map((e) => {
+      const name = typeof e?.name === "string" ? e.name : null;
+      if (!name) return null;
 
-    return {
-      name,
-      tier: normalizeExportTier(e.tier),
-      kind: typeof e.kind === "string" ? e.kind : "value"
-    };
-  }).filter(Boolean);
+      return {
+        name,
+        tier: normalizeExportTier(e.tier),
+        kind: typeof e.kind === "string" ? e.kind : "value"
+      };
+    })
+    .filter(Boolean);
 
   appendPresenceRecord("normalizeExportsMeta", {
     count: normalized.length
@@ -589,18 +702,20 @@ function normalizeExportsMeta(exportsMetaRaw) {
 function normalizeImportsMeta(importsMetaRaw) {
   if (!importsMetaRaw || !Array.isArray(importsMetaRaw)) return [];
 
-  const normalized = importsMetaRaw.map((i) => {
-    const name = typeof i?.name === "string" ? i.name : null;
-    const from = typeof i?.from === "string" ? i.from : null;
-    if (!name || !from) return null;
+  const normalized = importsMetaRaw
+    .map((i) => {
+      const name = typeof i?.name === "string" ? i.name : null;
+      const from = typeof i?.from === "string" ? i.from : null;
+      if (!name || !from) return null;
 
-    return {
-      name,
-      from,
-      layer: typeof i.layer === "string" ? i.layer : null,
-      required: i.required === true
-    };
-  }).filter(Boolean);
+      return {
+        name,
+        from,
+        layer: typeof i.layer === "string" ? i.layer : null,
+        required: i.required === true
+      };
+    })
+    .filter(Boolean);
 
   appendPresenceRecord("normalizeImportsMeta", {
     count: normalized.length
@@ -649,11 +764,12 @@ export function normalizeModuleChunk(chunkEnvelope) {
   const typeHint = meta.typeHint || null;
 
   // 1) Normalize raw module body (one-layer unwrap + type-aware)
-  const rawModule = chunkEnvelope.module !== undefined
-    ? chunkEnvelope.module
-    : chunkEnvelope.value !== undefined
-    ? chunkEnvelope.value
-    : chunkEnvelope;
+  const rawModule =
+    chunkEnvelope.module !== undefined
+      ? chunkEnvelope.module
+      : chunkEnvelope.value !== undefined
+      ? chunkEnvelope.value
+      : chunkEnvelope;
 
   const normalizedModule = normalizeChunkValue(rawModule, typeHint, meta.options || {});
 
@@ -741,7 +857,7 @@ export function validateSubimports(importsMeta, subimportsMap, layerHint = null)
 }
 
 // ============================================================================
-//  EXPORTS — v27 IMMORTAL++
+//  EXPORTS — v27 IMMORTAL++ + BINARY LANES
 // ============================================================================
 export const PulseChunkNormalizer = {
   normalizeChunkValue,
@@ -751,6 +867,7 @@ export const PulseChunkNormalizer = {
   normalizeJS: normalizeText,
   normalizeJSON,
   normalizeBinary,
+  normalizeBinaryToURL,
   unwrap,
 
   // NEW module-level helpers

@@ -1,6 +1,6 @@
 // ============================================================================
 // FILE: /PULSE-TOUCH/PULSE-TOUCH-WARMUP.js
-// PULSE OS — v25++ IMMORTAL
+// PULSE OS — v27++ IMMORTAL
 // PULSE‑TOUCH WARMUP — METABOLIC PRE‑PULSE ENGINE
 // ============================================================================
 //
@@ -15,6 +15,7 @@
 //   + PulseImport / PulseExport / subimport / chunkProfile warmup
 //   + Uses PulseChunkNormalizer (if present) to pre-normalize module envelopes
 //   + Populates a local PulseImportWarmupCache for the current page/layer
+//   + Exposes moduleWarmupRisk + moduleWarmupScore for Security / Predictor / Oracle
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulseTouchWarmup = {
@@ -50,7 +51,11 @@ export const AI_EXPERIENCE_META_PulseTouchWarmup = {
       "pulseimport_warmup",
       "pulseexport_tier_warmup",
       "subimport_validation_warmup",
-      "chunkprofile_warmup"
+      "chunkprofile_warmup",
+
+      // v27++ module warmup risk surfaces
+      "module_warmup_risk",
+      "module_warmup_score"
     ],
     speed: "async_parallel"
   },
@@ -325,11 +330,10 @@ export async function warmupOrganism(pulseTouch) {
   // 9. PULSEIMPORT / PULSEEXPORT / SUBIMPORT WARMUP (v27++)
   // ============================================================
   let moduleWarmup = null;
+  let moduleWarmupRisk = null;
 
   if (hasWindow && window.PulseChunkNormalizer && window.PulseChunks) {
     try {
-      // Optional: a way for PulseChunks to expose a module envelope for this page/layer
-      // This is intentionally soft-contract: if not present, we silently skip.
       const getEnvelope =
         typeof window.PulseChunks.getModuleEnvelope === "function"
           ? window.PulseChunks.getModuleEnvelope
@@ -354,7 +358,6 @@ export async function warmupOrganism(pulseTouch) {
               ? validateSubimports(normalized.importsMeta, normalized.subimports, layer || null)
               : { ok: [], missing: [], moved: [], layer: layer || null };
 
-            // Local, in-memory warmup cache for PulseImport / Portal / Bridge
             if (!window.PulseImportWarmupCache) {
               window.PulseImportWarmupCache = Object.create(null);
             }
@@ -372,6 +375,38 @@ export async function warmupOrganism(pulseTouch) {
 
             moduleWarmup = window.PulseImportWarmupCache[page || "index"];
 
+            // Derive a bounded module warmup risk score for downstream organs
+            const missingCount = Array.isArray(subimportValidation.missing)
+              ? subimportValidation.missing.length
+              : 0;
+
+            const wrongTierExportsCount = Array.isArray(normalized.exportsMeta)
+              ? normalized.exportsMeta.filter(
+                  (e) => e.tier === "global" || e.tier === "system"
+                ).length
+              : 0;
+
+            const hasMissingSubimports = missingCount > 0;
+            const hasWrongTierExports = wrongTierExportsCount > 0;
+            const hasGlobalExposureRisk = hasWrongTierExports;
+            const hasChunkProfileAnomaly = false; // reserved for future checks
+
+            let score = 0;
+            if (hasMissingSubimports) score += 10;
+            if (hasWrongTierExports) score += 10;
+            if (hasGlobalExposureRisk) score += 5;
+
+            score = Math.min(30, Math.max(0, score));
+
+            moduleWarmupRisk = {
+              hasMissingSubimports,
+              hasWrongTierExports,
+              hasGlobalExposureRisk,
+              hasChunkProfileAnomaly,
+              score,
+              source: "warmup"
+            };
+
             tasks.push("pulseimport_warmup");
             tasks.push("pulseexport_tier_warmup");
             tasks.push("subimport_validation_warmup");
@@ -380,8 +415,8 @@ export async function warmupOrganism(pulseTouch) {
         }
       }
     } catch {
-      // silent by contract
       moduleWarmup = null;
+      moduleWarmupRisk = null;
     }
   }
 
@@ -416,7 +451,9 @@ export async function warmupOrganism(pulseTouch) {
     nextPageWarmup: nextPageWarmup || null,
 
     // v27++ module warmup surfaces
-    moduleWarmup
+    moduleWarmup,
+    moduleWarmupRisk,
+    moduleWarmupScore: moduleWarmupRisk ? moduleWarmupRisk.score : 0
   };
 
   return {
@@ -466,7 +503,6 @@ function collectVisibleAssets() {
 function normalizeNextPageWarmup(hint, currentPage) {
   if (!hint) return null;
 
-  // Accept either a string page or an object with page/assets/chunks.
   if (typeof hint === "string") {
     return {
       page: hint,

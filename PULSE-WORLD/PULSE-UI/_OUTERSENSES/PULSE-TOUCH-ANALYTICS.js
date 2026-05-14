@@ -1,17 +1,26 @@
 // ============================================================================
 //  PULSE OS — OUTER SENSE ORGAN
-//  FILE: _OUTERSENSES/PULSE-TOUCH-ANALYTICS-v27++.js
-//  ORGAN: PulseTouchAnalytics (v27++ IMMORTAL)
-//  ROLE: Metrics / Advantage Hints / Pulse Analysis / Module Health Awareness
+//  FILE: _OUTERSENSES/PULSE-TOUCH-ANALYTICS-v27-IMMORTAL-BINARY++.js
+//  ORGAN: PulseTouchAnalytics (v27++ IMMORTAL BINARY-AWARE)
+//  ROLE: Metrics / Advantage Hints / Pulse Analysis / Module + Binary Health
 // ============================================================================
 
 export const AI_EXPERIENCE_META_PulseTouchAnalytics = {
   id: "pulsetouch.analytics",
   kind: "outer_sense",
-  version: "v27++-IMMORTAL",
+  version: "v27++-IMMORTAL-BINARY",
   role: "pulse_analytics",
   surfaces: {
-    band: ["analytics", "metrics", "advantage", "signal", "presence", "genome", "module"],
+    band: [
+      "analytics",
+      "metrics",
+      "advantage",
+      "signal",
+      "presence",
+      "genome",
+      "module",
+      "binary"
+    ],
     wave: ["cold", "numerical", "deterministic"],
     presence: ["analytics_state"],
     speed: "sync"
@@ -43,7 +52,11 @@ export const ORGAN_META_PulseTouchAnalytics = {
     pulseImportAware: true,
     pulseExportAware: true,
     subimportAware: true,
-    tierAware: true
+    tierAware: true,
+
+    // v27++ BINARY
+    binaryAware: true,
+    binaryDeltaAware: true
   }
 };
 
@@ -54,11 +67,12 @@ export const ORGAN_CONTRACT_PulseTouchAnalytics = {
     warmup: "Optional warmup state",
     portal: "Optional Portal warmup state",
     chunks: "Optional PulseChunks state",
-    predictor: "Optional Predictor output (modulePrediction)"
+    predictor: "Optional Predictor output (modulePrediction, binaryPrediction)",
+    binary: "Optional PulseBinary state or binary-delta summary"
   },
   outputs: {
-    metrics: "Aggregated numeric + symbolic metrics",
-    advantageHints: "Hints for Advantage Cortex / Gate / Warmup / Predictor"
+    metrics: "Aggregated numeric + symbolic metrics (module + binary aware)",
+    advantageHints: "Hints for Advantage Cortex / Gate / Warmup / Predictor / Binary"
   },
   guarantees: {
     deterministic: true,
@@ -75,7 +89,7 @@ export const IMMORTAL_OVERLAYS_PulseTouchAnalytics = {
 };
 
 // ============================================================================
-// HELPERS — unchanged
+// HELPERS — unchanged core, extended where needed
 // ============================================================================
 
 function getSignalHints() {
@@ -128,8 +142,29 @@ function getHydrationTier() {
   }
 }
 
+// Binary helper: normalize a symbolic binary health snapshot
+function getBinaryMetrics(binary, predictor) {
+  const p = predictor?.binaryPrediction || {};
+  const b = binary || {};
+
+  return {
+    // lane / mode are symbolic only, no IO
+    lane: b.lane || p.lane || "default",
+    mode: b.mode || p.mode || "normal",
+    // size + churn are hints, not exact bytes
+    sizeHint: b.sizeHint ?? p.sizeHint ?? null,
+    churnHint: b.churnHint ?? p.churnHint ?? null,
+    // delta health
+    hasDelta: b.hasDelta ?? p.hasDelta ?? null,
+    deltaAddedBits: b.deltaAddedBits ?? p.deltaAddedBits ?? 0,
+    deltaRemovedBits: b.deltaRemovedBits ?? p.deltaRemovedBits ?? 0,
+    // risk
+    riskBand: b.riskBand || p.riskBand || "low"
+  };
+}
+
 // ============================================================================
-//  MAIN ORGAN — v27++ IMMORTAL
+//  MAIN ORGAN — v27++ IMMORTAL BINARY-AWARE
 // ============================================================================
 
 export function PulseTouchAnalytics() {
@@ -139,7 +174,8 @@ export function PulseTouchAnalytics() {
     warmup = null,
     portal = null,
     chunks = null,
-    predictor = null
+    predictor = null,
+    binary = null
   ) {
     // -----------------------------------------------------------------------
     // 1. BASE METRICS (Touch state)
@@ -181,12 +217,17 @@ export function PulseTouchAnalytics() {
         hasGlobalExposureRisk: predictor?.modulePrediction?.hasGlobalExposureRisk ?? null,
         hasChunkProfileAnomaly: predictor?.modulePrediction?.hasChunkProfileAnomaly ?? null,
         source: predictor?.modulePrediction?.source ?? "none"
-      }
+      },
+
+      // -------------------------------------------------------------------
+      // 3. BINARY HEALTH (v27++ BINARY-AWARE)
+      // -------------------------------------------------------------------
+      binary: getBinaryMetrics(binary, predictor)
     };
 
     // -----------------------------------------------------------------------
-    // 3. ADVANTAGE HINTS (IMMORTAL++ deterministic)
-    // -----------------------------------------------------------------------
+    // 4. ADVANTAGE HINTS (IMMORTAL++ deterministic, module + binary aware)
+// -----------------------------------------------------------------------
     const advantageHints = {
       // Hydration bias
       hydrationBias:
@@ -228,7 +269,7 @@ export function PulseTouchAnalytics() {
       signalMode: metrics.signals?.pulse ? "active" : "idle",
 
       // -------------------------------------------------------------------
-      // 4. MODULE HEALTH ADVANTAGE HINTS (v27++)
+      // MODULE HEALTH ADVANTAGE HINTS (v27++)
       // -------------------------------------------------------------------
       moduleBias:
         metrics.module.stabilityScore == null
@@ -249,7 +290,22 @@ export function PulseTouchAnalytics() {
       exportTierBias:
         metrics.module.hasWrongTierExports
           ? "unsafe"
-          : "safe"
+          : "safe",
+
+      // -------------------------------------------------------------------
+      // BINARY HEALTH ADVANTAGE HINTS (v27++ BINARY-AWARE)
+      // -------------------------------------------------------------------
+      binaryBias:
+        metrics.binary.riskBand === "high"
+          ? "conserve"
+          : metrics.binary.riskBand === "medium"
+          ? "balanced"
+          : "aggressive",
+
+      binaryPrewarmBias:
+        metrics.binary.hasDelta
+          ? "prewarm_delta"
+          : "none"
     };
 
     return { metrics, advantageHints };
