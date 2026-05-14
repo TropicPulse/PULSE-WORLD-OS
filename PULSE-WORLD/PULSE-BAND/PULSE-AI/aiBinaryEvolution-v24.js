@@ -1,49 +1,59 @@
 /**
- * aiBinaryEvolution-v24.js — Pulse OS v24++ Immortal Organ
- * ---------------------------------------------------------
+ * aiBinaryEvolution-v30.js — Pulse OS v30‑IMMORTAL++ Organ
+ * --------------------------------------------------------
  * CANONICAL ROLE:
  *   Binary Evolution Engine (genetic layer)
  *   • generates deterministic binary signatures
  *   • detects drift and mutation
  *   • enforces organism identity
- *   • binary‑primary, dualband‑safe
+ *   • binary‑primary, dualband‑safe, port‑era ready
  */
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-// v24++ identity (no hardcoded meta)
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  META BLOCK — v24++ IMMORTAL (Organism Kernel)
+//  GLOBAL HANDLE (environment‑agnostic, no identity surfaces)
 // ============================================================================
-export const EvolutionMeta       = Identity.OrganMeta;
-export const pulseRole           = Identity.pulseRole;
-export const surfaceMeta         = Identity.surfaceMeta;
-export const pulseLoreContext    = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META  = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META         = Identity.EXPORT_META;
+const G =
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof window !== "undefined" && window) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+
 
 // ============================================================================
-//  CANONICAL JSON CANONICALIZER — unchanged (v16 → v24++)
+//  CANONICAL JSON CANONICALIZER — deterministic key ordering
 // ============================================================================
 function canonicalize(obj) {
   return JSON.stringify(obj, Object.keys(obj).sort());
 }
 
+
 // ============================================================================
-//  PREWARM ENGINE — unchanged (v16 → v24++)
+//  BINARY EQUALITY HELPER — correct drift comparison
+// ============================================================================
+function binaryEquals(a, b) {
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
+
+// ============================================================================
+//  PREWARM ENGINE — v30, behavior preserved
 // ============================================================================
 export function prewarmAIBinaryEvolution(config = {}) {
   try {
     const { encoder, memory, trace } = config;
 
     if (!encoder?.encode || !memory?.write || !memory?.read) {
-      if (trace) console.warn("[AIBinaryEvolution Prewarm] Missing encoder/memory");
+      if (trace) {
+        // eslint-disable-next-line no-console
+        console.warn("[AIBinaryEvolution Prewarm] Missing encoder/memory");
+      }
       return false;
     }
 
@@ -60,6 +70,7 @@ export function prewarmAIBinaryEvolution(config = {}) {
 
     if (trace) {
       const stored = memory.read(warmKey);
+      // eslint-disable-next-line no-console
       console.log("[AIBinaryEvolution Prewarm] success", {
         bits: warmBits.length,
         storedBits: stored?.length ?? 0
@@ -68,19 +79,21 @@ export function prewarmAIBinaryEvolution(config = {}) {
 
     return true;
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error("[AIBinaryEvolution Prewarm] Failed:", err);
     return false;
   }
 }
 
+
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v24++ (BEHAVIOR UNCHANGED)
+//  ORGAN IMPLEMENTATION — v30 IMMORTAL++
 // ============================================================================
 class AIBinaryEvolution {
   constructor(config = {}) {
-    this.id      = config.id || EvolutionMeta.identity;
+    this.id      = config.id || "pulse-touch-evolution";
     this.encoder = config.encoder;
-    this.memory  = config.memory;
+    this.memory  = config.memory;   // can be PulsePort / IndexedDB‑backed
     this.trace   = !!config.trace;
 
     if (!this.encoder?.encode) {
@@ -93,7 +106,9 @@ class AIBinaryEvolution {
     this.maxSignatureBits = config.maxSignatureBits || 0;
   }
 
-  // SIGNATURE GENERATION — unchanged
+  // -------------------------------------------------------------------------
+  //  SIGNATURE GENERATION — deterministic, canonical
+  // -------------------------------------------------------------------------
   generateSignature(organ) {
     const json = canonicalize({
       id: organ.id || null,
@@ -102,12 +117,13 @@ class AIBinaryEvolution {
     });
 
     let binary = this.encoder.encode(json);
+    const originalLength = binary.length;
 
     if (this.maxSignatureBits > 0 && binary.length > this.maxSignatureBits) {
       binary = binary.slice(-this.maxSignatureBits);
       this._trace("generateSignature:truncated", {
         organ: organ.id,
-        originalBits: binary.length,
+        originalBits: originalLength,
         maxSignatureBits: this.maxSignatureBits
       });
     }
@@ -120,7 +136,9 @@ class AIBinaryEvolution {
     return binary;
   }
 
-  // SIGNATURE STORAGE — unchanged
+  // -------------------------------------------------------------------------
+  //  SIGNATURE STORAGE
+  // -------------------------------------------------------------------------
   storeSignature(organ) {
     const signature = this.generateSignature(organ);
     const key = this.encoder.encode(`signature:${organ.id}`);
@@ -147,7 +165,9 @@ class AIBinaryEvolution {
     return stored || null;
   }
 
-  // DRIFT DETECTION — unchanged
+  // -------------------------------------------------------------------------
+  //  DRIFT DETECTION — now uses correct binary comparison
+  // -------------------------------------------------------------------------
   detectDrift(organ) {
     const oldSig = this.loadSignature(organ);
     const newSig = this.generateSignature(organ);
@@ -157,7 +177,7 @@ class AIBinaryEvolution {
       return { oldSig: null, newSig };
     }
 
-    if (oldSig === newSig) {
+    if (binaryEquals(oldSig, newSig)) {
       this._trace("detectDrift:noDrift", { organ: organ.id });
       return null;
     }
@@ -171,7 +191,9 @@ class AIBinaryEvolution {
     return { oldSig, newSig };
   }
 
-  // EVOLUTION UPDATE — unchanged
+  // -------------------------------------------------------------------------
+  //  EVOLUTION UPDATE
+  // -------------------------------------------------------------------------
   evolve(organ) {
     const drift = this.detectDrift(organ);
 
@@ -196,15 +218,19 @@ class AIBinaryEvolution {
     return result;
   }
 
-  // INTERNAL TRACE — unchanged
+  // -------------------------------------------------------------------------
+  //  INTERNAL TRACE
+  // -------------------------------------------------------------------------
   _trace(event, payload) {
     if (!this.trace) return;
+    // eslint-disable-next-line no-console
     console.log(`[${this.id}] ${event}`, payload);
   }
 }
 
+
 // ============================================================================
-// FACTORY EXPORT — v24++
+//  FACTORY EXPORT — v30 IMMORTAL++
 // ============================================================================
 export function createAIBinaryEvolution(config = {}) {
   prewarmAIBinaryEvolution(config);
@@ -217,7 +243,6 @@ if (typeof module !== "undefined") {
   module.exports = {
     AIBinaryEvolution,
     createAIBinaryEvolution,
-    EvolutionMeta,
     prewarmAIBinaryEvolution
   };
 }

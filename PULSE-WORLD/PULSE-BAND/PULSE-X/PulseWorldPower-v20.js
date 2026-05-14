@@ -23,15 +23,7 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;
-export const pulseRole = Identity.pulseRole;
-export const PulsePowerRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
+
 import { PulseProofBridge as PulseCoreMemoryBridge, BridgeError as error, BridgeWarn as warn, BridgeLog as log, PulseProofBridgeLogger as PulseLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const G =
@@ -396,7 +388,7 @@ function applyPrewarmToDOM({ predictions, assets }, doc) {
 
   // Mark body with power attributes
   if (d.body) {
-    d.body.setAttribute("data-pulse-power-version", PulsePowerRole.version);
+    d.body.setAttribute("data-pulse-power-version", window.__PULSE_TOUCH__?.version);
     d.body.setAttribute(
       "data-pulse-power-next-pages",
       (predictions.nextPages || []).join(",")
@@ -446,8 +438,8 @@ function announceToAIConsole({ pageId, route, predictions, prewarmAssets }) {
 
   try {
     PulseAIConsole.onSystemNarration(msg, {
-      organ: PulsePowerRole.identity,
-      version: PulsePowerRole.version,
+      organ: "pulse-touch",
+      version: window.__PULSE_TOUCH__?.version || "v0",
       route: route || null,
       pageId: pageId || null,
       nextPages: predictions.nextPages || [],
@@ -515,7 +507,7 @@ export function pulsePowerTouch({
 
   return {
     ok: true,
-    role: PulsePowerRole.identity,
+    role: "pulse-touch",
     state,
     predictions,
     prewarmAssets,
@@ -548,7 +540,7 @@ export function getPulsePowerSnapshot() {
   });
 
   return {
-    role: PulsePowerRole,
+    role: "pulse-touch",
     state,
     history,
     predictions,
@@ -563,7 +555,6 @@ export function getPulsePowerSnapshot() {
 // ============================================================================
 
 const PulsePowerAPI = {
-  PulsePowerRole,
   pulsePowerTouch,
   getPulsePowerSnapshot,
 };

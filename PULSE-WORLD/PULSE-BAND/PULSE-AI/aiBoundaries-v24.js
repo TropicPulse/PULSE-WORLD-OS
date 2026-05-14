@@ -4,36 +4,6 @@
 //  PURE CONSTRAINTS. ZERO RANDOMNESS. ZERO INTERNET.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const SuperegoMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================
@@ -341,7 +311,6 @@ function bucketPressure(v) {
   if (v > 0) return "low";
   return "none";
 }
-
 export function getBoundaryArterySnapshot({
   personaId,
   binaryVitals = {},
@@ -353,6 +322,7 @@ export function getBoundaryArterySnapshot({
   const pressure = extractPressure(binaryVitals);
   const trust = extractTrustSignals(trustArtery);
   const dualBandContext = dualBand?.artery || null;
+  const touch = window.__PULSE_TOUCH__ || {};
 
   return Object.freeze({
     type: "boundary-artery",
@@ -376,19 +346,15 @@ export function getBoundaryArterySnapshot({
       artery: dualBandContext
     },
     meta: {
-      version: SuperegoMeta.version,
-      epoch: SuperegoMeta.evo.epoch,
-      identity: SuperegoMeta.identity
+      id: "pulse-touch-boundaries",
+      version: touch.version || "v0",
+      epoch: touch.epoch || Date.now()
     }
   });
 }
 
-// ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility (v24‑IMMORTAL++ dualband)
-// ---------------------------------------------------------------------------
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
-    SuperegoMeta,
     BoundaryLevels,
     ArchitectAIBoundaries,
     ObserverAIBoundaries,
@@ -402,29 +368,6 @@ if (typeof module !== "undefined" && module.exports) {
     canPerformDynamic,
     selectBoundaryModeCached,
     canPerformDynamicCached,
-    getBoundaryArterySnapshot,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    getBoundaryArterySnapshot
   };
 }
-
-export default {
-  SuperegoMeta,
-  BoundaryLevels,
-  ArchitectAIBoundaries,
-  ObserverAIBoundaries,
-  TourGuideAIBoundaries,
-  NeutralAIBoundaries,
-  JuryAIBoundaries,
-  getBoundariesForPersona,
-  canPerform,
-  BoundaryModes,
-  selectBoundaryMode,
-  canPerformDynamic,
-  selectBoundaryModeCached,
-  canPerformDynamicCached,
-  getBoundaryArterySnapshot
-};

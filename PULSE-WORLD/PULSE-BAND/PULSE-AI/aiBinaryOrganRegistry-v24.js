@@ -1,33 +1,28 @@
 /**
- * aiOrganRegistry.js — Pulse OS v24‑IMMORTAL++ DualBand Organ
- * ---------------------------------------------------------
+ * aiOrganRegistry-v30.js — Pulse OS v30‑IMMORTAL++ DualBand Organ
+ * ---------------------------------------------------------------
  * CANONICAL ROLE:
  *   Organ Identity Registry (binary‑primary, dualband‑aware)
  *   Stores organ identity, signatures, timestamps, type, and band.
- *   Deterministic • Drift‑Proof • IMMORTAL v24++
+ *   Deterministic • Drift‑Proof • IMMORTAL v30 • Port‑era ready
  */
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-// v24++ identity (no hardcoded meta)
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  META BLOCK — v24++ IMMORTAL (Organism Kernel)
+//  GLOBAL HANDLE (Touch‑aware, environment‑agnostic)
 // ============================================================================
-export const OrganRegistryMeta   = Identity.OrganMeta;
-export const pulseRole           = Identity.pulseRole;
-export const surfaceMeta         = Identity.surfaceMeta;
-export const pulseLoreContext    = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META  = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META         = Identity.EXPORT_META;
+const G =
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+
+const g = G;
+
 
 // ============================================================================
-//  BINARY‑ONLY ORGAN SET — unchanged
+//  BINARY‑ONLY ORGAN SET — unchanged semantics
 // ============================================================================
 const BINARY_ONLY_ORGANS = new Set([
   "aiBinaryAgent",
@@ -37,24 +32,31 @@ const BINARY_ONLY_ORGANS = new Set([
   "PulseBinaryShifterEvolutionaryPulse"
 ]);
 
+
 // ============================================================================
-//  PACKET EMITTER — upgraded to v24++ packet discipline
+//  PACKET EMITTER — v30 IMMORTAL++ packet discipline
 // ============================================================================
 function emitRegistryPacket(type, payload) {
+  const touch = g.__PULSE_TOUCH__ || {};
+
   return Object.freeze({
-    meta: OrganRegistryMeta,
+    meta: {
+      id: "pulse-touch-registry",
+      version: touch.version || "v0",
+      epoch: touch.epoch || Date.now(),
+      layer: "registry",
+      role: "organ-registry",
+      band: "binary"
+    },
     packetType: `registry-${type}`,
-    timestamp: Date.now(),                 // unchanged (v24++ allows timing)
-    epoch: OrganRegistryMeta.evo.epoch,    // now v24++ epoch
-    layer: OrganRegistryMeta.layer,
-    role: OrganRegistryMeta.role,
-    identity: OrganRegistryMeta.identity,
+    timestamp: Date.now(),
     ...payload
   });
 }
 
+
 // ============================================================================
-//  PREWARM ENGINE — unchanged behavior, v24++ meta
+//  PREWARM ENGINE — v30, behavior unchanged, port‑era safe
 // ============================================================================
 export function prewarmAIBinaryOrganRegistry(config = {}) {
   try {
@@ -77,8 +79,9 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
 
     memory.write(warmKey, warmVal);
 
-    if (memory.read(warmKey)) {
-      encoder.decode(memory.read(warmKey), "string");
+    const readBack = memory.read(warmKey);
+    if (readBack) {
+      encoder.decode(readBack, "string");
     }
 
     if (typeof memory.listKeys === "function") {
@@ -93,7 +96,10 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
       });
     }
 
-    if (trace) console.log("[aiOrganRegistry] prewarm");
+    if (trace) {
+      // eslint-disable-next-line no-console
+      console.log("[aiOrganRegistry] prewarm");
+    }
 
     return emitRegistryPacket("prewarm", {
       message: "Organ Registry prewarmed."
@@ -106,14 +112,15 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
   }
 }
 
+
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v24++ (BEHAVIOR UNCHANGED)
+//  ORGAN IMPLEMENTATION — v30 IMMORTAL++ (behavior preserved)
 // ============================================================================
 export class AIBinaryOrganRegistry {
   constructor(config = {}) {
     this.id        = config.id || "organ-registry";
     this.encoder   = config.encoder;
-    this.memory    = config.memory;
+    this.memory    = config.memory;    // can be PulsePort / IndexedDB‑backed
     this.evolution = config.evolution || null;
     this.trace     = !!config.trace;
 
@@ -139,7 +146,9 @@ export class AIBinaryOrganRegistry {
     };
   }
 
-  // REGISTER ORGAN — unchanged logic, v24++ meta
+  // -------------------------------------------------------------------------
+  //  REGISTER ORGAN — v30, semantics unchanged
+  // -------------------------------------------------------------------------
   registerOrgan(organ) {
     const signature = this.evolution
       ? this.evolution.generateSignature(organ)
@@ -176,7 +185,9 @@ export class AIBinaryOrganRegistry {
     return emitRegistryPacket("register", record);
   }
 
-  // LOOKUP — unchanged
+  // -------------------------------------------------------------------------
+  //  LOOKUP — v30, unchanged behavior
+  // -------------------------------------------------------------------------
   getOrganRecord(organId) {
     const key = this.encoder.encode(`organ:${organId}`);
     const binary = this.memory.read(key);
@@ -198,7 +209,9 @@ export class AIBinaryOrganRegistry {
     return emitRegistryPacket("lookup", record);
   }
 
-  // LIST — unchanged
+  // -------------------------------------------------------------------------
+  //  LIST — v30, unchanged behavior
+  // -------------------------------------------------------------------------
   listOrgans() {
     const keys = this.memory.listKeys();
 
@@ -220,7 +233,9 @@ export class AIBinaryOrganRegistry {
     return emitRegistryPacket("list", { organIds });
   }
 
-  // EVOLVE — unchanged
+  // -------------------------------------------------------------------------
+  //  EVOLVE — v30, unchanged behavior
+  // -------------------------------------------------------------------------
   evolveOrgan(organ) {
     if (!this.evolution) {
       throw new Error("evolution engine not provided");
@@ -240,15 +255,19 @@ export class AIBinaryOrganRegistry {
     return emitRegistryPacket("evolve", result);
   }
 
-  // TRACE — unchanged
+  // -------------------------------------------------------------------------
+  //  TRACE — v30, environment‑agnostic
+  // -------------------------------------------------------------------------
   _trace(event, payload) {
     if (!this.trace) return;
+    // eslint-disable-next-line no-console
     console.log(`[${this.id}] ${event}`, payload);
   }
 }
 
+
 // ============================================================================
-// FACTORY — v24++
+//  FACTORY — v30 IMMORTAL++
 // ============================================================================
 export function createAIBinaryOrganRegistry(config = {}) {
   prewarmAIBinaryOrganRegistry(config);
@@ -257,7 +276,6 @@ export function createAIBinaryOrganRegistry(config = {}) {
 
 if (typeof module !== "undefined") {
   module.exports = {
-    OrganRegistryMeta,
     AIBinaryOrganRegistry,
     createAIBinaryOrganRegistry,
     prewarmAIBinaryOrganRegistry

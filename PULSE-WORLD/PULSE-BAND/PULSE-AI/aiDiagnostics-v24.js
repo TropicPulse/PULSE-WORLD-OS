@@ -1,33 +1,12 @@
 // ============================================================================
-//  PULSE OS v24++‑IMMORTAL‑ADVANTAGE — DIAGNOSTICS ORGAN
+//  PULSE OS v30‑IMMORTAL++ — DIAGNOSTICS ORGAN
 //  Drift Tracker • Mismatch Ledger • Slowdown Sensor • Dualband Pressure Aware
-//  PURE OBSERVATION. ZERO RANDOMNESS. ZERO MUTATION. OWNER‑SUBORDINATE.
+//  PURE OBSERVATION. ZERO RANDOMNESS. ZERO MUTATION. NO IDENTITY.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  META BLOCK — v24++ IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const DiagnosticsMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24++ IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  PRESSURE HELPERS — dualband‑aware
+//  PRESSURE HELPERS — dualband‑aware (v30)
 // ============================================================================
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
@@ -47,26 +26,24 @@ function bucketPressure(v) {
   return "none";
 }
 
+
 // ============================================================================
-//  PACKET EMITTER — deterministic, diagnostics‑scoped
+//  PACKET EMITTER — deterministic, diagnostics‑scoped (v30 IMMORTAL++)
 // ============================================================================
 function emitDiagnosticsPacket(type, payload = {}) {
   return Object.freeze({
-    meta: DiagnosticsMeta,
     packetType: `diagnostics-${type}`,
-    timestamp: Date.now(),
-    epoch: DiagnosticsMeta.evo.epoch,
-    layer: DiagnosticsMeta.layer,
-    role: DiagnosticsMeta.role,
-    identity: DiagnosticsMeta.identity,
-    owner: "Aldwyn",
-    subordinate: true,
+    timestamp: 0,          // IMMORTAL++: no wall‑clock
+    layer: "diagnostics-organ",
+    role: "diagnostics",
+    band: "binary",
     ...payload
   });
 }
 
+
 // ============================================================================
-//  PREWARM ENGINE — v24++ IMMORTAL‑ADVANTAGE
+//  PREWARM ENGINE — v30 IMMORTAL++
 // ============================================================================
 export function prewarmDiagnosticsOrgan() {
   try {
@@ -98,8 +75,9 @@ export function prewarmDiagnosticsOrgan() {
   }
 }
 
+
 // ============================================================================
-//  FACTORY — Create Diagnostics State (v24++)
+//  FACTORY — Create Diagnostics State (v30 IMMORTAL++)
 // ============================================================================
 export function createDiagnosticsState() {
   return {
@@ -108,12 +86,13 @@ export function createDiagnosticsState() {
     slowdownCauses: [],
     driftEvents: [],
     driftDetected: false,
-    timestamp: Date.now()
+    timestamp: 0 // IMMORTAL++: no Date.now
   };
 }
 
+
 // ============================================================================
-//  ATTACH HELPERS — Bind Diagnostics to a Context (v24++)
+//  ATTACH HELPERS — Bind Diagnostics to a Context (v30 IMMORTAL++)
 // ============================================================================
 export function attachDiagnosticsOrgan(context) {
   if (!context) return context;
@@ -145,8 +124,9 @@ export function attachDiagnosticsOrgan(context) {
   return context;
 }
 
+
 // ============================================================================
-//  STANDALONE DIAGNOSTICS API — No Context Mutation (v24++)
+//  STANDALONE DIAGNOSTICS API — No Context Mutation (v30 IMMORTAL++)
 // ============================================================================
 export function createDiagnosticsAPI() {
   const diagnostics = createDiagnosticsState();
@@ -169,7 +149,6 @@ export function createDiagnosticsAPI() {
   }
 
   return Object.freeze({
-    meta: DiagnosticsMeta,
     diagnostics,
     flagMismatch,
     flagMissingField,
@@ -178,8 +157,9 @@ export function createDiagnosticsAPI() {
   });
 }
 
+
 // ============================================================================
-//  DIAGNOSTICS ARTERY — symbolic‑only, deterministic (v24++)
+//  DIAGNOSTICS ARTERY — symbolic‑only, deterministic (v30 IMMORTAL++)
 // ============================================================================
 export function diagnosticsArtery(diagnostics, binaryVitals = {}) {
   const binaryPressure = extractBinaryPressure(binaryVitals);
@@ -214,14 +194,14 @@ export function diagnosticsArtery(diagnostics, binaryVitals = {}) {
   });
 }
 
+
 // ============================================================================
-//  BOOT PREWARM + DUAL‑MODE EXPORTS
+//  BOOT PREWARM + DUAL‑MODE EXPORTS — v30 IMMORTAL++
 // ============================================================================
 prewarmDiagnosticsOrgan();
 
 if (typeof module !== "undefined") {
   module.exports = {
-    DiagnosticsMeta,
     createDiagnosticsState,
     attachDiagnosticsOrgan,
     createDiagnosticsAPI,

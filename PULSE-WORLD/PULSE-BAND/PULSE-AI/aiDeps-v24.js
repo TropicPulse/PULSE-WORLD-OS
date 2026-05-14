@@ -1,56 +1,20 @@
 // ============================================================================
-//  PULSE OS v24‑IMMORTAL‑ADVANTAGE++ — aiDeps
+//  PULSE OS v30‑IMMORTAL++ — aiDeps
 //  Dependency Injection Organ • Organism Snapshot Kernel • Tri‑Heart Aware
-//  PURE INPUT. ZERO MUTATION. ZERO RANDOMNESS. OWNER‑SUBORDINATE.
-// ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const DepsMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
+//  PURE INPUT. ZERO MUTATION. ZERO RANDOMNESS. NO IDENTITY. NO WALL‑CLOCK.
 // ============================================================================
 
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, deps-scoped
+//  PACKET EMITTER — deterministic, deps‑scoped (v30 IMMORTAL++)
 // ============================================================================
 function emitDepsPacket(type = "snapshot", payload = {}) {
   return Object.freeze({
-    meta: DepsMeta,
     packetType: `deps-${type}`,
-    timestamp: Date.now(),
-    epoch: DepsMeta.evo.epoch,
-    layer: DepsMeta.layer,
-    role: DepsMeta.role,
-    identity: DepsMeta.identity,
-    owner: "Aldwyn",
-    subordinate: true,
+    timestamp: 0,              // IMMORTAL++: no wall‑clock coupling
+    layer: "deps-organ",
+    role: "dependency-surface",
+    band: "binary",
     adapters: [
       "db",
       "fs",
@@ -73,7 +37,7 @@ function emitDepsPacket(type = "snapshot", payload = {}) {
 }
 
 // ============================================================================
-//  PREWARM — v24 IMMORTAL‑ADVANTAGE++
+//  PREWARM — v30 IMMORTAL++
 // ============================================================================
 export function prewarmDepsLayer() {
   try {
@@ -105,7 +69,7 @@ export function prewarmDepsLayer() {
     getOrganismSnapshot(warmDualBand);
 
     return emitDepsPacket("prewarm", {
-      message: "Deps layer prewarmed and v24++ adapter pathways aligned."
+      message: "Deps layer prewarmed and v30++ adapter pathways aligned."
     });
   } catch (err) {
     return emitDepsPacket("prewarm-error", {
@@ -118,8 +82,8 @@ export function prewarmDepsLayer() {
 // ============================================================================
 //  DATABASE API — Firestore/SQL/KV Compatible Adapter
 // ============================================================================
-export function getDb({ trace = false } = {}) {
-  const log = (msg, data) => trace && console.log(`[aiDeps:db] ${msg}`, data);
+export function getDb(_opts = {}) {
+  const log = () => {}; // v30: no console side‑effects
 
   return Object.freeze({
     async getCollection(collection, options = {}) {
@@ -137,8 +101,8 @@ export function getDb({ trace = false } = {}) {
 // ============================================================================
 //  FILESYSTEM API — Required by aiEvolution
 // ============================================================================
-export function getFsAPI({ trace = false } = {}) {
-  const log = (msg, data) => trace && console.log(`[aiDeps:fs] ${msg}`, data);
+export function getFsAPI(_opts = {}) {
+  const log = () => {}; // v30: no console side‑effects
 
   return Object.freeze({
     async getAllFiles() {
@@ -156,8 +120,8 @@ export function getFsAPI({ trace = false } = {}) {
 // ============================================================================
 //  ROUTE API — Required by aiEvolution
 // ============================================================================
-export function getRouteAPI({ trace = false } = {}) {
-  const log = (msg, data) => trace && console.log(`[aiDeps:routes] ${msg}`, data);
+export function getRouteAPI(_opts = {}) {
+  const log = () => {}; // v30: no console side‑effects
 
   return Object.freeze({
     async getRouteMap() {
@@ -175,8 +139,8 @@ export function getRouteAPI({ trace = false } = {}) {
 // ============================================================================
 //  SCHEMA API — Required by aiEvolution
 // ============================================================================
-export function getSchemaAPI({ trace = false } = {}) {
-  const log = (msg, data) => trace && console.log(`[aiDeps:schema] ${msg}`, data);
+export function getSchemaAPI(_opts = {}) {
+  const log = () => {}; // v30: no console side‑effects
 
   return Object.freeze({
     async getAllSchemas() {
@@ -192,7 +156,7 @@ export function getSchemaAPI({ trace = false } = {}) {
 }
 
 // ============================================================================
-//  ORGANISM SNAPSHOT — v24 IMMORTAL‑ADVANTAGE++
+//  ORGANISM SNAPSHOT — v30 IMMORTAL++
 // ============================================================================
 export function getOrganismSnapshot(dualBand) {
   if (!dualBand) {
@@ -207,12 +171,12 @@ export function getOrganismSnapshot(dualBand) {
       boundaries: null,
       persona: null,
       identity: null,
-      timestamp: Date.now()
+      timestamp: 0
     });
   }
 
   return Object.freeze({
-    timestamp: Date.now(),
+    timestamp: 0, // v30: no wall‑clock
 
     binary: dualBand.binary?.vitals?.snapshot?.() || null,
 
@@ -231,27 +195,23 @@ export function getOrganismSnapshot(dualBand) {
 }
 
 // ============================================================================
-//  EXPORT — v24 IMMORTAL‑ADVANTAGE++ Dependency Surface (Frozen)
+//  EXPORT — v30 IMMORTAL++ Dependency Surface (Frozen)
 // ============================================================================
 prewarmDepsLayer();
 
 export const depsSurface = Object.freeze({
-  meta: DepsMeta,
   getDb,
   getFsAPI,
   getRouteAPI,
   getSchemaAPI,
   getOrganismSnapshot,
-  emitDepsPacket,
-  owner: "Aldwyn",
-  subordinate: true
+  emitDepsPacket
 });
 
 export default depsSurface;
 
 if (typeof module !== "undefined") {
   module.exports = {
-    DepsMeta,
     getDb,
     getFsAPI,
     getRouteAPI,

@@ -1,30 +1,10 @@
 // ============================================================================
-//  PULSE OS v24.0‑IMMORTAL — CLINICIAN ORGAN
+//  PULSE OS v27‑IMMORTAL++ — CLINICIAN ORGAN
 //  Diagnostic Interpreter • Triage Specialist • System Health Auditor
 //  PURE OBSERVATION. ZERO MEDICAL ADVICE. ZERO MUTATION.
-//  v24++: CoreMemory‑ready, organism‑aligned artifacts.
+//  v27: CoreMemory‑ready, Touch‑aligned, map‑free.
 // ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const ClinicianMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS
@@ -44,14 +24,21 @@ function bucketPressure(v) {
   if (v > 0) return "low";
   return "none";
 }
-
 // ============================================================================
-//  v24++ CORE MEMORY ARTIFACT HELPERS (protocol‑only, zero DB)
+//  v27 CORE MEMORY ARTIFACT HELPERS (protocol‑only, zero DB)
 //  Shapes are compatible with PulseOSMemory.buildSnapshot / buildDriftSignature
 // ============================================================================
 function buildMemorySnapshot({ subsystem = "Clinician", diagnostics, binaryVitals }) {
+  const touch = (typeof window !== "undefined" && window.__PULSE_TOUCH__) || {};
+
   return {
-    ...pulseLoreContext,
+    meta: {
+      id: "pulse-touch-clinician",
+      version: touch.version || "v0",
+      epoch: touch.epoch || Date.now(),
+      layer: "clinician",
+      role: "diagnostic-interpreter"
+    },
     kind: "snapshot",
     subsystem,
     payload: {
@@ -62,6 +49,8 @@ function buildMemorySnapshot({ subsystem = "Clinician", diagnostics, binaryVital
 }
 
 function buildMemoryDriftSignature({ subsystem = "Clinician", diagnostics, binaryVitals }) {
+  const touch = (typeof window !== "undefined" && window.__PULSE_TOUCH__) || {};
+
   const pressure = extractBinaryPressure(binaryVitals);
   const drift =
     diagnostics?.driftDetected === true ||
@@ -69,7 +58,13 @@ function buildMemoryDriftSignature({ subsystem = "Clinician", diagnostics, binar
     (diagnostics?.mismatches?.length || 0) > 0;
 
   return {
-    ...pulseLoreContext,
+    meta: {
+      id: "pulse-touch-clinician",
+      version: touch.version || "v0",
+      epoch: touch.epoch || Date.now(),
+      layer: "clinician",
+      role: "diagnostic-interpreter"
+    },
     kind: "driftSignature",
     subsystem,
     type: drift ? "clinician_drift_detected" : "clinician_stable",
@@ -86,7 +81,7 @@ function buildMemoryDriftSignature({ subsystem = "Clinician", diagnostics, binar
 }
 
 // ============================================================================
-//  CLINICIAN ORGAN IMPLEMENTATION (v24.0‑IMMORTAL, CoreMemory‑ready)
+//  CLINICIAN ORGAN IMPLEMENTATION (v27‑IMMORTAL++, CoreMemory‑ready)
 // ============================================================================
 export function createClinicianOrgan(context = {}) {
   const diagnostics = context.diagnostics || {};
@@ -94,6 +89,8 @@ export function createClinicianOrgan(context = {}) {
 
   const subsystemName = context.subsystemName || "Clinician";
   const routeId = context.routeId || "clinician";
+
+  const touch = (typeof window !== "undefined" && window.__PULSE_TOUCH__) || {};
 
   function prewarm() {
     return true;
@@ -146,7 +143,7 @@ export function createClinicianOrgan(context = {}) {
   }
 
   // --------------------------------------------------------------------------
-  // PACKET EMITTER v3 — now also emits CoreMemory‑ready artifacts
+  // PACKET EMITTER v3 — also emits CoreMemory‑ready artifacts
   // --------------------------------------------------------------------------
   function buildPacket(binaryVitals = {}) {
     const summary = buildSummary(binaryVitals);
@@ -219,7 +216,6 @@ export function createClinicianOrgan(context = {}) {
         slowdown: slowdownCount,
         drift
       },
-      // v24++: expose CoreMemory‑ready artifacts on the artery as well
       memoryArtifacts: {
         snapshot: buildMemorySnapshot({
           subsystem: subsystemName,
@@ -236,10 +232,18 @@ export function createClinicianOrgan(context = {}) {
   }
 
   // --------------------------------------------------------------------------
-  // PUBLIC CLINICIAN API (v24.0‑IMMORTAL, CoreMemory‑ready)
-// --------------------------------------------------------------------------
+  // PUBLIC CLINICIAN API (v27‑IMMORTAL++, CoreMemory‑ready)
+  // --------------------------------------------------------------------------
+  const clinicianMeta = {
+    id: "pulse-touch-clinician",
+    version: touch.version || "v0",
+    epoch: touch.epoch || Date.now(),
+    layer: "clinician",
+    role: "diagnostic-interpreter"
+  };
+
   return Object.freeze({
-    meta: ClinicianMeta,
+    meta: clinicianMeta,
     prewarm,
 
     log(message) {
@@ -252,8 +256,7 @@ export function createClinicianOrgan(context = {}) {
         safeContext: buildSafeContext(),
         trace,
         flags: buildFlags(),
-        meta: ClinicianMeta,
-        // v24++: CoreMemory artifacts available to CNS / workers
+        meta: clinicianMeta,
         memoryArtifacts: {
           snapshot: buildMemorySnapshot({
             subsystem: subsystemName,
@@ -281,7 +284,6 @@ export default createClinicianOrgan;
 
 if (typeof module !== "undefined") {
   module.exports = {
-    ClinicianMeta,
     createClinicianOrgan,
     default: createClinicianOrgan
   };

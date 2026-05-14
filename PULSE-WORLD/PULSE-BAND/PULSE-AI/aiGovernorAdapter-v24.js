@@ -4,27 +4,6 @@
 //  PURE MEMBRANE. ZERO INTERPRETATION. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24++ IMMORTAL‑ADVANTAGE++
-// ============================================================================
-export const GovernorAdapterMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE EXPORTS — v24++ IMMORTAL‑ADVANTAGE++
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  HELPERS — pressure + artery

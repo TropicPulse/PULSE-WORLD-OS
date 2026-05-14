@@ -1,34 +1,13 @@
 // ============================================================================
-//  aiGeniusWithoutEgo.js — Pulse OS v24++ IMMORTAL‑ADVANTAGE++
+//  aiGeniusWithoutEgo-v30.js — Pulse OS v30 IMMORTAL‑ADVANTAGE++
 //  Resident Genius • Zero Ego • Ultra‑Fast Tone Refinement • Trust‑Aware
 //  WINDOW‑SAFE • ARTERY‑AWARE • DUALBAND‑FUSION • DRIFT‑PROOF
+//  META‑STRIPPED • IDENTITY‑PRESERVING.
 // ============================================================================
-
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 import { aiHumilityFilter } from "./aiHumilityFilter-v24.js";
 
-const Identity = OrganismIdentity(import.meta.url);
-
 // ============================================================================
-//  META BLOCK — v24++ IMMORTAL‑ADVANTAGE++
-// ============================================================================
-export const GeniusMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE EXPORTS — v24++ IMMORTAL‑ADVANTAGE++
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  HELPERS — pressure + artery
+//  HELPERS — pressure + artery (v30, no GeniusMeta)
 // ============================================================================
 function bucketPressure(v) {
   if (v >= 0.9) return "overload";
@@ -63,45 +42,45 @@ function buildToneArterySnapshot({ context = {}, input = "", output = "" } = {})
     text: {
       inputLength: typeof input === "string" ? input.length : 0,
       outputLength: typeof output === "string" ? output.length : 0
-    },
-    meta: {
-      version: GeniusMeta.version,
-      epoch: GeniusMeta.evo.epoch,
-      identity: GeniusMeta.identity,
-      layer: GeniusMeta.layer,
-      role: GeniusMeta.role
     }
   });
 }
 
 // ============================================================================
-//  PACKET EMITTER — deterministic IMMORTAL‑ADVANTAGE++
+//  PACKET EMITTER — v30 META‑STRIPPED, IDENTITY‑PRESERVING
 // ============================================================================
-function emitGeniusPacket(type, payload) {
+function emitGeniusPacket(type, payload = {}) {
   return Object.freeze({
-    meta: {
-      version: GeniusMeta.version,
-      epoch: GeniusMeta.evo.epoch,
-      identity: GeniusMeta.identity,
-      layer: GeniusMeta.layer,
-      role: GeniusMeta.role,
-      owner: "Aldwyn",
-      subordinate: true
-    },
     packetType: `genius-${type}`,
-    packetId: `genius-${type}-${Date.now()}`,
-    timestamp: Date.now(),
+    timestamp: 0,
+    layer: "genius-without-ego",
+    role: "tone-refinement",
+    owner: "Aldwyn",
+    subordinate: true,
     ...payload
   });
 }
 
+// Optional: symbolic‑only PulseBinary / IndexedDB‑style adapter
+async function writePulseBinaryLog(adapter, kind, payload) {
+  if (!adapter || typeof adapter.write !== "function") return false;
+  const safePayload = Object.freeze({ ...payload });
+  const keySeed = `${kind}::${safePayload.packetType || "genius"}::${safePayload.message || ""}`;
+  const docId = `genius-${Math.abs(
+    keySeed.split("").reduce((a, c, i) => (a + c.charCodeAt(0) * (i + 1)) % 1000003, 0)
+  )}`;
+  return adapter.write(`GENIUS_LOGS/${docId}`, safePayload);
+}
+
+
 // ============================================================================
-//  PREWARM — IMMORTAL‑ADVANTAGE++
+//  PREWARM — v30 IMMORTAL‑ADVANTAGE++
 // ============================================================================
 export function prewarmGeniusOrgan({
   trace = false,
   trustFabric = null,
-  juryFrame = null
+  juryFrame = null,
+  pulseBinaryAdapter = null
 } = {}) {
   try {
     const sample = "warmup text";
@@ -120,8 +99,9 @@ export function prewarmGeniusOrgan({
 
     trustFabric?.recordGeniusPrewarm?.({ artery });
     juryFrame?.recordEvidence?.("genius-prewarm", packet);
+    writePulseBinaryLog(pulseBinaryAdapter, "prewarm", packet);
 
-    if (trace) console.log("[aiGeniusWithoutEgo] prewarm", packet);
+    if (trace) console.log("[aiGeniusWithoutEgo v30] prewarm", packet);
     return packet;
   } catch (err) {
     const packet = emitGeniusPacket("prewarm-error", {
@@ -134,21 +114,31 @@ export function prewarmGeniusOrgan({
   }
 }
 
+
 // ============================================================================
-//  CORE GENIUS-WITHOUT-EGO REFINEMENT — v24++ IMMORTAL‑ADVANTAGE++
+//  CORE GENIUS-WITHOUT-EGO REFINEMENT — v30 IMMORTAL‑ADVANTAGE++
 // ============================================================================
 export function createGeniusWithoutEgo({
   trustFabric = null,
-  juryFrame = null
+  juryFrame = null,
+  pulseBinaryAdapter = null
 } = {}) {
   const organ = {
-    meta: GeniusMeta,
+    descriptor: Object.freeze({
+      kind: "GeniusWithoutEgo",
+      version: "v30",
+      role: "tone-refinement"
+    }),
 
     refine(text, context = {}) {
       // Empty input path
       if (!text || typeof text !== "string") {
         const artery = buildToneArterySnapshot({ context, input: "", output: "" });
-        const packet = emitGeniusPacket("refine", { input: "", output: "", artery });
+        const packet = emitGeniusPacket("refine", {
+          input: "",
+          output: "",
+          artery
+        });
 
         trustFabric?.recordGeniusRefine?.({
           personaId: context.personaId || null,
@@ -157,6 +147,7 @@ export function createGeniusWithoutEgo({
         });
 
         juryFrame?.recordEvidence?.("genius-refine-empty", packet);
+        writePulseBinaryLog(pulseBinaryAdapter, "refine-empty", packet);
         return packet;
       }
 
@@ -235,6 +226,7 @@ export function createGeniusWithoutEgo({
       });
 
       juryFrame?.recordEvidence?.("genius-refine", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "refine", packet);
 
       return packet;
     }
@@ -255,7 +247,6 @@ if (typeof module !== "undefined") {
     aiGeniusWithoutEgo,
     createGeniusWithoutEgo,
     prewarmGeniusOrgan,
-    GeniusMeta,
     default: aiGeniusWithoutEgo
   };
 }

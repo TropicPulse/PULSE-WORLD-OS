@@ -1,34 +1,13 @@
 // ============================================================================
-//  aiEmotionEngine-v24.js — Pulse OS v24++‑IMMORTAL‑ADVANTAGE
+//  aiEmotionEngine-v30.js — Pulse OS v30‑IMMORTAL++
 //  Emotion Organ • Subtle Affect Detection • Tone Routing Surface
 //  PURE AFFECT. ZERO DIAGNOSIS. ZERO CLINICAL INTERPRETATION.
-//  OWNER‑SUBORDINATE: ALWAYS BELOW ALDWYN.
+//  v30: NO META • NO IDENTITY • NO OWNER • NO WALL-CLOCK
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  META BLOCK — v24++ IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const EmotionEngineMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24++ IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  PRESSURE HELPERS — dualband‑aware
+//  PRESSURE HELPERS — dualband‑aware (v30)
 // ============================================================================
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
@@ -48,23 +27,21 @@ function bucketPressure(v) {
   return "none";
 }
 
+
 // ============================================================================
-//  PACKET EMITTER — deterministic, emotion‑scoped
+//  PACKET EMITTER — deterministic, emotion‑scoped (v30 IMMORTAL++)
 // ============================================================================
 function emitEmotionPacket(type, payload = {}) {
   return Object.freeze({
-    meta: EmotionEngineMeta,
     packetType: `emotion-${type}`,
-    timestamp: Date.now(),
-    epoch: EmotionEngineMeta.evo.epoch,
-    layer: EmotionEngineMeta.layer,
-    role: EmotionEngineMeta.role,
-    identity: EmotionEngineMeta.identity,
-    owner: "Aldwyn",
-    subordinate: true,
+    timestamp: 0,        // IMMORTAL++: no wall-clock
+    layer: "emotion-organ",
+    role: "emotion",
+    band: "symbolic",
     ...payload
   });
 }
+
 
 // ============================================================================
 //  CORE DETECTORS (pure, stateless, drift‑proof)
@@ -74,7 +51,6 @@ function coreDetectEmotion(message) {
 
   const msg = String(message).toLowerCase();
 
-  // v24++ expanded affect lexicon (still non‑clinical)
   if (msg.includes("lol") || msg.includes("haha") || msg.includes(":)"))
     return "casual";
 
@@ -112,8 +88,9 @@ function coreDetectIntensity(message) {
   return 0.5;
 }
 
+
 // ============================================================================
-//  EMOTION ARTERY — symbolic‑only, deterministic, dualband‑aware
+//  EMOTION ARTERY — symbolic‑only, deterministic, dualband‑aware (v30)
 // ============================================================================
 function emotionArtery({ message = "", binaryVitals = {} } = {}) {
   const pressure = extractBinaryPressure(binaryVitals);
@@ -141,12 +118,12 @@ function emotionArtery({ message = "", binaryVitals = {} } = {}) {
   });
 }
 
+
 // ============================================================================
-//  FACTORY — v24++ IMMORTAL‑ADVANTAGE
+//  FACTORY — v30 IMMORTAL++
 // ============================================================================
 export function createEmotionEngine({ context = {}, personaEngine = null } = {}) {
   const base = {
-    meta: EmotionEngineMeta,
     context,
     personaEngine,
 
@@ -167,7 +144,6 @@ export function createEmotionEngine({ context = {}, personaEngine = null } = {})
         intensity,
         message,
         contextSnapshot: {
-          userId: context?.userId ?? null,
           personaId: personaEngine?.getActivePersona?.()?.id ?? null
         },
         pressure: extractBinaryPressure(binaryVitals),
@@ -186,8 +162,9 @@ export function createEmotionEngine({ context = {}, personaEngine = null } = {})
 // Backwards‑compatible alias
 export const aiEmotionEngine = createEmotionEngine;
 
+
 // ============================================================================
-//  EMOTION ENGINE PREWARM — v24++ IMMORTAL‑ADVANTAGE
+//  EMOTION ENGINE PREWARM — v30 IMMORTAL++
 // ============================================================================
 export function prewarmEmotionEngine() {
   try {
@@ -204,7 +181,7 @@ export function prewarmEmotionEngine() {
       "feeling a bit down today"
     ];
 
-    const warmEngine = createEmotionEngine({ context: { userId: "prewarm" } });
+    const warmEngine = createEmotionEngine({ context: {} });
 
     for (const msg of warmSamples) {
       warmEngine.detectEmotion(msg);
@@ -224,6 +201,7 @@ export function prewarmEmotionEngine() {
   }
 }
 
+
 // ============================================================================
 //  DEFAULT EXPORT (ESM + CJS)
 // ============================================================================
@@ -231,7 +209,6 @@ export default aiEmotionEngine;
 
 if (typeof module !== "undefined") {
   module.exports = {
-    EmotionEngineMeta,
     aiEmotionEngine,
     createEmotionEngine,
     prewarmEmotionEngine,

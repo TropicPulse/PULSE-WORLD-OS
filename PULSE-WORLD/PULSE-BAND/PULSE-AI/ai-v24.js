@@ -7,40 +7,12 @@
   (keep your big AI_EXPERIENCE_META comment here if you want it for docs;
    it no longer drives runtime identity — the genome does)
 */
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
-const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const OrganismKernelMeta = Identity.OrganMeta;
 
 // ============================================================================
 //  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
 //  (for Understanding / CNS / Portal alignment)
 // ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
-
 
 import { AIBinaryAgent } from "./aiBinaryAgent-v24.js";
 import { AIMemory } from "./aiMemory-v24.js";
@@ -59,7 +31,7 @@ import { AIBinaryScheduler } from "./aiScheduler-v24.js";
 import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
 import { AIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
 
-import { createPulseAIChunker } from "./PulseAIChunker-v24.js";
+import { createPulseAIChunker } from "./PulseAIChunker-v30.js";
 
 // ============================================================================
 //  ORGANISM BOOTLOADER — PURE BEHAVIOR (NO META IN THIS FILE ANYMORE)
@@ -149,12 +121,18 @@ function _registryKey(id) {
 //  ORGANISM CONTEXT — IDENTITY OF THE DUALBAND ORGANISM
 // ============================================================================
 const ORGANISM_CONTEXT = Object.freeze({
-  layer: OrganismKernelMeta.layer,
-  role: OrganismKernelMeta.role,
-  version: OrganismKernelMeta.version,
-  lineage: "pulse-organism-v24.0-IMMORTAL",
-  evo: OrganismKernelMeta.evo
+  layer: "touch",
+  role: "pulse-touch",
+  version: window.__PULSE_TOUCH__?.version || "v0",
+  lineage: "pulse-touch-organism-v27",
+  evo: {
+    band: window.__PULSE_TOUCH__?.band,
+    region: window.__PULSE_TOUCH__?.region,
+    mode: window.__PULSE_TOUCH__?.mode,
+    chunkProfile: window.__PULSE_TOUCH__?.chunkProfile
+  }
 });
+
 
 // ============================================================================
 //  KERNEL-LEVEL CHUNKER (32-LANE, NON-MIND)
@@ -350,10 +328,10 @@ function computeOrganismArtery({ registry, anatomy, genome, memory, scheduler, c
   const artery = Object.freeze({
     timestamp: Date.now(), // remains symbolic; deterministic enough at kernel level
     kernel: {
-      id: OrganismKernelMeta.identity,
-      version: OrganismKernelMeta.version,
-      layer: OrganismKernelMeta.layer,
-      role: OrganismKernelMeta.role
+      id: "pulse-touch",
+      version: window.__PULSE_TOUCH__?.version || "v0",
+      layer: "touch",
+      role: "pulse-touch"
     },
     counts: {
       registry: registryCount,
@@ -562,17 +540,30 @@ export function createBinaryOrganism({
     band: "symbolic"
   });
 
-  if (nodeAdminReporter) {
-    try {
-      nodeAdminReporter(artery, OrganismKernelMeta);
-    } catch {}
-  }
+const touch = window.__PULSE_TOUCH__ || {};
 
-  if (overmindReporter) {
-    try {
-      overmindReporter(artery, OrganismKernelMeta);
-    } catch {}
-  }
+if (nodeAdminReporter) {
+  try {
+    nodeAdminReporter(artery, {
+      id: "pulse-touch",
+      version: touch.version || "v0",
+      layer: "touch",
+      role: "pulse-touch"
+    });
+  } catch {}
+}
+
+if (overmindReporter) {
+  try {
+    overmindReporter(artery, {
+      id: "pulse-touch",
+      version: touch.version || "v0",
+      layer: "touch",
+      role: "pulse-touch"
+    });
+  } catch {}
+}
+
 
   const readiness = Object.freeze({
     meta: {
@@ -633,12 +624,18 @@ export async function bootBinaryOrganism(options = {}) {
 //  DEFAULT EXPORT — DUALBAND ORGANISM KERNEL SURFACE
 // ============================================================================
 const PulseOrganismBoot = {
-  ...ORGANISM_CONTEXT,
-  meta: OrganismKernelMeta,
+  organism: {
+    id: "pulse-touch",
+    version: window.__PULSE_TOUCH__?.version || "v0",
+    layer: "touch",
+    role: "pulse-touch"
+  },
+
   create: createBinaryOrganism,
   boot: bootBinaryOrganism,
   getGlobalOrganismArteries,
   chunker: kernelChunker
 };
+
 
 export default PulseOrganismBoot;

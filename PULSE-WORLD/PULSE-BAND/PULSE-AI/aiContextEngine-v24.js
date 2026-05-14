@@ -1,103 +1,26 @@
 // ============================================================================
-//  PULSE OS v24.0‑IMMORTAL‑ADVANTAGE++ — CONTEXT ENGINE
-//  Context Kernel • Organism Fusion • Tri‑Heart + Earn + Genome + Governor
-//  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS. OWNER‑SUBORDINATE.
-// ============================================================================
-//
-//  v16++ / v24++ Feature Surface (NO DOWNGRADES, ONLY ADDITIONS):
-//   • Tri‑Heart Aware (mom/dad/earn)              [via arteries + binaryVitals surfaces]
-//   • Earn‑Aware (earnPressure, earnVitals)       [earn artery]
-//   • Genome‑Aware (artery, fingerprint, drift)   [genome artery]
-//   • Governor‑Aware (membrane artery, reflex)    [governor artery]
-//   • Watchdog‑Aware (trust gaps, anomalies)      [watchdog vitals]
-//   • Cortex‑Aware (cognition artery)             [cortex artery]
-//   • Memory‑Aware (artery v4)                    [memory artery]
-//   • Heartbeat‑Aware (artery + fallback path)    [heartbeat artery]
-//   • Persona + Boundaries + Permissions Fusion   [persona + boundariesPacket]
-//   • IdentityCore injection (owner‑subordinate)  [identityCore surfaces]
-//   • Context Pressure / Cost / Budget            [contextArtery]
-//   • Context Artery Snapshot                     [contextArtery]
-//   • Organism‑Wide Artery Fusion                 [organismArtery v24++]
-//   • DualBand‑Aware (binary + symbolic hints)    [dualBand + binaryVitals]
-//   • Chunk‑Aware Context Packets                 [context-engine-* packets]
-//   • Multi‑instance, multi‑band, multi‑shard     [pure, stateless core]
-//   • Zero mutation, zero randomness, zero drift
+//  PULSE OS v30‑IMMORTAL++ — CONTEXT ENGINE
+//  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS. TOUCH‑SCOPED META.
 // ============================================================================
 
-/*
-AI_EXPERIENCE_META = {
-  identity: "aiContextEngine",
-  version: "v24.0-Immortal-Advantage++",
-  layer: "ai_core",
-  role: "context_kernel",
-  lineage: "aiContextEngine-v12 → v14-Immortal → v16-Immortal-Advantage++ → v24.0-Immortal-Advantage++",
-
-  evo: {
-    contextKernel: true,
-    organismFusion: true,
-    dualBand: true,
-    symbolicPrimary: true,
-    binaryAware: true,
-    deterministic: true,
-    driftProof: true,
-    pureCompute: true,
-    zeroNetwork: true,
-    zeroFilesystem: true,
-    zeroMutationOfInput: true
-  },
-
-  contract: {
-    always: ["aiCognitiveFrame", "aiCortex", "aiBrainstem", "aiBoundariesEngine", "aiGovernorAdapter"],
-    never: ["safeRoute", "fetchViaCNS", "directInternetAccess"]
-  }
-}
-*/
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const ContextEngineMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
-
-
-// ============================================================================
-//  PACKET EMITTER — deterministic, context-engine scoped
+//  PACKET EMITTER — v30 IMMORTAL++ (PulseTouch‑scoped, binary band)
 // ============================================================================
 function emitContextEnginePacket(type, payload) {
+  const touch =
+    (typeof window !== "undefined" && window.__PULSE_TOUCH__) || {};
+
   return Object.freeze({
-    meta: ContextEngineMeta,
+    meta: {
+      id: "pulse-touch-context-frame",
+      version: touch.version || "v0",
+      epoch: touch.epoch || 0,          // IMMORTAL++: no Date.now()
+      layer: "context-frame",
+      role: "context-organ",
+      band: "binary"
+    },
     packetType: `context-engine-${type}`,
-    timestamp: Date.now(),
-    epoch: ContextEngineMeta.evo.epoch,
-    layer: ContextEngineMeta.layer,
-    role: ContextEngineMeta.role,
-    identity: ContextEngineMeta.identity,
-    owner: "Aldwyn",
-    subordinate: true,
+    timestamp: 0,                       // IMMORTAL++: no wall-clock
     ...payload
   });
 }
@@ -105,7 +28,6 @@ function emitContextEnginePacket(type, payload) {
 // ============================================================================
 //  READ-ONLY VITALS HELPERS (v16++ / v24++)
 // ============================================================================
-
 function safe(obj, path, fallback = null) {
   try {
     return path.split(".").reduce((o, k) => (o ? o[k] : null), obj) ?? fallback;
@@ -181,7 +103,9 @@ function readOrganismArteryFromDualBand(dualBand) {
 
 function readAnatomyArteryFromBrainstem(brainstem) {
   try {
-    return brainstem?.organs?.anatomy?.anatomyArtery?.({ binaryVitals: brainstem.binaryVitals || {} }) || null;
+    return brainstem?.organs?.anatomy?.anatomyArtery?.({
+      binaryVitals: brainstem.binaryVitals || {}
+    }) || null;
   } catch {
     return null;
   }
@@ -218,18 +142,23 @@ function fuseOrganismArtery({
   const boundaryPressure = boundaryVitals.pressure ?? 0;
 
   const sources = [contextArtery, anatomyArtery, dualBandArtery].filter(Boolean);
+  const basePressure = contextArtery?.pressure ?? 0;
+
   const avgPressure =
     sources.length > 0
       ? Math.min(
           1,
           sources.reduce((acc, a) => acc + (a.pressure ?? 0), 0) / sources.length
         )
-      : contextArtery.pressure;
+      : basePressure;
 
-  const fusedPressure = Math.min(1, (avgPressure * 0.8) + (boundaryPressure * 0.2));
+  const fusedPressure = Math.min(
+    1,
+    avgPressure * 0.8 + boundaryPressure * 0.2
+  );
 
   return Object.freeze({
-    type: "organism-artery-v24",
+    type: "organism-artery-v30",
     context: contextArtery || null,
     anatomy: anatomyArtery || null,
     dualBand: dualBandArtery || null,
@@ -242,7 +171,7 @@ function fuseOrganismArtery({
 }
 
 // ============================================================================
-//  CORE IMPLEMENTATION — v16‑IMMORTAL‑ADVANTAGE++ (LOGIC PRESERVED) + v24++ FUSION
+//  CORE IMPLEMENTATION — v16 LOGIC + v24 FUSION + v30 TOUCH META
 // ============================================================================
 export class AiContextEngine {
   constructor({ safetyFrame = null, experienceFrame = null } = {}) {
@@ -334,12 +263,11 @@ export class AiContextEngine {
     });
 
     const frame = Object.freeze({
-      meta: ContextEngineMeta,
-
+      // v30: no hardcoded owner identity, no supremacy flags
       owner: Object.freeze({
-        name: "Aldwyn",
-        supremacy: true,
-        aiSubordinate: true
+        name: null,
+        supremacy: false,
+        aiSubordinate: false
       }),
 
       user: Object.freeze({
@@ -423,7 +351,7 @@ export class AiContextEngine {
 
       contextArtery,
 
-      // v24++: organism‑wide artery snapshot (new, additive)
+      // v24++: organism‑wide artery snapshot (additive)
       organismArtery,
 
       organs: Object.freeze({
@@ -438,7 +366,7 @@ export class AiContextEngine {
 }
 
 // ============================================================================
-//  PUBLIC API — v24.0‑IMMORTAL‑ADVANTAGE++
+//  PUBLIC API — v30‑IMMORTAL++
 // ============================================================================
 export function createContextEngine(config = {}) {
   const core = new AiContextEngine({
@@ -447,7 +375,6 @@ export function createContextEngine(config = {}) {
   });
 
   return Object.freeze({
-    meta: ContextEngineMeta,
     buildContextFrame(payload) {
       const frame = core.buildContextFrame(payload);
       return emitContextEnginePacket("context:packet", frame);
@@ -462,14 +389,8 @@ export default createContextEngine;
 // ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    ContextEngineMeta,
     AiContextEngine,
     createContextEngine,
-    default: createContextEngine,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    default: createContextEngine
   };
 }

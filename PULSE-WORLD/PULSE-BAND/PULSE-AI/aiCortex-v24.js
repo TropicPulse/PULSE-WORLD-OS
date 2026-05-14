@@ -1,71 +1,20 @@
-/**
- * aiCortex-v24.0-IMMORTAL-ADV — Pulse OS v24.0‑IMMORTAL-ADV Organ
- * --------------------------------------------------------------
- * CANONICAL ROLE:
- *   Dual‑Band Executive Cortex of the organism (subordinate to Aldwyn).
- *
- *   Dual‑band model:
- *     - Binary‑primary (deterministic, pattern, metrics, arteries)
- *     - Symbolic‑augment (persona, boundaries, intent, social/earn context)
- *
- *   Provides:
- *     - long-term reasoning
- *     - pattern recognition
- *     - decision-making
- *     - predictive modeling (lightweight, deterministic)
- *     - binary cognition artery metrics (throughput, pressure, cost, budget)
- *     - symbolic cognition artery metrics (intent clarity, semantic load, context depth)
- *     - dual-band cognition artery snapshots for NodeAdmin/Overmind
- *     - earn/heartbeat/organism‑vitals awareness (read‑only)
- *
- *   Ownership:
- *     • Explicitly subordinate to Aldwyn (canonical owner).
- */
-
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  PULSE OS v30‑IMMORTAL++ — AI CORTEX ORGAN
+//  Dual‑Band Executive Cortex (binary‑primary, symbolic‑augment)
+//  PURE CORTEX. ZERO OWNER IDENTITY. ZERO WALL‑CLOCK. ZERO CONSOLE.
 // ============================================================================
-export const CortexMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
-
 
 // ---------------------------------------------------------
 //  GLOBAL CORTEX ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)
 // ---------------------------------------------------------
 
 const _globalCortexArteryRegistry = new Map();
+
 /**
  * Registry key: `${id}#${instanceIndex}`
  */
 function _registryKey(id, instanceIndex) {
-  return `${id || CortexMeta.identity}#${instanceIndex}`;
+  return `${id || "ai-dualband-cortex-v30"}#${instanceIndex}`;
 }
 
 export function getGlobalCortexArteries() {
@@ -77,11 +26,11 @@ export function getGlobalCortexArteries() {
 }
 
 // ---------------------------------------------------------
-//  CORTEX PREWARM ENGINE — v24.0‑IMMORTAL‑ADV (logic from v16)
+//  CORTEX PREWARM ENGINE — v30 IMMORTAL++ (logic preserved, identity-free)
 // ---------------------------------------------------------
 export function prewarmAICortex(config = {}) {
   try {
-    const { encoder, trace } = config;
+    const { encoder } = config;
 
     const binaryMetrics = {
       throughput: 1,
@@ -103,13 +52,12 @@ export function prewarmAICortex(config = {}) {
       contextDepth: 0.3,
       persona: "none",
       boundaryMode: "safe",
-      owner: "Aldwyn",
       mode: "prewarm"
     };
 
     const fused = {
       type: "binary-cortex-decision",
-      timestamp: 0,
+      timestamp: 0, // IMMORTAL++: no wall-clock
       pattern: "prewarm-pattern",
       decision: "prewarm-decision",
       binary: binaryMetrics,
@@ -118,8 +66,7 @@ export function prewarmAICortex(config = {}) {
         primary: "binary",
         secondary: "symbolic",
         fusion: "binary-primary-symbolic-augment"
-      },
-      owner: "Aldwyn"
+      }
     };
 
     if (encoder?.encode) {
@@ -127,24 +74,19 @@ export function prewarmAICortex(config = {}) {
       encoder.decode?.(bits, "string");
     }
 
-    if (trace) {
-      console.log("[AICortex Prewarm v24] complete");
-    }
-
     return true;
-  } catch (err) {
-    console.error("[AICortex Prewarm v24] Failed:", err);
+  } catch {
     return false;
   }
 }
 
 // ---------------------------------------------------------
-//  CORTEX CLASS — v16.0‑IMMORTAL‑ADV LOGIC, v24 META
+//  CORTEX CLASS — v16 LOGIC, v24 METRICS, v30 IDENTITY REMOVAL
 // ---------------------------------------------------------
 
 export class AIDualBandCortex {
   constructor(config = {}) {
-    this.id = config.id || CortexMeta.identity || "ai-dualband-cortex-v24";
+    this.id = config.id || "ai-dualband-cortex-v30";
 
     // Binary / organism stack
     this.encoder = config.encoder;
@@ -178,7 +120,7 @@ export class AIDualBandCortex {
     this.trace = !!config.trace;
 
     if (!this.encoder) {
-      throw new Error("AIDualBandCortex v24 requires aiBinaryAgent encoder");
+      throw new Error("AIDualBandCortex v30 requires aiBinaryAgent encoder");
     }
 
     this.patternHistory = [];
@@ -205,7 +147,7 @@ export class AIDualBandCortex {
 
   // ---------------------------------------------------------
   //  BINARY COGNITION ARTERY METRICS (v16 tuned)
-// ---------------------------------------------------------
+  // ---------------------------------------------------------
   _computeCognitionThroughput(patternComplexity, snapshotBits, earnPressure = 0) {
     const sizeFactor = Math.min(1, snapshotBits / 65536);
     const earnFactor = Math.min(1, earnPressure);
@@ -261,7 +203,7 @@ export class AIDualBandCortex {
 
   // ---------------------------------------------------------
   //  AUX VITALS — heartbeat / earn / governor (read-only)
-// ---------------------------------------------------------
+  // ---------------------------------------------------------
   _readHeartbeatVitals() {
     try {
       if (!this.heartbeat || typeof this.heartbeat.snapshot !== "function") {
@@ -300,7 +242,7 @@ export class AIDualBandCortex {
 
   // ---------------------------------------------------------
   //  PATTERN RECOGNITION (BINARY PRIMARY)
-// ---------------------------------------------------------
+  // ---------------------------------------------------------
   _detectPattern(bits) {
     const motif = bits.slice(0, 32); // richer motif for v16
 
@@ -349,7 +291,7 @@ export class AIDualBandCortex {
 
   // ---------------------------------------------------------
   //  SYMBOLIC COGNITION (AUGMENT)
-// ---------------------------------------------------------
+  // ---------------------------------------------------------
   _makeSymbolicDecision(pattern, bits, routerPacket = null) {
     if (!routerPacket) {
       this._trace("decision:symbolic", { reason: "no-router-packet", skipped: true });
@@ -360,8 +302,7 @@ export class AIDualBandCortex {
         semanticLoad: 0,
         contextDepth: 0,
         persona: null,
-        boundaryMode: null,
-        owner: "Aldwyn"
+        boundaryMode: null
       };
     }
 
@@ -417,14 +358,13 @@ export class AIDualBandCortex {
       semanticLoad,
       contextDepth,
       persona: personaName,
-      boundaryMode,
-      owner: "Aldwyn"
+      boundaryMode
     };
   }
 
   // ---------------------------------------------------------
   //  DUAL‑BAND FUSION (BINARY‑PRIMARY, SYMBOLIC‑AUGMENT)
-// ---------------------------------------------------------
+  // ---------------------------------------------------------
   _fuseDecisions(binaryDecision, symbolic) {
     const symbolicDecision = symbolic.decision;
     const confidence = symbolic.confidence || 0;
@@ -507,8 +447,7 @@ export class AIDualBandCortex {
       semanticLoad: 0,
       contextDepth: 0,
       persona: null,
-      boundaryMode: null,
-      owner: "Aldwyn"
+      boundaryMode: null
     };
 
     const band = {
@@ -526,8 +465,7 @@ export class AIDualBandCortex {
       instanceIndex: this.instanceIndex,
       instanceCount: AIDualBandCortex.getInstanceCount(),
       id: this.id,
-      timestamp: Date.now(),
-      owner: "Aldwyn"
+      timestamp: 0 // IMMORTAL++: no wall-clock
     });
 
     const payload = {
@@ -540,8 +478,7 @@ export class AIDualBandCortex {
       band,
       binaryDecision: options.binaryDecision || decision,
       symbolicDecision: symbolic.decision || null,
-      artery,
-      owner: "Aldwyn"
+      artery
     };
 
     const json = JSON.stringify(payload);
@@ -558,7 +495,7 @@ export class AIDualBandCortex {
 
     if (this.overmindReporter) {
       try {
-        this.overmindReporter(artery, packet, CortexMeta);
+        this.overmindReporter(artery, packet);
       } catch (err) {
         this._trace("overmind:reporter:error", { error: String(err) });
       }
@@ -566,7 +503,7 @@ export class AIDualBandCortex {
 
     if (this.nodeAdminReporter) {
       try {
-        this.nodeAdminReporter(artery, packet, CortexMeta);
+        this.nodeAdminReporter(artery, packet);
       } catch (err) {
         this._trace("nodeAdmin:reporter:error", { error: String(err) });
       }
@@ -574,8 +511,7 @@ export class AIDualBandCortex {
 
     this._trace("cortex:packet", {
       bits: packet.bitLength,
-      band,
-      owner: "Aldwyn"
+      band
     });
 
     return packet;
@@ -583,7 +519,7 @@ export class AIDualBandCortex {
 
   // ---------------------------------------------------------
   //  EXECUTIVE PROCESSING (DUAL‑BAND)
-// ---------------------------------------------------------
+  // ---------------------------------------------------------
   async process(bits, routerPacket = null) {
     const pattern = this._detectPattern(bits);
 
@@ -627,12 +563,9 @@ export class AIDualBandCortex {
   // ---------------------------------------------------------
   //  INTERNAL HELPERS
   // ---------------------------------------------------------
-  _trace(event, payload) {
+  _trace(_event, _payload) {
     if (!this.trace) return;
-    console.log(
-      `[${this.id}#${this.instanceIndex}@v24] ${event}`,
-      payload
-    );
+    // v30 IMMORTAL++: no console side-effects; tracing is a no-op hook.
   }
 }
 
@@ -645,15 +578,9 @@ export function createCortex(config) {
 // ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    CortexMeta,
     AIDualBandCortex,
     createCortex,
     getGlobalCortexArteries,
-    prewarmAICortex,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    prewarmAICortex
   };
 }

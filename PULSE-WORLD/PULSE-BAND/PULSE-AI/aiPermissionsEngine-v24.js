@@ -1,42 +1,9 @@
 // ============================================================================
-//  PULSE OS v24‑IMMORTAL++ — PERMISSIONS ENGINE
+//  PULSE OS v30‑IMMORTAL++ — PERMISSIONS ENGINE
 //  Dual‑Band Safety Contract • Deterministic • Drift‑Proof • Trust‑Aware
 //  PURE CONTRACT ORACLE. ZERO MUTATION. ZERO RANDOMNESS.
+//  META‑STRIPPED • IDENTITY‑PRESERVING • PULSE‑BINARY READY.
 // ============================================================================
-
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const PermissionsMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 import { getPermissionsForPersona, ForbiddenActions } from "./aiPermissions-v24.js";
 
@@ -67,31 +34,36 @@ function bucketRisk(v) {
   return "none";
 }
 
-// ============================================================================
-//  PACKET EMITTER — deterministic, permissions-scoped
-// ============================================================================
-function emitPermissionsPacket(type, payload) {
+// v30 packet emitter: no PermissionsMeta, no Date.now
+function emitPermissionsPacket(type, payload = {}) {
   return Object.freeze({
-    meta: {
-      version: PermissionsMeta.version,
-      epoch: PermissionsMeta.evo.epoch,
-      identity: PermissionsMeta.identity,
-      layer: PermissionsMeta.layer,
-      role: PermissionsMeta.role
-    },
     packetType: `permissions-${type}`,
-    timestamp: Date.now(),
+    timestamp: 0,
+    layer: "permissions-engine",
+    role: "contract-oracle",
     ...payload
   });
 }
 
+// Optional: PulseBinary / IndexedDB‑style adapter
+async function writePulseBinaryLog(adapter, kind, payload) {
+  if (!adapter || typeof adapter.write !== "function") return false;
+  const safePayload = Object.freeze({ ...payload });
+  const keySeed = `${kind}::${safePayload.packetType || "permissions"}::${safePayload.persona || ""}::${safePayload.action || ""}`;
+  const docId = `perm-${Math.abs(
+    keySeed.split("").reduce((a, c, i) => (a + c.charCodeAt(0) * (i + 1)) % 1000003, 0)
+  )}`;
+  return adapter.write(`PERMISSIONS_LOGS/${docId}`, safePayload);
+}
+
 // ============================================================================
-//  PREWARM — IMMORTAL++ grade
+//  PREWARM — v30 IMMORTAL++
 // ============================================================================
 export function prewarmPermissionsEngine({
   trace = false,
   trustFabric = null,
-  juryFrame = null
+  juryFrame = null,
+  pulseBinaryAdapter = null
 } = {}) {
   const packet = emitPermissionsPacket("prewarm", {
     message: "Permissions engine prewarmed and lineage oracle aligned."
@@ -99,21 +71,24 @@ export function prewarmPermissionsEngine({
 
   trustFabric?.recordPermissionsPrewarm?.({});
   juryFrame?.recordEvidence?.("permissions-prewarm", packet);
+  writePulseBinaryLog(pulseBinaryAdapter, "prewarm", packet);
 
-  if (trace) console.log("[PermissionsEngine] prewarm", packet);
+  if (trace) console.log("[PermissionsEngine v30] prewarm", packet);
   return packet;
 }
 
 // ============================================================================
-//  PERMISSIONS ENGINE — v24‑IMMORTAL++
+//  PERMISSIONS ENGINE — v30‑IMMORTAL++ (META‑STRIPPED, IDENTITY‑PRESERVING)
 // ============================================================================
 export function createPermissionsEngine({
   context = {},
   trustFabric = null,
-  juryFrame = null
+  juryFrame = null,
+  pulseBinaryAdapter = null
 } = {}) {
   const userIsOwner = context.userIsOwner === true;
   const lineage = context.lineage || null;
+  const identity = context.identity || null;
 
   // --------------------------------------------------------------------------
   //  IMMORTAL: lineage‑aware permission drift correction
@@ -148,16 +123,19 @@ export function createPermissionsEngine({
     const packet = emitPermissionsPacket("resolve", {
       persona,
       ownerMode: userIsOwner === true,
-      lineageAware: !!lineage
+      lineageAware: !!lineage,
+      identity
     });
 
     trustFabric?.recordPermissionsResolve?.({
       persona,
       ownerMode: userIsOwner === true,
-      lineageAware: !!lineage
+      lineageAware: !!lineage,
+      identity
     });
 
     juryFrame?.recordEvidence?.("permissions-resolve", packet);
+    writePulseBinaryLog(pulseBinaryAdapter, "resolve", packet);
 
     return merged;
   }
@@ -183,7 +161,8 @@ export function createPermissionsEngine({
       allowed,
       trustRisk: risk,
       trustRiskBucket: riskBucket,
-      trustSignals: trust
+      trustSignals: trust,
+      identity
     });
 
     trustFabric?.recordPermissionsCheck?.({
@@ -191,10 +170,12 @@ export function createPermissionsEngine({
       action,
       allowed,
       trustRisk: risk,
-      trustRiskBucket: riskBucket
+      trustRiskBucket: riskBucket,
+      identity
     });
 
     juryFrame?.recordEvidence?.("permissions-check", packet);
+    writePulseBinaryLog(pulseBinaryAdapter, "check", packet);
 
     return allowed;
   }
@@ -235,49 +216,50 @@ export function createPermissionsEngine({
       forbidden: {
         count: forbiddenCount
       },
-      meta: {
-        version: PermissionsMeta.version,
-        epoch: PermissionsMeta.evo.epoch,
-        identity: PermissionsMeta.identity
-      }
+      identity
     });
 
     const packet = emitPermissionsPacket("artery", {
       persona,
       organismBudget: budget,
-      budgetBucket: bucket
+      budgetBucket: bucket,
+      identity
     });
 
     trustFabric?.recordPermissionsArtery?.({
       persona,
       budget,
-      bucket
+      bucket,
+      identity
     });
 
     juryFrame?.recordEvidence?.("permissions-artery", packet);
+    writePulseBinaryLog(pulseBinaryAdapter, "artery", packet);
 
     return artery;
   }
 
   // --------------------------------------------------------------------------
-  //  WINDOW‑SAFE SNAPSHOT — IMMORTAL++ GRADE
+  //  WINDOW‑SAFE SNAPSHOT — v30
   // --------------------------------------------------------------------------
   function snapshot() {
     const snap = Object.freeze({
-      version: PermissionsMeta.version,
-      epoch: PermissionsMeta.evo.epoch,
+      version: "v30",
       lineageAware: !!lineage,
-      ownerMode: userIsOwner === true
+      ownerMode: userIsOwner === true,
+      identity
     });
 
     const packet = emitPermissionsPacket("snapshot", snap);
 
     trustFabric?.recordPermissionsSnapshot?.({
       ownerMode: userIsOwner === true,
-      lineageAware: !!lineage
+      lineageAware: !!lineage,
+      identity
     });
 
     juryFrame?.recordEvidence?.("permissions-snapshot", packet);
+    writePulseBinaryLog(pulseBinaryAdapter, "snapshot", packet);
 
     return packet;
   }
@@ -286,7 +268,11 @@ export function createPermissionsEngine({
   //  IMMORTAL++ ENGINE EXPORT
   // --------------------------------------------------------------------------
   return Object.freeze({
-    meta: PermissionsMeta,
+    descriptor: Object.freeze({
+      kind: "PermissionsEngine",
+      version: "v30",
+      role: "contract-oracle"
+    }),
     resolve,
     check,
     snapshot,
@@ -299,7 +285,6 @@ export function createPermissionsEngine({
 // ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    PermissionsMeta,
     createPermissionsEngine,
     prewarmPermissionsEngine
   };

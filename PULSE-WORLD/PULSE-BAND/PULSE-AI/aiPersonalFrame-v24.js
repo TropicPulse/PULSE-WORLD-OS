@@ -1,49 +1,38 @@
 // ============================================================================
-//  PULSE OS v24‑IMMORTAL++ — PERSONAL FRAME ORGAN
+//  PULSE OS v30‑IMMORTAL++ — PERSONAL FRAME ORGAN
 //  User Preferences • Tone • Abstraction • Verbosity • Persona Routing
 //  PURE READ-ONLY TO BINARY. GUARDED WRITES TO PERSONAL MEMORY LANES.
 //  DUALBAND • TRUST-AWARE • ARTERY-AWARE • WINDOW-SAFE • DETERMINISTIC
+//  META‑STRIPPED • IDENTITY‑PRESERVING • PULSE‑BINARY READY.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  PACKET EMITTER — v30 deterministic, personal-frame-scoped (no PersonalFrameMeta)
 // ============================================================================
-export const PersonalFrameMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  PACKET EMITTER — deterministic, personal-frame-scoped
-// ============================================================================
-function emitPersonalFramePacket(type, payload) {
-  const now = Date.now();
+function emitPersonalFramePacket(type, payload = {}) {
   return Object.freeze({
-    meta: PersonalFrameMeta,
     packetType: `personal-frame-${type}`,
-    packetId: `personal-frame-${type}-${now}`,
-    timestamp: now,
-    epoch: PersonalFrameMeta.evo.epoch,
+    timestamp: 0,
+    layer: "personal-frame",
+    role: "preferences",
     ...payload
   });
 }
 
+// Optional: PulseBinary / IndexedDB‑style adapter
+async function writePulseBinaryLog(adapter, kind, payload) {
+  if (!adapter || typeof adapter.write !== "function") return false;
+  const safePayload = Object.freeze({ ...payload });
+  const keySeed = `${kind}::${safePayload.packetType || "personal-frame"}::${safePayload.userId || ""}`;
+  const docId = `pf-${Math.abs(
+    keySeed.split("").reduce((a, c, i) => (a + c.charCodeAt(0) * (i + 1)) % 1000003, 0)
+  )}`;
+  return adapter.write(`PERSONAL_FRAME_LOGS/${docId}`, safePayload);
+}
+
 // ============================================================================
-//  ARTERY SNAPSHOT — v24 IMMORTAL++
+//  ARTERY SNAPSHOT — v30 IMMORTAL++ (meta stripped, identity preserved)
 // ============================================================================
 function buildPersonalArterySnapshot({ context = {}, profile = {} } = {}) {
   return Object.freeze({
@@ -55,23 +44,19 @@ function buildPersonalArterySnapshot({ context = {}, profile = {} } = {}) {
     abstraction: profile.abstraction,
     verbosity: profile.verbosity,
     presenceTier: context.presenceTier || "idle",
-    band: context.band || "symbolic",
-    meta: {
-      version: PersonalFrameMeta.version,
-      epoch: PersonalFrameMeta.evo.epoch,
-      identity: PersonalFrameMeta.identity
-    }
+    band: context.band || "symbolic"
   });
 }
 
 // ============================================================================
-//  PREWARM — IMMORTAL++
+//  PREWARM — v30 IMMORTAL++
 // ============================================================================
 export function prewarmPersonalFrame({
   trace = false,
   context = {},
   trustFabric = null,
-  juryFrame = null
+  juryFrame = null,
+  pulseBinaryAdapter = null
 } = {}) {
   const artery = buildPersonalArterySnapshot({
     context,
@@ -89,17 +74,19 @@ export function prewarmPersonalFrame({
 
   trustFabric?.recordPersonalFramePrewarm?.({ artery });
   juryFrame?.recordEvidence?.("personal-frame-prewarm", packet);
+  writePulseBinaryLog(pulseBinaryAdapter, "prewarm", packet);
 
-  if (trace) console.log("[PersonalFrame] prewarm", packet);
+  if (trace) console.log("[PersonalFrame v30] prewarm", packet);
   return packet;
 }
 
 // ============================================================================
-//  PERSONAL FRAME ORGAN — v24‑IMMORTAL++
+//  PERSONAL FRAME ORGAN — v30‑IMMORTAL++
 // ============================================================================
 export class AiPersonalFrame {
-  constructor({ memoryAPI, defaultProfile = {} } = {}) {
+  constructor({ memoryAPI, defaultProfile = {}, pulseBinaryAdapter = null } = {}) {
     this.memoryAPI = memoryAPI || null;
+    this.pulseBinaryAdapter = pulseBinaryAdapter || null;
 
     this.defaultProfile = Object.freeze({
       tone: "neutral",
@@ -151,11 +138,12 @@ export class AiPersonalFrame {
     this.personalArtery.lastAbstraction = profile.abstraction;
     this.personalArtery.lastVerbosity = profile.verbosity;
 
-    emitPersonalFramePacket("load-profile", {
+    const packet = emitPersonalFramePacket("load-profile", {
       userId,
       profile
     });
 
+    writePulseBinaryLog(this.pulseBinaryAdapter, "load-profile", packet);
     return profile;
   }
 
@@ -175,11 +163,12 @@ export class AiPersonalFrame {
     this.personalArtery.lastAbstraction = next.abstraction;
     this.personalArtery.lastVerbosity = next.verbosity;
 
-    emitPersonalFramePacket("update-profile", {
+    const packet = emitPersonalFramePacket("update-profile", {
       userId,
       profile: next
     });
 
+    writePulseBinaryLog(this.pulseBinaryAdapter, "update-profile", packet);
     return Object.freeze(next);
   }
 
@@ -236,13 +225,15 @@ export class AiPersonalFrame {
 
     const artery = buildPersonalArterySnapshot({ context, profile });
 
-    emitPersonalFramePacket("shape-output", {
+    const packet = emitPersonalFramePacket("shape-output", {
       userId: context?.userId || null,
       profile,
       presenceTier,
       band,
       artery
     });
+
+    writePulseBinaryLog(this.pulseBinaryAdapter, "shape-output", packet);
 
     return { text: result, profile, artery };
   }
@@ -267,13 +258,17 @@ export class AiPersonalFrame {
 }
 
 // ============================================================================
-//  PUBLIC API — Create Personal Frame Organ
+//  PUBLIC API — Create Personal Frame Organ (v30)
 // ============================================================================
 export function createPersonalFrameOrgan(config = {}) {
   const core = new AiPersonalFrame(config);
 
   return Object.freeze({
-    meta: PersonalFrameMeta,
+    descriptor: Object.freeze({
+      kind: "PersonalFrameOrgan",
+      version: "v30",
+      role: "preferences"
+    }),
     async loadProfile(context) {
       return core.loadProfile(context);
     },
@@ -291,7 +286,6 @@ export function createPersonalFrameOrgan(config = {}) {
 
 if (typeof module !== "undefined") {
   module.exports = {
-    PersonalFrameMeta,
     AiPersonalFrame,
     createPersonalFrameOrgan,
     prewarmPersonalFrame

@@ -1,35 +1,13 @@
 // ============================================================================
-//  aiEnvironment-v24.js — Pulse OS v24++‑IMMORTAL‑ADVANTAGE
-//  World State • Internal Flags • Drift Awareness • Dual‑Band Logging
-//  PURE READ‑ONLY. ZERO MUTATION. ZERO RANDOMNESS.
-//  OWNER‑SUBORDINATE: ALWAYS BELOW ALDWYN.
+//  PULSE OS v30‑IMMORTAL++ — ENVIRONMENT ORGAN
+//  Event‑Based Environment Surface • ShortBand / LongBand • DualBand‑Aware
+//  PURE ENVIRONMENT. ZERO TIME. ZERO IDENTITY. ZERO META.
 // ============================================================================
-
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 import { getOrganismSnapshot } from "./aiDeps-v24.js";
-// ============================================================================
-//  META BLOCK — v24++ IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const EnvironmentMeta = Identity.OrganMeta;
 
 // ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24++ IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  PRESSURE HELPERS — dualband‑aware
+//  HELPERS — PRESSURE + HASH + IDENTITY STRIP
 // ============================================================================
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
@@ -49,36 +27,15 @@ function bucketPressure(v) {
   return "none";
 }
 
-// ============================================================================
-//  PACKET EMITTER — deterministic, environment‑scoped
-// ============================================================================
-function emitEnvironmentPacket(type, payload = {}) {
-  return Object.freeze({
-    meta: EnvironmentMeta,
-    packetType: `environment-${type}`,
-    timestamp: Date.now(),
-    epoch: EnvironmentMeta.evo.epoch,
-    layer: EnvironmentMeta.layer,
-    role: EnvironmentMeta.role,
-    identity: EnvironmentMeta.identity,
-    owner: "Aldwyn",
-    subordinate: true,
-    ...payload
-  });
+function computeHash(str) {
+  const s = String(str || "");
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 1000003;
+  }
+  return `h${h}`;
 }
 
-// ============================================================================
-//  CACHES — Hourly + Daily (Presence‑grade, IMMORTAL‑SAFE)
-// ============================================================================
-const hourlyCache = { data: null, timestamp: 0 };
-const dailyCache = { data: null, timestamp: 0 };
-
-const ONE_HOUR = 60 * 60 * 1000;
-const ONE_DAY = 24 * ONE_HOUR;
-
-// ============================================================================
-//  IDENTITY‑SAFE CLONING v24++
-// ============================================================================
 function stripIdentity(record) {
   if (!record || typeof record !== "object") return record;
 
@@ -91,241 +48,270 @@ function stripIdentity(record) {
   delete clone.sessionRoot;
   delete clone.deviceFingerprint;
 
-  // v24++ hardened
   delete clone.email;
   delete clone.phone;
   delete clone.ip;
   delete clone.session;
   delete clone.token;
+  delete clone.auth;
   delete clone.browserFingerprint;
 
   return clone;
 }
 
 // ============================================================================
-//  ENVIRONMENT ORGAN — v24++ IMMORTAL‑ADVANTAGE
+//  PACKET EMITTER — v30 IMMORTAL++ (no meta, no time)
+// ============================================================================
+function emitEnvironmentPacket(type, payload = {}) {
+  return Object.freeze({
+    packetType: `environment-${type}`,
+    timestamp: 0,
+    layer: "environment-organ",
+    role: "environment",
+    band: "symbolic",
+    ...payload
+  });
+}
+
+// ============================================================================
+//  EVENT‑BASED CACHE — shortBand / longBand (no time, hash‑driven)
+// ============================================================================
+const environmentCache = {
+  shortBand: { data: null, signature: null },
+  longBand: { data: null, signature: null }
+};
+
+async function fetchCollection(db, collection, options = {}) {
+  const rows = await db.getCollection(collection, options);
+  return rows.map(stripIdentity);
+}
+
+// shortBand = short‑horizon environment (ex‑hourly)
+async function rebuildShortBandIfNeeded(db, context) {
+  const [weather, heatIndex, waves, storms] = await Promise.all([
+    fetchCollection(db, "weather", { limit: 1 }),
+    fetchCollection(db, "heatIndex", { limit: 1 }),
+    fetchCollection(db, "waves", { limit: 1 }),
+    fetchCollection(db, "storms", { limit: 1 })
+  ]);
+
+  const data = Object.freeze({
+    weather: weather[0] || null,
+    heatIndex: heatIndex[0] || null,
+    waves: waves[0] || null,
+    storms: storms[0] || null
+  });
+
+  const signature = computeHash(JSON.stringify(data));
+
+  if (environmentCache.shortBand.signature !== signature) {
+    context.logStep?.("env:shortBand-rebuild");
+    environmentCache.shortBand = { data, signature };
+  } else {
+    context.logStep?.("env:shortBand-stable");
+  }
+
+  return environmentCache.shortBand.data;
+}
+
+// longBand = long‑horizon environment (ex‑daily)
+async function rebuildLongBandIfNeeded(db, context) {
+  const [sargassum, moon, wildlife, seasons, holidays] = await Promise.all([
+    fetchCollection(db, "sargassum", { limit: 1 }),
+    fetchCollection(db, "moon", { limit: 1 }),
+    fetchCollection(db, "wildlife", { limit: 1 }),
+    fetchCollection(db, "seasons", { limit: 1 }),
+    fetchCollection(db, "holidays", { limit: 1 })
+  ]);
+
+  const data = Object.freeze({
+    sargassum: sargassum[0] || null,
+    moon: moon[0] || null,
+    wildlife: wildlife[0] || null,
+    seasons: seasons[0] || null,
+    holidays: holidays[0] || null
+  });
+
+  const signature = computeHash(JSON.stringify(data));
+
+  if (environmentCache.longBand.signature !== signature) {
+    context.logStep?.("env:longBand-rebuild");
+    environmentCache.longBand = { data, signature };
+  } else {
+    context.logStep?.("env:longBand-stable");
+  }
+
+  return environmentCache.longBand.data;
+}
+
+// ============================================================================
+//  ANOMALY DETECTION — deterministic, drift‑proof
+// ============================================================================
+function detectJumps(arr, label, context) {
+  const anomalies = [];
+  if (!Array.isArray(arr)) return anomalies;
+
+  for (let i = 1; i < arr.length; i++) {
+    const prev = arr[i - 1];
+    const curr = arr[i];
+    if (!prev || !curr) continue;
+    if (typeof prev.value !== "number" || typeof curr.value !== "number") continue;
+
+    const base = prev.value === 0 ? 1 : prev.value;
+    const diff = Math.abs(curr.value - prev.value);
+    const pct = (diff / base) * 100;
+
+    if (pct >= 25) {
+      anomalies.push({
+        type: `${label}_jump`,
+        deviation: pct,
+        from: prev.value,
+        to: curr.value
+      });
+
+      context.logStep?.(`env:anomaly ${label} ${pct.toFixed(1)}%`);
+    }
+  }
+
+  return anomalies;
+}
+
+// ============================================================================
+//  ENVIRONMENT ARTERY — symbolic‑only, dualband‑aware
+// ============================================================================
+function environmentArtery({ binaryVitals = {} } = {}) {
+  const pressure = extractBinaryPressure(binaryVitals);
+  const localPressure = 0.2;
+
+  const combined = Math.max(
+    0,
+    Math.min(1, 0.6 * localPressure + 0.4 * pressure)
+  );
+
+  return emitEnvironmentPacket("artery", {
+    organism: {
+      pressure: combined,
+      pressureBucket: bucketPressure(combined)
+    }
+  });
+}
+
+// ============================================================================
+//  PUBLIC API — v30 IMMORTAL++ Environment Organ
 // ============================================================================
 export function createEnvironmentAPI(db, evolutionAPI, dualBand = null) {
+  // ------------------------------------------------------------------------
+  // PUBLIC ENVIRONMENT — tourist‑safe, event‑based cache
+  // ------------------------------------------------------------------------
+  async function getPublicEnvironment(context = {}) {
+    context.logStep?.("env:public");
 
-  async function fetch(collection, options = {}) {
-    const rows = await db.getCollection(collection, options);
-    return rows.map(stripIdentity);
+    const organismSnapshot = getOrganismSnapshot(dualBand);
+    const shortBand = await rebuildShortBandIfNeeded(db, context);
+    const longBand = await rebuildLongBandIfNeeded(db, context);
+
+    return emitEnvironmentPacket("public", {
+      shortBand,
+      longBand,
+      organismSnapshot
+    });
   }
 
-  // --------------------------------------------------------------------------
-  // HOURLY CACHE BUILDER (IMMORTAL‑SAFE)
-// --------------------------------------------------------------------------
-  async function buildHourly(context) {
-    const now = Date.now();
+  // ------------------------------------------------------------------------
+  // INTERNAL ENVIRONMENT — owner‑only, richer fields
+  // ------------------------------------------------------------------------
+  async function getInternalEnvironment(context = {}) {
+    if (!context.userIsOwner) return null;
 
-    if (hourlyCache.data && now - hourlyCache.timestamp < ONE_HOUR) {
-      context.logStep?.("env:hourly-hit");
-      return hourlyCache.data;
-    }
+    context.logStep?.("env:internal");
 
-    context.logStep?.("env:hourly-miss");
-
-    const [weather, heatIndex, waves, storms] = await Promise.all([
-      fetch("weather", { limit: 1 }),
-      fetch("heatIndex", { limit: 1 }),
-      fetch("waves", { limit: 1 }),
-      fetch("storms", { limit: 1 })
+    const [internal, settings, history] = await Promise.all([
+      fetchCollection(db, "environment", { where: { scope: "internal" } }),
+      fetchCollection(db, "environmentSettings"),
+      fetchCollection(db, "environmentHistory")
     ]);
 
-    hourlyCache.data = Object.freeze({
-      weather: weather[0] || null,
-      heatIndex: heatIndex[0] || null,
-      waves: waves[0] || null,
-      storms: storms[0] || null
-    });
+    const organismSnapshot = getOrganismSnapshot(dualBand);
 
-    hourlyCache.timestamp = now;
-    return hourlyCache.data;
+    return emitEnvironmentPacket("internal", {
+      internal: internal[0] || null,
+      settings,
+      history,
+      organismSnapshot
+    });
   }
 
-  // --------------------------------------------------------------------------
-  // DAILY CACHE BUILDER (IMMORTAL‑SAFE)
-// --------------------------------------------------------------------------
-  async function buildDaily(context) {
-    const now = Date.now();
+  // ------------------------------------------------------------------------
+  // ENVIRONMENT ANOMALIES — owner‑only, deterministic
+  // ------------------------------------------------------------------------
+  async function getEnvironmentAnomalies(context = {}) {
+    if (!context.userIsOwner) return null;
 
-    if (dailyCache.data && now - dailyCache.timestamp < ONE_DAY) {
-      context.logStep?.("env:daily-hit");
-      return dailyCache.data;
-    }
+    context.logStep?.("env:anomalies");
 
-    context.logStep?.("env:daily-miss");
-
-    const [sargassum, moon, wildlife, seasons, holidays] = await Promise.all([
-      fetch("sargassum", { limit: 1 }),
-      fetch("moon", { limit: 1 }),
-      fetch("wildlife", { limit: 1 }),
-      fetch("seasons", { limit: 1 }),
-      fetch("holidays", { limit: 1 })
+    const [weatherHistory, heatHistory, waveHistory] = await Promise.all([
+      fetchCollection(db, "weatherHistory"),
+      fetchCollection(db, "heatIndexHistory"),
+      fetchCollection(db, "waveHistory")
     ]);
 
-    dailyCache.data = Object.freeze({
-      sargassum: sargassum[0] || null,
-      moon: moon[0] || null,
-      wildlife: wildlife[0] || null,
-      seasons: seasons[0] || null,
-      holidays: holidays[0] || null
-    });
-
-    dailyCache.timestamp = now;
-    return dailyCache.data;
-  }
-
-  // --------------------------------------------------------------------------
-  // ANOMALY DETECTION — deterministic, drift‑proof
-  // --------------------------------------------------------------------------
-  function detectJumps(arr, label, context) {
-    const anomalies = [];
-    if (!Array.isArray(arr)) return anomalies;
-
-    for (let i = 1; i < arr.length; i++) {
-      const prev = arr[i - 1];
-      const curr = arr[i];
-      if (!prev || !curr) continue;
-
-      const base = prev.value === 0 ? 1 : prev.value;
-      const diff = Math.abs(curr.value - prev.value);
-      const pct = (diff / base) * 100;
-
-      if (pct >= 25) {
-        anomalies.push({
-          type: `${label}_jump`,
-          timestamp: curr.timestamp,
-          deviation: pct,
-          from: prev.value,
-          to: curr.value
-        });
-
-        context.logStep?.(`env:anomaly ${label} ${pct.toFixed(1)}%`);
-      }
-    }
-
-    return anomalies;
-  }
-
-  // --------------------------------------------------------------------------
-  // ENVIRONMENT ARTERY — symbolic-only, deterministic, dualband-aware
-  // --------------------------------------------------------------------------
-  function environmentArtery({ binaryVitals = {} } = {}) {
-    const pressure = extractBinaryPressure(binaryVitals);
-
-    const localPressure = 0.2; // environment always contributes a baseline
-
-    const combined = Math.max(
-      0,
-      Math.min(1, 0.6 * localPressure + 0.4 * pressure)
-    );
-
-    return emitEnvironmentPacket("artery", {
-      organism: {
-        pressure: combined,
-        pressureBucket: bucketPressure(combined)
-      }
+    return emitEnvironmentPacket("anomalies", {
+      anomalies: [
+        ...detectJumps(weatherHistory, "weather", context),
+        ...detectJumps(heatHistory, "heatIndex", context),
+        ...detectJumps(waveHistory, "waves", context)
+      ]
     });
   }
 
-  // --------------------------------------------------------------------------
-  // PUBLIC API — Cached + Dual‑Band Logged + IMMORTAL‑SAFE
-  // --------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
+  // EVOLUTION OVERVIEW — owner‑only, evolution‑aware
+  // ------------------------------------------------------------------------
+  async function getEnvironmentEvolutionOverview(context = {}) {
+    if (!context.userIsOwner || !evolutionAPI?.analyzeSchema) return null;
+
+    context.logStep?.("env:evolution");
+
+    const result = await evolutionAPI.analyzeSchema(context, "environment");
+
+    return emitEnvironmentPacket("evolution", { result });
+  }
+
+  // ------------------------------------------------------------------------
+  // FILE + ROUTE ANALYSIS — owner‑only, evolution‑aware
+  // ------------------------------------------------------------------------
+  async function analyzeEnvironmentFiles(context = {}) {
+    if (!context.userIsOwner || !evolutionAPI?.analyzeFile) return null;
+
+    context.logStep?.("env:files");
+
+    const result = await evolutionAPI.analyzeFile(context, "environment.js");
+
+    return emitEnvironmentPacket("files", { result });
+  }
+
+  async function analyzeEnvironmentRoutes(context = {}) {
+    if (!context.userIsOwner || !evolutionAPI?.analyzeRoute) return null;
+
+    context.logStep?.("env:routes");
+
+    const result = await evolutionAPI.analyzeRoute(context, "environment");
+
+    return emitEnvironmentPacket("routes", { result });
+  }
+
+  // ------------------------------------------------------------------------
+  // PUBLIC SURFACE
+  // ------------------------------------------------------------------------
   return Object.freeze({
-
-    // ----------------------------------------------------------------------
-    // TOURIST‑SAFE SNAPSHOT
-    // ----------------------------------------------------------------------
-    async getPublicEnvironment(context) {
-      context.logStep?.("env:public");
-
-      const snapshot = getOrganismSnapshot(dualBand);
-      const hourly = await buildHourly(context);
-      const daily = await buildDaily(context);
-
-      return emitEnvironmentPacket("public", {
-        ...hourly,
-        ...daily,
-        organismSnapshot: snapshot
-      });
-    },
-
-    // ----------------------------------------------------------------------
-    // OWNER‑ONLY INTERNAL ENVIRONMENT
-    // ----------------------------------------------------------------------
-    async getInternalEnvironment(context) {
-      if (!context.userIsOwner) return null;
-
-      context.logStep?.("env:internal");
-
-      const [internal, settings, history] = await Promise.all([
-        fetch("environment", { where: { scope: "internal" } }),
-        fetch("environmentSettings"),
-        fetch("environmentHistory")
-      ]);
-
-      const snapshot = getOrganismSnapshot(dualBand);
-
-      return emitEnvironmentPacket("internal", {
-        internal: internal[0] || null,
-        settings,
-        history,
-        organismSnapshot: snapshot
-      });
-    },
-
-    // ----------------------------------------------------------------------
-    // OWNER‑ONLY ANOMALIES
-    // ----------------------------------------------------------------------
-    async getEnvironmentAnomalies(context) {
-      if (!context.userIsOwner) return null;
-
-      context.logStep?.("env:anomalies");
-
-      const [weatherHistory, heatHistory, waveHistory] = await Promise.all([
-        fetch("weatherHistory"),
-        fetch("heatIndexHistory"),
-        fetch("waveHistory")
-      ]);
-
-      return emitEnvironmentPacket("anomalies", {
-        anomalies: [
-          ...detectJumps(weatherHistory, "weather", context),
-          ...detectJumps(heatHistory, "heatIndex", context),
-          ...detectJumps(waveHistory, "waves", context)
-        ]
-      });
-    },
-
-    // ----------------------------------------------------------------------
-    // OWNER‑ONLY EVOLUTION ANALYSIS
-    // ----------------------------------------------------------------------
-    async getEnvironmentEvolutionOverview(context) {
-      if (!context.userIsOwner || !evolutionAPI?.analyzeSchema) return null;
-      context.logStep?.("env:evolution");
-      return emitEnvironmentPacket("evolution", {
-        result: await evolutionAPI.analyzeSchema(context, "environment")
-      });
-    },
-
-    async analyzeEnvironmentFiles(context) {
-      if (!context.userIsOwner || !evolutionAPI?.analyzeFile) return null;
-      return emitEnvironmentPacket("files", {
-        result: await evolutionAPI.analyzeFile(context, "environment.js")
-      });
-    },
-
-    async analyzeEnvironmentRoutes(context) {
-      if (!context.userIsOwner || !evolutionAPI?.analyzeRoute) return null;
-      return emitEnvironmentPacket("routes", {
-        result: await evolutionAPI.analyzeRoute(context, "environment")
-      });
-    },
-
-    // ----------------------------------------------------------------------
-    // ARTERY
-    // ----------------------------------------------------------------------
+    getPublicEnvironment,
+    getInternalEnvironment,
+    getEnvironmentAnomalies,
+    getEnvironmentEvolutionOverview,
+    analyzeEnvironmentFiles,
+    analyzeEnvironmentRoutes,
     environmentArtery
   });
 }
+
+export default createEnvironmentAPI;

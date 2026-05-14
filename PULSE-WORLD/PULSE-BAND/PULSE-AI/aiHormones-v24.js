@@ -24,18 +24,6 @@
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 // ============================================================================
-//  META BLOCK — v24 IMMORTAL ADVANTAGE++
-// ============================================================================
-export const HormonesMeta = Identity.OrganMeta;
-
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
 //  GLOBAL HORMONE REGISTRY v2 — read-only from outside
 // ============================================================================
 const _globalHormoneRegistry = new Map();

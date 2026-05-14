@@ -20,37 +20,7 @@
 //   • No randomness, no timestamps, no direct network access.
 //   • All external IO must be routed via Pulse‑Net / Pulse surfaces.
 // ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const BrainstemMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  GLOBAL HANDLE (WINDOW/WORKER/NODE SAFE)
@@ -111,12 +81,12 @@ const fetchFn =
 // ============================================================================
 
 // ⭐ CNS‑SAFE v16 Chunker (32 lanes, Pulse‑Net aware)
-import { createPulseChunker } from "./PulseAIChunker-v24.js";
+import { createPulseChunker } from "./PulseAIChunker-v30.js";
 
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
-import pulseAIChunker from "./PulseAIChunker-v24.js";
-import createPulseFileScanner from "./PulseFileScanner-v24.js";
+import pulseAIChunker from "./PulseAIChunker-v30.js";
+import createPulseFileScanner from "./PulseFileScanner-v30.js";
 import { createArchitectAPI } from "./aiArchitect-v24.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist-v24.js";
 

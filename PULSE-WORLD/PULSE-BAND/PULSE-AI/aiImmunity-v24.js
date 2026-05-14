@@ -4,31 +4,6 @@
 //  PURE BINARY. ZERO NETWORK. ZERO RANDOMNESS IN LOGIC PATHS.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const ImmunityMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  GLOBAL IMMUNE REGISTRY — window‑safe, read‑only from outside

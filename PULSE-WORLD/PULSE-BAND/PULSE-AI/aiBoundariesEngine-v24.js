@@ -5,27 +5,6 @@
 //  OWNER‑SUBORDINATE: ALWAYS BELOW ALDWYN, NEVER TOP DOG.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const BoundariesMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-export const pulseRole        = Identity.pulseRole;
-export const surfaceMeta      = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META        = Identity.EXPORT_META;
 
 import { getBoundariesForPersona, canPerformDynamic } from "./aiBoundaries-v24.js";
 
@@ -185,19 +164,27 @@ function buildCoreMemoryDrift(memory, { personaId, mode, routeId, binaryVitals, 
 //  PACKET EMITTER — deterministic, boundary-scoped
 // ============================================================================
 function emitBoundaryPacket(type, payload) {
+  const touch = window.__PULSE_TOUCH__ || {};
+
   return Object.freeze({
-    meta: BoundariesMeta,
+    meta: {
+      id: "pulse-touch-boundaries",
+      version: touch.version || "v0",
+      epoch: touch.epoch || Date.now(),
+      layer: "boundaries",
+      role: "superego"
+    },
+
     packetType: `boundaries-${type}`,
     timestamp: safeNow(),
-    epoch: BoundariesMeta.evo.epoch,
-    layer: BoundariesMeta.layer,
-    role: BoundariesMeta.role,
-    identity: BoundariesMeta.identity,
+
     owner: "Aldwyn",
     subordinate: true,
+
     ...payload
   });
 }
+
 
 // ============================================================================
 //  PREWARM — warms static boundary tables + dynamic resolver
@@ -383,30 +370,40 @@ export function createBoundariesEngine({
       routeId
     });
   }
+const touch = window.__PULSE_TOUCH__ || {};
 
-  const engine = Object.freeze({
-    meta: BoundariesMeta,
-    resolve,
-    check,
+const engine = Object.freeze({
+  meta: {
+    id: "pulse-touch-boundaries-engine",
+    version: touch.version || "v0",
+    epoch: touch.epoch || Date.now(),
+    layer: "boundaries",
+    role: "superego"
+  },
+
+  resolve,
+  check,
+  dnaTag,
+  version,
+  routeId,
+  owner: "Aldwyn",
+  subordinate: true
+});
+
+try {
+  log("[BoundariesEngine] INIT", {
+    id: "pulse-touch-boundaries-engine",
+    version: touch.version || "v0",
+    epoch: touch.epoch || Date.now(),
     dnaTag,
-    version,
     routeId,
     owner: "Aldwyn",
     subordinate: true
   });
+} catch {}
 
-  try {
-    log("[BoundariesEngine] INIT", {
-      identity: BoundariesMeta.identity,
-      version: BoundariesMeta.version,
-      dnaTag,
-      routeId,
-      owner: "Aldwyn",
-      subordinate: true
-    });
-  } catch {}
+return engine;
 
-  return engine;
 }
 
 // ============================================================================
@@ -414,7 +411,6 @@ export function createBoundariesEngine({
 // ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    BoundariesMeta,
     createBoundariesEngine,
     prewarmBoundariesEngine
   };

@@ -30,11 +30,6 @@
 //
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
 // ============================================================================
 //  GLOBAL HANDLE (v24 IMMORTAL, environment-agnostic)
@@ -90,27 +85,6 @@ const fetchFn =
   (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
   null;
 
-// ============================================================================
-//  IDENTITY (v24 IMMORTAL)
-// ============================================================================
-
-const Identity = OrganismIdentity(import.meta.url);
-
-export const LAW_ASSISTANT_IDENTITY = Identity;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  v24+ SIGNAL-AWARE TRACE LAYER (optional, non-fatal)
-// ============================================================================
 
 function traceLawEvent(event, payload, traceFlag) {
   if (!traceFlag) return;

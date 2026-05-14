@@ -4,28 +4,6 @@
 //  PURE STRUCTURE. ZERO ROUTING. ZERO COMPUTE.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL‑EVO++
-// ============================================================================
-export const AnatomyMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL‑EVO++
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS (v24 IMMORTAL BUCKET ENGINE)
@@ -67,7 +45,7 @@ function bucketCost(v) {
 // ============================================================================
 export class AIAnatomy {
   constructor(config = {}) {
-    this.id = config.id || AnatomyMeta.identity;
+    this.id = config.id || "pulse-touch-anatomy";
     this.encoder = config.encoder;
     this.memory = config.memory;
     this.trace = !!config.trace;
@@ -326,7 +304,6 @@ export function createAIAnatomy(config) {
 if (typeof module !== "undefined") {
   module.exports = {
     AIAnatomy,
-    createAIAnatomy,
-    AnatomyMeta
+    createAIAnatomy
   };
 }

@@ -1,75 +1,55 @@
 // ============================================================================
-//  aiEvolutionEngine.js — Pulse OS v24‑IMMORTAL++
+//  aiEvolutionEngine-v30.js — Pulse OS v30‑IMMORTAL++
 //  Evolution Organ • Passive + Active User Evolution • Trust‑Aware • Jury‑Aware
-//  PURE META. ZERO MUTATION. ZERO RANDOMNESS.
+//  PURE META. ZERO MUTATION. ZERO RANDOMNESS. META-STRIPPED, IDENTITY-PRESERVING.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
 
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+// INTERNAL HELPERS — v30 PACKETS (NO META ENVELOPE, NO Date.now)
 // ============================================================================
-export const EvolutionEngineMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-// INTERNAL HELPERS
-// ============================================================================
-function emitEvolutionPacket(type, payload, { severity = "info" } = {}) {
+function emitEvolutionPacket(type, payload = {}, { severity = "info" } = {}) {
   return Object.freeze({
-    meta: {
-      version: EvolutionEngineMeta.version,
-      epoch: EvolutionEngineMeta.evo.epoch,
-      identity: EvolutionEngineMeta.identity,
-      layer: EvolutionEngineMeta.layer,
-      role: EvolutionEngineMeta.role
-    },
     packetType: `evo-engine-${type}`,
-    timestamp: Date.now(),
+    timestamp: 0,
+    layer: "evolution-engine",
+    role: "evolution",
+    band: "symbolic-meta",
     severity,
     ...payload
   });
 }
 
+// Optional: symbolic-only PulseBinary / IndexedDB-style adapter
+async function writePulseBinaryLog(adapter, kind, payload) {
+  if (!adapter || typeof adapter.write !== "function") return false;
+  // v30: DO NOT STRIP IDENTITY HERE — identity is allowed, meta is not.
+  const safePayload = Object.freeze({ ...payload });
+  const keySeed = `${kind}::${safePayload.packetType || "evo"}::${safePayload.message || ""}`;
+  const docId = `evo-${Math.abs(keySeed.split("").reduce((a, c, i) => (a + c.charCodeAt(0) * (i + 1)) % 1000003, 0))}`;
+  return adapter.write(`EVOLUTION_LOGS/${docId}`, safePayload);
+}
+
+
 // ============================================================================
-// PREWARM
+// PREWARM — v30 IMMORTAL++ (META-STRIPPED, IDENTITY-PRESERVING)
 // ============================================================================
 export function prewarmEvolutionEngine(
   dualBand = null,
-  { trace = false, trustFabric = null, juryFrame = null } = {}
+  {
+    trace = false,
+    trustFabric = null,
+    juryFrame = null,
+    pulseBinaryAdapter = null
+  } = {}
 ) {
   try {
-    if (trace) console.log("[aiEvolutionEngine v24] prewarm: starting");
+    if (trace) console.log("[aiEvolutionEngine v30] prewarm: starting");
 
     const state = Object.freeze({
       evolved: true,
-      version: EvolutionEngineMeta.version,
+      // v30: version is now just a literal, not tied to a meta object
+      version: "v30",
       confidence: 1.0,
       humility: 1.0,
       clarity: 1.0
@@ -80,8 +60,8 @@ export function prewarmEvolutionEngine(
 
     const packet = emitEvolutionPacket("prewarm", {
       state,
-      dualBandPersona: arteryPersona,
-      dualBandArtery: arterySnapshot,
+      personaId: arteryPersona,
+      arterySnapshot,
       message: "Evolution engine prewarmed and aligned."
     });
 
@@ -91,8 +71,9 @@ export function prewarmEvolutionEngine(
     });
 
     juryFrame?.recordEvidence?.("evolution-prewarm", packet);
+    writePulseBinaryLog(pulseBinaryAdapter, "prewarm", packet);
 
-    if (trace) console.log("[aiEvolutionEngine v24] prewarm: complete");
+    if (trace) console.log("[aiEvolutionEngine v30] prewarm: complete");
     return packet;
   } catch (err) {
     const packet = emitEvolutionPacket(
@@ -109,16 +90,27 @@ export function prewarmEvolutionEngine(
   }
 }
 
+
 // ============================================================================
-// CORE ENGINE OBJECT — v24‑IMMORTAL++
+// CORE ENGINE OBJECT — v30‑IMMORTAL++ (META-STRIPPED, IDENTITY-PRESERVING)
 // ============================================================================
-export function createEvolutionEngine({ trustFabric = null, juryFrame = null } = {}) {
+export function createEvolutionEngine({
+  trustFabric = null,
+  juryFrame = null,
+  pulseBinaryAdapter = null,
+  identity = null // optional identity context (owner, persona, etc.)
+} = {}) {
   const engine = {
-    meta: EvolutionEngineMeta,
+    // v30: meta removed; keep a lightweight self-description if you want
+    descriptor: Object.freeze({
+      kind: "EvolutionEngine",
+      version: "v30",
+      role: "evolution"
+    }),
 
     state: Object.freeze({
       evolved: true,
-      version: EvolutionEngineMeta.version,
+      version: "v30",
       confidence: 1.0,
       humility: 1.0,
       clarity: 1.0
@@ -134,37 +126,51 @@ export function createEvolutionEngine({ trustFabric = null, juryFrame = null } =
       learning: ["exposure", "encoding", "retrieval", "integration"],
       systems: ["boundaries", "interfaces", "feedback", "evolution"],
       product: ["user", "problem", "mechanism", "loop"],
-      career: ["skill", "signal", "leverage", "compounding"]
+      career: ["skill", "signal", "leverage", "compounding"],
+      ideas: ["capture", "expand", "test", "integrate"]
     }),
 
+    // ----------------------------------------------------------------------
+    // PASSIVE USER EVOLUTION — conceptual only
+    // ----------------------------------------------------------------------
     suggestUserEvolution(idea) {
       const packet = emitEvolutionPacket("user-evolution-suggestion", {
         idea,
+        identity, // identity is allowed to flow
         message:
           `Here are conceptual things you *could* explore with this system: ${idea}. ` +
-          `This is optional, non-binding, and does not reveal internal architecture.`
+          `This is optional, non‑binding, and architecture‑agnostic.`
       });
 
-      trustFabric?.recordEvolutionSuggestion?.({ idea });
+      trustFabric?.recordEvolutionSuggestion?.({ idea, identity });
       juryFrame?.recordEvidence?.("evolution-suggestion", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "user-evolution-suggestion", packet);
 
       return packet;
     },
 
+    // ----------------------------------------------------------------------
+    // ACTIVE USER EVOLUTION — on demand, still meta‑only
+    // ----------------------------------------------------------------------
     guideActiveEvolution(request) {
       const packet = emitEvolutionPacket("active-evolution-guidance", {
         request,
+        identity,
         message:
           `Active evolution guidance for: "${request}". ` +
-          `This provides conceptual pathways without exposing internal wiring.`
+          `Provides conceptual pathways without exposing internal wiring.`
       });
 
-      trustFabric?.recordEvolutionGuidance?.({ request });
+      trustFabric?.recordEvolutionGuidance?.({ request, identity });
       juryFrame?.recordEvidence?.("evolution-guidance", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "active-evolution-guidance", packet);
 
       return packet;
     },
 
+    // ----------------------------------------------------------------------
+    // DOMAIN MAPPING — map a target into an evolution route
+    // ----------------------------------------------------------------------
     mapDomain(target) {
       const key = String(target || "").toLowerCase();
       const route = engine.routes[key] || null;
@@ -172,17 +178,22 @@ export function createEvolutionEngine({ trustFabric = null, juryFrame = null } =
       const packet = emitEvolutionPacket("map-domain", {
         target,
         route,
+        identity,
         message: route
-          ? `Mapped "${target}" to an existing evolutionary organism route.`
-          : `No direct route for "${target}". Using generic evolutionary organism pattern.`
+          ? `Mapped "${target}" to an existing evolutionary route.`
+          : `No direct route for "${target}". Using generic evolutionary pattern.`
       });
 
-      trustFabric?.recordEvolutionMapDomain?.({ target, hasRoute: !!route });
+      trustFabric?.recordEvolutionMapDomain?.({ target, hasRoute: !!route, identity });
       juryFrame?.recordEvidence?.("evolution-map-domain", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "map-domain", packet);
 
       return packet;
     },
 
+    // ----------------------------------------------------------------------
+    // TRAJECTORY PROJECTION — phased conceptual path
+    // ----------------------------------------------------------------------
     projectTrajectory(target, horizon = "90d") {
       const key = String(target || "").toLowerCase();
       const baseRoute = engine.routes[key] || [
@@ -203,38 +214,50 @@ export function createEvolutionEngine({ trustFabric = null, juryFrame = null } =
         target,
         horizon,
         phases,
+        identity,
         message: `Projected an evolutionary trajectory for "${target}" over ${horizon}.`
       });
 
-      trustFabric?.recordEvolutionTrajectory?.({ target, horizon });
+      trustFabric?.recordEvolutionTrajectory?.({ target, horizon, identity });
       juryFrame?.recordEvidence?.("evolution-trajectory", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "trajectory", packet);
 
       return packet;
     },
 
+    // ----------------------------------------------------------------------
+    // OVERLAY SUMMARY — combine with memory overlays (symbolic only)
+// ----------------------------------------------------------------------
     overlayEvolutionSummary(memoryOverlaySummary) {
       const packet = emitEvolutionPacket("overlay-evolution", {
         overlay: memoryOverlaySummary,
+        identity,
         message:
           "Computed an evolution overlay summary from the provided memory overlay description (no internal state mutated)."
       });
 
-      trustFabric?.recordEvolutionOverlay?.({});
+      trustFabric?.recordEvolutionOverlay?.({ identity });
       juryFrame?.recordEvidence?.("evolution-overlay", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "overlay-evolution", packet);
 
       return packet;
     },
 
+    // ----------------------------------------------------------------------
+    // EVOLVE — main route mapper (generic + domain‑specific)
+// ----------------------------------------------------------------------
     evolve(target) {
       if (!target) {
         const packet = emitEvolutionPacket("evolve-missing-target", {
           target: null,
           route: null,
+          identity,
           message:
             "Specify what you want to evolve and I’ll map the evolutionary route."
         });
 
         juryFrame?.recordEvidence?.("evolution-missing-target", packet);
+        writePulseBinaryLog(pulseBinaryAdapter, "evolve-missing-target", packet);
         return packet;
       }
 
@@ -250,11 +273,13 @@ export function createEvolutionEngine({ trustFabric = null, juryFrame = null } =
             "adaptation — modify based on context",
             "reinforcement — stabilize the new pattern"
           ]),
+          identity,
           message: `Generated a universal evolutionary route for "${target}".`
         });
 
-        trustFabric?.recordEvolutionGenericRoute?.({ target });
+        trustFabric?.recordEvolutionGenericRoute?.({ target, identity });
         juryFrame?.recordEvidence?.("evolution-generic-route", packet);
+        writePulseBinaryLog(pulseBinaryAdapter, "evolve-generic-route", packet);
 
         return packet;
       }
@@ -262,22 +287,30 @@ export function createEvolutionEngine({ trustFabric = null, juryFrame = null } =
       const packet = emitEvolutionPacket("evolve-domain-route", {
         target,
         route: Object.freeze([...route]),
+        identity,
         message: `Evolved route for "${target}" is ready.`
       });
 
-      trustFabric?.recordEvolutionDomainRoute?.({ target });
+      trustFabric?.recordEvolutionDomainRoute?.({ target, identity });
       juryFrame?.recordEvidence?.("evolution-domain-route", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "evolve-domain-route", packet);
 
       return packet;
     },
 
+    // ----------------------------------------------------------------------
+    // PRE‑EVOLVE — readiness surface
+    // ----------------------------------------------------------------------
     preEvolve() {
       const packet = emitEvolutionPacket("pre-evolve", {
         state: engine.state,
+        identity,
         message: "Evolution engine fully aligned and ready."
       });
 
       juryFrame?.recordEvidence?.("evolution-pre-evolve", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "pre-evolve", packet);
+
       return packet;
     }
   };
@@ -285,8 +318,9 @@ export function createEvolutionEngine({ trustFabric = null, juryFrame = null } =
   return Object.freeze(engine);
 }
 
+
 // ============================================================================
-// DEFAULT INSTANCE (backwards-compatible)
+// DEFAULT INSTANCE (backwards‑compatible surface)
 // ============================================================================
 export const aiEvolutionEngine = createEvolutionEngine();
 
@@ -294,7 +328,6 @@ export default aiEvolutionEngine;
 
 if (typeof module !== "undefined") {
   module.exports = {
-    EvolutionEngineMeta,
     aiEvolutionEngine,
     createEvolutionEngine,
     prewarmEvolutionEngine,

@@ -8,27 +8,6 @@
 // ============================================================================
 //  IDENTITY (from Organism Map)
 // ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// Optional: meta export for this dualband organism
-export const DualBandMeta = Identity.OrganMeta;
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const DUAL_BAND_CONTEXT = Identity.pulseLoreContext;
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // IMPORTS (dependency-ordered, ESM)
@@ -122,7 +101,7 @@ import {
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
-import { createPulseAIChunker } from "./PulseAIChunker-v24.js";
+import { createPulseAIChunker } from "./PulseAIChunker-v30.js";
 
 // ============================================================================
 //  Dualband Organism Bootloader

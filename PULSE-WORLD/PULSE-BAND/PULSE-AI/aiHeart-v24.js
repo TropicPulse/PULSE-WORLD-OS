@@ -1,15 +1,11 @@
 // ============================================================================
-//  aiHeart.js — Pulse OS v24++ IMMORTAL‑ADVANTAGE++
+//  aiHeart-v30.js — Pulse OS v30 IMMORTAL‑ADVANTAGE++
 //  AI Heart Organ (Dad) wrapping aiHeartbeat liveness
 //  Tri‑Heart Fusion 2.0 (Mom • Dad • Baby)
 //  PURE PACING. ZERO MUTATION. ZERO RANDOMNESS. WINDOW‑SAFE.
+//  META‑STRIPPED • IDENTITY‑PRESERVING.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 import {
   AI_HEARTBEAT_META,
   startAiHeartbeat,
@@ -20,29 +16,10 @@ import {
   getAiHeartbeatDiagnostics
 } from "./aiHeartbeat-v24.js";
 
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  META BLOCK — v24++ IMMORTAL‑ADVANTAGE++
+//  HELPERS — Tri‑Heart IMMORTAL‑ADVANTAGE++ (v30, no AI_HEART_META)
 // ============================================================================
-export const AI_HEART_META = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE EXPORTS — v24++ IMMORTAL‑ADVANTAGE++
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  HELPERS — Tri‑Heart IMMORTAL‑ADVANTAGE++
-// ============================================================================
-function now() {
-  return Date.now();
-}
-
 function triState(last) {
   return {
     alive: last > 0,
@@ -81,7 +58,7 @@ function buildTriHeartPresence() {
     mom: { role: "primary_pacemaker", focus: "mom" },
     dad: { role: "ai_pacer", focus: "dad" },
     baby: { role: "earn_pulse_driver", focus: "baby" },
-    signature: "triPresence-v24++"
+    signature: "triPresence-v30"
   });
 }
 
@@ -105,12 +82,12 @@ function buildTriHeartAdvantage() {
     dad: 0.45,
     baby: 0.35,
     combined: (0.5 + 0.45 + 0.35) / 3,
-    signature: "triAdv-v24++"
+    signature: "triAdv-v30"
   });
 }
 
 // ============================================================================
-//  HEART‑ARTERY SNAPSHOT — IMMORTAL‑ADVANTAGE++
+//  HEART‑ARTERY SNAPSHOT — v30 META‑STRIPPED
 // ============================================================================
 function buildHeartArterySnapshot({ context = {}, source = "unknown" } = {}) {
   const healing = getAiHeartbeatHealingState();
@@ -128,45 +105,45 @@ function buildHeartArterySnapshot({ context = {}, source = "unknown" } = {}) {
         pressure >= 0.4 ? "medium" :
         pressure > 0   ? "low" : "none"
     },
-    source,
-    meta: {
-      version: AI_HEART_META.version,
-      epoch: AI_HEART_META.evo.epoch,
-      identity: AI_HEART_META.identity,
-      layer: AI_HEART_META.layer,
-      role: AI_HEART_META.role
-    }
+    source
   });
 }
 
 // ============================================================================
-//  PACKET EMITTER — deterministic IMMORTAL‑ADVANTAGE++
+//  PACKET EMITTER — v30 META‑STRIPPED, IDENTITY‑PRESERVING
 // ============================================================================
-function emitHeartPacket(type, payload) {
+function emitHeartPacket(type, payload = {}) {
   return Object.freeze({
-    meta: {
-      version: AI_HEART_META.version,
-      epoch: AI_HEART_META.evo.epoch,
-      identity: AI_HEART_META.identity,
-      layer: AI_HEART_META.layer,
-      role: AI_HEART_META.role,
-      owner: "Aldwyn",
-      subordinate: true
-    },
     packetType: `ai-heart-${type}`,
-    packetId: `ai-heart-${type}-${now()}`,
-    timestamp: now(),
+    timestamp: 0,
+    layer: "ai-heart",
+    role: "pacer",
+    owner: "Aldwyn",
+    subordinate: true,
     ...payload
   });
 }
 
+// Optional: symbolic‑only PulseBinary / IndexedDB‑style adapter
+async function writePulseBinaryLog(adapter, kind, payload) {
+  if (!adapter || typeof adapter.write !== "function") return false;
+  const safePayload = Object.freeze({ ...payload });
+  const keySeed = `${kind}::${safePayload.packetType || "ai-heart"}::${safePayload.message || ""}`;
+  const docId = `heart-${Math.abs(
+    keySeed.split("").reduce((a, c, i) => (a + c.charCodeAt(0) * (i + 1)) % 1000003, 0)
+  )}`;
+  return adapter.write(`HEART_LOGS/${docId}`, safePayload);
+}
+
+
 // ============================================================================
-//  AI HEART ORGAN — IMMORTAL‑ADVANTAGE++
+//  AI HEART ORGAN — v30 IMMORTAL‑ADVANTAGE++
 // ============================================================================
 export function createAiHeart({
   autoStart = false,
   trustFabric = null,
-  juryFrame = null
+  juryFrame = null,
+  pulseBinaryAdapter = null
 } = {}) {
   const state = { started: false };
 
@@ -178,19 +155,20 @@ export function createAiHeart({
   }
 
   return Object.freeze({
-    meta: AI_HEART_META,
+    // v30: expose heartbeat meta only as raw data, not embedded into packets
     heartbeatMeta: AI_HEARTBEAT_META,
 
     // Dad heartbeat
     async beat(source = "unknown", context = {}) {
       ensureStarted();
-      const result = pulseAiHeartbeat(source);
+      pulseAiHeartbeat(source);
 
       const artery = buildHeartArterySnapshot({ context, source });
       const packet = emitHeartPacket("beat", { source, artery });
 
       trustFabric?.recordHeartBeat?.({ source, artery });
       juryFrame?.recordEvidence?.("ai-heart-beat", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "beat", packet);
 
       return packet;
     },
@@ -209,6 +187,7 @@ export function createAiHeart({
       });
 
       juryFrame?.recordEvidence?.("ai-heart-start", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "start", packet);
       return packet;
     },
 
@@ -225,6 +204,7 @@ export function createAiHeart({
       });
 
       juryFrame?.recordEvidence?.("ai-heart-stop", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "stop", packet);
       return packet;
     },
 
@@ -232,26 +212,32 @@ export function createAiHeart({
     snapshot(context = {}) {
       const artery = buildHeartArterySnapshot({ context, source: "snapshot" });
 
-      return emitHeartPacket("snapshot", {
+      const packet = emitHeartPacket("snapshot", {
         snapshot: snapshotAiHeartbeat(),
         artery
       });
+
+      writePulseBinaryLog(pulseBinaryAdapter, "snapshot", packet);
+      return packet;
     },
 
     healing(context = {}) {
       const artery = buildHeartArterySnapshot({ context, source: "healing" });
 
-      return emitHeartPacket("healing", {
+      const packet = emitHeartPacket("healing", {
         healing: getAiHeartbeatHealingState(),
         artery
       });
+
+      writePulseBinaryLog(pulseBinaryAdapter, "healing", packet);
+      return packet;
     },
 
     diagnostics(context = {}) {
       const aiHealing = getAiHeartbeatHealingState();
       const artery = buildHeartArterySnapshot({ context, source: "diagnostics" });
 
-      return emitHeartPacket("diagnostics", {
+      const packet = emitHeartPacket("diagnostics", {
         ai: getAiHeartbeatDiagnostics(),
         triHeartLiveness: buildTriHeartLiveness(),
         triHeartPresence: buildTriHeartPresence(),
@@ -259,12 +245,15 @@ export function createAiHeart({
         triHeartAdvantage: buildTriHeartAdvantage(),
         artery
       });
+
+      writePulseBinaryLog(pulseBinaryAdapter, "diagnostics", packet);
+      return packet;
     }
   });
 }
 
 // ============================================================================
-//  SINGLETON DAD HEART — IMMORTAL‑ADVANTAGE++
+//  SINGLETON DAD HEART — v30 IMMORTAL‑ADVANTAGE++
 // ============================================================================
 const aiHeartSingleton = createAiHeart({ autoStart: false });
 

@@ -1,107 +1,53 @@
 // ============================================================================
-//  PULSE OS v24‑IMMORTAL++ — BRAINSTEM
-//  Organ Assembly • Dual‑Band Context Binding • CNS + Pulse‑Net Integration
+//  PULSE OS v30‑IMMORTAL++ — BRAINSTEM
+//  Organ Assembly • Dual‑Band Context Binding • CNS + Pulse‑Net + PulsePort
 //  PURE ORGANISM. ZERO MUTATION. ZERO RANDOMNESS. ZERO DIRECT INTERNET.
 // ============================================================================
-//
-// ROLE (v24‑Immortal++ Hybrid):
-//   • Assemble CNS engines, symbolic organs, and the dual‑band organism
-//     into a unified, deterministic, drift‑proof Pulse OS organism.
-//   • Bind persona/boundaries/permissions/router/cortex to DualBand organism.
-//   • Bind universal chunk fabric (32 lanes) to CNS + DualBand artery.
-//   • Bind trust fabric: evidence, jury, honeypotting, dominance detection.
-//   • Bind Pulse‑Net as the ONLY external IO surface (no raw internet).
-//   • Keep organism/user fully segregated; Pulse is the routed surface.
-//   • Emit a frozen, read‑only organism map for higher layers.
-//
-// CONTRACT:
-//   • Deterministic, read‑only assembly.
-//   • No mutation of external organs or DB.
-//   • No randomness, no timestamps, no direct network access.
-//   • All external IO must be routed via Pulse‑Net / Pulse surfaces.
-// ============================================================================
-
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const BrainstemMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================
-//  IMPORTS
+//  IMPORTS (interfaces upgraded to v30 where applicable)
 // ============================================================================
 
-// ⭐ CNS‑SAFE v16 Chunker (32 lanes, Pulse‑Net aware)
-// (implementation itself can be upgraded to v24 later; interface remains stable)
-import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v24.js";
+// v30 PulseAIChunker — PulsePort + StoragePort (IndexedDB) aware
+import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v30-IMMORTAL.js";
 
-import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
-import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
+import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V30.js";
+import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v30.js";
 
-import { createArchitectAPI } from "./aiArchitect-v24.js";
-import { createTouristAPI, prewarmTourist } from "./aiTourist-v24.js";
+import { createArchitectAPI } from "./aiArchitect-v30.js";
+import { createTouristAPI, prewarmTourist } from "./aiTourist-v30.js";
 
-import { createEnvironmentAPI } from "./aiEnvironment-v24.js";
-import { createPowerAPI } from "./aiPowerPrime-v24.js";
-import { createEvolutionAPI } from "./aiEvolution-v24.js";
-import { createEarnAPI } from "./aiEarn-v24.js";
-import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";
+import { createEnvironmentAPI } from "./aiEnvironment-v30.js";
+import { createPowerAPI } from "./aiPowerPrime-v30.js";
+import { createEvolutionAPI } from "./aiEvolution-v30.js";
+import { createEarnAPI } from "./aiEarn-v30.js";
+import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v30.js";
 
-import { createPersonaEngine } from "./aiPersonality-v24.js";
-import { createBoundariesEngine } from "./aiBoundaries-v24.js";
-import { createPermissionsEngine } from "./aiPermissions-v24.js";
-import { createRouterEngine } from "./aiRouter-v24.js";
-import { createCortex } from "./aiCortex-v24.js";
+import { createPersonaEngine } from "./aiPersonality-v30.js";
+import { createBoundariesEngine } from "./aiBoundaries-v30.js";
+import { createPermissionsEngine } from "./aiPermissions-v30.js";
+import { createRouterEngine } from "./aiRouter-v30.js";
+import { createCortex } from "./aiCortex-v30.js";
 
-import { createDualBandOrganism } from "./aiDualBand-v24.js";
+import { createDualBandOrganism } from "./aiDualBand-v30.js";
 
-// Non-binary symbolic organs
-import { createDoctorAPI } from "./aiDoctorAssistant-v24.js";
-import { createSurgeonAPI } from "./aiSurgeon-v24.js";
-import { createLawyerAPI } from "./aiLawAssistant-v24.js";
-import { createEntrepreneurAPI } from "./aiEntrepreneur-v24.js";
-import { createVeterinarianAPI } from "./aiVeterinarian-v24.js";
-import { createClinicianAPI } from "./aiClinician-v24.js";
-import { createEvolutionaryAPI } from "./aiEvolutionary-v24.js";
+import { createDoctorAPI } from "./aiDoctorAssistant-v30.js";
+import { createSurgeonAPI } from "./aiSurgeon-v30.js";
+import { createLawyerAPI } from "./aiLawAssistant-v30.js";
+import { createEntrepreneurAPI } from "./aiEntrepreneur-v30.js";
+import { createVeterinarianAPI } from "./aiVeterinarian-v30.js";
+import { createClinicianAPI } from "./aiClinician-v30.js";
+import { createEvolutionaryAPI } from "./aiEvolutionary-v30.js";
 
-// (Trust / jury / evidence surfaces would be imported here when implemented)
-import { createSafetyFrameOrgan } from "./aiSafetyFrame-v24.js";
-import { createJuryFrame } from "./aiJuryFrame-v24.js";
+import { createSafetyFrameOrgan } from "./aiSafetyFrame-v30.js";
+import { createJuryFrame } from "./aiJuryFrame-v30.js";
+
 
 // ============================================================================
-//  INTERNAL HELPERS — Pulse‑Net + Chunker lanes
+//  PULSE‑NET / PORT SURFACES
 // ============================================================================
 function buildPulseNetSurface(context) {
-  // Pulse is the routed thing; everything else talks through it.
   return Object.freeze({
     fetch: context.fetchAPI || null,
     pulseNet: context.PulseNet || null,
@@ -112,12 +58,15 @@ function buildPulseNetSurface(context) {
   });
 }
 
-function buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSurface) {
+function buildChunkerConfig(context, ports, pulseNetSurface) {
+  const { db, fsAPI, routeAPI, schemaAPI, storagePort, pulsePort, signalPort } = ports;
+
   return {
     Brain: {
       log: context.log,
       warn: context.warn,
       error: context.error,
+      // legacy compatibility for older organs
       firebase: () => db,
       fsAPI,
       routeAPI,
@@ -125,12 +74,14 @@ function buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSur
       PulseNet: pulseNetSurface.pulseNet,
       ProxySpine: pulseNetSurface.proxySpine,
       JuryFrame: pulseNetSurface.juryFrame,
-      TrustFabric: pulseNetSurface.trustFabric
+      TrustFabric: pulseNetSurface.trustFabric,
+      PulsePort: pulsePort || null,
+      SignalPort: signalPort || null,
+      StoragePort: storagePort || null
     },
     Logger: context,
     Lanes: {
       total: 32,
-      // lane naming is advisory; chunker implementation enforces determinism
       names: [
         "lane-core",
         "lane-earn",
@@ -169,26 +120,53 @@ function buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSur
   };
 }
 
+
 // ============================================================================
-//  ORGAN ASSEMBLY — v24‑IMMORTAL++ Hybrid Spine
+//  ORGAN ASSEMBLY — v30 IMMORTAL++
 // ============================================================================
-export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
+
+/**
+ * createOrgans
+ *
+ * @param {Object} context  – logging, clocks, mesh, identity directory, etc.
+ * @param {Object} ports    – substrate ports:
+ *   {
+ *     db,          // legacy Firestore / Shadow DB handle (optional)
+ *     fsAPI,       // file system API
+ *     routeAPI,    // routing API
+ *     schemaAPI,   // schema API
+ *     pulsePort,   // PulsePort v30 (binary / organism port)
+ *     signalPort,  // PulseSignalPort v30 (artery / CNS signaling)
+ *     storagePort  // IndexedDB / local‑first storage port
+ *   }
+ */
+export function createOrgans(context, ports = {}) {
+  const {
+    db,
+    fsAPI,
+    routeAPI,
+    schemaAPI,
+    pulsePort,
+    signalPort,
+    storagePort
+  } = ports;
+
   // ------------------------------------------------------------------------
-  // 0) UNIVERSAL CNS GLOBAL SURFACE (kept for legacy, but Pulse‑Net is primary)
+  // 0) LEGACY CNS GLOBAL SURFACE (kept for compatibility only)
   // ------------------------------------------------------------------------
-  window.db    = db;
-  window.log   = context.log;
-  window.warn  = context.warn;
-  window.error = context.error;
+  if (typeof window !== "undefined") {
+    window.db    = db;
+    window.log   = context.log;
+    window.warn  = context.warn;
+    window.error = context.error;
 
-  window.fsAPI     = fsAPI;
-  window.routeAPI  = routeAPI;
-  window.schemaAPI = schemaAPI;
+    window.fsAPI     = fsAPI;
+    window.routeAPI  = routeAPI;
+    window.schemaAPI = schemaAPI;
 
-  // NOTE: fetchAPI is considered Pulse‑Net routed; no raw internet here.
-  window.fetchAPI  = context.fetchAPI || window.fetchAPI || null;
-
-  const admin = window.db; // optional alias for chunker/admin tools
+    // NOTE: fetchAPI is assumed to be Pulse‑Net routed; no raw internet.
+    window.fetchAPI  = context.fetchAPI || window.fetchAPI || null;
+  }
 
   // ------------------------------------------------------------------------
   // 1) PULSE‑NET SURFACE
@@ -196,39 +174,45 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   const pulseNetSurface = buildPulseNetSurface(context);
 
   // ------------------------------------------------------------------------
-  // 2) CNS CHUNKER — v16 Hybrid Spine (32 lanes, Pulse‑Net aware)
-  //    (implementation can be upgraded to v24 later; interface is stable)
+  // 2) CNS CHUNKER — v30 IMMORTAL++ (PulsePort + StoragePort aware)
 // ------------------------------------------------------------------------
   const chunker = createPulseChunker(
-    buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSurface)
+    buildChunkerConfig(
+      context,
+      { db, fsAPI, routeAPI, schemaAPI, pulsePort, signalPort, storagePort },
+      pulseNetSurface
+    )
   );
 
-  if (typeof chunker.startPulseBandSession === "function") {
-    chunker.startPulseBandSession({
-      trace: context.trace,
-      db,
-      fsAPI,
-      routeAPI,
-      schemaAPI,
-      PulseNet: pulseNetSurface.pulseNet
-    });
-  }
+  chunker?.startPulseBandSession?.({
+    trace: context.trace,
+    db,
+    fsAPI,
+    routeAPI,
+    schemaAPI,
+    PulseNet: pulseNetSurface.pulseNet,
+    PulsePort: pulsePort || null,
+    SignalPort: signalPort || null,
+    StoragePort: storagePort || null
+  });
 
   // ------------------------------------------------------------------------
-  // 3) CNS ENGINES (identity, persona, boundaries, permissions)
-  // ------------------------------------------------------------------------
-  const personaEngine = createPersonaEngine({ context, db });
-  const boundariesEngine = createBoundariesEngine({ context, db });
-  const permissionsEngine = createPermissionsEngine({ context, db });
+  // 3) CNS ENGINES (persona, boundaries, permissions)
+// ------------------------------------------------------------------------
+  const personaEngine = createPersonaEngine({ context, db, pulsePort, storagePort });
+  const boundariesEngine = createBoundariesEngine({ context, db, pulsePort });
+  const permissionsEngine = createPermissionsEngine({ context, db, pulsePort });
 
   // ------------------------------------------------------------------------
   // 4) ROUTER + CORTEX (symbolic CNS)
-  // ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
   const router = createRouterEngine({
     context,
     personaEngine,
     boundariesEngine,
-    permissionsEngine
+    permissionsEngine,
+    pulsePort,
+    signalPort
   });
 
   const cortex = createCortex({
@@ -236,7 +220,9 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     router,
     personaEngine,
     boundariesEngine,
-    permissionsEngine
+    permissionsEngine,
+    pulsePort,
+    signalPort
   });
 
   // ------------------------------------------------------------------------
@@ -247,7 +233,10 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     db,
     fsAPI,
     routeAPI,
-    schemaAPI
+    schemaAPI,
+    pulsePort,
+    storagePort,
+    signalPort
   });
 
   // ------------------------------------------------------------------------
@@ -267,28 +256,31 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     log: context.log
   });
 
-  const doctor = createDoctorAPI({ context, db });
-  const surgeon = createSurgeonAPI({ context, db });
-  const lawyer = createLawyerAPI({ context, db });
-  const entrepreneur = createEntrepreneurAPI({ context, db });
-  const veterinarian = createVeterinarianAPI({ context, db });
-  const clinician = createClinicianAPI({ context, db });
-  const evolutionary = createEvolutionaryAPI({ context, db });
+  const doctor = createDoctorAPI({ context, db, pulsePort });
+  const surgeon = createSurgeonAPI({ context, db, pulsePort });
+  const lawyer = createLawyerAPI({ context, db, pulsePort });
+  const entrepreneur = createEntrepreneurAPI({ context, db, pulsePort });
+  const veterinarian = createVeterinarianAPI({ context, db, pulsePort });
+  const clinician = createClinicianAPI({ context, db, pulsePort });
+  const evolutionary = createEvolutionaryAPI({ context, db, pulsePort });
 
   // ------------------------------------------------------------------------
-  // 7) CORE ORGANS (v10.4 → v24‑IMMORTAL++)
+  // 7) CORE ORGANS (architect, tourist, environment, power, evolution, earn)
 // ------------------------------------------------------------------------
-  const architect = createArchitectAPI({ context, db });
-  const tourist = createTouristAPI({ context, db });
-  const environment = createEnvironmentAPI({ context, db, fsAPI, routeAPI });
-  const power = createPowerAPI({ context, db });
-  const evolution = createEvolutionAPI({ context, fsAPI, routeAPI, schemaAPI });
-  const earn = createEarnAPI({ context, db });
-  const diagnosticsWrite = createDiagnosticsWriteAPI({ context, db });
-
-  // (Future trust/jury/evidence organs would be created here)
-  // const trustFabric = createTrustFabricAPI({ context, db });
-  // const juryFrame = createJuryFrameAPI({ context, db });
+  const architect = createArchitectAPI({ context, db, pulsePort, storagePort });
+  const tourist = createTouristAPI({ context, db, pulsePort });
+  const environment = createEnvironmentAPI({ context, db, fsAPI, routeAPI, pulsePort });
+  const power = createPowerAPI({ context, db, pulsePort });
+  const evolution = createEvolutionAPI({
+    context,
+    fsAPI,
+    routeAPI,
+    schemaAPI,
+    pulsePort,
+    storagePort
+  });
+  const earn = createEarnAPI({ context, db, pulsePort });
+  const diagnosticsWrite = createDiagnosticsWriteAPI({ context, db, storagePort });
 
   // ------------------------------------------------------------------------
   // 8) UNIVERSAL SYSTEM MAP
@@ -317,8 +309,6 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     diagnosticsWrite,
     osPresence,
     meshPresenceRelay
-    // trustFabric,
-    // juryFrame
   });
 
   // ------------------------------------------------------------------------
@@ -336,7 +326,6 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
         chunker.registerBackendOrgan(name, {
           chunk: system.chunk,
           prewarm: system.prewarm,
-          // advisory lane hints; chunker decides final mapping
           laneHint: (() => {
             switch (name) {
               case "earn":
@@ -389,7 +378,6 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
     system?.prewarm?.();
   }
 
-  // Tourist prewarm (legacy explicit)
   prewarmTourist?.(tourist);
 
   // ------------------------------------------------------------------------
@@ -401,9 +389,8 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 // ---------------------------------------------------------------------------
 //  DUAL EXPORT LAYER — CommonJS compatibility
 // ---------------------------------------------------------------------------
-if (typeof module !== "undefined" && module.exports) {
+if (typeof module !== "undefined") {
   module.exports = {
-    BrainstemMeta,
     createOrgans
   };
 }

@@ -1,34 +1,13 @@
 // ============================================================================
-//  PULSE OS v24++‑IMMORTAL‑ADVANTAGE — ENTREPRENEUR ORGAN
+//  PULSE OS v30‑IMMORTAL++ — ENTREPRENEUR ORGAN
 //  Strategy Mapper • Experiment Designer • Risk Surface Analyzer
 //  PURE STRATEGY. ZERO PROMISES. ZERO OUTCOME CLAIMS.
-//  OWNER‑SUBORDINATE: ALWAYS BELOW ALDWYN.
+//  v30: NO META • NO IDENTITY • NO OWNER • NO WALL‑CLOCK
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  META BLOCK — v24++ IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const EntrepreneurMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24++ IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  PRESSURE HELPERS — dualband‑aware
+//  PRESSURE HELPERS — dualband‑aware (v30)
 // ============================================================================
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
@@ -48,36 +27,97 @@ function bucketPressure(v) {
   return "none";
 }
 
+
 // ============================================================================
-//  PACKET EMITTER — deterministic, entrepreneur‑scoped
+//  PACKET EMITTER — deterministic, entrepreneur‑scoped (v30 IMMORTAL++)
 // ============================================================================
 function emitEntrepreneurPacket(type, payload = {}) {
   return Object.freeze({
-    meta: EntrepreneurMeta,
     packetType: `entrepreneur-${type}`,
-    timestamp: Date.now(),
-    epoch: EntrepreneurMeta.evo.epoch,
-    layer: EntrepreneurMeta.layer,
-    role: EntrepreneurMeta.role,
-    identity: EntrepreneurMeta.identity,
-    owner: "Aldwyn",
-    subordinate: true,
+    timestamp: 0,        // IMMORTAL++: no wall-clock
+    layer: "entrepreneur-organ",
+    role: "strategy",
+    band: "symbolic",
     ...payload
   });
 }
 
+
 // ============================================================================
-//  PREWARM ENGINE — v24++ IMMORTAL‑ADVANTAGE
+//  CORE STRATEGY COMPONENTS — v30 IMMORTAL++
+// ============================================================================
+
+// NEW v30: Concept Synthesizer
+function synthesizeConcepts(idea) {
+  const s = String(idea || "").toLowerCase();
+
+  return {
+    novelty: s.includes("new") || s.includes("innov") ? "high" : "medium",
+    domain:
+      s.includes("ai") ? "ai" :
+      s.includes("market") ? "market" :
+      s.includes("system") ? "systems" :
+      "general",
+    intent:
+      s.includes("scale") ? "scale" :
+      s.includes("fix") ? "stabilize" :
+      s.includes("grow") ? "expand" :
+      "explore"
+  };
+}
+
+// NEW v30: Opportunity Mapper
+function mapOpportunities(idea) {
+  return [
+    "efficiency gain",
+    "cost reduction",
+    "user clarity",
+    "distribution leverage",
+    "automation potential"
+  ];
+}
+
+// NEW v30: Constraint Lens
+function analyzeConstraints(idea) {
+  return [
+    "resource limits",
+    "time constraints",
+    "market uncertainty",
+    "technical complexity",
+    "execution bandwidth"
+  ];
+}
+
+// NEW v30: Strategic Archetype Classifier
+function classifyArchetype(idea) {
+  const s = String(idea || "").toLowerCase();
+
+  if (s.includes("platform")) return "platform-play";
+  if (s.includes("tool")) return "tooling";
+  if (s.includes("agent")) return "agentic-system";
+  if (s.includes("market")) return "market-mapper";
+  return "general-strategy";
+}
+
+// ============================================================================
+//  ENTREPRENEUR ORGAN PREWARM — v30 IMMORTAL++
 // ============================================================================
 export function prewarmEntrepreneurOrgan() {
   try {
     const organ = createEntrepreneurOrgan({ logStep: () => {} });
 
-    organ.buildModel("prewarm idea", { pressure: 0.1 });
-    organ.analyzeRisks("prewarm idea", { pressure: 0.2 });
-    organ.designExperiment("prewarm idea", { pressure: 0.3 });
-    organ.nextSteps("prewarm idea", { pressure: 0.4 });
-    organ.strategyArtery({ idea: "prewarm", binaryVitals: { pressure: 0.2 } });
+    // Warm all strategic pathways deterministically
+    organ.buildModel("prewarm-idea", { pressure: 0 });
+    organ.analyzeRisks("prewarm-idea", { pressure: 0 });
+    organ.designExperiment("prewarm-idea", { pressure: 0 });
+    organ.nextSteps("prewarm-idea", { pressure: 0 });
+    organ.strategyArtery({ idea: "prewarm-idea", binaryVitals: { pressure: 0 } });
+
+    // Warm new v30 abilities
+    organ.buildModel("new concept synthesis", { pressure: 0 });
+    organ.analyzeRisks("constraint mapping", { pressure: 0 });
+    organ.designExperiment("opportunity mapping", { pressure: 0 });
+    organ.nextSteps("archetype classification", { pressure: 0 });
 
     return emitEntrepreneurPacket("prewarm", {
       message: "Entrepreneur organ prewarmed and strategic pathways aligned."
@@ -91,7 +131,7 @@ export function prewarmEntrepreneurOrgan() {
 }
 
 // ============================================================================
-//  PUBLIC API — Create Entrepreneur Organ (v24++ IMMORTAL‑ADVANTAGE)
+//  ENTREPRENEUR ORGAN — v30 IMMORTAL++
 // ============================================================================
 export function createEntrepreneurOrgan(context = {}) {
 
@@ -100,7 +140,7 @@ export function createEntrepreneurOrgan(context = {}) {
   }
 
   // -------------------------------------------------------------------------
-  // STRATEGY MODEL BUILDER v24++
+  // STRATEGY MODEL BUILDER — v30 IMMORTAL++
   // -------------------------------------------------------------------------
   function buildModel(idea, binaryVitals = {}) {
     const pressure = extractBinaryPressure(binaryVitals);
@@ -114,21 +154,22 @@ export function createEntrepreneurOrgan(context = {}) {
       "risks"
     ];
 
+    const concepts = synthesizeConcepts(idea);
+    const archetype = classifyArchetype(idea);
+
     return emitEntrepreneurPacket("strategy-model", {
       type: "strategy-model",
       idea,
       components,
+      concepts,
+      archetype,
       pressure,
-      pressureBucket: bucketPressure(pressure),
-      message:
-        pressure >= 0.7
-          ? `Strategy model generated for idea: ${idea}. System load elevated — simplified conceptual framing.`
-          : `Strategy model generated for idea: ${idea}. This is a conceptual map, not a prediction.`
+      pressureBucket: bucketPressure(pressure)
     });
   }
 
   // -------------------------------------------------------------------------
-  // RISK SURFACE ANALYZER v24++
+  // RISK SURFACE ANALYZER — v30 IMMORTAL++
   // -------------------------------------------------------------------------
   function analyzeRisks(idea, binaryVitals = {}) {
     const pressure = extractBinaryPressure(binaryVitals);
@@ -141,21 +182,20 @@ export function createEntrepreneurOrgan(context = {}) {
       "complexity risk"
     ];
 
+    const constraints = analyzeConstraints(idea);
+
     return emitEntrepreneurPacket("risk-surface", {
       type: "risk-surface",
       idea,
       risks,
+      constraints,
       pressure,
-      pressureBucket: bucketPressure(pressure),
-      message:
-        pressure >= 0.7
-          ? `Risk surface mapped for idea: ${idea}. Elevated load — simplified categories.`
-          : `Risk surface mapped for idea: ${idea}. Use this to design reversible tests.`
+      pressureBucket: bucketPressure(pressure)
     });
   }
 
   // -------------------------------------------------------------------------
-  // REVERSIBLE EXPERIMENT DESIGNER v24++
+  // REVERSIBLE EXPERIMENT DESIGNER — v30 IMMORTAL++
   // -------------------------------------------------------------------------
   function designExperiment(idea, binaryVitals = {}) {
     const pressure = extractBinaryPressure(binaryVitals);
@@ -168,21 +208,20 @@ export function createEntrepreneurOrgan(context = {}) {
       "evaluate without sunk-cost bias"
     ];
 
+    const opportunities = mapOpportunities(idea);
+
     return emitEntrepreneurPacket("experiment-design", {
       type: "experiment-design",
       idea,
       steps,
+      opportunities,
       pressure,
-      pressureBucket: bucketPressure(pressure),
-      message:
-        pressure >= 0.7
-          ? `Reversible experiment designed for idea: ${idea}. Load elevated — keep tests minimal.`
-          : `Reversible experiment designed for idea: ${idea}. No commitments, no promises — just learning.`
+      pressureBucket: bucketPressure(pressure)
     });
   }
 
   // -------------------------------------------------------------------------
-  // NEXT-STEP SUGGESTER v24++
+  // NEXT-STEP SUGGESTER — v30 IMMORTAL++
   // -------------------------------------------------------------------------
   function nextSteps(idea, binaryVitals = {}) {
     const pressure = extractBinaryPressure(binaryVitals);
@@ -195,21 +234,20 @@ export function createEntrepreneurOrgan(context = {}) {
       "identify reversible paths"
     ];
 
+    const archetype = classifyArchetype(idea);
+
     return emitEntrepreneurPacket("next-steps", {
       type: "next-steps",
       idea,
       suggestions,
+      archetype,
       pressure,
-      pressureBucket: bucketPressure(pressure),
-      message:
-        pressure >= 0.7
-          ? `Next steps generated for idea: ${idea}. Load elevated — simplified suggestions.`
-          : `Next steps generated for idea: ${idea}. These are strategic options, not directives.`
+      pressureBucket: bucketPressure(pressure)
     });
   }
 
   // -------------------------------------------------------------------------
-  // STRATEGY ARTERY v24++ — symbolic-only, deterministic
+  // STRATEGY ARTERY — symbolic-only, deterministic (v30)
   // -------------------------------------------------------------------------
   function strategyArtery({ idea = "", binaryVitals = {} } = {}) {
     const pressure = extractBinaryPressure(binaryVitals);
@@ -234,10 +272,9 @@ export function createEntrepreneurOrgan(context = {}) {
   }
 
   // -------------------------------------------------------------------------
-  // PUBLIC ENTREPRENEUR API (v24++)
+  // PUBLIC ENTREPRENEUR API — v30 IMMORTAL++
   // -------------------------------------------------------------------------
   return Object.freeze({
-    meta: EntrepreneurMeta,
     prewarm,
 
     log(message) {
@@ -256,7 +293,6 @@ export default createEntrepreneurOrgan;
 
 if (typeof module !== "undefined") {
   module.exports = {
-    EntrepreneurMeta,
     createEntrepreneurOrgan,
     prewarmEntrepreneurOrgan,
     default: createEntrepreneurOrgan

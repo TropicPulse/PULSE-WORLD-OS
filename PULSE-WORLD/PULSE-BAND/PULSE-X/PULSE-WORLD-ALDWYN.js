@@ -163,8 +163,8 @@ import createAIExperience from "../PULSE-AI/aiExperience-v24.js";
 // ============================================================================
 import createAIBinaryPipeline from "../PULSE-AI/aiPipeline-v24.js";
 import runAI from "../PULSE-AI/aiEngine-v24.js";
-import pulseAIChunker from "../PULSE-AI/PulseAIChunker-v24.js";
-import createPulseFileScanner from "../PULSE-AI/PulseFileScanner-v24.js";
+import pulseAIChunker from "../PULSE-AI/PulseAIChunker-v30.js";
+import createPulseFileScanner from "../PULSE-AI/PulseFileScanner-v30.js";
 
 // ============================================================================
 //  7. WATCHDOG + VITALS + LOGGING

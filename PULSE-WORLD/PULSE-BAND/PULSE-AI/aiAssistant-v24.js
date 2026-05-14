@@ -4,22 +4,6 @@
 //  PURE STRUCTURE. ZERO ACTION IN THE WORLD. ZERO TIMING. ZERO MUTATION.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// META EXPORTS — v24 IMMORTAL++
-export const AssistantMeta       = Identity.OrganMeta;
-export const pulseRole           = Identity.pulseRole;
-export const surfaceMeta         = Identity.surfaceMeta;
-export const pulseLoreContext    = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META  = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META         = Identity.EXPORT_META;
-
 // ============================================================================
 // IMMORTAL HELPERS — ZERO TIMING, ZERO RANDOMNESS
 // ============================================================================
@@ -251,7 +235,6 @@ export function createAssistantOrgan(context = {}) {
   // PUBLIC ASSISTANT API — v24‑IMMORTAL++
   // --------------------------------------------------------------------------
   return Object.freeze({
-    meta: AssistantMeta,
     prewarm,
 
     log(message) {

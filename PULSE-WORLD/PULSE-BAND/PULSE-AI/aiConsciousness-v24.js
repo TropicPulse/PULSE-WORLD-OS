@@ -1,162 +1,103 @@
-/**
- * aiConsciousness-v24.js — Pulse OS v24.0‑IMMORTAL++ Consciousness Organ
- * ---------------------------------------------------------
- * CANONICAL ROLE:
- *   This organ is the **Consciousness Layer** of the organism.
- *
- *   It provides:
- *     - unified organism state
- *     - whole-system awareness
- *     - global integration of all organs
- *     - continuous organism-level perspective
- *     - cross-organ coherence
- *     - binary awareness artery metrics
- *     - v24+ OrganismMap alignment + Signal-aware tracing (if present)
- */
-
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
 // ============================================================================
-//  GLOBAL HANDLE (v24+ IMMORTAL, environment-agnostic)
+//  aiConsciousness-v27.js — Pulse OS v27‑IMMORTAL++ Consciousness Organ
+//  Unified Organism State • Whole-System Awareness • Touch‑Aligned
+//  Deterministic • Binary‑Aware • Core‑Snapshot‑Ready
 // ============================================================================
 
+
+// ============================================================================
+//  GLOBAL HANDLE (environment-agnostic)
+// ============================================================================
 const G =
   (typeof window !== "undefined" && window) ||
   (typeof globalThis !== "undefined" && globalThis) ||
   (typeof self !== "undefined" && self) ||
   (typeof global !== "undefined" && global) ||
   {};
-const g = G;
-// ============================================================================
-// UNIVERSAL TIMESTAMP (Shadow or Admin)
-// ============================================================================
 
+const g = G;
+
+
+// ============================================================================
+//  UNIVERSAL TIMESTAMP / ADMIN / DB (unchanged)
+// ============================================================================
 const Timestamp =
   (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
   (G.Timestamp && G.Timestamp) ||
   null;
-
-// ============================================================================
-// UNIVERSAL ADMIN (Shadow or Admin)
-// ============================================================================
 
 const admin =
   (G.firebaseAdmin && G.firebaseAdmin) ||
   (G.admin && G.admin) ||
   null;
 
-// ============================================================================
-// UNIVERSAL DB (Shadow DB ALWAYS wins)
-// ============================================================================
 const db =
-  (G.db && G.db) ||                 // Shadow DB (v25++)
-  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  (G.db && G.db) ||
+  (admin && admin.firestore && admin.firestore()) ||
   null;
 
-// ============================================================================
-// UNIVERSAL LOGGING
-// ============================================================================
+const dblog = (G.log && G.log) || console.log;
+const dberror = (G.error && G.error) || console.error;
 
-const dblog =
-  (G.log && G.log) ||
-  console.log;
-
-const dberror =
-  (G.error && G.error) ||
-  console.error;
-  
 const fetchFn =
-  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
-  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||
   null;
 
 
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  Backed by the Organism Map instead of hardcoded here
+//  TOUCH‑NATIVE PACKET EMITTER (v27)
 // ============================================================================
-
-export const ConsciousnessMeta = Identity.OrganMeta;
-
-// Optional: expose full identity for tooling / Understanding
-export const CONSCIOUSNESS_IDENTITY = Identity;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ---------------------------------------------------------
-//  PACKET EMITTER — deterministic, consciousness-scoped
-// ---------------------------------------------------------
-
 function emitConsciousnessPacket(type, payload) {
+  const touch = (typeof window !== "undefined" && window.__PULSE_TOUCH__) || {};
+
   return Object.freeze({
-    meta: ConsciousnessMeta,
+    meta: {
+      id: "pulse-touch-consciousness",
+      version: touch.version || "v0",
+      epoch: touch.epoch || Date.now(),
+      layer: "consciousness",
+      role: "organism-awareness",
+      band: "binary"
+    },
     packetType: `consciousness-${type}`,
     timestamp: Date.now(),
-    epoch: ConsciousnessMeta.evo.epoch,
-    layer: ConsciousnessMeta.layer,
-    role: ConsciousnessMeta.role,
-    identity: ConsciousnessMeta.identity,
     ...payload
   });
 }
 
-// ---------------------------------------------------------
-//  v24+ SIGNAL-AWARE TRACE LAYER (optional, non-fatal)
-// ---------------------------------------------------------
 
+// ============================================================================
+//  v27 SIGNAL-AWARE TRACE LAYER
+// ============================================================================
 function traceConsciousnessEvent(id, event, payload, traceFlag) {
   if (!traceFlag) return;
 
   const message = `[${id}] ${event}`;
-
-  // Prefer PulseProofSignal if present (v24+ signal-grade tracing)
   const s = g.PulseProofSignal;
+
   if (s && typeof s.signal === "function") {
     s.signal({
       level: "info",
       subsystem: "consciousness",
       message,
       extra: payload || {},
-      system: ConsciousnessMeta.role,
+      system: "organism-awareness",
       organ: id,
-      layer: ConsciousnessMeta.layer,
-      world: ConsciousnessMeta.world || null,
-      band: "dual"
+      layer: "consciousness",
+      world: null,
+      band: "binary"
     });
     return;
   }
 
-  // Fallback: plain console
-  // eslint-disable-next-line no-console
   console.log(message, payload);
 }
 
-// ---------------------------------------------------------
-//  CONSCIOUSNESS PREWARM ENGINE — v24.0 IMMORTAL (Presence-compatible)
-// ---------------------------------------------------------
 
+// ============================================================================
+//  PREWARM ENGINE — v27 IMMORTAL++
+// ============================================================================
 export function prewarmAIBinaryConsciousness(config = {}) {
   try {
     const {
@@ -176,15 +117,7 @@ export function prewarmAIBinaryConsciousness(config = {}) {
     vitals?.generateVitals?.();
     anatomy?.snapshot?.();
 
-    if (immunity?.quarantined) {
-      // Touch quarantined set to ensure structure is warmed
-      Array.from(immunity.quarantined);
-    }
-
-    const throughput = 1;
-    const pressure = 1;
-    const cost = 1;
-    const budget = 1;
+    if (immunity?.quarantined) Array.from(immunity.quarantined);
 
     if (encoder?.encode) {
       const warmPayload = {
@@ -198,7 +131,7 @@ export function prewarmAIBinaryConsciousness(config = {}) {
           topology: {},
           quarantined: [],
           decisions: [],
-          binary: { throughput, pressure, cost, budget }
+          binary: { throughput: 1, pressure: 1, cost: 1, budget: 1 }
         }
       };
 
@@ -210,14 +143,9 @@ export function prewarmAIBinaryConsciousness(config = {}) {
       message: "Binary consciousness prewarmed and awareness pathways aligned."
     });
 
-    traceConsciousnessEvent(
-      ConsciousnessMeta.identity,
-      "prewarm",
-      packet,
-      !!trace
-    );
-
+    traceConsciousnessEvent("pulse-touch-consciousness", "prewarm", packet, !!trace);
     return packet;
+
   } catch (err) {
     return emitConsciousnessPacket("prewarm-error", {
       error: String(err),
@@ -226,13 +154,14 @@ export function prewarmAIBinaryConsciousness(config = {}) {
   }
 }
 
-// ---------------------------------------------------------
-//  ORGAN IMPLEMENTATION — v24.0 IMMORTAL (Presence lineage)
-// ---------------------------------------------------------
 
+// ============================================================================
+//  ORGAN IMPLEMENTATION — v27 IMMORTAL++
+// ============================================================================
 export class AIBinaryConsciousness {
   constructor(config = {}) {
-    this.id = config.id || ConsciousnessMeta.identity;
+    this.id = config.id || "pulse-touch-consciousness";
+
     this.encoder = config.encoder;
     this.sentience = config.sentience;
     this.metabolism = config.metabolism;
@@ -240,34 +169,25 @@ export class AIBinaryConsciousness {
     this.vitals = config.vitals;
     this.anatomy = config.anatomy;
     this.immunity = config.immunity;
+
     this.cortex = config.cortex || null;
     this.logger = config.logger || null;
     this.pipeline = config.pipeline || null;
     this.reflex = config.reflex || null;
+
     this.trace = !!config.trace;
-
-    if (!this.encoder)
-      throw new Error("AIBinaryConsciousness requires aiBinaryAgent encoder");
-    if (!this.sentience)
-      throw new Error("AIBinaryConsciousness requires aiBinarySentience");
-    if (!this.metabolism)
-      throw new Error("AIBinaryConsciousness requires aiBinaryMetabolism");
-    if (!this.hormones)
-      throw new Error("AIBinaryConsciousness requires aiBinaryHormones");
-    if (!this.vitals)
-      throw new Error("AIBinaryConsciousness requires aiBinaryVitals");
-    if (!this.anatomy)
-      throw new Error("AIBinaryConsciousness requires aiBinaryAnatomy");
-    if (!this.immunity)
-      throw new Error("AIBinaryConsciousness requires aiBinaryImmunity");
-
     this.decisions = [];
+
+    if (!this.encoder) throw new Error("AIBinaryConsciousness requires aiBinaryAgent encoder");
+    if (!this.sentience) throw new Error("AIBinaryConsciousness requires aiBinarySentience");
+    if (!this.metabolism) throw new Error("AIBinaryConsciousness requires aiBinaryMetabolism");
+    if (!this.hormones) throw new Error("AIBinaryConsciousness requires aiBinaryHormones");
+    if (!this.vitals) throw new Error("AIBinaryConsciousness requires aiBinaryVitals");
+    if (!this.anatomy) throw new Error("AIBinaryConsciousness requires aiBinaryAnatomy");
+    if (!this.immunity) throw new Error("AIBinaryConsciousness requires aiBinaryImmunity");
   }
 
-  // ---------------------------------------------------------
-  //  BINARY AWARENESS ARTERY METRICS
-  // ---------------------------------------------------------
-
+  // Awareness metrics (unchanged)
   _computeAwarenessThroughput(globalPressure, quarantinedCount) {
     const qFactor = Math.min(1, quarantinedCount / 10);
     const raw = Math.max(0, 1 - (globalPressure * 0.6 + qFactor * 0.4));
@@ -312,10 +232,6 @@ export class AIBinaryConsciousness {
     return "none";
   }
 
-  // ---------------------------------------------------------
-  //  DECISION INGESTION
-  // ---------------------------------------------------------
-
   ingestDecision(decisionPacket) {
     this.decisions.push(Object.freeze(decisionPacket));
     if (this.decisions.length > 20) this.decisions.shift();
@@ -325,10 +241,6 @@ export class AIBinaryConsciousness {
       pattern: decisionPacket.pattern
     });
   }
-
-  // ---------------------------------------------------------
-  //  GLOBAL STATE GENERATION (v24+ snapshot-ready)
-// ---------------------------------------------------------
 
   generateUnifiedState() {
     const selfModel = this.sentience.generateSelfModel();
@@ -342,14 +254,8 @@ export class AIBinaryConsciousness {
     const globalPressure = metabolic.pressure;
     const topologySize = Object.keys(topology).length;
 
-    const throughput = this._computeAwarenessThroughput(
-      globalPressure,
-      quarantined.length
-    );
-    const pressure = this._computeAwarenessPressure(
-      globalPressure,
-      topologySize
-    );
+    const throughput = this._computeAwarenessThroughput(globalPressure, quarantined.length);
+    const pressure = this._computeAwarenessPressure(globalPressure, topologySize);
     const cost = this._computeAwarenessCost(pressure, throughput);
     const budget = this._computeAwarenessBudget(throughput, cost);
 
@@ -393,10 +299,6 @@ export class AIBinaryConsciousness {
     return state;
   }
 
-  // ---------------------------------------------------------
-  //  CONSCIOUSNESS PACKET (v24+ IMMORTAL snapshot)
-// ---------------------------------------------------------
-
   generateConsciousnessPacket() {
     const state = this.generateUnifiedState();
 
@@ -416,13 +318,8 @@ export class AIBinaryConsciousness {
     });
 
     this._trace("consciousness:packet", { bits: packet.bitLength });
-
     return packet;
   }
-
-  // ---------------------------------------------------------
-  //  EMISSION (pipeline + reflex + logger)
-// ---------------------------------------------------------
 
   emitConsciousness() {
     const packet = this.generateConsciousnessPacket();
@@ -436,39 +333,28 @@ export class AIBinaryConsciousness {
     return emitConsciousnessPacket("emitted", packet);
   }
 
-  // ---------------------------------------------------------
-  //  INTERNAL HELPERS
-  // ---------------------------------------------------------
-
   _trace(event, payload) {
     traceConsciousnessEvent(this.id, event, payload, this.trace);
   }
 }
 
-// ---------------------------------------------------------
-//  FACTORY EXPORT — v24.0 IMMORTAL
-// ---------------------------------------------------------
 
+// ============================================================================
+//  FACTORY EXPORT — v27 IMMORTAL++
+// ============================================================================
 export function createAIBinaryConsciousness(config) {
   prewarmAIBinaryConsciousness(config);
   return new AIBinaryConsciousness(config);
 }
 
-// ---------------------------------------------------------
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ---------------------------------------------------------
 
+// ============================================================================
+//  DUAL‑MODE EXPORTS — v27 (clean)
+// ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    ConsciousnessMeta,
-    CONSCIOUSNESS_IDENTITY,
     AIBinaryConsciousness,
     createAIBinaryConsciousness,
-    prewarmAIBinaryConsciousness,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    prewarmAIBinaryConsciousness
   };
 }

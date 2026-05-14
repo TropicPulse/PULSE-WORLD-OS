@@ -6,11 +6,6 @@
 //  • Pure routing, zero mutation, zero randomness, deterministic, drift-proof
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 import { Personas, getPersona } from "./aiPersonality-v24.js";
 
 import Overmind from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
@@ -44,82 +39,7 @@ import {
   getProxyLineage
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
-const Identity = OrganismIdentity(import.meta.url);
 const { getRuntimeStateV2: getRuntimeStateV2Context } = PulseRuntimeV2;
-
-// ============================================================================
-//  META — v24++ IMMORTAL++ Router Identity
-// ============================================================================
-
-export const AIRouterMeta = Object.freeze({
-  layer: "PulseAIRouter",
-  role: "CNS_ROUTER_ORGANISM",
-  version: "v24-IMMORTAL++",
-  identity: "aiRouter-v24-IMMORTAL++",
-  evo: Object.freeze({
-    driftProof: true,
-    deterministic: true,
-    dualband: true,
-    binaryAware: true,
-    symbolicAware: true,
-    personaAware: true,
-    boundaryAware: true,
-    permissionAware: true,
-    archetypeAware: true,
-    routingAware: true,
-    routingArteryAware: true,
-    overmindAware: true,
-    safetyAware: true,
-    personalAware: true,
-    multiInstanceReady: true,
-    cacheAware: true,
-    prewarmReady: true,
-    organismAware: true,
-    failoverAware: true,
-    healthScoreAware: true,
-    epoch: "v24-IMMORTAL++"
-  }),
-  contract: Object.freeze({
-    purpose:
-      "Decode intent, select persona, map archetypes, integrate dual-band + organism routing hints, compute routing artery metrics v5, and optionally enrich with Overmind + NodeAdmin meta.",
-    never: Object.freeze([
-      "mutate request",
-      "mutate persona",
-      "mutate boundaries",
-      "mutate permissions",
-      "introduce randomness",
-      "override cortex decisions",
-      "override execution engine decisions",
-      "perform cognition",
-      "perform analysis",
-      "perform writes",
-      "generate symbolic state"
-    ]),
-    always: Object.freeze([
-      "normalize intent deterministically",
-      "extract flags deterministically",
-      "select persona safely",
-      "map archetypes deterministically",
-      "integrate organism snapshot metrics",
-      "compute routing artery metrics v5",
-      "produce dual-band routing hints",
-      "produce organism health score",
-      "surface safety + overmind hints",
-      "return frozen routing packets",
-      "remain drift-proof",
-      "remain non-blocking on sync path",
-      "support async enrichment via advanced path",
-      "support hot-path caching and prewarm"
-    ])
-  })
-});
-
-// Required surface exports
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  ARCHETYPE PAGE MAP (STATIC)

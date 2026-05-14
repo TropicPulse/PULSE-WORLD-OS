@@ -20,37 +20,6 @@
 //  ORGANISM IDENTITY — v24.0 IMMORTAL (Organism Map–backed)
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-
-export const BinaryAgentMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
-
 // ---------------------------------------------------------
 //  BINARY AGENT PREWARM ENGINE — v16‑Immortal (carried into v24)
 // ---------------------------------------------------------
@@ -311,7 +280,7 @@ class AIBinaryAgent {
       // identity
       cortexId: this.id,
       triHeartId: this.triHeartId,
-      epoch: BinaryAgentMeta.evo.epoch,
+      epoch: window.__PULSE_TOUCH__?.epoch || Date.now(),
       band: "binary"
     });
   }
@@ -547,18 +516,19 @@ export function createAIBinaryAgent(config = {}) {
 }
 
 export const BinaryAgentPresence = Object.freeze({
-  meta: BinaryAgentMeta,
+  meta: {
+    id: "ai-binary-agent",
+    version: window.__PULSE_TOUCH__?.version || "v0",
+    layer: "binary",
+    role: "binary-cortex",
+    band: "binary"
+  },
+
   create: createAIBinaryAgent,
   prewarm: prewarmAIBinaryAgent,
-  organ: "AIBinaryAgent",
-  layer: BinaryAgentMeta.layer,
-  role: BinaryAgentMeta.role,
-  version: BinaryAgentMeta.version,
-  band: "binary",
-  pulseRole,
-  surfaceMeta,
-  pulseLoreContext
+  organ: "AIBinaryAgent"
 });
+
 
 // Keep direct class export for advanced callers
 export { AIBinaryAgent };
@@ -566,21 +536,15 @@ export { AIBinaryAgent };
 // ---------------------------------------------------------
 //  COMMONJS FALLBACK EXPORT (Dual‑Mode)
 // ---------------------------------------------------------
-
 if (typeof module !== "undefined") {
   module.exports = {
     AIBinaryAgent,
     createAIBinaryAgent,
-    BinaryAgentMeta,
     BinaryAgentPresence,
-    prewarmAIBinaryAgent,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    prewarmAIBinaryAgent
   };
 }
+
 
 // Default ES export for v24‑IMMORTAL surface usage
 export default createAIBinaryAgent;

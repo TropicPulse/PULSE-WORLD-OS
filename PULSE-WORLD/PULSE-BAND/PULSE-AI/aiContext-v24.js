@@ -1,29 +1,9 @@
 // ============================================================================
-//  PULSE OS v24.0‑IMMORTAL Presence — COGNITIVE FRAME ORGAN
+//  PULSE OS v27‑IMMORTAL++ Presence — COGNITIVE FRAME ORGAN
 //  Dual‑Band Context • ABA Anchor • Drift & Diagnostics Surface
-//  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS.
+//  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS. TOUCH‑ALIGNED.
 // ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const COGNITIVE_FRAME_META = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  HELPERS — PRESSURE + BUCKETS
@@ -47,23 +27,28 @@ function bucketPressure(v) {
 }
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, frame-scoped
+//  PACKET EMITTER — deterministic, frame‑scoped, Touch‑aligned
 // ============================================================================
 function emitCognitiveFramePacket(type, payload) {
+  const touch = (typeof window !== "undefined" && window.__PULSE_TOUCH__) || {};
+
   return Object.freeze({
-    meta: COGNITIVE_FRAME_META,
+    meta: {
+      id: "pulse-touch-cognitive-frame",
+      version: touch.version || "v0",
+      epoch: touch.epoch || Date.now(),
+      layer: "cognitive-frame",
+      role: "context-organ",
+      band: "binary"
+    },
     packetType: `cognitive-frame-${type}`,
     timestamp: Date.now(),
-    epoch: COGNITIVE_FRAME_META.evo.epoch,
-    layer: COGNITIVE_FRAME_META.layer,
-    role: COGNITIVE_FRAME_META.role,
-    identity: COGNITIVE_FRAME_META.identity,
     ...payload
   });
 }
 
 // ============================================================================
-//  COGNITIVE FRAME PREWARM ENGINE — v24.0‑IMMORTAL Presence
+//  COGNITIVE FRAME PREWARM ENGINE — v27‑IMMORTAL++ Presence
 // ============================================================================
 export function prewarmCognitiveFrame() {
   try {
@@ -127,13 +112,23 @@ export function prewarmCognitiveFrame() {
 }
 
 // ============================================================================
-//  createCognitiveFrame — Self‑Contained Cognitive Context
+//  createCognitiveFrame — Self‑Contained Cognitive Context (v27‑IMMORTAL++)
 // ============================================================================
 export function createCognitiveFrame(options = {}) {
   const { request = {}, routing = {}, organismSnapshot = null } = options;
+  const touch = (typeof window !== "undefined" && window.__PULSE_TOUCH__) || {};
+
+  const frameMeta = {
+    id: "pulse-touch-cognitive-frame",
+    version: touch.version || "v0",
+    epoch: touch.epoch || Date.now(),
+    layer: "cognitive-frame",
+    role: "context-organ",
+    band: "binary"
+  };
 
   const context = {
-    meta: COGNITIVE_FRAME_META,
+    meta: frameMeta,
 
     request: Object.freeze({
       intent: request.intent || null,
@@ -334,11 +329,10 @@ export function createCognitiveFrame(options = {}) {
 export default createCognitiveFrame;
 
 // ============================================================================
-//  COMMONJS FALLBACK EXPORTS
+//  COMMONJS FALLBACK EXPORTS — v27‑IMMORTAL++
 // ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    COGNITIVE_FRAME_META,
     createCognitiveFrame,
     default: createCognitiveFrame,
     prewarmCognitiveFrame

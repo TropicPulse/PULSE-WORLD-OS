@@ -1,45 +1,13 @@
 // ============================================================================
-//  PULSE OS v24.0‑IMMORTAL — DELIVERY ENGINE
+//  PULSE OS v30‑IMMORTAL++ — DELIVERY ENGINE
 //  Delivery Organ • Clarity Engine • Drift‑Proof Formatting
 //  PURE DELIVERY. ZERO MUTATION OF MEANING. ZERO RANDOMNESS.
+//  v30: NO META COUPLING, NO IDENTITY, NO WALL‑CLOCK, NO CONSOLE.
 // ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const DeliveryEngineMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ─────────────────────────────────────────────────────────────
-// PRESSURE HELPERS — v24 IMMORTAL
+// PRESSURE HELPERS — v30 IMMORTAL++
 // ─────────────────────────────────────────────────────────────
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
@@ -59,28 +27,24 @@ function bucketPressure(v) {
 
 
 // ─────────────────────────────────────────────────────────────
-// PACKET EMITTER — deterministic, delivery-scoped
+// PACKET EMITTER — deterministic, delivery‑scoped (v30 IMMORTAL++)
 // ─────────────────────────────────────────────────────────────
 function emitDeliveryPacket(type, payload) {
   return Object.freeze({
-    meta: DeliveryEngineMeta,
     packetType: `delivery-${type}`,
-    timestamp: Date.now(),
-    epoch: DeliveryEngineMeta.evo.epoch,
-    layer: DeliveryEngineMeta.layer,
-    role: DeliveryEngineMeta.role,
-    identity: DeliveryEngineMeta.identity,
+    timestamp: 0, // IMMORTAL++: no wall‑clock coupling
+    layer: "delivery-engine",
+    role: "delivery-organ",
+    band: "binary",
     ...payload
   });
 }
 
 
 // ─────────────────────────────────────────────────────────────
-// CORE DELIVERY ORGAN — v24‑IMMORTAL
+// CORE DELIVERY ORGAN — v30‑IMMORTAL++
 // ─────────────────────────────────────────────────────────────
 export const aiDeliveryEngine = {
-  meta: DeliveryEngineMeta,
-
   // CORE DELIVERY LOGIC (meaning‑preserving cleanup)
   deliver(text) {
     if (!text || typeof text !== "string") {
@@ -122,7 +86,7 @@ export const aiDeliveryEngine = {
     return structured;
   },
 
-  // OPTIONAL: PACKETIZED FINAL DELIVERY — v24 IMMORTAL
+  // OPTIONAL: PACKETIZED FINAL DELIVERY — v30 IMMORTAL++
   finalizePacket(text, binaryVitals = {}) {
     const output = this.finalize(text);
     const length = output.length;
@@ -177,7 +141,7 @@ export const aiDeliveryEngine = {
 
 
 // ─────────────────────────────────────────────────────────────
-// DELIVERY ENGINE PREWARM — v24‑IMMORTAL
+// DELIVERY ENGINE PREWARM — v30‑IMMORTAL++
 // ─────────────────────────────────────────────────────────────
 export function prewarmDeliveryEngine() {
   try {
@@ -192,13 +156,15 @@ export function prewarmDeliveryEngine() {
     aiDeliveryEngine.structure(warmText);
     aiDeliveryEngine.finalize(warmText);
     aiDeliveryEngine.finalizePacket(warmText, { binary: { pressure: 0 } });
-    aiDeliveryEngine.deliveryArtery({ text: warmText, binaryVitals: { binary: { pressure: 0 } } });
+    aiDeliveryEngine.deliveryArtery({
+      text: warmText,
+      binaryVitals: { binary: { pressure: 0 } }
+    });
 
     return emitDeliveryPacket("prewarm", {
       message: "Delivery engine prewarmed and formatting pathways aligned."
     });
   } catch (err) {
-    console.error("[DeliveryEngine Prewarm] Failed:", err);
     return emitDeliveryPacket("prewarm-error", {
       error: String(err),
       message: "Delivery engine prewarm failed."
@@ -210,13 +176,12 @@ export default aiDeliveryEngine;
 
 
 // ─────────────────────────────────────────────────────────────
-// BOOT PREWARM + DUAL‑MODE EXPORTS
+// BOOT PREWARM + DUAL‑MODE EXPORTS — v30 IMMORTAL++
 // ─────────────────────────────────────────────────────────────
 prewarmDeliveryEngine();
 
 if (typeof module !== "undefined") {
   module.exports = {
-    DeliveryEngineMeta,
     aiDeliveryEngine,
     prewarmDeliveryEngine,
     default: aiDeliveryEngine

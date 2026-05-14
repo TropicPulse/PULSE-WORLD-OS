@@ -1,110 +1,86 @@
 // ============================================================================
-// FILE: /PULSE-TOUCH/PULSE-TOUCH-STORAGE.js
-// PULSE OS — v27++ IMMORTAL-INTEL
-// PULSE‑TOUCH STORAGE — BINARY INDEXEDDB ORGAN (FULL VERSION)
+// FILE: /PULSE-TOUCH/PULSE-TOUCH-STORAGE-v30.js
+// PULSE OS — v30 IMMORTAL++
+// PULSE‑TOUCH STORAGE — PULSEBINARY INDEXEDDB ORGAN (FULL VERSION)
 // ============================================================================
 //
 // ROLE:
 //   Unified binary storage cortex for Pulse‑Touch.
-//   Provides deterministic, IMMORTAL-safe IndexedDB access.
-//   Stores:
-//     • presence ring buffer (binary)
-//     • module envelopes (binary)
-//     • chunk profiles (binary)
-//     • warmup cache (binary)
-//     • analytics frames (binary)
-//     • pulse signals (binary)
+//   Deterministic, IMMORTAL‑safe IndexedDB access.
+//   Stores (all binary):
+//     • presence ring buffer
+//     • module envelopes
+//     • chunk profiles
+//     • warmup cache
+//     • analytics frames
+//     • pulse signals
 //
-//   All keys + values are binary.
+//   All keys + values are binary (ArrayBuffer / Uint8Array).
 //   No JSON. No strings. No schema drift.
 //   Append‑only where possible.
 //   Deterministic IMMORTAL schema.
 // ============================================================================
 
-export const AI_EXPERIENCE_META_PulseTouchStorage = {
-  id: "pulsetouch.storage",
+export const PULSE_TOUCH_STORAGE_META_V30 = Object.freeze({
+  id: "pulsetouch.storage.v30",
   kind: "storage_organ",
-  version: "v27++-IMMORTAL-INTEL",
+  version: "v30-IMMORTAL++",
   role: "binary_storage_engine",
-  surfaces: {
-    band: ["storage", "binary", "indexeddb", "persistence"],
-    wave: ["quiet", "background", "deterministic"],
-    presence: ["storage_state"],
-    speed: "async"
-  },
-  invariants: {
+  layer: "edge.storage",
+  band: "storage",
+  invariants: Object.freeze({
     networkCalls: "none",
     sideEffects: "none",
     determinism: "strict",
     mutation: "forbidden_at_runtime",
     zeroPII: true,
-    zeroTracking: true
-  }
-};
-
-export const ORGAN_META_PulseTouchStorage = {
-  id: "organ.pulsetouch.storage",
-  organism: "PulseTouch",
-  layer: "edge.storage",
-  tier: "IMMORTAL",
-  evoFlags: {
-    deterministic: true,
-    driftProof: true,
-    asyncSafe: true,
-    zeroPII: true,
     zeroTracking: true,
-    binaryAware: true,
-    indexedDBAware: true,
-    chunkProfileAware: true,
-    moduleEnvelopeAware: true,
-    warmupCacheAware: true,
-    analyticsAware: true,
-    presenceHistoryAware: true,
-    pulseSignalAware: true
-  }
-};
+    binaryOnly: true,
+    indexedDBOnly: true
+  })
+});
 
-export const ORGAN_CONTRACT_PulseTouchStorage = {
-  inputs: {
+export const PULSE_TOUCH_STORAGE_CONTRACT_V30 = Object.freeze({
+  inputs: Object.freeze({
     op: "operation",
     store: "store name",
-    key: "binary key",
-    value: "binary value (optional)"
-  },
-  outputs: {
+    key: "binary key (ArrayBuffer/Uint8Array)",
+    value: "binary value (optional, ArrayBuffer/Uint8Array)"
+  }),
+  outputs: Object.freeze({
     result: "binary result or null",
     ok: "boolean"
-  },
-  guarantees: {
+  }),
+  guarantees: Object.freeze({
     deterministic: true,
     asyncSafe: true,
     noNetwork: true,
     zeroPII: true
-  }
-};
+  })
+});
 
-export const IMMORTAL_OVERLAYS_PulseTouchStorage = {
+export const PULSE_TOUCH_STORAGE_OVERLAYS_V30 = Object.freeze({
   drift: { allowed: false },
   pressure: { expectedLoad: "medium" },
   stability: { semantics: "stable" },
   load: { maxComponents: 1 }
-};
+});
 
 // ============================================================================
 // INTERNAL CONSTANTS
 // ============================================================================
 
-const DB_NAME = "PulseTouchDB_v27_INTEL";
-const DB_VERSION = 3;
+const DB_NAME = "PulseTouchDB_v30_IMMORTAL";
+const DB_VERSION = 1;
 
-const STORES = {
+const STORES = Object.freeze({
   presence: "presence",       // binary ring buffer
   modules: "modules",         // binary module envelopes
   chunks: "chunks",           // binary chunk profiles
   warmup: "warmup",           // binary warmup cache
   analytics: "analytics",     // binary analytics frames
   signals: "signals"          // binary pulse signals
-};
+});
 
 // ============================================================================
 // OPEN DATABASE (IMMORTAL)
@@ -130,22 +106,20 @@ function openDB() {
 }
 
 // ============================================================================
-// BINARY HELPERS
+// BINARY HELPERS (PULSEBINARY STRICT)
 // ============================================================================
 
 function toBinaryKey(key) {
-  if (key instanceof ArrayBuffer) return key;
   if (key instanceof Uint8Array) return key.buffer;
-  if (typeof key === "string") return new TextEncoder().encode(key).buffer;
-  throw new Error("Invalid binary key");
+  if (key instanceof ArrayBuffer) return key;
+  throw new Error("PULSE-TOUCH-STORAGE v30: key must be Uint8Array or ArrayBuffer");
 }
 
 function toBinaryValue(value) {
   if (value == null) return null;
-  if (value instanceof ArrayBuffer) return value;
   if (value instanceof Uint8Array) return value.buffer;
-  if (typeof value === "string") return new TextEncoder().encode(value).buffer;
-  throw new Error("Invalid binary value");
+  if (value instanceof ArrayBuffer) return value;
+  throw new Error("PULSE-TOUCH-STORAGE v30: value must be Uint8Array or ArrayBuffer or null");
 }
 
 // ============================================================================
@@ -162,7 +136,7 @@ function toBinaryValue(value) {
 // ============================================================================
 
 async function appendPresenceFrame(timestamp, presenceCode) {
-  const key = toBinaryKey("presence_ring");
+  const key = toBinaryKey(new Uint8Array([0x70, 0x72, 0x65, 0x73])); // "pres" binary tag
   const db = await openDB();
 
   return new Promise((resolve) => {
@@ -177,9 +151,9 @@ async function appendPresenceFrame(timestamp, presenceCode) {
       if (!buf) {
         // initialize ring buffer
         buf = new ArrayBuffer(8 + 1024 * 5); // header + 5KB frames
-        const dv = new DataView(buf);
-        dv.setUint32(0, 0); // head
-        dv.setUint32(4, 0); // size
+        const dvInit = new DataView(buf);
+        dvInit.setUint32(0, 0); // head
+        dvInit.setUint32(4, 0); // size
       }
 
       const dv = new DataView(buf);
@@ -187,8 +161,8 @@ async function appendPresenceFrame(timestamp, presenceCode) {
       let size = dv.getUint32(4);
 
       const frameOffset = 8 + head * 5;
-      dv.setUint32(frameOffset, timestamp);
-      dv.setUint8(frameOffset + 4, presenceCode);
+      dv.setUint32(frameOffset, timestamp >>> 0);
+      dv.setUint8(frameOffset + 4, presenceCode & 0xff);
 
       head = (head + 1) % 1024;
       size = Math.min(size + 1, 1024);
@@ -205,7 +179,7 @@ async function appendPresenceFrame(timestamp, presenceCode) {
 }
 
 // ============================================================================
-// CORE STORAGE OPERATIONS
+// CORE STORAGE OPERATIONS (BINARY‑ONLY)
 // ============================================================================
 
 async function storagePut(storeName, key, value) {
@@ -214,7 +188,10 @@ async function storagePut(storeName, key, value) {
     const tx = db.transaction(storeName, "readwrite");
     const store = tx.objectStore(storeName);
 
-    const req = store.put(toBinaryValue(value), toBinaryKey(key));
+    const binaryKey = toBinaryKey(key);
+    const binaryValue = toBinaryValue(value);
+
+    const req = store.put(binaryValue, binaryKey);
 
     req.onsuccess = () => resolve(true);
     req.onerror = () => resolve(false);
@@ -227,9 +204,13 @@ async function storageGet(storeName, key) {
     const tx = db.transaction(storeName, "readonly");
     const store = tx.objectStore(storeName);
 
-    const req = store.get(toBinaryKey(key));
+    const binaryKey = toBinaryKey(key);
+    const req = store.get(binaryKey);
 
-    req.onsuccess = () => resolve(req.result || null);
+    req.onsuccess = () => {
+      const result = req.result || null;
+      resolve(result);
+    };
     req.onerror = () => resolve(null);
   });
 }
@@ -240,7 +221,8 @@ async function storageDelete(storeName, key) {
     const tx = db.transaction(storeName, "readwrite");
     const store = tx.objectStore(storeName);
 
-    const req = store.delete(toBinaryKey(key));
+    const binaryKey = toBinaryKey(key);
+    const req = store.delete(binaryKey);
 
     req.onsuccess = () => resolve(true);
     req.onerror = () => resolve(false);
@@ -248,14 +230,14 @@ async function storageDelete(storeName, key) {
 }
 
 // ============================================================================
-// PUBLIC ORGAN INTERFACE
+/** PUBLIC ORGAN INTERFACE — v30 IMMORTAL++ PULSEBINARY */
 // ============================================================================
 
-export function PulseTouchStorage() {
-  return {
-    meta: ORGAN_META_PulseTouchStorage,
-    contract: ORGAN_CONTRACT_PulseTouchStorage,
-    overlays: IMMORTAL_OVERLAYS_PulseTouchStorage,
+export function PulseTouchStorageV30() {
+  return Object.freeze({
+    meta: PULSE_TOUCH_STORAGE_META_V30,
+    contract: PULSE_TOUCH_STORAGE_CONTRACT_V30,
+    overlays: PULSE_TOUCH_STORAGE_OVERLAYS_V30,
 
     async put(store, key, value) {
       if (!STORES[store]) return { ok: false, result: null };
@@ -275,10 +257,10 @@ export function PulseTouchStorage() {
       return { ok, result: null };
     },
 
-    // v27++ INTEL — presence ring buffer
+    // v30 IMMORTAL++ — presence ring buffer (binary‑only)
     async appendPresence(timestamp, presenceCode) {
       const ok = await appendPresenceFrame(timestamp, presenceCode);
       return { ok };
     }
-  };
+  });
 }

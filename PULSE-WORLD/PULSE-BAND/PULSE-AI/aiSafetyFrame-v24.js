@@ -6,43 +6,6 @@
 //  NODEADMIN‑AWARE • PRESENCE‑AWARE • WINDOWED ARTERY REGISTRY
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL++
-// ============================================================================
-export const SafetyFrameMeta = Object.freeze({
-  ...Identity.OrganMeta,
-  version: "24-IMMORTAL++",
-  identity: "aiSafetyFrame-v24-IMMORTAL++",
-  evo: {
-    ...Identity.OrganMeta.evo,
-    deterministic: true,
-    driftProof: true,
-    dualband: true,
-    overmindAware: true,
-    presenceAware: true,
-    arteryAware: true,
-    nodeAdminAware: true,
-    epoch: "24-IMMORTAL++"
-  }
-});
-
-// ============================================================================
-//  SURFACE EXPORTS
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
 // ============================================================================
 //  GLOBAL SAFETY ARTERY REGISTRY — IMMORTAL++
 // ============================================================================

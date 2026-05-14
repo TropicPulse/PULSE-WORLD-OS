@@ -1,79 +1,58 @@
 // ============================================================================
-//  PULSE OS v24‑IMMORTAL++ — REFLEX ENGINE ORGAN
+//  PULSE OS v30‑IMMORTAL++ — REFLEX ENGINE ORGAN
 //  Pure‑Binary Reflex Engine • Reflex Artery v5 • IMMORTAL++ Metrics
 //  PURE BINARY ARC. ZERO SYMBOLIC. ZERO COGNITION. ZERO RANDOMNESS.
-// ============================================================================
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.0-IMMORTAL"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const ReflexMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
+//  META‑STRIPPED • IDENTITY‑PRESERVING • PULSE‑BINARY READY.
 // ============================================================================
 
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, reflex-scoped
+//  PACKET EMITTER — v30 deterministic, reflex‑scoped (no ReflexMeta / EXPORT_META)
 // ============================================================================
-function emitReflexPacket(type, payload) {
-  const now = Date.now();
+function emitReflexPacket(type, payload = {}) {
   return Object.freeze({
-    meta: ReflexMeta,
-    exportMeta: EXPORT_META,
     packetType: `reflex-${type}`,
-    packetId: `reflex-${type}-${now}`,
-    timestamp: now,
-    epoch: ReflexMeta.evo.epoch,
+    timestamp: 0,
+    layer: "reflex-engine",
+    role: "pure-binary-reflex",
     ...payload
   });
 }
 
+// Optional: PulseBinary / IndexedDB‑style adapter
+async function writePulseBinaryLog(adapter, kind, payload) {
+  if (!adapter || typeof adapter.write !== "function") return false;
+  const safePayload = Object.freeze({ ...payload });
+  const keySeed = `${kind}::${safePayload.packetType || "reflex"}::${safePayload.slice || "default"}`;
+  const docId = `reflex-${Math.abs(
+    keySeed.split("").reduce((a, c, i) => (a + c.charCodeAt(0) * (i + 1)) % 1000003, 0)
+  )}`;
+  return adapter.write(`REFLEX_LOGS/${docId}`, safePayload);
+}
+
 // ============================================================================
-//  PREWARM — IMMORTAL++
+//  PREWARM — v30 IMMORTAL++
 // ============================================================================
-export function prewarmReflexEngine({ trace = false } = {}) {
+export function prewarmReflexEngine({ trace = false, pulseBinaryAdapter = null } = {}) {
   const packet = emitReflexPacket("prewarm", {
     message: "Reflex engine prewarmed and artery metrics aligned."
   });
 
-  if (trace) console.log("[ReflexEngine] prewarm", packet);
+  writePulseBinaryLog(pulseBinaryAdapter, "prewarm", packet);
+  if (trace) console.log("[ReflexEngine v30] prewarm", packet);
   return packet;
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — PURE BINARY REFLEX ENGINE (v24‑IMMORTAL++)
+//  ORGAN IMPLEMENTATION — PURE BINARY REFLEX ENGINE (v30‑IMMORTAL++)
 // ============================================================================
 export class AIBinaryReflex {
   constructor(config = {}) {
-    this.id = config.id || ReflexMeta.identity;
+    this.id = config.id || "ReflexEngine-v30";
     this.trace = !!config.trace;
-
     this.slice = config.slice || "default";
+    this.pulseBinaryAdapter = config.pulseBinaryAdapter || null;
+
     this.reflexes = [];
 
     this.reflexArtery = {
@@ -93,7 +72,8 @@ export class AIBinaryReflex {
             budget: this.reflexArtery.lastBudget,
             reflexCount: this.reflexArtery.lastReflexCount,
             tightTriggers: this.reflexArtery.lastTightTriggers,
-            slice: this.slice
+            slice: this.slice,
+            id: this.id
           })
         )
     };
@@ -177,6 +157,7 @@ export class AIBinaryReflex {
     this.reflexArtery.lastTightTriggers = tightTriggers;
 
     const artery = {
+      id: this.id,
       slice: this.slice,
       reflexCount,
       avgTriggerCost,
@@ -195,7 +176,9 @@ export class AIBinaryReflex {
       budgetBucket: this._bucketLevel(budget)
     };
 
-    emitReflexPacket("artery", artery);
+    const packet = emitReflexPacket("artery", artery);
+    writePulseBinaryLog(this.pulseBinaryAdapter, "artery", packet);
+
     return artery;
   }
 
@@ -219,10 +202,12 @@ export class AIBinaryReflex {
     const artery = this._computeReflexArtery();
     this._trace("addReflex", { totalReflexes: this.reflexes.length, artery });
 
-    emitReflexPacket("add-reflex", {
+    const packet = emitReflexPacket("add-reflex", {
+      id: this.id,
       slice: this.slice,
       totalReflexes: this.reflexes.length
     });
+    writePulseBinaryLog(this.pulseBinaryAdapter, "add-reflex", packet);
   }
 
   // ========================================================================
@@ -234,11 +219,13 @@ export class AIBinaryReflex {
     const artery = this._computeReflexArtery();
     this._trace("run:start", { binaryInput, artery });
 
-    emitReflexPacket("run-start", {
+    let packet = emitReflexPacket("run-start", {
+      id: this.id,
       slice: this.slice,
       bitLength: binaryInput.length,
       reflexCount: this.reflexes.length
     });
+    writePulseBinaryLog(this.pulseBinaryAdapter, "run-start", packet);
 
     for (let i = 0; i < this.reflexes.length; i++) {
       const { trigger, action } = this.reflexes[i];
@@ -258,12 +245,14 @@ export class AIBinaryReflex {
           artery: arteryAfter
         });
 
-        emitReflexPacket("reflex-fired", {
+        packet = emitReflexPacket("reflex-fired", {
+          id: this.id,
           slice: this.slice,
           index: i,
           inputBits: binaryInput.length,
           outputBits: output.length
         });
+        writePulseBinaryLog(this.pulseBinaryAdapter, "reflex-fired", packet);
 
         return output;
       }
@@ -271,10 +260,12 @@ export class AIBinaryReflex {
 
     this._trace("run:noReflexFired", { binaryInput });
 
-    emitReflexPacket("no-reflex", {
+    packet = emitReflexPacket("no-reflex", {
+      id: this.id,
       slice: this.slice,
       bitLength: binaryInput.length
     });
+    writePulseBinaryLog(this.pulseBinaryAdapter, "no-reflex", packet);
 
     return null;
   }
@@ -295,9 +286,9 @@ export class AIBinaryReflex {
 }
 
 // ============================================================================
-//  FACTORY — v24‑IMMORTAL++
+//  FACTORY — v30‑IMMORTAL++
 // ============================================================================
-export function createAIBinaryReflex(config) {
+export function createAIBinaryReflex(config = {}) {
   return new AIBinaryReflex(config);
 }
 
@@ -306,11 +297,8 @@ export function createAIBinaryReflex(config) {
 // ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    ReflexMeta,
     AIBinaryReflex,
     createAIBinaryReflex,
-    prewarmReflexEngine,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    prewarmReflexEngine
   };
 }

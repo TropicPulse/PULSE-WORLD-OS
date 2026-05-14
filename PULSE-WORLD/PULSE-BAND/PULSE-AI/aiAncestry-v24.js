@@ -5,21 +5,6 @@
 //  CORE MEMORY AWARE. IMMORTAL. DUALBAND. DETERMINISTIC.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// META EXPORTS — v24 IMMORTAL++
-export const AncestryMeta       = Identity.OrganMeta;
-export const pulseRole          = Identity.pulseRole;
-export const surfaceMeta        = Identity.surfaceMeta;
-export const pulseLoreContext   = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META        = Identity.EXPORT_META;
 
 // ============================================================================
 //  IMMORTAL HELPERS — ZERO TIMING, ZERO RANDOMNESS
@@ -53,7 +38,7 @@ function immortalTimestamp() {
 // ============================================================================
 export class AIAncestry {
   constructor(config = {}) {
-    this.id       = config.id || AncestryMeta.identity;
+    this.id       = config.id || "pulse-touch-ancestry";
     this.encoder  = config.encoder;
     this.memory   = config.memory;
     this.pipeline = config.pipeline || null;
@@ -244,7 +229,6 @@ export function createAIAncestry(config) {
 if (typeof module !== "undefined") {
   module.exports = {
     AIAncestry,
-    createAIAncestry,
-    AncestryMeta
+    createAIAncestry
   };
 }

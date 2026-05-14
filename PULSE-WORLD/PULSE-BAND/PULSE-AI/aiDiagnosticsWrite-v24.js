@@ -1,33 +1,12 @@
 // ============================================================================
-//  PULSE OS v24++‑IMMORTAL‑ADVANTAGE — DIAGNOSTICS WRITE ORGAN
+//  PULSE OS v30‑IMMORTAL++ — DIAGNOSTICS WRITE ORGAN
 //  Safe Logger • Identity‑Stripped • Deterministic Write Surface
-//  PURE LOGGING. ZERO IDENTITY. ZERO MUTATION. OWNER‑SUBORDINATE.
+//  PURE LOGGING. ZERO IDENTITY. ZERO MUTATION. ZERO WALL‑CLOCK.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  META BLOCK — v24++ IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const DiagnosticsWriteMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24++ IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  PRESSURE HELPERS — dualband‑aware
+//  PRESSURE HELPERS — dualband‑aware (v30)
 // ============================================================================
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
@@ -47,26 +26,24 @@ function bucketPressure(v) {
   return "none";
 }
 
+
 // ============================================================================
-//  PACKET EMITTER — deterministic, diagnostics-write scoped
+//  PACKET EMITTER — deterministic, diagnostics-write scoped (v30 IMMORTAL++)
 // ============================================================================
 function emitDiagnosticsWritePacket(type, payload = {}) {
   return Object.freeze({
-    meta: DiagnosticsWriteMeta,
     packetType: `diagnostics-write-${type}`,
-    timestamp: Date.now(),
-    epoch: DiagnosticsWriteMeta.evo.epoch,
-    layer: DiagnosticsWriteMeta.layer,
-    role: DiagnosticsWriteMeta.role,
-    identity: DiagnosticsWriteMeta.identity,
-    owner: "Aldwyn",
-    subordinate: true,
+    timestamp: 0,              // IMMORTAL++: no wall‑clock
+    layer: "diagnostics-write-organ",
+    role: "diagnostics-write",
+    band: "binary",
     ...payload
   });
 }
 
+
 // ============================================================================
-//  PREWARM ENGINE — v24++ IMMORTAL‑ADVANTAGE
+//  PREWARM ENGINE — v30 IMMORTAL++
 // ============================================================================
 export function prewarmDiagnosticsWriteOrgan() {
   try {
@@ -112,8 +89,9 @@ export function prewarmDiagnosticsWriteOrgan() {
   }
 }
 
+
 // ============================================================================
-//  IDENTITY STRIPPER v24++ — hardened, drift‑proof
+//  IDENTITY STRIPPER — hardened, drift‑proof (v30 IMMORTAL++)
 // ============================================================================
 function stripIdentity(obj) {
   if (!obj || typeof obj !== "object") return obj;
@@ -127,7 +105,7 @@ function stripIdentity(obj) {
   delete clone.sessionRoot;
   delete clone.deviceFingerprint;
 
-  // v24++ additions
+  // v24++ additions retained
   delete clone.email;
   delete clone.phone;
   delete clone.ip;
@@ -139,8 +117,9 @@ function stripIdentity(obj) {
   return clone;
 }
 
+
 // ============================================================================
-//  DIAGNOSTICS WRITE ORGAN — v24++ IMMORTAL‑ADVANTAGE
+//  DIAGNOSTICS WRITE ORGAN — v30 IMMORTAL++
 // ============================================================================
 export function createDiagnosticsWriteOrgan({ context, backend }) {
 
@@ -149,7 +128,7 @@ export function createDiagnosticsWriteOrgan({ context, backend }) {
   // --------------------------------------------------------------------------
   async function writeRun({ result, binaryVitals = {} }) {
     try {
-      const timestamp = Date.now();
+      const timestamp = 0; // IMMORTAL++: no Date.now
       const docId = `${context.personaId || "unknown"}-${timestamp}`;
 
       const safePayload = {
@@ -201,11 +180,9 @@ export function createDiagnosticsWriteOrgan({ context, backend }) {
   }
 
   // --------------------------------------------------------------------------
-  // PUBLIC ORGAN SURFACE — v24++ IMMORTAL‑ADVANTAGE
+  // PUBLIC ORGAN SURFACE — v30 IMMORTAL++
   // --------------------------------------------------------------------------
   return Object.freeze({
-    meta: DiagnosticsWriteMeta,
-
     log(message) {
       context?.logStep?.(`aiDiagnosticsWrite: ${message}`);
     },
@@ -215,12 +192,12 @@ export function createDiagnosticsWriteOrgan({ context, backend }) {
   });
 }
 
+
 // ============================================================================
-//  DUAL‑MODE EXPORTS
+//  DUAL‑MODE EXPORTS — v30 IMMORTAL++
 // ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    DiagnosticsWriteMeta,
     createDiagnosticsWriteOrgan,
     prewarmDiagnosticsWriteOrgan
   };

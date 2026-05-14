@@ -1,34 +1,12 @@
 // ============================================================================
-//  PULSE OS v24.0‑IMMORTAL‑ADVANTAGE++ — THE SCRIBE
+//  PULSE OS v30‑IMMORTAL++ — THE SCRIBE
 //  Dual‑Band Diagnostic Recorder • Forensic Historian • Organism Snapshot
 //  PURE FORMATTING + SUMMARIZATION. ZERO MUTATION. ZERO RANDOMNESS.
-//  FULL v24++ ORGANISM‑AWARE SCRIBE
+//  v30: NO IDENTITY, NO WALL‑CLOCK, NO META COUPLING.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const SCRIBE_META = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  SCRIBE PREWARM ENGINE — v24++
+//  PREWARM — v30 IMMORTAL++ (logic preserved, side‑effect free)
 // ============================================================================
 export function prewarmScribe() {
   try {
@@ -89,12 +67,13 @@ export function prewarmScribe() {
       }
     };
 
-    formatDebugReport(warmContext, warmDualBand);
-    formatDebugString(warmContext, warmDualBand);
+    // Warm internal paths; ignore outputs
+    void formatDebugReport(warmContext, warmDualBand);
+    void formatDebugString(warmContext, warmDualBand);
 
     return true;
-  } catch (err) {
-    console.error("[Scribe Prewarm v24] Failed:", err);
+  } catch {
+    // v30 IMMORTAL++: no console side‑effects
     return false;
   }
 }
@@ -111,8 +90,6 @@ export function formatDebugReport(context = {}, dualBand = null) {
   const organismArtery = organismSnapshot?.artery || null;
 
   return Object.freeze({
-    meta: SCRIBE_META,
-
     summary: buildSummary(diagnostics, binarySnapshot, organismArtery),
 
     trace: [...trace],
@@ -122,27 +99,27 @@ export function formatDebugReport(context = {}, dualBand = null) {
     slowdownCauses: [...(diagnostics.slowdownCauses || [])],
     driftDetected: diagnostics.driftDetected === true,
 
-    // v24++ Dual‑Band Layers
+    // Dual‑Band Layers
     binary: binarySnapshot,
     symbolic: symbolicSnapshot,
     organism: organismSnapshot,
     organismArtery,
 
-    // v24++ Evolutionary Layers
+    // Evolutionary Layers
     evolution: buildEvolutionaryNotes(context, organismSnapshot),
 
-    // v24++ CNS Layers
+    // CNS Layers
     organs: buildOrganSnapshot(context),
     routing: buildRoutingSnapshot(context),
     cortex: buildCortexSnapshot(context),
 
-    // v24++ Pulse lineage
+    // Pulse lineage
     pulse: buildPulseSnapshot(context)
   });
 }
 
 // ============================================================================
-// SUMMARY BUILDER — v24++
+//  SUMMARY BUILDER — v30 IMMORTAL++
 // ============================================================================
 function buildSummary(diagnostics, binary, organismArtery) {
   const summary = [];
@@ -169,7 +146,9 @@ function buildSummary(diagnostics, binary, organismArtery) {
     summary.push(`⚠️ Schema drift detected`);
 
   if (diagnostics.slowdownCauses?.length > 0)
-    summary.push(`🐢 Slowdown causes: ${diagnostics.slowdownCauses.map(s => s.reason).join(", ")}`);
+    summary.push(
+      `🐢 Slowdown causes: ${diagnostics.slowdownCauses.map(s => s.reason).join(", ")}`
+    );
 
   if (summary.length === 0)
     summary.push("✅ No issues detected");
@@ -178,7 +157,7 @@ function buildSummary(diagnostics, binary, organismArtery) {
 }
 
 // ============================================================================
-// ORGANISM SNAPSHOT — v24++
+//  ORGANISM SNAPSHOT — v30 IMMORTAL++
 // ============================================================================
 function buildOrganismSnapshot(dualBand) {
   if (!dualBand) return null;
@@ -187,7 +166,7 @@ function buildOrganismSnapshot(dualBand) {
     dualBand.organism?.organismSnapshot?.()?.artery || null;
 
   return Object.freeze({
-    timestamp: Date.now(),
+    timestamp: 0, // v30: no wall‑clock
 
     binary: dualBand.binary?.vitals?.snapshot?.() || null,
 
@@ -202,7 +181,7 @@ function buildOrganismSnapshot(dualBand) {
 }
 
 // ============================================================================
-// EVOLUTIONARY NOTES — v24++
+//  EVOLUTIONARY NOTES — v30 IMMORTAL++
 // ============================================================================
 function buildEvolutionaryNotes(context, organismSnapshot) {
   const notes = [];
@@ -232,7 +211,7 @@ function buildEvolutionaryNotes(context, organismSnapshot) {
 }
 
 // ============================================================================
-// ORGAN SNAPSHOT — v24++
+//  ORGAN SNAPSHOT — v30 IMMORTAL++
 // ============================================================================
 function buildOrganSnapshot(context) {
   return Object.freeze({
@@ -243,7 +222,7 @@ function buildOrganSnapshot(context) {
 }
 
 // ============================================================================
-// ROUTING SNAPSHOT — v24++
+//  ROUTING SNAPSHOT — v30 IMMORTAL++
 // ============================================================================
 function buildRoutingSnapshot(context) {
   if (!context.routing) return null;
@@ -256,7 +235,7 @@ function buildRoutingSnapshot(context) {
 }
 
 // ============================================================================
-// CORTEX SNAPSHOT — v24++
+//  CORTEX SNAPSHOT — v30 IMMORTAL++
 // ============================================================================
 function buildCortexSnapshot(context) {
   if (!context.cortexPacket) return null;
@@ -272,7 +251,7 @@ function buildCortexSnapshot(context) {
 }
 
 // ============================================================================
-// PULSE SNAPSHOT — v24++
+//  PULSE SNAPSHOT — v30 IMMORTAL++
 // ============================================================================
 function buildPulseSnapshot(context) {
   if (!context.pulse) return null;
@@ -287,12 +266,12 @@ function buildPulseSnapshot(context) {
 }
 
 // ============================================================================
-// STRING FORMATTER — v24++
+//  STRING FORMATTER — v30 IMMORTAL++
 // ============================================================================
 export function formatDebugString(context, dualBand = null) {
   const report = formatDebugReport(context, dualBand);
 
-  let out = "\n=== AI DEBUG REPORT (v24.0‑IMMORTAL‑ADVANTAGE++) ===\n\n";
+  let out = "\n=== AI DEBUG REPORT (v30‑IMMORTAL++) ===\n\n";
 
   out += "SUMMARY:\n";
   report.summary.forEach(line => {
@@ -329,20 +308,16 @@ export function formatDebugString(context, dualBand = null) {
   return out;
 }
 
-// ============================================================================
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ============================================================================
+// Kick prewarm once (safe, side‑effect free)
 prewarmScribe();
 
+// ============================================================================
+//  COMMONJS FALLBACK EXPORTS — v30 IMMORTAL++
+// ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    SCRIBE_META,
     formatDebugReport,
     formatDebugString,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    prewarmScribe
   };
 }

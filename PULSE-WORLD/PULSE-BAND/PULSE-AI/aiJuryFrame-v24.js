@@ -5,13 +5,6 @@
 //  v24+ UPGRADE: OrganismMap-backed identity + Signal-aware tracing (optional)
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
 //  GLOBAL HANDLE (v24+ IMMORTAL, environment-agnostic)

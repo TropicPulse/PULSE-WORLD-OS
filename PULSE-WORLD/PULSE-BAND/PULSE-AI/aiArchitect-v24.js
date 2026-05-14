@@ -8,36 +8,6 @@
   (You can keep this AI_EXPERIENCE_META block as documentation;
    runtime identity now comes from the Organism Map.)
 */
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-// or: const Identity = OrganismIdentity["pulse-ai/ai-v24.1-IMMORTAL-EVO++"] if that's the key you chose
-
-// ============================================================================
-//  META BLOCK — v24.1 IMMORTAL‑EVO++ (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const ArchitectMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.1 IMMORTAL‑EVO++
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — PRESSURE + BUCKETS
@@ -276,7 +246,12 @@ export function createArchitectOrgan({ db, evolutionAPI, personas } = {}) {
   // PUBLIC ARCHITECT API
   // --------------------------------------------------------------------------
   return Object.freeze({
-    meta: ArchitectMeta,
+    meta: {
+      id: "pulse-touch-architect",
+      version: window.__PULSE_TOUCH__?.version || "v0",
+      layer: "touch",
+      role: "architect"
+    },
     prewarm,
 
     log(message) {
@@ -381,7 +356,6 @@ export function createArchitectOrgan({ db, evolutionAPI, personas } = {}) {
 // ---------------------------------------------------------------------------
 if (typeof module !== "undefined") {
   module.exports = {
-    ArchitectMeta,
     createArchitectOrgan
   };
 }

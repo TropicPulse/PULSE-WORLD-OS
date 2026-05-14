@@ -5,25 +5,7 @@
 //  Owner-Aware (Aldwyn) • Deterministic • Drift-Resistant • Non-Blocking
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 import { createPulseNodeEvolutionV16 as PulseNodeAdminEvolution } from "../PULSE-TOOLS/PulseToolsNodeEvolution-v20.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ---------------------------------------------------------------------------
-//  META EXPORTS (IMMORTAL KERNEL SURFACE)
-// ---------------------------------------------------------------------------
-
-export const ReproductionMeta = Identity.OrganMeta;
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ---------------------------------------------------------------------------
 //  GLOBAL ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)

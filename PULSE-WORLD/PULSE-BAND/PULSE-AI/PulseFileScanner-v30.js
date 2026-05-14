@@ -1,35 +1,11 @@
 // ============================================================================
-// FILE: /PULSE-AI/PulseFileScanner-v24-IMMORTAL+++.js
-// PULSE OS v24‑IMMORTAL+++ — FILE SCANNER ORGAN
+// FILE: /PULSE-AI/PulseFileScanner-v30-IMMORTAL++.js
+// PULSE OS v30‑IMMORTAL++ — FILE SCANNER ORGAN
 // Symbolic Cognition • Structural Analysis • Drift + Lineage + Trust + Advantage
-// PURE SYMBOLIC ENGINE. ZERO EXECUTION. ZERO MUTATION. DUALBAND + PULSE-NET SAFE.
-// Global artery registry • identity / environment aware • chunk-hints aware
+// PURE SYMBOLIC ENGINE. ZERO MUTATION. DUALBAND + PULSE-NET SAFE.
+// Global artery registry • chunk-hints aware • v30 IMMORTAL++ (no meta, no wall-clock)
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-
-export const PulseFileScannerMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // HELPERS — BUCKETS + PRESSURE + TRUST / COMPLEXITY / ADVANTAGE
@@ -382,9 +358,9 @@ export function getScannerArterySnapshotV5({
     environment: environmentField,
     chunkHints,
     meta: {
-      version: PulseFileScannerMeta.version,
-      epoch: PulseFileScannerMeta.evo.epoch,
-      identity: PulseFileScannerMeta.identity,
+      version: "v30-IMMORTAL++",
+      epoch: 0,
+      identity: null,
       scannerId,
       arterySignature
     }
@@ -396,7 +372,7 @@ export function getScannerArterySnapshotV5({
 }
 
 // ============================================================================
-// FILE SCANNER FACTORY — v24‑IMMORTAL+++
+// FILE SCANNER FACTORY — v30‑IMMORTAL++
 // ============================================================================
 
 export function createPulseFileScanner({
@@ -421,8 +397,8 @@ export function createPulseFileScanner({
   function prewarm() {
     return {
       ok: true,
-      epoch: PulseFileScannerMeta.evo.epoch,
-      identity: PulseFileScannerMeta.identity,
+      epoch: 0,
+      identity: null,
       id
     };
   }
@@ -453,12 +429,12 @@ export function createPulseFileScanner({
     if (!fs.existsSync(fullPath)) {
       Evolution?.recordLineage?.("scanner-file-not-found", {
         filePath,
-        epoch: PulseFileScannerMeta.evo.epoch,
+        epoch: 0,
         scannerId: id
       });
       TrustFabric?.recordEvidence?.("scanner-file-not-found", {
         filePath,
-        epoch: PulseFileScannerMeta.evo.epoch,
+        epoch: 0,
         scannerId: id
       });
 
@@ -489,7 +465,7 @@ export function createPulseFileScanner({
 
     Evolution?.recordLineage?.("scanner-file-analyzed", {
       filePath,
-      epoch: PulseFileScannerMeta.evo.epoch,
+      epoch: 0,
       drift: report.drift,
       complexity,
       advantage,
@@ -499,7 +475,7 @@ export function createPulseFileScanner({
 
     TrustFabric?.recordEvidence?.("scanner-file-analyzed", {
       filePath,
-      epoch: PulseFileScannerMeta.evo.epoch,
+      epoch: 0,
       trustSignals,
       complexity,
       advantage,
@@ -512,7 +488,7 @@ export function createPulseFileScanner({
       complexity,
       trustSignals,
       advantage,
-      epoch: PulseFileScannerMeta.evo.epoch,
+      epoch: 0,
       scannerId: id
     });
 
@@ -539,7 +515,6 @@ export function createPulseFileScanner({
 
   return Object.freeze({
     id,
-    meta: PulseFileScannerMeta,
     prewarm,
     scanFile,
     getScannerArterySnapshotV5,
@@ -548,12 +523,11 @@ export function createPulseFileScanner({
 }
 
 // ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility (v24‑IMMORTAL+++ dualband)
+//  DUAL EXPORT LAYER — CommonJS compatibility (v30‑IMMORTAL++)
 // ---------------------------------------------------------------------------
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
-    PulseFileScannerMeta,
     createPulseFileScanner,
     getScannerArterySnapshotV5,
     getGlobalScannerArteries

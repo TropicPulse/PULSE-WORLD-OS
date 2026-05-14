@@ -1,38 +1,7 @@
 // ============================================================================
-//  aiConductor-v24.js — Pulse OS v24.0‑IMMORTAL Presence Organ
-//  Deterministic Wiring • Dualband‑Safe • Packet‑Aware • Drift‑Proof
-//  Conductor‑Artery • Binary‑Aware • Core‑Snapshot‑Ready
+//  aiConductor-v27.js — Pulse OS v27‑IMMORTAL++ Presence Organ
+//  Deterministic Wiring • Binary‑Aware • Core‑Snapshot‑Ready • Touch‑Aligned
 // ============================================================================
-
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
-// ============================================================================
-export const ConductorMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 
 // ============================================================================
@@ -57,23 +26,28 @@ function bucketPressure(v) {
 }
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, conductor-scoped
+//  PACKET EMITTER — deterministic, conductor‑scoped, Touch‑aligned
 // ============================================================================
 function emitConductorPacket(type, payload) {
+  const touch = (typeof window !== "undefined" && window.__PULSE_TOUCH__) || {};
+
   return Object.freeze({
-    meta: ConductorMeta,
+    meta: {
+      id: "pulse-touch-conductor",
+      version: touch.version || "v0",
+      epoch: touch.epoch || Date.now(),
+      layer: "conductor",
+      role: "presence-orchestrator",
+      band: "binary"
+    },
     packetType: `conductor-${type}`,
     timestamp: Date.now(),
-    epoch: ConductorMeta.evo.epoch,
-    layer: ConductorMeta.layer,
-    role: ConductorMeta.role,
-    identity: ConductorMeta.identity,
     ...payload
   });
 }
 
 // ============================================================================
-//  PREWARM ENGINE — v24.0‑IMMORTAL Presence
+//  PREWARM ENGINE — v27‑IMMORTAL++ Presence
 // ============================================================================
 export function prewarmAIConductor(config = {}) {
   try {
@@ -135,17 +109,16 @@ export function prewarmAIConductor(config = {}) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v24.0‑IMMORTAL Presence
+//  ORGAN IMPLEMENTATION — v27‑IMMORTAL++ Presence
 // ============================================================================
 export class AIConductor {
   constructor(config = {}) {
-    this.id = config.id || ConductorMeta.identity;
+    this.id = config.id || "pulse-touch-conductor";
     this.trace = !!config.trace;
     this.organs = new Map();
 
-    // optional v24++ extras
-    this.encoder = config.encoder || null;      // aiBinaryAgent encoder (optional)
-    this.coreMemory = config.coreMemory || null; // PulseOSMemory / CoreMemory (optional)
+    this.encoder = config.encoder || null;
+    this.coreMemory = config.coreMemory || null;
 
     this.stats = {
       registrations: 0,
@@ -224,7 +197,6 @@ export class AIConductor {
       organCount: this.organs.size
     });
 
-    // optional: emit a core memory snapshot if provided (pure metadata)
     if (this.coreMemory?.buildSnapshot) {
       try {
         const snapshot = this.coreMemory.buildSnapshot("conductor", {
@@ -272,7 +244,7 @@ export class AIConductor {
   }
 
   // --------------------------------------------------------------------------
-  //  PRESENCE PACKET — v24++ with optional bits
+  //  PRESENCE PACKET — v27++ with optional bits
   // --------------------------------------------------------------------------
   emitPacket(binaryVitals = {}) {
     const artery = this.conductorArtery({ binaryVitals });
@@ -313,7 +285,7 @@ export class AIConductor {
 }
 
 // ============================================================================
-//  FACTORY — v24.0‑IMMORTAL Presence
+//  FACTORY — v27‑IMMORTAL++ Presence
 // ============================================================================
 export function createAIConductor(config = {}) {
   prewarmAIConductor(config);
@@ -325,7 +297,6 @@ export function createAIConductor(config = {}) {
 // ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    ConductorMeta,
     AIConductor,
     createAIConductor,
     prewarmAIConductor

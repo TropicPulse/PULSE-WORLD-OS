@@ -26,11 +26,6 @@
 //      and lower layers — organism‑wide, not per‑organ.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
 // ============================================================================
@@ -86,24 +81,6 @@ const fetchFn =
   (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
   (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
   null;
-// ============================================================================
-//  IDENTITY (v24 IMMORTAL)
-// ============================================================================
-
-const Identity = OrganismIdentity(import.meta.url);
-
-export const MemoryMeta = Identity.OrganMeta;
-export const MEMORY_IDENTITY = Identity;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  GLOBAL MEMORY ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)

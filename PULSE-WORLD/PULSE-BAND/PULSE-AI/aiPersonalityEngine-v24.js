@@ -1,49 +1,38 @@
 // ============================================================================
-//  PULSE OS v24‑IMMORTAL++ — PERSONALITY ENGINE ORGAN
+//  PULSE OS v30‑IMMORTAL++ — PERSONALITY ENGINE ORGAN
 //  Stable Personality Layer • Deterministic Tone • Ego‑Free Identity
 //  PURE READ‑ONLY TO BINARY. ZERO MUTATION. DUALBAND‑AWARE. TRUST‑AWARE.
 //  WINDOW‑SAFE • ARTERY‑AWARE • OVERMIND‑PRIME‑AWARE • DRIFT‑PROOF
+//  META‑STRIPPED • IDENTITY‑PRESERVING • PULSE‑BINARY READY.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
 
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
+//  PACKET EMITTER — v30 deterministic, personality‑scoped (no PersonalityEngineMeta)
 // ============================================================================
-export const PersonalityEngineMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-//  PACKET EMITTER — deterministic, personality-scoped
-// ============================================================================
-function emitPersonalityPacket(type, payload) {
-  const now = Date.now();
+function emitPersonalityPacket(type, payload = {}) {
   return Object.freeze({
-    meta: PersonalityEngineMeta,
     packetType: `personality-${type}`,
-    packetId: `personality-${type}-${now}`,
-    timestamp: now,
-    epoch: PersonalityEngineMeta.evo.epoch,
+    timestamp: 0,
+    layer: "personality-engine",
+    role: "tone-identity",
     ...payload
   });
 }
 
+// Optional: PulseBinary / IndexedDB‑style adapter
+async function writePulseBinaryLog(adapter, kind, payload) {
+  if (!adapter || typeof adapter.write !== "function") return false;
+  const safePayload = Object.freeze({ ...payload });
+  const keySeed = `${kind}::${safePayload.packetType || "personality"}::${safePayload.context?.personaId || ""}`;
+  const docId = `personality-${Math.abs(
+    keySeed.split("").reduce((a, c, i) => (a + c.charCodeAt(0) * (i + 1)) % 1000003, 0)
+  )}`;
+  return adapter.write(`PERSONALITY_LOGS/${docId}`, safePayload);
+}
+
 // ============================================================================
-//  ARTERY SNAPSHOT — v24 IMMORTAL++
+//  ARTERY SNAPSHOT — v30 IMMORTAL++ (meta stripped, traits + identity preserved)
 // ============================================================================
 function buildPersonalityArterySnapshot({ context = {}, traits = {} } = {}) {
   return Object.freeze({
@@ -57,32 +46,30 @@ function buildPersonalityArterySnapshot({ context = {}, traits = {} } = {}) {
       clarity: traits.clarity,
       humility: traits.humility,
       humor: traits.humor
-    },
-    meta: {
-      version: PersonalityEngineMeta.version,
-      epoch: PersonalityEngineMeta.evo.epoch,
-      identity: PersonalityEngineMeta.identity
     }
   });
 }
 
 // ============================================================================
-//  PREWARM — IMMORTAL++
+//  PREWARM — v30 IMMORTAL++
 // ============================================================================
 export function prewarmPersonalityEngine({
   trace = false,
   context = {},
   trustFabric = null,
-  juryFrame = null
+  juryFrame = null,
+  pulseBinaryAdapter = null
 } = {}) {
+  const traits = {
+    warmth: 0.9,
+    clarity: 1.0,
+    humility: 1.0,
+    humor: 0.4
+  };
+
   const artery = buildPersonalityArterySnapshot({
     context,
-    traits: {
-      warmth: 0.9,
-      clarity: 1.0,
-      humility: 1.0,
-      humor: 0.4
-    }
+    traits
   });
 
   const packet = emitPersonalityPacket("prewarm", {
@@ -92,16 +79,21 @@ export function prewarmPersonalityEngine({
 
   trustFabric?.recordPersonalityPrewarm?.({ artery });
   juryFrame?.recordEvidence?.("personality-prewarm", packet);
+  writePulseBinaryLog(pulseBinaryAdapter, "prewarm", packet);
 
-  if (trace) console.log("[PersonalityEngine] prewarm", packet);
+  if (trace) console.log("[PersonalityEngine v30] prewarm", packet);
   return packet;
 }
 
 // ============================================================================
-//  PERSONALITY ENGINE — v24‑IMMORTAL++
+//  PERSONALITY ENGINE — v30‑IMMORTAL++
 // ============================================================================
 export const aiPersonalityEngine = {
-  meta: PersonalityEngineMeta,
+  descriptor: Object.freeze({
+    kind: "PersonalityEngine",
+    version: "v30",
+    role: "tone-identity"
+  }),
 
   // --------------------------------------------------------------------------
   //  PERSONALITY TRAITS — deterministic, drift-proof
@@ -144,7 +136,11 @@ export const aiPersonalityEngine = {
   // --------------------------------------------------------------------------
   //  PERSONALITY APPLICATION — Tone Identity v7 (IMMORTAL++)
   // --------------------------------------------------------------------------
-  applyPersonality(text, context = {}, { trustFabric = null, juryFrame = null } = {}) {
+  applyPersonality(
+    text,
+    context = {},
+    { trustFabric = null, juryFrame = null, pulseBinaryAdapter = null } = {}
+  ) {
     if (!text || typeof text !== "string") {
       const artery = buildPersonalityArterySnapshot({
         context,
@@ -154,11 +150,18 @@ export const aiPersonalityEngine = {
       const packet = emitPersonalityPacket("apply-empty", {
         input: "",
         output: "",
-        artery
+        artery,
+        context: {
+          evolutionMode: context.evolutionMode || "passive",
+          personaId: context.personaId || null,
+          presenceTier: context.presenceTier || "idle",
+          band: context.band || "symbolic"
+        }
       });
 
       trustFabric?.recordPersonalityApply?.({ empty: true, artery });
       juryFrame?.recordEvidence?.("personality-apply-empty", packet);
+      writePulseBinaryLog(pulseBinaryAdapter, "apply-empty", packet);
 
       return packet;
     }
@@ -209,6 +212,7 @@ export const aiPersonalityEngine = {
     });
 
     juryFrame?.recordEvidence?.("personality-apply", packet);
+    writePulseBinaryLog(pulseBinaryAdapter, "apply", packet);
 
     return packet;
   },
@@ -241,7 +245,6 @@ export default aiPersonalityEngine;
 // ============================================================================
 if (typeof module !== "undefined") {
   module.exports = {
-    PersonalityEngineMeta,
     aiPersonalityEngine,
     prewarmPersonalityEngine
   };

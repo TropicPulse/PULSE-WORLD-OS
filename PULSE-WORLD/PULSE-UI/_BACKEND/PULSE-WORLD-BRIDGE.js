@@ -27,8 +27,8 @@ import { createPulseRouteMemory as PulseUIRouteMemory } from "../_COMPONENTS_EVO
 // NEW: Finality / Signal Port (IMMORTAL FINALITY LAYER)
 import { PulseSignalPort, PulsePort } from "../../PULSE-BAND/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
 
-const Import = PulsePort("ORGANISM");
-const Export = PulsePort("CHECKBAND");
+// const Import = PulsePort("ORGANISM");
+// const Export = PulsePort("CHECKBAND");
 
 const G =
   (typeof window !== "undefined" && window) ||
