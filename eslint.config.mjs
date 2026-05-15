@@ -5,7 +5,7 @@ export default [
     files: ["**/*.js", "**/*.cjs", "**/*.mjs"],
 
     ignores: [
-      "PULSE-X/PULSE-WORLD-OS.js"
+      "PULSE-UNIVERSE/PULSE-WORLD/PULSE-BAND/X-PULSE-X/PULSE-WORLD-OS.js"
     ],
 
     languageOptions: {
@@ -137,13 +137,14 @@ export default [
   {
     files: [
       "**/PulseProxy*.js",
-      "**/PulseBinaryProxy*.js",
+      "**/PulseProxyBinary*.js",
       "**/PulseOSLongTermMemory*.js",
       "**/WBC*.js",
       "**/*Healer*.js",
       "**/*Immune*.js",
       "**/*Membrane*.js",
-      "**/PULSE-WORLD*.js",
+      "**/PULSE-WORLD*.js",      
+      "**/PULSE-UNIVERSE*.js",
       "**/*ProxySpine*.js",
       "**/*Vault*.js",
       "**/*Wallet*.js",

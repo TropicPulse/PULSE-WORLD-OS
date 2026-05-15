@@ -1,6 +1,6 @@
 {
   "functions": {
-    "source": "PULSE-UNIVERSE/PULSE-MULTIVERSE/PULSE-WORLD-FIREBASE",
+    "source": "PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSEWORLD-FIREBASE",
     "codebase": "default",
     "runtime": "nodejs20",
     "ignore": [

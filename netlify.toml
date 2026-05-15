@@ -1,6 +1,6 @@
 [build]
-  publish = "PULSE-BAND"
-  functions = "PULSE-UNIVERSE/PULSE-WORLD/PULSE-X"
+  publish = "PULSE-MULTIVERSE"
+  functions = "PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD"
 
 [functions."PULSE-WORLD-SERVER"]
   schedule = "* * * * *"
