@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktAmbassador-v24-IMMORTAL-PLUSPLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktAmbassador-v24-IMMORTAL-PLUSPLUS.js
 // LAYER: THE AMBASSADOR (v24‑IMMORTAL‑PLUSPLUS + A‑B‑A + INTEL)
 // ============================================================================
 //

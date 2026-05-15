@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseWorldTransport-v20.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseWorldTransport-v20.js
 // PULSE‑WORLD TRANSPORT — IMMORTAL GLOBAL CORS ORGAN — v20‑IMMORTAL‑THROUGHPUT
 // ----------------------------------------------------------------------------
 // ROLE:

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUGeneticMemory-v24.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUGeneticMemory-v24.js
 // PULSE GPU GENETIC MEMORY v24‑IMMORTAL++ — THE DNA ARCHIVE
 // Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
 // CoreMemory‑v24‑Integrated • ComputerIntelligence‑Aware • Earn‑v24‑GPU‑Ready

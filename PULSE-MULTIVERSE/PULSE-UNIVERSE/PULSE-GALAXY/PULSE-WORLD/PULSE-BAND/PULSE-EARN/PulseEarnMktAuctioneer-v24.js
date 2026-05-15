@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktAuctioneer-v24-IMMORTAL-PLUSPLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktAuctioneer-v24-IMMORTAL-PLUSPLUS.js
 // LAYER: MARKETPLACE AUCTIONEER (v24‑IMMORTAL++‑INTEL‑DUALHASH A‑B‑A)
 // Vast.ai Deterministic Adapter + Presence/Advantage/Hints/Factoring Surfaces + GPU‑AWARE BAND
 // ============================================================================

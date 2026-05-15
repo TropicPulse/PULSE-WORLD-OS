@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktConsulate-v24-IMMORTAL-INTEL.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktConsulate-v24-IMMORTAL-INTEL.js
 // LAYER: THE CONSULATE (v24 IMMORTAL + INTEL + DualHash + Presence + Advantage + Chunk + Artery)
 // ============================================================================
 

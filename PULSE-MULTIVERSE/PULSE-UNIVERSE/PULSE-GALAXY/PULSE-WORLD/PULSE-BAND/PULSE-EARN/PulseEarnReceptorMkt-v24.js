@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnReceptor-v24-IMMORTAL-INTEL-SUPERIOR.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnReceptor-v24-IMMORTAL-INTEL-SUPERIOR.js
 // LAYER: THE STANDARD RECEPTOR (Marketplace Protocol + Universal Adapter)
 // PULSE EARN — v24-IMMORTAL-INTEL-SUPERIOR A‑B‑A + DualHash + Presence + Advantage + Chunk + 24++ Overlays
 // ============================================================================

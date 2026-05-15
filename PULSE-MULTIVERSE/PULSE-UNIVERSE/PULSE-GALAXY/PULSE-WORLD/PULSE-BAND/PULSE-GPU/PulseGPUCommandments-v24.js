@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUConfig-v24.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUConfig-v24.js
 // LAYER: THE COMMANDMENTS — GPU-SUBSYSTEM (CONFIG + POLICY CONSTANTS)
 //
 // PulseGPUConfig v24-Immortal++ — Deterministic, Drift‑Proof, PulseSend‑v24‑Ready, Self‑Repair‑Ready

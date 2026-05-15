@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUEventEmitter-v24.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUEventEmitter-v24.js
 //  PULSE GPU EVENT EMITTER v24-Immortal++ — THE SYNAPSE LAYER 24++
 //  Deterministic, Fail‑Open, Zero‑Side‑Effects Signal Relay • CoreMemory‑Aware
 //  Dual-Band • Prewarm-Aware • Cache-Aware • NervousSystem-Linked • CI-Aware

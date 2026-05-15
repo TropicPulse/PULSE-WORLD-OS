@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnGenome-v24-Immortal-INTEL-PLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnGenome-v24-Immortal-INTEL-PLUS.js
 // LAYER: THE GENOME CORE (v24-Immortal-INTEL-PLUS)
 // (Immutable DNA Sequence + Cross‑Organism Law + v24 Presence/Advantage/Compute Surfaces + Proof Bridge)
 // ============================================================================

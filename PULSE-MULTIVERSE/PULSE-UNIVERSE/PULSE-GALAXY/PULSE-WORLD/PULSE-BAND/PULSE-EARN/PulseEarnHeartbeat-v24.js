@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseHeartbeat-v24-Immortal-INTEL-PLUSPLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseHeartbeat-v24-Immortal-INTEL-PLUSPLUS.js
 // PULSE OS — v24-Immortal-INTEL++
 // “THE BABY HEART / METABOLIC CELL + HEARTBEAT ENGINE (24++)”
 // Fully upgraded from v16-Immortal-INTEL, no removals, all tri-heart + intel surfaces intact.

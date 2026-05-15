@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnImmuneSystem-v24-Immortal-INTEL++.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnImmuneSystem-v24-Immortal-INTEL++.js
 // LAYER: THE IMMUNE SYSTEM (v24-Immortal-INTEL++ + Dual-Band + Binary-First + Wave + Presence + INTEL)
 // (Subsystem Doctor + Drift Diagnostician + Deterministic Repair Engine + Presence/INTEL Telemetry)
 // ============================================================================

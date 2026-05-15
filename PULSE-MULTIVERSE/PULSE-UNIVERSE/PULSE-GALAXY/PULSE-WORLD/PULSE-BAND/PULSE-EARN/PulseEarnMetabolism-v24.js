@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMetabolism-v24-IMMORTAL-INTEL-PLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMetabolism-v24-IMMORTAL-INTEL-PLUS.js
 // LAYER: THE METABOLIC ENGINEER (v24-IMMORTAL-INTEL-PLUS)
 // (Interpreter of Jobs + Safe Executor + Deterministic Throughput Engine + INTEL Plan)
 // ============================================================================

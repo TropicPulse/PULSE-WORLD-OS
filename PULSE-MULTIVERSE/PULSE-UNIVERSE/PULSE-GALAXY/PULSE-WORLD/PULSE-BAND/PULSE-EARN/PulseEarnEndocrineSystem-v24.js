@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnEndocrineSystem-v24-Immortal-INTEL-AGGRESSIVE-PLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnEndocrineSystem-v24-Immortal-INTEL-AGGRESSIVE-PLUS.js
 // LAYER: THE ENDOCRINE SYSTEM (v24-Immortal-INTEL AGGRESSIVE-PLUS)
 // (Performance Intelligence + Reputation Hormones + Trust Regulation + v24++ Surfaces)
 // ============================================================================

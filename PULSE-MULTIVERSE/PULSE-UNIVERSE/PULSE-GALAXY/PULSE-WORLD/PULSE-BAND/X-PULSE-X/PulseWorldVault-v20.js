@@ -1,6 +1,6 @@
 /* global log,warn,error */
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-UNIVERSE/X-PULSE-X/PulseWorldVault-v20.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-UNIVERSE/X-PULSE-X/PulseWorldVault-v20.js
 // ORGAN: PulseWorldVault-v20 (Vault Organ)
 // LAYER: PULSE-WORLD / MEMORY-CORE / VAULT / IMMORTAL-V20
 // ============================================================================

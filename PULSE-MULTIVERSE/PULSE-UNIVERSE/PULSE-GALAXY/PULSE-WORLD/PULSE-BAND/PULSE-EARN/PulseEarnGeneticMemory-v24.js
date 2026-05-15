@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnGeneticMemory-v24-Immortal-INTEL-NEURAL.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnGeneticMemory-v24-Immortal-INTEL-NEURAL.js
 // LAYER: THE GENETIC MEMORY (v24-Immortal-INTEL-NEURAL)
 // Neural‑Genetic Hybrid • Core Memory Bridge • Deep Job INTEL • v24 Surfaces
 // ============================================================================

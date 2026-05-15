@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktBroker-v24-IMMORTAL-INTEL-PLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktBroker-v24-IMMORTAL-INTEL-PLUS.js
 // LAYER: THE RUNPOD BROKER (v24‑IMMORTAL‑INTEL‑DUALHASH)
 // ============================================================================
 //

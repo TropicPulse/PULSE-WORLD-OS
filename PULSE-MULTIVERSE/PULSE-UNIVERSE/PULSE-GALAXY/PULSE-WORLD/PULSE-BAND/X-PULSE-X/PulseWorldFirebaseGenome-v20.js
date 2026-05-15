@@ -1,5 +1,5 @@
 /* global log, warn, error */
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseWorldFirebaseGenome-v20.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseWorldFirebaseGenome-v20.js
 // ============================================================================
 //  PULSE-WORLD GENOME ORGAN — PulseWorldFirebaseGenome (v20 IMMORTAL ADVANTAGE)
 //  World-layer deterministic service organ

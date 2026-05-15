@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /TROPIC-PULSE-FUNCTIONS/PULSE-MULTIVERSE/PULSEWORLD/PulseWorldCompilerWorker-v30.js
+FILE: /PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PulseWorldCompilerWorker-v30.js
 ORGAN: PulseWorldCompilerWorker
 LAYER: WORLD BACKEND — SEMANTIC COMPILE WORKER — v30-IMMORTAL-BINARY
 ===============================================================================

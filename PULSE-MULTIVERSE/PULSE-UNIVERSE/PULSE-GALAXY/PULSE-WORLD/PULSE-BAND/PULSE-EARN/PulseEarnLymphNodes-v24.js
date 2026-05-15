@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnLymphNodes-v24-Immortal-INTEL.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnLymphNodes-v24-Immortal-INTEL.js
 // LAYER: THE LYMPHATIC HANDSHAKE NODES (v24-Immortal-INTEL)
 // (Finalizer of Jobs + Immune-Safe Dispatch + Certified Marketplace Exchange)
 // ============================================================================
