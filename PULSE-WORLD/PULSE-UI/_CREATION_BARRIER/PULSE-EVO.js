@@ -1,14 +1,14 @@
 // ============================================================
-// PULSE-INDEX.js — UI BUILDER (FINAL UPGRADED VERSION)
+// PULSE-EVO.js — UI BUILDER (FINAL UPGRADED VERSION)
 // ============================================================
 
-console.log("[PULSE-INDEX] Running UI builder");
+console.log("[PULSE-EVO] Running UI builder");
 
 // 1. Get wrapper
 const root = document.getElementById("evo-wrapper");
 
 if (!root) {
-  console.error("[PULSE-INDEX] ERROR: #evo-wrapper not found.");
+  console.error("[PULSE-EVO] ERROR: #evo-wrapper not found.");
 }
 
 // ============================================================
@@ -405,204 +405,274 @@ root.innerHTML = String.raw`
   </footer>
 
 `;
+// ============================================================================
+//  PULSE-EVO v30 — IMMORTAL++ REAL PULSE + GPU TEMPO
+//  Frontend UI • PulseSignal / PulsePort.Global Driven • Self-Pulsing Fallback
+// ============================================================================
 
-// ============================================================
-// 3. UI LOGIC — ALWAYS RUNS (NO DOMContentLoaded BUG)
-// ============================================================
 
-function mark(label) {
-  console.log("[INDEX]", label);
+// IMMORTAL COLOR CONSTANTS
+const C_ID   = "color:#26C6DA; font-weight:bold; font-family:monospace;";
+const C_OK   = "color:#00FF9C; font-family:monospace;";
+const C_INFO = "color:#E8F8FF; font-family:monospace;";
+const C_WARN = "color:#FFE066; font-family:monospace;";
+const C_ERR  = "color:#FF3B3B; font-weight:bold; font-family:monospace;";
+
+// ---------------------------------------------------------------------------
+//  PULSE-CHRONO v26 — Unified Timing Core
+// ---------------------------------------------------------------------------
+let _pulseChronoLast = performance.now();
+
+function _pulseChronoLabel(absolute) {
+  const now = performance.now();
+  const diff = now - _pulseChronoLast;
+
+  const label = absolute
+    ? `@${now.toFixed(1)}ms`
+    : `+${diff.toFixed(1)}ms`;
+
+  _pulseChronoLast = now;
+  return label;
 }
 
-/* 2. UI ONLY — ensure this runs ONCE */
-if (!window.__PULSE_UI_INIT__) {
-  window.__PULSE_UI_INIT__ = true;
+// ---------------------------------------------------------------------------
+//  LOGGERS — All Upgraded to Chrono v26
+// ---------------------------------------------------------------------------
+function logID(msg, absolute = false, ...rest) {
+  const time = _pulseChronoLabel(absolute);
+  console.log(
+    `%c[PULSE-EVO] %c${msg} %c${time}`,
+    C_ID,
+    C_INFO,
+    "color:#999;font-weight:300;",
+    ...rest
+  );
+}
+
+function logOK(msg, absolute = false, ...rest) {
+  const time = _pulseChronoLabel(absolute);
+  console.log(
+    `%c[PULSE-EVO] %c${msg} %c${time}`,
+    C_ID,
+    C_OK,
+    "color:#999;font-weight:300;",
+    ...rest
+  );
+}
+
+function logWarn(msg, absolute = false, ...rest) {
+  const time = _pulseChronoLabel(absolute);
+  console.warn(
+    `%c[PULSE-EVO] %c${msg} %c${time}`,
+    C_ID,
+    C_WARN,
+    "color:#999;font-weight:300;",
+    ...rest
+  );
+}
+
+function logErr(msg, absolute = false, ...rest) {
+  const time = _pulseChronoLabel(absolute);
+  console.error(
+    `%c[PULSE-EVO] %c${msg} %c${time}`,
+    C_ID,
+    C_ERR,
+    "color:#999;font-weight:300;",
+    ...rest
+  );
+}
+
+// Optional: manual reset
+logID.reset = () => {
+  _pulseChronoLast = performance.now();
+  console.log(`%c[PULSE-EVO] %cTimer reset`, C_ID, C_WARN);
+};
+
+
+// ============================================================================
+//  DOM TIMING — NEW
+// ============================================================================
+logID("BOOT MEMBRANE START");
+
+// Start DOM timing
+window.__DOM_START = performance.now();
+logID("DOM START", true);
+
+// ===============================================================
+// EVO PAGE — DOM INIT v30 (Stable, Deterministic, Pulse‑Aligned)
+// ===============================================================
+if (!window.__PULSE_DOM_V30__) {
+  window.__PULSE_DOM_V30__ = true;
 
   document.addEventListener("DOMContentLoaded", () => {
-    mark("WINDOW DOM STARTED INDEX PAGE");
+    const domEnd = performance.now();
+    const domTotal = (domEnd - (window.__DOM_START || domEnd)).toFixed(1);
+    logOK(`DOM READY — ${domTotal}ms`);
 
-    /* ============================================================
-       3. PULSEBAND UI — UI ONLY (NO LOGIC)
-    ============================================================ */
-    const pbBadge = document.getElementById("pulseband-badge");
-    const pbPanel = document.getElementById("pulseband-panel");
-    let pbOpen = false;
+    // -----------------------------------------------------------
+    // 1. SAFE FIELD MAP (auto‑null‑tolerant)
+    // -----------------------------------------------------------
+    const $ = (id) => document.getElementById(id);
 
-    if (pbBadge && pbPanel) {
-      pbBadge.addEventListener("click", () => {
-        pbOpen = !pbOpen;
-        pbPanel.classList.toggle("pb-open", pbOpen);
-      });
-
-      document.addEventListener("click", (e) => {
-        if (!pbPanel.contains(e.target) && !pbBadge.contains(e.target)) {
-          pbOpen = false;
-          pbPanel.classList.remove("pb-open");
-        }
-      });
-    }
-
-    const pbFields = {
-      bars:       document.getElementById("pb-bars-text"),
-      phone:      document.getElementById("pb-phonebars-text"),
-      stability:  document.getElementById("pb-stability"),
-      latency:    document.getElementById("pb-latency"),
-      micro:      document.getElementById("pb-micro"),
-      route:      document.getElementById("pb-route"),
-      state:      document.getElementById("pb-state"),
-      sync:       document.getElementById("pb-sync"),
-      efficiency: document.getElementById("pb-efficiency"),
-      health:     document.getElementById("pb-health"),
-      advantage:  document.getElementById("pb-advantage"),
-      estimated:  document.getElementById("pb-estimated")
+    const PB = {
+      bars:       $("pb-bars-text"),
+      phone:      $("pb-phonebars-text"),
+      stability:  $("pb-stability"),
+      latency:    $("pb-latency"),
+      micro:      $("pb-micro"),
+      route:      $("pb-route"),
+      state:      $("pb-state"),
+      sync:       $("pb-sync"),
+      efficiency: $("pb-efficiency"),
+      health:     $("pb-health"),
+      advantage:  $("pb-advantage"),
+      estimated:  $("pb-estimated")
     };
 
-    /* ============================================================
-       3B. PULSEBAND SNAPSHOT — UI ONLY
-    ============================================================ */
-    (async () => {
+    // -----------------------------------------------------------
+    // 2. PULSE SNAPSHOT RESOLVER (Unified v30 — Import‑Free Index)
+    // -----------------------------------------------------------
+    function getSnap() {
       try {
-        const vitals    = window.VitalsMonitor.Vitals?.generate?.() ?? null;
-        const binary    = window.PulseBinary ?? null;
-        const sentience = binary?.Sentience?.snapshot?.() ?? null;
-
-        const signalBars  = vitals?.network?.bars ?? "—";
-        const phoneBars   = vitals?.device?.bars ?? signalBars;
-        const stability   = vitals?.stability?.score ?? null;
-        const latencyMs   = vitals?.latency?.ms ?? null;
-        const microPhase  = vitals?.micro?.phase ?? sentience?.phase ?? "Idle";
-        const route       = vitals?.network?.route ?? "Primary";
-        const state       = vitals?.state ?? "Active";
-        const syncAge     = vitals?.sync?.ageLabel ?? "Just now";
-        const efficiency  = vitals?.efficiency?.label ?? "Balanced";
-        const health      = vitals?.health?.label ?? "Excellent";
-        const advantage   = vitals?.advantage?.multiplier ?? 1.0;
-        const estimated   = vitals?.advantage?.percent ?? 0;
-
-        if (pbFields.bars)       pbFields.bars.textContent       = String(signalBars);
-        if (pbFields.phone)      pbFields.phone.textContent      = String(phoneBars);
-        if (pbFields.stability)  pbFields.stability.textContent  = stability != null ? `${stability}%` : "—";
-        if (pbFields.latency)    pbFields.latency.textContent    = latencyMs != null ? `${latencyMs} ms` : "—";
-        if (pbFields.micro)      pbFields.micro.textContent      = microPhase;
-        if (pbFields.route)      pbFields.route.textContent      = route;
-        if (pbFields.state)      pbFields.state.textContent      = state;
-        if (pbFields.sync)       pbFields.sync.textContent       = syncAge;
-        if (pbFields.efficiency) pbFields.efficiency.textContent = efficiency;
-        if (pbFields.health)     pbFields.health.textContent     = health;
-        if (pbFields.advantage)  pbFields.advantage.textContent  = `${advantage}× Faster`;
-        if (pbFields.estimated)  pbFields.estimated.textContent  = `${estimated}% better`;
-      } catch (err) {
-        mark("Window PulseBand snapshot failed", err);
+        return window.__PULSE_LAST_SIGNAL__ || null;
+      } catch {
+        return null;
       }
-    })();
-
-    /* ============================================================
-       4. GPU TEST — UI ONLY
-    ============================================================ */
-    const testBtn     = document.getElementById("tp-test-button");
-    const testFile    = document.getElementById("tp-test-file");
-    const testStatus  = document.getElementById("tp-test-status");
-    const testMetrics = document.getElementById("tp-test-metrics");
-
-    testBtn?.addEventListener("click", async () => {
-      if (!testFile?.files?.length) {
-        if (testStatus) testStatus.textContent = "Please select a file first.";
-        return;
-      }
-
-      if (testStatus)  testStatus.textContent  = "Running GPU warm test…";
-      if (testMetrics) testMetrics.textContent = "";
-
-      await new Promise((res) => requestAnimationFrame(res));
-
-      try {
-        const file = testFile.files[0];
-
-        const binary   = window.PulseBinary ?? null;
-        const vitalsFn = binary?.Vitals?.generate;
-
-        const before = performance.now();
-        await file.arrayBuffer();
-        const after = performance.now();
-
-        const vitalsAfter = vitalsFn ? await vitalsFn() : null;
-
-        const gpuSmooth   = vitalsAfter?.stability?.score ?? null;
-        const advantage   = vitalsAfter?.advantage?.multiplier ?? null;
-        const route       = vitalsAfter?.network?.route ?? null;
-        const cpuImpact   = vitalsAfter?.cpu?.impact ?? null;
-        const memImpact   = vitalsAfter?.memory?.impact ?? null;
-        const microMs     = vitalsAfter?.latency?.microMs ?? null;
-        const decodeMs    = Math.round(after - before);
-
-        if (testMetrics) {
-          testMetrics.innerHTML = `
-            GPU Smoothness: <strong>${gpuSmooth != null ? gpuSmooth + "%" : "—"}</strong><br>
-            PulseBand Advantage: <strong>${advantage != null ? advantage + "×" : "—"}</strong><br>
-            Network Route: <strong>${route ?? "—"}</strong><br>
-            CPU Impact: <strong>${cpuImpact != null ? cpuImpact + "%" : "—"}</strong><br>
-            Memory Impact: <strong>${memImpact != null ? memImpact + "%" : "—"}</strong><br>
-            Micro Latency: <strong>${microMs != null ? microMs + " ms" : "—"}</strong><br>
-            Decode Speed: <strong>${decodeMs} ms</strong>
-          `;
-        }
-
-        if (testStatus) testStatus.textContent = "Test complete.";
-      } catch (err) {
-        mark("Window GPU test failed", err);
-        if (testStatus)  testStatus.textContent  = "Test failed.";
-        if (testMetrics) testMetrics.textContent = "";
-      }
-    });
-
-    /* ============================================================
-       5. CAROUSEL — UI ONLY
-    ============================================================ */
-    const carousel = document.getElementById("appCarousel");
-    if (carousel) {
-      const track  = carousel.querySelector(".carousel-track");
-      const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
-      const dots   = Array.from(carousel.querySelectorAll(".carousel-dot"));
-      const arrows = Array.from(carousel.querySelectorAll(".carousel-arrow"));
-
-      const visibleSlides = 2;
-      const totalSlides   = slides.length;
-      const maxIndex      = totalSlides - visibleSlides;
-
-      let currentIndex = 0;
-
-      function updateCarousel(index) {
-        const clamped = Math.max(0, Math.min(index, maxIndex));
-        currentIndex = clamped;
-
-        const offset = -(clamped * (100 / visibleSlides));
-        track.style.transform = `translateX(${offset}%)`;
-
-        dots.forEach((dot, i) => dot.classList.toggle("active", i === clamped));
-      }
-
-      dots.forEach((dot, i) => dot.addEventListener("click", () => updateCarousel(i)));
-
-      arrows.forEach((arrow) => {
-        arrow.addEventListener("click", () => {
-          const dir = arrow.getAttribute("data-dir");
-          updateCarousel(dir === "next" ? currentIndex + 1 : currentIndex - 1);
-        });
-      });
     }
 
-    /* ============================================================
-       6. FAQ ACCORDION — UI ONLY
-    ============================================================ */
-    document.querySelectorAll("[data-faq]").forEach((item) => {
-      const btn = item.querySelector(".faq-question");
-      btn.addEventListener("click", () => {
-        const isOpen = item.classList.contains("open");
-        document.querySelectorAll("[data-faq]").forEach((i) => i.classList.remove("open"));
-        if (!isOpen) item.classList.add("open");
+    // -----------------------------------------------------------
+    // 3. UI UPDATE (Stable, No Drift)
+    // -----------------------------------------------------------
+    function updateUI() {
+      const s = getSnap();
+      if (!s) return;
+
+      window.__PULSE_LAST_SIGNAL__ = s;
+
+      PB.bars       && (PB.bars.textContent       = s.network?.bars ?? "—");
+      PB.phone      && (PB.phone.textContent      = s.device?.bars ?? s.network?.bars ?? "—");
+      PB.stability  && (PB.stability.textContent  = s.stability?.score != null ? s.stability.score + "%" : "—");
+      PB.latency    && (PB.latency.textContent    = s.latency?.ms != null ? s.latency.ms + " ms" : "—");
+      PB.micro      && (PB.micro.textContent      = s.micro?.phase ?? s.phase ?? "Idle");
+      PB.route      && (PB.route.textContent      = s.network?.route ?? s.route ?? "Primary");
+      PB.state      && (PB.state.textContent      = s.state ?? "Active");
+      PB.sync       && (PB.sync.textContent       = s.sync?.ageLabel ?? "Just now");
+      PB.efficiency && (PB.efficiency.textContent = s.efficiency?.label ?? "Balanced");
+      PB.health     && (PB.health.textContent     = s.health?.label ?? "Excellent");
+      PB.advantage  && (PB.advantage.textContent  = (s.advantage?.multiplier ?? 1) + "× Faster");
+      PB.estimated  && (PB.estimated.textContent  = (s.advantage?.percent ?? 0) + "% better");
+    }
+
+    // -----------------------------------------------------------
+    // 4. PULSE SIGNAL SUBSCRIBE (IMMORTAL++ v30)
+    // -----------------------------------------------------------
+    try {
+      const PS = window.PulseSignal;
+
+      if (PS?.subscribe) {
+        PS.subscribe((packet) => {
+          const state = packet?.state || packet;
+          window.__PULSE_LAST_SIGNAL__ = state;
+
+          try {
+            localStorage.setItem("__pulse_signal__", JSON.stringify(state));
+          } catch {}
+
+          updateUI();
+        });
+
+        logOK("PulseSignal v30 subscribed");
+      }
+
+      // Cross‑tab sync
+      window.addEventListener("storage", (e) => {
+        if (e.key === "__pulse_signal__") {
+          try {
+            window.__PULSE_LAST_SIGNAL__ = JSON.parse(e.newValue);
+            updateUI();
+          } catch {}
+        }
       });
+
+      // Restore last snapshot
+      try {
+        const last = localStorage.getItem("__pulse_signal__");
+        if (last) {
+          window.__PULSE_LAST_SIGNAL__ = JSON.parse(last);
+          updateUI();
+        }
+      } catch {}
+    } catch (err) {
+      logErr("PulseSignal v30 subscription failed", err);
+    }
+
+    // -----------------------------------------------------------
+    // 5. PULSE ENGINE v30 (Balanced + RAF) — BASE LOOP
+    // -----------------------------------------------------------
+    setInterval(updateUI, 120);
+
+    (function rafLoop() {
+      updateUI();
+      requestAnimationFrame(rafLoop);
+    })();
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) updateUI();
     });
 
-    mark("WINDOW DOM ENDED INDEX PAGE");
+    window.addEventListener("online",  updateUI);
+    window.addEventListener("offline", updateUI);
+
+    ["click", "keydown", "mousemove", "touchstart"].forEach((evt) => {
+      window.addEventListener(evt, updateUI, { passive: true });
+    });
+
+    logOK("Pulse Engine v30 active");
+
+    // -----------------------------------------------------------
+    // 5b. GPU LYMPH TEMPO (Heartbeat Attach, if present)
+    // -----------------------------------------------------------
+    try {
+      // From upgraded GPU lymph nodes module
+      window.PulseGpuLymphTempo?.attachToUi?.(updateUI);
+      logOK("GPU Lymph Tempo attached");
+    } catch (err) {
+      logWarn("GPU Lymph Tempo attach failed");
+    }
+
+    // -----------------------------------------------------------
+    // 6. WORLD‑READY PHASE (100/200/500ms — PulsePort, Mesh, World, Routes)
+    // -----------------------------------------------------------
+    [100, 200, 500].forEach((delay) => {
+      setTimeout(() => {
+        try {
+          if (window.PulsePort?.Global?.signal) {
+            window.__PULSE_LAST_SIGNAL__ = window.PulsePort.Global.signal;
+            updateUI();
+            logOK(`World‑Ready (${delay}ms): PulsePort.Global signal applied`);
+          }
+        } catch {}
+      }, delay);
+    });
+
+    // -----------------------------------------------------------
+    // 7. BOOT CORE SYSTEMS (PulseBand, BinaryOS, DualBandAI)
+    // -----------------------------------------------------------
+    try {
+      window.PulseBand?.emit?.("request", { type: "start" });
+      window.PulseBand?.on?.("signal", (p) => {
+        window.__PULSE_LAST_SIGNAL__ = p?.state || p;
+        updateUI();
+      });
+
+      window.BinaryOS?.boot?.();
+      window.DualBandAI?.boot?.();
+
+      logOK("Core systems booted");
+    } catch (err) {
+      logErr("Core boot failed", err);
+    }
+
+    logOK("EVO PAGE v30 DOM INIT COMPLETE");
   });
 }
