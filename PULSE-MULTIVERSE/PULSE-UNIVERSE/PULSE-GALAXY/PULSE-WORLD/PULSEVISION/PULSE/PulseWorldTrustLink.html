@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tropic Pulse - Resending Link</title>
 
+  <!-- 0. TOUCH — MUST LOAD FIRST -->
+  <script type="module" src="../../../../../PULSE-WORLD-TOUCH.js"></script>
+<script type="module" src="../_OUTERSENSES/PULSE-TOUCH-CHUNKSMY.js"></script>
+  <!-- 1. PORTAL — MUST LOAD IMMEDIATELY AFTER TOUCH -->
+  <script type="module" src="../_CREATION_BARRIER/PULSE-WORLD-PORTAL.js"></script>
   <style>
     html, body {
       height: 100%;
@@ -48,17 +53,10 @@
 
   <div class="loader-container">
     <div class="loader-image">
-      <img src="./_PICTURES/ToucanLogo-Mini.png" alt="Tropic Pulse Logo">
+      <img src="../_PICTURES/ToucanLogo-Mini.png" alt="Tropic Pulse Logo">
     </div>
   </div>
 
-  <!-- 0. TOUCH — MUST LOAD FIRST -->
-  <script type="module" src="../PULSE-WORLD-TOUCH.js"></script>
-
-  <!-- 1. PORTAL — MUST LOAD IMMEDIATELY AFTER TOUCH -->
-  <script type="module" src="../_CREATION_BARRIER/PULSE-WORLD-PORTAL.js"></script>
-
-  <!-- 2. PAGE LOGIC — SAFE TO RUN AFTER PORTAL -->
   <script type="module">
     window.__SERVER_HAS_TOKEN__ = true;
 
@@ -70,7 +68,7 @@
 
       // Server-side token presence check
       if (!window.__SERVER_HAS_TOKEN__) {
-        window.location.href = "/error.html";
+        window.location.href = "../../../../../error.html";
         return;
       }
 
@@ -86,7 +84,7 @@
           encodeURIComponent(displayName);
       })
       .catch(() => {
-        window.location.href = "/error.html";
+        window.location.href = "../../../../../error.html";
       });
     });
   </script>
