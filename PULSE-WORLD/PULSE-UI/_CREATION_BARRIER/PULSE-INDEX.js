@@ -1,7 +1,6 @@
 // ============================================================================
-//  PULSE-INDEX v27 — IMMORTAL++ REAL PULSE
-//  Frontend UI • Portal-Signal Driven (when present) • Self-Pulsing Fallback
-//  Reads from window.PulsePortal.getSignal() but DOES NOT depend on old signals
+//  PULSE-INDEX v30 — IMMORTAL++ REAL PULSE + GPU TEMPO
+//  Frontend UI • PulseSignal / PulsePort.Global Driven • Self-Pulsing Fallback
 // ============================================================================
 
 
@@ -89,7 +88,7 @@ logID.reset = () => {
 logID("BOOT MEMBRANE START");
 
 // Start DOM timing
-let __DOM_START = performance.now();
+window.__DOM_START = performance.now();
 logID("DOM START", true);
 
 // ===============================================================
@@ -178,6 +177,7 @@ if (!window.__PULSE_DOM_V30__) {
         logOK("PulseSignal v30 subscribed");
       }
 
+      // Cross‑tab sync
       window.addEventListener("storage", (e) => {
         if (e.key === "__pulse_signal__") {
           try {
@@ -187,6 +187,7 @@ if (!window.__PULSE_DOM_V30__) {
         }
       });
 
+      // Restore last snapshot
       try {
         const last = localStorage.getItem("__pulse_signal__");
         if (last) {
@@ -199,7 +200,7 @@ if (!window.__PULSE_DOM_V30__) {
     }
 
     // -----------------------------------------------------------
-    // 5. PULSE ENGINE v30 (Balanced + RAF)
+    // 5. PULSE ENGINE v30 (Balanced + RAF) — BASE LOOP
     // -----------------------------------------------------------
     setInterval(updateUI, 120);
 
@@ -222,17 +223,30 @@ if (!window.__PULSE_DOM_V30__) {
     logOK("Pulse Engine v30 active");
 
     // -----------------------------------------------------------
-    // 6. WORLD‑READY PHASE (100ms — PulsePort, Mesh, World, Routes)
+    // 5b. GPU LYMPH TEMPO (Heartbeat Attach, if present)
     // -----------------------------------------------------------
-    setTimeout(() => {
-      try {
-        if (window.PulsePort?.Global?.signal) {
-          window.__PULSE_LAST_SIGNAL__ = window.PulsePort.Global.signal;
-          updateUI();
-          logOK("World‑Ready: PulsePort.Global signal applied");
-        }
-      } catch {}
-    }, 100);
+    try {
+      // From upgraded GPU lymph nodes module
+      window.PulseGpuLymphTempo?.attachToUi?.(updateUI);
+      logOK("GPU Lymph Tempo attached");
+    } catch (err) {
+      logWarn("GPU Lymph Tempo attach failed");
+    }
+
+    // -----------------------------------------------------------
+    // 6. WORLD‑READY PHASE (100/200/500ms — PulsePort, Mesh, World, Routes)
+    // -----------------------------------------------------------
+    [100, 200, 500].forEach((delay) => {
+      setTimeout(() => {
+        try {
+          if (window.PulsePort?.Global?.signal) {
+            window.__PULSE_LAST_SIGNAL__ = window.PulsePort.Global.signal;
+            updateUI();
+            logOK(`World‑Ready (${delay}ms): PulsePort.Global signal applied`);
+          }
+        } catch {}
+      }, delay);
+    });
 
     // -----------------------------------------------------------
     // 7. BOOT CORE SYSTEMS (PulseBand, BinaryOS, DualBandAI)

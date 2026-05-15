@@ -47,7 +47,7 @@ import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem-v24.js";
 import { PulseGPUPerformanceAdvisor } from "./PulseGPUDriveCenter-v24.js";
 import { PulseGPUSettingsRestorer } from "./PulseGPUCognitiveLayer-v24.js";
 import { PulseGPUGuardianCortex } from "./PulseGPUGuardianCortex-v24.js";
-import { PulseGPUHealer } from "./PulseGPULymphNodes-v24.js";
+import { PulseGPUHealer } from "./PulseGPULymphNodes-v30.js";
 import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence-v24.js";
 import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
 import { DEFAULT_USER_PREFERENCES } from "./PulseGPUCommandments-v24.js";

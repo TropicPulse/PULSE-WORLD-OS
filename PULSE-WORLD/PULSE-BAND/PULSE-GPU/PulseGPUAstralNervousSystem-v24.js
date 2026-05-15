@@ -59,7 +59,7 @@ export * from "./PulseGPUSpine-v24.js";
 // ============================================================================
 // GPU HEALER / LYMPH NODES (v24-Immortal++)
 // ============================================================================
-export * from "./PulseGPULymphNodes-v24.js";
+export * from "./PulseGPULymphNodes-v30.js";
 
 // ============================================================================
 // GPU WARM PATH / CACHE HINTS (v24-Immortal++)

@@ -28,7 +28,7 @@ import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem-v24.
 import * as PulseGPUSpine               from "./PulseGPUSpine-v24.js";
 import * as PulseGPUGeneticMemory       from "./PulseGPUGeneticMemory-v24.js";
 import * as PulseGPUGuardianCortex      from "./PulseGPUGuardianCortex-v24.js";
-import * as PulseGPULymphNodes          from "./PulseGPULymphNodes-v24.js";
+import * as PulseGPULymphNodes          from "./PulseGPULymphNodes-v30.js";
 import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts-v24.js";
 import * as PulseGPUChunkPlannerModule  from "./PulseGPUChunkPlanner-v24.js"; // awareness only
 

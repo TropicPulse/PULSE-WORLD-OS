@@ -38,7 +38,7 @@ import * as PulseGPUGeneticMemory        from "./PulseGPUGeneticMemory-v24.js";
 import * as PulseGPUAstralMuscleSystem   from "./PulseGPUAstralMuscleSystem-v24.js";
 
 import * as PulseGPUGuardianCortex       from "./PulseGPUGuardianCortex-v24.js";
-import * as PulseGPULymphNodes           from "./PulseGPULymphNodes-v24.js";
+import * as PulseGPULymphNodes           from "./PulseGPULymphNodes-v30.js";
 
 import * as PulseGPUAstralNervousSystem  from "./PulseGPUAstralNervousSystem-v24.js";
 import * as PulseGPUNervousSystem        from "./PulseGPUNervousSystem-v24.js";

@@ -22,7 +22,7 @@ const TRACER_CONTEXT = Identity.pulseLoreContext;
 import PulseGPU from "./PulseGPU-v24.js";
 import PulseBinaryGPU from "./PulseGPUBinary-v24.js";
 import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
-import { PulseGPUHealer } from "./PulseGPULymphNodes-v24.js";
+import { PulseGPUHealer } from "./PulseGPULymphNodes-v30.js";
 
 
 // ------------------------------------------------------------

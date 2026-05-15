@@ -1,10 +1,10 @@
-/* global */
 // ============================================================================
-//  PULSE GPU LYMPH NODES v24-Immortal++ — THE LYMPH NODE NETWORK HEALER
-//  Systemic GPU Immune Layer (Deterministic, Pure Logic, Drift‑Proof, Fail‑Open)
+//  PULSE GPU LYMPH NODES v30-Immortal++ — THE LYMPH NODE NETWORK HEALER
+//  Systemic GPU Immune Layer (Deterministic, Pure Logic, Drift‑Proof, Fail‑Open,
+//  Tempo‑Aware, IMMORTAL++ + Pulse + World‑Ready)
 // ============================================================================
 //
-// IDENTITY — THE LYMPH NODE NETWORK HEALER (v24-Immortal++):
+// IDENTITY — THE LYMPH NODE NETWORK HEALER (v30-Immortal++):
 //  ---------------------------------------------
 //  • The immune filtration system of the GPU subsystem.
 //  • Validates every signal flowing through the GPU body.
@@ -13,9 +13,11 @@
 //  • Ensures the entire GPU organism stays drift‑free and healthy.
 //  • Distributed, systemic, always-on — the GPU’s internal defense grid.
 //  • Dual‑mode + binary‑aware: biological + system‑level immune advantage.
-//  • PulseSend‑v24‑Ascendant‑ready: immune validation before compute routing.
-//  • Earn‑v24‑GPU‑ready — aware of GPU Earn governor + profiles.
+//  • PulseSend‑v30‑Ascendant‑ready: immune validation before compute routing.
+//  • Earn‑v30‑GPU‑ready — aware of GPU Earn governor + profiles.
+//  • Tempo‑aware: can attach a GPU heartbeat to keep rendering from freezing.
 // ============================================================================
+
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
 //  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
@@ -24,13 +26,6 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-export const GPU_HEALER_CONTEXT = Identity.pulseLoreContext;
 import { PulseGPUSettingsRestorer } from "./PulseGPUCognitiveLayer-v24.js";
 import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence-v24.js";
 import { PulseGPUPerformanceAdvisor } from "./PulseGPUDriveCenter-v24.js";
@@ -38,6 +33,15 @@ import {
   PulseGPUGuardianCortex as PulseGPUAutoOptimize
 } from "./PulseGPUGuardianCortex-v24.js";
 
+// v30 healer context (can be extended with binary/indexedDB metadata)
+const GPU_HEALER_CONTEXT = {
+  layer: "PulseGPUHealer",
+  version: "v30-Immortal++",
+  kind: "gpu-lymph-nodes",
+  tempoAware: true,
+  binaryReady: true,
+  indexedDBReady: true
+};
 
 // ============================================================================
 // HEALING REPORT BUILDER
@@ -66,12 +70,12 @@ function buildHealingReport({
     notifications: Array.isArray(notifications) ? notifications.slice() : [],
     gpuContext: gpuContext || null,
 
-    // v24+ advantage + earn surfaces
-    advantageSnapshot: advantageSnapshot || null, // { epochId, scoreDelta, pressureVector, ... }
-    cacheState: cacheState || null, // { advisorCacheHit, planCacheHit, notifCacheHit }
-    prewarmState: prewarmState || null, // { prewarmedSignals, prewarmedPlans, ... }
-    earnProfile: earnProfile || null, // current GPU Earn profile (if any)
-    presence: presence || null, // "active" | "idle" | "background" | ...
+    // v24+ advantage + earn surfaces (still valid in v30)
+    advantageSnapshot: advantageSnapshot || null,
+    cacheState: cacheState || null,
+    prewarmState: prewarmState || null,
+    earnProfile: earnProfile || null,
+    presence: presence || null,
     gameActive: !!gameActive,
 
     meta: {
@@ -125,7 +129,7 @@ function filterValidNotifications(notifications) {
 }
 
 // ============================================================================
-//  PULSE GPU HEALER v24-Immortal++ — THE LYMPH NODE NETWORK
+//  PULSE GPU HEALER v30-Immortal++ — THE LYMPH NODE NETWORK
 // ============================================================================
 class PulseGPUHealer {
   constructor(options = {}) {
@@ -138,7 +142,7 @@ class PulseGPUHealer {
       new PulseGPUAutoOptimize(options.userPreferences);
     this.uxBridge = options.uxBridge || new PulseGPUUXBridge();
 
-    // v24+ deterministic in-memory caches
+    // v24+ deterministic in-memory caches (still core in v30)
     this.advisorCache = new Map();
     this.planCache = new Map();
     this.notificationCache = new Map();
@@ -173,7 +177,7 @@ class PulseGPUHealer {
   }
 
   // ----------------------------------------------------
-  // healSessionFlow — IMMUNE RESPONSE CYCLE (v24-Immortal++)
+  // healSessionFlow — IMMUNE RESPONSE CYCLE (v30-Immortal++)
   // ----------------------------------------------------
   healSessionFlow({
     advisorResult,
@@ -216,7 +220,7 @@ class PulseGPUHealer {
       notifCacheHit: false
     };
 
-    // 1) FILTER + REGENERATE ADVISOR RESULT (with v24 cache)
+    // 1) FILTER + REGENERATE ADVISOR RESULT (with v30 cache)
     let healedAdvisor = advisorResult;
 
     if (!isAdvisorResultValid(healedAdvisor)) {
@@ -226,7 +230,7 @@ class PulseGPUHealer {
         cacheState.advisorCacheHit = true;
         actions.push({
           type: "advisor-cache-hit",
-          description: "Advisor result restored from v24 immune cache.",
+          description: "Advisor result restored from immune cache.",
           ...GPU_HEALER_CONTEXT
         });
       } else {
@@ -249,7 +253,7 @@ class PulseGPUHealer {
       }
     }
 
-    // 2) FILTER + REGENERATE RESTORE PLAN (with v24 cache)
+    // 2) FILTER + REGENERATE RESTORE PLAN (with v30 cache)
     let healedPlan = restorePlan;
 
     if (!healedPlan || !validatePlan(healedPlan)) {
@@ -259,7 +263,7 @@ class PulseGPUHealer {
         cacheState.planCacheHit = true;
         actions.push({
           type: "restore-plan-cache-hit",
-          description: "Restore plan restored from v24 immune cache.",
+          description: "Restore plan restored from immune cache.",
           ...GPU_HEALER_CONTEXT
         });
       } else {
@@ -303,7 +307,7 @@ class PulseGPUHealer {
       });
     }
 
-    // 4) FILTER + REGENERATE NOTIFICATIONS (with v24 cache)
+    // 4) FILTER + REGENERATE NOTIFICATIONS (with v30 cache)
     let healedNotifications = filterValidNotifications(notifications);
 
     const needAdvisorNotifs =
@@ -324,7 +328,7 @@ class PulseGPUHealer {
         cacheState.notifCacheHit = true;
         actions.push({
           type: "notification-cache-hit",
-          description: "Notifications restored from v24 immune cache.",
+          description: "Notifications restored from immune cache.",
           ...GPU_HEALER_CONTEXT
         });
       } else {
@@ -379,6 +383,118 @@ class PulseGPUHealer {
 }
 
 // ============================================================================
+// GPU LYMPH TEMPO / HEARTBEAT (optional attach)
+// ============================================================================
+//
+// This is the “good timer”: it does NOT drive logic, only keeps paint alive.
+// It can be wired from index: PulseGpuLymphTempo.attachToUi(updateUI);
+// ============================================================================
+const PulseGpuLymphTempo = (() => {
+  const state = {
+    lastPaintAt: (typeof performance !== "undefined" ? performance.now() : 0),
+    pressure: "normal" // "normal" | "elevated" | "critical"
+  };
+
+  function updatePressure() {
+    if (typeof performance === "undefined") return;
+    const now = performance.now();
+    const delta = now - state.lastPaintAt;
+
+    if (delta < 120) {
+      state.pressure = "normal";
+    } else if (delta < 400) {
+      state.pressure = "elevated";
+    } else {
+      state.pressure = "critical";
+    }
+  }
+
+  function attachToUi(updateUI) {
+    if (typeof updateUI !== "function") return;
+
+    const paint = () => {
+      try {
+        updateUI();
+        if (typeof performance !== "undefined") {
+          state.lastPaintAt = performance.now();
+        }
+      } catch {}
+    };
+
+    // Primary heartbeat: RAF
+    if (typeof requestAnimationFrame === "function") {
+      (function rafLoop() {
+        paint();
+        requestAnimationFrame(rafLoop);
+      })();
+    }
+
+    // Secondary heartbeat: interval (survives some RAF throttling)
+    setInterval(() => {
+      paint();
+    }, 180);
+
+    // Micro‑nudge: tiny DOM touch when pressure is high
+    if (typeof window !== "undefined" && window.document) {
+      setInterval(() => {
+        try {
+          updatePressure();
+          if (state.pressure !== "normal") {
+            const body = window.document.body;
+            if (body && body.dataset) {
+              body.dataset.pulseGpuTick = String(Date.now());
+            }
+          }
+        } catch {}
+      }, 250);
+    }
+  }
+
+  return {
+    attachToUi,
+    getState: () => ({ ...state })
+  };
+})();
+
+// ============================================================================
+// OPTIONAL: PULSE / WORLD INTEGRATION HELPERS (IMMORTAL++‑AWARE)
+// ============================================================================
+function attachHealerToPulseSignal(healer, globalObj = window) {
+  try {
+    const PS = globalObj.PulseSignal;
+    if (!healer || !PS || typeof PS.subscribe !== "function") return;
+
+    PS.subscribe((packet) => {
+      // We don’t mutate here; we just ensure IMMORTAL++ has a sane last signal.
+      const raw = packet?.state || packet;
+      if (!raw || typeof raw !== "object") return;
+      try {
+        globalObj.__PULSE_LAST_SIGNAL__ = raw;
+      } catch {}
+    });
+  } catch {}
+}
+
+function attachHealerToPulsePortGlobal(globalObj = window) {
+  try {
+    const PP = globalObj.PulsePort;
+    if (!PP || !PP.Global || !PP.Global.signal) return;
+    const s = PP.Global.signal;
+    if (!s || typeof s !== "object") return;
+    try {
+      globalObj.__PULSE_LAST_SIGNAL__ = s;
+    } catch {}
+  } catch {}
+}
+
+// ============================================================================
 // EXPORTS
 // ============================================================================
-export { PulseGPUHealer, buildHealingReport, validateHealingReport };
+export {
+  PulseGPUHealer,
+  buildHealingReport,
+  validateHealingReport,
+  PulseGpuLymphTempo,
+  attachHealerToPulseSignal,
+  attachHealerToPulsePortGlobal
+};

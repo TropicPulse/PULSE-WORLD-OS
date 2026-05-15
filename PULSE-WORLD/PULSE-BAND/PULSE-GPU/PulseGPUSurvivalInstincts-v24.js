@@ -36,7 +36,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 export const SURVIVAL_CONTEXT = Identity.pulseLoreContext;
 // v24: imports so SurvivalInstincts is wired into the v24 organism
 import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem-v24.js";
-import { PulseGPUHealer } from "./PulseGPULymphNodes-v24.js";
+import { PulseGPUHealer } from "./PulseGPULymphNodes-v30.js";
 import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
 import { SCORE_CONSTANTS } from "./PulseGPUCommandments-v24.js";
 // optional Earn field integration (conceptual, v24-compatible)
