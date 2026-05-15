@@ -5,7 +5,7 @@ export default [
     files: ["**/*.js", "**/*.cjs", "**/*.mjs"],
 
     ignores: [
-      "PULSE-UNIVERSE/PULSE-WORLD/PULSE-BAND/X-PULSE-X/PULSE-WORLD-OS.js"
+      "PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/X-PULSE-X/PULSE-WORLD-OS.js"
     ],
 
     languageOptions: {
