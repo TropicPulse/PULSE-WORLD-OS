@@ -103,7 +103,7 @@ import {
 // ============================================================================
 import { PulseIntentMap } from "../../PULSE-WORLD-MAPINTENT.js";
 import { createPulseWorldCore, createPulseCastle, createPulseMesh } from "../PULSE-EXPANSION/PULSE-EXPANSION-USER.js";
-import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v30.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/PulseAIDualBand-v30.js";
 
 // ============================================================================
 //  IMPORTS — SYMBOLIC / BINARY ORGANS

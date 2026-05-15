@@ -4,7 +4,7 @@
 //  WINDOW‑SAFE • ARTERY‑AWARE • DUALBAND‑FUSION • DRIFT‑PROOF
 //  META‑STRIPPED • IDENTITY‑PRESERVING.
 // ============================================================================
-import { aiHumilityFilter } from "./aiHumilityFilter-v24.js";
+import { aiHumilityFilter } from "./PulseAIHumilityFilter-v24.js";
 
 // ============================================================================
 //  HELPERS — pressure + artery (v30, no GeniusMeta)

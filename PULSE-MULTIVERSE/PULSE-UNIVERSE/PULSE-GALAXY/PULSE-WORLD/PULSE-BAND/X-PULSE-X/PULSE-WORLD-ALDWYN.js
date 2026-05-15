@@ -107,13 +107,13 @@ import { PulseBinaryTech } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 // ============================================================================
 import createBoundariesEngine from "../PULSE-AI/aiBoundariesEngine-v30.js";
 import createPermissionsEngine from "../PULSE-AI/aiPermissionsEngine-v24.js";
-import aiIdentityCore from "../PULSE-AI/aiIdentityCore-v30.js";
+import aiIdentityCore from "../PULSE-AI/PulseAIIdentityCore-v30.js";
 import aiPersonalityEngine from "../PULSE-AI/aiPersonalityEngine-v24.js";
 
 // ============================================================================
 //  2. CONTEXT + CORTEX
 // ============================================================================
-import createCognitiveFrame from "../PULSE-AI/aiContext-v30.js";
+import createCognitiveFrame from "../PULSE-AI/PulseAIContext-v30.js";
 import createContextEngine from "../PULSE-AI/aiContextEngine-v24.js";
 
 // ============================================================================
@@ -126,8 +126,8 @@ import aiToneRouter from "../PULSE-AI/aiToneRouter-v24.js";
 // ============================================================================
 //  4. META‑GOVERNANCE (CROWN LAYER)
 // ============================================================================
-import createJuryFrame from "../PULSE-AI/aiJuryFrame-v24.js";
-import createAIBinaryGovernorAdapter from "../PULSE-AI/aiGovernorAdapter-v30.js";
+import createJuryFrame from "../PULSE-AI/PulseAIJuryFrame-v24.js";
+import createAIBinaryGovernorAdapter from "../PULSE-AI/PulseAIGovernorAdapter-v30.js";
 import {
   PulseTrustMeta,
   buildJuryFeed,
@@ -142,13 +142,13 @@ import {
 //  5. MEMORY + EXPERIENCE (META ONLY)
 // ============================================================================
 import createAIMemory from "../PULSE-AI/aiMemory-v24.js";
-import createAIExperience from "../PULSE-AI/aiExperience-v30.js";
+import createAIExperience from "../PULSE-AI/PulseAIExperience-v30.js";
 
 // ============================================================================
 //  6. PIPELINE + ENGINE + CHUNKER + FILE SCANNER
 // ============================================================================
 import createAIBinaryPipeline from "../PULSE-AI/PulseAIPipeline-v30.js";
-import runAI from "../PULSE-AI/aiEngine-v30.js";
+import runAI from "../PULSE-AI/PulseAIEngine-v30.js";
 import pulseAIChunker from "../PULSE-AI/PulseAIChunker-v30.js";
 import createPulseFileScanner from "../PULSE-AI/PulseAIFileScanner-v30.js";
 
@@ -165,7 +165,7 @@ import createAIBinaryLoggerAdapter from "../PULSE-AI/aiLoggerAdapter-v24.js";
 import createPersonalFrameOrgan from "../PULSE-AI/aiPersonalFrame-v24.js";
 import getBoundariesForPersona from "../PULSE-AI/aiBoundaries-v30.js";
 import getPermissionsForPersona from "../PULSE-AI/PulseAIPermissions-v24.js";
-import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v30.js";
+import createExperienceFrameOrgan from "../PULSE-AI/PulseAIExperienceFrame-v30.js";
 
 const C_ID   = "color:#FFCA28; font-weight:bold; font-family:monospace;"; // Cyan
 const C_OK   = "color:#00FF9C; font-family:monospace;";                   // Green

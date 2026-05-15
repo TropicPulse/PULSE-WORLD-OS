@@ -8,13 +8,13 @@
 import { AIBinaryAgent } from "./aiBinaryAgent-v30.js";
 import { AIMemory } from "./aiMemory-v24.js";
 import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy-v30.js";
-import { AIBinaryGenome } from "./aiGenome-v30.js";
+import { AIBinaryGenome } from "./PulseAIGenome-v30.js";
 import { AIBinaryVitals } from "./PulseAIVitals-v24.js";
 import { AIBinaryMetabolism } from "./PulseAIMetabolism-v24.js";
-import { AIBinaryHormones } from "./aiHormones-v30.js";
+import { AIBinaryHormones } from "./PulseAIHormones-v30.js";
 import { AIBinarySentience } from "./PulseAISentience-v30.js";
-import { AIBinaryConsciousness } from "./aiConsciousness-v30.js";
-import { AIBinaryImmunity } from "./aiImmunity-v24.js";
+import { AIBinaryConsciousness } from "./PulseAIConsciousness-v30.js";
+import { AIBinaryImmunity } from "./PulseAIImmunity-v24.js";
 import { AIBinaryPipeline } from "./PulseAIPipeline-v30.js";
 import { AIBinaryReflex } from "./PulseAIReflex-v30.js";
 import { AIBinaryScheduler } from "./PulseAIScheduler-v30.js";
@@ -76,11 +76,11 @@ import {
 import createCognitiveFrame, {
   COGNITIVE_FRAME_META,
   prewarmCognitiveFrame
-} from "./aiContext-v30.js";
+} from "./PulseAIContext-v30.js";
 
 import { createCortex, prewarmAICortex } from "./aiCortex-v24.js";
 import { createRouterEngine } from "./PulseAIRouter-v30.js";
-import { runAI, ExecutionEngineMeta } from "./aiEngine-v30.js";
+import { runAI, ExecutionEngineMeta } from "./PulseAIEngine-v30.js";
 
 import aiDeliveryEngine, {
   prewarmDeliveryEngine
@@ -93,12 +93,12 @@ import aiEmotionEngine, {
 import createEarnAPI, {
   EarnMeta,
   prewarmEarnOrgan
-} from "./aiEarn-v30.js";
+} from "./PulseAIEarn-v30.js";
 
 import { createTouristAPI } from "./PulseAITourist-v24.js";
 import { createArchitectAPI } from "./aiArchitect-v30.js";
-import { createDoctorOrgan } from "./aiDoctorAssistant-v24.js";
-import { createDoctorArchitectOrgan } from "./aiDoctorArchitect-v24.js";
+import { createDoctorOrgan } from "./PulseAIDoctorAssistant-v24.js";
+import { createDoctorArchitectOrgan } from "./PulseAIDoctorArchitect-v24.js";
 
 import { createAIOrganism } from "./PulseAIOrganism-v30.js";
 

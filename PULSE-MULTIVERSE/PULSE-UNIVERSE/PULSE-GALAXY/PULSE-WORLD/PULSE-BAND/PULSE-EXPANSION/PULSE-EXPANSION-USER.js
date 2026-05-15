@@ -52,7 +52,7 @@ import { PulseCastleMeta, createPulseCastle } from "./PULSE-EXPANSION-CASTLE.js"
 import { PulseServerMeta, createPulseServer } from "./PULSE-EXPANSION-SERVER.js";
 import { PulseRouterMeta, createPulseRouter } from "../X-PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 import { PulseExpansionMeta, createPulseExpansion } from "./PULSE-EXPANSION-WORLD.js";
-import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v30.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/PulseAIDualBand-v30.js";
 
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v24.js";

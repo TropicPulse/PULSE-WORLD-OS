@@ -30,7 +30,7 @@ import { PulseServerMeta } from "../PULSE-EXPANSION/PULSE-EXPANSION-SERVER.js";
 import { PulseRouterMeta } from "../X-PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
-import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./aiDualBand-v30.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "./PulseAIDualBand-v30.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v24.js";
 import createBinaryRouter from "../PULSE-ROUTER/PulseRouterBinary-v24.js";
 import PulseRouter from "../PULSE-ROUTER/PulseRouter-v24.js";

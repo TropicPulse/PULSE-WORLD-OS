@@ -11,12 +11,12 @@ import { createAIBinaryReflex } from "./aiReflex-v24.js";
 import { createAIBinaryLoggerAdapter } from "./aiLoggerAdapter-v24.js";
 import { createAIBinaryPageScannerAdapter } from "./aiPageScannerAdapter-v24.js";
 import { createAIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
-import { createAIBinaryGovernorAdapter } from "./aiGovernorAdapter-v30.js";
+import { createAIBinaryGovernorAdapter } from "./PulseAIGovernorAdapter-v30.js";
 import { createAIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
-import { createAIConductor as createAIBinaryConductor } from "./aiConductor-v30.js";
+import { createAIConductor as createAIBinaryConductor } from "./PulseAIConductor-v30.js";
 import { createAIBinaryMetabolism } from "./PulseAIMetabolism-v24.js";
-import { createAIBinaryHormones } from "./aiHormones-v30.js";
-import { createAIBinaryImmunity } from "./aiImmunity-v24.js";
+import { createAIBinaryHormones } from "./PulseAIHormones-v30.js";
+import { createAIBinaryImmunity } from "./PulseAIImmunity-v24.js";
 import { createAIBinaryNervousSystem } from "./aiNervousSystem-v24.js";
 import { createAIBinarySentience } from "./PulseAISentience-v30.js";
 import { createAIBinaryConsciousness } from "./aiConsciousness-v30-IMMORTAL+++.js";
@@ -28,7 +28,7 @@ import { createPermissionsEngine } from "./PulseAIPermissions-v24.js";
 import createCognitiveFrame, {
   COGNITIVE_FRAME_META,
   prewarmCognitiveFrame
-} from "./aiContext-v30.js";
+} from "./PulseAIContext-v30.js";
 
 import {
   createContextEngine,
@@ -44,7 +44,7 @@ import aiEmotionEngine, {
   prewarmEmotionEngine
 } from "./aiEmotionEngine-v24.js";
 
-import createExperienceEngine from "./aiExperience-v30.js";
+import createExperienceEngine from "./PulseAIExperience-v30.js";
 import { createPersonalityEngine } from "./aiPersonalityEngine-v24.js";
 import { createPersonalFrame } from "./aiPersonalFrame-v24.js";
 
@@ -53,7 +53,7 @@ import aiDeliveryEngine, {
 } from "./aiDeliveryEngine-v24.js";
 
 import { aiEvolutionEngine } from "./aiEvolutionEngine-v24.js";
-import { aiDualBand } from "./aiDualBand-v30.js";
+import { aiDualBand } from "./PulseAIDualBand-v30.js";
 
 import {
   SCRIBE_META,
@@ -87,7 +87,7 @@ import depsSurface, {
   prewarmDepsLayer
 } from "./aiDeps-v24.js";
 
-import { runAI, ExecutionEngineMeta } from "./aiEngine-v30.js";
+import { runAI, ExecutionEngineMeta } from "./PulseAIEngine-v30.js";
 
 // optional: if you have a dedicated delta organ
 import { createAIBinaryDelta } from "./aiBinaryDelta-v24.js";

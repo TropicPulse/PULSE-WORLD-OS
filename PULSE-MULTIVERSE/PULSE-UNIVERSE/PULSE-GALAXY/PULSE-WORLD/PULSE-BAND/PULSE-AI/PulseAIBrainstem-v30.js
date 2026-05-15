@@ -18,27 +18,27 @@ import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v30.js"
 import { createArchitectAPI } from "./aiArchitect-v30.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist-v30.js";
 
-import { createEnvironmentAPI } from "./aiEnvironment-v30.js";
+import { createEnvironmentAPI } from "./PulseAIEnvironment-v30.js";
 import { createPowerAPI } from "./aiPowerPrime-v30.js";
-import { createEvolutionAPI } from "./aiEvolution-v30.js";
-import { createEarnAPI } from "./aiEarn-v30.js";
-import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v30.js";
+import { createEvolutionAPI } from "./PulseAIEvolution-v30.js";
+import { createEarnAPI } from "./PulseAIEarn-v30.js";
+import { createDiagnosticsWriteAPI } from "./PulseAIDiagnosticsWrite-v30.js";
 
 import { createPersonaEngine } from "./aiPersonality-v30.js";
 import { createBoundariesEngine } from "./aiBoundaries-v30.js";
 import { createPermissionsEngine } from "./aiPermissions-v30.js";
 import { createRouterEngine } from "./aiRouter-v30.js";
-import { createCortex } from "./aiCortex-v30.js";
+import { createCortex } from "./PulseAICortex-v30.js";
 
-import { createDualBandOrganism } from "./aiDualBand-v30.js";
+import { createDualBandOrganism } from "./PulseAIDualBand-v30.js";
 
 import { createDoctorAPI } from "./aiDoctorAssistant-v30.js";
 import { createSurgeonAPI } from "./aiSurgeon-v30.js";
 import { createLawyerAPI } from "./aiLawAssistant-v30.js";
-import { createEntrepreneurAPI } from "./aiEntrepreneur-v30.js";
+import { createEntrepreneurAPI } from "./PulseAIEntrepreneur-v30.js";
 import { createVeterinarianAPI } from "./aiVeterinarian-v30.js";
-import { createClinicianAPI } from "./aiClinician-v30.js";
-import { createEvolutionaryAPI } from "./aiEvolutionary-v30.js";
+import { createClinicianAPI } from "./PulseAIClinician-v30.js";
+import { createEvolutionaryAPI } from "./PulseAIEvolutionary-v30.js";
 
 import { createSafetyFrameOrgan } from "./aiSafetyFrame-v30.js";
 import { createJuryFrame } from "./aiJuryFrame-v30.js";
