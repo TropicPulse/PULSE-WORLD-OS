@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: tropic-pulse-functions/PULSE-UNIVERSE/netlify/lib/PulseWorldSMSAlert-v20.js
+// FILE: pulse-world-os/PULSE-UNIVERSE/netlify/lib/PulseWorldSMSAlert-v20.js
 // ORGAN: PulseWorldSMSAlert-v20 (Twilio SMS Organ)
 // LAYER: PULSE-WORLD / COMMUNICATION-CORE / IMMORTAL-V20
 // ============================================================================

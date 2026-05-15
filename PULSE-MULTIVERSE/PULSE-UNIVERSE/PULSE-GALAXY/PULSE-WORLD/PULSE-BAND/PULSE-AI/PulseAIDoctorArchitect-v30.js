@@ -1,14 +1,73 @@
 // ============================================================================
-//  PULSE OS v24.0‑IMMORTAL‑ADVANTAGE — DOCTOR‑ARCHITECT ORGAN
+//  PULSE OS v30.0‑IMMORTAL‑ADVANTAGE — DOCTOR‑ARCHITECT ORGAN
 //  Structural Mapper • Clinical Pattern Interpreter • Gradient Analyzer
 //  SAFE SCANFILE ANALYSIS • ZERO DIAGNOSIS • ZERO EXECUTION
 //  PURE CONTEXT. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
+// Fully self‑contained v30+ meta (no external remnants)
+export const DoctorArchitectMeta = Object.freeze({
+  type: "Organ",
+  subsystem: "doctor-architect",
+  layer: "C3-DoctorArchitect",
+  role: "structural-clinical-mapper",
+  version: "30-Immortal-Advantage",
+  identity: "aiDoctorArchitectOrgan-v30-Immortal-Advantage",
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    egoFree: true,
+    adaptive: true,
+    harmonic: true,
+
+    // safety + scope
+    zeroExecution: true,
+    zeroDiagnosis: true,
+    scanfileOnly: true,
+    symbolicOnly: true,
+    binaryAware: true,
+
+    // awareness
+    arteryAware: true,
+    pressureAware: true,
+    windowSafe: true,
+
+    epoch: "30-Immortal-Advantage"
+  }),
+  contract: Object.freeze({
+    purpose:
+      "Provide structural, mechanical, and clinical-pattern context for scanfiles without diagnosis or execution.",
+    never: Object.freeze([
+      "execute code",
+      "run scanfiles",
+      "provide medical diagnosis",
+      "override clinicians",
+      "mutate input",
+      "introduce randomness",
+      "log sensitive payloads directly"
+    ]),
+    always: Object.freeze([
+      "stay structural",
+      "stay educational",
+      "stay non-diagnostic",
+      "stay deterministic",
+      "stay safety-aligned",
+      "respect clinician primacy",
+      "emit window-safe context only"
+    ])
+  }),
+  safetyLine() {
+    return (
+      "This is general structural and clinical pattern information. " +
+      "For medical decisions or diagnoses, a licensed clinician is required."
+    );
+  }
+});
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, doctor-architect scoped
+// PACKET EMITTER — v30 IMMORTAL‑ADVANTAGE
 // ============================================================================
+
 function emitDoctorArchitectPacket(type, payload = {}) {
   return Object.freeze({
     meta: DoctorArchitectMeta,
@@ -23,8 +82,9 @@ function emitDoctorArchitectPacket(type, payload = {}) {
 }
 
 // ============================================================================
-// HELPERS — PRESSURE + BUCKETS
+// PRESSURE HELPERS
 // ============================================================================
+
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
     return binaryVitals.layered.organism.pressure;
@@ -42,8 +102,9 @@ function bucketPressure(v) {
 }
 
 // ============================================================================
-//  PREWARM ENGINE — v24.0‑IMMORTAL‑ADVANTAGE
+// PREWARM — v30 IMMORTAL‑ADVANTAGE
 // ============================================================================
+
 export function prewarmDoctorArchitectOrgan() {
   try {
     const organ = createDoctorArchitectOrgan({
@@ -92,15 +153,16 @@ export function prewarmDoctorArchitectOrgan() {
 }
 
 // ============================================================================
-// PUBLIC API — Create Doctor-Architect Organ (v24.0‑IMMORTAL‑ADVANTAGE)
+// FACTORY — v30 IMMORTAL‑ADVANTAGE
 // ============================================================================
+
 export function createDoctorArchitectOrgan(context = {}) {
   function prewarm() {
     return true;
   }
 
   // ========================================================================
-  // SAFE SCANFILE ANALYZER v3 — symbolic-only, non-executing
+  // SCANFILE STRUCTURAL ANALYSIS v3 (SAFE, NON-EXECUTING)
   // ========================================================================
   function analyzeScanFile({ file = {}, text = "" } = {}, binaryVitals = {}) {
     const binaryPressure = extractBinaryPressure(binaryVitals);
@@ -232,10 +294,7 @@ export function createDoctorArchitectOrgan(context = {}) {
   // SOFT SAFETY LINE
   // ========================================================================
   function safetyLine() {
-    return (
-      "This is general structural and clinical pattern information. " +
-      "For medical decisions or diagnoses, a licensed clinician is required."
-    );
+    return DoctorArchitectMeta.safetyLine();
   }
 
   // ========================================================================
@@ -270,8 +329,8 @@ export function createDoctorArchitectOrgan(context = {}) {
   }
 
   // ========================================================================
-  // PUBLIC DOCTOR-ARCHITECT API (v24.0‑IMMORTAL‑ADVANTAGE)
-// ========================================================================
+  // PUBLIC DOCTOR-ARCHITECT API (v30.0‑IMMORTAL‑ADVANTAGE)
+  // ========================================================================
   return Object.freeze({
     meta: DoctorArchitectMeta,
     prewarm,
@@ -291,6 +350,10 @@ export function createDoctorArchitectOrgan(context = {}) {
 }
 
 export default createDoctorArchitectOrgan;
+
+// ============================================================================
+// DUAL‑MODE EXPORTS (ESM + CommonJS) — v30 CLEAN, NO REMNANTS
+// ============================================================================
 
 if (typeof module !== "undefined") {
   module.exports = {

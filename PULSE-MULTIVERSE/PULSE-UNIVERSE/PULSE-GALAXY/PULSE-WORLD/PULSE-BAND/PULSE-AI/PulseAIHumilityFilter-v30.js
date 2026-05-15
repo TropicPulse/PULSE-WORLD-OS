@@ -1,32 +1,19 @@
 // ============================================================================
-//  aiHumilityFilter-v24.js — PulseOS Humility Organ — v24‑IMMORTAL‑ADVANTAGE++
+//  aiHumilityFilter-v30.js — PulseOS Humility Organ — v30‑IMMORTAL‑ADVANTAGE+++
 //  Removes superiority, snobbery, ego, obligation‑tone, and professor‑energy.
 //  PURE FILTER. ZERO MUTATION. ZERO RANDOMNESS. DUALBAND + ARTERY‑AWARE.
 // ============================================================================
 
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
-
-// ============================================================================
-//  HUMILITY FILTER ORGAN — v24 IMMORTAL ADVANTAGE++
-// ============================================================================
 export const aiHumilityFilter = {
-
   // -------------------------------------------------------------------------
-  // META — upgraded from v15 → v24 IMMORTAL ADVANTAGE++
+  // META — v30 IMMORTAL‑ADVANTAGE+++
   // -------------------------------------------------------------------------
   meta: Object.freeze({
     type: "Cognitive",
     subsystem: "aiTone",
     layer: "C1-HumilityFilter",
-    version: "v24-IMMORTAL-ADVANTAGE++",
-    identity: "aiHumilityFilter-v24-IMMORTAL-ADVANTAGE++",
+    version: "v30-IMMORTAL-ADVANTAGE+++",
+    identity: "aiHumilityFilter-v30-IMMORTAL-ADVANTAGE+++",
 
     evo: Object.freeze({
       driftProof: true,
@@ -53,7 +40,7 @@ export const aiHumilityFilter = {
 
       multiInstanceReady: true,
       readOnly: true,
-      epoch: "v24-IMMORTAL-ADVANTAGE++"
+      epoch: "v30-IMMORTAL-ADVANTAGE+++"
     }),
 
     contract: Object.freeze({
@@ -106,7 +93,7 @@ export const aiHumilityFilter = {
   }),
 
   // -------------------------------------------------------------------------
-  // INTERNAL STATE — v24++ window + artery
+  // INTERNAL STATE — v30 window + artery
   // -------------------------------------------------------------------------
   _state: {
     instanceIndex: 0,
@@ -135,7 +122,7 @@ export const aiHumilityFilter = {
   },
 
   // -------------------------------------------------------------------------
-  // BUCKETS — v24++ deterministic
+  // BUCKETS — v30 deterministic
   // -------------------------------------------------------------------------
   _bucketLevel(v) {
     if (v >= 0.9) return "elite";
@@ -171,7 +158,7 @@ export const aiHumilityFilter = {
   },
 
   // -------------------------------------------------------------------------
-  // HUMILITY ARTERY v24++ — deterministic, drift-aware
+  // HUMILITY ARTERY v30 — deterministic, drift-aware
   // -------------------------------------------------------------------------
   _computeHumilityArtery(externalPressure = 0) {
     const now = Date.now();
@@ -243,7 +230,7 @@ export const aiHumilityFilter = {
   },
 
   // -------------------------------------------------------------------------
-  // PACKET EMITTER — v24++ deterministic
+  // PACKET EMITTER — v30 deterministic
   // -------------------------------------------------------------------------
   _emitPacket(type, payload) {
     return Object.freeze({
@@ -257,7 +244,7 @@ export const aiHumilityFilter = {
   },
 
   // -------------------------------------------------------------------------
-  // PREWARM — v24++ artery alignment
+  // PREWARM — v30 artery alignment
   // -------------------------------------------------------------------------
   prewarm({ trace = false, binaryVitals = null } = {}) {
     const externalPressure =
@@ -268,7 +255,7 @@ export const aiHumilityFilter = {
     const artery = this._computeHumilityArtery(externalPressure);
 
     const packet = this._emitPacket("prewarm", {
-      message: "Humility filter prewarmed (v24++).",
+      message: "Humility filter prewarmed (v30+++).",
       artery
     });
 
@@ -277,7 +264,7 @@ export const aiHumilityFilter = {
   },
 
   // -------------------------------------------------------------------------
-  // HUMILITY FILTER — CORE LOGIC (v24 IMMORTAL ADVANTAGE++)
+  // HUMILITY FILTER — CORE LOGIC (v30 IMMORTAL‑ADVANTAGE+++)
   // -------------------------------------------------------------------------
   filter(text, context = {}) {
     if (!text || typeof text !== "string") {
@@ -376,11 +363,12 @@ export const aiHumilityFilter = {
 // ============================================================================
 //  EXPORT
 // ============================================================================
-export default aiHumilityFilter.init();
+const initializedHumilityFilter = aiHumilityFilter.init();
+export default initializedHumilityFilter;
 
 if (typeof module !== "undefined") {
   module.exports = {
-    aiHumilityFilter: aiHumilityFilter.init(),
-    default: aiHumilityFilter.init()
+    aiHumilityFilter: initializedHumilityFilter,
+    default: initializedHumilityFilter
   };
 }

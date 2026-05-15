@@ -1,42 +1,53 @@
 // ============================================================================
-//  aiDoctorAssistant-v24.js — PulseOS Doctor’s Assistant Organ — v24.0‑IMMORTAL‑EVO++
+//  aiDoctorAssistant-v30.js — PulseOS Doctor’s Assistant Organ — v30.0‑IMMORTAL‑ADVANTAGE
 //  Clinical Mapper • Pattern Interpreter • Route‑Based Medical Info Reader
 //  PURE COMPUTE. ZERO NETWORK FROM THIS ORGAN. ZERO RANDOMNESS.
-// ============================================================================
-//
-//  CANONICAL ROLE:
-//    • Doctor’s Assistant (Not a Doctor).
-//    • Provides general medical pattern information, terminology lookup, and
-//      educational context for symptoms, scans, and mechanisms.
-//    • Helps users understand what topics, questions, or observations may be
-//      relevant to bring to a licensed clinician.
-//    • Interprets symptoms into broad patterns, outlines conceptual risk tiers,
-//      and explains mechanisms in plain language.
-//    • Requests educational medical information via PulseOS route() and reads
-//      routed medical text (NOT for diagnosis or treatment).
-//    • Guides users toward the kinds of patterns and questions clinicians
-//      typically examine, WITHOUT recommending actions or replacing a doctor.
-//
-//  ROLE BOUNDARY (Declared Once):
-//    • This organ is a Doctor’s Assistant, not a doctor.
-//    • It does not diagnose, treat, prescribe, or tell users what to do.
-//    • It does not replace a licensed clinician.
-//    • It is meant to support you and your clinician by organizing information,
-//      highlighting patterns, and surfacing questions you may want to ask.
-//
-//  HARD GUARANTEES:
-//    • No diagnosis, no treatment plans, no dosing, no “do X” directives.
-//    • No medical outcome predictions or claims of medical authority.
-//    • No direct network primitives (no fetch/axios/etc inside this file).
-//    • All external I/O (including medical info queries) is mediated by the
-//      caller’s route() / CNS.
-//    • From this organ’s perspective: pure compute over provided data
-//      (symptoms, scans, routed educational medical text).
+//  EDUCATIONAL ONLY. ZERO DIAGNOSIS. ZERO TREATMENT.
 // ============================================================================
 
+// Minimal v30 meta (no external remnants, no undefined globals)
+export const DoctorMeta = Object.freeze({
+  identity: "aiDoctorAssistant-v30-Immortal-Advantage",
+  version: "30.0-Immortal-Advantage",
+  role: "doctor_assistant",
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    egoFree: true,
+    adaptive: true,
+    harmonic: true,
+    symbolicOnly: true,
+    zeroNetworkFromOrgan: true,
+    zeroDiagnosis: true,
+    zeroTreatment: true,
+    epoch: "30-Immortal-Advantage"
+  }),
+  contract: Object.freeze({
+    purpose:
+      "Provide structural and clinical-pattern education to support better conversations with licensed clinicians.",
+    never: Object.freeze([
+      "diagnose conditions",
+      "recommend treatment",
+      "override clinicians",
+      "simulate prescriptions",
+      "give medical clearance",
+      "replace professional medical judgment"
+    ]),
+    always: Object.freeze([
+      "stay educational",
+      "stay structural",
+      "stay pattern-focused",
+      "stay non-diagnostic",
+      "defer to licensed clinicians",
+      "preserve safety framing"
+    ])
+  })
+});
+
 // ============================================================================
-// HELPERS — PRESSURE + BUCKETS
+//  PRESSURE HELPERS
 // ============================================================================
+
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
     return binaryVitals.layered.organism.pressure;
@@ -53,41 +64,41 @@ function bucketPressure(v) {
   return "none";
 }
 
+// ============================================================================
+//  ARCHETYPE ARTERY v3 — symbolic-only, deterministic
+// ============================================================================
 
-  // ========================================================================
-  // ARCHETYPE ARTERY v3 — symbolic-only, deterministic
-  // ========================================================================
-  function archetypeArtery({ symptoms = [], scan = {}, binaryVitals = {} } = {}) {
-    const binaryPressure = extractBinaryPressure(binaryVitals);
+function archetypeArtery({ symptoms = [], scan = {}, binaryVitals = {} } = {}) {
+  const binaryPressure = extractBinaryPressure(binaryVitals);
 
-    const hasSymptoms = Array.isArray(symptoms) && symptoms.length > 0;
-    const hasScan = !!scan;
+  const hasSymptoms = Array.isArray(symptoms) && symptoms.length > 0;
+  const hasScan = !!scan;
 
-    const localPressure =
-      (hasSymptoms ? 0.3 : 0) +
-      (hasScan ? 0.3 : 0) +
-      (binaryPressure * 0.4);
+  const localPressure =
+    (hasSymptoms ? 0.3 : 0) +
+    (hasScan ? 0.3 : 0) +
+    binaryPressure * 0.4;
 
-    const pressure = Math.max(0, Math.min(1, localPressure));
+  const pressure = Math.max(0, Math.min(1, localPressure));
 
-    return {
-      organism: {
-        pressure,
-        pressureBucket: bucketPressure(pressure)
-      },
-      symptoms: {
-        provided: hasSymptoms,
-        count: symptoms.length
-      },
-      scan: {
-        provided: hasScan,
-        distance: scan?.distance ?? null,
-        confidence: scan?.confidenceHint ?? "unknown"
-      }
-    };
-  }
+  return {
+    organism: {
+      pressure,
+      pressureBucket: bucketPressure(pressure)
+    },
+    symptoms: {
+      provided: hasSymptoms,
+      count: symptoms.length
+    },
+    scan: {
+      provided: hasScan,
+      distance: scan?.distance ?? null,
+      confidence: scan?.confidenceHint ?? "unknown"
+    }
+  };
+}
 
-// v24++: simple owner/subordinate snapshot for Architect/Overmind
+// v30: owner/subordinate snapshot for Architect/Overmind
 function buildDoctorArterySnapshot({ symptoms = [], scan = {}, binaryVitals = {} } = {}) {
   const binaryPressure = extractBinaryPressure(binaryVitals);
   const archetype = archetypeArtery({ symptoms, scan, binaryVitals });
@@ -102,14 +113,15 @@ function buildDoctorArterySnapshot({ symptoms = [], scan = {}, binaryVitals = {}
     meta: {
       identity: DoctorMeta.identity,
       version: DoctorMeta.version,
-      role: "doctor_assistant"
+      role: DoctorMeta.role
     }
   });
 }
 
 // ============================================================================
-// INTERNAL HELPER — MEDICAL INFO POINTER (no route, no I/O)
+//  MEDICAL INFO POINTER (EDUCATIONAL ONLY, ZERO NETWORK FROM ORGAN)
 // ============================================================================
+
 function _medicalInfoPointer({ topic = "" } = {}) {
   const sources = {
     general:    "https://medlineplus.gov/search/?query=",
@@ -140,17 +152,17 @@ function _medicalInfoPointer({ topic = "" } = {}) {
 }
 
 // ============================================================================
-// PUBLIC API — Create Doctor’s Assistant Organ (v24.0‑IMMORTAL‑EVO++)
+//  DOCTOR ASSISTANT ORGAN — v30 IMMORTAL‑ADVANTAGE
 // ============================================================================
-export function createDoctorOrgan(context = {}) {
 
+export function createDoctorOrgan(context = {}) {
   function prewarm() {
     return true;
   }
 
-  // ========================================================================
-  // SYMPTOM → PATTERN INTERPRETER v3
-  // ========================================================================
+  // ------------------------------------------------------------------------
+  //  SYMPTOM PATTERN INTERPRETER v3 (EDUCATIONAL ONLY)
+  // ------------------------------------------------------------------------
   function interpretSymptoms(symptoms = [], binaryVitals = {}) {
     const binaryPressure = extractBinaryPressure(binaryVitals);
 
@@ -174,9 +186,9 @@ export function createDoctorOrgan(context = {}) {
     });
   }
 
-  // ========================================================================
-  // SCAN INTERPRETER v3 — structural + clinical, non-medical
-  // ========================================================================
+  // ------------------------------------------------------------------------
+  //  SCAN INTERPRETER v3 (STRUCTURAL, NON-DIAGNOSTIC)
+// ------------------------------------------------------------------------
   function interpretScan(scan = {}, binaryVitals = {}) {
     const binaryPressure = extractBinaryPressure(binaryVitals);
 
@@ -200,9 +212,9 @@ export function createDoctorOrgan(context = {}) {
     });
   }
 
-  // ========================================================================
-  // RISK TIER OUTLINER v3 — NOT DIAGNOSTIC
-  // ========================================================================
+  // ------------------------------------------------------------------------
+  //  RISK TIER OUTLINER v3 (CONCEPTUAL ONLY)
+// ------------------------------------------------------------------------
   function outlineRiskTiers(patterns = [], binaryVitals = {}) {
     const binaryPressure = extractBinaryPressure(binaryVitals);
 
@@ -224,9 +236,9 @@ export function createDoctorOrgan(context = {}) {
     });
   }
 
-  // ========================================================================
-  // CLINICIAN QUESTION SUGGESTER v3
-  // ========================================================================
+  // ------------------------------------------------------------------------
+  //  CLINICIAN QUESTION SUGGESTER v3
+  // ------------------------------------------------------------------------
   function suggestClinicianQuestions(patterns = [], binaryVitals = {}) {
     const binaryPressure = extractBinaryPressure(binaryVitals);
 
@@ -250,9 +262,9 @@ export function createDoctorOrgan(context = {}) {
     });
   }
 
-  // ========================================================================
-  // MECHANISM EXPLAINER v3
-  // ========================================================================
+  // ------------------------------------------------------------------------
+  //  MECHANISM EXPLAINER v3
+  // ------------------------------------------------------------------------
   function explainMechanisms(pattern = "", binaryVitals = {}) {
     const binaryPressure = extractBinaryPressure(binaryVitals);
 
@@ -276,9 +288,9 @@ export function createDoctorOrgan(context = {}) {
     });
   }
 
-  // ========================================================================
-  // SOFT SAFETY LINE
-  // ========================================================================
+  // ------------------------------------------------------------------------
+  //  SAFETY LINE v3
+  // ------------------------------------------------------------------------
   function safetyLine() {
     return (
       "This is general medical and structural pattern information. " +
@@ -286,42 +298,9 @@ export function createDoctorOrgan(context = {}) {
     );
   }
 
-  // ========================================================================
-  // ARCHETYPE ARTERY v3 — symbolic-only, deterministic
-  // ========================================================================
-  function archetypeArtery({ symptoms = [], scan = {}, binaryVitals = {} } = {}) {
-    const binaryPressure = extractBinaryPressure(binaryVitals);
-
-    const hasSymptoms = Array.isArray(symptoms) && symptoms.length > 0;
-    const hasScan = !!scan;
-
-    const localPressure =
-      (hasSymptoms ? 0.3 : 0) +
-      (hasScan ? 0.3 : 0) +
-      (binaryPressure * 0.4);
-
-    const pressure = Math.max(0, Math.min(1, localPressure));
-
-    return {
-      organism: {
-        pressure,
-        pressureBucket: bucketPressure(pressure)
-      },
-      symptoms: {
-        provided: hasSymptoms,
-        count: symptoms.length
-      },
-      scan: {
-        provided: hasScan,
-        distance: scan?.distance ?? null,
-        confidence: scan?.confidenceHint ?? "unknown"
-      }
-    };
-  }
-
-  // ========================================================================
-  // MEDICAL INFO QUERY v1 — pointer + route‑based query
-  // ========================================================================
+  // ------------------------------------------------------------------------
+  //  MEDICAL INFO QUERY v2 — POINTER OR HOST-ROUTED
+  // ------------------------------------------------------------------------
   function medicalInfoQuery({ topic = "", mode = "auto", route = null } = {}) {
     const pointer = _medicalInfoPointer({ topic });
 
@@ -340,7 +319,7 @@ export function createDoctorOrgan(context = {}) {
       meta: {
         fromOrgan: DoctorMeta.identity,
         version: DoctorMeta.version,
-        role: "doctor_assistant"
+        role: DoctorMeta.role
       }
     };
 
@@ -362,9 +341,9 @@ export function createDoctorOrgan(context = {}) {
     };
   }
 
-  // ========================================================================
-  // MEDICAL INFO READER v1 — interpret routed educational medical text
-  // ========================================================================
+  // ------------------------------------------------------------------------
+  //  MEDICAL INFO READER v1 — interpret routed educational text
+  // ------------------------------------------------------------------------
   function medicalInfoReader(info = {}, binaryVitals = {}) {
     const notes = [];
     const text = (info.rawText || "").toLowerCase();
@@ -415,8 +394,8 @@ export function createDoctorOrgan(context = {}) {
   }
 
   // ========================================================================
-  // PUBLIC DOCTOR’S ASSISTANT API (v24.0‑IMMORTAL‑EVO++)
-  // ========================================================================
+  //  PUBLIC DOCTOR’S ASSISTANT API (v30.0‑IMMORTAL‑ADVANTAGE)
+// ========================================================================
   return Object.freeze({
     meta: DoctorMeta,
     prewarm,
@@ -435,19 +414,18 @@ export function createDoctorOrgan(context = {}) {
     medicalInfoReader,
     safetyLine,
 
-    // v24++ artery snapshot for Architect/Overmind
+    // v30 artery snapshot for Architect/Overmind
     doctorArterySnapshot: buildDoctorArterySnapshot
   });
 }
 
+// ============================================================================
+//  DUAL‑MODE EXPORTS (ESM + CommonJS)
+// ============================================================================
+
 if (typeof module !== "undefined") {
   module.exports = {
     DoctorMeta,
-    createDoctorOrgan,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    createDoctorOrgan
   };
 }

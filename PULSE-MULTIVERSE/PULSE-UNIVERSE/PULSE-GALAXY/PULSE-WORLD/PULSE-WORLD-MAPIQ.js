@@ -809,7 +809,7 @@ async function buildPulseIQMapEvolvable(evolutionSources) {
   const chunkingProfiles = buildChunkingProfiles(genome, pageExpectations);
 
   const topology = {
-    backendRoot: "tropic-pulse-functions",
+    backendRoot: "pulse-world-os",
     publishRoot: FRONTEND_ROOT,
     frontendFiles: FRONTEND_FILES,
     frontendSystems: FRONTEND_SYSTEMS,

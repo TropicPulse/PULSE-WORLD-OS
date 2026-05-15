@@ -1,14 +1,14 @@
 // ============================================================================
-//  aiEmotionEngine-v31-Orbital.js — Pulse OS v31‑IMMORTAL++
+//  aiEmotionEngine-v30-Orbital.js — Pulse OS v30‑IMMORTAL++
 //  Emotion Organ • Subtle Affect Detection • Tone Routing Surface
 //  PURE AFFECT. ZERO DIAGNOSIS. ZERO CLINICAL INTERPRETATION.
-//  v31: NO META • NO IDENTITY • NO OWNER • NO WALL-CLOCK
+//  v30: NO META • NO IDENTITY • NO OWNER • NO WALL-CLOCK
 //       ORBITAL-AWARE PRESSURE • ROUTING HINTS • DUALBAND TONE
 // ============================================================================
 
 
 // ============================================================================
-//  PRESSURE HELPERS — dualband‑aware (v31)
+//  PRESSURE HELPERS — dualband‑aware (v30)
 // ============================================================================
 function extractBinaryPressure(binaryVitals = {}) {
   if (binaryVitals?.layered?.organism?.pressure != null)
@@ -40,7 +40,7 @@ function bucketPressure(v) {
 
 
 // ============================================================================
-//  PACKET EMITTER — deterministic, emotion‑scoped (v31 IMMORTAL++)
+//  PACKET EMITTER — deterministic, emotion‑scoped (v30 IMMORTAL++)
 // ============================================================================
 function emitEmotionPacket(type, payload = {}) {
   return Object.freeze({
@@ -230,7 +230,7 @@ function deriveToneProfile({ emotion, intensity, binaryPressure, orbitalPressure
 
 
 // ============================================================================
-//  EMOTION ARTERY — symbolic‑only, deterministic, dualband‑aware (v31)
+//  EMOTION ARTERY — symbolic‑only, deterministic, dualband‑aware (v30)
 // ============================================================================
 function emotionArtery({ message = "", binaryVitals = {} } = {}) {
   const pressure = extractBinaryPressure(binaryVitals);
@@ -270,7 +270,7 @@ function emotionArtery({ message = "", binaryVitals = {} } = {}) {
 
 
 // ============================================================================
-//  FACTORY — v31 IMMORTAL++
+//  FACTORY — v30 IMMORTAL++
 // ============================================================================
 export function createEmotionEngine({ context = {}, personaEngine = null } = {}) {
   const base = {
@@ -358,7 +358,7 @@ export const aiEmotionEngine = createEmotionEngine;
 
 
 // ============================================================================
-//  EMOTION ENGINE PREWARM — v31 IMMORTAL++
+//  EMOTION ENGINE PREWARM — v30 IMMORTAL++
 // ============================================================================
 export function prewarmEmotionEngine() {
   try {
