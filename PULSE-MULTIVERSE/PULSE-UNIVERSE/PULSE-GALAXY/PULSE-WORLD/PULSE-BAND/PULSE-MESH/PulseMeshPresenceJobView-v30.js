@@ -55,12 +55,7 @@ import { OrganismIdentity } from "../X-PULSE-X/PULSE-WORLD-MAP.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // META EXPORTS
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
+
 
 // ============================================================================
 // FACTORY — v30 IMMORTAL+++

@@ -18,29 +18,6 @@
 //   • v24 OrganismIdentity‑backed meta.
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../X-PULSE-X/PULSE-WORLD-MAPORGANISM.jssss
-";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-
-export const PulseEarnAmbassadorMeta = Identity.OrganMeta;
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // Deterministic Akash Receptor DNA (INTEL‑aware but static)

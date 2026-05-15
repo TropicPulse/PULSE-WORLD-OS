@@ -27,13 +27,6 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-export const SURVIVAL_CONTEXT = Identity.pulseLoreContext;
 // v24: imports so SurvivalInstincts is wired into the v24 organism
 import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem-v24.js";
 import { PulseGPUHealer } from "./PulseGPULymphNodes-v30.js";

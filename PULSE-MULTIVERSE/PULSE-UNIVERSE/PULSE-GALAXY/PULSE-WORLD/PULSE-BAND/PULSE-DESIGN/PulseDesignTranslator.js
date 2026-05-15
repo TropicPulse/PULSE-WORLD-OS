@@ -13,14 +13,6 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-// 2 — EXPORT GENOME METADATA
-export const PulseDesignArchitectMeta = Identity.OrganMeta;
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
 // 3 — ALL OTHER IMPORTS (AFTER IDENTITY)
 import path from "path";
 import { walkRepo } from "./PulseDesignRepoWalker.js";

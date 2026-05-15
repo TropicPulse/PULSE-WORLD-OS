@@ -3,22 +3,6 @@
 // LAYER: THE CARTOGRAPHER (Terrain Explorer + Directory Mapper + Evolutionary Topographer)
 // ============================================================================
 
-// 1 — GENOME IDENTITY (MUST BE FIRST)
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../X-PULSE-X/PULSE-WORLD-MAP.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// 2 — EXPORT GENOME METADATA
-export const PulseDesignCartographerMeta = Identity.OrganMeta;
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // 3 — ALL OTHER IMPORTS (AFTER IDENTITY)
 import fs from "fs";

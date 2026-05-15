@@ -3,29 +3,6 @@
 // LAYER: THE ANATOMIST (Structural Classifier + Identity Mapper + Evolutionary Morphology)
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../X-PULSE-X/PULSE-WORLD-MAP.js";
-import path from "path";
-const Identity = OrganismIdentity(import.meta.url);
-
-// ============================================================================
-//  META BLOCK — v17 IMMORTAL (from genome)
-// ============================================================================
-export const PulseDesignAnatomistMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v17 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
 // ============================================================================
 // INTERNAL TYPES (conceptual, not enforced at runtime)
 // ============================================================================

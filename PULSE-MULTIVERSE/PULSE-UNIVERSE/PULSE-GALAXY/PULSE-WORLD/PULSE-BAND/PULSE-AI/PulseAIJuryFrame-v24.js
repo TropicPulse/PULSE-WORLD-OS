@@ -64,26 +64,6 @@ const fetchFn =
 //  (now backed by the Organism Map instead of hardcoded here)
 // ============================================================================
 
-export const JuryFrameMeta = Identity.OrganMeta;
-export const JURY_IDENTITY = Identity;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-//  (for Understanding / CNS / Portal alignment)
-// ============================================================================
-
-// Required 3 for every “surface” in the organism graph
-export const pulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-// Optional: richer experience meta for AI / tooling
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-
-// Optional: export meta for tooling / dev panels
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 //  HELPERS — TEXT, BUCKETS, SAFE ACCESS

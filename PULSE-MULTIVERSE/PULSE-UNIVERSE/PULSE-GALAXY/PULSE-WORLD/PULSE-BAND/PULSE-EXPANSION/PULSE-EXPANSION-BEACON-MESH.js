@@ -70,12 +70,7 @@ export const PulseBeaconMeshMeta = {
   version: "v24-Immortal-NET++",
   role: "LOCAL_MEMBRANE_SIMULATOR"
 };
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
+
 
 // ============================================================================
 // IMPORTS — ORGANISM CONTEXT + BEACON ENGINE

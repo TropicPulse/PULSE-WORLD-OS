@@ -33,18 +33,6 @@
 // • Metadata-only shaping (no routing side-effects by itself)
 // ============================================================================
 
-import { OrganismIdentity } from "../../PULSE-WORLD-MAPORGANISM.js";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// ---------------------------------------------------------------------------
-// META EXPORTS — v30 IMMORTAL KERNEL
-// ---------------------------------------------------------------------------
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // COMMUNITY CORTEX LAYER — v30 IMMORTAL+++

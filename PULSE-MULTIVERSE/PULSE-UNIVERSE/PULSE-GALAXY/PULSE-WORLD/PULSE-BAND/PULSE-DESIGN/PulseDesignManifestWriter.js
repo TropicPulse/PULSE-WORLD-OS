@@ -3,29 +3,9 @@
 // LAYER: THE SURVEYOR (Canonical Blueprint Writer, v17 IMMORTAL)
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../X-PULSE-X/PULSE-WORLD-MAP.js";
 import fs from "fs";
 import path from "path";
-const Identity = OrganismIdentity(import.meta.url);
 
-// ============================================================================
-//  META BLOCK — v17 IMMORTAL (from genome)
-// ============================================================================
-export const PulseDesignSurveyorMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v17 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
 // ============================================================================
 // PUBLIC API — Write Canonical Manifest (v17 IMMORTAL)
