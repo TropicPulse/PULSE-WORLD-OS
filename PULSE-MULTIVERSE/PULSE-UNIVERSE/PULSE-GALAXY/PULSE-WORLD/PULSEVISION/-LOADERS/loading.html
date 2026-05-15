@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Loading Pulse Account…</title>
-   <meta name="viewport"
+  <meta charset="UTF-8" />
+    <meta name="viewport"
       content="width=device-width,
                initial-scale=1,
                maximum-scale=1,
                minimum-scale=1,
                user-scalable=no">
+<title>Loading Pulse Account…</title>
 
-
-<!-- End Meta Pixel Code -->
   <style>
     
     body {
@@ -107,7 +106,7 @@
   <div class="center-box" id="loaderBox">
 
     <div class="loader-image">
-      <img src="./_PICTURES/ToucanLogo-Mini.png" alt="Tropic Pulse Logo">
+      <img src="../_PICTURES/ToucanLogo-Mini.png" alt="Tropic Pulse Logo">
     </div>
 
     <div class="loader-circle"></div>
@@ -136,7 +135,7 @@
 
         if (!token) {
           setTimeout(() => {
-            window.location.replace("/CheckEmail.html");
+            window.location.replace("/PulseWorldBarrier.html");
           }, 300);
           return;
         }
@@ -158,7 +157,7 @@
               }
             });
             setTimeout(() => {
-              window.location.replace("/CheckEmail.html");
+              window.location.replace("/PulseWorldBarrier.html");
             }, 300);
             return;
           }
@@ -176,7 +175,7 @@
                 window.location.replace(data.identity.stripeDashboardURL);
                 return;
               }
-              window.location.replace("/dashboard.html");
+              window.location.replace("/PulseWorldInventory.html");
             }, 300);
           }, 500);
         });

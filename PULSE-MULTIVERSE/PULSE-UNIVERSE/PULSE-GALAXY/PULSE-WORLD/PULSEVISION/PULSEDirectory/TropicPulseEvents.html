@@ -1934,7 +1934,7 @@ async function hardLogout(reason) {
     localStorage.removeItem("tp_token_v4");
     localStorage.removeItem("tp_device_token_v4");
   } finally {
-    window.location.replace("/CheckEmail.html");
+    window.location.replace("/PulseWorldBarrier.html");
   }
 }
 
@@ -1971,7 +1971,7 @@ async function sessionCheck() {
   // No identity or not trusted → go to login
   if (!id || !id.trustedDevice) {
     const here = encodeURIComponent(location.pathname + location.search);
-    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    window.location.href = `/PulseWorldBarrier.html?returnTo=${here}`;
     return null;
   }
 
@@ -3492,7 +3492,7 @@ function punchBackdropHole(shell, panel, backdrop) {
       createBtn.onclick = () => {
         if (!userEmail) {
           const returnTo = encodeURIComponent(window.location.href);
-          window.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
+          window.location.replace(`/PulseWorldBarrier.html?returnTo=${returnTo}`);
           return;
         }
         window.location.href = `/EditEvent.html`;
@@ -3526,7 +3526,7 @@ function punchBackdropHole(shell, panel, backdrop) {
       myBtn.onclick = () => {
         if (!userEmail) {
           const returnTo = encodeURIComponent(window.location.href);
-          window.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
+          window.location.replace(`/PulseWorldBarrier.html?returnTo=${returnTo}`);
           return;
         }
         setEventMode("my");

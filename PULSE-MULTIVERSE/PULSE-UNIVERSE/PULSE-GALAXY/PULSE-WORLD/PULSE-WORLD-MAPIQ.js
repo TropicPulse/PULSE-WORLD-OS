@@ -175,8 +175,8 @@ const FRONTEND_ROOT = "PULSE-WORLD";
 
 const FRONTEND_FILES = [
   "index.html",
-  "dashboard.html",
-  "checkemail.html",
+  "PulseWorldInventory.html",
+  "PulseWorldBarrier.html",
   "userrecords.html"
 ];
 

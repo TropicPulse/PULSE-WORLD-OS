@@ -1108,7 +1108,7 @@ body::before {
   // No identity or not trusted → go to login
   if (!id || !id.trustedDevice) {
     const here = encodeURIComponent(location.pathname + location.search);
-    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    window.location.href = `/PulseWorldBarrier.html?returnTo=${here}`;
     return null;
   }
 

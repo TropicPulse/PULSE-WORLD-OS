@@ -121,7 +121,7 @@ root.innerHTML = String.raw`
         <a href="#pricing">Pricing</a>
         <a href="#faq">FAQ</a>
         <a href="#contact">Contact</a>
-        <a href="./PULSE/PulseWorldBarrier.html">Open Tropic Pulse</a>
+        <a href="../PULSE/PulseWorldBarrier.html">Open Tropic Pulse</a>
       </div>
 
       <div class="mobile-menu-cta">
@@ -155,7 +155,7 @@ root.innerHTML = String.raw`
       </nav>
 
       <div class="header-cta">
-        <a href="./PULSE/PulseWorldBarrier.html" class="btn btn-primary">Open Tropic Pulse</a>
+        <a href="../PULSE/PulseWorldBarrier.html" class="btn btn-primary">Open Tropic Pulse</a>
       </div>
 
       <button class="mobile-menu-toggle" id="mobileMenuToggle">
@@ -384,7 +384,7 @@ root.innerHTML = String.raw`
           <p><a href="#deliverers">Become a Deliverer</a></p>
           <p><a href="#pricing">Pricing</a></p>
           <p><a href="#faq">FAQ</a></p>
-          <p><a href="./PULSE/PulseWorldBarrier.html">Open Tropic Pulse</a></p>
+          <p><a href="../PULSE/PulseWorldBarrier.html">Open Tropic Pulse</a></p>
         </div>
 
         <div style="text-align:left;">

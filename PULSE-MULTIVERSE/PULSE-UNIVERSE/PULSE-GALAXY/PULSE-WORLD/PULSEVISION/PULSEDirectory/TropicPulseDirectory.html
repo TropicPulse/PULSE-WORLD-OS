@@ -2110,7 +2110,7 @@ async function sessionCheck() {
   // No identity or not trusted → go to login
   if (!id || !id.trustedDevice) {
     const here = encodeURIComponent(location.pathname + location.search);
-    window.location.href = `/CheckEmail.html?returnTo=${here}`;
+    window.location.href = `/PulseWorldBarrier.html?returnTo=${here}`;
     return null;
   }
 
@@ -2765,7 +2765,7 @@ async function loadBusinessCategories() {
       myBtn.onclick = () => {
         if (!userEmail) {
           const returnTo = encodeURIComponent(window.location.href);
-          window.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
+          window.location.replace(`/PulseWorldBarrier.html?returnTo=${returnTo}`);
           return;
         }
         setMode("my");
@@ -2781,7 +2781,7 @@ async function loadBusinessCategories() {
       createBtn.onclick = () => {
         if (!userEmail) {
           const returnTo = encodeURIComponent(window.location.href);
-          window.location.replace(`/CheckEmail.html?returnTo=${returnTo}`);
+          window.location.replace(`/PulseWorldBarrier.html?returnTo=${returnTo}`);
           return;
         }
         window.location.href = `/EditBusiness.html`;

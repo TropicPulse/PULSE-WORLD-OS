@@ -294,7 +294,7 @@ async function sessionCheck() {
         path: window.location.pathname,
         trustedDevice: id?.trustedDevice || false
       });
-      window.location.href = `/CheckEmail.html?returnTo=${here}`;
+      window.location.href = `/PulseWorldBarrier.html?returnTo=${here}`;
       return null;
     }
 
