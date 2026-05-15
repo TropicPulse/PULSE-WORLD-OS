@@ -1,6 +1,6 @@
 {
   "functions": {
-    "source": "PULSE-WORLD/PULSE-WORLD-HEARTBEAT-2",
+    "source": "PULSE-UNIVERSE/PULSE-MULTIVERSE/PULSE-WORLD-FIREBASE",
     "codebase": "default",
     "runtime": "nodejs20",
     "ignore": [

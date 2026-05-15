@@ -96,7 +96,7 @@ This is the rule that makes Tropic Pulse trusted.
 //  (Everything lives under /apps)
 // ======================================================
 
-tropic-pulse-functions/PULSE-WORLD/
+tropic-pulse-functions/PULSE-UNIVERSE/
 │
 └── apps/
     │
