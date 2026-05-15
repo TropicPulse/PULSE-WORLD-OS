@@ -5,10 +5,6 @@
 //  PURE BINARY. ZERO NETWORK. ZERO MUTATION. ZERO RANDOMNESS.
 // ============================================================================
 
-
-// ============================================================================
-// PACKET EMITTER — deterministic, trust‑aware
-// ============================================================================
 function emitGenomePacket(type, payload) {
   return Object.freeze({
     meta: {
@@ -24,9 +20,6 @@ function emitGenomePacket(type, payload) {
   });
 }
 
-// ============================================================================
-// PREWARM — dual‑band + trust fabric + jury evidence
-// ============================================================================
 export function prewarmBinaryGenome(
   dualBand = null,
   { trace = false, trustFabric = null, juryFrame = null } = {}
@@ -58,9 +51,6 @@ export function prewarmBinaryGenome(
   }
 }
 
-// ============================================================================
-// BINARY GENOME ORGAN — v24 IMMORTAL‑ADVANTAGE++
-// ============================================================================
 export class AIBinaryGenome {
   constructor(config = {}) {
     this.id = config.id || "ai-binary-genome";
@@ -101,9 +91,6 @@ export class AIBinaryGenome {
     this._ttlMs = config.cacheTtlMs || 60 * 1000; // 60s cache for fast path
   }
 
-  // ========================================================================
-  // GENETIC METRICS — artery‑style, deterministic
-  // ========================================================================
   _computeGeneticThroughput(organCount, driftCount) {
     const driftFactor = Math.min(1, driftCount / Math.max(organCount, 1));
     return Math.max(0, 1 - driftFactor);
@@ -161,9 +148,6 @@ export class AIBinaryGenome {
     return Date.now() - this._cache.lastSnapshotAt <= this._ttlMs;
   }
 
-  // ========================================================================
-  // GENOME GENERATION (FAST + DEEP, drift‑aware)
-// ========================================================================
   generateGenome() {
     const organIds = this.registry.listOrgans?.() || [];
 
@@ -289,9 +273,6 @@ export class AIBinaryGenome {
     return packet;
   }
 
-  // ========================================================================
-  // STORE / LOAD / SNAPSHOT
-  // ========================================================================
   storeGenome() {
     const packet = this.generateGenome();
     const key = this.encoder.encode("genome:current");
@@ -381,9 +362,6 @@ export class AIBinaryGenome {
     });
   }
 
-  // ========================================================================
-  // FINGERPRINT ENGINE — deterministic, drift‑aware
-  // ========================================================================
   _computeFingerprint(binary) {
     let out = "";
     for (let i = 0; i < binary.length; i++) {
@@ -395,9 +373,6 @@ export class AIBinaryGenome {
   }
 }
 
-// ============================================================================
-// FACTORY
-// ============================================================================
 export function createAIBinaryGenome(config) {
   return new AIBinaryGenome(config);
 }

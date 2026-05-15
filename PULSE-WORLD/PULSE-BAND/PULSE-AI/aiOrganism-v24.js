@@ -32,7 +32,6 @@ import { createAIBinaryPageScannerAdapter } from "./aiPageScannerAdapter-v24.js"
 import { createAIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
 import { createAIBinaryGovernorAdapter } from "./aiGovernorAdapter-v24.js";
 import { createAIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
-import { createAIBinaryDelta } from "./aiBinaryDelta-v24.js";
 import { createAIConductor as createAIBinaryConductor } from "./aiConductor-v24.js";
 import { createAIBinaryMetabolism } from "./aiMetabolism-v24.js";
 import { createAIBinaryHormones } from "./aiHormones-v24.js";

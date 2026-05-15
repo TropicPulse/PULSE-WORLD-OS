@@ -26,10 +26,10 @@ import { AIBinarySentience } from "./aiSentience-v24.js";
 import { AIBinaryConsciousness } from "./aiConsciousness-v24.js";
 import { AIBinaryImmunity } from "./aiImmunity-v24.js";
 import { AIBinaryPipeline } from "./aiPipeline-v24.js";
-import { AIBinaryReflex } from "./aiReflex-v24.js";
+import { AIBinaryReflex } from "./aiReflex-v30.js";
 import { AIBinaryScheduler } from "./aiScheduler-v24.js";
-import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v24.js";
-import { AIBinaryEvolution } from "./aiBinaryEvolution-v24.js";
+import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v30.js";
+import { AIBinaryEvolution } from "./aiBinaryEvolution-v30.js";
 
 import { createPulseAIChunker } from "./PulseAIChunker-v30.js";
 

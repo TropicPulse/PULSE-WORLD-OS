@@ -1,31 +1,19 @@
-// ============================================================================
-//  PULSE OS v24‑IMMORTAL++ — BRAINSTEM
-//  Organ Assembly • Dual‑Band Context Binding • CNS + Pulse‑Net Integration
-//  PURE ORGANISM. ZERO MUTATION. ZERO RANDOMNESS. ZERO DIRECT INTERNET.
-// ============================================================================
-//
-// ROLE (v24‑Immortal++ Hybrid Spine):
-//   • Assemble CNS engines, symbolic organs, and the dual‑band organism
-//     into a unified, deterministic, drift‑proof Pulse OS organism.
-//   • Bind persona/boundaries/permissions/router/cortex to DualBand organism.
-//   • Bind universal chunk fabric (32 lanes) to CNS + DualBand artery.
-//   • Bind trust fabric: evidence, jury, honeypotting, dominance detection.
-//   • Bind Pulse‑Net as the ONLY external IO surface (no raw internet).
-//   • Keep organism/user fully segregated; Pulse is the routed surface.
-//   • Emit a frozen, read‑only organism map for higher layers.
-//
-// CONTRACT:
-//   • Deterministic, read‑only assembly.
-//   • No mutation of external organs or DB.
-//   • No randomness, no timestamps, no direct network access.
-//   • All external IO must be routed via Pulse‑Net / Pulse surfaces.
-// ============================================================================
-
+/**
+ * aiOrganAssembly-v30.js — Pulse OS v30‑IMMORTAL++ Brainstem
+ * ----------------------------------------------------------
+ * CANONICAL ROLE:
+ *   Organ Assembly • Dual‑Band Context Binding • CNS + Chunker Integration
+ *   PURE ORGANISM. ZERO RANDOMNESS. ZERO DIRECT INTERNET.
+ *
+ * CONTRACT:
+ *   • Deterministic, read‑only assembly.
+ *   • No mutation of external DB or remote state.
+ *   • No direct network access (all IO via provided context surfaces).
+ */
 
 // ============================================================================
 //  GLOBAL HANDLE (WINDOW/WORKER/NODE SAFE)
 // ============================================================================
-
 const G =
   (typeof window !== "undefined" && window) ||
   (typeof globalThis !== "undefined" && globalThis) ||
@@ -33,60 +21,29 @@ const G =
   (typeof global !== "undefined" && global) ||
   {};
 const g = G;
-// ============================================================================
-// UNIVERSAL TIMESTAMP (Shadow or Admin)
-// ============================================================================
-
-const Timestamp =
-  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
-  (G.Timestamp && G.Timestamp) ||
-  null;
 
 // ============================================================================
-// UNIVERSAL ADMIN (Shadow or Admin)
+//  META — v30 IMMORTAL++
 // ============================================================================
-
-const admin =
-  (G.firebaseAdmin && G.firebaseAdmin) ||
-  (G.admin && G.admin) ||
-  null;
-
-// ============================================================================
-// UNIVERSAL DB (Shadow DB ALWAYS wins)
-// ============================================================================
-const db =
-  (G.db && G.db) ||                 // Shadow DB (v25++)
-  (admin && admin.firestore && admin.firestore()) || // Admin fallback
-  null;
-
-// ============================================================================
-// UNIVERSAL LOGGING
-// ============================================================================
-
-const dblog =
-  (G.log && G.log) ||
-  console.log;
-
-const dberror =
-  (G.error && G.error) ||
-  console.error;
-  
-const fetchFn =
-  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
-  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
-  null;
+export const BrainstemMeta = Object.freeze({
+  id: "PulseOS-Brainstem",
+  version: "v30-IMMORTAL++",
+  role: "organ-assembly",
+  band: "dualband"
+});
 
 // ============================================================================
 //  IMPORTS
 // ============================================================================
 
-// ⭐ CNS‑SAFE v16 Chunker (32 lanes, Pulse‑Net aware)
+// CNS‑SAFE v30 Chunker (32 lanes, Pulse‑Net aware)
 import { createPulseChunker } from "./PulseAIChunker-v30.js";
 
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
 import pulseAIChunker from "./PulseAIChunker-v30.js";
 import createPulseFileScanner from "./PulseFileScanner-v30.js";
+
 import { createArchitectAPI } from "./aiArchitect-v24.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist-v24.js";
 
@@ -188,11 +145,11 @@ function buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSur
 }
 
 // ============================================================================
-//  ORGAN ASSEMBLY — v24‑IMMORTAL++ Hybrid Spine
+//  ORGAN ASSEMBLY — v30 IMMORTAL++ Brainstem
 // ============================================================================
 export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   // ------------------------------------------------------------------------
-  // 0) UNIVERSAL CNS GLOBAL SURFACE (legacy; Pulse‑Net is primary)
+  // 0) LIGHT GLOBAL SURFACE (legacy compatibility, no admin/firestore wiring)
   // ------------------------------------------------------------------------
   g.db = g.db || db;
   g.log = g.log || context.log;
@@ -204,15 +161,13 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   g.schemaAPI = g.schemaAPI || schemaAPI;
   g.fetchAPI = context.fetchAPI || g.fetchAPI || null;
 
-  const admin = g.db;
-
   // ------------------------------------------------------------------------
   // 1) PULSE‑NET SURFACE
   // ------------------------------------------------------------------------
   const pulseNetSurface = buildPulseNetSurface(context);
 
   // ------------------------------------------------------------------------
-  // 2) CNS CHUNKER — v16 Hybrid Spine (32 lanes, Pulse‑Net aware)
+  // 2) CNS CHUNKER — v30 (32 lanes, Pulse‑Net aware)
   // ------------------------------------------------------------------------
   const chunker = createPulseChunker(
     buildChunkerConfig(context, db, fsAPI, routeAPI, schemaAPI, pulseNetSurface)
@@ -238,7 +193,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
 
   // ------------------------------------------------------------------------
   // 4) ROUTER + CORTEX (symbolic CNS)
-// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   const router = createRouterEngine({
     context,
     personaEngine,
@@ -291,7 +246,7 @@ export function createOrgans(context, db, fsAPI, routeAPI, schemaAPI) {
   const evolutionary = createEvolutionaryAPI({ context, db });
 
   // ------------------------------------------------------------------------
-  // 7) CORE ORGANS (v10.4 → v24‑IMMORTAL++)
+  // 7) CORE ORGANS (v24 → v30‑IMMORTAL++ spine)
   // ------------------------------------------------------------------------
   const architect = createArchitectAPI({ context, db });
   const tourist = createTouristAPI({ context, db });

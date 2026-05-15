@@ -3,10 +3,9 @@
  * ---------------------------------------------------------------
  * CANONICAL ROLE:
  *   Organ Identity Registry (binary‑primary, dualband‑aware)
- *   Stores organ identity, signatures, timestamps, type, and band.
+ *   Stores organ identity, type, band, signatureBits, timestamps.
  *   Deterministic • Drift‑Proof • IMMORTAL v30 • Port‑era ready
  */
-
 
 // ============================================================================
 //  GLOBAL HANDLE (Touch‑aware, environment‑agnostic)
@@ -20,18 +19,21 @@ const G =
 
 const g = G;
 
-
 // ============================================================================
-//  BINARY‑ONLY ORGAN SET — unchanged semantics
+//  BINARY‑NATIVE ORGANS — v30 IMMORTAL++
+//  These are the organs that are *binary‑native*, not dualband.
+//  They generate/consume binary frames directly.
 // ============================================================================
 const BINARY_ONLY_ORGANS = new Set([
   "aiBinaryAgent",
-  "aiBinaryDelta",
   "aiBinaryEvolution",
-  "PulseBinaryTech",
-  "PulseBinaryShifterEvolutionaryPulse"
+  "PULSE-TECH-BINARY-WAVE",
+  "PulseShifterBinaryEvolutionaryPulse",
+  "PULSE-TECH-BINARY-OS",
+  "PulseWorldBinaryCache",
+  "PulseWorldBinarySubstrate",
+  "PulseWorldBinaryThroughputScheduler"
 ]);
-
 
 // ============================================================================
 //  PACKET EMITTER — v30 IMMORTAL++ packet discipline
@@ -54,9 +56,8 @@ function emitRegistryPacket(type, payload) {
   });
 }
 
-
 // ============================================================================
-//  PREWARM ENGINE — v30, behavior unchanged, port‑era safe
+//  PREWARM ENGINE — v30, deterministic, port‑era safe
 // ============================================================================
 export function prewarmAIBinaryOrganRegistry(config = {}) {
   try {
@@ -80,9 +81,7 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
     memory.write(warmKey, warmVal);
 
     const readBack = memory.read(warmKey);
-    if (readBack) {
-      encoder.decode(readBack, "string");
-    }
+    if (readBack) encoder.decode(readBack, "string");
 
     if (typeof memory.listKeys === "function") {
       const keys = memory.listKeys();
@@ -96,10 +95,7 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
       });
     }
 
-    if (trace) {
-      // eslint-disable-next-line no-console
-      console.log("[aiOrganRegistry] prewarm");
-    }
+    if (trace) console.log("[aiOrganRegistry] prewarm");
 
     return emitRegistryPacket("prewarm", {
       message: "Organ Registry prewarmed."
@@ -112,15 +108,14 @@ export function prewarmAIBinaryOrganRegistry(config = {}) {
   }
 }
 
-
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v30 IMMORTAL++ (behavior preserved)
+//  ORGAN IMPLEMENTATION — v30 IMMORTAL++
 // ============================================================================
 export class AIBinaryOrganRegistry {
   constructor(config = {}) {
     this.id        = config.id || "organ-registry";
     this.encoder   = config.encoder;
-    this.memory    = config.memory;    // can be PulsePort / IndexedDB‑backed
+    this.memory    = config.memory;
     this.evolution = config.evolution || null;
     this.trace     = !!config.trace;
 
@@ -147,20 +142,25 @@ export class AIBinaryOrganRegistry {
   }
 
   // -------------------------------------------------------------------------
-  //  REGISTER ORGAN — v30, semantics unchanged
+  //  REGISTER ORGAN — v30, deterministic, drift‑proof
   // -------------------------------------------------------------------------
   registerOrgan(organ) {
     const signature = this.evolution
       ? this.evolution.generateSignature(organ)
       : this.encoder.encode("nosig");
 
-    const band = BINARY_ONLY_ORGANS.has(organ.constructor.name)
+    const typeName = organ.constructor.name;
+
+    // v30 rule:
+    // If it's in the binary‑native set → band = binary
+    // Otherwise → band = dualband
+    const band = BINARY_ONLY_ORGANS.has(typeName)
       ? "binary"
       : "dualband";
 
     const record = {
       id: organ.id || null,
-      type: organ.constructor.name,
+      type: typeName,
       band,
       signatureBits: signature.length,
       timestamp: Date.now()
@@ -186,7 +186,7 @@ export class AIBinaryOrganRegistry {
   }
 
   // -------------------------------------------------------------------------
-  //  LOOKUP — v30, unchanged behavior
+  //  LOOKUP — v30
   // -------------------------------------------------------------------------
   getOrganRecord(organId) {
     const key = this.encoder.encode(`organ:${organId}`);
@@ -210,7 +210,7 @@ export class AIBinaryOrganRegistry {
   }
 
   // -------------------------------------------------------------------------
-  //  LIST — v30, unchanged behavior
+  //  LIST — v30
   // -------------------------------------------------------------------------
   listOrgans() {
     const keys = this.memory.listKeys();
@@ -234,7 +234,7 @@ export class AIBinaryOrganRegistry {
   }
 
   // -------------------------------------------------------------------------
-  //  EVOLVE — v30, unchanged behavior
+  //  EVOLVE — v30
   // -------------------------------------------------------------------------
   evolveOrgan(organ) {
     if (!this.evolution) {
@@ -256,15 +256,13 @@ export class AIBinaryOrganRegistry {
   }
 
   // -------------------------------------------------------------------------
-  //  TRACE — v30, environment‑agnostic
+  //  TRACE — v30
   // -------------------------------------------------------------------------
   _trace(event, payload) {
     if (!this.trace) return;
-    // eslint-disable-next-line no-console
     console.log(`[${this.id}] ${event}`, payload);
   }
 }
-
 
 // ============================================================================
 //  FACTORY — v30 IMMORTAL++
