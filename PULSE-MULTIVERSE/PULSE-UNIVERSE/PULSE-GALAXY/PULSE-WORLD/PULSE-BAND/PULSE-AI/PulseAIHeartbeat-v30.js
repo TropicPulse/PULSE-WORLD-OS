@@ -33,7 +33,7 @@ export const AI_HEARTBEAT_META = Object.freeze({
     noExternalWrites: true
   })
 });
-
+ 
 // ---------------------------------------------------------------------------
 //  VERSION MAP — v30++ artery + tri‑heart
 // ---------------------------------------------------------------------------
