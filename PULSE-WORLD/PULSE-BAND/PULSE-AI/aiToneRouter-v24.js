@@ -7,7 +7,7 @@
 
 import { aiToneEngine } from "./aiToneEngine-v24.js";
 import { aiPersonalityEngine } from "./aiPersonalityEngine-v24.js";
-import { aiIdentityCore } from "./aiIdentityCore-v24.js";
+import { aiIdentityCore } from "./aiIdentityCore-v30.js";
 
 export const aiToneRouter = {
   // ─────────────────────────────────────────────────────────────

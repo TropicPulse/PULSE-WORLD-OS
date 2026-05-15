@@ -55,7 +55,7 @@ import { PulseIntentMap } from "./PULSE-WORLD-MAPINTENT.js";
 // ============================================================================
 //  AI ORGANISM (v16 IMMORTAL-INTEL)
 // ============================================================================
-import { aiOrganism } from "../PULSE-AI/aiOrganism-v24.js";
+import { aiOrganism } from "../PULSE-AI/aiOrganism-v30.js";
 
 // ============================================================================
 //  CORE ORGANISM LAYERS
@@ -105,21 +105,21 @@ import { PulseBinaryTech } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 // ============================================================================
 //  1. CORE CROWN CONTRACTS
 // ============================================================================
-import createBoundariesEngine from "../PULSE-AI/aiBoundariesEngine-v24.js";
+import createBoundariesEngine from "../PULSE-AI/aiBoundariesEngine-v30.js";
 import createPermissionsEngine from "../PULSE-AI/aiPermissionsEngine-v24.js";
-import aiIdentityCore from "../PULSE-AI/aiIdentityCore-v24.js";
+import aiIdentityCore from "../PULSE-AI/aiIdentityCore-v30.js";
 import aiPersonalityEngine from "../PULSE-AI/aiPersonalityEngine-v24.js";
 
 // ============================================================================
 //  2. CONTEXT + CORTEX
 // ============================================================================
-import createCognitiveFrame from "../PULSE-AI/aiContext-v24.js";
+import createCognitiveFrame from "../PULSE-AI/aiContext-v30.js";
 import createContextEngine from "../PULSE-AI/aiContextEngine-v24.js";
 
 // ============================================================================
 //  3. SAFETY + TONE
 // ============================================================================
-import createSafetyFrameOrgan from "../PULSE-AI/aiSafetyFrame-v24.js";
+import createSafetyFrameOrgan from "../PULSE-AI/aiSafetyFrame-v30.js";
 import aiToneEngine from "../PULSE-AI/aiToneEngine-v24.js";
 import aiToneRouter from "../PULSE-AI/aiToneRouter-v24.js";
 
@@ -127,7 +127,7 @@ import aiToneRouter from "../PULSE-AI/aiToneRouter-v24.js";
 //  4. META‑GOVERNANCE (CROWN LAYER)
 // ============================================================================
 import createJuryFrame from "../PULSE-AI/aiJuryFrame-v24.js";
-import createAIBinaryGovernorAdapter from "../PULSE-AI/aiGovernorAdapter-v24.js";
+import createAIBinaryGovernorAdapter from "../PULSE-AI/aiGovernorAdapter-v30.js";
 import {
   PulseTrustMeta,
   buildJuryFeed,
@@ -142,13 +142,13 @@ import {
 //  5. MEMORY + EXPERIENCE (META ONLY)
 // ============================================================================
 import createAIMemory from "../PULSE-AI/aiMemory-v24.js";
-import createAIExperience from "../PULSE-AI/aiExperience-v24.js";
+import createAIExperience from "../PULSE-AI/aiExperience-v30.js";
 
 // ============================================================================
 //  6. PIPELINE + ENGINE + CHUNKER + FILE SCANNER
 // ============================================================================
-import createAIBinaryPipeline from "../PULSE-AI/aiPipeline-v24.js";
-import runAI from "../PULSE-AI/aiEngine-v24.js";
+import createAIBinaryPipeline from "../PULSE-AI/aiPipeline-v30.js";
+import runAI from "../PULSE-AI/aiEngine-v30.js";
 import pulseAIChunker from "../PULSE-AI/PulseAIChunker-v30.js";
 import createPulseFileScanner from "../PULSE-AI/PulseFileScanner-v30.js";
 
@@ -163,9 +163,9 @@ import createAIBinaryLoggerAdapter from "../PULSE-AI/aiLoggerAdapter-v24.js";
 //  8. OPTIONAL (GLOBAL MAPS / FRAMES)
 // ============================================================================
 import createPersonalFrameOrgan from "../PULSE-AI/aiPersonalFrame-v24.js";
-import getBoundariesForPersona from "../PULSE-AI/aiBoundaries-v24.js";
+import getBoundariesForPersona from "../PULSE-AI/aiBoundaries-v30.js";
 import getPermissionsForPersona from "../PULSE-AI/aiPermissions-v24.js";
-import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v24.js";
+import createExperienceFrameOrgan from "../PULSE-AI/aiExperienceFrame-v30.js";
 
 const C_ID   = "color:#FFCA28; font-weight:bold; font-family:monospace;"; // Cyan
 const C_OK   = "color:#00FF9C; font-family:monospace;";                   // Green

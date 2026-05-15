@@ -24,7 +24,7 @@ import checkBand from "../PULSE-X/PULSE-WORLD-BAND.js";
 import checkIdentity from "../PULSE-X/PulseWorldIdentity-v20.js";
 import checkRouterMemory from "../PULSE-PROXY/PulseProxyMemoryRouter-v20.js";
 import { getStripe as Stripe } from "../PULSE-X/PulseWorldBank-v20.js";
-import { createDualBandOrganism } from "../PULSE-AI/aiDualBand-v24.js";
+import { createDualBandOrganism } from "../PULSE-AI/aiDualBand-v30.js";
 
 // ============================================================================
 // CNS META

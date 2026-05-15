@@ -25,7 +25,7 @@ import { PulseRouterCommandments }            from "./PulseRouterCommandments-v2
 import { PulseEarnRouter }                    from "./PulseRouterEarn-v24.js";
 
 import { createPulseCoreMemory }              from "../PULSE-CORE/PulseCoreMemory-v24.js";
-import { createPulseMeshPresenceRelay as PulseMeshPresenceRelay } from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
+import { createPulseMeshPresenceRelay as PulseMeshPresenceRelay } from "../PULSE-MESH/PulseMeshPresenceRelay-v30.js";
 
 // ============================================================================
 //  CORE MEMORY (mesh-level intel / prewarm)

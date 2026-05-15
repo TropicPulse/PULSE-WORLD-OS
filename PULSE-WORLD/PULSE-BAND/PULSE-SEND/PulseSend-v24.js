@@ -66,7 +66,7 @@ import { createPulseSendSystem as PulseSendSystem } from "./PulseSendSystem.js";
 // --- Mesh Factoring (awareness only, optional) -----------------------------
 import {
   applyMeshSignalFactoring
-} from "../PULSE-MESH/PulseMeshSignalFactoring-v24.js";
+} from "../PULSE-MESH/PulseMeshSignalFactoring-v30.js";
 
 // ============================================================================
 //  INTERNAL HELPERS — deterministic, pure

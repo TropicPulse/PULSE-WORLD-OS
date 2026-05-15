@@ -35,15 +35,15 @@
 import { withModuleInitGuard, withOrganGuard } from "./PulseOSGovernor-v30.js"; // Supervisor organ
 import * as PulseOSBrain from "./PulseOSBrain-v30.js";                         // CNS brain organ (v30)
 import * as PulseOSEvolution from "./PulseOSEvolution-v30-Immortal-CoreMemory.js"; // Evolution organ (v30)
-import * as PulseSpinalCord from "./PulseOSSpinalCord-v24.js";                 // Wiring organ (v24)
+import * as PulseSpinalCord from "./PulseOSSpinalCord-v30.js";                 // Wiring organ (v24)
 
 // Presence / Mesh presence (symbolic/OS side, optional)
-import * as PulseOSPresence from "./PulseOSPresence-V24.js";                   // OS Presence Organ (optional)
+import * as PulseOSPresence from "./PulseOSPresence-v30.js";                   // OS Presence Organ (optional)
 
 // Binary + symbolic mesh environment (IMMORTAL v16)
 import {
   createBinaryMeshEnvironment as createBinaryMeshEnv
-} from "../PULSE-MESH/PulseMeshBinary-v24.js";
+} from "../PULSE-MESH/PulseMeshBinary-v30.js";
 
 // PULSE OS Expansion — v24 world barrel (still v24 surface)
 import {

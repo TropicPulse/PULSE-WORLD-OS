@@ -113,7 +113,7 @@
 
 import { PulseProofBridgeFlow as initUIFlow, PulseProofBridgeErrors as PulseUIErrors, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
-import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v24.js";
+import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v30.js";
 import { createPulseRouter } from "./PULSE-WORLD-INTERNET-ROUTER.js";
 import { PulseUnderstanding, PulseWorldCastle, PulseWorldMesh } from "./PULSE-WORLD-UNDERSTANDING.js";
 

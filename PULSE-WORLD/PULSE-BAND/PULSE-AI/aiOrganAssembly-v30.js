@@ -39,27 +39,27 @@ export const BrainstemMeta = Object.freeze({
 // CNS‑SAFE v30 Chunker (32 lanes, Pulse‑Net aware)
 import { createPulseChunker } from "./PulseAIChunker-v30.js";
 
-import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V24.js";
-import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
+import PulseOSPresence from "../PULSE-OS/PulseOSPresence-v30.js";
+import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v30.js";
 import pulseAIChunker from "./PulseAIChunker-v30.js";
 import createPulseFileScanner from "./PulseFileScanner-v30.js";
 
-import { createArchitectAPI } from "./aiArchitect-v24.js";
+import { createArchitectAPI } from "./aiArchitect-v30.js";
 import { createTouristAPI, prewarmTourist } from "./aiTourist-v24.js";
 
 import { createEnvironmentAPI } from "./aiEnvironment-v24.js";
 import { createPowerAPI } from "./aiPowerPrime-v24.js";
 import { createEvolutionAPI } from "./aiEvolution-v24.js";
-import { createEarnAPI } from "./aiEarn-v24.js";
+import { createEarnAPI } from "./aiEarn-v30.js";
 import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";
 
 import { createPersonaEngine } from "./aiPersonality-v24.js";
-import { createBoundariesEngine } from "./aiBoundaries-v24.js";
+import { createBoundariesEngine } from "./aiBoundaries-v30.js";
 import { createPermissionsEngine } from "./aiPermissions-v24.js";
-import { createRouterEngine } from "./aiRouter-v24.js";
+import { createRouterEngine } from "./aiRouter-v30.js";
 import { createCortex } from "./aiCortex-v24.js";
 
-import { createDualBandOrganism } from "./aiDualBand-v24.js";
+import { createDualBandOrganism } from "./aiDualBand-v30.js";
 
 // Non-binary symbolic organs
 import { createDoctorAPI } from "./aiDoctorAssistant-v24.js";
@@ -67,11 +67,11 @@ import { createSurgeonAPI } from "./aiSurgeon-v24.js";
 import { createLawyerAPI } from "./aiLawAssistant-v24.js";
 import { createEntrepreneurAPI } from "./aiEntrepreneur-v24.js";
 import { createVeterinarianAPI } from "./aiVeterinarian-v24.js";
-import { createClinicianAPI } from "./aiClinician-v24.js";
+import { createClinicianAPI } from "./aiClinician-v30.js";
 import { createEvolutionaryAPI } from "./aiEvolutionary-v24.js";
 
 // (Future trust / jury / evidence surfaces)
-import { createSafetyFrameOrgan } from "./aiSafetyFrame-v24.js";
+import { createSafetyFrameOrgan } from "./aiSafetyFrame-v30.js";
 import { createJuryFrame } from "./aiJuryFrame-v24.js";
 
 // ============================================================================

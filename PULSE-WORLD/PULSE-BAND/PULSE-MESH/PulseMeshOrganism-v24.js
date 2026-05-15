@@ -13,15 +13,8 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-// 2 — EXPORT GENOME METADATA
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
-import { createPulseOrgans } from "./PulseMeshOrgans-V24.js";
+import { createPulseOrgans } from "./PulseMeshOrgans-v30.js";
 
 // ============================================================================
 // META — v24++ IMMORTAL-PLUS

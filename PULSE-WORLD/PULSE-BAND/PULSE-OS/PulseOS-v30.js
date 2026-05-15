@@ -33,20 +33,20 @@
 import { withModuleInitGuard, withOrganGuard } from "./PulseOSGovernor-v30.js";
 import * as PulseOSBrain from "./PulseOSBrain-v30.js";
 import * as PulseOSEvolution from "./PulseOSEvolution-v30-Immortal-CoreMemory.js";
-import * as PulseSpinalCord from "./PulseOSSpinalCord-v24.js";
+import * as PulseSpinalCord from "./PulseOSSpinalCord-v30.js";
 
 // Presence / Mesh presence (symbolic/OS side)
-import * as PulseOSPresence from "./PulseOSPresence-V24.js";
+import * as PulseOSPresence from "./PulseOSPresence-v30.js";
 
 // IMMORTAL Mesh Presence Relay v16
 import {
   createPulseMeshPresenceRelay as PulseMeshPresence
-} from "../PULSE-MESH/PulseMeshPresenceRelay-v24.js";
+} from "../PULSE-MESH/PulseMeshPresenceRelay-v30.js";
 
 // IMMORTAL Binary Mesh Environment v16
 import {
   createBinaryMeshEnvironment as createBinaryMeshEnv
-} from "../PULSE-MESH/PulseMeshBinary-v24.js";
+} from "../PULSE-MESH/PulseMeshBinary-v30.js";
 
 // IMMORTAL OrganismMesh v16
 import { createOrganismMesh } from "../PULSE-MESH/PulseMeshOrganism-v24.js";

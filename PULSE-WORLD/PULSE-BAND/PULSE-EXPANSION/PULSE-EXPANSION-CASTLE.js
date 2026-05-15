@@ -76,10 +76,10 @@ import {
 // Mesh organism (symbolic + binary)
 import createPulseMesh, {
   PulseMeshMeta
-} from "../PULSE-MESH/PulseMesh-v24.js";
+} from "../PULSE-MESH/PulseMesh-v30.js";
 import createBinaryMesh, {
   BinaryMeshMeta
-} from "../PULSE-MESH/PulseMeshBinary-v24.js";
+} from "../PULSE-MESH/PulseMeshBinary-v30.js";
 
 // Beacon engine + membrane
 import PulseBeaconEngine from "./PULSE-EXPANSION-BEACON-ENGINE.js";
@@ -99,7 +99,7 @@ import { getPulseOvermindContext } from "../PULSE-X/PULSE-WORLD-ALDWYN.js";
 import { getEarnContext } from "../PULSE-EARN/PulseEarn-v24.js";
 
 // Dual-band organism + binary send
-import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v30.js";
 import { createBinarySend as PulseSendBin } from "../PULSE-SEND/PulseSendBinary-v24.js";
 
 // Proxy context (v16 IMMORTAL ORGANISM)

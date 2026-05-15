@@ -68,7 +68,7 @@ import nodemailer from "nodemailer";
 import { createClient } from "redis";
 
 // SDN prewarm engine (spinal reflex ignition for backend spine, passive only)
-import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v24.js";
+import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v30.js";
 
 // Proxy / organism / context / front (symbolic-only, descriptive surfaces)
 import { PulseProxyOrganismMeta, createProxy } from "./PulseProxy-v20.js";

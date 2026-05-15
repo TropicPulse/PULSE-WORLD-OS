@@ -22,7 +22,7 @@ import {
   NeutralAIBoundaries,
   BoundaryModes,
   selectBoundaryMode
-} from "./aiBoundaries-v24.js";
+} from "./aiBoundaries-v30.js";
 
 // ============================================================================
 // META — Persona Engine (v24‑IMMORTAL++)

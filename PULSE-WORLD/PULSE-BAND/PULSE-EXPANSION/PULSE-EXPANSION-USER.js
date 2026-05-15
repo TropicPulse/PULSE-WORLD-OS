@@ -45,14 +45,14 @@ export const EXPORT_META = Identity.EXPORT_META;
 import * as PulseBinaryOS from "../PULSE-OS/PulseOSBinary-v30.js";
 
 // Mesh + BeaconMesh meta
-import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v24.js";
+import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v30.js";
 import { PulseBeaconMeshMeta, PulseBeaconMesh } from "./PULSE-EXPANSION-BEACON-MESH.js";
 
 import { PulseCastleMeta, createPulseCastle } from "./PULSE-EXPANSION-CASTLE.js";
 import { PulseServerMeta, createPulseServer } from "./PULSE-EXPANSION-SERVER.js";
 import { PulseRouterMeta, createPulseRouter } from "../PULSE-X/PULSE-WORLD-INTERNET-ROUTER.js";
 import { PulseExpansionMeta, createPulseExpansion } from "./PULSE-EXPANSION-WORLD.js";
-import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
+import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v30.js";
 
 // Earn / Band / BinarySend
 import { getEarnContext, evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v24.js";

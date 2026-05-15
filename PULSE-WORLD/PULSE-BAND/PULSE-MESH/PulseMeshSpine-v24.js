@@ -40,20 +40,13 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-// 2 — EXPORT GENOME METADATA
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
-import { createCommunityReflex } from "./PulseMeshFlow-V24.js";
-import { applyPulseCortex } from "./PulseMeshCortex-V24.js";
-import { applyPulseMeshTendons } from "./PulseMeshTendons-V24.js";
-import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring-v24.js";
-import { createPulseMeshImmuneSystem as recordMeshDriftEvent } from "./PulseMeshImmuneSystem-v24.js";
-import * as PulseMeshSkinReflex from "./PulseMeshSkinReflex-V24.js";
+import { createCommunityReflex } from "./PulseMeshFlow-v30.js";
+import { applyPulseCortex } from "./PulseMeshCortex-v30.js";
+import { applyPulseMeshTendons } from "./PulseMeshTendons-v30.js";
+import { applyMeshSignalFactoring } from "./PulseMeshSignalFactoring-v30.js";
+import { createPulseMeshImmuneSystem as recordMeshDriftEvent } from "./PulseMeshImmuneSystem-v30.js";
+import * as PulseMeshSkinReflex from "./PulseMeshSkinReflex-v30.js";
 
 // ============================================================================
 // GLOBAL MESH MEMORY — v24-IMMORTAL++

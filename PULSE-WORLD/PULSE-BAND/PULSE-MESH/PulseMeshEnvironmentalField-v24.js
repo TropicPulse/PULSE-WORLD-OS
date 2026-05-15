@@ -5,21 +5,6 @@
 // Advantage-Aware • Mesh-Pressure-Aware • Zero-Compute • Zero-Mutation
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js
-";
-
-const Identity = OrganismIdentity(import.meta.url);
-
-// 2 — EXPORT GENOME METADATA
-export const pulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
 // ============================================================================
 // FACTORY — ALL DEPENDENCIES INJECTED BY THE CNS BRAIN
 // ============================================================================
