@@ -72,7 +72,7 @@ import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v24.js";
 
 // Proxy / organism / context / front (symbolic-only, descriptive surfaces)
 import { PulseProxyOrganismMeta, createProxy } from "./PulseProxy-v20.js";
-import { PulseProofBridge as PulseProxyBridge, updateUserMetrics as recordUserMetrics } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge as PulseProxyBridge, updateUserMetrics as recordUserMetrics } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 import {
   proxyFrontRoute,
   PulseProxyFrontMeta
@@ -101,12 +101,12 @@ import { PNSRepair } from "./PulseProxyPNSRepair-v20.js";
 import { createPulseEarnSendSystem } from "../PULSE-EARN/PulseEarnSendSystem-v24.js";
 
 import startPulseTimer from "./PulseProxyHeart-v20.js";
-import { createPulseOSHealerV12_3 as startPulseOSHealer } from "../PULSE-OS/PulseOSInflammatoryResponse-v24.js";
-import { createGlobalHealerV12 as startGlobalHealer } from "../PULSE-OS/PulseOSImmuneSystem-v24.js";
-import { PulseBinaryOSv11Evo as startPulseOS } from "../PULSE-OS/PulseOSBinary-v24.js";
+import { createPulseOSHealerV12_3 as startPulseOSHealer } from "../PULSE-OS/PulseOSInflammatoryResponse-v30.js";
+import { createGlobalHealerV12 as startGlobalHealer } from "../PULSE-OS/PulseOSImmuneSystem-v30.js";
+import { PulseBinaryOSv11Evo as startPulseOS } from "../PULSE-OS/PulseOSBinary-v30.js";
 
 // Binary/GPU metrics (descriptive only)
-import { getBinaryMetrics } from "../PULSE-OS/PulseOSBinary-v24.js";
+import { getBinaryMetrics } from "../PULSE-OS/PulseOSBinary-v30.js";
 import { getGPUMetrics } from "../PULSE-GPU/PulseGPU-v24.js";
 
 import { getStripe as Stripe, stripeInstance, determinePayoutCurrency } from "../PULSE-X/PulseWorldBank-v20.js";

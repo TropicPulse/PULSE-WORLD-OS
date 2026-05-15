@@ -1,13 +1,12 @@
-/* global log, error */
 // ============================================================================
-// FILE: /PulseOS/Organs/Barriers/PulseOSOrganMembrane-v24-IMMORTAL++.js
-// PULSE OS — v24.0-IMMORTAL++
+// FILE: /PulseOS/Organs/Barriers/PulseOSOrganMembrane-v30-IMMORTAL++++.js
+// PULSE OS — v30-IMMORTAL++++
 // “THE ORGAN MEMBRANE / A3 EPITHELIAL REFLEX”
 // GLOBAL SENTINEL • ORGAN-LEVEL PROTECTOR • ZERO RANDOMNESS
-// DUALBAND-AWARE • PRESENCE-AWARE • ARTERY-AWARE
+// DUALBAND-AWARE • PRESENCE-AWARE • ARTERY-AWARE • ADVANTAGE-AWARE
 // ============================================================================
 //
-// ORGAN IDENTITY (v24.0-IMMORTAL++):
+// ORGAN IDENTITY (v30-IMMORTAL++++):
 //   • Organ Type: Barrier / Reflex Membrane
 //   • Layer: A3 (Organ-Level Reflex)
 //   • Biological Analog: Organ epithelial membrane (deep protective layer)
@@ -21,51 +20,61 @@
 //   ✔ Prevent mesh-level failures from destabilizing the organism
 //   ✔ Trigger healing via Router
 //
-// SAFETY CONTRACT (v24.0-IMMORTAL++):
+// SAFETY CONTRACT (v30-IMMORTAL++++):
 //   • No timers, no scheduling, no async loops beyond direct event handling
 //   • No randomness
-//   • No mutation of external systems
+//   • No mutation of external systems (beyond Router/route calls)
 //   • No blocking of CNS or Mesh
 //   • Guarded access to window / globals
 //   • Dual-band metadata ready (symbolic-primary, binary-non-executable)
-//   • Presence-aware, artery-aware, read-only
+//   • Presence-aware, artery-aware, advantage-aware, read-only
 // ============================================================================
 
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
-import { route, Router } from "./PulseOSCNSNervousSystem-v24.js";
+import { route, Router } from "./PulseOSCNSNervousSystem-v30.js";
 
-const Identity = OrganismIdentity(import.meta.url);
+
 
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-// ============================================================================
-export const MembraneMeta = Identity.OrganMeta;
-
-// ============================================================================
-//  SURFACE / ORGANISM LAYER EXPORTS — v24.0 IMMORTAL
-// ============================================================================
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
-// ============================================================================
-// LAYER CONSTANTS + DIAGNOSTICS
+// LAYER CONSTANTS + META
 // ============================================================================
 const LAYER_ID   = "MESH-REFLEX";
 const LAYER_NAME = "THE ORGAN MEMBRANE";
 const LAYER_ROLE = "MESH ERROR GUARDIAN & HEALING TRIGGER";
-const LAYER_VER  = "24.0-IMMORTAL++";
+const LAYER_VER  = "30.0-IMMORTAL++++";
 
 const hasWindow = typeof window !== "undefined";
+
+const MembraneMeta = Object.freeze({
+  layerId: LAYER_ID,
+  layerName: LAYER_NAME,
+  layerRole: LAYER_ROLE,
+  layerVersion: LAYER_VER,
+  epoch: "v30-IMMORTAL++++",
+  dualBandAware: true,
+  symbolicPrimary: true,
+  binaryNonExecutable: true,
+  presenceAware: true,
+  arteryAware: true,
+  advantageAware: true
+});
+
+const PulseRole = Object.freeze({
+  type: "Organ",
+  subsystem: "Barrier",
+  layer: "A3",
+  identity: "PulseOSOrganMembrane",
+  version: LAYER_VER,
+  evo: {
+    deterministic: true,
+    driftProof: true,
+    dualBand: true,
+    symbolicPrimary: true,
+    binaryNonExecutable: true,
+    presenceFieldAware: true,
+    arteryAware: true,
+    advantageFieldAware: true
+  }
+});
 
 const MESH_DIAGNOSTICS_ENABLED =
   hasWindow &&
@@ -89,7 +98,7 @@ const logMesh = (stage, details = {}) => {
 };
 
 // ============================================================================
-// MESH ARTERY v2 — IMMORTAL++ (pure counters, no time)
+// MESH ARTERY v3 — IMMORTAL++++ (pure counters, no time)
 // ============================================================================
 const _MEMBRANE_ARTERY = {
   totalErrors: 0,
@@ -140,6 +149,13 @@ function _presenceDensity() {
   return _clamp01(typeof v === "number" ? v : 0);
 }
 
+// optional advantage hint: window.PULSE_ADVANTAGE_SCORE ∈ [0,1]
+function _advantageScore() {
+  if (!hasWindow) return 0;
+  const v = window.PULSE_ADVANTAGE_SCORE;
+  return _clamp01(typeof v === "number" ? v : 0);
+}
+
 function _computeMembraneArtery() {
   const total = _MEMBRANE_ARTERY.totalErrors;
   const heals = _MEMBRANE_ARTERY.totalHeals;
@@ -150,11 +166,13 @@ function _computeMembraneArtery() {
   const failureRatio = total > 0 ? _clamp01(failures / total) : 0;
 
   const presence = _presenceDensity();
+  const advantage = _advantageScore();
 
   const pressure = _clamp01(
-    errorDensity * 0.6 +
+    errorDensity * 0.5 +
       failureRatio * 0.25 +
-      presence * 0.15
+      presence * 0.15 +
+      advantage * 0.10
   );
 
   const throughput = _clamp01(1 - pressure);
@@ -171,6 +189,7 @@ function _computeMembraneArtery() {
     classifiedRoutingDrift: _MEMBRANE_ARTERY.classifiedRoutingDrift,
     lastErrorKind: _MEMBRANE_ARTERY.lastErrorKind,
     presenceDensity: presence,
+    advantageScore: advantage,
     errorDensity,
     healRatio,
     failureRatio,
@@ -190,7 +209,7 @@ export function getMembraneArterySnapshot() {
 }
 
 // ============================================================================
-// ROUTE MEMORY (same pattern as v12, deterministic sequence counter)
+// ROUTE MEMORY (deterministic sequence counter)
 // ============================================================================
 let meshRouteSeq = 0;
 
@@ -235,18 +254,22 @@ const MeshRouteMemory = {
 // ============================================================================
 // PUBLIC API (C-LAYER passthrough — symbolic-primary, dual-band metadata)
 // ============================================================================
-export async function meshAuth(jwtToken) {
+// NOTE: `route` and `Router` are expected to be injected globals from the OS.
+export async function meshAuth(jwtToken, meta = {}) {
   logMesh("MESH_AUTH", {});
   return await route("auth", {
     jwtToken,
     reflexOrigin: "MeshScanner",
     layer: "A3",
     modeKind: "symbolic",
-    __band: "symbolic"
+    __band: "symbolic",
+    advantage: meta.advantage || null,
+    presence: meta.presence || null,
+    arterySnapshot: meta.arterySnapshot || null
   });
 }
 
-export async function meshHook(name, payload = {}) {
+export async function meshHook(name, payload = {}, meta = {}) {
   logMesh("MESH_HOOK", { name });
   return await route("hook", {
     name,
@@ -254,22 +277,28 @@ export async function meshHook(name, payload = {}) {
     reflexOrigin: "MeshScanner",
     layer: "A3",
     modeKind: "symbolic",
-    __band: "symbolic"
+    __band: "symbolic",
+    advantage: meta.advantage || null,
+    presence: meta.presence || null,
+    arterySnapshot: meta.arterySnapshot || null
   });
 }
 
-export async function meshMap(mapName) {
+export async function meshMap(mapName, meta = {}) {
   logMesh("MESH_MAP", { mapName });
   return await route("map", {
     mapName,
     reflexOrigin: "MeshScanner",
     layer: "A3",
     modeKind: "symbolic",
-    __band: "symbolic"
+    __band: "symbolic",
+    advantage: meta.advantage || null,
+    presence: meta.presence || null,
+    arterySnapshot: meta.arterySnapshot || null
   });
 }
 
-export async function meshHelper(helperName, payload = {}) {
+export async function meshHelper(helperName, payload = {}, meta = {}) {
   logMesh("MESH_HELPER", { helperName });
   return await route("helper", {
     helperName,
@@ -277,7 +306,10 @@ export async function meshHelper(helperName, payload = {}) {
     reflexOrigin: "MeshScanner",
     layer: "A3",
     modeKind: "symbolic",
-    __band: "symbolic"
+    __band: "symbolic",
+    advantage: meta.advantage || null,
+    presence: meta.presence || null,
+    arterySnapshot: meta.arterySnapshot || null
   });
 }
 
@@ -398,7 +430,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
       meshHealing = true;
 
       try {
-        if (Router && typeof Router.receiveReflex === "function") {
+        if (typeof Router !== "undefined" && Router && typeof Router.receiveReflex === "function") {
           Router.receiveReflex({
             reflexOrigin: "MeshScanner",
             layer: "A3",
@@ -443,7 +475,7 @@ if (hasWindow && typeof window.addEventListener === "function") {
 }
 
 // ============================================================================
-// PARSER (same as v12, symbolic-only, deterministic)
+// PARSER (symbolic-only, deterministic)
 // ============================================================================
 function parseMissingField(message) {
   logMesh("PARSER_INVOKED", {});
@@ -463,15 +495,13 @@ function parseMissingField(message) {
 // ============================================================================
 // DUAL-MODE EXPORTS (ESM + CommonJS)
 // ============================================================================
+export const surfaceMeta = MembraneMeta;
+
 if (typeof module !== "undefined") {
   module.exports = {
     MembraneMeta,
-    pulseRole,
     PulseRole,
     surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META,
     meshAuth,
     meshHook,
     meshMap,
@@ -481,5 +511,5 @@ if (typeof module !== "undefined") {
 }
 
 // ============================================================================
-// END OF FILE — THE ORGAN MEMBRANE / A3 EPITHELIAL REFLEX  [v24.0-IMMORTAL++]
+// END OF FILE — THE ORGAN MEMBRANE / A3 EPITHELIAL REFLEX  [v30.0-IMMORTAL++++]
 // ============================================================================

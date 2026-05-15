@@ -20,7 +20,7 @@ import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
+} from "../PULSE-X/PULSE-WORLD-MAPORGANISM.js";
 const Identity = OrganismIdentity(import.meta.url);
 // 2 — EXPORT GENOME METADATA
 export const PulseUserMeta = {
@@ -42,7 +42,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 // Primary OS / Binary OS (OSBrain + runtimes)
-import * as PulseBinaryOS from "../PULSE-OS/PulseOSBinary-v24.js";
+import * as PulseBinaryOS from "../PULSE-OS/PulseOSBinary-v30.js";
 
 // Mesh + BeaconMesh meta
 import { PulseMeshMeta, createPulseMesh } from "../PULSE-MESH/PulseMesh-v24.js";

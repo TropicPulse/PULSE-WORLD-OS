@@ -25,7 +25,7 @@ export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
 export const EXPORT_META = Identity.EXPORT_META;
 
 import { prewarmSDN } from "./PulseOSSDNPrewarm-v24.js";
-import { createPulseSkinReflex as PageScannerV12 } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+import { createPulseSkinReflex as PageScannerV12 } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const hasWindow = typeof window !== "undefined";
 

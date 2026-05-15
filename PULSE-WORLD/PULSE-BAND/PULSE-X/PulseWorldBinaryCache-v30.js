@@ -12,7 +12,7 @@
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 
-import { PulseProofBridge } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreMemory = PulseProofBridge.corememory;
 

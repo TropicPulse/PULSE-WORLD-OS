@@ -40,12 +40,12 @@ import {
   computePowerRiskVector,
   buildPowerRiskSummary,
   buildPowerBeaconSignals
-} from "../PULSE-GRID/PulseGridRiskEngine-v24.js";
+} from "../PULSE-MESH/PulseMeshRiskEngine-v30.js";
 import {
   computeContinuanceMetricsV3,
   detectFluctuationsV3,
   detectOutagesV3
-} from "../PULSE-GRID/PulseGridContinuanceEngine-v24.js";
+} from "../PULSE-MESH/PulseMeshContinuanceEngine-v30.js";
 
 // ---------------------------------------------------------------------------
 //  IDENTITY‑SAFE HELPERS

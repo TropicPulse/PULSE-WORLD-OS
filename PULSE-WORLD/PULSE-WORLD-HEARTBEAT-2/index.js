@@ -125,7 +125,7 @@ import express from "express";
 import { admin, db } from "../PULSE-BAND/PULSE-X/PulseWorldGenome-v20.js";
 import { getStripe as Stripe } from "../PULSE-BAND/PULSE-X/PulseWorldBank-v20.js";
 import { getTwilioClient as twilio } from "../PULSE-BAND/PULSE-X/PulseWorldSMSAlert-v20.js";
-import { PulseProofBridgeLogger as logger, BridgeLog as log } from "../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeLogger as logger, BridgeLog as log } from "../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 import { runUserScoring } from "../PULSE-BAND/PULSE-PROXY/PulseProxyHypothalamus-v20.js";
 
 

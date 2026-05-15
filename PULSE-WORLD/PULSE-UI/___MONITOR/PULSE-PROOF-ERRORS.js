@@ -32,7 +32,7 @@ function resolveBridgeExport() {
   try {
     // This does NOT execute the module immediately.
     // It only returns the reference if already evaluated.
-    const mod = require("../_BACKEND/PULSE-WORLD-BRIDGE.js");
+    const mod = require("../____BACKEND/PULSE-WORLD-BRIDGE.js");
     BridgeExport = mod?.PulseProofBridge || null;
   } catch {
     BridgeExport = null;

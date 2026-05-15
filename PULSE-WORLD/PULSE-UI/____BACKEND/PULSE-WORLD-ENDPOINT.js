@@ -1,11 +1,11 @@
 // ============================================================================
-// PulseWorldEndpoint-v27++-IMMORTAL-FINALITY.js
+// PulseWorldEndpoint-v30-IMMORTAL-FINALITY.js
 // ============================================================================
-// CENTRAL NERVOUS ENDPOINT FOR PULSE ARCHITECTURE — v27++ IMMORTAL
+// CENTRAL NERVOUS ENDPOINT FOR PULSE ARCHITECTURE — v30 IMMORTAL
 // ----------------------------------------------------------------------------
 //  • Single canonical endpoint for CNS, CheckBand, PulseNet, Transport, PulseBand
 //  • Deterministic, chunk-aware, cache-aware, prewarmable, pulse-aware, versioned
-//  • v27++: Finality-aware via PulseSignalPort, richer metrics
+//  • v30: bandFamily / dnaTag / meshTag aware, Finality via PulseSignalPort
 // ============================================================================
 
 import { PulseProofSignal } from "../../PULSE-BAND/PULSE-X/PULSE-WORLD-SIGNAL.js";
@@ -17,15 +17,15 @@ import { PulseSignalPort } from "../../PULSE-BAND/PULSE-FINALITY/PULSE-FINALITY-
 
 const EndpointSignal =
   (typeof PulseProofSignal === "function" &&
-    PulseProofSignal.for?.("PulseWorldEndpoint-v27")) ||
+    PulseProofSignal.for?.("PulseWorldEndpoint-v30")) ||
   (typeof PulseProofSignal === "function" &&
-    new PulseProofSignal("PulseWorldEndpoint-v27")) ||
+    new PulseProofSignal("PulseWorldEndpoint-v30")) ||
   null;
 
 const EndpointFinalityPort =
   (typeof PulseSignalPort === "function" &&
-    (PulseSignalPort.for?.("PulseWorldEndpoint-v27") ||
-      new PulseSignalPort("PulseWorldEndpoint-v27"))) ||
+    (PulseSignalPort.for?.("PulseWorldEndpoint-v30") ||
+      new PulseSignalPort("PulseWorldEndpoint-v30"))) ||
   null;
 
 function emitSignal(event, payload) {
@@ -52,6 +52,71 @@ function emitFinality(event, payload) {
   } catch {
     // never crash
   }
+}
+
+// ----------------------------------------------------------------------------
+// BAND MODEL (v30)
+// ----------------------------------------------------------------------------
+
+const BAND_FAMILY = {
+  PULSEBAND: "pulseband",
+  MESHBAND: "meshband"
+};
+
+function normalizeBandId(bandId) {
+  const v = (bandId || "symbolic").toString().toLowerCase();
+  if (v === "binary") return "binary";
+  if (v === "dual") return "dual";
+  if (v === "mesh") return "mesh";
+  return "symbolic";
+}
+
+function normalizeBandFamily(family) {
+  const v = (family || BAND_FAMILY.PULSEBAND).toString().toLowerCase();
+  if (v === BAND_FAMILY.MESHBAND) return BAND_FAMILY.MESHBAND;
+  return BAND_FAMILY.PULSEBAND;
+}
+
+function resolveBandFromRoute(route, payload) {
+  const p = payload || route?.payload || {};
+  const band =
+    p.__band ||
+    p.band ||
+    p.bandId ||
+    route?.band ||
+    route?.bandId ||
+    "symbolic";
+  return normalizeBandId(band);
+}
+
+function resolveBandFamilyFromRoute(route, payload) {
+  const p = payload || route?.payload || {};
+  const family =
+    p.__bandFamily ||
+    p.bandFamily ||
+    route?.bandFamily ||
+    BAND_FAMILY.PULSEBAND;
+  return normalizeBandFamily(family);
+}
+
+function resolveDnaTagFromRoute(route, payload) {
+  const p = payload || route?.payload || {};
+  return (
+    p.__dnaTag ||
+    p.dnaTag ||
+    route?.dnaTag ||
+    null
+  );
+}
+
+function resolveMeshTagFromRoute(route, payload) {
+  const p = payload || route?.payload || {};
+  return (
+    p.__meshTag ||
+    p.meshTag ||
+    route?.meshTag ||
+    null
+  );
 }
 
 // ----------------------------------------------------------------------------
@@ -89,7 +154,7 @@ function safeJsonClone(value) {
   }
 }
 
-function recordLatency(type, durationMs, error = null) {
+function recordLatency(type, durationMs, error = null, routeMeta = null) {
   endpointMetrics.totalCalls++;
   endpointMetrics.lastLatencyMs = durationMs;
   endpointMetrics.lastType = type;
@@ -105,23 +170,20 @@ function recordLatency(type, durationMs, error = null) {
 
   const snapshot = { ...endpointMetrics };
 
-  emitSignal("endpoint.metrics", {
+  const meta = {
     type,
     durationMs,
     error: error ? String(error) : null,
-    snapshot
-  });
+    snapshot,
+    routeMeta: routeMeta || null
+  };
 
-  emitFinality("endpoint.metrics", {
-    type,
-    durationMs,
-    error: error ? String(error) : null,
-    snapshot
-  });
+  emitSignal("endpoint.metrics", meta);
+  emitFinality("endpoint.metrics", meta);
 }
 
 function getBandState(bandId = "symbolic") {
-  const key = String(bandId || "symbolic").toLowerCase();
+  const key = normalizeBandId(bandId);
   if (!bandCache.has(key)) {
     bandCache.set(key, {
       bandId: key,
@@ -132,14 +194,17 @@ function getBandState(bandId = "symbolic") {
       speedBoost: 1.0,
       speedBoostReason: "neutral",
       speedBoostExpiresAt: 0,
-      authoritativeBand: null
+      authoritativeBand: null,
+      bandFamily: BAND_FAMILY.PULSEBAND,
+      dnaTag: null,
+      meshTag: null
     });
   }
   return bandCache.get(key);
 }
 
 function applySpeedBoost(bandId, boost, reason, ttlMs = 30_000) {
-  const key = String(bandId || "symbolic").toLowerCase();
+  const key = normalizeBandId(bandId);
   const expiresAt = nowMs() + ttlMs;
 
   const entry = {
@@ -163,7 +228,7 @@ function applySpeedBoost(bandId, boost, reason, ttlMs = 30_000) {
 }
 
 function getEffectiveSpeedBoost(bandId) {
-  const key = String(bandId || "symbolic").toLowerCase();
+  const key = normalizeBandId(bandId);
   const entry = speedBoosts.get(key);
   const now = nowMs();
 
@@ -192,10 +257,10 @@ function getEffectiveSpeedBoost(bandId) {
 }
 
 // ----------------------------------------------------------------------------
-// v27++ CHUNK PIPELINE (same semantics as v25++, finality-aware)
+// v30 CHUNK PIPELINE (same semantics as v27++, finality-aware)
 // ----------------------------------------------------------------------------
 
-function handleChunkedPayloadV27(chunkMeta) {
+function handleChunkedPayloadV30(chunkMeta) {
   const { chunkId, chunkIndex, totalChunks, data, isJson } = chunkMeta || {};
   if (!chunkId || typeof totalChunks !== "number") {
     return { complete: true, payload: chunkMeta }; // not chunked
@@ -263,15 +328,24 @@ function handleChunkedPayloadV27(chunkMeta) {
 }
 
 // ----------------------------------------------------------------------------
-// HANDLERS
+// HANDLERS (v30, band-aware)
 // ----------------------------------------------------------------------------
 
-async function handleCheckBand(payload) {
-  const bandId = payload?.bandId || payload?.band || "symbolic";
+async function handleCheckBand(payload, route) {
+  const bandId = normalizeBandId(
+    payload?.bandId || payload?.band || route?.bandId || route?.band
+  );
+  const bandFamily = resolveBandFamilyFromRoute(route, payload);
+  const dnaTag = resolveDnaTagFromRoute(route, payload);
+  const meshTag = resolveMeshTagFromRoute(route, payload);
+
   const state = getBandState(bandId);
 
   state.lastCheckBand = safeJsonClone(payload);
   state.lastUpdatedAt = nowMs();
+  state.bandFamily = bandFamily;
+  state.dnaTag = dnaTag;
+  state.meshTag = meshTag;
 
   const stability = payload?.stabilityScore ?? 100;
   let boost = 1.0;
@@ -292,27 +366,39 @@ async function handleCheckBand(payload) {
     ok: true,
     type: "CheckBandResult",
     bandId,
+    bandFamily,
+    dnaTag,
+    meshTag,
     stability,
     speedBoost: boostEntry,
     authoritativeBand: state.authoritativeBand,
     meta: {
       source: "PulseWorldEndpoint.CheckBand",
-      version: 27
+      version: 30
     }
   };
 
-  emitSignal("band.check", { bandId, stability, result });
-  emitFinality("band.check", { bandId, stability, result });
+  emitSignal("band.check", { bandId, bandFamily, stability, result });
+  emitFinality("band.check", { bandId, bandFamily, stability, result });
 
   return result;
 }
 
-async function handleVitalsSample(payload) {
-  const bandId = payload?.bandId || payload?.network?.band || "symbolic";
+async function handleVitalsSample(payload, route) {
+  const bandId = normalizeBandId(
+    payload?.bandId || payload?.network?.band || route?.bandId || route?.band
+  );
+  const bandFamily = resolveBandFamilyFromRoute(route, payload);
+  const dnaTag = resolveDnaTagFromRoute(route, payload);
+  const meshTag = resolveMeshTagFromRoute(route, payload);
+
   const state = getBandState(bandId);
 
   state.lastVitals = safeJsonClone(payload);
   state.lastUpdatedAt = nowMs();
+  state.bandFamily = bandFamily;
+  state.dnaTag = dnaTag;
+  state.meshTag = meshTag;
 
   const latencyMs = payload?.latencyMs ?? payload?.latency?.ms ?? 50;
   const stability = payload?.stabilityScore ?? payload?.stability?.score ?? 100;
@@ -336,17 +422,21 @@ async function handleVitalsSample(payload) {
     ok: true,
     type: "VitalsTuningResult",
     bandId,
+    bandFamily,
+    dnaTag,
+    meshTag,
     suggestedAdvantage: effectiveAdvantage,
     baseAdvantage,
     speedBoost: boostEntry,
     meta: {
       source: "PulseWorldEndpoint.VitalsSample",
-      version: 27
+      version: 30
     }
   };
 
   emitSignal("band.vitals", {
     bandId,
+    bandFamily,
     latencyMs,
     stability,
     baseAdvantage,
@@ -356,6 +446,7 @@ async function handleVitalsSample(payload) {
 
   emitFinality("band.vitals", {
     bandId,
+    bandFamily,
     latencyMs,
     stability,
     baseAdvantage,
@@ -366,29 +457,37 @@ async function handleVitalsSample(payload) {
   return result;
 }
 
-async function handlePulseNetRoute(payload) {
-  const kind = payload?.kind || payload?.channel || "unknown";
-  const bandId = payload?.band || payload?.bandId || "symbolic";
+async function handlePulseNetRoute(payload, route) {
+  const kind = payload?.kind || payload?.channel || route?.channel || "unknown";
+  const bandId = normalizeBandId(
+    payload?.band || payload?.bandId || route?.band || route?.bandId
+  );
+  const bandFamily = resolveBandFamilyFromRoute(route, payload);
+  const dnaTag = resolveDnaTagFromRoute(route, payload);
+  const meshTag = resolveMeshTagFromRoute(route, payload);
 
   const result = {
     ok: true,
     type: "PulseNetAck",
     kind,
     bandId,
+    bandFamily,
+    dnaTag,
+    meshTag,
     receivedAt: nowMs(),
     meta: {
       source: "PulseWorldEndpoint.PulseNetRoute",
-      version: 27
+      version: 30
     }
   };
 
-  emitSignal("pulsenet.route", { bandId, kind, payload, result });
-  emitFinality("pulsenet.route", { bandId, kind, payload, result });
+  emitSignal("pulsenet.route", { bandId, bandFamily, kind, payload, result });
+  emitFinality("pulsenet.route", { bandId, bandFamily, kind, payload, result });
 
   return result;
 }
 
-async function handleCheckRouterMemory(payload) {
+async function handleCheckRouterMemory(payload, route) {
   const logs = Array.isArray(payload?.logs) ? payload.logs : [];
 
   const result = {
@@ -398,7 +497,7 @@ async function handleCheckRouterMemory(payload) {
     suggestions: [],
     meta: {
       source: "PulseWorldEndpoint.CheckRouterMemory",
-      version: 27
+      version: 30
     }
   };
 
@@ -408,7 +507,7 @@ async function handleCheckRouterMemory(payload) {
   return result;
 }
 
-async function handleRouteDownAlert(payload) {
+async function handleRouteDownAlert(payload, route) {
   const { error, type } = payload || {};
 
   const result = {
@@ -418,7 +517,7 @@ async function handleRouteDownAlert(payload) {
     error: String(error || "unknown"),
     meta: {
       source: "PulseWorldEndpoint.RouteDownAlert",
-      version: 27
+      version: 30
     }
   };
 
@@ -428,12 +527,21 @@ async function handleRouteDownAlert(payload) {
   return result;
 }
 
-async function handlePulseBandMetrics(payload) {
-  const bandId = payload?.bandId || payload?.network?.band || "symbolic";
+async function handlePulseBandMetrics(payload, route) {
+  const bandId = normalizeBandId(
+    payload?.bandId || payload?.network?.band || route?.bandId || route?.band
+  );
+  const bandFamily = resolveBandFamilyFromRoute(route, payload);
+  const dnaTag = resolveDnaTagFromRoute(route, payload);
+  const meshTag = resolveMeshTagFromRoute(route, payload);
+
   const state = getBandState(bandId);
 
   state.lastPulseBandSample = safeJsonClone(payload);
   state.lastUpdatedAt = nowMs();
+  state.bandFamily = bandFamily;
+  state.dnaTag = dnaTag;
+  state.meshTag = meshTag;
 
   const boostEntry = getEffectiveSpeedBoost(bandId);
 
@@ -441,42 +549,54 @@ async function handlePulseBandMetrics(payload) {
     ok: true,
     type: "PulseBandMetricsAck",
     bandId,
+    bandFamily,
+    dnaTag,
+    meshTag,
     speedBoost: boostEntry,
     meta: {
       source: "PulseWorldEndpoint.PulseBandMetrics",
-      version: 27
+      version: 30
     }
   };
 
-  emitSignal("band.metrics", { bandId, payload, result });
-  emitFinality("band.metrics", { bandId, payload, result });
+  emitSignal("band.metrics", { bandId, bandFamily, payload, result });
+  emitFinality("band.metrics", { bandId, bandFamily, payload, result });
 
   return result;
 }
 
-async function handleExpansionRoute(payload) {
-  const channel = payload?.channel || payload?.kind || "internet";
-  const route = payload?.route ?? payload;
+async function handleExpansionRoute(payload, route) {
+  const channel = payload?.channel || payload?.kind || route?.channel || "internet";
+  const routeEcho = payload?.route ?? payload;
+
+  const bandId = resolveBandFromRoute(route, payload);
+  const bandFamily = resolveBandFamilyFromRoute(route, payload);
+  const dnaTag = resolveDnaTagFromRoute(route, payload);
+  const meshTag = resolveMeshTagFromRoute(route, payload);
 
   const result = {
     ok: true,
     type: "ExpansionAck",
     channel,
-    routeEcho: route,
+    bandId,
+    bandFamily,
+    dnaTag,
+    meshTag,
+    routeEcho,
     meta: {
       source: "PulseWorldEndpoint.ExpansionRoute",
-      version: 27
+      version: 30
     }
   };
 
-  emitSignal("expansion.route", { channel, route, result });
-  emitFinality("expansion.route", { channel, route, result });
+  emitSignal("expansion.route", { channel, bandId, bandFamily, routeEcho, result });
+  emitFinality("expansion.route", { channel, bandId, bandFamily, routeEcho, result });
 
   return result;
 }
 
 // ----------------------------------------------------------------------------
-// ROUTE REGISTRY (v27++)
+// ROUTE REGISTRY (v30)
 // ----------------------------------------------------------------------------
 
 const routeHandlers = {
@@ -510,11 +630,12 @@ export function prewarmPulseWorldEndpoint() {
   if (prewarmed) return;
   prewarmed = true;
 
-  const defaultBands = ["symbolic", "binary", "dual"];
+  const defaultBands = ["symbolic", "binary", "dual", "mesh"];
 
   for (const bandId of defaultBands) {
     const state = getBandState(bandId);
     state.lastUpdatedAt = nowMs();
+    state.bandFamily = BAND_FAMILY.PULSEBAND;
     applySpeedBoost(bandId, 1.0, "prewarm-neutral", 60_000);
   }
 
@@ -528,7 +649,7 @@ export function prewarmPulseWorldEndpoint() {
 }
 
 // ----------------------------------------------------------------------------
-// CENTRAL DISPATCH — v27++
+// CENTRAL DISPATCH — v30
 // ----------------------------------------------------------------------------
 
 const C_ID = "color:#FFA726; font-weight:bold; font-family:monospace;";
@@ -543,6 +664,11 @@ export const PulseWorldEndpoint = Object.freeze({
     const rawType = route?.type || route?.path || "Unknown";
     let error = null;
 
+    const bandId = resolveBandFromRoute(route, route?.payload);
+    const bandFamily = resolveBandFamilyFromRoute(route, route?.payload);
+    const dnaTag = resolveDnaTagFromRoute(route, route?.payload);
+    const meshTag = resolveMeshTagFromRoute(route, route?.payload);
+
     console.log(
       "%c[PulseWorldEndpoint] %chandle() %c→ %s",
       C_ID,
@@ -551,8 +677,22 @@ export const PulseWorldEndpoint = Object.freeze({
       rawType
     );
 
-    emitSignal("endpoint.call", { type: rawType, route });
-    emitFinality("endpoint.call", { type: rawType, route });
+    emitSignal("endpoint.call", {
+      type: rawType,
+      route,
+      bandId,
+      bandFamily,
+      dnaTag,
+      meshTag
+    });
+    emitFinality("endpoint.call", {
+      type: rawType,
+      route,
+      bandId,
+      bandFamily,
+      dnaTag,
+      meshTag
+    });
 
     try {
       try {
@@ -570,11 +710,16 @@ export const PulseWorldEndpoint = Object.freeze({
           payload.chunkId
         );
 
-        const chunkResult = handleChunkedPayloadV27(payload);
+        const chunkResult = handleChunkedPayloadV30(payload);
 
         if (!chunkResult.complete) {
           const duration = nowMs() - start;
-          recordLatency(rawType, duration, null);
+          recordLatency(rawType, duration, null, {
+            bandId,
+            bandFamily,
+            dnaTag,
+            meshTag
+          });
 
           console.log(
             "%c[PulseWorldEndpoint] %cchunk incomplete %c→ waiting",
@@ -589,7 +734,7 @@ export const PulseWorldEndpoint = Object.freeze({
             chunkId: payload.chunkId,
             meta: {
               source: "PulseWorldEndpoint.Chunk",
-              version: 27
+              version: 30
             }
           };
 
@@ -622,15 +767,24 @@ export const PulseWorldEndpoint = Object.freeze({
         );
 
         const duration = nowMs() - start;
-        recordLatency(rawType, duration, null);
+        recordLatency(rawType, duration, null, {
+          bandId,
+          bandFamily,
+          dnaTag,
+          meshTag
+        });
 
         const unknown = {
           ok: false,
           type: "UnknownRouteType",
           routeType: rawType,
+          bandId,
+          bandFamily,
+          dnaTag,
+          meshTag,
           meta: {
             source: "PulseWorldEndpoint.Unknown",
-            version: 27
+            version: 30
           }
         };
 
@@ -639,7 +793,13 @@ export const PulseWorldEndpoint = Object.freeze({
         return unknown;
       }
 
-      const result = await handler(payload, route);
+      const result = await handler(payload, {
+        ...route,
+        bandId,
+        bandFamily,
+        dnaTag,
+        meshTag
+      });
       const duration = nowMs() - start;
 
       console.log(
@@ -650,9 +810,31 @@ export const PulseWorldEndpoint = Object.freeze({
         duration
       );
 
-      recordLatency(rawType, duration, null);
-      emitSignal("endpoint.result", { type: rawType, durationMs: duration, result });
-      emitFinality("endpoint.result", { type: rawType, durationMs: duration, result });
+      recordLatency(rawType, duration, null, {
+        bandId,
+        bandFamily,
+        dnaTag,
+        meshTag
+      });
+
+      emitSignal("endpoint.result", {
+        type: rawType,
+        durationMs: duration,
+        bandId,
+        bandFamily,
+        dnaTag,
+        meshTag,
+        result
+      });
+      emitFinality("endpoint.result", {
+        type: rawType,
+        durationMs: duration,
+        bandId,
+        bandFamily,
+        dnaTag,
+        meshTag,
+        result
+      });
 
       return result;
     } catch (err) {
@@ -667,27 +849,44 @@ export const PulseWorldEndpoint = Object.freeze({
       );
 
       const duration = nowMs() - start;
-      recordLatency(rawType, duration, error);
+      recordLatency(rawType, duration, error, {
+        bandId,
+        bandFamily,
+        dnaTag,
+        meshTag
+      });
 
       const failure = {
         ok: false,
         type: "PulseWorldEndpointError",
         message: String(err),
+        bandId,
+        bandFamily,
+        dnaTag,
+        meshTag,
         meta: {
           source: "PulseWorldEndpoint.handle",
-          version: 27
+          version: 30
         }
       };
 
       emitSignal("endpoint.error", {
         type: rawType,
         durationMs: duration,
+        bandId,
+        bandFamily,
+        dnaTag,
+        meshTag,
         error: String(err)
       });
 
       emitFinality("endpoint.error", {
         type: rawType,
         durationMs: duration,
+        bandId,
+        bandFamily,
+        dnaTag,
+        meshTag,
         error: String(err)
       });
 
@@ -737,7 +936,7 @@ export const PulseWorldEndpoint = Object.freeze({
 // ----------------------------------------------------------------------------
 
 console.log(
-  "%c[PulseWorldEndpoint] %cauto-prewarm on import (v27++)",
+  "%c[PulseWorldEndpoint] %cauto-prewarm on import (v30)",
   C_ID,
   C_OK
 );
@@ -745,7 +944,7 @@ console.log(
 prewarmPulseWorldEndpoint();
 
 console.log(
-  "%c[PulseWorldEndpoint] %cexposed to window (v27++)",
+  "%c[PulseWorldEndpoint] %cexposed to window (v30)",
   C_ID,
   C_OK
 );

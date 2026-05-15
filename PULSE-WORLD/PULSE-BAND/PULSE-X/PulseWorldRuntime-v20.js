@@ -26,7 +26,7 @@ import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
+} from "./PULSE-WORLD-MAPORGANISM.js";
 const Identity = OrganismIdentity(import.meta.url);
 // 2 — EXPORT GENOME METADATA
 // export const PulseBinaryWaveScannerMeta = Identity.OrganMeta;

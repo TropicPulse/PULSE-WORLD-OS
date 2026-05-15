@@ -11,7 +11,7 @@
 import { OrganismIdentity, buildPulseOrganismMap as buildOrganismMap} from "../PULSE-X/PULSE-WORLD-MAP.js
 ";
 const Identity = OrganismIdentity(import.meta.url);
-import { BridgeLog as log,BridgeWarn as warn,BridgeError as error} from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { BridgeLog as log,BridgeWarn as warn,BridgeError as error} from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 // 2 — EXPORT GENOME METADATA
 export const PulseWorldFirebaseAdapterMeta = Identity.OrganMeta;
 export const pulseRole = Identity.pulseRole;

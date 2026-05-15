@@ -14,16 +14,6 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-// 2 — EXPORT GENOME METADATA
-export const GPUMetaBlock = Identity.OrganMeta;
-export const pulseRole = Identity.pulseRole;
-export const GPURole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
 // ---------------------------------------------------------------------------
 //  IMPORTS — v24 IMMORTAL++
 // ---------------------------------------------------------------------------
@@ -64,7 +54,7 @@ import {
   PulseNetBoot,
   PulseNet,
   PulseProofBridge
-} from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+} from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
 import PulseCoreMemory                   from "../PULSE-CORE/PulseCoreMemory-v24.js";

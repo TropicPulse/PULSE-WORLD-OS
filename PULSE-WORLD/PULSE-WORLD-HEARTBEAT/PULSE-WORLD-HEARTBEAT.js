@@ -14,7 +14,7 @@ import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-BAND/PULSE-X/PULSE-WORLD-MAP.js";
+} from "../PULSE-BAND/PULSE-X/PULSE-WORLD-MAPORGANISM.js";
 const Identity = OrganismIdentity(import.meta.url);
 
 // 2 — EXPORT GENOME METADATA
@@ -79,7 +79,7 @@ const fetchFn =
   (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
   null;
 
-import { safeRoute as route, PulseProofBridgeLogger as logger } from "../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+import { safeRoute as route, PulseProofBridgeLogger as logger } from "../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 import { PulseLineage } from "../PULSE-BAND/PULSE-PROXY/PulseProxyBBB-v20.js";
 
 

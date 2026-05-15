@@ -32,7 +32,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 import {
   PulseProofBridgeLogger as logger,
   PulseProofBridgeTelemetry as emitTelemetry
-} from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+} from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 
 const SUBSYSTEM = "circulation";

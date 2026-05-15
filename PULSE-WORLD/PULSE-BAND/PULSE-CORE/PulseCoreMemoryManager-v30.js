@@ -26,7 +26,7 @@
 //   • v30 binary spine compatible
 // ============================================================================
 
-import { PulseProofBridge } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 // BRIDGE INTEGRATION — REQUIRED (v30)

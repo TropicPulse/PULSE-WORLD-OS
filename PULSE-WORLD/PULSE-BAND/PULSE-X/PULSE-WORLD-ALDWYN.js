@@ -42,29 +42,15 @@ AI_EXPERIENCE_META = {
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "./PULSE-WORLD-MAP.js";
-const Identity = OrganismIdentity(import.meta.url);
-// 2 — EXPORT GENOME METADATA
-export const OvermindPrimeMeta = Identity.OrganMeta;
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-// export const WBC_CONTEXT = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-import { PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+
+import { PulseProofBridgeLogger as PulseProofLogger, PulseProofBridgeMonitor as PulseVitalsMonitor } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 //  GLOBAL MAPS
 // ============================================================================
 
-import { PulseIQMap } from "./PULSE-WORLD-IQ.js";
-import { PulseIntentMap } from "./PULSE-WORLD-INTENT.js";
+import { PulseIQMap } from "./PULSE-WORLD-MAPIQ.js";
+import { PulseIntentMap } from "./PULSE-WORLD-MAPINTENT.js";
 
 // ============================================================================
 //  AI ORGANISM (v16 IMMORTAL-INTEL)
@@ -113,7 +99,7 @@ import {
 } from "../PULSE-CORE/PulseCoreSendMemoryAdapter-v20.js";
 
 import { PulseUnderstanding } from "./PULSE-WORLD-UNDERSTANDING.js";
-import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor-v24.js";
+import { PulseGovernor } from "../PULSE-OS/PulseOSGovernor-v30.js";
 import { PulseBinaryTech } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 
 // ============================================================================

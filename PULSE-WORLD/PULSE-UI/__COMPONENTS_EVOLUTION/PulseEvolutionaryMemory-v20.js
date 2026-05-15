@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS_EVOLUTION/PulseEvolutionaryMemory-v20Plus.js
+// FILE: /PULSE-UI/__COMPONENTS_EVOLUTION/PulseEvolutionaryMemory-v20Plus.js
 // PULSE OS — v20++ IMMORTAL EVOLUTIONARY MEMORY ORGAN
 // ROLE: MEMORY-DRIVEN EVOLUTION ADVISOR (ADVISORY MODE)
 // ============================================================================
@@ -72,7 +72,7 @@
 //     • CNS Impulses (advisory only)
 //
 // ============================================================================
-import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge } from "../____BACKEND/PULSE-WORLD-BRIDGE.js";
 export let MEMORY_MODE = "deep"; 
 // "deep" → full envelope
 // "slim" → optimized envelope

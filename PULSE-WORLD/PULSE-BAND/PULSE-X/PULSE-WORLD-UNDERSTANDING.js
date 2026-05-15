@@ -81,12 +81,12 @@ import {
   log,
   warn,
   error
-} from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+} from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 //  IMPORTS — COMPILER / CHUNKER / ACTNOW
 // ============================================================================
-import { PulseWorldCompile } from "./PulseWorldCompiler-v20.js";
+import { PulseWorldCompile } from "./PulseWorldCompiler-v30.js";
 import { createPulseChunker } from "./PulseWorldChunker-v20.js";
 import { createPulseWorldFightFlightResponseV20 } from "./PulseWorldFightFlightResponse-v20.js";
 
@@ -101,7 +101,7 @@ import {
 // ============================================================================
 //  IMPORTS — MAPS (Intent, Organism, IQ)
 // ============================================================================
-import { PulseIntentMap } from "./PULSE-WORLD-INTENT.js";
+import { PulseIntentMap } from "./PULSE-WORLD-MAPINTENT.js";
 import { createPulseWorldCore, createPulseCastle, createPulseMesh } from "../PULSE-EXPANSION/PULSE-EXPANSION-USER.js";
 import { createDualBandOrganism as PulseBinaryOrganismBoot } from "../PULSE-AI/aiDualBand-v24.js";
 

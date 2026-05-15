@@ -1,7 +1,7 @@
 // ============================================================================
-//  PulseProofBridge-v27-IMMORTAL-FINALITY++
+//  PulseProofBridge-v30-IMMORTAL-FINALITY++
 //  ROLE: Portal Trust Bridge + Local Buffer + Finality / Approval Layer
-//        + CNS / Binary / DualBand / Remote Endpoint
+//        + CNS / Binary / DualBand / Remote Endpoint (v30, PulseBand/Mesh-aware)
 // ============================================================================
 
 import {
@@ -14,14 +14,15 @@ import {
   PulseVersion,
   PulseColors,
   PulseIcons
-} from "../_MONITOR/PULSE-PROOF-LOGGER.js";
-import { VitalsMonitor as PulseProofMonitor } from "../_MONITOR/PULSE-PROOF-MONITOR.js";
-import { initUIFlow as PulseProofFlow } from "../_MONITOR/PULSE-PROOF-FLOW.js";
-import PulseUIErrors from "../_MONITOR/PULSE-PROOF-ERRORS.js";
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
+import { VitalsMonitor as PulseProofMonitor } from "../___MONITOR/PULSE-PROOF-MONITOR.js";
+import { initUIFlow as PulseProofFlow } from "../___MONITOR/PULSE-PROOF-FLOW.js";
+import { PulseUIErrors } from "../___MONITOR/PULSE-PROOF-ERRORS.js";
+
 import { PulseWorldEndpoint } from "./PULSE-WORLD-ENDPOINT.js";
 
 import { createPulseSkinReflex as PulseProofReflex } from "../__COMPONENTS_EVOLUTION/PulseUISkinReflex-v24.js";
-import PulsePageScanner from "../__COMPONENTS_EVOLUTION/PulseUIPageScanner-v24.js";
+import { PulsePageScanner } from "../__COMPONENTS_EVOLUTION/PulseUIPageScanner-v24.js";
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../__COMPONENTS_EVOLUTION/PulseUIRouteMemory-v24.js";
 
 // NEW: Finality / Signal Port (IMMORTAL FINALITY LAYER)
@@ -79,7 +80,9 @@ const PulseProofBridge = {
   }
 };
 
-window.PulseProofBridge = PulseProofBridge;
+if (typeof window !== "undefined") {
+  window.PulseProofBridge = PulseProofBridge;
+}
 
 export function attachRealBridge(real) {
   for (const key of Object.keys(PulseProofBridge)) {
@@ -251,7 +254,7 @@ function isOnline() {
 // IMMORTAL LOCALSTORAGE MIRROR — PulseBridgeStore
 // ============================================================================
 
-const BRIDGE_LS_KEY = "PulseBridge.v24.buffer";
+const BRIDGE_LS_KEY = "PulseBridge.v30.buffer";
 const BRIDGE_LS_MAX = 6000;
 
 function hasLocalStorage() {
@@ -320,7 +323,7 @@ function buildArterySnapshot(kind) {
 }
 
 // ============================================================================
-// FINALITY / APPROVAL LAYER — v27++ IMMORTAL
+// FINALITY / APPROVAL LAYER — v30 IMMORTAL
 // ============================================================================
 
 const FINALITY_CHANNEL_ID = "portal.trust.bridge";
@@ -429,7 +432,7 @@ function appendBridgeRecord(kind, payload) {
       subsystem: "bridge",
       system: "PortalTrustLayer",
       organ: "PulseProofBridge",
-      layer: "PulseProofBridge-v27-FINALITY",
+      layer: "PulseProofBridge-v30-FINALITY",
       message: `[Bridge] ${kind}`,
       extra: entry,
       level: "log",
@@ -518,7 +521,7 @@ const FIRE_AND_FORGET_PATHS = new Set([
 function trace(label, data) {
   if (!DEV) return;
   console.log(
-    `%c[PORTAL TRUST BRIDGE v27] → ${label}`,
+    `%c[PORTAL TRUST BRIDGE v30] → ${label}`,
     "color:#7FDBFF; font-weight:bold;",
     data
   );
@@ -527,7 +530,7 @@ function trace(label, data) {
 function traceInbound(label, data) {
   if (!DEV) return;
   console.log(
-    `%c[PORTAL TRUST BRIDGE v27] ← ${label}`,
+    `%c[PORTAL TRUST BRIDGE v30] ← ${label}`,
     "color:#39CCCC; font-weight:bold;",
     data
   );
@@ -662,8 +665,11 @@ function recordBridgeFailure(path, reason) {
 }
 
 // ============================================================================
-// INBOUND HANDLER
+// INBOUND HANDLER (CNS_RESPONSE / IMAGE_RESPONSE / EVENTS)
 // ============================================================================
+
+const pending = Object.create(null);
+const imagePending = Object.create(null);
 
 function handleInbound(event) {
   const msg = event?.data;
@@ -690,24 +696,146 @@ function handleInbound(event) {
     resolve(msg.data || null);
     return;
   }
+
+  // Portal / AI / Boot events (same as v27)
+  const safeCall = (label, fn, payload) => {
+    if (typeof fn !== "function") return;
+    try {
+      fn(payload);
+    } catch (err) {
+      console.error(
+        "%c[BRIDGE::ERROR] %c%s %c→ %s",
+        "color:#FF3B3B; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        label,
+        "color:#FF3B3B; font-family:monospace;",
+        String(err)
+      );
+      appendBridgeRecord(`${label}_error`, { error: String(err) });
+    }
+  };
+
+  const logInbound = (type, payload) => {
+    console.log(
+      "%c[BRIDGE::INBOUND] %c%s %c→",
+      "color:#7C4DFF; font-weight:bold; font-family:monospace;",
+      "color:#EC407A; font-weight:bold; font-family:monospace;",
+      type,
+      "color:#E8F8FF; font-family:monospace;"
+    );
+
+    if (payload !== undefined) {
+      console.log(
+        "%c↳ payload:",
+        "color:#EC407A; font-family:monospace; font-weight:bold;"
+      );
+      console.log(
+        "%c" + JSON.stringify(payload, null, 2),
+        "color:#E8F8FF; font-family:monospace;"
+      );
+    }
+  };
+
+  switch (msg.type) {
+    case "DUALBAND_AI_EVENT": {
+      logInbound("DUALBAND_AI_EVENT", msg.data);
+      appendBridgeRecord("dualband_ai_event", msg.data);
+      safeCall("aiEventHandler", aiEventHandler, msg.data);
+      break;
+    }
+
+    case "AI_EVENT": {
+      logInbound("AI_EVENT", msg);
+      appendBridgeRecord("ai_event", msg);
+      safeCall("aiEventHandler", aiEventHandler, msg);
+      break;
+    }
+
+    case "PORTAL_EVENT": {
+      logInbound("PORTAL_EVENT", msg);
+      appendBridgeRecord("portal_event", msg);
+      safeCall("portalEventHandler", portalEventHandler, msg);
+      break;
+    }
+
+    case "DUALBAND_BOOT": {
+      logInbound("DUALBAND_BOOT", msg.bootOptions);
+      appendBridgeRecord("dualband_boot", msg.bootOptions);
+      safeCall("dualBandBootHandler", dualBandBootHandler, msg.bootOptions);
+      break;
+    }
+
+    case "CNS_BOOT": {
+      logInbound("CNS_BOOT", msg);
+      appendBridgeRecord("cns_boot", msg);
+      safeCall("dualBandBootHandler", dualBandBootHandler, msg);
+      break;
+    }
+
+    case "IMAGE_RESPONSE": {
+      // already handled above, but keep log for completeness
+      logInbound("IMAGE_RESPONSE", msg.data);
+      appendBridgeRecord("image_response", msg.data);
+      break;
+    }
+
+    case "COMPILER_EVENT": {
+      logInbound("COMPILER_EVENT", msg);
+      appendBridgeRecord("compiler_event", msg);
+      break;
+    }
+
+    default: {
+      console.log(
+        "%c[BRIDGE::UNKNOWN] %c%s",
+        "color:#7C4DFF; font-weight:bold; font-family:monospace;",
+        "color:#FFE066; font-family:monospace;",
+        msg.type
+      );
+      break;
+    }
+  }
 }
 
-if (channel && !channel.__PULSE_BRIDGE_BOUND_V27__) {
-  channel.__PULSE_BRIDGE_BOUND_V27__ = true;
+if (channel && !channel.__PULSE_BRIDGE_BOUND_V30__) {
+  channel.__PULSE_BRIDGE_BOUND_V30__ = true;
   channel.addEventListener("message", handleInbound);
 }
 
-const pending = Object.create(null);
-const imagePending = Object.create(null);
+// ============================================================================
+// REQUEST ID GENERATOR
+// ============================================================================
+
+function nextRequestId(prefix = "req") {
+  return (
+    prefix +
+    "-" +
+    Date.now().toString(36) +
+    "-" +
+    Math.random().toString(36).slice(2)
+  );
+}
 
 // ============================================================================
-// SAFE ROUTE — DIRECT ENDPOINT MODE (NO BRIDGE, NO TIMEOUTS)
+// SAFE ROUTE — FULL CNS REQUEST/RESPONSE + ENDPOINT FALLBACK (v30)
+// ============================================================================
+//
+//  • Primary path: CNS_REQUEST over BroadcastChannel("PulseCNS")
+//  • CNS responds with CNS_RESPONSE (handled above)
+//  • Fire-and-forget paths still use CNS_REQUEST without pending
+//  • Fallback: direct PulseHooks / PulseRemoteEndpoint.handle
 // ============================================================================
 
 export function safeRoute(path, payload = {}, timeoutMs = 10000) {
   trace("SAFE_ROUTE", { path, payload });
 
-  // 1 — Direct frontend hooks
+  // Fire-and-forget paths → CNS_REQUEST without awaiting
+  if (FIRE_AND_FORGET_PATHS.has(path)) {
+    fireAndForgetRoute(path, payload);
+    return Promise.resolve(null);
+  }
+
+  // 1 — Direct frontend hooks (fastest path, no CNS)
   if (
     typeof window !== "undefined" &&
     window.PulseHooks &&
@@ -723,7 +851,33 @@ export function safeRoute(path, payload = {}, timeoutMs = 10000) {
     }
   }
 
-  // 2 — DIRECT ENDPOINT ROUTE
+  // 2 — CNS REQUEST/RESPONSE over BroadcastChannel (v30 CNS)
+  if (channel) {
+    return new Promise((resolve) => {
+      const requestId = nextRequestId("cns");
+
+      const timer = setTimeout(() => {
+        if (!pending[requestId]) return;
+        delete pending[requestId];
+        recordBridgeFailure(path, "timeout");
+        appendBridgeRecord("safeRoute_cns_timeout", { path, payload });
+        resolve(null);
+      }, timeoutMs);
+
+      pending[requestId] = { resolve, timer, path };
+
+      const msg = envelope("CNS_REQUEST", {
+        requestId,
+        path,
+        payload
+      });
+
+      trace("CNS_REQUEST", { path, payload, requestId });
+      send(msg);
+    });
+  }
+
+  // 3 — DIRECT ENDPOINT ROUTE (legacy / fallback)
   return new Promise(async (resolve) => {
     try {
       if (
@@ -812,7 +966,7 @@ export const coreSpeechBridge = {
 };
 
 // ============================================================================
-// FIRE-AND-FORGET ROUTE
+// FIRE-AND-FORGET ROUTE (CNS_REQUEST, no pending)
 // ============================================================================
 
 export function fireAndForgetRoute(path, payload = {}) {
@@ -881,119 +1035,6 @@ export function requestCompiler(reason = "touch", meta = {}) {
 }
 
 // ============================================================================
-// INBOUND PORTAL / AI / BOOT EVENTS
-// ============================================================================
-
-if (channel) {
-  channel.addEventListener("message", (event) => {
-    const msg = event?.data;
-    if (!msg || typeof msg !== "object") return;
-
-    appendBridgeRecord("inbound_raw", msg);
-
-    const safeCall = (label, fn, payload) => {
-      if (typeof fn !== "function") return;
-      try {
-        fn(payload);
-      } catch (err) {
-        console.error(
-          "%c[BRIDGE::ERROR] %c%s %c→ %s",
-          "color:#FF3B3B; font-weight:bold; font-family:monospace;",
-          "color:#FFE066; font-family:monospace;",
-          label,
-          "color:#FF3B3B; font-family:monospace;",
-          String(err)
-        );
-        appendBridgeRecord(`${label}_error`, { error: String(err) });
-      }
-    };
-
-    const logInbound = (type, payload) => {
-      console.log(
-        "%c[BRIDGE::INBOUND] %c%s %c→",
-        "color:#7C4DFF; font-weight:bold; font-family:monospace;",
-        "color:#EC407A; font-weight:bold; font-family:monospace;",
-        type,
-        "color:#E8F8FF; font-family:monospace;"
-      );
-
-      if (payload !== undefined) {
-        console.log(
-          "%c↳ payload:",
-          "color:#EC407A; font-family:monospace; font-weight:bold;"
-        );
-        console.log(
-          "%c" + JSON.stringify(payload, null, 2),
-          "color:#E8F8FF; font-family:monospace;"
-        );
-      }
-    };
-
-    switch (msg.type) {
-      case "DUALBAND_AI_EVENT": {
-        logInbound("DUALBAND_AI_EVENT", msg.data);
-        appendBridgeRecord("dualband_ai_event", msg.data);
-        safeCall("aiEventHandler", aiEventHandler, msg.data);
-        break;
-      }
-
-      case "AI_EVENT": {
-        logInbound("AI_EVENT", msg);
-        appendBridgeRecord("ai_event", msg);
-        safeCall("aiEventHandler", aiEventHandler, msg);
-        break;
-      }
-
-      case "PORTAL_EVENT": {
-        logInbound("PORTAL_EVENT", msg);
-        appendBridgeRecord("portal_event", msg);
-        safeCall("portalEventHandler", portalEventHandler, msg);
-        break;
-      }
-
-      case "DUALBAND_BOOT": {
-        logInbound("DUALBAND_BOOT", msg.bootOptions);
-        appendBridgeRecord("dualband_boot", msg.bootOptions);
-        safeCall("dualBandBootHandler", dualBandBootHandler, msg.bootOptions);
-        break;
-      }
-
-      case "CNS_BOOT": {
-        logInbound("CNS_BOOT", msg);
-        appendBridgeRecord("cns_boot", msg);
-        safeCall("dualBandBootHandler", dualBandBootHandler, msg);
-        break;
-      }
-
-      case "IMAGE_RESPONSE": {
-        logInbound("IMAGE_RESPONSE", msg.data);
-        appendBridgeRecord("image_response", msg.data);
-        break;
-      }
-
-      case "COMPILER_EVENT": {
-        logInbound("COMPILER_EVENT", msg);
-        appendBridgeRecord("compiler_event", msg);
-        break;
-      }
-
-      default: {
-        console.log(
-          "%c[BRIDGE::UNKNOWN] %c%s",
-          "color:#7C4DFF; font-weight:bold; font-family:monospace;",
-          "color:#FFE066; font-family:monospace;",
-          msg.type
-        );
-        break;
-      }
-    }
-  });
-}
-
-import { createAdminDiagnosticsOrgan } from "../__COMPONENTS_EVOLUTION/PulseAIAdminPanel-v20.js";
-import { createPulseWorldAdminPanel } from "../__COMPONENTS_EVOLUTION/PulseWorldAdminPanel-v20.js";
-
-// ============================================================================
 // EXPORT SURFACE
 // ============================================================================
 
@@ -1012,60 +1053,3 @@ export const BridgeIcons = PulseIcons;
 
 export const PulseProofBridgeLogger = PulseProofLogger;
 export const PulseProofBridgeReflex = PulseProofReflex;
-export const PulseProofBridgeMonitor = PulseProofMonitor;
-export const PulseProofBridgeTelemetry = emitTelemetry;
-export const PulseProofBridgeFlow = PulseProofFlow;
-export const PulseProofBridgeErrors = PulseUIErrors;
-export const PulseProofBridgeScanner = PulsePageScanner;
-export const PulseProofBridgeRouteMemory = PulseUIRouteMemory;
-export const PulseProofBridgeWorldAdminPanel = createPulseWorldAdminPanel;
-export const PulseProofBridgeAdminDiagnostics = createAdminDiagnosticsOrgan;
-
-// ============================================================================
-// IMMORTAL++ GLOBAL MIRROR
-// ============================================================================
-
-(function exposeBridgeGlobally() {
-  try {
-    const roots = [
-      typeof globalThis !== "undefined" ? globalThis : null,
-      typeof window !== "undefined" ? window : null,
-      typeof global !== "undefined" ? global : null,
-      typeof self !== "undefined" ? self : null,
-      typeof g !== "undefined" ? g : null
-    ];
-
-    for (const root of roots) {
-      if (!root) continue;
-
-      if (!root.PulseProofBridge) {
-        Object.defineProperty(root, "PulseProofBridge", {
-          value: PulseProofBridge,
-          writable: false,
-          enumerable: true,
-          configurable: false
-        });
-      }
-
-      if (!root.PulseBridgeStore) {
-        Object.defineProperty(root, "PulseBridgeStore", {
-          value: PulseBridgeStore,
-          writable: false,
-          enumerable: true,
-          configurable: false
-        });
-      }
-    }
-  } catch (err) {
-    console.error("[PulseProofBridge v27-FINALITY] Global exposure failed:", err);
-  }
-})();
-
-// ⭐ THIS IS THE WHOLE POINT OF THIS PAGE
-if (typeof window !== "undefined") {
-  window.PulseRemoteEndpoint = {
-    async handle(route) {
-      return PulseWorldEndpoint.handle(route);
-    }
-  };
-}

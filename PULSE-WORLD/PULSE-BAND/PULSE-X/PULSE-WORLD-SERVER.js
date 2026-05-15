@@ -62,7 +62,7 @@ const fetchFn =
   (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
   null;
 
-import { PulseProofBridgeFlow as initUIFlow, PulseProofBridgeErrors as PulseUIErrors, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeFlow as initUIFlow, PulseProofBridgeErrors as PulseUIErrors, PulseProofBridgeLogger as PulseProofLogger, BridgeLog as log, BridgeWarn as warn, BridgeError as error } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 import { aiOvermindPrime } from "./PULSE-WORLD-ALDWYN.js";
 import { prewarmSDN } from "../PULSE-OS/PulseOSSDNPrewarm-v24.js";
 import { createPulseRouter } from "./PULSE-WORLD-INTERNET-ROUTER.js";
@@ -73,8 +73,8 @@ import { PulseUnderstanding, PulseWorldCastle, PulseWorldMesh } from "./PULSE-WO
 //  • Hybrid crown model: OvermindPrime sees heartbeats + AI requests
 // ============================================================================
 
-import { PulseForward as createForwardEngine } from "../PULSE-ENGINE/PulseEngineForwardMotion-v24.js";
-import { PulseBackward as createBackwardEngine } from "../PULSE-ENGINE/PulseEngineBackwardMotion-v24.js";
+import { PulseForward as createForwardEngine } from "../PULSE-ENGINE/PulseEngineForwardProcess-v30.js";
+import { PulseBackward as createBackwardEngine } from "../PULSE-ENGINE/PulseEngineBackwardProcess-v30.js";
 
 
 const Router = createPulseRouter({ trace: false });

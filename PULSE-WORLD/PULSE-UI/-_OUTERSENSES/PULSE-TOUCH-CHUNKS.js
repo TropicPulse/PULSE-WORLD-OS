@@ -112,7 +112,7 @@ const fetchFn =
 console.log("Presence v25++");
 console.log("[PulseChunks-v25++-MULTILANE-Immortal] Membrane chunker loading...");
 
-import { safeRoute as route, fireAndForgetRoute } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { safeRoute as route, fireAndForgetRoute } from "../____BACKEND/PULSE-WORLD-BRIDGE.js";
 import PulseChunkNormalizer from "./PULSE-TOUCH-MYPULSECHUNKS.js";
 
 // ============================================================================
@@ -323,7 +323,7 @@ function shouldSkipChunk(filePath = "", fileSize = 0) {
     "/build/",
     "/dist/",
     "/server/",
-    "/_backend/"
+    "/____BACKEND/"
   ];
 
   for (const dir of forbiddenDirs) {

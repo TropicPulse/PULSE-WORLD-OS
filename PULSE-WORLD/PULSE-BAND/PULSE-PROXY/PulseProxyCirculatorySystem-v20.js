@@ -36,7 +36,7 @@ import {
   PulseVersion,
   PulseRoles,
   PulseLineage
-} from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+} from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 
 // ============================================================================

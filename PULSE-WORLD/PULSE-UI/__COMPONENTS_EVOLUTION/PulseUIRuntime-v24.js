@@ -152,7 +152,7 @@ const fetchFn =
   (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
   null;
 
-import { PulseProofBridge } from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridge } from "../____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 const CoreMemory = PulseProofBridge?.coreMemory || null;
 const Trust      = PulseProofBridge?.trust || null;

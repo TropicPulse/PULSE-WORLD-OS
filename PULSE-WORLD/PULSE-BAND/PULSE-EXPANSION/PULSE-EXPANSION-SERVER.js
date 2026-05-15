@@ -25,7 +25,7 @@ import {
   OrganismIdentity,
   buildPulseOrganismMap as PulseOrganismMap,
   buildPulseOrganismMap as buildOrganismMap
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
+} from "../PULSE-X/PULSE-WORLD-MAPORGANISM.js";
 const Identity = OrganismIdentity(import.meta.url);
 // 2 — EXPORT GENOME METADATA
 export const PulseServerMeta = Identity.OrganMeta;
@@ -41,7 +41,7 @@ export const EXPORT_META = Identity.EXPORT_META;
 //  IMPORTS — Organs it feeds and orchestrates
 // ============================================================================
 
-import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // v24 Expansion / Castle
 import {

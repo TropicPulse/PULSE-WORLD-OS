@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS_EVOLUTION/PulseEvolutionaryStyles-v20.js
+// FILE: /PULSE-UI/__COMPONENTS_EVOLUTION/PulseEvolutionaryStyles-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
 // AUTO-BUILT PAGE CSS • UI SKILLS GENOME → PAGE-SCOPED CSS EMITTER
 // ============================================================================

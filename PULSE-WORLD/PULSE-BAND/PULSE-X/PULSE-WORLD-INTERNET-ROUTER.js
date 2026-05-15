@@ -1,18 +1,8 @@
-/**
- * ============================================================================
- *  PULSE OS v25++ IMMORTAL-ORGANISM — PULSE ROUTER (TRAFFIC BRAIN / ORGANISM-AWARE)
- *  PulseRouter-v25.js
- * ============================================================================
- *
- *  ROLE:
- *    - Traffic brain of a region.
- *    - Decides how to route user requests: castle / mesh / cloud.
- *    - Reads Castle, Mesh (symbolic + binary), Expansion, Beacon, User, WorldCore,
- *      Runtime, Scheduler, Overmind, Earn, Proxy.
- *    - Suggests better routes and corridor protection (never auto-applies).
- *    - Pure symbolic planner + v25++ internet routing orchestrator.
- */
-
+// ============================================================================
+//  PULSE-WORLD-ROUTER v30 — IMMORTAL MESH-FIRST + HOST/SATELLITE FALLBACK
+//  Routes: mesh • host-mesh • satellite-mesh • direct-fallback (cloud)
+//  Symbolic-only, deterministic, organism-aware.
+// ============================================================================
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
 //  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
@@ -20,24 +10,9 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-import {
-  OrganismIdentity,
-  buildPulseOrganismMap as PulseOrganismMap,
-  buildPulseOrganismMap as buildOrganismMap
-} from "./PULSE-WORLD-MAP.js";
-const Identity = OrganismIdentity(import.meta.url);
-export const PulseRouterMeta = Identity.OrganMeta;
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
 
-// ============================================================================
-//  IMPORTS (backend-safe, organism-aware)
-// ============================================================================
-import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/___BACKEND/PULSE-WORLD-BRIDGE.js";
+
+import { PulseProofBridgeLogger as logger } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 import {
   PulseExpansionMeta,
@@ -95,6 +70,19 @@ import {
 } from "../PULSE-PROXY/PulseProxyContext-v20.js";
 
 // ============================================================================
+//  ROUTER META — v30 IMMORTAL MESH-FIRST
+// ============================================================================
+export const PulseRouterMeta = Object.freeze({
+  version: "v30-IMMORTAL-MESH-ROUTER",
+  band: "symbolic",
+  organismRole: "router",
+  meshFirst: true,
+  satelliteFallback: true,
+  hostMeshFallback: true,
+  organId: "PULSE-WORLD-ROUTER"
+});
+
+// ============================================================================
 //  A-B-A SURFACES — SYMBOLIC BAND SIGNATURES
 // ============================================================================
 function computeHash(str) {
@@ -113,9 +101,9 @@ function buildBinaryField(cycle, proxyMeta) {
   const surface = density + 16;
 
   return {
-    binaryPhenotypeSignature: computeHash(`ROUTER_BEXP24::${surface}::${proxyPressure}`),
-    binarySurfaceSignature: computeHash(`ROUTER_BEXP24_SURF::${surface}`),
-    binarySurface: { density, surface, patternLen: 24 },
+    binaryPhenotypeSignature: computeHash(`ROUTER_BEXP30::${surface}::${proxyPressure}`),
+    binarySurfaceSignature: computeHash(`ROUTER_BEXP30_SURF::${surface}`),
+    binarySurface: { density, surface, patternLen: 30 },
     parity: surface % 2,
     shiftDepth: Math.floor(Math.log2(surface || 1))
   };
@@ -137,7 +125,7 @@ function buildWaveField(cycle, band, proxyMeta) {
 
 function buildBandSignature(band, proxyMeta) {
   const mode = proxyMeta?.proxyMode || "normal";
-  return computeHash(`ROUTER_EXP_BAND24::${band}::${mode}`);
+  return computeHash(`ROUTER_EXP_BAND30::${band}::${mode}`);
 }
 
 // ============================================================================
@@ -230,7 +218,7 @@ function getLocalBeaconEngine() {
 }
 
 // ============================================================================
-// FACTORY: createPulseRouter — v25++ Immortal Organism
+// FACTORY: createPulseRouter — v30 Immortal Organism
 // ============================================================================
 export function createPulseRouter({
   routerID = null,
@@ -242,14 +230,14 @@ export function createPulseRouter({
     routerID,
     regionID,
     createdBy: "PulseWorldCore",
-    version: "v25++-Immortal-ORGANISM"
+    version: "v30-IMMORTAL-MESH-ROUTER"
   });
 
   function log(...args) {
-    if (trace) console.log("[PulseRouter v25++]", ...args);
+    if (trace) console.log("[PulseRouter v30]", ...args);
   }
 
-  log("PulseRouter v25++ created:", { routerID, regionID });
+  log("PulseRouter v30 created:", { routerID, regionID });
 
   let cycle = 0;
   let lastBinaryField = null;
@@ -507,9 +495,10 @@ export function createPulseRouter({
   }
 
   // Decision engine
-  function routeTo(target, reason, context = {}) {
+  function routeTo(target, routeMode, reason, context = {}) {
     return Object.freeze({
-      target,
+      target,          // executor key: "castle" | "mesh" | "cloud"
+      routeMode,       // "mesh" | "host-mesh" | "satellite-mesh" | "direct-fallback"
       reason,
       hops: 1,
       safe: true,
@@ -562,58 +551,49 @@ export function createPulseRouter({
       0;
 
     const osBrainStatus = userSignals.osBrainStatus;
+    const regionPresence = presenceField.regionPresence || "unknown";
 
-    // Proxy-aware bias
+    // Proxy-aware hard fallback → direct cloud
     if (proxyMeta.proxyFallback || proxyMeta.proxyMode === "fallback") {
-      return routeTo("cloud", "proxyFallbackActive", {
-        mesh,
-        castle,
-        presenceField,
-        advantageField,
-        userSignals,
-        routeField,
-        proxyMeta
-      });
+      return routeTo(
+        "cloud",
+        "direct-fallback",
+        "proxyFallbackActive",
+        { mesh, castle, presenceField, advantageField, userSignals, routeField, proxyMeta }
+      );
     }
 
-    if (proxyMeta.proxyPressure > 0.8 && meshStrength !== "weak") {
-      return routeTo("mesh", "proxyPressureHighPreferMesh", {
-        mesh,
-        castle,
-        presenceField,
-        advantageField,
-        userSignals,
-        routeField,
-        proxyMeta
-      });
+    // Satellite-mesh bias: remote / weak region presence
+    const regionLooksRemote =
+      regionPresence === "remote" ||
+      regionPresence === "edge" ||
+      regionPresence === "unknown";
+
+    if (
+      regionLooksRemote &&
+      Policy.A_baseline.fallbackToRemoteCloud &&
+      meshStrength !== "weak"
+    ) {
+      // executor: cloud, but mode: satellite-mesh (cloud edge / satellite entry, then mesh)
+      return routeTo(
+        "cloud",
+        "satellite-mesh",
+        "regionRemotePreferSatelliteMesh",
+        { mesh, castle, presenceField, advantageField, userSignals, routeField, proxyMeta }
+      );
     }
 
-    if (proxyMeta.proxyBoost > 0.5 && castleLoad !== "critical") {
-      return routeTo("castle", "proxyBoostPreferCastle", {
-        mesh,
-        castle,
-        presenceField,
-        advantageField,
-        userSignals,
-        routeField,
-        proxyMeta
-      });
-    }
-
-    // OS brain / fallback
+    // OS brain / high fallback → direct-fallback cloud
     if (osBrainStatus !== "healthy" || fallbackBandLevel >= 3) {
-      return routeTo("cloud", "osBrainUnhealthyOrHighFallback", {
-        mesh,
-        castle,
-        presenceField,
-        advantageField,
-        userSignals,
-        routeField,
-        proxyMeta
-      });
+      return routeTo(
+        "cloud",
+        "direct-fallback",
+        "osBrainUnhealthyOrHighFallback",
+        { mesh, castle, presenceField, advantageField, userSignals, routeField, proxyMeta }
+      );
     }
 
-    // Castle preferred
+    // Host-mesh: castle healthy, mesh available → host first, mesh as fabric
     const castleHealthy =
       castleLoad === "low" ||
       castleLoad === "normal" ||
@@ -621,81 +601,76 @@ export function createPulseRouter({
 
     if (
       castleHealthy &&
+      meshStrength !== "weak" &&
       userStress < 80 &&
       Policy.A_baseline.preferLocalCastle
     ) {
-      return routeTo("castle", "nearestHealthyCastle", {
-        mesh,
-        castle,
-        presenceField,
-        advantageField,
-        userSignals,
-        routeField,
-        proxyMeta
-      });
+      return routeTo(
+        "castle",
+        "host-mesh",
+        "nearestHealthyCastleMeshBackbone",
+        { mesh, castle, presenceField, advantageField, userSignals, routeField, proxyMeta }
+      );
     }
 
-    // Mesh for castle relief
+    // Mesh-first for castle relief
     if (
       (castleLoad === "high" || castleLoad === "critical") &&
       meshStrength !== "weak" &&
       Policy.A_baseline.preferLocalMesh
     ) {
-      return routeTo("mesh", "castleReliefViaMesh", {
-        mesh,
-        castle,
-        presenceField,
-        advantageField,
-        userSignals,
-        routeField,
-        proxyMeta
-      });
+      return routeTo(
+        "mesh",
+        "mesh",
+        "castleReliefViaMesh",
+        { mesh, castle, presenceField, advantageField, userSignals, routeField, proxyMeta }
+      );
     }
 
-    // Strong mesh
+    // Strong mesh → mesh-first
     if (
       meshStrength === "strong" &&
       meshPressure < 80 &&
       Policy.A_baseline.preferLocalMesh
     ) {
-      return routeTo("mesh", "strongMeshPreferred", {
-        mesh,
-        castle,
-        presenceField,
-        advantageField,
-        userSignals,
-        routeField,
-        proxyMeta
-      });
+      return routeTo(
+        "mesh",
+        "mesh",
+        "strongMeshPreferred",
+        { mesh, castle, presenceField, advantageField, userSignals, routeField, proxyMeta }
+      );
     }
 
-    // User stress high → mesh
+    // User stress high → mesh-first
     if (
       userStress >= 80 &&
       meshStrength !== "weak" &&
       Policy.A_baseline.preferLocalMesh
     ) {
-      return routeTo("mesh", "userStressHighPreferMesh", {
-        mesh,
-        castle,
-        presenceField,
-        advantageField,
-        userSignals,
-        routeField,
-        proxyMeta
-      });
+      return routeTo(
+        "mesh",
+        "mesh",
+        "userStressHighPreferMesh",
+        { mesh, castle, presenceField, advantageField, userSignals, routeField, proxyMeta }
+      );
     }
 
-    // Cloud fallback
-    return routeTo("cloud", "fallback", {
-      mesh,
-      castle,
-      presenceField,
-      advantageField,
-      userSignals,
-      routeField,
-      proxyMeta
-    });
+    // Default: cloud with satellite-mesh flavor if mesh is usable, else direct-fallback
+    if (meshStrength !== "weak") {
+      return routeTo(
+        "cloud",
+        "satellite-mesh",
+        "fallbackSatelliteMesh",
+        { mesh, castle, presenceField, advantageField, userSignals, routeField, proxyMeta }
+      );
+    }
+
+    return routeTo(
+      "cloud",
+      "direct-fallback",
+      "fallback",
+      { mesh, castle, presenceField, advantageField, userSignals, routeField, proxyMeta }
+    );
   }
 
   // Suggestions
@@ -853,20 +828,14 @@ export function createPulseRouter({
   }
 
   // ==========================================================================
-  // v25++ INTERNET ROUTING ORCHESTRATOR
+  // v30 INTERNET ROUTING ORCHESTRATOR (mesh-first + host/satellite modes)
   // ==========================================================================
   /**
    * executors: {
-   *   castle: async (request, routeDecision) => { ... },
-   *   mesh:   async (request, routeDecision) => { ... },
-   *   cloud:  async (request, routeDecision) => { ... } // can use fetch, safeRoute, etc.
+   *   castle: async (request, routeDecision) => { ... },   // host-mesh
+   *   mesh:   async (request, routeDecision) => { ... },   // mesh
+   *   cloud:  async (request, routeDecision) => { ... }    // satellite-mesh / direct-fallback
    * }
-   *
-   * Strategy:
-   *   1. decideRoute(request) → primary target
-   *   2. try primary target
-   *   3. if fails, try alternates (mesh, castle, cloud) in safe order
-   *   4. return first ok result or final error
    */
   async function routeInternet(request, executors = {}) {
     const start = Date.now();
@@ -874,7 +843,12 @@ export function createPulseRouter({
     const primary = decision.target;
 
     const order = buildFallbackOrder(primary);
-    log("routeInternet decision:", { primary, order, reason: decision.reason });
+    log("routeInternet decision:", {
+      primary,
+      routeMode: decision.routeMode,
+      order,
+      reason: decision.reason
+    });
 
     let lastError = null;
 
@@ -910,11 +884,7 @@ export function createPulseRouter({
   }
 
   function buildFallbackOrder(primary) {
-    // v25++ fallback logic:
-    //   castle → [castle, mesh, cloud]
-    //   mesh   → [mesh, castle, cloud]
-    //   cloud  → [cloud, mesh, castle]
-    //   default→ [castle, mesh, cloud]
+    // Same executor keys, but now routeMode carries semantics.
     switch (primary) {
       case "castle":
         return ["castle", "mesh", "cloud"];
@@ -954,7 +924,7 @@ export function createPulseRouter({
     // routing
     decideRoute,
     recordRoute,
-    routeInternet,   // ⭐ v25++ internet routing orchestrator
+    routeInternet,
 
     // suggestions
     suggestBetterRoutes,

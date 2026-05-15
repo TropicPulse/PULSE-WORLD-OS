@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-UI/_COMPONENTS_EVOLUTION/PulseAIConsole-v20.js
+FILE: /PULSE-UI/__COMPONENTS_EVOLUTION/PulseAIConsole-v20.js
 LAYER: UI → CNS BRIDGE (AI COMMAND ORGAN)
 VERSION: v20-IMMORTAL
 ===============================================================================

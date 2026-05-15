@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS_EVOLUTION/PulseEvolutionaryImpulse-v20.js
+// FILE: /PULSE-UI/__COMPONENTS_EVOLUTION/PulseEvolutionaryImpulse-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
 // CNS BRAINSTEM IMPULSE ORGAN — CONTEXT-FUSION, TIER-AWARE, CHANNEL-AWARE
 // ============================================================================

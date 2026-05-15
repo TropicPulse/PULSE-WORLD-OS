@@ -108,16 +108,6 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-// 2 — EXPORT GENOME METADATA
-// export const PulseMeshMeta = Identity.OrganMeta;
-export const pulseRole = Identity.pulseRole;
-export const PulseRole = Identity.pulseRole;
-export const surfaceMeta = Identity.surfaceMeta;
-export const pulseLoreContext = Identity.pulseLoreContext;
-// export const PULSE_EARN_IMMUNE_CONTEXT = Identity.pulseLoreContext;
-export const AI_EXPERIENCE_META = Identity.AI_EXPERIENCE_META;
-export const EXPORT_META = Identity.EXPORT_META;
-
 
 import nodemailer from "nodemailer";
 import { onRequest, onCall } from "firebase-functions/v2/https";
@@ -126,7 +116,7 @@ import express from "express";
 import { admin, db } from "../PULSE-X/PulseWorldGenome-v20.js";
 import { getStripe as Stripe } from "../PULSE-X/PulseWorldBank-v20.js";
 import { getTwilioClient as twilio } from "../PULSE-X/PulseWorldSMSAlert-v20.js";
-import { PulseProofBridgeLogger as logger, BridgeLog as log } from "../../PULSE-UI/_BACKEND/PULSE-WORLD-BRIDGE.js";
+import { PulseProofBridgeLogger as logger, BridgeLog as log } from "../../PULSE-UI/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 
 

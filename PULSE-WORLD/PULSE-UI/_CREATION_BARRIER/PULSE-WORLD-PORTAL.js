@@ -48,8 +48,8 @@ import {
   PulseProofBridgeScanner as PulsePageScanner,
   PulseProofBridgeRouteMemory as PulseUIRouteMemory,
   PulseProofBridgeWorldAdminPanel as createPulseWorldAdminPanel,
-  PulseProofBridgeAdminDiagnostics as createAdminDiagnosticsOrgan} from "../_BACKEND/PULSE-WORLD-BRIDGE.js";
-  import { firestore as db, SetDoc as setdoc, GetDoc as getdoc, Doc as doc } from "../_MONITOR/PULSE-PROOF-SHADOW.js"
+  PulseProofBridgeAdminDiagnostics as createAdminDiagnosticsOrgan} from "../____BACKEND/PULSE-WORLD-BRIDGE.js";
+  import { firestore as db, SetDoc as setdoc, GetDoc as getdoc, Doc as doc } from "../___MONITOR/PULSE-PROOF-SHADOW.js"
 // ============================================================
 //  CREATE SKINREFLEX INSTANCE + EXPORT A1 API TO WINDOW
 // ============================================================

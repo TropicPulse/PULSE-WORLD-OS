@@ -54,7 +54,7 @@
 
 import {
   OrganismIdentity
-} from "../PULSE-X/PULSE-WORLD-MAP.js";
+} from "../PULSE-X/PULSE-WORLD-MAPORGANISM.js";
 
 const Identity = OrganismIdentity(import.meta.url);
 

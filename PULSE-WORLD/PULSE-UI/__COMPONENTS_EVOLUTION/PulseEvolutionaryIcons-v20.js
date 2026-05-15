@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PULSE-UI/_COMPONENTS_EVOLUTION/PulseEvolutionaryIcons-v20.js
+// FILE: /PULSE-UI/__COMPONENTS_EVOLUTION/PulseEvolutionaryIcons-v20.js
 // PULSE OS — v20-IMMORTAL-EVOLUTIONARY
 // ICON ORGAN — AUTO-BUILT, ROUTE-AWARE, UPCOMING-AWARE
 // ============================================================================
