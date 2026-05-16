@@ -1,47 +1,35 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnGenome-v24-Immortal-INTEL-PLUS.js
-// LAYER: THE GENOME CORE (v24-Immortal-INTEL-PLUS)
-// (Immutable DNA Sequence + Cross‑Organism Law + v24 Presence/Advantage/Compute Surfaces + Proof Bridge)
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/
+//       PulseEarnGenome-v30-Immortal-INTEL-PLUSPLUS.js
+// LAYER: THE GENOME CORE (v30-Immortal-INTEL-PLUSPLUS)
+// (Immutable DNA Sequence + Cross‑Organism Law + v30 Presence/Advantage/Compute Surfaces + Proof Bridge)
 // ============================================================================
 //
-// ROLE (v24-Immortal-INTEL-PLUS):
-//   THE GENOME CORE — the immutable DNA of Pulse‑Earn v24.
+// ROLE (v30-Immortal-INTEL-PLUSPLUS):
+//   THE GENOME CORE — the immutable DNA of Pulse‑Earn v30++.
 //   • Defines the canonical v13 job structure (genetic sequence) — schema remains v13, immutable.
 //   • Establishes the cross‑organism treaty all subsystems must obey.
-//   • Guarantees compatibility across every v24 Earn organ that still speaks v13 job DNA.
+//   • Guarantees compatibility across every v30 Earn organ that still speaks v13 job DNA.
 //   • Serves as the constitutional backbone of job identity and metabolism.
-//   • Emits v24‑Presence‑IMMORTAL genome signatures + binary/wave/advantage/chunk surfaces.
-//   • Emits v24 computeProfile + pulseIntelligence for the job schema itself (metadata‑only).
+//   • Emits v30‑Presence‑IMMORTAL genome signatures + binary/wave/advantage/chunk surfaces.
+//   • Emits v30 computeProfile + pulseIntelligence for the job schema itself (metadata‑only).
 //   • Uses computeHashIntelligence as primary hash, with computeHash as deterministic fallback.
 //   • Integrates with PulseProofBridge for core memory / proof surfaces.
 //
-// CONTRACT (v24-Immortal-INTEL-PLUS):
+// CONTRACT (v30-Immortal-INTEL-PLUSPLUS):
 //   • PURE STATIC SCHEMA + PURE METADATA ENGINE — no job logic, no runtime behavior on jobs.
 //   • NO dynamic fields, NO optional structural keys in the schema.
 //   • NO timestamps, NO environment‑dependent fields.
 //   • Immutable schema across versions unless explicitly ratified.
-//   • v24‑IMMORTAL‑INTEL‑PLUS adds ONLY metadata + signatures OUTSIDE the schema.
+//   • v30‑IMMORTAL‑INTEL‑PLUSPLUS adds ONLY metadata + signatures OUTSIDE the schema.
 //   • Presence/advantage/chunk/computeProfile/pulseIntelligence DO NOT change the schema.
 //   • NO async, NO network, NO randomness, NO filesystem.
 // ============================================================================
 
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
-// 2 — EXPORT GENOME METADATA
-// export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
-
-
 import { PulseProofBridge } from "../../PULSEVISION/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
-
 // ============================================================================
-// INTERNAL: Deterministic Hash Helpers (v24-Immortal-INTEL-PLUS)
+// INTERNAL: Deterministic Hash Helpers (v30-Immortal-INTEL-PLUSPLUS)
 // ============================================================================
 
 function computeHash(str) {
@@ -103,7 +91,7 @@ function normalizeCachePriority(p) {
 }
 
 // ============================================================================
-// HEALING METADATA — Genome Constitutional Health Log (v24-Immortal-INTEL-PLUS)
+// HEALING METADATA — Genome Constitutional Health Log (v30-Immortal-INTEL-PLUSPLUS)
 // ============================================================================
 
 const genomeHealing = {
@@ -153,21 +141,22 @@ export const PulseEarnJobSchemaV13 = {
 };
 
 // ============================================================================
-// v24 Presence / Advantage / Chunk / ComputeProfile / Intelligence
+// v30 Presence / Advantage / Chunk / ComputeProfile / Intelligence
 // ============================================================================
 
 let genomeCycle = 0;
 
 const genomeProof = new PulseProofBridge({
-  namespace: "PulseEarnGenomeCore-v24-Immortal-INTEL-PLUS",
+  namespace: "PulseEarnGenomeCore-v30-Immortal-INTEL-PLUSPLUS",
   layer: "GenomeCore",
   role: "GenomeProofSurface",
-  version: "v24-Immortal-INTEL-PLUS",
+  version: "v30-Immortal-INTEL-PLUSPLUS",
   deterministic: true,
-  driftProof: true
+  driftProof: true,
+  epoch: 30
 });
 
-function buildPresenceFieldV24(globalHints = {}) {
+function buildPresenceFieldV30(globalHints = {}) {
   genomeCycle++;
   genomeHealing.cycleCount = genomeCycle;
 
@@ -190,12 +179,15 @@ function buildPresenceFieldV24(globalHints = {}) {
   const presenceTier = classifyPresenceTier(pressure);
 
   const presenceField = {
-    presenceVersion: "v24.0-Presence-Immortal-INTEL-PLUS",
+    presenceVersion: "v30.0-Presence-Immortal-INTEL-PLUSPLUS",
+    presenceEpoch: 30,
     presenceTier,
 
     bandPresence: ghP.bandPresence || "symbolic",
     routerPresence: ghP.routerPresence || "stable",
     devicePresence: ghP.devicePresence || "genome-core",
+    presenceLayer: "GENOME_CORE",
+    presenceBandMode: "dual-band-v30",
 
     meshPresence: ghP.meshPresence || (meshStrength > 0 ? "mesh-active" : "mesh-idle"),
     castlePresence: ghP.castlePresence || castle.castlePresence || "genome-region",
@@ -211,8 +203,8 @@ function buildPresenceFieldV24(globalHints = {}) {
     cycle: genomeCycle,
 
     presenceSignature: hashIntelligent(
-      `GENOME_PRESENCE_V24::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`,
-      "presenceFieldV24"
+      `GENOME_PRESENCE_V30::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`,
+      "presenceFieldV30"
     )
   };
 
@@ -220,18 +212,18 @@ function buildPresenceFieldV24(globalHints = {}) {
   return presenceField;
 }
 
-function buildBinaryFieldV24(schemaString, band) {
+function buildBinaryFieldV30(schemaString, band) {
   const size = schemaString.length;
   const density = size + genomeCycle;
   const surface = density + size;
 
   const binaryField = {
     binaryGenomeSignature: hashIntelligent(
-      `BGENOME_V24::${band}::${surface}`,
+      `BGENOME_V30::${band}::${surface}`,
       "binaryGenome"
     ),
     binarySurfaceSignature: hashIntelligent(
-      `BGENOME_SURF_V24::${surface}`,
+      `BGENOME_SURF_V30::${surface}`,
       "binarySurface"
     ),
     binarySurface: {
@@ -247,7 +239,7 @@ function buildBinaryFieldV24(schemaString, band) {
   return binaryField;
 }
 
-function buildWaveFieldV24(schemaString, band) {
+function buildWaveFieldV30(schemaString, band) {
   const size = schemaString.length;
   const amplitude = size + genomeCycle;
   const wavelength = genomeCycle + 1;
@@ -265,7 +257,7 @@ function buildWaveFieldV24(schemaString, band) {
   return waveField;
 }
 
-function buildAdvantageFieldV24(binaryField, waveField, presenceField, globalHints = {}) {
+function buildAdvantageFieldV30(binaryField, waveField, presenceField, globalHints = {}) {
   const density = binaryField.binarySurface.density;
   const amplitude = waveField.amplitude;
 
@@ -288,7 +280,9 @@ function buildAdvantageFieldV24(binaryField, waveField, presenceField, globalHin
   else if (advantageScore > 0) advantageTier = 1;
 
   const advantageField = {
-    advantageVersion: "C-24.0-INTEL-PLUS",
+    advantageVersion: "C-30.0-INTEL-PLUSPLUS",
+    advantageEpoch: 30,
+    advantageProfile: "Earn-v30++",
     advantageScore,
     advantageTier,
     fallbackBandLevel: globalHints.fallbackBandLevel ?? 0
@@ -298,7 +292,7 @@ function buildAdvantageFieldV24(binaryField, waveField, presenceField, globalHin
   return advantageField;
 }
 
-function buildChunkPrewarmPlanV24(presenceField, advantageField) {
+function buildChunkPrewarmPlanV30(presenceField, advantageField) {
   const basePriority =
     presenceField.presenceTier === "critical"
       ? 4
@@ -316,7 +310,10 @@ function buildChunkPrewarmPlanV24(presenceField, advantageField) {
     0;
 
   const chunkPlan = {
-    planVersion: "v24.0-GenomeCore-AdvantageC-INTEL-PLUS",
+    planVersion: "v30.0-GenomeCore-AdvantageC-INTEL-PLUSPLUS",
+    planEpoch: 30,
+    planContinuanceAware: true,
+    planGenomeAware: true,
     priority: basePriority + advantageBoost,
     band: presenceField.presenceTier,
     chunks: {
@@ -337,7 +334,7 @@ function buildChunkPrewarmPlanV24(presenceField, advantageField) {
   return chunkPlan;
 }
 
-function deriveFactoringSignalForGenomeV24({ meshPressureIndex = 0, size = 0, cachePriority = "normal" }) {
+function deriveFactoringSignalForGenomeV30({ meshPressureIndex = 0, size = 0, cachePriority = "normal" }) {
   const pressure = clamp01(meshPressureIndex / 100);
   const bigSchema = size >= 1024;
   const highPressure = pressure >= 0.7;
@@ -346,7 +343,7 @@ function deriveFactoringSignalForGenomeV24({ meshPressureIndex = 0, size = 0, ca
   return 0;
 }
 
-function buildComputeProfileV24({ band, globalHints = {}, presenceField, size = 0 }) {
+function buildComputeProfileV30({ band, globalHints = {}, presenceField, size = 0 }) {
   const b = normalizeBand(band);
   const hints = globalHints || {};
   const cacheHints = hints.cacheHints || {};
@@ -356,7 +353,7 @@ function buildComputeProfileV24({ band, globalHints = {}, presenceField, size = 
   const prewarmNeeded = !!prewarmHints.shouldPrewarm;
   const meshPressureIndex = presenceField.meshPressureIndex || 0;
 
-  const factoringSignal = deriveFactoringSignalForGenomeV24({
+  const factoringSignal = deriveFactoringSignalForGenomeV30({
     meshPressureIndex,
     size,
     cachePriority
@@ -365,7 +362,8 @@ function buildComputeProfileV24({ band, globalHints = {}, presenceField, size = 
   const deepJobCandidate = size >= 2048 || cachePriority === "critical";
 
   const computeProfile = {
-    computeProfileVersion: "v24.0-GenomeCore-INTEL-PLUS",
+    computeProfileVersion: "v30.0-GenomeCore-INTEL-PLUSPLUS",
+    computeProfileEpoch: 30,
     routeBand: b,
     fallbackBandLevel: hints.fallbackBandLevel ?? 0,
     chunkAggression: (hints.chunkHints && hints.chunkHints.chunkAggression) ?? 0,
@@ -383,7 +381,7 @@ function buildComputeProfileV24({ band, globalHints = {}, presenceField, size = 
   return computeProfile;
 }
 
-function computePulseIntelligenceForGenomeV24({ band, presenceField, advantageField, computeProfile, size }) {
+function computePulseIntelligenceForGenomeV30({ band, presenceField, advantageField, computeProfile, size }) {
   const bandIsBinary = band === "binary" ? 1 : 0;
   const factoring = computeProfile.factoringSignal ? 1 : 0;
 
@@ -429,7 +427,8 @@ function computePulseIntelligenceForGenomeV24({ band, presenceField, advantageFi
   );
 
   const pulseIntelligence = {
-    pulseIntelligenceVersion: "v24.0-GenomeCore-INTEL-PLUS",
+    pulseIntelligenceVersion: "v30.0-GenomeCore-INTEL-PLUSPLUS",
+    pulseIntelligenceEpoch: 30,
     solvednessScore,
     factoringSignal: factoring ? "high" : "low",
     computeTier,
@@ -444,29 +443,29 @@ function computePulseIntelligenceForGenomeV24({ band, presenceField, advantageFi
 }
 
 // ============================================================================
-// PUBLIC API — Genome Constitutional Surfaces (v24-Immortal-INTEL-PLUS)
+// PUBLIC API — Genome Constitutional Surfaces (v30-Immortal-INTEL-PLUSPLUS)
 // ============================================================================
 
-export function buildPulseEarnGenomeConstitutionV24(dualBandContext = {}, globalHints = {}) {
+export function buildPulseEarnGenomeConstitutionV30(dualBandContext = {}, globalHints = {}) {
   const band = normalizeBand(dualBandContext.band || "symbolic");
   genomeHealing.lastBand = band;
-  genomeHealing.lastBandSignature = hashIntelligent(`GENOME_BAND_V24::${band}`, "genomeBand");
+  genomeHealing.lastBandSignature = hashIntelligent(`GENOME_BAND_V30::${band}`, "genomeBandV30");
 
   const schemaString = JSON.stringify(PulseEarnJobSchemaV13);
   const size = schemaString.length;
 
-  const presenceField = buildPresenceFieldV24(globalHints);
-  const binaryField = buildBinaryFieldV24(schemaString, band);
-  const waveField = buildWaveFieldV24(schemaString, band);
-  const advantageField = buildAdvantageFieldV24(binaryField, waveField, presenceField, globalHints);
-  const chunkPlan = buildChunkPrewarmPlanV24(presenceField, advantageField);
-  const computeProfile = buildComputeProfileV24({
+  const presenceField = buildPresenceFieldV30(globalHints);
+  const binaryField = buildBinaryFieldV30(schemaString, band);
+  const waveField = buildWaveFieldV30(schemaString, band);
+  const advantageField = buildAdvantageFieldV30(binaryField, waveField, presenceField, globalHints);
+  const chunkPlan = buildChunkPrewarmPlanV30(presenceField, advantageField);
+  const computeProfile = buildComputeProfileV30({
     band,
     globalHints,
     presenceField,
     size
   });
-  const pulseIntelligence = computePulseIntelligenceForGenomeV24({
+  const pulseIntelligence = computePulseIntelligenceForGenomeV30({
     band,
     presenceField,
     advantageField,
@@ -475,32 +474,33 @@ export function buildPulseEarnGenomeConstitutionV24(dualBandContext = {}, global
   });
 
   const genomeSignature = hashIntelligent(
-    `GENOME_CORE_V24::${band}::${schemaString.length}`,
-    "genomeCore"
+    `GENOME_CORE_V30::${band}::${schemaString.length}`,
+    "genomeCoreV30"
   );
 
   const constitutionalMetadata = {
-    genomeVersion: "v24-Immortal-INTEL-PLUS",
+    genomeVersion: "v30-Immortal-INTEL-PLUSPLUS",
+    genomeEpoch: 30,
     schemaVersion: "v13.0-Presence-Immortal",
     band,
     genomeSignature,
     presenceSignature: presenceField.presenceSignature,
     binarySignature: binaryField.binaryGenomeSignature,
     waveSignature: hashIntelligent(
-      `WAVE_GENOME_V24::${waveField.amplitude}::${waveField.wavelength}::${waveField.phase}`,
-      "waveGenome"
+      `WAVE_GENOME_V30::${waveField.amplitude}::${waveField.wavelength}::${waveField.phase}`,
+      "waveGenomeV30"
     ),
     advantageSignature: hashIntelligent(
-      `ADV_GENOME_V24::${advantageField.advantageScore}::${advantageField.advantageTier}`,
-      "advGenome"
+      `ADV_GENOME_V30::${advantageField.advantageScore}::${advantageField.advantageTier}`,
+      "advGenomeV30"
     ),
     computeProfileSignature: hashIntelligent(
-      `CP_GENOME_V24::${computeProfile.routeBand}::${computeProfile.cachePriority}::${computeProfile.factoringSignal}`,
-      "cpGenome"
+      `CP_GENOME_V30::${computeProfile.routeBand}::${computeProfile.cachePriority}::${computeProfile.factoringSignal}`,
+      "cpGenomeV30"
     ),
     pulseIntelligenceSignature: hashIntelligent(
-      `PI_GENOME_V24::${pulseIntelligence.computeTier}::${pulseIntelligence.solvednessScore}`,
-      "piGenome"
+      `PI_GENOME_V30::${pulseIntelligence.computeTier}::${pulseIntelligence.solvednessScore}`,
+      "piGenomeV30"
     )
   };
 
@@ -522,10 +522,10 @@ export function buildPulseEarnGenomeConstitutionV24(dualBandContext = {}, global
     constitutionalMetadata
   };
 
-  genomeHealing.lastProofEventType = "constitution";
+  genomeHealing.lastProofEventType = "constitution-v30";
   genomeHealing.lastProofPayloadSize = JSON.stringify(proofPayload).length;
 
-  genomeProof.write("constitution", proofPayload);
+  genomeProof.write("constitution-v30", proofPayload);
 
   return {
     genomeSignatures: {
@@ -545,14 +545,15 @@ export function buildPulseEarnGenomeConstitutionV24(dualBandContext = {}, global
 }
 
 // ============================================================================
-// v24‑IMMORTAL‑INTEL‑PLUS GENOME METADATA (NON‑STRUCTURAL, SAFE, IMMUTABLE)
+// v30‑IMMORTAL‑INTEL‑PLUSPLUS GENOME METADATA (NON‑STRUCTURAL, SAFE, IMMUTABLE)
 // ============================================================================
 
-export const PulseEarnGenomeMetadata = {
-  genomeVersion: "24-Immortal-INTEL-PLUS",
-  genomeIdentity: "PulseEarn-GenomeCore-v24-Immortal-INTEL-PLUS",
+export const PulseEarnGenomeMetadataV30 = {
+  genomeVersion: "30-Immortal-INTEL-PLUSPLUS",
+  genomeEpoch: 30,
+  genomeIdentity: "PulseEarn-GenomeCore-v30-Immortal-INTEL-PLUSPLUS",
   genomeLayer: "GENOME_CORE",
-  genomeRole: "Immutable DNA Sequence + Cross‑Organism Law (v13 schema, v24 surfaces + proof)",
+  genomeRole: "Immutable DNA Sequence + Cross‑Organism Law (v13 schema, v30 surfaces + proof)",
 
   constitutionalPattern:
     "GENOME_V13::" +
@@ -563,125 +564,130 @@ export const PulseEarnGenomeMetadata = {
     "presenceField:PresenceFieldV13::advantageField:AdvantageFieldV13::chunkPlan:ChunkPrewarmPlanV13",
 
   genomeSignature: computeHash(JSON.stringify(PulseEarnJobSchemaV13)),
-  genomeSignatureV24: hashIntelligent(
-    "GENOME_CORE_V24::" + JSON.stringify(PulseEarnJobSchemaV13),
-    "genomeMetadata"
+  genomeSignatureV30: hashIntelligent(
+    "GENOME_CORE_V30::" + JSON.stringify(PulseEarnJobSchemaV13),
+    "genomeMetadataV30"
   ),
 
   bandAware: true,
   dualBandReady: true,
-  bandSignature_symbolic: hashIntelligent("band::symbolic::v24", "bandSymbolic"),
-  bandSignature_binary: hashIntelligent("band::binary::v24", "bandBinary"),
+  bandSignature_symbolic: hashIntelligent("band::symbolic::v30", "bandSymbolicV30"),
+  bandSignature_binary: hashIntelligent("band::binary::v30", "bandBinaryV30"),
 
   binaryGenomeSignature: hashIntelligent(
-    "binary::v24::" + JSON.stringify(PulseEarnJobSchemaV13),
-    "binaryGenomeMeta"
+    "binary::v30::" + JSON.stringify(PulseEarnJobSchemaV13),
+    "binaryGenomeMetaV30"
   ),
 
   binaryFieldSignatures: {
-    id: hashIntelligent("binary::v24::id:string", "field:id"),
-    marketplaceId: hashIntelligent("binary::v24::marketplaceId:string", "field:marketplaceId"),
+    id: hashIntelligent("binary::v30::id:string", "field:id"),
+    marketplaceId: hashIntelligent("binary::v30::marketplaceId:string", "field:marketplaceId"),
 
-    payout: hashIntelligent("binary::v24::payout:number", "field:payout"),
-    cpuRequired: hashIntelligent("binary::v24::cpuRequired:number", "field:cpuRequired"),
-    memoryRequired: hashIntelligent("binary::v24::memoryRequired:number", "field:memoryRequired"),
-    estimatedSeconds: hashIntelligent("binary::v24::estimatedSeconds:number", "field:estimatedSeconds"),
+    payout: hashIntelligent("binary::v30::payout:number", "field:payout"),
+    cpuRequired: hashIntelligent("binary::v30::cpuRequired:number", "field:cpuRequired"),
+    memoryRequired: hashIntelligent("binary::v30::memoryRequired:number", "field:memoryRequired"),
+    estimatedSeconds: hashIntelligent("binary::v30::estimatedSeconds:number", "field:estimatedSeconds"),
 
-    minGpuScore: hashIntelligent("binary::v24::minGpuScore:number", "field:minGpuScore"),
-    bandwidthNeededMbps: hashIntelligent("binary::v24::bandwidthNeededMbps:number", "field:bandwidthNeededMbps"),
+    minGpuScore: hashIntelligent("binary::v30::minGpuScore:number", "field:minGpuScore"),
+    bandwidthNeededMbps: hashIntelligent("binary::v30::bandwidthNeededMbps:number", "field:bandwidthNeededMbps"),
 
-    _abaBand: hashIntelligent("binary::v24::_abaBand:string", "field:_abaBand"),
-    _abaBinaryDensity: hashIntelligent("binary::v24::_abaBinaryDensity:number", "field:_abaBinaryDensity"),
-    _abaWaveAmplitude: hashIntelligent("binary::v24::_abaWaveAmplitude:number", "field:_abaWaveAmplitude"),
+    _abaBand: hashIntelligent("binary::v30::_abaBand:string", "field:_abaBand"),
+    _abaBinaryDensity: hashIntelligent("binary::v30::_abaBinaryDensity:number", "field:_abaBinaryDensity"),
+    _abaWaveAmplitude: hashIntelligent("binary::v30::_abaWaveAmplitude:number", "field:_abaWaveAmplitude"),
 
-    presenceField: hashIntelligent("binary::v24::presenceField:PresenceFieldV13", "field:presenceField"),
-    advantageField: hashIntelligent("binary::v24::advantageField:AdvantageFieldV13", "field:advantageField"),
-    chunkPlan: hashIntelligent("binary::v24::chunkPlan:ChunkPrewarmPlanV13", "field:chunkPlan")
+    presenceField: hashIntelligent("binary::v30::presenceField:PresenceFieldV13", "field:presenceField"),
+    advantageField: hashIntelligent("binary::v30::advantageField:AdvantageFieldV13", "field:advantageField"),
+    chunkPlan: hashIntelligent("binary::v30::chunkPlan:ChunkPrewarmPlanV13", "field:chunkPlan")
   },
 
   waveSignature: hashIntelligent(
-    "wave::v24::" + computeHash(JSON.stringify(PulseEarnJobSchemaV13)),
-    "waveMeta"
+    "wave::v30::" + computeHash(JSON.stringify(PulseEarnJobSchemaV13)),
+    "waveMetaV30"
   ),
 
   waveField: {
-    wavelength: 24,
-    amplitude: 9,
-    phase: (24 + 9) % 16,
+    wavelength: 30,
+    amplitude: 11,
+    phase: (30 + 11) % 16,
     mode: "symbolic-wave"
   },
 
   presenceFieldSignatures: {
-    presenceVersionSignature: hashIntelligent("presence::v24::presenceVersion", "presence:version"),
-    presenceTierSignature: hashIntelligent("presence::v24::presenceTier", "presence:tier"),
-    bandPresenceSignature: hashIntelligent("presence::v24::bandPresence", "presence:band"),
-    routerPresenceSignature: hashIntelligent("presence::v24::routerPresence", "presence:router"),
-    devicePresenceSignature: hashIntelligent("presence::v24::devicePresence", "presence:device"),
-    meshPresenceSignature: hashIntelligent("presence::v24::meshPresence", "presence:mesh"),
-    castlePresenceSignature: hashIntelligent("presence::v24::castlePresence", "presence:castle"),
-    regionPresenceSignature: hashIntelligent("presence::v24::regionPresence", "presence:region"),
-    regionIdSignature: hashIntelligent("presence::v24::regionId", "presence:regionId"),
-    castleIdSignature: hashIntelligent("presence::v24::castleId", "presence:castleId"),
-    castleLoadLevelSignature: hashIntelligent("presence::v24::castleLoadLevel", "presence:castleLoad"),
-    meshStrengthSignature: hashIntelligent("presence::v24::meshStrength", "presence:meshStrength"),
-    meshPressureIndexSignature: hashIntelligent("presence::v24::meshPressureIndex", "presence:meshPressure"),
-    cycleSignature: hashIntelligent("presence::v24::cycle", "presence:cycle")
+    presenceVersionSignature: hashIntelligent("presence::v30::presenceVersion", "presence:versionV30"),
+    presenceEpochSignature: hashIntelligent("presence::v30::presenceEpoch", "presence:epochV30"),
+    presenceTierSignature: hashIntelligent("presence::v30::presenceTier", "presence:tierV30"),
+    bandPresenceSignature: hashIntelligent("presence::v30::bandPresence", "presence:bandV30"),
+    routerPresenceSignature: hashIntelligent("presence::v30::routerPresence", "presence:routerV30"),
+    devicePresenceSignature: hashIntelligent("presence::v30::devicePresence", "presence:deviceV30"),
+    meshPresenceSignature: hashIntelligent("presence::v30::meshPresence", "presence:meshV30"),
+    castlePresenceSignature: hashIntelligent("presence::v30::castlePresence", "presence:castleV30"),
+    regionPresenceSignature: hashIntelligent("presence::v30::regionPresence", "presence:regionV30"),
+    regionIdSignature: hashIntelligent("presence::v30::regionId", "presence:regionIdV30"),
+    castleIdSignature: hashIntelligent("presence::v30::castleId", "presence:castleIdV30"),
+    castleLoadLevelSignature: hashIntelligent("presence::v30::castleLoadLevel", "presence:castleLoadV30"),
+    meshStrengthSignature: hashIntelligent("presence::v30::meshStrength", "presence:meshStrengthV30"),
+    meshPressureIndexSignature: hashIntelligent("presence::v30::meshPressureIndex", "presence:meshPressureV30"),
+    cycleSignature: hashIntelligent("presence::v30::cycle", "presence:cycleV30")
   },
 
   advantageFieldSignatures: {
-    advantageVersionSignature: hashIntelligent("advantage::v24::version", "adv:version"),
-    advantageScoreSignature: hashIntelligent("advantage::v24::score", "adv:score"),
-    advantageTierSignature: hashIntelligent("advantage::v24::tier", "adv:tier"),
-    fallbackBandLevelSignature: hashIntelligent("advantage::v24::fallbackBandLevel", "adv:fallbackBandLevel")
+    advantageVersionSignature: hashIntelligent("advantage::v30::version", "adv:versionV30"),
+    advantageEpochSignature: hashIntelligent("advantage::v30::epoch", "adv:epochV30"),
+    advantageProfileSignature: hashIntelligent("advantage::v30::profile", "adv:profileV30"),
+    advantageScoreSignature: hashIntelligent("advantage::v30::score", "adv:scoreV30"),
+    advantageTierSignature: hashIntelligent("advantage::v30::tier", "adv:tierV30"),
+    fallbackBandLevelSignature: hashIntelligent("advantage::v30::fallbackBandLevel", "adv:fallbackBandLevelV30")
   },
 
   hintsFieldSignatures: {
-    fallbackBandLevelSignature: hashIntelligent("hints::v24::fallbackBandLevel", "hints:fallbackBandLevel"),
-    chunkHintsSignature: hashIntelligent("hints::v24::chunkHints", "hints:chunkHints"),
-    cacheHintsSignature: hashIntelligent("hints::v24::cacheHints", "hints:cacheHints"),
-    prewarmHintsSignature: hashIntelligent("hints::v24::prewarmHints", "hints:prewarmHints"),
-    coldStartHintsSignature: hashIntelligent("hints::v24::coldStartHints", "hints:coldStartHints")
+    fallbackBandLevelSignature: hashIntelligent("hints::v30::fallbackBandLevel", "hints:fallbackBandLevelV30"),
+    chunkHintsSignature: hashIntelligent("hints::v30::chunkHints", "hints:chunkHintsV30"),
+    cacheHintsSignature: hashIntelligent("hints::v30::cacheHints", "hints:cacheHintsV30"),
+    prewarmHintsSignature: hashIntelligent("hints::v30::prewarmHints", "hints:prewarmHintsV30"),
+    coldStartHintsSignature: hashIntelligent("hints::v30::coldStartHints", "hints:coldStartHintsV30")
   },
 
   computeProfileSignatures: {
-    computeProfileVersionSignature: hashIntelligent("cp::v24::version", "cp:version"),
-    routeBandSignature: hashIntelligent("cp::v24::routeBand", "cp:routeBand"),
-    cachePrioritySignature: hashIntelligent("cp::v24::cachePriority", "cp:cachePriority"),
-    prewarmNeededSignature: hashIntelligent("cp::v24::prewarmNeeded", "cp:prewarmNeeded"),
-    factoringSignalSignature: hashIntelligent("cp::v24::factoringSignal", "cp:factoring"),
-    deepJobCandidateSignature: hashIntelligent("cp::v24::deepJobCandidate", "cp:deepJob"),
-    multiInstanceHintSignature: hashIntelligent("cp::v24::multiInstanceHint", "cp:multiInstance")
+    computeProfileVersionSignature: hashIntelligent("cp::v30::version", "cp:versionV30"),
+    computeProfileEpochSignature: hashIntelligent("cp::v30::epoch", "cp:epochV30"),
+    routeBandSignature: hashIntelligent("cp::v30::routeBand", "cp:routeBandV30"),
+    cachePrioritySignature: hashIntelligent("cp::v30::cachePriority", "cp:cachePriorityV30"),
+    prewarmNeededSignature: hashIntelligent("cp::v30::prewarmNeeded", "cp:prewarmNeededV30"),
+    factoringSignalSignature: hashIntelligent("cp::v30::factoringSignal", "cp:factoringV30"),
+    deepJobCandidateSignature: hashIntelligent("cp::v30::deepJobCandidate", "cp:deepJobV30"),
+    multiInstanceHintSignature: hashIntelligent("cp::v30::multiInstanceHint", "cp:multiInstanceV30")
   },
 
   pulseIntelligenceSignatures: {
-    piVersionSignature: hashIntelligent("pi::v24::version", "pi:version"),
-    solvednessScoreSignature: hashIntelligent("pi::v24::solvednessScore", "pi:solvedness"),
-    computeTierSignature: hashIntelligent("pi::v24::computeTier", "pi:computeTier"),
-    readinessScoreSignature: hashIntelligent("pi::v24::readinessScore", "pi:readiness"),
-    bandSignature: hashIntelligent("pi::v24::band", "pi:band"),
-    advantageTierSignature: hashIntelligent("pi::v24::advantageTier", "pi:advTier"),
-    sizeSignature: hashIntelligent("pi::v24::size", "pi:size")
+    piVersionSignature: hashIntelligent("pi::v30::version", "pi:versionV30"),
+    piEpochSignature: hashIntelligent("pi::v30::epoch", "pi:epochV30"),
+    solvednessScoreSignature: hashIntelligent("pi::v30::solvednessScore", "pi:solvednessV30"),
+    computeTierSignature: hashIntelligent("pi::v30::computeTier", "pi:computeTierV30"),
+    readinessScoreSignature: hashIntelligent("pi::v30::readinessScore", "pi:readinessV30"),
+    bandSignature: hashIntelligent("pi::v30::band", "pi:bandV30"),
+    advantageTierSignature: hashIntelligent("pi::v30::advantageTier", "pi:advTierV30"),
+    sizeSignature: hashIntelligent("pi::v30::size", "pi:sizeV30")
   },
 
   fieldSignatures: {
-    id: hashIntelligent("v24::id:string", "field:id"),
-    marketplaceId: hashIntelligent("v24::marketplaceId:string", "field:marketplaceId"),
+    id: hashIntelligent("v30::id:string", "field:idV30"),
+    marketplaceId: hashIntelligent("v30::marketplaceId:string", "field:marketplaceIdV30"),
 
-    payout: hashIntelligent("v24::payout:number", "field:payout"),
-    cpuRequired: hashIntelligent("v24::cpuRequired:number", "field:cpuRequired"),
-    memoryRequired: hashIntelligent("v24::memoryRequired:number", "field:memoryRequired"),
-    estimatedSeconds: hashIntelligent("v24::estimatedSeconds:number", "field:estimatedSeconds"),
+    payout: hashIntelligent("v30::payout:number", "field:payoutV30"),
+    cpuRequired: hashIntelligent("v30::cpuRequired:number", "field:cpuRequiredV30"),
+    memoryRequired: hashIntelligent("v30::memoryRequired:number", "field:memoryRequiredV30"),
+    estimatedSeconds: hashIntelligent("v30::estimatedSeconds:number", "field:estimatedSecondsV30"),
 
-    minGpuScore: hashIntelligent("v24::minGpuScore:number", "field:minGpuScore"),
-    bandwidthNeededMbps: hashIntelligent("v24::bandwidthNeededMbps:number", "field:bandwidthNeededMbps"),
+    minGpuScore: hashIntelligent("v30::minGpuScore:number", "field:minGpuScoreV30"),
+    bandwidthNeededMbps: hashIntelligent("v30::bandwidthNeededMbps:number", "field:bandwidthNeededMbpsV30"),
 
-    _abaBand: hashIntelligent("v24::_abaBand:string", "field:_abaBand"),
-    _abaBinaryDensity: hashIntelligent("v24::_abaBinaryDensity:number", "field:_abaBinaryDensity"),
-    _abaWaveAmplitude: hashIntelligent("v24::_abaWaveAmplitude:number", "field:_abaWaveAmplitude"),
+    _abaBand: hashIntelligent("v30::_abaBand:string", "field:_abaBandV30"),
+    _abaBinaryDensity: hashIntelligent("v30::_abaBinaryDensity:number", "field:_abaBinaryDensityV30"),
+    _abaWaveAmplitude: hashIntelligent("v30::_abaWaveAmplitude:number", "field:_abaWaveAmplitudeV30"),
 
-    presenceField: hashIntelligent("v24::presenceField:PresenceFieldV13", "field:presenceField"),
-    advantageField: hashIntelligent("v24::advantageField:AdvantageFieldV13", "field:advantageField"),
-    chunkPlan: hashIntelligent("v24::chunkPlan:ChunkPrewarmPlanV13", "field:chunkPlan")
+    presenceField: hashIntelligent("v30::presenceField:PresenceFieldV13", "field:presenceFieldV30"),
+    advantageField: hashIntelligent("v30::advantageField:AdvantageFieldV13", "field:advantageFieldV30"),
+    chunkPlan: hashIntelligent("v30::chunkPlan:ChunkPrewarmPlanV13", "field:chunkPlanV30")
   }
 };
 
@@ -689,6 +695,13 @@ export const PulseEarnGenomeMetadata = {
 // Healing State Export
 // ============================================================================
 
-export function getPulseEarnGenomeHealingState() {
+export function getPulseEarnGenomeHealingStateV30() {
   return { ...genomeHealing };
 }
+
+export default {
+  PulseEarnJobSchemaV13,
+  buildPulseEarnGenomeConstitutionV30,
+  PulseEarnGenomeMetadataV30,
+  getPulseEarnGenomeHealingStateV30
+};

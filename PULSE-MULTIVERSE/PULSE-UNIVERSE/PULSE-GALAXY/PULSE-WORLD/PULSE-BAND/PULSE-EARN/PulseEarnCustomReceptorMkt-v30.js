@@ -1,27 +1,27 @@
 // ============================================================================
-// FILE: PulseEarnCustomReceptor-v24-Immortal-INTEL.js
-// LAYER: THE GENETIC REGULATOR (v24-Immortal-INTEL A‑B‑A)
-// (Deterministic Marketplace Interpreter + Receptor Builder + v24 Surfaces)
+// FILE: PulseEarnCustomReceptor-v30-Immortal-INTEL.js
+// LAYER: THE GENETIC REGULATOR (v30-Immortal-INTEL A‑B‑A)
+// (Deterministic Marketplace Interpreter + Receptor Builder + v30 Surfaces)
 // ============================================================================
 //
-// ROLE (v24-Immortal-INTEL A‑B‑A):
-//   THE GENETIC REGULATOR — deterministic marketplace interpreter for Earn v24.
+// ROLE (v30-Immortal-INTEL A‑B‑A):
+//   THE GENETIC REGULATOR — deterministic marketplace interpreter for Earn v30.
 //   • Reads receptor DNA from static deterministic config (no network).
-//   • Expresses that DNA into a functional v24 receptor phenotype.
+//   • Expresses that DNA into a functional v30 receptor phenotype.
 //   • Enforces the universal interface (ping, fetchJobs, submitResult, normalizeJob).
-//   • Emits v24 presence/advantage/chunk/computeProfile/pulseIntelligence surfaces.
+//   • Emits v30 presence/advantage/chunk/computeProfile/pulseIntelligence surfaces.
 //   • Emits A‑B‑A bandSignature + binaryField + waveField.
 //   • Fully factoring‑aware + prewarm/cache/chunk aware.
 //   • Continuance/risk/capabilityModel aware as metadata-only.
 //   • Pure, drift‑proof, zero user code, zero async.
 //
-// CONTRACT (v24-Immortal-INTEL):
+// CONTRACT (v30-Immortal-INTEL):
 //   • PURE RECEPTOR — deterministic, drift‑proof.
 //   • NO async, NO network, NO randomness, NO timestamps.
 //   • NO eval(), NO Function(), NO dynamic imports.
 //   • NEVER mutate job objects.
 //   • READ‑ONLY except deterministic DNA caching.
-//   • Unified Earn v24 presence/advantage/chunk/computeProfile/pulseIntelligence schema.
+//   • Unified Earn v30 presence/advantage/chunk/computeProfile/pulseIntelligence schema.
 //   • Dual-band A‑B‑A: symbolic primary, binary aware, metadata-only.
 // ============================================================================
 // 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
@@ -33,10 +33,6 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
-// 2 — EXPORT GENOME METADATA
-export const PulseEarnCustomReceptorMeta = Identity.OrganMeta;
-
 
 // ============================================================================
 // Deterministic Hash Helper
@@ -61,12 +57,12 @@ function clamp01(x) {
 }
 
 // ============================================================================
-// Deterministic Genetic DNA (v24 IMMORTAL)
+// Deterministic Genetic DNA (v30 IMMORTAL)
 // ============================================================================
 const DETERMINISTIC_RECEPTOR_DNA = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  version: "24-Immortal-INTEL",
+  version: "30-Immortal-INTEL",
   healthScore: 1.0,
 
   band: "symbolic", // symbolic | binary
@@ -79,7 +75,7 @@ const DETERMINISTIC_RECEPTOR_DNA = {
 
   headers: {},
 
-  lineage: "Receptor-GeneticRegulator-v24-Immortal-INTEL",
+  lineage: "Receptor-GeneticRegulator-v30-Immortal-INTEL",
   phenotype: "MarketplaceReceptor"
 };
 
@@ -102,7 +98,7 @@ function loadMarketplaceDNA() {
 }
 
 // ============================================================================
-// Presence v24 — Unified v24 Presence Field
+// Presence v30 — Unified v30 Presence Field
 // ============================================================================
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
@@ -134,7 +130,7 @@ function buildPresenceField(globalHints = {}, cycle) {
   const dna = loadMarketplaceDNA();
 
   return {
-    presenceVersion: "v24-Immortal-INTEL",
+    presenceVersion: "v30-Immortal-INTEL",
     presenceTier,
 
     bandPresence: ghP.bandPresence || normalizeBand(dna.band),
@@ -155,15 +151,21 @@ function buildPresenceField(globalHints = {}, cycle) {
     cycle,
 
     presenceSignature: computeHash(
-      `CUSTOM_PRESENCE_V24::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+      `CUSTOM_PRESENCE_V30::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
     )
   };
 }
 
 // ============================================================================
-// Advantage‑C v24 — Advantage Surfaces
+// Advantage‑C v30 — Advantage Surfaces
 // ============================================================================
-function buildAdvantageField(bandPack, presenceField, globalHints = {}, continuanceSnapshot = null, riskSnapshot = null) {
+function buildAdvantageField(
+  bandPack,
+  presenceField,
+  globalHints = {},
+  continuanceSnapshot = null,
+  riskSnapshot = null
+) {
   const density = bandPack.binaryField.binarySurface.density;
   const amplitude = bandPack.waveField.amplitude;
 
@@ -199,7 +201,7 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}, continua
   const fallbackBandLevel = globalHints.fallbackBandLevel ?? 0;
 
   return {
-    advantageVersion: "C-24.0-INTEL",
+    advantageVersion: "C-30.0-INTEL",
     advantageScore,
     advantageTier,
     fallbackBandLevel,
@@ -209,7 +211,7 @@ function buildAdvantageField(bandPack, presenceField, globalHints = {}, continua
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan v24 — Chunking Surfaces
+// Chunk / Cache / Prewarm Plan v30 — Chunking Surfaces
 // ============================================================================
 function buildChunkPrewarmPlan(presenceField, advantageField) {
   const basePriority =
@@ -231,7 +233,7 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
   const priority = basePriority + advantageBoost;
 
   return {
-    planVersion: "v24-CustomReceptor-AdvantageC-INTEL",
+    planVersion: "v30-CustomReceptor-AdvantageC-INTEL",
     priority,
     band: presenceField.presenceTier,
     chunks: {
@@ -250,7 +252,7 @@ function buildChunkPrewarmPlan(presenceField, advantageField) {
 }
 
 // ============================================================================
-// A‑B‑A Binary + Wave Surfaces (v24)
+// A‑B‑A Binary + Wave Surfaces (v30)
 // ============================================================================
 function buildBinaryField(dna, cycle) {
   const patternLen =
@@ -265,8 +267,8 @@ function buildBinaryField(dna, cycle) {
   const surface = density + patternLen;
 
   return {
-    binaryPhenotypeSignature: computeHash(`BCUSTOM_V24::${surface}`),
-    binarySurfaceSignature: computeHash(`BCUSTOM_SURF_V24::${surface}`),
+    binaryPhenotypeSignature: computeHash(`BCUSTOM_V30::${surface}`),
+    binarySurfaceSignature: computeHash(`BCUSTOM_SURF_V30::${surface}`),
     binarySurface: {
       patternLen,
       density,
@@ -293,7 +295,7 @@ function buildWaveField(dna, cycle, band) {
 }
 
 // ============================================================================
-// Hints + Compute Profile v24 — Metadata-only, Receptor-level
+// Hints + Compute Profile v30 — Metadata-only, Receptor-level
 // ============================================================================
 function buildHintsField(globalHints = {}) {
   return Object.freeze({
@@ -359,7 +361,7 @@ function buildComputeProfile({ band, globalHints = {}, presenceField, capability
 }
 
 // ============================================================================
-// Pulse Intelligence v24 for Custom Receptor — Logic-only
+// Pulse Intelligence v30 for Custom Receptor — Logic-only
 // ============================================================================
 function computePulseIntelligenceForMarket({ band, presenceField, advantageField, computeProfile }) {
   const bandIsBinary = band === "binary" ? 1 : 0;
@@ -422,30 +424,36 @@ function computePulseIntelligenceForMarket({ band, presenceField, advantageField
 // ============================================================================
 function buildReceptorSignature(dna) {
   return computeHash(
-    `RECEPTOR_V24::${dna.id}::${dna.version}::${normalizeBand(dna.band)}`
+    `RECEPTOR_V30::${dna.id}::${dna.version}::${normalizeBand(dna.band)}`
   );
 }
 
 function buildPingSignature(latency) {
-  return computeHash(`PING_V24::CUSTOM::${latency}`);
+  return computeHash(`PING_V30::CUSTOM::${latency}`);
 }
 
 function buildJobListSignature(count) {
-  return computeHash(`JOBS_V24::CUSTOM::${count}`);
+  return computeHash(`JOBS_V30::CUSTOM::${count}`);
 }
 
 function buildSubmissionSignature(jobId, status) {
-  return computeHash(`SUBMIT_V24::CUSTOM::${jobId}::${status}`);
+  return computeHash(`SUBMIT_V30::CUSTOM::${jobId}::${status}`);
 }
 
 function buildBandSignature(dna) {
-  return computeHash(`RECEPTOR_BAND_V24::${normalizeBand(dna.band)}::${dna.id}`);
+  return computeHash(`RECEPTOR_BAND_V30::${normalizeBand(dna.band)}::${dna.id}`);
 }
 
 // ============================================================================
-// normalizeJob — strict unified v24 job schema + v24 surfaces
+// normalizeJob — strict unified v30 job schema + v30 surfaces
 // ============================================================================
-function normalizeJob(raw, globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
+function normalizeJob(
+  raw,
+  globalHints = {},
+  continuanceSnapshot = null,
+  riskSnapshot = null,
+  capabilityModel = {}
+) {
   const dna = loadMarketplaceDNA();
 
   if (!raw || typeof raw !== "object") {
@@ -536,7 +544,7 @@ function normalizeJob(raw, globalHints = {}, continuanceSnapshot = null, riskSna
     _abaBinaryDensity: binaryField.binarySurface.density,
     _abaWaveAmplitude: waveField.amplitude,
 
-    // Unified v24 surfaces
+    // Unified v30 surfaces
     presenceField,
     advantageField,
     chunkPlan,
@@ -547,9 +555,14 @@ function normalizeJob(raw, globalHints = {}, continuanceSnapshot = null, riskSna
 
 // ============================================================================
 // Receptor Expression — ping(), fetchJobs(), submitResult()
-// Unified v24 presence/advantage/chunk/computeProfile/pulseIntelligence surfaces.
+// Unified v30 presence/advantage/chunk/computeProfile/pulseIntelligence surfaces.
 // ============================================================================
-function ping(globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
+function ping(
+  globalHints = {},
+  continuanceSnapshot = null,
+  riskSnapshot = null,
+  capabilityModel = {}
+) {
   customReceptorCycle++;
 
   const dna = loadMarketplaceDNA();
@@ -603,7 +616,12 @@ function ping(globalHints = {}, continuanceSnapshot = null, riskSnapshot = null,
   };
 }
 
-function fetchJobs(globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
+function fetchJobs(
+  globalHints = {},
+  continuanceSnapshot = null,
+  riskSnapshot = null,
+  capabilityModel = {}
+) {
   customReceptorCycle++;
 
   const dna = loadMarketplaceDNA();
@@ -656,7 +674,14 @@ function fetchJobs(globalHints = {}, continuanceSnapshot = null, riskSnapshot = 
   };
 }
 
-function submitResult(job, result, globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
+function submitResult(
+  job,
+  result,
+  globalHints = {},
+  continuanceSnapshot = null,
+  riskSnapshot = null,
+  capabilityModel = {}
+) {
   customReceptorCycle++;
 
   const dna = loadMarketplaceDNA();
@@ -727,13 +752,13 @@ function submitResult(job, result, globalHints = {}, continuanceSnapshot = null,
 }
 
 // ============================================================================
-// Export — The Genetic Regulator Organ (v24-Immortal-INTEL A‑B‑A)
+// Export — The Genetic Regulator Organ (v30-Immortal-INTEL A‑B‑A)
 // ============================================================================
 export const PulseEarnCustomReceptor = {
   id: "CUSTOM",
   name: "Custom Marketplace",
-  version: "24-Immortal-INTEL",
-  lineage: "Receptor-GeneticRegulator-v24-Immortal-INTEL",
+  version: "30-Immortal-INTEL",
+  lineage: "Receptor-GeneticRegulator-v30-Immortal-INTEL",
 
   receptorSignature: () => buildReceptorSignature(loadMarketplaceDNA()),
   bandSignature: () => buildBandSignature(loadMarketplaceDNA()),
@@ -748,6 +773,5 @@ export const PulseEarnCustomReceptor = {
 };
 
 export default {
-  PulseEarnCustomReceptorMeta,
   PulseEarnCustomReceptor
 };

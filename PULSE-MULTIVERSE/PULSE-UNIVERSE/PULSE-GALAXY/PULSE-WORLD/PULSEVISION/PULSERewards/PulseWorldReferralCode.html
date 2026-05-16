@@ -8,21 +8,20 @@
                minimum-scale=1,
                user-scalable=no">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="../PULSE-WORLD-TOUCH.js"></script>
-<!-- Backend Connector Layer -->
-<script type="module">
-/* 0. BOOT MEMBRANE — MUST BE FIRST */
-import * as PulseWindow from "../_CREATION_BARRIER/PULSE-WORLD-PORTAL.js";
+  <!-- 0. TOUCH — MUST LOAD FIRST -->
+<script type="module" src="../../../../../PULSE-WORLD-TOUCH.js"></script>
+<script type="module" src="../-_OUTERSENSES/PULSE-TOUCH-GATE.js"></script>
 
-</script>
 
+<!-- 1. PORTAL — FRONTEND MEMBRANE (MUST LOAD IMMEDIATELY AFTER TOUCH) -->
+<script type="module" src="../_CREATION_BARRIER/PULSE-WORLD-PORTAL.js"></script>
 <style>
 
   body {
       margin: 0;
       padding: 0;
       background: #000;
-      background-image: url('./_PICTURES/Mysterious.png');
+      background-image: url('../_PICTURES/Mysterious.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -100,7 +99,7 @@ log("🌞 Script loaded, attaching visibility listener…");
       }
     });
 
-    const returnTo = encodeURIComponent("/PulsePoints.html");
+    const returnTo = encodeURIComponent("/PulseWorldRewards.html");
     window.location.replace(`/PulseWorldBarrier.html?returnTo=${returnTo}`);
     throw new Error("No identity — redirecting to CheckEmail");
   }
