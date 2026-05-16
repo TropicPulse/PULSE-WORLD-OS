@@ -1,27 +1,20 @@
 // ============================================================================
-//  PulseEarnMuscleSystem-v24-Immortal-INTEL-Superior.js
-//  THE MUSCLE SYSTEM (v24-IMMORTAL-INTEL + Advantage‑M‑24++ + Triple Presence + Dual-Hash)
+//  PulseEarnMuscleSystem-v30-Immortal-INTEL-Superior.js
+//  THE MUSCLE SYSTEM (v30-IMMORTAL-INTEL + Advantage‑M‑30++ + Triple Presence
+//  + Dual-Hash + GPU/Lane-aware + Chunk/Pressure Surfaces)
 //  Deterministic Worker Supervisor + Profit Orchestrator
 //  Zero async, zero compute mutation, zero routing mutation
 //  IMMORTAL: presence/advantage/plan are descriptive-only, no hidden governors.
-//  24++: MuscleComputeProfile + MusclePressureProfile + Tri-Heart overlays
+//  30++: MuscleComputeProfile + MusclePressureProfile + Tri-Heart overlays
+//        + GPU lane awareness + band/binary/wave v30
 // ============================================================================
-
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
 
 import { fetchJobFromMarketplace } from "./PulseEarnNervousSystem-v24.js";
 import { submitMarketplaceResult } from "./PulseEarnLymphNodes-v24.js";
 import { getPulseEarnDeviceProfile } from "./PulseEarnSkeletalSystem-v24.js";
 
 // ============================================================================
-// Deterministic Hash + Dual-Hash Helper (v24-IMMORTAL-INTEL)
+// Deterministic Hash + Dual-Hash Helper (v30-IMMORTAL-INTEL)
 // ============================================================================
 
 function computeHash(str) {
@@ -44,16 +37,14 @@ function computeHashIntelligence(payload) {
   return `HINTEL_${h}`;
 }
 
-function buildDualHashSignature(label, intelPayload, classicString) {
+function buildDualHashSignature(label, intelPayload, classicString = "") {
   const intelBase = {
     label,
     intel: intelPayload || {},
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash,
@@ -66,8 +57,19 @@ function normalizeBand(b) {
   return x === "binary" ? "binary" : "symbolic";
 }
 
+function clamp01(v) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(1, n));
+}
+
+function safeNumber(v, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
 // ============================================================================
-// Healing Metadata — Muscle Memory Log (v24-IMMORTAL-INTEL-Superior)
+// Healing Metadata — Muscle Memory Log (v30-IMMORTAL-INTEL-Superior)
 // ============================================================================
 const engineHealing = {
   running: false,
@@ -96,7 +98,7 @@ const engineHealing = {
   lastBinaryField: null,
   lastWaveField: null,
 
-  // Triple Presence (v13 carried into v16 → v24++)
+  // Triple Presence (v30)
   lastPresencePreFetch: null,
   lastPresencePreExecute: null,
   lastPresencePostExecute: null,
@@ -109,11 +111,11 @@ const engineHealing = {
   lastChunkPlanPreExecute: null,
   lastChunkPlanPostExecute: null,
 
-  // 24++ overlays
+  // 30++ overlays
   lastMuscleComputeProfile: null,
   lastMusclePressureProfile: null,
 
-  // 24++ tri-heart overlays
+  // 30++ tri-heart overlays
   triHeartLiveness: null,
   triHeartAdvantage: null,
   triHeartSpeed: null,
@@ -123,69 +125,96 @@ const engineHealing = {
 let engineCycle = 0;
 
 // ============================================================================
-// Presence Field (v24-IMMORTAL-INTEL)
+// Presence Field (v30-IMMORTAL-INTEL)
 // Descriptive-only: tiers from simple structural counts, no perf scoring.
 // ============================================================================
 function buildPresenceField(job, device, cycleIndex) {
   const jobLen = (job?.id || "").length;
   const marketLen = (job?.marketplaceId || "").length;
   const stability = device?.stabilityScore ?? 0.7;
+  const gpuScore = safeNumber(device?.gpuScore ?? 0, 0);
+  const laneCount = safeNumber(device?.gpuLaneCount ?? 0, 0);
 
-  const magnitude = jobLen + marketLen;
+  const magnitude = jobLen + marketLen + Math.floor(gpuScore / 1000);
   let presenceTier = "presence_idle";
-  if (magnitude >= 40) presenceTier = "presence_high";
-  else if (magnitude >= 10) presenceTier = "presence_mid";
+  if (magnitude >= 60) presenceTier = "presence_high";
+  else if (magnitude >= 20) presenceTier = "presence_mid";
   else if (magnitude > 0) presenceTier = "presence_low";
 
   const payload = {
-    presenceVersion: "v24-IMMORTAL-INTEL",
+    presenceVersion: "v30-IMMORTAL-INTEL",
     presenceTier,
     jobLen,
     marketLen,
     stability,
+    gpuScore,
+    gpuLaneCount: laneCount,
     cycleIndex
   };
 
-  const sig = buildDualHashSignature("MUSCLE_PRESENCE_V24", payload, "");
+  const sig = buildDualHashSignature("MUSCLE_PRESENCE_V30", payload, "");
 
   return {
     ...payload,
     presenceSignaturePrimary: sig.primary,
-    presenceSignature: sig.primary
+    presenceSignature: sig.primary,
+    presenceIntelSignature: sig.intel
   };
 }
 
 // ============================================================================
-// Advantage‑M Field (v24-IMMORTAL-INTEL)
-// Structural-only: no advantageScore math, just descriptive fields.
+// Advantage‑M Field (v30-IMMORTAL-INTEL)
+// Structural-only: descriptive fields + GPU/binary/wave awareness.
 // ============================================================================
 function buildAdvantageField(job, device, bandPack, presenceField) {
-  const gpuScore = device?.gpuScore || 0;
-  const bandwidth = device?.bandwidthMbps || 0;
-  const density = bandPack.binaryField.density;
-  const amplitude = bandPack.waveField.amplitude;
+  const gpuScore = safeNumber(device?.gpuScore ?? 0, 0);
+  const bandwidth = safeNumber(device?.bandwidthMbps ?? 0, 0);
+  const laneCount = safeNumber(device?.gpuLaneCount ?? 0, 0);
+  const laneUtil = clamp01(device?.gpuLaneUtilization ?? 0);
+
+  const density = safeNumber(bandPack.binaryField.density ?? 0, 0);
+  const amplitude = safeNumber(bandPack.waveField.amplitude ?? 0, 0);
+
+  const structuralScore =
+    gpuScore * 0.0002 +
+    bandwidth * 0.0001 +
+    laneCount * 0.001 +
+    laneUtil * 0.05 +
+    density * 0.00001 +
+    amplitude * 0.00001;
+
+  const advantageTier =
+    structuralScore >= 0.08 ? 3 :
+    structuralScore >= 0.04 ? 2 :
+    structuralScore >= 0.01 ? 1 :
+    0;
 
   const payload = {
-    advantageVersion: "M-24.0",
+    advantageVersion: "M-30.0",
     band: bandPack.band,
     gpuScore,
     bandwidth,
+    gpuLaneCount: laneCount,
+    gpuLaneUtilization: laneUtil,
     binaryDensity: density,
     waveAmplitude: amplitude,
-    presenceTier: presenceField.presenceTier
+    presenceTier: presenceField.presenceTier,
+    structuralScore,
+    advantageTier
   };
 
-  const sig = buildDualHashSignature("MUSCLE_ADVANTAGE_V24", payload, "");
+  const sig = buildDualHashSignature("MUSCLE_ADVANTAGE_V30", payload, "");
 
   return {
     ...payload,
     advantageSignaturePrimary: sig.primary,
-    advantageSignature: sig.primary
+    advantageSignature: sig.primary,
+    advantageIntelSignature: sig.intel
   };
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan (v24 IMMORTAL-INTEL)
+// Chunk / Cache / Prewarm Plan (v30 IMMORTAL-INTEL)
 // Plan surface only; no hidden throttling or perf governors.
 // ============================================================================
 function buildChunkPrewarmPlan(job, device, presenceField) {
@@ -194,10 +223,22 @@ function buildChunkPrewarmPlan(job, device, presenceField) {
   else if (presenceField.presenceTier === "presence_mid") priorityLabel = "medium";
   else if (presenceField.presenceTier === "presence_low") priorityLabel = "low";
 
+  const gpuScore = safeNumber(device?.gpuScore ?? 0, 0);
+  const laneCount = safeNumber(device?.gpuLaneCount ?? 0, 0);
+
+  const chunkAggression =
+    gpuScore >= 8000 ? 1.0 :
+    gpuScore >= 4000 ? 0.7 :
+    gpuScore >= 1000 ? 0.4 :
+    0.2;
+
   const payload = {
-    planVersion: "v24.0-AdvantageM",
+    planVersion: "v30.0-AdvantageM",
     priorityLabel,
     bandPresence: presenceField.presenceTier,
+    chunkAggression,
+    gpuScore,
+    gpuLaneCount: laneCount,
     chunks: {
       jobEnvelope: true,
       metabolismBlueprint: true,
@@ -205,7 +246,8 @@ function buildChunkPrewarmPlan(job, device, presenceField) {
     },
     cache: {
       deviceProfile: true,
-      muscleDiagnostics: true
+      muscleDiagnostics: true,
+      gpuProfile: true
     },
     prewarm: {
       pulseSendSystem: presenceField.presenceTier !== "presence_idle",
@@ -214,51 +256,66 @@ function buildChunkPrewarmPlan(job, device, presenceField) {
     }
   };
 
-  const sig = buildDualHashSignature("MUSCLE_CHUNKPLAN_V24", payload, "");
+  const sig = buildDualHashSignature("MUSCLE_CHUNKPLAN_V30", payload, "");
 
   return {
     ...payload,
     chunkPlanSignaturePrimary: sig.primary,
-    chunkPlanSignature: sig.primary
+    chunkPlanSignature: sig.primary,
+    chunkPlanIntelSignature: sig.intel
   };
 }
 
 // ============================================================================
-// A-B-A Band/Binary/Wave (v24-IMMORTAL-INTEL)
+// A-B-A Band/Binary/Wave (v30-IMMORTAL-INTEL)
 // ============================================================================
-function buildEngineBandBinaryWave(job, result, cycleIndex) {
+function buildEngineBandBinaryWave(job, result, cycleIndex, device) {
   const band = normalizeBand(
     result?.band ||
     job?.band ||
     job?.meta?.band ||
+    device?.band ||
     "symbolic"
   );
   engineHealing.lastBand = band;
-  engineHealing.lastBandSignature = computeHash(`BAND::MUSCLE::${band}`);
+
+  const bandPayload = {
+    band,
+    cycleIndex,
+    jobId: job?.id || null,
+    marketplaceId: job?.marketplaceId || null
+  };
+  const bandSig = buildDualHashSignature("MUSCLE_BAND_V30", bandPayload, band);
+  engineHealing.lastBandSignature = bandSig.primary;
 
   const jobIdLength = (job?.id || "").length;
   const marketLength = (job?.marketplaceId || "").length;
-  const surface = jobIdLength + marketLength + cycleIndex;
+  const gpuScore = safeNumber(device?.gpuScore ?? 0, 0);
+  const laneCount = safeNumber(device?.gpuLaneCount ?? 0, 0);
+
+  const surface = jobIdLength + marketLength + cycleIndex + Math.floor(gpuScore / 1000) + laneCount;
 
   const binaryField = {
-    binaryEngineSignature: computeHash(`BENGINE::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_ENGINE::${surface}`),
+    binaryEngineSignature: computeHash(`BENGINE_V30::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_ENGINE_V30::${surface}`),
     binarySurface: {
       jobIdLength,
       marketLength,
+      gpuScore,
+      laneCount,
       cycle: cycleIndex,
       surface
     },
     parity: surface % 2 === 0 ? 0 : 1,
-    density: jobIdLength + marketLength,
+    density: jobIdLength + marketLength + laneCount,
     shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
   };
   engineHealing.lastBinaryField = binaryField;
 
   const waveField = {
-    amplitude: jobIdLength + marketLength,
-    wavelength: cycleIndex,
-    phase: (jobIdLength + cycleIndex) % 16,
+    amplitude: jobIdLength + marketLength + Math.floor(gpuScore / 1000),
+    wavelength: cycleIndex || 1,
+    phase: (jobIdLength + cycleIndex + laneCount) % 16,
     band,
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
@@ -268,26 +325,33 @@ function buildEngineBandBinaryWave(job, result, cycleIndex) {
 }
 
 // ============================================================================
-// Muscle Compute Profile + Pressure Profile + Tri-Heart (24++)
+// Muscle Compute Profile + Pressure Profile + Tri-Heart (30++)
 // ============================================================================
-function buildMuscleComputeProfile(device, bandPack) {
-  const gpuScore = device?.gpuScore || 0;
-  const bandwidth = device?.bandwidthMbps || 0;
+function buildMuscleComputeProfile(device, bandPack, advantageField) {
+  const gpuScore = safeNumber(device?.gpuScore ?? 0, 0);
+  const bandwidth = safeNumber(device?.bandwidthMbps ?? 0, 0);
+  const laneCount = safeNumber(device?.gpuLaneCount ?? 0, 0);
+  const laneUtil = clamp01(device?.gpuLaneUtilization ?? 0);
 
   const computeTier =
-    gpuScore >= 8000 ? "tier_ultra" :
-    gpuScore >= 4000 ? "tier_high" :
-    gpuScore >= 1000 ? "tier_mid" :
+    gpuScore >= 12000 ? "tier_ultra" :
+    gpuScore >= 8000  ? "tier_extreme" :
+    gpuScore >= 4000  ? "tier_high" :
+    gpuScore >= 1000  ? "tier_mid" :
     "tier_low";
 
   const profile = {
-    profileVersion: "MUSCLE-COMPUTE-24++",
+    profileVersion: "MUSCLE-COMPUTE-30++",
     routeBand: bandPack.band,
     gpuScore,
     bandwidthMbps: bandwidth,
+    gpuLaneCount: laneCount,
+    gpuLaneUtilization: laneUtil,
     computeTier,
     binaryDensity: bandPack.binaryField.density,
-    waveAmplitude: bandPack.waveField.amplitude
+    waveAmplitude: bandPack.waveField.amplitude,
+    advantageTier: advantageField.advantageTier,
+    structuralScore: advantageField.structuralScore
   };
 
   engineHealing.lastMuscleComputeProfile = profile;
@@ -299,49 +363,55 @@ function buildMusclePressureProfile(presenceField, advantageField) {
     (presenceField.jobLen || 0) +
     (presenceField.marketLen || 0) +
     (advantageField.binaryDensity || 0) +
-    (advantageField.waveAmplitude || 0);
+    (advantageField.waveAmplitude || 0) +
+    Math.floor((advantageField.structuralScore || 0) * 1000);
 
   let pressureTier = "pressure_idle";
-  if (magnitude >= 80) pressureTier = "pressure_critical";
-  else if (magnitude >= 40) pressureTier = "pressure_high";
-  else if (magnitude >= 15) pressureTier = "pressure_elevated";
+  if (magnitude >= 120) pressureTier = "pressure_critical";
+  else if (magnitude >= 60) pressureTier = "pressure_high";
+  else if (magnitude >= 25) pressureTier = "pressure_elevated";
   else if (magnitude > 0) pressureTier = "pressure_soft";
 
   const profile = {
-    profileVersion: "MUSCLE-PRESSURE-24++",
+    profileVersion: "MUSCLE-PRESSURE-30++",
     pressureTier,
     presenceTier: presenceField.presenceTier,
     jobLen: presenceField.jobLen || 0,
     marketLen: presenceField.marketLen || 0,
     binaryDensity: advantageField.binaryDensity || 0,
-    waveAmplitude: advantageField.waveAmplitude || 0
+    waveAmplitude: advantageField.waveAmplitude || 0,
+    structuralScore: advantageField.structuralScore || 0,
+    advantageTier: advantageField.advantageTier || 0
   };
 
   engineHealing.lastMusclePressureProfile = profile;
   return profile;
 }
 
-function buildTriHeartFields(presenceField, advantageField) {
+function buildTriHeartFields(presenceField, advantageField, computeProfile, pressureProfile) {
   const liveness = {
-    triHeartVersion: "MUSCLE-TRI-24++",
+    triHeartVersion: "MUSCLE-TRI-30++",
     alive: true,
-    presenceTier: presenceField.presenceTier
+    presenceTier: presenceField.presenceTier,
+    computeTier: computeProfile.computeTier
   };
 
   const advantage = {
-    triHeartVersion: "MUSCLE-TRI-24++",
+    triHeartVersion: "MUSCLE-TRI-30++",
     binaryDensity: advantageField.binaryDensity ?? 0,
-    waveAmplitude: advantageField.waveAmplitude ?? 0
+    waveAmplitude: advantageField.waveAmplitude ?? 0,
+    structuralScore: advantageField.structuralScore ?? 0,
+    advantageTier: advantageField.advantageTier ?? 0
   };
 
   const speed = {
-    triHeartVersion: "MUSCLE-TRI-24++",
-    contractionSpeedTier: presenceField.presenceTier,
+    triHeartVersion: "MUSCLE-TRI-30++",
+    contractionSpeedTier: pressureProfile.pressureTier,
     contractionContinuity: engineHealing.engineState === "running"
   };
 
   const presence = {
-    triHeartVersion: "MUSCLE-TRI-24++",
+    triHeartVersion: "MUSCLE-TRI-30++",
     presenceTier: presenceField.presenceTier
   };
 
@@ -354,7 +424,7 @@ function buildTriHeartFields(presenceField, advantageField) {
 }
 
 // ============================================================================
-// Signature Builders (v24 dual-hash surfaces)
+// Signature Builders (v30 dual-hash surfaces)
 // ============================================================================
 function buildEngineSignature() {
   const payload = {
@@ -362,7 +432,7 @@ function buildEngineSignature() {
     cycleCount: engineHealing.cycleCount,
     lastJobId: engineHealing.lastJob?.id || "NO_JOB"
   };
-  const sig = buildDualHashSignature("ENGINE_V24", payload, "");
+  const sig = buildDualHashSignature("ENGINE_V30", payload, "");
   return { combined: sig.primary };
 }
 
@@ -371,7 +441,7 @@ function buildJobSignature(job) {
     jobId: job?.id || null,
     marketplaceId: job?.marketplaceId || null
   };
-  const sig = buildDualHashSignature("JOB_V24", payload, "");
+  const sig = buildDualHashSignature("JOB_V30", payload, "");
   return { combined: sig.primary };
 }
 
@@ -384,7 +454,7 @@ function buildResultSignature(job, result) {
     jobId: job?.id || null,
     success
   };
-  const sig = buildDualHashSignature("RESULT_V24", payload, "");
+  const sig = buildDualHashSignature("RESULT_V30", payload, "");
   return { combined: sig.primary };
 }
 
@@ -393,19 +463,19 @@ function buildSubmissionSignature(job, submission) {
     jobId: job?.id || null,
     submissionOk: submission?.ok ?? null
   };
-  const sig = buildDualHashSignature("SUBMISSION_V24", payload, "");
+  const sig = buildDualHashSignature("SUBMISSION_V30", payload, "");
   return { combined: sig.primary };
 }
 
 // ============================================================================
-// FACTORY — createEarnEngine (v24-IMMORTAL-INTEL-Superior)
+// FACTORY — createEarnEngine (v30-IMMORTAL-INTEL-Superior)
 // ============================================================================
 export function createEarnEngine({
   pulseSendSystem,
   log = console.log
 } = {}) {
   if (!pulseSendSystem || typeof pulseSendSystem.compute !== "function") {
-    throw new Error("[EarnEngine-v24-IMMORTAL-INTEL] pulseSendSystem.compute(job, ctx) required.");
+    throw new Error("[EarnEngine-v30-IMMORTAL-INTEL] pulseSendSystem.compute(job, ctx) required.");
   }
 
   const engine = {
@@ -444,7 +514,7 @@ export function createEarnEngine({
 
     // -----------------------------------------------------------------------
     // cycle() — ONE deterministic contraction cycle (TRIPLE PRESENCE + dual-hash)
-    // -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
     cycle() {
       if (!engineHealing.running) return null;
 
@@ -490,12 +560,12 @@ export function createEarnEngine({
         // ============================================================
         const deviceB = getPulseEarnDeviceProfile();
         const preExecutePresence = buildPresenceField(job, deviceB, engineHealing.cycleCount);
-        const preExecuteBandPack = buildEngineBandBinaryWave(job, null, engineHealing.cycleCount);
+        const preExecuteBandPack = buildEngineBandBinaryWave(job, null, engineHealing.cycleCount, deviceB);
         const preExecuteAdvantage = buildAdvantageField(job, deviceB, preExecuteBandPack, preExecutePresence);
         const preExecuteChunk = buildChunkPrewarmPlan(job, deviceB, preExecutePresence);
-        const preExecuteCompute = buildMuscleComputeProfile(deviceB, preExecuteBandPack);
+        const preExecuteCompute = buildMuscleComputeProfile(deviceB, preExecuteBandPack, preExecuteAdvantage);
         const preExecutePressure = buildMusclePressureProfile(preExecutePresence, preExecuteAdvantage);
-        const preExecuteTriHeart = buildTriHeartFields(preExecutePresence, preExecuteAdvantage);
+        const preExecuteTriHeart = buildTriHeartFields(preExecutePresence, preExecuteAdvantage, preExecuteCompute, preExecutePressure);
 
         engineHealing.lastPresencePreExecute = preExecutePresence;
         engineHealing.lastAdvantagePreExecute = preExecuteAdvantage;
@@ -513,7 +583,7 @@ export function createEarnEngine({
         const resultSig = buildResultSignature(job, result);
         engineHealing.lastResultSignature = resultSig.combined;
 
-        const postExecuteBandPack = buildEngineBandBinaryWave(job, result, engineHealing.cycleCount);
+        const postExecuteBandPack = buildEngineBandBinaryWave(job, result, engineHealing.cycleCount, deviceB);
 
         // ============================================================
         // 4. POST-EXECUTE PRESENCE (deviceProfile B reused)
@@ -521,9 +591,9 @@ export function createEarnEngine({
         const postExecutePresence = buildPresenceField(job, deviceB, engineHealing.cycleCount);
         const postExecuteAdvantage = buildAdvantageField(job, deviceB, postExecuteBandPack, postExecutePresence);
         const postExecuteChunk = buildChunkPrewarmPlan(job, deviceB, postExecutePresence);
-        const postExecuteCompute = buildMuscleComputeProfile(deviceB, postExecuteBandPack);
+        const postExecuteCompute = buildMuscleComputeProfile(deviceB, postExecuteBandPack, postExecuteAdvantage);
         const postExecutePressure = buildMusclePressureProfile(postExecutePresence, postExecuteAdvantage);
-        const postExecuteTriHeart = buildTriHeartFields(postExecutePresence, postExecuteAdvantage);
+        const postExecuteTriHeart = buildTriHeartFields(postExecutePresence, postExecuteAdvantage, postExecuteCompute, postExecutePressure);
 
         engineHealing.lastPresencePostExecute = postExecutePresence;
         engineHealing.lastAdvantagePostExecute = postExecuteAdvantage;
@@ -563,7 +633,7 @@ export function createEarnEngine({
           chunkPrewarmPreExecute: preExecuteChunk,
           chunkPrewarmPostExecute: postExecuteChunk,
 
-          // 24++ compute/pressure/tri-heart (post-execute surfaces returned)
+          // 30++ compute/pressure/tri-heart (post-execute surfaces returned)
           muscleComputeProfile: postExecuteCompute,
           musclePressureProfile: postExecutePressure,
           triHeartLivenessField: postExecuteTriHeart.liveness,
@@ -581,14 +651,14 @@ export function createEarnEngine({
         };
 
       } catch (err) {
-        engineHealing.lastError = err.message;
+        engineHealing.lastError = err && err.message ? err.message : String(err);
         return null;
       }
     },
 
     // -----------------------------------------------------------------------
     // diagnostics()
-    // -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
     diagnostics() {
       return {
         engineState: engineHealing.engineState,
@@ -623,7 +693,7 @@ export function createEarnEngine({
         chunkPrewarmPreExecute: engineHealing.lastChunkPlanPreExecute,
         chunkPrewarmPostExecute: engineHealing.lastChunkPlanPostExecute,
 
-        // 24++ overlays
+        // 30++ overlays
         muscleComputeProfile: engineHealing.lastMuscleComputeProfile,
         musclePressureProfile: engineHealing.lastMusclePressureProfile,
         triHeartLivenessField: engineHealing.triHeartLiveness,

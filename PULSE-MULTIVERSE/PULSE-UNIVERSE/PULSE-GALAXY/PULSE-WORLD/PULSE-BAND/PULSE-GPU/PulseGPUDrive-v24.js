@@ -1,4 +1,4 @@
-/* global log,warn,error */
+
 // ============================================================================
 // FILE: PULSE-UNIVERSE/PULSE-GPU/PulseGPUDrive-v24.js
 // LAYER: MOMENTUM NETWORK — GPU RUNTIME (BRAIN → ENGINE FLOW)
@@ -27,7 +27,17 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
+import {
+  VitalsLogger as logger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 
 // ============================================================================
 // IMPORTS — GPU BRAIN + CI + ADVANTAGE ORGANS

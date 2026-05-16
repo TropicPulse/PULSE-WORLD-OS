@@ -23,7 +23,7 @@
 //   • NO IDENTITY ANCHORS (uid, resendToken, etc.) in outputs.
 // ============================================================================
 
-import { getOrganismSnapshot } from "./aiDeps-v24.js";
+import { getOrganismSnapshot } from "./PulseAIDeps-v24.js";
 
 // ---------------------------------------------------------------------------
 // META

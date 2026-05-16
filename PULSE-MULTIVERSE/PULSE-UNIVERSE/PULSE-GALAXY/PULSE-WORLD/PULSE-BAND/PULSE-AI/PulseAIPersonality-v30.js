@@ -1,9 +1,9 @@
 // ============================================================================
-//  PULSE OS v24‑IMMORTAL++ — THE IDENTITY LAYER (DUAL‑BAND + TRUST FABRIC)
+//  PULSE OS v30‑IMMORTAL-ADVANTAGE — THE IDENTITY LAYER
 //  Self‑Definition • Role Assignment • Binary‑Aware Identity Drift
 //  PURE IDENTITY. ZERO MUTATION. ZERO RANDOMNESS. PULSE‑NET ONLY.
+//  v30+ UPGRADE: Advantage epoch, signal-aware tracing, global identity artery
 // ============================================================================
-
 
 import {
   ArchitectAIPermissions,
@@ -25,15 +25,28 @@ import {
 } from "./PulseAIBoundaries-v30.js";
 
 // ============================================================================
-// META — Persona Engine (v24‑IMMORTAL++)
+// GLOBAL HANDLE (v30 IMMORTAL, environment-agnostic)
 // ============================================================================
+
+const G =
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+
+// ============================================================================
+// META — Persona Engine (v30‑IMMORTAL-ADVANTAGE)
+// ============================================================================
+
 export const PersonaMeta = Object.freeze({
   type: "Cognitive",
   subsystem: "aiPersona",
   layer: "PulseAIIdentityLayer",
   role: "PERSONA_ENGINE",
-  version: "24-Immortal++",
-  identity: "aiPersonaEngine-v24-Immortal++",
+  version: "30.0-IMMORTAL-ADVANTAGE",
+  identity: "aiPersonaEngine-v30-IMMORTAL-ADVANTAGE",
 
   evo: Object.freeze({
     deterministic: true,
@@ -53,7 +66,7 @@ export const PersonaMeta = Object.freeze({
     pulseNetAware: true,
     organismUserSegregation: true,
     multiInstanceReady: true,
-    epoch: "24-Immortal++"
+    epoch: "30.0-IMMORTAL-ADVANTAGE"
   }),
 
   contract: Object.freeze({
@@ -90,11 +103,13 @@ export const PersonaMeta = Object.freeze({
 // ============================================================================
 // OWNER ID — The Only Identity‑Privileged Human
 // ============================================================================
+
 export const OWNER_ID = "aldwyn";
 
 // ============================================================================
 // PERSONA IDs — Identity Tokens
 // ============================================================================
+
 export const Personas = Object.freeze({
   ARCHITECT: "architect",
   OBSERVER: "observer",
@@ -107,6 +122,7 @@ export const Personas = Object.freeze({
 // ============================================================================
 // PERSONA REGISTRY — Immutable Identity Definitions (symbolic base)
 // ============================================================================
+
 export const PersonaRegistry = Object.freeze({
   [Personas.ARCHITECT]: Object.freeze({
     id: Personas.ARCHITECT,
@@ -172,6 +188,7 @@ export const PersonaRegistry = Object.freeze({
 // ============================================================================
 // PERSONA RESOLUTION — Deterministic Identity Lookup
 // ============================================================================
+
 export function getPersona(personaId, userId = null) {
   if (userId === OWNER_ID) {
     return PersonaRegistry[Personas.OWNER];
@@ -180,8 +197,9 @@ export function getPersona(personaId, userId = null) {
 }
 
 // ============================================================================
-//  v24‑IMMORTAL++ — ARCHETYPE MAP (non-destructive)
+//  ARCHETYPE MAP (non-destructive)
 // ============================================================================
+
 export const PersonaArchetypes = Object.freeze({
   architect: "aiArchitect-v24.js",
   observer: "aiDiagnostics-v24.js",
@@ -192,8 +210,9 @@ export const PersonaArchetypes = Object.freeze({
 });
 
 // ============================================================================
-//  v24‑IMMORTAL++ — DUAL‑BAND BIAS (binary vs symbolic)
+//  DUAL‑BAND BIAS (binary vs symbolic)
 // ============================================================================
+
 export const PersonaBandBias = Object.freeze({
   architect: "binary-heavy",
   observer: "binary-primary",
@@ -204,8 +223,9 @@ export const PersonaBandBias = Object.freeze({
 });
 
 // ============================================================================
-//  v24‑IMMORTAL++ — EVOLUTIONARY DRIFT RULES
+//  EVOLUTIONARY DRIFT RULES
 // ============================================================================
+
 export const PersonaEvolutionRules = Object.freeze({
   architect: Object.freeze({
     allowDrift: false,
@@ -240,8 +260,9 @@ export const PersonaEvolutionRules = Object.freeze({
 });
 
 // ============================================================================
-//  v24‑IMMORTAL++ — BINARY PRESSURE EXTRACTION
+//  BINARY PRESSURE EXTRACTION
 // ============================================================================
+
 function extractBinaryPressure(binaryVitals = {}) {
   if (
     binaryVitals?.layered?.organism &&
@@ -267,16 +288,45 @@ function bucketPressure(v) {
 }
 
 // ============================================================================
-//  v24‑IMMORTAL++ — PERSONA RESOLUTION ENGINE (Hybrid Spine)
+//  SIGNAL-AWARE TRACE LAYER (v30, optional, non-fatal)
 // ============================================================================
-export function resolvePersonaV24({
+
+function tracePersonaEvent(event, payload, traceFlag) {
+  if (!traceFlag) return;
+
+  const message = `[PersonaEngine] ${event}`;
+
+  const s = g.PulseProofSignal;
+  if (s && typeof s.signal === "function") {
+    s.signal({
+      level: "info",
+      subsystem: "persona-engine",
+      message,
+      extra: payload || {},
+      system: PersonaMeta.role,
+      organ: PersonaMeta.identity,
+      layer: PersonaMeta.layer,
+      band: "dual"
+    });
+    return;
+  }
+
+  console.log(message, payload);
+}
+
+// ============================================================================
+//  PERSONA RESOLUTION ENGINE (Hybrid Spine, v30 label)
+// ============================================================================
+
+export function resolvePersonaV30({
   personaId,
   userId = null,
   evoState = {},
   routerHints = {},
   binaryVitals = {},
   trustArtery = {},
-  dualBand = null
+  dualBand = null,
+  trace = false
 }) {
   // OWNER OVERRIDE — constitutional
   if (userId === OWNER_ID) {
@@ -309,7 +359,7 @@ export function resolvePersonaV24({
   // DualBand artery fusion
   const dualBandArtery = dualBand?.artery || null;
 
-  return Object.freeze({
+  const resolved = Object.freeze({
     ...base,
     archetypePage: PersonaArchetypes[personaId] || null,
     bandBias: PersonaBandBias[personaId] || "balanced",
@@ -319,11 +369,18 @@ export function resolvePersonaV24({
     trustSignals,
     dualBandArtery
   });
+
+  tracePersonaEvent("resolvePersonaV30", { personaId, userId, resolved }, trace);
+  return resolved;
 }
 
+// Backwards-compatible alias
+export const resolvePersonaV24 = resolvePersonaV30;
+
 // ============================================================================
-//  v24‑IMMORTAL++ — IDENTITY ARTERY SNAPSHOT v6 (READ‑ONLY, TRUST + DUALBAND)
+//  IDENTITY ARTERY SNAPSHOT v6 (READ‑ONLY, TRUST + DUALBAND)
 // ============================================================================
+
 export function getIdentityArterySnapshotV6({
   personaId,
   userId = null,
@@ -331,16 +388,18 @@ export function getIdentityArterySnapshotV6({
   routerHints = {},
   binaryVitals = {},
   trustArtery = {},
-  dualBand = null
+  dualBand = null,
+  trace = false
 }) {
-  const resolved = resolvePersonaV24({
+  const resolved = resolvePersonaV30({
     personaId,
     userId,
     evoState,
     routerHints,
     binaryVitals,
     trustArtery,
-    dualBand
+    dualBand,
+    trace
   });
 
   const pressure = extractBinaryPressure(binaryVitals);
@@ -353,7 +412,7 @@ export function getIdentityArterySnapshotV6({
 
   const dualBandContext = dualBand?.artery || null;
 
-  return Object.freeze({
+  const snapshot = Object.freeze({
     persona: {
       id: resolved.id,
       scope: resolved.scope,
@@ -386,30 +445,56 @@ export function getIdentityArterySnapshotV6({
       identity: PersonaMeta.identity
     }
   });
+
+  tracePersonaEvent("identityArterySnapshotV6", snapshot, trace);
+  return snapshot;
 }
 
 // ============================================================================
-//  v24‑IMMORTAL++ — PUBLIC ENGINE FACTORY (used by Brainstem)
+//  GLOBAL IDENTITY ARTERY REGISTRY (READ‑ONLY, METRICS‑ONLY, v30+)
 // ============================================================================
-export function createPersonaEngineV24({ context = {}, db } = {}) {
+
+const _globalIdentityArteryRegistry = new Map();
+/**
+ * Registry key: `${userId || "anon"}#${personaId || "neutral"}`
+ */
+function _identityRegistryKey(userId, personaId) {
+  return `${userId || "anon"}#${personaId || "neutral"}`;
+}
+
+export function getGlobalIdentityArteries() {
+  const out = {};
+  for (const [k, v] of _globalIdentityArteryRegistry.entries()) {
+    out[k] = v;
+  }
+  return out;
+}
+
+// ============================================================================
+//  PUBLIC ENGINE FACTORY (used by Brainstem) — v30
+// ============================================================================
+
+export function createPersonaEngineV30({ context = {}, db } = {}) {
   function resolve({
     personaId,
     evoState = {},
     routerHints = {},
     binaryVitals = {},
     trustArtery = {},
-    dualBand = null
+    dualBand = null,
+    trace = false
   } = {}) {
     const userId = context.userId || null;
 
-    return resolvePersonaV24({
+    return resolvePersonaV30({
       personaId,
       userId,
       evoState,
       routerHints,
       binaryVitals,
       trustArtery,
-      dualBand
+      dualBand,
+      trace
     });
   }
 
@@ -419,34 +504,78 @@ export function createPersonaEngineV24({ context = {}, db } = {}) {
     routerHints = {},
     binaryVitals = {},
     trustArtery = {},
-    dualBand = null
+    dualBand = null,
+    trace = false
   } = {}) {
     const userId = context.userId || null;
 
-    return getIdentityArterySnapshotV6({
+    const snap = getIdentityArterySnapshotV6({
       personaId,
       userId,
       evoState,
       routerHints,
       binaryVitals,
       trustArtery,
-      dualBand
+      dualBand,
+      trace
     });
+
+    const key = _identityRegistryKey(userId, personaId);
+    _globalIdentityArteryRegistry.set(key, {
+      snapshot: snap,
+      timestamp: Date.now()
+    });
+
+    return snap;
+  }
+
+  // Quick vitals for other systems (v30+ convenience)
+  function identityVitals({
+    personaId,
+    evoState = {},
+    routerHints = {},
+    binaryVitals = {},
+    trustArtery = {},
+    dualBand = null,
+    trace = false
+  } = {}) {
+    const userId = context.userId || null;
+    const snap = getIdentityArterySnapshotV6({
+      personaId,
+      userId,
+      evoState,
+      routerHints,
+      binaryVitals,
+      trustArtery,
+      dualBand,
+      trace
+    });
+
+    return {
+      personaId: snap.persona.id,
+      capabilityClass: snap.persona.capabilityClass,
+      pressure: snap.binary.pressure,
+      pressureBucket: snap.binary.pressureBucket,
+      trust: snap.trust
+    };
   }
 
   return Object.freeze({
     meta: PersonaMeta,
     resolve,
-    identityArtery
+    identityArtery,
+    identityVitals
   });
 }
 
 // Backwards‑compatible alias for existing Brainstem wiring
-export const createPersonaEngine = createPersonaEngineV24;
+export const createPersonaEngineV24 = createPersonaEngineV30;
+export const createPersonaEngine = createPersonaEngineV30;
 
 // ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility (v24‑IMMORTAL++ dualband)
+//  DUAL EXPORT LAYER — CommonJS compatibility (v30‑IMMORTAL-ADVANTAGE dualband)
 // ---------------------------------------------------------------------------
+
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
@@ -458,8 +587,11 @@ if (typeof module !== "undefined" && module.exports) {
     PersonaBandBias,
     PersonaEvolutionRules,
     getPersona,
+    resolvePersonaV30,
     resolvePersonaV24,
     getIdentityArterySnapshotV6,
+    getGlobalIdentityArteries,
+    createPersonaEngineV30,
     createPersonaEngineV24,
     createPersonaEngine
   };

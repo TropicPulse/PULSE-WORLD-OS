@@ -1,4 +1,4 @@
-/* global window, navigator */
+
 /* 
 @PULSE_IMMORTAL_REQUIRE_FULL_META
 This organ requires FULL IMMORTAL++ metadata on every upgrade:

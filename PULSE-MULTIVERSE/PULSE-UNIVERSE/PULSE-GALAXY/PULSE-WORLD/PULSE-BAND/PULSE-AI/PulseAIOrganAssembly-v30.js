@@ -44,35 +44,35 @@ import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v30.js"
 import pulseAIChunker from "./PulseAIChunker-v30.js";
 import createPulseFileScanner from "./PulseAIFileScanner-v30.js";
 
-import { createArchitectAPI } from "./aiArchitect-v30.js";
+import { createArchitectAPI } from "./PulseAIArchitect-v30.js";
 import { createTouristAPI, prewarmTourist } from "./PulseAITourist-v24.js";
 
-import { createEnvironmentAPI } from "./aiEnvironment-v24.js";
+import { createEnvironmentAPI } from "./PulseAIEnvironment-v24.js";
 import { createPowerAPI } from "./PulseAIPowerPrime-v24.js";
-import { createEvolutionAPI } from "./aiEvolution-v24.js";
-import { createEarnAPI } from "./aiEarn-v30.js";
-import { createDiagnosticsWriteAPI } from "./aiDiagnosticsWrite-v24.js";
+import { createEvolutionAPI } from "./PulseAIEvolution-v24.js";
+import { createEarnAPI } from "./PulseAIEarn-v30.js";
+import { createDiagnosticsWriteAPI } from "./PulseAIDiagnosticsWrite-v24.js";
 
 import { createPersonaEngine } from "./PulseAIPersonality-v24.js";
-import { createBoundariesEngine } from "./aiBoundaries-v30.js";
+import { createBoundariesEngine } from "./PulseAIBoundaries-v30.js";
 import { createPermissionsEngine } from "./PulseAIPermissions-v24.js";
 import { createRouterEngine } from "./PulseAIRouter-v30.js";
-import { createCortex } from "./aiCortex-v24.js";
+import { createCortex } from "./PulseAICortex-v24.js";
 
-import { createDualBandOrganism } from "./aiDualBand-v30.js";
+import { createDualBandOrganism } from "./PulseAIDualBand-v30.js";
 
 // Non-binary symbolic organs
-import { createDoctorAPI } from "./aiDoctorAssistant-v24.js";
+import { createDoctorAPI } from "./PulseAIDoctorAssistant-v24.js";
 import { createSurgeonAPI } from "./PulseAISurgeon-v24.js";
-import { createLawyerAPI } from "./aiLawAssistant-v24.js";
-import { createEntrepreneurAPI } from "./aiEntrepreneur-v24.js";
+import { createLawyerAPI } from "./PulseAILawAssistant-v24.js";
+import { createEntrepreneurAPI } from "./PulseAIEntrepreneur-v24.js";
 import { createVeterinarianAPI } from "./PulseAIVeterinarian-v24.js";
-import { createClinicianAPI } from "./aiClinician-v30.js";
-import { createEvolutionaryAPI } from "./aiEvolutionary-v24.js";
+import { createClinicianAPI } from "./PulseAIClinician-v30.js";
+import { createEvolutionaryAPI } from "./PulseAIEvolutionary-v24.js";
 
 // (Future trust / jury / evidence surfaces)
 import { createSafetyFrameOrgan } from "./PulseAISafetyFrame-v30.js";
-import { createJuryFrame } from "./aiJuryFrame-v24.js";
+import { createJuryFrame } from "./PulseAIJuryFrame-v24.js";
 
 // ============================================================================
 //  INTERNAL HELPERS — Pulse‑Net + Chunker lanes

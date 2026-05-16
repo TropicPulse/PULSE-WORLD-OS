@@ -1,4 +1,4 @@
-/* global log,warn */
+
 // ============================================================================
 // FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUSettingsRestorer-v24.js
 // PULSE GPU SETTINGS RESTORER v24-Immortal++

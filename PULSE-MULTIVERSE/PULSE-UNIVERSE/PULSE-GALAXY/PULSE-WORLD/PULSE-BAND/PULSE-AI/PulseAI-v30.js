@@ -6,16 +6,16 @@
 // ============================================================================
 
 import { AIBinaryAgent } from "./PulseAIBinaryAgent-v30.js";
-import { AIMemory } from "./aiMemory-v24.js";
+import { AIMemory } from "./PulseAIMemory-v24.js";
 
 import { AIAnatomy as AIBinaryAnatomy } from "./PulseAIAnatomy-v30.js";
-import { AIBinaryGenome } from "./aiGenome-v30.js";
+import { AIBinaryGenome } from "./PulseAIGenome-v30.js";
 import { AIBinaryVitals } from "./PulseAIVitals-v24.js";
-import { AIBinaryMetabolism } from "./aiMetabolism-v24.js";
-import { AIBinaryHormones } from "./aiHormones-v30.js";
+import { AIBinaryMetabolism } from "./PulseAIMetabolism-v24.js";
+import { AIBinaryHormones } from "./PulseAIHormones-v30.js";
 import { AIBinarySentience } from "./PulseAISentience-v30.js";
-import { AIBinaryConsciousness } from "./aiConsciousness-v30.js";
-import { AIBinaryImmunity } from "./aiImmunity-v24.js";
+import { AIBinaryConsciousness } from "./PulseAIConsciousness-v30.js";
+import { AIBinaryImmunity } from "./PulseAIImmunity-v24.js";
 import { AIBinaryPipeline } from "./PulseAIPipeline-v30.js";
 import { AIBinaryReflex } from "./PulseAIReflex-v30.js";
 import { AIBinaryScheduler } from "./PulseAIScheduler-v30.js";

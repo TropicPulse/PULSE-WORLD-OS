@@ -38,7 +38,7 @@
 // IMPORTS — Mom / Dad / Baby Hearts (backend-only, safe)
 // ============================================================================
 import * as heartbeat from "../../PULSE-WORLD-MULTIVERSE/PULSE-WORLD-NETLIFY/PULSE-WORLD-HEARTBEAT.js";
-import * as aiHeartbeat from "../PULSE-AI/aiHeartbeat-v24.js";
+import * as aiHeartbeat from "../PULSE-AI/PulseAIHeartbeat-v24.js";
 import {
   pulseEarnFromHeartbeat,
   getPulseEarnHeartHealingState

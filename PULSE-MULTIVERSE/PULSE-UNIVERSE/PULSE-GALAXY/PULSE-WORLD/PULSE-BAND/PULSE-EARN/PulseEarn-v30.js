@@ -1,15 +1,16 @@
 // ============================================================================
-//  PulseEarn-v24.0-Immortal-Earn-Core-GPU.js — Earn Organism v24
-//  IMMORTAL UPGRADE of v16.0-Presence-Immortal-GPU-INTEL:
+//  PulseEarn-v30.0-Immortal-Earn-Core-GPU.js — Earn Organism v30++
+//  IMMORTAL UPGRADE of v24.0-Immortal-Earn-Core-GPU:
 //  - dual-band (symbolic + binary) — executionContext-aware
-//  - evolution surfaces — advantage-field v24, pressure + mode + presence
+//  - evolution surfaces — advantage-field v30, pressure + mode + presence
 //  - presence / mesh / castle / expansion / server / globalHints-aware
 //  - chunk / cache / prewarm / warm-path / cold-path / factoring-aware
 //  - GPU advantage baked in (lanes, tiers, reuse, prewarm plans, binary field)
 //  - per-page compute intelligence + memory surfaces + earn-field integration
+//  - v30++: richer intelligence surfaces, extended pressure fields, cohort trust
 // ============================================================================
 //
-//  SAFETY CONTRACT (v24.0-Immortal-Earn-Core-GPU):
+//  SAFETY CONTRACT (v30.0-Immortal-Earn-Core-GPU):
 //  ------------------------------------------------
 //  • No randomness.
 //  • No real-time clocks in math (timestamps only allowed in external telemetry).
@@ -23,8 +24,8 @@
 //  • No network, no filesystem, no DOM, no GPU calls from this organ.
 // ============================================================================
 // ============================================================================
-// FILE: PULSE-UNIVERSE/PULSE-DESIGN/translator-v17.js
-// LAYER: THE ARCHITECT (v17 IMMORTAL Orchestrator + Genome Conductor)
+// FILE: PULSE-UNIVERSE/PULSE-DESIGN/translator-v30.js
+// LAYER: THE ARCHITECT (v30 IMMORTAL Orchestrator + Genome Conductor)
 // ============================================================================
 
 // 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
@@ -40,21 +41,21 @@
 
 // --- CORE EARN ORGAN --------------------------------------------------------
 // --- BIOLOGICAL EARN ORGANS -----------------------------------------------
-import * as PulseEarnHeart from "./PulseEarnHeart-v24.js";
-import * as PulseEarnCirculatorySystem from "./PulseEarnCirculatorySystem-v24.js";
-import * as PulseEarnEndocrineSystem   from "./PulseEarnEndocrineSystem-v24.js";
-import * as PulseEarnImmuneSystem      from "./PulseEarnImmuneSystem-v24.js";
-import * as PulseEarnMetabolism        from "./PulseEarnMetabolism-v24.js";
-import * as PulseEarnNervousSystem     from "./PulseEarnNervousSystem-v24.js";
-import * as PulseEarnSkeletalSystem    from "./PulseEarnSkeletalSystem-v24.js";
-import * as PulseEarnSignalFactoring from "./PulseEarnSignalFactoring-v24.js";
+import * as PulseEarnHeart from "./PulseEarnHeart-v30.js";
+import * as PulseEarnCirculatorySystem from "./PulseEarnCirculatorySystem-v30.js";
+import * as PulseEarnEndocrineSystem   from "./PulseEarnEndocrineSystem-v30.js";
+import * as PulseEarnImmuneSystem      from "./PulseEarnImmuneSystem-v30.js";
+import * as PulseEarnMetabolism        from "./PulseEarnMetabolism-v30.js";
+import * as PulseEarnNervousSystem     from "./PulseEarnNervousSystem-v30.js";
+import * as PulseEarnSkeletalSystem    from "./PulseEarnSkeletalSystem-v30.js";
+import * as PulseEarnSignalFactoring   from "./PulseEarnSignalFactoring-v30.js";
 
-import * as PulseEarnReflex     from "./PulseEarnReflex-v24.js";
-import * as PulseEarnReflexRouter    from "./PulseEarnReflexRouter-v24.js";
-import * as PulseEarnSurvivalInstincts from "./PulseEarnSurvivalInstincts-v24.js";
+import * as PulseEarnReflex            from "./PulseEarnReflex-v30.js";
+import * as PulseEarnReflexRouter      from "./PulseEarnReflexRouter-v30.js";
+import * as PulseEarnSurvivalInstincts from "./PulseEarnSurvivalInstincts-v30.js";
 
 // --- MARKET EARN ORGANS ----------------------------------------------------
-import PulseEarnMktConsulate     from "./PulseEarnMktConsulate-v24.js";
+import PulseEarnMktConsulate     from "./PulseEarnMktConsulate-v30.js";
 
 import {
   PulseNetBoot,
@@ -63,15 +64,15 @@ import {
 } from "../../PULSEVISION/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
-import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory-v24.js";
-import PulseCoreAIMemoryAdapter       from "../PULSE-CORE/PulseCoreAIMemoryAdapter-v20.js";
-import PulseCoreGPUMemoryAdapter      from "../PULSE-CORE/PulseCoreGpuMemoryAdapter-v20.js";
-import PulseCoreEarnMemoryAdapter     from "../PULSE-CORE/PulseCoreEarnMemoryAdapter-v20.js";
-import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseCoreBinaryOverlay-v20.js";
+import PulseCoreMemory                from "../PULSE-CORE/PulseCoreMemory-v30.js";
+import PulseCoreAIMemoryAdapter       from "../PULSE-CORE/PulseCoreAIMemoryAdapter-v30.js";
+import PulseCoreGPUMemoryAdapter      from "../PULSE-CORE/PulseCoreGpuMemoryAdapter-v30.js";
+import PulseCoreEarnMemoryAdapter     from "../PULSE-CORE/PulseCoreEarnMemoryAdapter-v30.js";
+import PulseBinaryCoreOverlay         from "../PULSE-CORE/PulseCoreBinaryOverlay-v30.js";
 
 
 // Optional: GPU chunker identity (no instantiation here, brain stays pure)
-import PulseEarnChunker             from "./PulseEarnChunker-v24.js";
+import PulseEarnChunker             from "./PulseEarnChunker-v30.js";
 
 // CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
 export const CoreMemory = Object.freeze({
@@ -96,7 +97,7 @@ function normalizeBand(band) {
 }
 
 // ============================================================================
-//  INTERNAL HELPERS — deterministic, tiny, pure (v24-Immortal-GPU-INTEL)
+//  INTERNAL HELPERS — deterministic, tiny, pure (v30-Immortal-GPU-INTEL)
 // ============================================================================
 
 function computeHash(str) {
@@ -157,8 +158,8 @@ function computeShapeSignature(pattern, lineage, band, executionContext = null) 
       : null
   };
 
-  const sig = buildDualHashSignature("earn-shape-v24", raw, pattern);
-  return `earn-shape-v24-${sig.intel}`;
+  const sig = buildDualHashSignature("earn-shape-v30", raw, pattern);
+  return `earn-shape-v30-${sig.intel}`;
 }
 
 function computeBinaryShapeSignature(pattern, lineage, executionContext = null) {
@@ -180,8 +181,8 @@ function computeBinaryShapeSignature(pattern, lineage, executionContext = null) 
       : null
   };
 
-  const sig = buildDualHashSignature("earn-bshape-v24", raw, pattern);
-  return `earn-bshape-v24-${sig.intel}`;
+  const sig = buildDualHashSignature("earn-bshape-v30", raw, pattern);
+  return `earn-bshape-v30-${sig.intel}`;
 }
 
 function computeEvolutionStage(pattern, lineage, band) {
@@ -236,7 +237,7 @@ function buildPageAncestrySignature({ pattern, lineage, pageId, band }) {
   return buildDualHashSignature(JSON.stringify(shape));
 }
 
-// v24 IMMORTAL: health is descriptive-only, not performance-weighted.
+// v30 IMMORTAL: health is descriptive-only, not performance-weighted.
 function computeHealthScore() {
   return 1.0;
 }
@@ -250,7 +251,7 @@ function classifyDegradationTier(h) {
 }
 
 // ============================================================================
-//  ADVANTAGE CORE + SUBFIELDS (v24, multi-surface, GPU + chunk + pressure-aware)
+//  ADVANTAGE CORE + SUBFIELDS (v30, multi-surface, GPU + chunk + pressure-aware)
 // ============================================================================
 
 function buildAdvantageFieldCore(
@@ -280,7 +281,7 @@ function buildAdvantageFieldCore(
   const symbolicRatio = advantageSnapshot?.symbolicModeRatio ?? 0;
 
   return {
-    advantageVersion: "E-24.0",
+    advantageVersion: "E-30.0",
     lineageDepth: depth,
     patternTag: pattern,
     band: b,
@@ -479,7 +480,7 @@ function buildPageAdvantage({
   };
 }
 
-// v24: explicit chunk advantage surface
+// v30: explicit chunk advantage surface
 function buildChunkAdvantage({
   chunkMode = "auto",          // "auto" | "chunked" | "flat"
   targetChunkSize = 0,         // structural hint only
@@ -572,9 +573,10 @@ function buildLoopField(lineage, band) {
     band: b
   };
 }
+
 // ============================================================================
 //  WAVE FIELD / INTELLIGENCE / MEMORY / PRESENCE / ADVANTAGE
-//  v24-Immortal-GPU-INTEL+ — dual-band + chunk/cache/prewarm/presence/earn-aware
+//  v30-Immortal-GPU-INTEL+ — dual-band + chunk/cache/prewarm/presence/earn-aware
 // ============================================================================
 
 function buildWaveField(pattern, lineage, band) {
@@ -612,7 +614,7 @@ function buildWaveField(pattern, lineage, band) {
 }
 
 // ============================================================================
-// ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe, GPU-aware, v24+)
+// ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe, GPU-aware, v30+)
 // ============================================================================
 function computePulseIntelligence({
   advantageField,
@@ -645,7 +647,7 @@ function computePulseIntelligence({
     gpuTier === "low"      ? 0.2 :
     0.0;
 
-  // v24+: advantage shaping from chunk/cache/prewarm/presence/earn
+  // v30+: advantage shaping from chunk/cache/prewarm/presence/earn
   const chunkWarmthScore   = clamp01(adv.chunkWarmthScore   || 0);
   const cacheHitRatio      = clamp01(adv.cacheHitRatio      || 0);
   const prewarmCoverage    = clamp01(adv.prewarmCoverage    || 0);
@@ -668,7 +670,7 @@ function computePulseIntelligence({
     prewarmCoverage * 0.04 +
     presenceUptimeRatio * 0.02 +
     earnYieldScore * 0.02 +
-    dualBandBalance * 0.00 // kept structural, not dominant
+    dualBandBalance * 0.00
   );
 
   const computeTier =
@@ -703,7 +705,7 @@ function computePulseIntelligence({
 }
 
 // ============================================================================
-// Per-page intelligence v24+: GPU + prewarm + chunk/cache/presence/earn
+// Per-page intelligence v30+: GPU + prewarm + chunk/cache/presence/earn
 // ============================================================================
 function computePageIntelligence({
   pageAdvantage,
@@ -754,7 +756,6 @@ function computePageIntelligence({
   const prewarmWeight = prewarmNeeded ? 1.0 : 0.2;
   const gpuWeight = gpuPreferred ? 1.0 : 0.3;
 
-  // v24+: extra shaping from chunk/cache/presence/earn/gpu lanes
   const chunkWarmthScore    = clamp01(page.chunkWarmthScore    || cache.chunkWarmthScore    || 0);
   const cacheHitRatio       = clamp01(page.cacheHitRatio       || cache.cacheHitRatio       || 0);
   const prewarmCoverage     = clamp01(page.prewarmCoverage     || prewarm.prewarmCoverage   || 0);
@@ -801,7 +802,7 @@ function computePageIntelligence({
 }
 
 // ============================================================================
-// MEMORY / BINARY FIELDS (v24-Immortal-GPU-INTEL)
+// MEMORY / BINARY FIELDS (v30-Immortal-GPU-INTEL)
 // ============================================================================
 function buildMemorySurface(pattern, lineage, pageId, band) {
   const ancestry = buildPatternAncestry(pattern);
@@ -816,7 +817,7 @@ function buildMemorySurface(pattern, lineage, pageId, band) {
   });
 
   const bandSignature = buildDualHashSignature(
-    `EARN_BAND_V24::${bandNorm}::${pattern || ""}::${pageId || "NO_PAGE"}`
+    `EARN_BAND_V30::${bandNorm}::${pattern || ""}::${pageId || "NO_PAGE"}`
   );
 
   return {
@@ -865,7 +866,10 @@ function buildBinaryField(pattern, lineage) {
 }
 
 // ============================================================================
-//  CORE MEMORY FIELD (FULL SPINE) — v24 structural, keyed, deterministic
+//  CORE MEMORY FIELD (FULL SPINE) — v30 structural, keyed, deterministic
+// ============================================================================
+// ============================================================================
+//  CORE MEMORY FIELD (FULL SPINE) — v30 structural, keyed, deterministic
 // ============================================================================
 function buildCoreMemoryField({
   pattern,
@@ -880,7 +884,7 @@ function buildCoreMemoryField({
   const bin = binaryField || {};
 
   return {
-    coreMemoryVersion: "v24.0-Presence-Immortal-GPU-INTEL",
+    coreMemoryVersion: "v30.0-Immortal-GPU-INTEL",
     band: normalizedBand,
     pattern,
     lineage,
@@ -900,6 +904,10 @@ function buildCoreMemoryField({
   };
 }
 
+// ============================================================================
+//  CORE MEMORY — structural read/write via Earn adapter (IMMORTAL v30)
+// ============================================================================
+
 // Structural read from CoreMemory via Earn adapter (if present).
 function readCoreMemoryEarn(memoryKey) {
   try {
@@ -909,6 +917,7 @@ function readCoreMemoryEarn(memoryKey) {
     }
     return earnAdapter.readEarnMemory(memoryKey);
   } catch {
+    // IMMORTAL v30: no side-effects, failure collapses to null.
     return null;
   }
 }
@@ -922,12 +931,12 @@ function writeCoreMemoryEarn(memoryKey, coreMemoryField) {
     }
     earnAdapter.writeEarnMemory(memoryKey, coreMemoryField);
   } catch {
-    // IMMORTAL: swallow, no side-effects on failure path.
+    // IMMORTAL v30: swallow, no side-effects on failure path.
   }
 }
 
 // ============================================================================
-//  PRESENCE / ADVANTAGE FIELDS (v24 IMMORTAL, GPU-aware, chunk/presence/earn)
+//  PRESENCE / ADVANTAGE FIELDS (v30 IMMORTAL++, GPU-aware, chunk/presence/earn)
 // ============================================================================
 function buildPresenceField({
   regionId = "unknown-region",
@@ -953,11 +962,11 @@ function buildPresenceField({
   else if (pressure > 0) presenceTier = "soft";
 
   const presenceSignature = buildDualHashSignature(
-    `EARN_PRESENCE_V24::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+    `EARN_PRESENCE_V30::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
   );
 
   return Object.freeze({
-    presenceVersion: "v24.0-Presence-Immortal-GPU-INTEL",
+    presenceVersion: "v30.0-IMMORTAL++-Earn-Core-GPU",
     presenceTier,
     presenceSignature,
     regionId,
@@ -1019,20 +1028,26 @@ function buildAdvantageField({
   pageId = "NO_PAGE",
   pagePriority = "normal",
   pageHotState = "cold",
-  pagePatternClass = "generic"
-} = {}) {
+  pagePatternClass = "generic",
 
+  // v30+: chunk + pressure + advantage snapshots (all optional, structural-only)
+  chunkHints = null,          // { chunkMode, targetChunkSize, maxChunks, chunkAggression }
+  pressureSnapshot = null,    // { gpuLoadPressure, memoryPressure, meshStormPressure, auraTension, thermalPressure }
+  advantageSnapshot = null    // { sampleCount, cacheHitStepCount, prewarmStepCount, binaryModeRatio, symbolicModeRatio }
+} = {}) {
   const normalizedBand = normalizeBand(band);
 
   // ------------------------------------------------------------
-  // v24: Build all sub‑advantage surfaces
+  // v30: Build all sub‑advantage surfaces
   // ------------------------------------------------------------
   const cacheAdv = buildCacheAdvantage({
     cachePriority,
     cacheScope,
     cacheCohort,
     cacheWarmth,
-    cacheReuseAllowed
+    cacheReuseAllowed,
+    pressureSnapshot,
+    advantageSnapshot
   });
 
   const prewarmAdv = buildPrewarmAdvantage({
@@ -1040,7 +1055,9 @@ function buildAdvantageField({
     prewarmScope,
     prewarmBand,
     prewarmBudget,
-    prewarmHint
+    prewarmHint,
+    pressureSnapshot,
+    advantageSnapshot
   });
 
   const serverAdv = buildServerAdvantage({
@@ -1049,7 +1066,8 @@ function buildAdvantageField({
     serverHotStateReuse,
     serverPlanCache,
     serverBinaryReuse,
-    serverTier
+    serverTier,
+    pressureSnapshot
   });
 
   const gpuAdv = buildGPUAdvantage({
@@ -1061,25 +1079,39 @@ function buildAdvantageField({
     gpuCachePriority,
     gpuLaneCount,
     gpuLaneUtilization,
-    gpuBinaryFieldEnabled
+    gpuBinaryFieldEnabled,
+    pressureSnapshot,
+    advantageSnapshot
   });
 
   const cohortAdv = buildCohortAdvantage({
     cohortId,
     cohortTier,
     cohortWaveMode,
-    cohortPriority
+    cohortPriority,
+    advantageSnapshot
   });
 
   const pageAdv = buildPageAdvantage({
     pageId,
     pagePriority,
     pageHotState,
-    pagePatternClass
+    pagePatternClass,
+    advantageSnapshot
+  });
+
+  const chunkAdv = buildChunkAdvantage({
+    chunkMode: chunkHints?.chunkMode ?? "auto",
+    targetChunkSize: chunkHints?.targetChunkSize ?? 0,
+    maxChunks: chunkHints?.maxChunks ?? 0,
+    chunkAggression: chunkHints?.chunkAggression ?? 0,
+    cachePriority,
+    pressureSnapshot,
+    advantageSnapshot
   });
 
   // ------------------------------------------------------------
-  // v24: Deterministic unified advantage score
+  // v30: Deterministic unified advantage score
   // ------------------------------------------------------------
   function weightPriority(v) {
     v = String(v || "normal").toLowerCase();
@@ -1107,21 +1139,51 @@ function buildAdvantageField({
     return 0.0;
   }
 
-  const cacheScore   = clamp01(weightPriority(cacheAdv.cachePriority) * 0.6 + weightWarmth(cacheAdv.cacheWarmth) * 0.4);
-  const prewarmScore = clamp01((prewarmAdv.prewarmNeeded ? 1.0 : 0.3) * 0.7 + clamp01(prewarmAdv.prewarmBudget / 100) * 0.3);
-  const gpuScore     = clamp01(weightGpuTier(gpuAdv.gpuTier) * 0.7 + (gpuAdv.gpuPreferred ? 0.3 : 0.1));
-  const serverScore  = clamp01((serverAdv.hotStateReuse ? 0.3 : 0) + (serverAdv.multiInstanceBatching ? 0.3 : 0) + (serverAdv.serverPlanCache ? 0.2 : 0) + (serverAdv.serverBinaryReuse ? 0.2 : 0));
+  const cacheScore   = clamp01(
+    weightPriority(cacheAdv.cachePriority) * 0.6 +
+    weightWarmth(cacheAdv.cacheWarmth) * 0.4
+  );
+
+  const prewarmScore = clamp01(
+    (prewarmAdv.prewarmNeeded ? 1.0 : 0.3) * 0.7 +
+    clamp01(prewarmAdv.prewarmBudget / 100) * 0.3
+  );
+
+  const gpuScore     = clamp01(
+    weightGpuTier(gpuAdv.gpuTier) * 0.7 +
+    (gpuAdv.gpuPreferred ? 0.3 : 0.1)
+  );
+
+  const serverScore  = clamp01(
+    (serverAdv.hotStateReuse ? 0.3 : 0) +
+    (serverAdv.multiInstanceBatching ? 0.3 : 0) +
+    (serverAdv.serverPlanCache ? 0.2 : 0) +
+    (serverAdv.serverBinaryReuse ? 0.2 : 0)
+  );
+
   const cohortScore  = clamp01(weightPriority(cohortAdv.cohortPriority));
-  const pageScore    = clamp01(weightPriority(pageAdv.pagePriority) * 0.6 + weightWarmth(pageAdv.pageHotState) * 0.4);
+
+  const pageScore    = clamp01(
+    weightPriority(pageAdv.pagePriority) * 0.6 +
+    weightWarmth(pageAdv.pageHotState) * 0.4
+  );
+
+  const chunkScore   = clamp01(
+    weightPriority(chunkAdv.cachePriority) * 0.5 +
+    (chunkAdv.chunkMode === "chunked" ? 0.3 : 0.1) +
+    clamp01(chunkAdv.chunkAggression) * 0.2
+  );
+
   const factoringScore = clamp01(factoringSignal ? 1 : 0);
 
   const advantageScore = clamp01(
-    cacheScore     * 0.18 +
-    prewarmScore   * 0.12 +
-    gpuScore       * 0.22 +
-    serverScore    * 0.15 +
-    cohortScore    * 0.10 +
-    pageScore      * 0.18 +
+    cacheScore     * 0.16 +
+    prewarmScore   * 0.11 +
+    gpuScore       * 0.21 +
+    serverScore    * 0.14 +
+    cohortScore    * 0.09 +
+    pageScore      * 0.16 +
+    chunkScore     * 0.08 +
     factoringScore * 0.05
   );
 
@@ -1132,10 +1194,10 @@ function buildAdvantageField({
     0;
 
   // ------------------------------------------------------------
-  // v24: FINAL RETURN OBJECT (FULLY CLOSED, COMPLETE)
+  // v30: FINAL RETURN OBJECT (FULLY CLOSED, COMPLETE)
   // ------------------------------------------------------------
   return Object.freeze({
-    advantageVersion: "E-24.0",
+    advantageVersion: "E-30.0",
     band: normalizedBand,
     factoringSignal,
 
@@ -1146,6 +1208,7 @@ function buildAdvantageField({
     gpu: gpuAdv,
     cohort: cohortAdv,
     page: pageAdv,
+    chunk: chunkAdv,
 
     // unified IMMORTAL advantage surface
     advantageScore,
@@ -1181,8 +1244,10 @@ function buildAdvantageField({
     pagePatternClass: pageAdv.pagePatternClass
   });
 }
+
+
 // ============================================================================
-//  FACTORY — Create an Earn v16 IMMORTAL-GPU-INTEL Organism (dual-band)
+//  FACTORY — Create an Earn v30 IMMORTAL++-Earn-Core-GPU Organism (dual-band)
 // ============================================================================
 export function createEarn({
   jobId,
@@ -1344,7 +1409,7 @@ export function createEarn({
     pagePatternClass: page.pagePatternClass ?? "generic"
   });
 
-  // ⭐ Intelligence surface (IMMORTAL-GPU-INTEL, v24-aware advantage)
+  // ⭐ Intelligence surface (IMMORTAL++-Earn-Core-GPU, v30-aware advantage)
   const pulseIntelligence = computePulseIntelligence({
     advantageField: {
       ...earnAdvantageField,
@@ -1364,7 +1429,6 @@ export function createEarn({
   });
 
   const earnObject = {
-    EarnRole,
     jobId,
     pattern,
     payload,
@@ -1586,7 +1650,7 @@ export function evolveEarn(earn, context = {}) {
     pagePatternClass: page?.pagePatternClass ?? adv.page?.pagePatternClass ?? "generic"
   });
 
-  // ⭐ Intelligence surface (v16 IMMORTAL-GPU-INTEL)
+  // ⭐ Intelligence surface (v30 IMMORTAL++-Earn-Core-GPU)
   const pulseIntelligence = computePulseIntelligence({
     advantageField: {
       ...nextAdvantageField,
@@ -1636,7 +1700,6 @@ export function evolveEarn(earn, context = {}) {
   });
 
   const evolved = {
-    EarnRole,
     jobId: earn.jobId,
     pattern: nextPattern,
     payload: earn.payload,

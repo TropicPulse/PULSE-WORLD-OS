@@ -1,4 +1,4 @@
-/* global log,warn,error */
+
 // ============================================================================
 // FILE: /PULSE-PROXY/pulseHistoryRepair.js
 // PULSE HISTORY REPAIR — VERSION 20‑IMMORTALPLUS‑PRESENCE
@@ -32,7 +32,17 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
+import {
+  VitalsLogger as logger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 const admin = window.db;
 const db    = window.db;
 

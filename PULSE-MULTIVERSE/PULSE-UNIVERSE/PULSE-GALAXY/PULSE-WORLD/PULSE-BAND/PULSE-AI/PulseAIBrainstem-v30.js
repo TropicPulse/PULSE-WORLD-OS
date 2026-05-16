@@ -15,33 +15,33 @@ import { pulseAIChunker as createPulseChunker } from "./PulseAIChunker-v30-IMMOR
 import PulseOSPresence from "../PULSE-OS/PulseOSPresence-V30.js";
 import PulseMeshPresenceRelay from "../PULSE-MESH/PulseMeshPresenceRelay-v30.js";
 
-import { createArchitectAPI } from "./aiArchitect-v30.js";
-import { createTouristAPI, prewarmTourist } from "./aiTourist-v30.js";
+import { createArchitectAPI } from "./PulseAIArchitect-v30.js";
+import { createTouristAPI, prewarmTourist } from "./PulseAITourist-v30.js";
 
 import { createEnvironmentAPI } from "./PulseAIEnvironment-v30.js";
-import { createPowerAPI } from "./aiPowerPrime-v30.js";
+import { createPowerAPI } from "./PulseAIPowerPrime-v30.js";
 import { createEvolutionAPI } from "./PulseAIEvolution-v30.js";
 import { createEarnAPI } from "./PulseAIEarn-v30.js";
 import { createDiagnosticsWriteAPI } from "./PulseAIDiagnosticsWrite-v30.js";
 
-import { createPersonaEngine } from "./aiPersonality-v30.js";
-import { createBoundariesEngine } from "./aiBoundaries-v30.js";
-import { createPermissionsEngine } from "./aiPermissions-v30.js";
-import { createRouterEngine } from "./aiRouter-v30.js";
+import { createPersonaEngine } from "./PulseAIPersonality-v30.js";
+import { createBoundariesEngine } from "./PulseAIBoundaries-v30.js";
+import { createPermissionsEngine } from "./PulseAIPermissions-v30.js";
+import { createRouterEngine } from "./PulseAIRouter-v30.js";
 import { createCortex } from "./PulseAICortex-v30.js";
 
 import { createDualBandOrganism } from "./PulseAIDualBand-v30.js";
 
-import { createDoctorAPI } from "./aiDoctorAssistant-v30.js";
-import { createSurgeonAPI } from "./aiSurgeon-v30.js";
-import { createLawyerAPI } from "./aiLawAssistant-v30.js";
+import { createDoctorAPI } from "./PulseAIDoctorAssistant-v30.js";
+import { createSurgeonAPI } from "./PulseAISurgeon-v30.js";
+import { createLawyerAPI } from "./PulseAILawAssistant-v30.js";
 import { createEntrepreneurAPI } from "./PulseAIEntrepreneur-v30.js";
-import { createVeterinarianAPI } from "./aiVeterinarian-v30.js";
+import { createVeterinarianAPI } from "./PulseAIVeterinarian-v30.js";
 import { createClinicianAPI } from "./PulseAIClinician-v30.js";
 import { createEvolutionaryAPI } from "./PulseAIEvolutionary-v30.js";
 
-import { createSafetyFrameOrgan } from "./aiSafetyFrame-v30.js";
-import { createJuryFrame } from "./aiJuryFrame-v30.js";
+import { createSafetyFrameOrgan } from "./PulseAISafetyFrame-v30.js";
+import { createJuryFrame } from "./PulseAIJuryFrame-v30.js";
 
 
 // ============================================================================

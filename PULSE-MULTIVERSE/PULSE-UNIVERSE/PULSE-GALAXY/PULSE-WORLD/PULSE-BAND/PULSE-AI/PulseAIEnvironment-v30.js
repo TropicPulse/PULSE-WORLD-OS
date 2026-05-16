@@ -4,7 +4,7 @@
 //  PURE ENVIRONMENT. ZERO TIME. ZERO IDENTITY. ZERO META.
 // ============================================================================
 
-import { getOrganismSnapshot } from "./aiDeps-v24.js";
+import { getOrganismSnapshot } from "./PulseAIDeps-v24.js";
 
 // ============================================================================
 //  HELPERS — PRESSURE + HASH + IDENTITY STRIP

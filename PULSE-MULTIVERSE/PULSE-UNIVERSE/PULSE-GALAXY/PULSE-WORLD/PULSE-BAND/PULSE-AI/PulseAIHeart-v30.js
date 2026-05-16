@@ -14,7 +14,7 @@ import {
   snapshotAiHeartbeat,
   getAiHeartbeatHealingState,
   getAiHeartbeatDiagnostics
-} from "./aiHeartbeat-v24.js";
+} from "./PulseAIHeartbeat-v24.js";
 
 // ============================================================================
 //  CONSTANTS / META — v30+ IMMORTAL‑ADVANTAGE+++

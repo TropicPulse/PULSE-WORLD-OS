@@ -1,26 +1,88 @@
 // ============================================================================
-//  PULSE OS v24.0‑IMMORTAL‑ADV++ — AI SERVICE GATEWAY ORGAN
+//  PULSE OS v30.0‑IMMORTAL-ADVANTAGE — AI SERVICE GATEWAY ORGAN
 //  Universal Dual‑Band Entry Point • Safe Relay • Deterministic Execution
 //  PURE RELAY. ZERO MUTATION. ZERO RANDOMNESS. ZERO DRIFT.
-//  ORGANISM‑AWARE • RELAY ARTERY v5 • OWNER‑SUBORDINATE
+//  ORGANISM‑AWARE • RELAY ARTERY v6 • OWNER‑SUBORDINATE • SIGNAL‑AWARE
 // ============================================================================
+
+// ============================================================================
+//  META — Service Gateway (v30 IMMORTAL-ADVANTAGE)
+// ============================================================================
+
+export const ServiceGatewayMeta = Object.freeze({
+  type: "Cognitive",
+  subsystem: "aiServiceGateway",
+  layer: "C4-ServiceRelay",
+  role: "AI_SERVICE_GATEWAY",
+  version: "30.0-IMMORTAL-ADVANTAGE",
+  identity: "aiServiceGateway-v30-IMMORTAL-ADVANTAGE",
+
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    dualband: true,
+    binaryAware: true,
+    symbolicAware: true,
+    relayArteryAware: true,
+    organismAware: true,
+    juryAware: true,
+    trustAware: true,
+    advantageAware: true,
+    multiInstanceReady: true,
+    epoch: "30.0-IMMORTAL-ADVANTAGE"
+  }),
+
+  contract: Object.freeze({
+    purpose:
+      "Act as the universal, deterministic relay for AI services, tracking relay load, errors, slowdown, and organism pressure via a relay artery.",
+    never: Object.freeze([
+      "mutate external systems",
+      "introduce randomness",
+      "bypass EgoCore",
+      "bypass JuryFrame",
+      "bypass TrustFabric",
+      "perform raw network I/O",
+      "modify caller payloads in-place"
+    ]),
+    always: Object.freeze([
+      "remain pure relay logic",
+      "emit relay artery snapshots",
+      "respect organism vitals",
+      "respect owner/ego decisions",
+      "stay deterministic under load"
+    ])
+  })
+});
 
 // ============================================================================
 //  IMPORTS — Binary Engine + Tools
 // ============================================================================
-import { runAI } from "./aiEngine-v24.js";
+
+import { runAI } from "./PulseAIEngine-v24.js";
 import {
   analyzeFirestoreDoc,
   analyzeSQLSchema,
   detectDrift,
   detectSlowdownPatterns,
   validatePulseSchema
-} from "./aiTools-v24.js";
-
+} from "./PulseAITools-v30.js";
 
 // ============================================================================
-//  GLOBAL RELAY ARTERY REGISTRY — v24 IMMORTAL‑ADV++
+//  GLOBAL HANDLE (v30 IMMORTAL, environment-agnostic)
 // ============================================================================
+
+const G =
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+
+// ============================================================================
+//  GLOBAL RELAY ARTERY REGISTRY — v30 IMMORTAL‑ADVANTAGE
+// ============================================================================
+
 const _globalRelayArteryRegistry = new Map();
 /**
  * Registry key: `${id}#${instanceIndex}`
@@ -37,10 +99,37 @@ export function getGlobalRelayArteries() {
   return out;
 }
 
+// ============================================================================
+//  SIGNAL‑AWARE TRACE LAYER (optional, non‑fatal)
+// ============================================================================
+
+function traceGatewayEvent(event, payload, traceFlag) {
+  if (!traceFlag) return;
+
+  const message = `[AiServiceGateway] ${event}`;
+
+  const s = g.PulseProofSignal;
+  if (s && typeof s.signal === "function") {
+    s.signal({
+      level: "info",
+      subsystem: "service-gateway",
+      message,
+      extra: payload || {},
+      system: ServiceGatewayMeta.role,
+      organ: ServiceGatewayMeta.identity,
+      layer: ServiceGatewayMeta.layer,
+      band: "dual"
+    });
+    return;
+  }
+
+  console.log(message, payload);
+}
 
 // ============================================================================
-//  RELAY ARTERY HELPERS — v5
+//  RELAY ARTERY HELPERS — v6
 // ============================================================================
+
 function relayBucketLevel(v) {
   if (v >= 0.9) return "elite";
   if (v >= 0.75) return "high";
@@ -72,11 +161,15 @@ function clamp01(v) {
   return n;
 }
 
+function safePressure(source) {
+  return clamp01(source?.pressure ?? 0);
+}
 
 // ============================================================================
-//  RELAY ARTERY v5 — Organism‑Aware Fusion
+//  RELAY ARTERY v6 — Organism‑Aware + Advantage‑Aware Fusion
 // ============================================================================
-function computeRelayArteryV5({
+
+function computeRelayArteryV6({
   calls,
   errors,
   slowCalls,
@@ -90,7 +183,10 @@ function computeRelayArteryV5({
   watchdog,
   cortex,
   memory,
-  safety
+  safety,
+  jury,
+  trust,
+  advantage
 }) {
   const total = calls.total;
   const window = calls.window;
@@ -105,14 +201,22 @@ function computeRelayArteryV5({
 
   const loadFactor = clamp01(harmonicLoad / 128);
 
-  const heartbeatPressure = clamp01(heartbeat?.pressure ?? 0);
-  const earnPressure = clamp01(earn?.pressure ?? 0);
-  const genomePressure = clamp01(genome?.pressure ?? 0);
-  const governorPressure = clamp01(governor?.pressure ?? 0);
-  const watchdogPressure = clamp01(watchdog?.pressure ?? 0);
-  const cortexPressure = clamp01(cortex?.pressure ?? 0);
-  const memoryPressure = clamp01(memory?.pressure ?? 0);
-  const safetyPressure = clamp01(safety?.pressure ?? 0);
+  const heartbeatPressure = safePressure(heartbeat);
+  const earnPressure = safePressure(earn);
+  const genomePressure = safePressure(genome);
+  const governorPressure = safePressure(governor);
+  const watchdogPressure = safePressure(watchdog);
+  const cortexPressure = safePressure(cortex);
+  const memoryPressure = safePressure(memory);
+  const safetyPressure = safePressure(safety);
+
+  const juryPressure = clamp01(jury?.pressure ?? 0);
+  const trustAnomaly = clamp01(trust?.anomalyScore ?? 0);
+  const trustHoneypot = clamp01(trust?.honeypotRisk ?? 0);
+  const trustDominance = clamp01(trust?.dominanceRisk ?? 0);
+
+  const meshPressure = clamp01(advantage?.meshPressureIndex ?? 0);
+  const proxyPressure = clamp01(advantage?.proxyPressure ?? 0);
 
   const organismPressure =
     (heartbeatPressure +
@@ -124,11 +228,17 @@ function computeRelayArteryV5({
       memoryPressure +
       safetyPressure) / 8;
 
+  const trustPressureBoost = Math.max(trustAnomaly, trustHoneypot, trustDominance);
+  const advantagePressureBoost = Math.max(meshPressure, proxyPressure);
+
   const pressure = clamp01(
-    loadFactor * 0.4 +
+    loadFactor * 0.35 +
       errorRate * 0.2 +
-      slowRate * 0.2 +
-      organismPressure * 0.2
+      slowRate * 0.15 +
+      organismPressure * 0.15 +
+      juryPressure * 0.1 +
+      trustPressureBoost * 0.03 +
+      advantagePressureBoost * 0.02
   );
 
   const throughput = clamp01(1 - pressure);
@@ -136,9 +246,15 @@ function computeRelayArteryV5({
   const budget = clamp01(throughput - cost);
 
   return Object.freeze({
-    instanceIndex,
-    instanceCount,
-    windowMs,
+    meta: {
+      identity: ServiceGatewayMeta.identity,
+      version: ServiceGatewayMeta.version,
+      epoch: ServiceGatewayMeta.evo.epoch,
+      instanceIndex,
+      instanceCount,
+      windowMs,
+      timestamp: Date.now()
+    },
 
     calls: {
       total,
@@ -169,6 +285,10 @@ function computeRelayArteryV5({
       safety
     },
 
+    jury: jury || null,
+    trust: trust || null,
+    advantage: advantage || null,
+
     throughput,
     pressure,
     cost,
@@ -181,10 +301,10 @@ function computeRelayArteryV5({
   });
 }
 
+// ============================================================================
+//  SERVICE GATEWAY CORE — v30.0‑IMMORTAL‑ADVANTAGE
+// ============================================================================
 
-// ============================================================================
-//  SERVICE GATEWAY CORE — v24.0‑IMMORTAL‑ADV++
-// ============================================================================
 class AiServiceGatewayCore {
   /**
    * CONFIG INTENT:
@@ -200,9 +320,12 @@ class AiServiceGatewayCore {
    *     cortexProvider     → () => { pressure?: number, ... }
    *     memoryProvider     → () => { pressure?: number, ... }
    *     safetyProvider     → () => { pressure?: number, ... }
+   *     juryProvider       → () => { pressure?: number, ... }
+   *     trustProvider      → () => { anomalyScore?: number, ... }
+   *     advantageProvider  → () => { meshPressureIndex?: number, ... }
    */
   constructor(config = {}) {
-    this.id = config.id || "ai-service-gateway-v24";
+    this.id = config.id || ServiceGatewayMeta.identity;
     this.trace = !!config.trace;
     this.scribe = config.scribe || null;
 
@@ -234,6 +357,11 @@ class AiServiceGatewayCore {
     this.cortexProvider = config.cortexProvider || null;
     this.memoryProvider = config.memoryProvider || null;
     this.safetyProvider = config.safetyProvider || null;
+
+    // v30+: jury / trust / advantage providers
+    this.juryProvider = config.juryProvider || null;
+    this.trustProvider = config.trustProvider || null;
+    this.advantageProvider = config.advantageProvider || null;
   }
 
   // ---------------------------------------------------------
@@ -268,7 +396,7 @@ class AiServiceGatewayCore {
 
   // ---------------------------------------------------------
   //  VITALS READERS (SAFE, READ‑ONLY)
-  // ---------------------------------------------------------
+// ---------------------------------------------------------
   _readVitals(provider) {
     if (!provider) return null;
     try {
@@ -287,7 +415,7 @@ class AiServiceGatewayCore {
 
     const elapsedMs = Math.max(1, now - this._windowStart);
 
-    const artery = computeRelayArteryV5({
+    const artery = computeRelayArteryV6({
       calls: {
         total: this._totalCalls,
         window: this._windowCalls,
@@ -311,12 +439,17 @@ class AiServiceGatewayCore {
       watchdog: this._readVitals(this.watchdogProvider),
       cortex: this._readVitals(this.cortexProvider),
       memory: this._readVitals(this.memoryProvider),
-      safety: this._readVitals(this.safetyProvider)
+      safety: this._readVitals(this.safetyProvider),
+
+      jury: this._readVitals(this.juryProvider),
+      trust: this._readVitals(this.trustProvider),
+      advantage: this._readVitals(this.advantageProvider)
     });
 
     const key = _registryKey(this.id, this.instanceIndex);
     _globalRelayArteryRegistry.set(key, artery);
 
+    traceGatewayEvent("relayArterySnapshot", artery, this.trace);
     return artery;
   }
 
@@ -326,7 +459,7 @@ class AiServiceGatewayCore {
 
   // ---------------------------------------------------------
   //  RELAY WRAPPER (NON-BLOCKING, MONITORED)
-  // ---------------------------------------------------------
+// ---------------------------------------------------------
   async relay(intent, flags, operation, request = {}, dualBand = null) {
     const start = Date.now();
 
@@ -354,12 +487,11 @@ class AiServiceGatewayCore {
         this._logSpiralWarning(intent, flags, artery);
       }
 
-      this._trace("relay:success", {
-        intent,
-        flags,
-        durationMs: duration,
-        artery
-      });
+      traceGatewayEvent(
+        "relay:success",
+        { intent, flags, durationMs: duration, artery },
+        this.trace
+      );
 
       return result;
     } catch (e) {
@@ -368,13 +500,17 @@ class AiServiceGatewayCore {
       this._recordCall(duration, true);
       const artery = this._computeRelayArtery();
 
-      this._trace("relay:error", {
-        intent,
-        flags,
-        durationMs: duration,
-        error: String(e && e.message ? e.message : e),
-        artery
-      });
+      traceGatewayEvent(
+        "relay:error",
+        {
+          intent,
+          flags,
+          durationMs: duration,
+          error: String(e && e.message ? e.message : e),
+          artery
+        },
+        this.trace
+      );
 
       if (
         artery.pressureBucket === "overload" ||
@@ -412,7 +548,7 @@ class AiServiceGatewayCore {
       artery
     };
 
-    this._trace("relay:spiral-warning", payload);
+    traceGatewayEvent("relay:spiral-warning", payload, this.trace);
 
     try {
       this.scribe?.logSafety?.({
@@ -424,17 +560,12 @@ class AiServiceGatewayCore {
       // best-effort only
     }
   }
-
-  _trace(event, payload) {
-    if (!this.trace) return;
-    console.log(`[${this.id}#${this.instanceIndex}] ${event}`, payload);
-  }
 }
 
+// ============================================================================
+//  INTERNAL GATEWAY INSTANCE — v30.0‑IMMORTAL‑ADVANTAGE
+// ============================================================================
 
-// ============================================================================
-//  INTERNAL GATEWAY INSTANCE — v24.0‑IMMORTAL‑ADV++
-// ============================================================================
 const _gatewayCore = new AiServiceGatewayCore({ trace: false });
 
 function callAI(intent, flags, operation, request = {}, dualBand = null) {
@@ -462,7 +593,6 @@ export function prewarmServiceRelay(iterations = 3) {
   }
   return Promise.all(ops).then(() => getServiceRelayArtery());
 }
-
 
 // ============================================================================
 //  PUBLIC SERVICE OPERATIONS — API‑COMPATIBLE, INTERNALLY UPGRADED
@@ -667,10 +797,10 @@ export async function runTourGuideQuery(
   );
 }
 
-
 // ============================================================================
 //  DUAL‑MODE EXPORTS (ESM + CommonJS)
 // ============================================================================
+
 if (typeof module !== "undefined") {
   module.exports = {
     ServiceGatewayMeta,

@@ -1,4 +1,4 @@
-/* global log,warn */
+
 // ============================================================================
 //  PULSE GPU INSIGHTS ENGINE v24-Immortal++-MAX — THE WISDOM CORTEX
 //  Deterministic, Pure Logic, Drift‑Proof Analytics Over Session Traces

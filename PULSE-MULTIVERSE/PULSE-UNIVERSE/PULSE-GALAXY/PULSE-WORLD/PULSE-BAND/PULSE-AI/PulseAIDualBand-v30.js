@@ -5,9 +5,9 @@
 //  PURE BRIDGE • ZERO MUTATION • ZERO RANDOMNESS • FULL ARTERY + GPU FABRIC
 // ============================================================================
 
-import { AIBinaryAgent } from "./aiBinaryAgent-v30.js";
-import { AIMemory } from "./aiMemory-v24.js";
-import { AIAnatomy as AIBinaryAnatomy } from "./aiAnatomy-v30.js";
+import { AIBinaryAgent } from "./PulseAIBinaryAgent-v30.js";
+import { AIMemory } from "./PulseAIMemory-v24.js";
+import { AIAnatomy as AIBinaryAnatomy } from "./PulseAIAnatomy-v30.js";
 import { AIBinaryGenome } from "./PulseAIGenome-v30.js";
 import { AIBinaryVitals } from "./PulseAIVitals-v24.js";
 import { AIBinaryMetabolism } from "./PulseAIMetabolism-v24.js";
@@ -18,8 +18,8 @@ import { AIBinaryImmunity } from "./PulseAIImmunity-v24.js";
 import { AIBinaryPipeline } from "./PulseAIPipeline-v30.js";
 import { AIBinaryReflex } from "./PulseAIReflex-v30.js";
 import { AIBinaryScheduler } from "./PulseAIScheduler-v30.js";
-import { AIBinaryOrganRegistry } from "./aiBinaryOrganRegistry-v30.js";
-import { AIBinaryEvolution } from "./aiBinaryEvolution-v30.js";
+import { AIBinaryOrganRegistry } from "./PulseAIBinaryOrganRegistry-v30.js";
+import { AIBinaryEvolution } from "./PulseAIBinaryEvolution-v30.js";
 
 import { createPulseAIChunker } from "./PulseAIChunker-v30.js";
 import { createBinaryMeshEnvironment } from "../PULSE-MESH/PulseMeshBinary-v30.js";
@@ -41,7 +41,7 @@ import depsSurface, {
   getOrganismSnapshot,
   emitDepsPacket,
   prewarmDepsLayer
-} from "./aiDeps-v24.js";
+} from "./PulseAIDeps-v24.js";
 
 import {
   DiagnosticsMeta,
@@ -49,46 +49,46 @@ import {
   attachDiagnosticsOrgan,
   createDiagnosticsAPI,
   prewarmDiagnosticsOrgan
-} from "./aiDiagnostics-v24.js";
+} from "./PulseAIDiagnostics-v24.js";
 
 import {
   DiagnosticsWriteMeta,
   createDiagnosticsWriteOrgan,
   prewarmDiagnosticsWriteOrgan
-} from "./aiDiagnosticsWrite-v24.js";
+} from "./PulseAIDiagnosticsWrite-v24.js";
 
 import {
   SCRIBE_META,
   formatDebugReport,
   formatDebugString,
   prewarmScribe
-} from "./aiDebug-v24.js";
+} from "./PulseAIDebug-v24.js";
 
-import { createPermissionsEngine } from "./aiPermissionsEngine-v24.js";
-import { createBoundariesEngine } from "./aiBoundariesEngine-v30.js";
+import { createPermissionsEngine } from "./PulseAIPermissionsEngine-v24.js";
+import { createBoundariesEngine } from "./PulseAIBoundariesEngine-v30.js";
 import { createPersonaEngine } from "./PulseAIPersonality-v24.js";
 
 import {
   createContextEngine,
   prewarmContextEngine
-} from "./aiContextEngine-v24.js";
+} from "./PulseAIContextEngine-v24.js";
 
 import createCognitiveFrame, {
   COGNITIVE_FRAME_META,
   prewarmCognitiveFrame
 } from "./PulseAIContext-v30.js";
 
-import { createCortex, prewarmAICortex } from "./aiCortex-v24.js";
+import { createCortex, prewarmAICortex } from "./PulseAICortex-v24.js";
 import { createRouterEngine } from "./PulseAIRouter-v30.js";
 import { runAI, ExecutionEngineMeta } from "./PulseAIEngine-v30.js";
 
 import aiDeliveryEngine, {
   prewarmDeliveryEngine
-} from "./aiDeliveryEngine-v24.js";
+} from "./PulseAIDeliveryEngine-v24.js";
 
 import aiEmotionEngine, {
   prewarmEmotionEngine
-} from "./aiEmotionEngine-v24.js";
+} from "./PulseAIEmotionEngine-v24.js";
 
 import createEarnAPI, {
   EarnMeta,
@@ -96,7 +96,7 @@ import createEarnAPI, {
 } from "./PulseAIEarn-v30.js";
 
 import { createTouristAPI } from "./PulseAITourist-v24.js";
-import { createArchitectAPI } from "./aiArchitect-v30.js";
+import { createArchitectAPI } from "./PulseAIArchitect-v30.js";
 import { createDoctorOrgan } from "./PulseAIDoctorAssistant-v24.js";
 import { createDoctorArchitectOrgan } from "./PulseAIDoctorArchitect-v24.js";
 

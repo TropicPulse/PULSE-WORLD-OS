@@ -6,12 +6,12 @@
 // ============================================================================
 
 import { createCognitiveFrame as createAIContext } from "./PulseAIContext-v30.js";
-import { createBrainstem } from "./aiBrainstem-v24.js";
+import { createBrainstem } from "./PulseAIBrainstem-v24.js";
 import { resolvePersonaV12 } from "./PulseAIPersonality-v24.js";
 import { routeAIRequest } from "./PulseAIRouter-v30.js";
-import { canPerformDynamic } from "./aiBoundaries-v30.js";
+import { canPerformDynamic } from "./PulseAIBoundaries-v30.js";
 
-import { createArchitectOrgan as runArchitectMode } from "./aiArchitect-v30.js";
+import { createArchitectOrgan as runArchitectMode } from "./PulseAIArchitect-v30.js";
 import { createClinicianOrgan as runObserverMode } from "./PulseAIClinician-v30.js";
 import { createTouristAPI as runTourGuideMode } from "./PulseAITourist-v24.js";
 

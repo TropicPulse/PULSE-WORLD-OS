@@ -1,4 +1,3 @@
-/* global log,warn,error */
 // ============================================================================
 // FILE: /PulseOS/PULSE-MULTIVERSE/PULSEWORLD/PulseUIFlow-v24-Immortal-Evo++++.js
 // PULSE OS — v24‑IMMORTAL‑EVO++++
@@ -8,6 +7,17 @@
 // Evidence‑Aware • Diagnostics‑Aware • Admin‑Console‑Ready
 // Vitals‑Aligned • ErrorSpine‑v24‑Aligned • Trust‑Fabric‑Aware
 // ============================================================================
+import {
+  VitalsLogger as PulseProofLogger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 const UIFLOW_SCHEMA_VERSION = "v5";
 
 // Global handle

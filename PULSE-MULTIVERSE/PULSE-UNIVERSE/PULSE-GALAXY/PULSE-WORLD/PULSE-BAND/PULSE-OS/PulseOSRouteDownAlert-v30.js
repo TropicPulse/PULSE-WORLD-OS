@@ -1,4 +1,4 @@
-/* global log, error */
+
 // ============================================================================
 // FILE: /PULSE-PROXY/RouteDownAlert-v30-IMMORTAL++++.js
 // PULSE OS — v30.0-IMMORTAL++++
@@ -13,7 +13,17 @@
 //   • May call the email organ, but never talks to core servers directly.
 //   • Presence/advantage-aware only as metadata (no computation of topology).
 // ============================================================================
-
+import {
+  VitalsLogger as logger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 import { PulseWorldEmailAlert } from "../X-PULSE-X/PulseWorldEmailAlert-v20.js";
 
 // ============================================================================

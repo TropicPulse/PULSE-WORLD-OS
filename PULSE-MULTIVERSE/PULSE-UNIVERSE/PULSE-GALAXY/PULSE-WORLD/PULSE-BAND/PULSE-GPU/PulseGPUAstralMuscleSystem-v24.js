@@ -1,4 +1,4 @@
-/* global log,warn */
+
 // ============================================================================
 //  PULSE GPU ENGINE v24-Immortal++ — THE ASTRAL MUSCLE SYSTEM
 //  WebGPU Execution Layer • Frame Conductor • GPU Motor Cortex
@@ -28,7 +28,17 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-
+import {
+  VitalsLogger as logger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 import { PulseGPURuntime } from "./PulseGPUDrive-v24.js";
 import { pulseGPUChunker } from "./PulseGPUChunker-v24.js";
 

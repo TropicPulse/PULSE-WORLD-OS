@@ -1,4 +1,4 @@
-/* global log, warn, error */
+
 // FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseWorldFirebaseGenome-v20.js
 // ============================================================================
 //  PULSE-WORLD GENOME ORGAN — PulseWorldFirebaseGenome (v20 IMMORTAL ADVANTAGE)
@@ -17,7 +17,17 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-
+import {
+  VitalsLogger as PulseProofLogger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 // ============================================================================
 //  IMPORTS — SAFE (NO SENSITIVE VALUES)
 // ============================================================================

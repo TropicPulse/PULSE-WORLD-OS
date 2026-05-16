@@ -1,4 +1,4 @@
-/* global log,warn */
+
 // ============================================================================
 // FILE: PULSE-GPU/PulseGPUCognitiveIntelligence.js
 // PULSE GPU COGNITIVE INTELLIGENCE v24-IMMORTAL++
@@ -14,7 +14,17 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
+import {
+  VitalsLogger as logger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 import * as PulseGPUBrain                from "./PulseGPUBrain-v24.js";
 import * as PulseGPUWisdomCortex        from "./PulseGPUWIsdomCortex-v24.js";
 import * as PulseGPUAstralMuscleSystem  from "./PulseGPUAstralMuscleSystem-v24.js";

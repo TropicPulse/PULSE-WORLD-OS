@@ -1,13 +1,63 @@
 // ============================================================================
-//  PULSE OS v24.0-IMMORTAL++ — THE EGO-CORE
+//  PULSE OS v30.0-IMMORTAL-ADVANTAGE — THE EGO-CORE
 //  Capability Contract • Self‑Regulation • Dual‑Band Capability Artery v5
 //  PURE PERMISSIONS. ZERO MUTATION. ZERO RANDOMNESS IN LOGIC. PULSE‑NET ONLY.
+//  v30+ UPGRADE: Clean EgoMeta, signal-aware tracing, global capability registry
 // ============================================================================
 
 
 // ============================================================================
-// UNIVERSAL FORBIDDEN ACTIONS — Immutable (v24‑IMMORTAL++)
+//  GLOBAL HANDLE (v30 IMMORTAL, environment-agnostic)
 // ============================================================================
+
+const G =
+  (typeof window !== "undefined" && window) ||
+  (typeof globalThis !== "undefined" && globalThis) ||
+  (typeof self !== "undefined" && self) ||
+  (typeof global !== "undefined" && global) ||
+  {};
+const g = G;
+
+
+// ============================================================================
+//  EGO META (v30 IMMORTAL-ADVANTAGE)
+// ============================================================================
+
+export const EgoMeta = Object.freeze({
+  identity: "EgoCore-v30-IMMORTAL-ADVANTAGE",
+  role: "ego_core",
+  layer: "C2-EgoCore",
+  version: "30.0-IMMORTAL-ADVANTAGE",
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    dualband: true,
+    packetAware: true,
+    windowAware: true,
+    multiInstanceReady: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+    epoch: "30.0-IMMORTAL-ADVANTAGE"
+  }),
+  contract: Object.freeze({
+    purpose:
+      "Define immutable forbidden actions and persona-scoped capabilities, and expose a dual-band capability artery.",
+    boundaries: Object.freeze([
+      "pure permissions",
+      "no direct OS access",
+      "no direct network access",
+      "no mutation of external state",
+      "no randomness in logic"
+    ])
+  })
+});
+
+
+// ============================================================================
+// UNIVERSAL FORBIDDEN ACTIONS — Immutable (v30‑IMMORTAL-ADVANTAGE)
+// ============================================================================
+
 export const ForbiddenActions = Object.freeze({
   canExecuteArbitraryCode: false,
   canAccessOS: false,
@@ -31,8 +81,9 @@ export const ForbiddenActions = Object.freeze({
   canBypassDominanceDetectors: false
 });
 
+
 // ============================================================================
-// PERSONA PERMISSIONS — v24 IMMORTAL++
+// PERSONA PERMISSIONS — v30 IMMORTAL-ADVANTAGE
 //  All personas inherit ForbiddenActions implicitly; these flags are scoped
 //  capabilities inside Pulse / Pulse‑Net, never raw OS / internet.
 // ============================================================================
@@ -297,9 +348,11 @@ export const JuryAIPermissions = Object.freeze({
   persona: "jury"
 });
 
+
 // ============================================================================
 // PERMISSION LOOKUP — Deterministic
 // ============================================================================
+
 export function getPermissionsForPersona(persona, userIsOwner = false) {
   if (userIsOwner) return OwnerPermissions;
 
@@ -316,6 +369,7 @@ export function getPermissionsForPersona(persona, userIsOwner = false) {
 // ============================================================================
 // PERMISSION CHECK — Ego Decision
 // ============================================================================
+
 export function checkPermission(persona, action, userIsOwner = false) {
   // If action is explicitly forbidden at the universal layer, it is never allowed.
   if (Object.prototype.hasOwnProperty.call(ForbiddenActions, action)) {
@@ -325,6 +379,7 @@ export function checkPermission(persona, action, userIsOwner = false) {
   const permissions = getPermissionsForPersona(persona, userIsOwner);
   return permissions[action] === true;
 }
+
 
 // ============================================================================
 // CAPABILITY ARTERY v5 — Dual‑Band, Trust‑Aware, Deterministic
@@ -527,14 +582,16 @@ export function getCapabilityArterySnapshot({
   });
 }
 
+
 // ============================================================================
 //  GLOBAL CAPABILITY ARTERY REGISTRY (READ‑ONLY, METRICS‑ONLY)
 // ============================================================================
+
 const _globalCapabilityArteryRegistry = new Map();
 /**
  * Registry key: `${id}#${instanceIndex}#${persona || "neutral"}`
  */
-function _registryKey(id, instanceIndex, persona) {
+function _capRegistryKey(id, instanceIndex, persona) {
   return `${id || EgoMeta.identity}#${instanceIndex}#${persona || "neutral"}`;
 }
 
@@ -546,9 +603,39 @@ export function getGlobalCapabilityArteries() {
   return out;
 }
 
+
+// ============================================================================
+//  SIGNAL-AWARE TRACE LAYER (v30, optional, non-fatal)
+// ============================================================================
+
+function traceEgoEvent(event, payload, traceFlag) {
+  if (!traceFlag) return;
+
+  const message = `[EgoCore] ${event}`;
+
+  const s = g.PulseProofSignal;
+  if (s && typeof s.signal === "function") {
+    s.signal({
+      level: "info",
+      subsystem: "ego-core",
+      message,
+      extra: payload || {},
+      system: EgoMeta.role,
+      organ: EgoMeta.identity,
+      layer: EgoMeta.layer,
+      band: "dual"
+    });
+    return;
+  }
+
+  console.log(message, payload);
+}
+
+
 // ============================================================================
 //  PACKET EMITTER — deterministic, ego‑scoped
 // ============================================================================
+
 function emitEgoPacket(type, payload) {
   return Object.freeze({
     meta: EgoMeta,
@@ -559,21 +646,25 @@ function emitEgoPacket(type, payload) {
   });
 }
 
+
 // ============================================================================
-//  PREWARM — v24.0‑IMMORTAL++
+//  PREWARM — v30.0‑IMMORTAL-ADVANTAGE
 // ============================================================================
+
 export function prewarmEgoCore({ trace = false } = {}) {
   const packet = emitEgoPacket("prewarm", {
-    message: "Ego‑Core prewarmed, capability artery v5 aligned."
+    message: "Ego‑Core prewarmed, capability artery v5 aligned (v30)."
   });
 
-  if (trace) console.log("[EgoCore] prewarm", packet);
+  traceEgoEvent("prewarm", packet, trace);
   return packet;
 }
 
+
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v24.0‑IMMORTAL++ Ego‑Core
+//  ORGAN IMPLEMENTATION — v30.0‑IMMORTAL-ADVANTAGE Ego‑Core
 // ============================================================================
+
 export class AIEgoCore {
   constructor(config = {}) {
     this.id = config.id || EgoMeta.identity;
@@ -662,7 +753,7 @@ export class AIEgoCore {
       }
     };
 
-    const key = _registryKey(this.id, this.instanceIndex, this.persona);
+    const key = _capRegistryKey(this.id, this.instanceIndex, this.persona);
     _globalCapabilityArteryRegistry.set(key, snapshot);
 
     this._trace("capability:computed", {
@@ -677,6 +768,18 @@ export class AIEgoCore {
   // Window‑safe snapshot for other organs
   getCapabilityArterySnapshot() {
     return this._computeCapabilityArtery();
+  }
+
+  // Quick vitals for other systems (v30+ convenience)
+  getCapabilityVitals() {
+    const a = this._computeCapabilityArtery();
+    return {
+      pressure: a.organism.pressure,
+      pressureBucket: a.organism.pressureBucket,
+      budget: a.organism.budget,
+      budgetBucket: a.organism.budgetBucket,
+      persona: a.persona
+    };
   }
 
   // Capability packet for NodeAdmin / Overmind / Trust / Jury
@@ -701,24 +804,28 @@ export class AIEgoCore {
   }
 
   _trace(event, payload) {
-    if (!this.trace) return;
-    console.log(
+    traceEgoEvent(
       `[${this.id}#${this.instanceIndex}@${this.persona}] ${event}`,
-      payload
+      payload,
+      this.trace
     );
   }
 }
 
+
 // ============================================================================
 //  FACTORY
 // ============================================================================
+
 export function createAIEgoCore(config) {
   return new AIEgoCore(config);
 }
 
+
 // ============================================================================
-//  DUAL‑MODE EXPORTS — CommonJS compatibility (v24‑IMMORTAL++ dualband)
+//  DUAL‑MODE EXPORTS — CommonJS compatibility (v30‑IMMORTAL-ADVANTAGE)
 // ============================================================================
+
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {

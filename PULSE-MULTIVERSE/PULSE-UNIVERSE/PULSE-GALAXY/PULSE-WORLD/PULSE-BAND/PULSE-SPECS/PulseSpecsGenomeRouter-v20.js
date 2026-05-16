@@ -1,4 +1,4 @@
-/* global log, warn, error */
+
 // ============================================================================
 // FILE: PULSE-UNIVERSE/PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseSpecsGenomeRouter-v20.js
 // ORGAN: PulseSpecsGenomeRouter-v20 (Genome → Memory Router Organ)

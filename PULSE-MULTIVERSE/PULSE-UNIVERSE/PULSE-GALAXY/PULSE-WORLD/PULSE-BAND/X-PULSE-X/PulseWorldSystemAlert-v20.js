@@ -1,4 +1,3 @@
-/* global log, warn, error */
 // ============================================================================
 // FILE: PULSE-UNIVERSE/PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseWorldSystemAlert-v20.js
 // ORGAN: PulseWorldSystemAlert-v20 (System Failure Alert Organ)
@@ -101,7 +100,17 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-
+import {
+  VitalsLogger as PulseProofLogger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 import { onRequest, onCall } from "firebase-functions/v2/https";
 
 // ============================================================================

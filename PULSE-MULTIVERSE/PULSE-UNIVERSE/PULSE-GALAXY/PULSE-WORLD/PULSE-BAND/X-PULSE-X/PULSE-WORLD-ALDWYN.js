@@ -105,23 +105,23 @@ import { PulseBinaryTech } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 // ============================================================================
 //  1. CORE CROWN CONTRACTS
 // ============================================================================
-import createBoundariesEngine from "../PULSE-AI/aiBoundariesEngine-v30.js";
-import createPermissionsEngine from "../PULSE-AI/aiPermissionsEngine-v24.js";
+import createBoundariesEngine from "../PULSE-AI/PulseAIBoundariesEngine-v30.js";
+import createPermissionsEngine from "../PULSE-AI/PulseAIPermissionsEngine-v24.js";
 import aiIdentityCore from "../PULSE-AI/PulseAIIdentityCore-v30.js";
-import aiPersonalityEngine from "../PULSE-AI/aiPersonalityEngine-v24.js";
+import aiPersonalityEngine from "../PULSE-AI/PulseAIPersonalityEngine-v24.js";
 
 // ============================================================================
 //  2. CONTEXT + CORTEX
 // ============================================================================
 import createCognitiveFrame from "../PULSE-AI/PulseAIContext-v30.js";
-import createContextEngine from "../PULSE-AI/aiContextEngine-v24.js";
+import createContextEngine from "../PULSE-AI/PulseAIContextEngine-v24.js";
 
 // ============================================================================
 //  3. SAFETY + TONE
 // ============================================================================
 import createSafetyFrameOrgan from "../PULSE-AI/PulseAISafetyFrame-v30.js";
-import aiToneEngine from "../PULSE-AI/aiToneEngine-v24.js";
-import aiToneRouter from "../PULSE-AI/aiToneRouter-v24.js";
+import aiToneEngine from "../PULSE-AI/PulseAIToneEngine-v24.js";
+import aiToneRouter from "../PULSE-AI/PulseAIToneRouter-v24.js";
 
 // ============================================================================
 //  4. META‑GOVERNANCE (CROWN LAYER)
@@ -141,7 +141,7 @@ import {
 // ============================================================================
 //  5. MEMORY + EXPERIENCE (META ONLY)
 // ============================================================================
-import createAIMemory from "../PULSE-AI/aiMemory-v24.js";
+import createAIMemory from "../PULSE-AI/PulseAIMemory-v24.js";
 import createAIExperience from "../PULSE-AI/PulseAIExperience-v30.js";
 
 // ============================================================================
@@ -155,15 +155,15 @@ import createPulseFileScanner from "../PULSE-AI/PulseAIFileScanner-v30.js";
 // ============================================================================
 //  7. WATCHDOG + VITALS + LOGGING
 // ============================================================================
-import createAIBinaryWatchdog from "../PULSE-AI/aiWatchdog-v24.js";
+import createAIBinaryWatchdog from "../PULSE-AI/PulseAIWatchdog-v24.js";
 import createAIBinaryVitals from "../PULSE-AI/PulseAIVitals-v24.js";
-import createAIBinaryLoggerAdapter from "../PULSE-AI/aiLoggerAdapter-v24.js";
+import createAIBinaryLoggerAdapter from "../PULSE-AI/PulseAILoggerAdapter-v24.js";
 
 // ============================================================================
 //  8. OPTIONAL (GLOBAL MAPS / FRAMES)
 // ============================================================================
-import createPersonalFrameOrgan from "../PULSE-AI/aiPersonalFrame-v24.js";
-import getBoundariesForPersona from "../PULSE-AI/aiBoundaries-v30.js";
+import createPersonalFrameOrgan from "../PULSE-AI/PulseAIPersonalFrame-v24.js";
+import getBoundariesForPersona from "../PULSE-AI/PulseAIBoundaries-v30.js";
 import getPermissionsForPersona from "../PULSE-AI/PulseAIPermissions-v24.js";
 import createExperienceFrameOrgan from "../PULSE-AI/PulseAIExperienceFrame-v30.js";
 

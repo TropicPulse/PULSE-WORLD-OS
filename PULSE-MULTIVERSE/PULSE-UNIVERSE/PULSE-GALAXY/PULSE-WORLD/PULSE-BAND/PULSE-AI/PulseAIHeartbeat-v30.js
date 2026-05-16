@@ -66,14 +66,14 @@ function emitHeartbeatPacket(type, payload) {
 // ============================================================================
 //  DEPENDENCIES
 // ============================================================================
-import { createBrainstem } from "./aiBrainstem-v24.js";
+import { createBrainstem } from "./PulseAIBrainstem-v24.js";
 import {
   getDb,
   getFsAPI,
   getRouteAPI,
   getSchemaAPI,
   getOrganismSnapshot
-} from "./aiDeps-v24.js";
+} from "./PulseAIDeps-v24.js";
 
 // ============================================================================
 //  CONFIG — metabolic‑safe cadence

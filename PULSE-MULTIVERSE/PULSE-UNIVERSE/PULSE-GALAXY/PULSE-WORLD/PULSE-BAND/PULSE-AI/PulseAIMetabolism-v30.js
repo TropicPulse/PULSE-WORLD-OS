@@ -1,9 +1,9 @@
 // ============================================================================
-//  aiMetabolism-v24.js — Pulse OS v24.0-IMMORTAL-CORE++ Organ
+//  aiMetabolism-v30.js — Pulse OS v30.0-IMMORTAL-ADVANTAGE Organ
 //  Binary Metabolism Engine • BinaryCore • Deterministic • Metabolic Artery v4
-//  v24+ UPGRADE: OrganismMap identity, dualband-aware, Signal-aware tracing,
-//  global metabolic artery registry, window-safe snapshots, Overmind/Heartbeat hooks
-// ----------------------------------------------------------------------------
+//  v30+ UPGRADE: Clean meta, dualband-aware hooks, global registry, system vitals
+// ============================================================================
+//
 //  CANONICAL ROLE:
 //    This organ is the **Binary Metabolism Engine** of the organism.
 //
@@ -25,10 +25,10 @@
 //      • binary energy artery source
 // ============================================================================
 
-// ============================================================================
-//  GLOBAL HANDLE (v24 IMMORTAL, environment-agnostic)
-// ============================================================================
 
+// ============================================================================
+//  GLOBAL HANDLE (v30 IMMORTAL, environment-agnostic)
+// ============================================================================
 
 const G =
   (typeof window !== "undefined" && window) ||
@@ -37,8 +37,9 @@ const G =
   (typeof global !== "undefined" && global) ||
   {};
 const g = G;
+
 // ============================================================================
-// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// UNIVERSAL TIMESTAMP / ADMIN / DB — reserved for host, not used here
 // ============================================================================
 
 const Timestamp =
@@ -46,21 +47,14 @@ const Timestamp =
   (G.Timestamp && G.Timestamp) ||
   null;
 
-// ============================================================================
-// UNIVERSAL ADMIN (Shadow or Admin)
-// ============================================================================
-
 const admin =
   (G.firebaseAdmin && G.firebaseAdmin) ||
   (G.admin && G.admin) ||
   null;
 
-// ============================================================================
-// UNIVERSAL DB (Shadow DB ALWAYS wins)
-// ============================================================================
 const db =
-  (G.db && G.db) ||                 // Shadow DB (v25++)
-  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  (G.db && G.db) ||
+  (admin && admin.firestore && admin.firestore()) ||
   null;
 
 // ============================================================================
@@ -74,15 +68,46 @@ const dblog =
 const dberror =
   (G.error && G.error) ||
   console.error;
-  
+
 const fetchFn =
-  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
-  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||
   null;
 
+
 // ============================================================================
-//  IDENTITY (v24 IMMORTAL)
+//  IDENTITY (v30 IMMORTAL-ADVANTAGE)
 // ============================================================================
+
+export const MetabolismMeta = Object.freeze({
+  identity: "aiMetabolism-v30-IMMORTAL-ADVANTAGE",
+  role: "binary_metabolism_engine",
+  layer: "C3-BinaryMetabolism",
+  version: "30.0-IMMORTAL-ADVANTAGE",
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    dualband: true,
+    packetAware: true,
+    windowAware: true,
+    multiInstanceReady: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+    epoch: "30.0-IMMORTAL-ADVANTAGE"
+  }),
+  contract: Object.freeze({
+    purpose:
+      "Provide a binary-first metabolic engine for load, pressure, cost, and budget across organs and instances.",
+    boundaries: Object.freeze([
+      "pure compute over bits and metrics",
+      "no direct network I/O",
+      "no direct filesystem I/O",
+      "no mutation of external state",
+      "metrics-only reporting to external observers"
+    ])
+  })
+});
 
 
 // ---------------------------------------------------------
@@ -105,7 +130,7 @@ export function getGlobalMetabolicArteries() {
 }
 
 // ---------------------------------------------------------
-//  v24+ SIGNAL-AWARE TRACE LAYER (optional, non-fatal)
+//  v30 SIGNAL-AWARE TRACE LAYER (optional, non-fatal)
 // ---------------------------------------------------------
 function traceMetabolismEvent(event, payload, traceFlag) {
   if (!traceFlag) return;
@@ -119,9 +144,9 @@ function traceMetabolismEvent(event, payload, traceFlag) {
       subsystem: "binary-metabolism",
       message,
       extra: payload || {},
-      system: pulseRole,
+      system: MetabolismMeta.role,
       organ: MetabolismMeta.identity,
-      layer: surfaceMeta?.layer,
+      layer: MetabolismMeta.layer,
       band: "dual"
     });
     return;
@@ -146,13 +171,27 @@ function emitMetabolismPacket(type, payload) {
 }
 
 // ---------------------------------------------------------
-//  PREWARM — v24.0-IMMORTAL-CORE++
+//  PREWARM — v30.0-IMMORTAL-ADVANTAGE
 // ---------------------------------------------------------
-export function prewarmAIBinaryMetabolism({ trace = false } = {}) {
+export function prewarmAIBinaryMetabolism({ trace = false, dualBand = null } = {}) {
+  const pressure =
+    dualBand?.binary?.metabolic?.pressure ??
+    dualBand?.binary?.pressure ??
+    0;
+
+  const load =
+    dualBand?.binary?.metabolic?.load ??
+    dualBand?.binary?.load ??
+    0;
+
   const packet = emitMetabolismPacket("prewarm", {
     type: "binary-metabolism-prewarm",
     message:
-      "Metabolism engine prewarmed and metabolic artery v4 aligned (v24 IMMORTAL)."
+      "Metabolism engine prewarmed and metabolic artery v4 aligned (v30 IMMORTAL-ADVANTAGE).",
+    binary: {
+      pressure,
+      load
+    }
   });
 
   traceMetabolismEvent("prewarm", packet, trace);
@@ -187,7 +226,7 @@ function bucketCost(v) {
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v24.0-IMMORTAL-CORE++
+//  ORGAN IMPLEMENTATION — v30.0-IMMORTAL-ADVANTAGE
 // ============================================================================
 export class AIBinaryMetabolism {
   constructor(config = {}) {
@@ -248,7 +287,9 @@ export class AIBinaryMetabolism {
           load: this.metabolicArtery.load,
           avgSize: this.metabolicArtery.avgSize,
           instanceIndex: this.instanceIndex,
-          instanceCount: AIBinaryMetabolism.getInstanceCount()
+          instanceCount: AIBinaryMetabolism.getInstanceCount(),
+          id: this.id,
+          epoch: MetabolismMeta.evo.epoch
         })
     };
   }
@@ -446,6 +487,18 @@ export class AIBinaryMetabolism {
 
   getMetabolicArterySnapshot() {
     return this._computeMetabolicArtery();
+  }
+
+  // quick vitals for other systems (v30+ convenience)
+  getMetabolicVitals() {
+    const a = this._computeMetabolicArtery();
+    return {
+      pressure: a.pressure,
+      pressureBucket: a.pressureBucket,
+      load: a.load,
+      budget: a.budget,
+      budgetBucket: a.budgetBucket
+    };
   }
 
   // ---------------------------------------------------------

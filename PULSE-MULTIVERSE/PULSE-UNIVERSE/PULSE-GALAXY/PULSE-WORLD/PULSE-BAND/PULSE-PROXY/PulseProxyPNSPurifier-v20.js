@@ -1,4 +1,4 @@
-/* global log,warn,error */
+
 /* 
 @PULSE_IMMORTAL_REQUIRE_FULL_META
 This organ requires FULL IMMORTAL++ metadata on every upgrade:
@@ -19,7 +19,17 @@ Always include ALL layers, ALL overlays, ALL IMMORTAL++ structures.
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
+import {
+  VitalsLogger as logger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 const admin = window.db;
 const db    = window.db;
 

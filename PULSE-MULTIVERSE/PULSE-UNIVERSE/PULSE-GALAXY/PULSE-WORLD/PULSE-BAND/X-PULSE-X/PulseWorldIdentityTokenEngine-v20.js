@@ -1,6 +1,4 @@
 // FILE: /netlify/functions/PulseWorldIdentityTokenEngine-v20.js
-/* global log, warn, error */
-
 // ============================================================================
 //  PULSE-WORLD IDENTITY TOKEN ENGINE — v20 IMMORTAL
 //  ROLE:
@@ -20,7 +18,17 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-
+import {
+  VitalsLogger as PulseProofLogger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 import { admin, db } from "./PulseWorldFirebaseGenome-v20.js";
 
 // ============================================================================

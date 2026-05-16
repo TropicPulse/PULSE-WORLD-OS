@@ -1,13 +1,18 @@
 // ============================================================================
-//  PULSE OS v24.0‑IMMORTAL++ — JURY FRAME ORGAN (WORLD JUSTICE ENGINE)
+//  PULSE OS v30.0‑IMMORTAL‑ADVANTAGE — JURY FRAME ORGAN (WORLD JUSTICE ENGINE)
 //  World-Lens Registry for aiOvermind / aiJury / Creator
 //  PURE FUNCTIONAL • ZERO STATE • ZERO MUTATION • JURY OF 12 LENSES
-//  v24+ UPGRADE: OrganismMap-backed identity + Signal-aware tracing (optional)
+//  v30+ UPGRADE: Clean meta, system‑jury meetings, signal‑aware tracing
+// ============================================================================
+//
+//  “PURE FUNCTIONAL • ZERO STATE • ZERO MUTATION • JURY OF 12 LENSES”
+//  “Each lens: ({ intent, context, candidate, juryFeed }) → { name, status, notes }”
+//
 // ============================================================================
 
 
 // ============================================================================
-//  GLOBAL HANDLE (v24+ IMMORTAL, environment-agnostic)
+//  GLOBAL HANDLE (v30 IMMORTAL, environment-agnostic)
 // ============================================================================
 
 const G =
@@ -17,8 +22,9 @@ const G =
   (typeof global !== "undefined" && global) ||
   {};
 const g = G;
+
 // ============================================================================
-// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// UNIVERSAL TIMESTAMP / ADMIN / DB — reserved for host, not used here
 // ============================================================================
 
 const Timestamp =
@@ -26,21 +32,14 @@ const Timestamp =
   (G.Timestamp && G.Timestamp) ||
   null;
 
-// ============================================================================
-// UNIVERSAL ADMIN (Shadow or Admin)
-// ============================================================================
-
 const admin =
   (G.firebaseAdmin && G.firebaseAdmin) ||
   (G.admin && G.admin) ||
   null;
 
-// ============================================================================
-// UNIVERSAL DB (Shadow DB ALWAYS wins)
-// ============================================================================
 const db =
-  (G.db && G.db) ||                 // Shadow DB (v25++)
-  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  (G.db && G.db) ||
+  (admin && admin.firestore && admin.firestore()) ||
   null;
 
 // ============================================================================
@@ -54,15 +53,46 @@ const dblog =
 const dberror =
   (G.error && G.error) ||
   console.error;
-  
+
 const fetchFn =
-  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
-  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||
   null;
+
+
 // ============================================================================
-//  META BLOCK — v24.0 IMMORTAL (ORGANISM KERNEL)
-//  (now backed by the Organism Map instead of hardcoded here)
+//  META BLOCK — v30.0 IMMORTAL‑ADVANTAGE (WORLD JUSTICE ENGINE)
 // ============================================================================
+
+export const JuryFrameMeta = Object.freeze({
+  identity: "JuryFrame-v30-IMMORTAL-ADVANTAGE",
+  role: "world_justice_engine",
+  layer: "C6-WorldJury",
+  version: "30.0-IMMORTAL-ADVANTAGE",
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    dualband: true,
+    packetAware: true,
+    windowAware: true,
+    multiSystemReady: true,
+    zeroNetwork: true,
+    zeroFilesystem: true,
+    zeroMutationOfInput: true,
+    epoch: "30.0-IMMORTAL-ADVANTAGE"
+  }),
+  contract: Object.freeze({
+    purpose:
+      "Provide a 12-lens, world-level justice frame for evaluating candidates, with support for multi-system jury meetings.",
+    boundaries: Object.freeze([
+      "pure functional",
+      "no external I/O",
+      "no mutation of inputs",
+      "no prescriptive directives",
+      "no outcome guarantees"
+    ])
+  })
+});
 
 
 // ============================================================================
@@ -130,8 +160,9 @@ function extractBoundaryPressure(boundaryArtery = {}) {
   return 0;
 }
 
+
 // ============================================================================
-//  v24+ SIGNAL-AWARE TRACE LAYER (optional, non-fatal)
+//  v30 SIGNAL-AWARE TRACE LAYER (optional, non-fatal)
 // ============================================================================
 
 function traceJuryEvent(event, payload, traceFlag) {
@@ -157,6 +188,7 @@ function traceJuryEvent(event, payload, traceFlag) {
   // eslint-disable-next-line no-console
   console.log(message, payload);
 }
+
 
 // ============================================================================
 //  LENS DEFINITIONS — 12 "JURORS"
@@ -520,6 +552,7 @@ function makeMetaLens() {
   };
 }
 
+
 // ============================================================================
 //  JURY CONSTRUCTION — 12 LENSES
 // ============================================================================
@@ -540,6 +573,7 @@ export function createJuryLenses({ safetyAPI } = {}) {
     makeMetaLens() // 12
   ]);
 }
+
 
 // ============================================================================
 //  WORLD-LENS FUSION + ARTERY (PURE) — FLOW PRODUCT VIEW
@@ -630,26 +664,11 @@ function computeWorldLensArtery({
   };
 }
 
+
 // ============================================================================
-//  JURY EVALUATION — MAIN ENTRY
+//  JURY EVALUATION — MAIN ENTRY (single system)
 // ============================================================================
 
-/**
- * evaluateJury
- *
- * Pure, deterministic evaluation of a candidate through the 12-lens jury.
- *
- * input = {
- *   intent,
- *   context,      // may include aiOrigin, originTag, priorSummary, etc.
- *   candidate,    // text or { text }
- *   juryFeed,     // PulseUser.buildJuryFeed() output (citizen witness + advantage)
- *   binaryVitals,
- *   boundaryArtery,
- *   safetyAPI,
- *   trace          // optional: enable Signal/console tracing
- * }
- */
 export function evaluateJury({
   intent,
   context,
@@ -666,12 +685,10 @@ export function evaluateJury({
     lens({ intent, context, candidate, juryFeed })
   );
 
-  // Aggregate verdict
   let verdict = "pass";
   if (lensResults.some(r => r.status === "fail")) verdict = "fail";
   else if (lensResults.some(r => r.status === "warn")) verdict = "warn";
 
-  // Creator-level flags
   const creatorFlags = {
     aiOriginRisk: lensResults.some(
       r => r.name === "AIOriginLens" && r.status !== "pass"
@@ -712,8 +729,73 @@ export function evaluateJury({
   return result;
 }
 
+
 // ============================================================================
-//  PUBLIC API — Create Jury Frame Organ (v24 IMMORTAL, dualband-ready)
+//  SYSTEM JURY MEETING — v30+ multi-system world-justice fusion
+// ============================================================================
+//
+//  systemJuryMeeting({
+//    systems: {
+//      systemName: {
+//        intent,
+//        context,
+//        candidate,
+//        juryFeed,
+//        binaryVitals,
+//        boundaryArtery
+//      },
+//      ...
+//    },
+//    safetyAPI,
+//    trace
+//  })
+//
+//  Each system gets its own 12-lens verdict; then a meta‑jury fuses them.
+//
+
+export function systemJuryMeeting({
+  systems = {},
+  safetyAPI,
+  trace = false
+} = {}) {
+  const perSystem = {};
+  const allLensResults = [];
+
+  for (const [name, cfg] of Object.entries(systems)) {
+    const res = evaluateJury({
+      ...cfg,
+      safetyAPI,
+      trace
+    });
+    perSystem[name] = res;
+    allLensResults.push(...res.lensResults);
+  }
+
+  const fusedArtery = computeWorldLensArtery({
+    lensResults: allLensResults,
+    binaryVitals: {},       // meta‑fusion is symbolic-only
+    boundaryArtery: {}
+  });
+
+  let metaVerdict = "pass";
+  if (allLensResults.some(r => r.status === "fail")) metaVerdict = "fail";
+  else if (allLensResults.some(r => r.status === "warn")) metaVerdict = "warn";
+
+  const out = Object.freeze({
+    meta: JuryFrameMeta,
+    metaVerdict,
+    metaArtery: fusedArtery,
+    systems: perSystem
+  });
+
+  traceJuryEvent("systemJuryMeeting", out, trace);
+
+  return out;
+}
+
+
+// ============================================================================
+//  PUBLIC API — Create Jury Frame Organ (v30 IMMORTAL‑ADVANTAGE)
 // ============================================================================
 
 export function createJuryFrame({ safetyAPI, trace = false } = {}) {
@@ -785,20 +867,16 @@ export function createJuryFrame({ safetyAPI, trace = false } = {}) {
   });
 }
 
+
 // ---------------------------------------------------------------------------
-//  DUAL EXPORT LAYER — CommonJS compatibility
+//  DUAL EXPORT LAYER — CommonJS compatibility (v30 clean)
 // ---------------------------------------------------------------------------
 /* c8 ignore next 10 */
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     JuryFrameMeta,
-    JURY_IDENTITY,
     createJuryFrame,
     evaluateJury,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META
+    systemJuryMeeting
   };
 }

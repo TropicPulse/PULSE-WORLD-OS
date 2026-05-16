@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-AI/aiExperience-v30.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-AI/PulseAIExperience-v30.js
 // LAYER: EXPERIENCE ORGAN (Tone • Boundaries • Flow • Refusals)
 // ============================================================================
 //

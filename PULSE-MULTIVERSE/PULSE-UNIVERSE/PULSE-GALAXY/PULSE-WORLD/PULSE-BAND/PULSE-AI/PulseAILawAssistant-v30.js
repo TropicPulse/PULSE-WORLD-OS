@@ -1,7 +1,7 @@
 // ============================================================================
-//  aiLawAssistant-v24.js — PulseOS Legal Assistant Organ — v24.0‑IMMORTAL++
+//  aiLawAssistant-v30.js — PulseOS Legal Assistant Organ — v30.0‑IMMORTAL‑ADVANTAGE
 //  Structured • Neutral • Doctrine‑Aware • Route‑Based Law Reader
-//  v24+ UPGRADE: OrganismMap identity + Signal-aware tracing + global handle
+//  v30+ UPGRADE: Clean meta, signal-safe tracing, no undefined globals, pure compute.
 // ============================================================================
 //
 //  CANONICAL ROLE:
@@ -32,7 +32,7 @@
 
 
 // ============================================================================
-//  GLOBAL HANDLE (v24 IMMORTAL, environment-agnostic)
+//  GLOBAL HANDLE (environment-agnostic, v30 IMMORTAL)
 // ============================================================================
 
 const G =
@@ -42,8 +42,9 @@ const G =
   (typeof global !== "undefined" && global) ||
   {};
 const g = G;
+
 // ============================================================================
-// UNIVERSAL TIMESTAMP (Shadow or Admin)
+// UNIVERSAL TIMESTAMP (Shadow or Admin) — kept for compatibility, unused here
 // ============================================================================
 
 const Timestamp =
@@ -52,7 +53,7 @@ const Timestamp =
   null;
 
 // ============================================================================
-// UNIVERSAL ADMIN (Shadow or Admin)
+// UNIVERSAL ADMIN / DB (Shadow DB ALWAYS wins) — reserved for host, not used here
 // ============================================================================
 
 const admin =
@@ -60,16 +61,13 @@ const admin =
   (G.admin && G.admin) ||
   null;
 
-// ============================================================================
-// UNIVERSAL DB (Shadow DB ALWAYS wins)
-// ============================================================================
 const db =
   (G.db && G.db) ||                 // Shadow DB (v25++)
   (admin && admin.firestore && admin.firestore()) || // Admin fallback
   null;
 
 // ============================================================================
-// UNIVERSAL LOGGING
+// UNIVERSAL LOGGING (fallback to console)
 // ============================================================================
 
 const dblog =
@@ -79,46 +77,24 @@ const dblog =
 const dberror =
   (G.error && G.error) ||
   console.error;
-  
+
+// Shadow fetch alias (NOT used directly in this organ; zero-network guarantee)
 const fetchFn =
-  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
-  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||
   null;
 
 
-function traceLawEvent(event, payload, traceFlag) {
-  if (!traceFlag) return;
-
-  const message = `[aiLawAssistant] ${event}`;
-
-  const s = g.PulseProofSignal;
-  if (s && typeof s.signal === "function") {
-    s.signal({
-      level: "info",
-      subsystem: "law-assistant",
-      message,
-      extra: payload || {},
-      system: pulseRole,
-      organ: LAW_ASSISTANT_IDENTITY?.OrganMeta?.identity,
-      layer: surfaceMeta?.layer,
-      band: "dual"
-    });
-    return;
-  }
-
-  console.log(message, payload);
-}
-
 // ============================================================================
-//  ORGAN ROLE META (v24 IMMORTAL)
+//  ORGAN ROLE META (v30 IMMORTAL‑ADVANTAGE)
 // ============================================================================
 
 export const PulseRole = Object.freeze({
   type: "Cognitive",
   subsystem: "aiLawAssistant",
   layer: "C5-LegalMapper",
-  version: "24.0-IMMORTAL++",
-  identity: "aiLawAssistant-v24-IMMORTAL++",
+  version: "30.0-IMMORTAL-ADVANTAGE",
+  identity: "aiLawAssistant-v30-IMMORTAL-ADVANTAGE",
 
   evo: Object.freeze({
     driftProof: true,
@@ -141,7 +117,7 @@ export const PulseRole = Object.freeze({
     lawReaderAware: true,
     multiInstanceReady: true,
     readOnly: true,
-    epoch: "24.0-IMMORTAL++",
+    epoch: "30.0-IMMORTAL-ADVANTAGE",
 
     zeroNetwork: true,
     zeroFilesystem: true,
@@ -151,7 +127,7 @@ export const PulseRole = Object.freeze({
   contract: Object.freeze({
     purpose:
       "Act as a law assistant: spot legal issues, map doctrines, outline arguments and counterarguments, and explain how legal reasoning typically works.",
-    boundaries: [
+    boundaries: Object.freeze([
       "not a lawyer",
       "no legal advice",
       "no prescriptive directives",
@@ -159,7 +135,7 @@ export const PulseRole = Object.freeze({
       "pure compute",
       "ego-free",
       "treat external law data as informational only"
-    ]
+    ])
   }),
 
   voice: Object.freeze({
@@ -172,6 +148,33 @@ export const PulseRole = Object.freeze({
     return "I’m a law assistant, not a lawyer. I can help you understand issues and questions to bring to your attorney, but I don’t give legal advice.";
   }
 });
+
+// ============================================================================
+//  SIGNAL-AWARE TRACING (v30, no undefined globals)
+// ============================================================================
+
+function traceLawEvent(event, payload, traceFlag) {
+  if (!traceFlag) return;
+
+  const message = `[aiLawAssistant] ${event}`;
+
+  const s = g.PulseProofSignal;
+  if (s && typeof s.signal === "function") {
+    s.signal({
+      level: "info",
+      subsystem: "law-assistant",
+      message,
+      extra: payload || {},
+      system: PulseRole,          // use canonical role meta
+      organ: PulseRole.identity,  // organ identity
+      layer: PulseRole.layer,
+      band: "dual"
+    });
+    return;
+  }
+
+  console.log(message, payload);
+}
 
 // ============================================================================
 //  DOCUMENT INTERPRETER v3 — issue spotting + doctrine mapping
@@ -596,6 +599,7 @@ PulseRole.issueWithLaw = function issueWithLaw(
   traceLawEvent("issueWithLaw", out, trace);
   return out;
 };
+
 // ============================================================================
 //  LAW QUERY v3 — pointer + route‑based query
 // ============================================================================
@@ -678,23 +682,17 @@ PulseRole.lawQuery = function lawQuery({
 };
 
 // ============================================================================
-//  ORGAN EXPORT — v24 IMMORTAL
+//  ORGAN EXPORT — v30 IMMORTAL‑ADVANTAGE
 // ============================================================================
 
 export const aiLawAssistant = Object.freeze(PulseRole);
 
 // ============================================================================
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
+//  DUAL‑MODE EXPORTS (ESM + CommonJS) — v30 clean, no undefined symbols
 // ============================================================================
 
 if (typeof module !== "undefined") {
   module.exports = {
-    LAW_ASSISTANT_IDENTITY,
-    pulseRole,
-    surfaceMeta,
-    pulseLoreContext,
-    AI_EXPERIENCE_META,
-    EXPORT_META,
     PulseRole,
     aiLawAssistant
   };

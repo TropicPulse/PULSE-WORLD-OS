@@ -4,7 +4,7 @@
 //  PURE META. ZERO MUTATION. ZERO SELF‑MODIFICATION. ZERO TIME.
 // ============================================================================
 
-import { getOrganismSnapshot } from "./aiDeps-v24.js";
+import { getOrganismSnapshot } from "./PulseAIDeps-v24.js";
 
 // ============================================================================
 //  HELPERS — SNAPSHOT + CHUNKING + PACKETS (NO META, NO TIME)

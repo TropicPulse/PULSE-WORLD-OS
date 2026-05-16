@@ -7,11 +7,11 @@
 
 import { aiToneEngine } from "./PulseAIToneEngine-v30.js";
 import { aiPersonalityEngine } from "./PulseAIPersonalityEngine-v30.js";
-import { aiIdentityCore } from "./aiIdentityCore-v30.js";
+import { aiIdentityCore } from "./PulseAIIdentityCore-v30.js";
 
 // Optional mesh + presence imports (if you wire them later)
-// import { aiMeshRouter } from "./aiMeshRouter-v30.js";
-// import { aiPresenceEngine } from "./aiPresenceEngine-v30.js";
+// import { aiMeshRouter } from "./PulseAIMeshRouter-v30.js";
+// import { aiPresenceEngine } from "./PulseAIPresenceEngine-v30.js";
 
 export const aiToneRouter = {
   // ─────────────────────────────────────────────────────────────

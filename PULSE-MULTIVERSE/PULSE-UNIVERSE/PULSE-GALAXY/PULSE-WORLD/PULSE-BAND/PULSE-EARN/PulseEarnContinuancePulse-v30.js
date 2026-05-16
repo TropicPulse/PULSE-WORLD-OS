@@ -1,15 +1,14 @@
 // ============================================================================
-//  PulseEarnContinuancePulse-v24-Immortal-INTEL.js
-//  Earn v1 Continuance Wrapper (v24 IMMORTAL SAFE MODE)
+//  PulseEarnContinuancePulse-v30-Immortal-INTEL.js
+//  Earn v1 Continuance Wrapper (v30 IMMORTAL SAFE MODE)
 //  NO PulseSendSystem, NO network, NO routing, NO loops.
 //  Only: build LegacyEarn v1 + Pulse-compatible envelope and return it.
 //  Presence/Advantage/Chunk/Band/Binary/Wave/Hints/ComputeProfile-aware
 //  as METADATA ONLY (pure compute, deterministic).
-//  v24-INTEL: extended pulseIntelligence + advantage + computeProfile
+//  v30-INTEL: extended pulseIntelligence + advantage + computeProfile
 //  with factoring, chunk/cache/prewarm, band/binary/gpu/miner/air-aware hints,
 //  and continuance/risk-aware surfaces (metadata-only).
 // ============================================================================
-// 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
 
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
@@ -19,22 +18,14 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-// 2 — EXPORT GENOME METADATA
-export const PulseEarnContinuancePulseMeta = Identity.OrganMeta;
-
-// ============================================================================
-// Deterministic cycle counter (replaces timestamps)
-// ============================================================================
 let continuanceCycle = 0;
 
-// ============================================================================
-// Deterministic Hash Helper
-// ============================================================================
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
-  for (let i = 0; i < s.length; i++)
+  for (let i = 0; i < s.length; i++) {
     h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
   return `h${h}`;
 }
 
@@ -49,7 +40,7 @@ function clamp01(x) {
 }
 
 // ============================================================================
-// v24 Presence Field (IMMORTAL)
+// v30 Presence Field (IMMORTAL)
 // ============================================================================
 function classifyPresenceTier(pressure) {
   if (pressure >= 150) return "critical";
@@ -59,7 +50,7 @@ function classifyPresenceTier(pressure) {
   return "idle";
 }
 
-function buildPresenceFieldV24(globalHints = {}, cycle) {
+function buildPresenceFieldV30(globalHints = {}, cycle) {
   const ghP = globalHints.presenceContext || {};
   const mesh = globalHints.meshSignals || {};
   const castle = globalHints.castleSignals || {};
@@ -79,7 +70,7 @@ function buildPresenceFieldV24(globalHints = {}, cycle) {
   const presenceTier = classifyPresenceTier(pressure);
 
   return {
-    presenceVersion: "v24-Immortal-INTEL",
+    presenceVersion: "v30-Immortal-INTEL",
     presenceTier,
 
     bandPresence: ghP.bandPresence || "symbolic",
@@ -100,15 +91,22 @@ function buildPresenceFieldV24(globalHints = {}, cycle) {
     cycle,
 
     presenceSignature: computeHash(
-      `CONTINUANCE_PRESENCE_V24::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+      `CONTINUANCE_PRESENCE_V30::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
     )
   };
 }
 
 // ============================================================================
-// Advantage‑C v24 (structural, IMMORTAL-safe)
+// Advantage‑C v30 (structural, IMMORTAL-safe)
 // ============================================================================
-function buildAdvantageFieldV24(binaryField, waveField, presenceField, globalHints = {}, continuanceSnapshot = null, riskSnapshot = null) {
+function buildAdvantageFieldV30(
+  binaryField,
+  waveField,
+  presenceField,
+  globalHints = {},
+  continuanceSnapshot = null,
+  riskSnapshot = null
+) {
   const density = binaryField.binarySurface.density;
   const amplitude = waveField.amplitude;
 
@@ -148,7 +146,7 @@ function buildAdvantageFieldV24(binaryField, waveField, presenceField, globalHin
   const coldStartHints = hints.coldStartHints || {};
 
   return {
-    advantageVersion: "C-24.0-INTEL",
+    advantageVersion: "C-30.0-INTEL",
     advantageScore,
     advantageTier,
     fallbackBandLevel: hints.fallbackBandLevel ?? 0,
@@ -169,9 +167,9 @@ function buildAdvantageFieldV24(binaryField, waveField, presenceField, globalHin
 }
 
 // ============================================================================
-// Chunk / Cache / Prewarm Plan v24
+// Chunk / Cache / Prewarm Plan v30
 // ============================================================================
-function buildChunkPrewarmPlanV24(presenceField, advantageField) {
+function buildChunkPrewarmPlanV30(presenceField, advantageField) {
   const basePriority =
     presenceField.presenceTier === "critical"
       ? 4
@@ -192,7 +190,7 @@ function buildChunkPrewarmPlanV24(presenceField, advantageField) {
     advantageField.gpuPreferred ? 1 : 0;
 
   return {
-    planVersion: "v24-Continuance-AdvantageC-INTEL",
+    planVersion: "v30-Continuance-AdvantageC-INTEL",
     priority: basePriority + advantageBoost + gpuBoost,
     band: presenceField.presenceTier,
     chunks: {
@@ -213,9 +211,9 @@ function buildChunkPrewarmPlanV24(presenceField, advantageField) {
 }
 
 // ============================================================================
-// Hints + Compute Profile v24 (metadata-only)
+// Hints + Compute Profile v30 (metadata-only)
 // ============================================================================
-function buildHintsFieldV24(globalHints = {}) {
+function buildHintsFieldV30(globalHints = {}) {
   return Object.freeze({
     fallbackBandLevel: globalHints.fallbackBandLevel ?? 0,
     chunkHints: globalHints.chunkHints || {},
@@ -228,14 +226,18 @@ function buildHintsFieldV24(globalHints = {}) {
   });
 }
 
-function normalizeCachePriorityV24(p) {
+function normalizeCachePriorityV30(p) {
   if (!p) return "normal";
   const v = String(p).toLowerCase();
   if (v === "critical" || v === "high" || v === "low") return v;
   return "normal";
 }
 
-function deriveFactoringSignalV24({ meshPressureIndex = 0, cachePriority = "normal", prewarmNeeded = false }) {
+function deriveFactoringSignalV30({
+  meshPressureIndex = 0,
+  cachePriority = "normal",
+  prewarmNeeded = false
+}) {
   const pressure = clamp01(meshPressureIndex / 100);
   const highPressure = pressure >= 0.7;
   const criticalCache = cachePriority === "critical";
@@ -244,14 +246,20 @@ function deriveFactoringSignalV24({ meshPressureIndex = 0, cachePriority = "norm
   return 0;
 }
 
-function buildComputeProfileV24({ band, presenceField, advantageField, globalHints = {}, capabilityModel = {} }) {
+function buildComputeProfileV30({
+  band,
+  presenceField,
+  advantageField,
+  globalHints = {},
+  capabilityModel = {}
+}) {
   const b = normalizeBand(band);
-  const hintsField = buildHintsFieldV24(globalHints);
-  const cachePriority = normalizeCachePriorityV24(hintsField.cacheHints.priority);
+  const hintsField = buildHintsFieldV30(globalHints);
+  const cachePriority = normalizeCachePriorityV30(hintsField.cacheHints.priority);
   const prewarmNeeded = !!hintsField.prewarmHints.shouldPrewarm;
   const meshPressureIndex = Number(globalHints.meshSignals?.meshPressureIndex || 0);
 
-  const factoringSignal = deriveFactoringSignalV24({
+  const factoringSignal = deriveFactoringSignalV30({
     meshPressureIndex,
     cachePriority,
     prewarmNeeded
@@ -263,6 +271,7 @@ function buildComputeProfileV24({ band, presenceField, advantageField, globalHin
   const airScore = capabilityModel.airScore ?? 0;
 
   return Object.freeze({
+    profileVersion: "CONTINUANCE-COMPUTE-30",
     routeBand: b,
     fallbackBandLevel: hintsField.fallbackBandLevel,
     chunkAggression: hintsField.chunkHints.chunkAggression ?? 0,
@@ -284,9 +293,9 @@ function buildComputeProfileV24({ band, presenceField, advantageField, globalHin
 }
 
 // ============================================================================
-// Binary + Wave Surfaces (v24)
+// Binary + Wave Surfaces (v30)
 // ============================================================================
-function buildBinaryFieldV24(pattern, lineage, cycle) {
+function buildBinaryFieldV30(pattern, lineage, cycle) {
   const size = pattern.length + lineage.length;
   const density = size + cycle;
   const surface = density + size;
@@ -304,7 +313,7 @@ function buildBinaryFieldV24(pattern, lineage, cycle) {
   };
 }
 
-function buildWaveFieldV24(pattern, lineage, cycle, band) {
+function buildWaveFieldV30(pattern, lineage, cycle, band) {
   const amplitude = lineage.length + cycle;
   const wavelength = pattern.length + 1;
   const phase = (pattern.length + lineage.length + cycle) % 16;
@@ -319,9 +328,15 @@ function buildWaveFieldV24(pattern, lineage, cycle, band) {
 }
 
 // ============================================================================
-// Pulse Intelligence for Earn Continuance (logic-only, v24)
+// Pulse Intelligence for Earn Continuance (logic-only, v30)
 // ============================================================================
-function computePulseIntelligenceForEarnV24({ band, factoringSignal, presenceField, advantageField, computeProfile }) {
+function computePulseIntelligenceForEarnV30({
+  band,
+  factoringSignal,
+  presenceField,
+  advantageField,
+  computeProfile
+}) {
   const bandIsBinary = band === "binary" ? 1 : 0;
   const factoring = factoringSignal ? 1 : 0;
 
@@ -378,9 +393,15 @@ function computePulseIntelligenceForEarnV24({ band, factoringSignal, presenceFie
 }
 
 // ============================================================================
-// Build Legacy Earn v1 (unchanged logic, upgraded metadata surfaces v24)
+// Build Legacy Earn v1 (unchanged logic, upgraded metadata surfaces v30)
 // ============================================================================
-function buildLegacyEarnV1(impulse, globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
+function buildLegacyEarnV1(
+  impulse,
+  globalHints = {},
+  continuanceSnapshot = null,
+  riskSnapshot = null,
+  capabilityModel = {}
+) {
   continuanceCycle++;
 
   const payload = impulse?.payload || {};
@@ -399,10 +420,10 @@ function buildLegacyEarnV1(impulse, globalHints = {}, continuanceSnapshot = null
   const patternSignature = computeHash(pattern);
   const lineageSignature = computeHash(lineage.join("::"));
 
-  const presenceField = buildPresenceFieldV24(globalHints, continuanceCycle);
-  const binaryField = buildBinaryFieldV24(pattern, lineage, continuanceCycle);
-  const waveField = buildWaveFieldV24(pattern, lineage, continuanceCycle, band);
-  const advantageField = buildAdvantageFieldV24(
+  const presenceField = buildPresenceFieldV30(globalHints, continuanceCycle);
+  const binaryField = buildBinaryFieldV30(pattern, lineage, continuanceCycle);
+  const waveField = buildWaveFieldV30(pattern, lineage, continuanceCycle, band);
+  const advantageField = buildAdvantageFieldV30(
     binaryField,
     waveField,
     presenceField,
@@ -410,9 +431,9 @@ function buildLegacyEarnV1(impulse, globalHints = {}, continuanceSnapshot = null
     continuanceSnapshot,
     riskSnapshot
   );
-  const chunkPlan = buildChunkPrewarmPlanV24(presenceField, advantageField);
-  const hintsField = buildHintsFieldV24(globalHints);
-  const computeProfile = buildComputeProfileV24({
+  const chunkPlan = buildChunkPrewarmPlanV30(presenceField, advantageField);
+  const hintsField = buildHintsFieldV30(globalHints);
+  const computeProfile = buildComputeProfileV30({
     band,
     presenceField,
     advantageField,
@@ -420,7 +441,7 @@ function buildLegacyEarnV1(impulse, globalHints = {}, continuanceSnapshot = null
     capabilityModel
   });
 
-  const pulseIntelligence = computePulseIntelligenceForEarnV24({
+  const pulseIntelligence = computePulseIntelligenceForEarnV30({
     band,
     factoringSignal,
     presenceField,
@@ -432,7 +453,7 @@ function buildLegacyEarnV1(impulse, globalHints = {}, continuanceSnapshot = null
     EarnRole: {
       kind: "Earn",
       version: "1.0",
-      identity: "Earn-v1-Continuance-v24-Immortal-INTEL"
+      identity: "Earn-v1-Continuance-v30-Immortal-INTEL"
     },
 
     jobId,
@@ -461,7 +482,7 @@ function buildLegacyEarnV1(impulse, globalHints = {}, continuanceSnapshot = null
     meta: {
       ...(payload.meta || {}),
       legacy: true,
-      origin: "ContinuancePulse-v24-Immortal-INTEL",
+      origin: "ContinuancePulse-v30-Immortal-INTEL",
       cycleIndex: continuanceCycle,
       patternSignature,
       lineageSignature
@@ -470,9 +491,9 @@ function buildLegacyEarnV1(impulse, globalHints = {}, continuanceSnapshot = null
 }
 
 // ============================================================================
-// Build Pulse-Compatible Envelope (v24 surfaces)
+// Build Pulse-Compatible Envelope (v30 surfaces)
 // ============================================================================
-function buildPulseCompatibleEarnV24(earn) {
+function buildPulseCompatibleEarnV30(earn) {
   if (!earn) return null;
 
   const continuanceSignature = computeHash(
@@ -480,7 +501,6 @@ function buildPulseCompatibleEarnV24(earn) {
   );
 
   return {
-    PulseRole,
 
     jobId: earn.jobId,
     pattern: earn.pattern,
@@ -507,9 +527,9 @@ function buildPulseCompatibleEarnV24(earn) {
 
     meta: {
       ...(earn.meta || {}),
-      origin: "ContinuancePulse-v24-Immortal-INTEL",
+      origin: "ContinuancePulse-v30-Immortal-INTEL",
       earnVersion: "1.0",
-      earnIdentity: "Earn-v1-Continuance-v24-Immortal-INTEL",
+      earnIdentity: "Earn-v1-Continuance-v30-Immortal-INTEL",
       earnEnvelope: true,
       cycleIndex: earn.meta.cycleIndex,
       continuanceSignature,
@@ -528,12 +548,24 @@ function buildPulseCompatibleEarnV24(earn) {
 }
 
 // ============================================================================
-// PUBLIC API — PulseEarnContinuancePulse (v24 IMMORTAL-INTEL SAFE MODE)
+// PUBLIC API — PulseEarnContinuancePulse (v30 IMMORTAL-INTEL SAFE MODE)
 // ============================================================================
 export const PulseEarnContinuancePulse = {
-  build(impulse, globalHints = {}, continuanceSnapshot = null, riskSnapshot = null, capabilityModel = {}) {
-    const earnV1 = buildLegacyEarnV1(impulse, globalHints, continuanceSnapshot, riskSnapshot, capabilityModel);
-    const pulseCompatibleEarn = buildPulseCompatibleEarnV24(earnV1);
+  build(
+    impulse,
+    globalHints = {},
+    continuanceSnapshot = null,
+    riskSnapshot = null,
+    capabilityModel = {}
+  ) {
+    const earnV1 = buildLegacyEarnV1(
+      impulse,
+      globalHints,
+      continuanceSnapshot,
+      riskSnapshot,
+      capabilityModel
+    );
+    const pulseCompatibleEarn = buildPulseCompatibleEarnV30(earnV1);
 
     return {
       ok: true,
@@ -545,7 +577,5 @@ export const PulseEarnContinuancePulse = {
 };
 
 export default {
-  PulseRole,
-  PulseEarnContinuancePulseMeta,
   PulseEarnContinuancePulse
 };

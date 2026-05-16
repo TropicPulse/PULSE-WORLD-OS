@@ -1,4 +1,4 @@
-/* global log, warn, error */
+
 // ============================================================================
 // FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-UNIVERSE/X-PULSE-X/PulseWorldEcoSystem-v20.js
 // ORGAN: PulseWorldEcoSystem-v20 (Environment Engine Organ)
@@ -120,7 +120,17 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-
+import {
+  VitalsLogger as PulseProofLogger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 // ============================================================================
 // IMPORTS
 // ============================================================================

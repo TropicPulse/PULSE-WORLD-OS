@@ -1,4 +1,4 @@
-/* global log,warn */
+
 // ============================================================================
 //  PULSE GPU BRAIN v24-Immortal++ — THE ANALYST CORTEX / BRAINSTEM
 //  CPU-SIDE INTELLIGENCE DIVISION (FULL-GPU, API-AGNOSTIC)
@@ -19,7 +19,17 @@
 //  NOTE: These imports are for identity, contracts, and future intelligent
 //        compute hooks. No direct calls here: brain stays pure.
 // ---------------------------------------------------------------------------
-
+import {
+  VitalsLogger as logger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 import * as PulseGPU                   from "./PulseGPU-v24.js";
 import * as PulseBinaryGPU             from "./PulseGPUBinary-v24.js";
 

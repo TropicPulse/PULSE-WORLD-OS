@@ -1,15 +1,16 @@
 // ============================================================================
-// FILE: PulseEarnChunker-v24-IMMORTAL-INTEL++-UPGRADED.js
-// [pulse:earn] CHUNKER LAYER — v24‑IMMORTAL‑INTEL++‑THROUGHPUT‑SUBSTRATE‑24++
+// FILE: PulseEarnChunker-v30-IMMORTAL-INTEL++-UPGRADED.js
+// [pulse:earn] CHUNKER LAYER — v30‑IMMORTAL‑INTEL++‑THROUGHPUT‑SUBSTRATE‑30++
 // ----------------------------------------------------------------------------
 // ROLE:
-//   • Consume Earn v24 signal‑factoring surfaces and turn them into EXECUTION plans.
+//   • Consume Earn v30 signal‑factoring surfaces and turn them into EXECUTION plans.
 //   • Redefine throughput by aligning chunks with GPU lanes, warps, memory bursts.
 //   • Operate at the lowest possible software layer without touching firmware.
 //   • Deterministic, drift‑proof, multi‑instance safe, metadata‑only (no routing).
 //   • Expose full INTEL dual‑hash surfaces + healing diagnostics for observability.
+//   • v30+: binary‑first density, dual‑band coherence, chunk‑aware throughput.
 // ----------------------------------------------------------------------------
-// SAFETY CONTRACT (IMMORTAL v24‑INTEL):
+// SAFETY CONTRACT (IMMORTAL v30‑INTEL):
 //   • No payload mutation beyond page.meta / page.flags / page.runtime (optional).
 //   • No routing influence (metadata only; routers MAY read but MUST NOT obey).
 //   • No randomness, no timestamps, no async, no network, no filesystem.
@@ -28,7 +29,7 @@
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 // ============================================================================
-// HASH / GENERIC HELPERS — v24 IMMORTAL
+// HASH / GENERIC HELPERS — v30 IMMORTAL
 // ============================================================================
 
 function computeHash(str) {
@@ -81,7 +82,7 @@ function normalizeBand(band) {
 }
 
 // ============================================================================
-// HEALING METADATA — Chunker Health / Throughput Log (v24-IMMORTAL-INTEL++-24PLUS)
+// HEALING METADATA — Chunker Health / Throughput Log (v30-IMMORTAL-INTEL++-30PLUS)
 // ============================================================================
 const chunkerHealing = {
   cycleCount: 0,
@@ -113,6 +114,8 @@ const chunkerHealing = {
   lastPlanScore: null,
   lastBinaryDensity: null,
   lastWaveAmplitude: null,
+  lastWaveCoherence: null,
+  lastBinaryBias: null,
 
   lastChunkPlanVersion: null,
   lastChunkPlanPriority: null,
@@ -130,16 +133,16 @@ export function getPulseEarnChunkerHealingState() {
 // ============================================================================
 
 function deriveWarpSizeFromBand(band) {
-  // symbolic: smaller logical warps, binary: larger physical warps
-  if (band === "binary") return 32;
+  // v30: binary gets wider warps, symbolic stays compact
+  if (band === "binary") return 64;
   return 16;
 }
 
 function deriveLaneGroupCount(gpuLaneCount, advantageTier) {
   const lanes = Math.max(1, safeNumber(gpuLaneCount, 1));
   const tierBoost =
-    advantageTier >= 3 ? 1.5 :
-    advantageTier === 2 ? 1.25 :
+    advantageTier >= 3 ? 1.75 :
+    advantageTier === 2 ? 1.35 :
     advantageTier === 1 ? 1.0 :
     0.75;
 
@@ -158,12 +161,14 @@ function deriveBurstSize(cacheTier, planTier) {
   return Math.max(1, base);
 }
 
-function deriveThroughputClass(advantageScore, planScore, density, amplitude) {
+function deriveThroughputClass(advantageScore, planScore, density, amplitude, coherence, binaryBias) {
   const score = clamp01(
-    advantageScore * 0.4 +
-    planScore       * 0.3 +
-    clamp01(density / 256)   * 0.15 +
-    clamp01(amplitude / 256) * 0.15
+    advantageScore * 0.35 +
+    planScore       * 0.25 +
+    clamp01(density   / 256) * 0.15 +
+    clamp01(amplitude / 256) * 0.10 +
+    clamp01(coherence)       * 0.10 +
+    clamp01(binaryBias)      * 0.05
   );
 
   if (score >= 0.9) return { cls: "throughput_extreme", score };
@@ -173,7 +178,7 @@ function deriveThroughputClass(advantageScore, planScore, density, amplitude) {
 }
 
 // ============================================================================
-// CORE: BUILD EXECUTION ENVELOPE (GPU / MEMORY / IO)
+// CORE: BUILD EXECUTION ENVELOPE (GPU / MEMORY / IO) — v30 BINARY‑AWARE
 // ============================================================================
 
 function buildChunkExecutionEnvelope({
@@ -205,14 +210,23 @@ function buildChunkExecutionEnvelope({
   const planTier  = chunkPlan.planTier  || "plan_low";
   const burstSize = deriveBurstSize(cacheTier, planTier);
 
-  const density   = safeNumber(bandPack?.binaryField?.density ?? 0, 0);
-  const amplitude = safeNumber(bandPack?.waveField?.amplitude ?? 0, 0);
+  // v30: binary density + wave amplitude + coherence
+  const density   = safeNumber(bandPack?.binaryField?.bitDensity ?? 0, 0);
+  const amplitude = safeNumber(bandPack?.waveField?.amplitude   ?? 0, 0);
+  const coherence = clamp01(bandPack?.waveField?.coherence ?? 0);
+  const binaryBias = clamp01(
+    advantageField?.gpuBinaryBias ??
+    bandPack?.binaryField?.gpuBinaryAffinity ??
+    0
+  );
 
   const throughput = deriveThroughputClass(
     safeNumber(advantageField?.advantageScore ?? 0, 0),
     safeNumber(chunkPlan?.planScore ?? 0, 0),
     density,
-    amplitude
+    amplitude,
+    coherence,
+    binaryBias
   );
 
   const gpuWarpPlan = {
@@ -230,7 +244,8 @@ function buildChunkExecutionEnvelope({
     cacheTier,
     planTier,
     binaryDensity: density,
-    waveAmplitude: amplitude
+    waveAmplitude: amplitude,
+    waveCoherence: coherence
   };
 
   const ioBurstPlan = {
@@ -260,6 +275,8 @@ function buildChunkExecutionEnvelope({
     planScore: chunkPlan?.planScore ?? 0,
     density,
     amplitude,
+    coherence,
+    binaryBias,
     factoringProfileKind
   };
 
@@ -271,10 +288,12 @@ function buildChunkExecutionEnvelope({
     `::THR:${throughput.cls}` +
     `::PTIER:${planTier}` +
     `::CTIER:${cacheTier}` +
+    `::COH:${coherence}` +
+    `::BBIAS:${binaryBias}` +
     `::FPK:${factoringProfileKind}`;
 
   const sig = buildDualHashSignature(
-    "EARN_CHUNK_EXECUTION_ENVELOPE_v24",
+    "EARN_CHUNK_EXECUTION_ENVELOPE_v30",
     intelPayload,
     classicString
   );
@@ -303,6 +322,8 @@ function buildChunkExecutionEnvelope({
   chunkerHealing.lastPlanScore = safeNumber(chunkPlan?.planScore ?? 0, 0);
   chunkerHealing.lastBinaryDensity = density;
   chunkerHealing.lastWaveAmplitude = amplitude;
+  chunkerHealing.lastWaveCoherence = coherence;
+  chunkerHealing.lastBinaryBias = binaryBias;
 
   chunkerHealing.lastChunkPlanVersion = chunkPlan.planVersion || null;
   chunkerHealing.lastChunkPlanPriority = chunkPlan.priorityLabel || null;
@@ -311,7 +332,7 @@ function buildChunkExecutionEnvelope({
   chunkerHealing.lastFactoringProfileHash = factoringProfileHash;
 
   return {
-    version: "v24-IMMORTAL-INTEL-EARN-CHUNKER",
+    version: "v30-IMMORTAL-INTEL-EARN-CHUNKER",
     band,
     gpuWarpPlan,
     memoryBurstPlan,
@@ -324,7 +345,7 @@ function buildChunkExecutionEnvelope({
 }
 
 // ============================================================================
-// CORE API — applyEarnChunker (v24‑IMMORTAL‑INTEL++‑24PLUS)
+// CORE API — applyEarnChunker (v30‑IMMORTAL‑INTEL++‑30PLUS)
 // ============================================================================
 
 export function applyEarnChunker(page, context = {}) {
@@ -338,7 +359,7 @@ export function applyEarnChunker(page, context = {}) {
 
   const esf = page.meta.earnSignalFactoring;
   if (!esf) {
-    // No signal factoring → nothing to chunk at v24 level.
+    // No signal factoring → nothing to chunk at v30 level.
     return page;
   }
 

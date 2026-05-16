@@ -11,7 +11,7 @@ import {
   canPerformDynamicCached,
   selectBoundaryModeCached,
   getBoundaryArterySnapshot
-} from "./aiBoundaries-v30.js";
+} from "./PulseAIBoundaries-v30.js";
 
 // ============================================================================
 //  INTERNAL HELPERS — v30 IMMORTAL

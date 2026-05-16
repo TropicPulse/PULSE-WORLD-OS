@@ -1,41 +1,44 @@
 // ============================================================================
-//  aiPowerPrime-v24.js — PULSE OS Power‑Prime Organ — v24‑IMMORTAL‑PRIME++
+//  aiPowerPrime-v30.js — PULSE OS Power‑Prime Organ — v30‑IMMORTAL‑PRIME+++
 //  Crown-Layer Power Intelligence • Artery-Fused • Predictive • Drift-Aware
-//  READ-ONLY • DUALBAND • DETERMINISTIC • IDENTITY-SAFE
+//  READ-ONLY • DUALBAND • DETERMINISTIC • IDENTITY-SAFE • JURY-AWARE v30
 // ============================================================================
 //
 //  CANONICAL ROLE:
-//    • Power Intelligence Assistant (Not a Controller).
+//    • Power Intelligence Assistant (NOT a controller).
 //    • Provides read-only power intelligence: risk, continuance, fluctuations,
-//      outages, and drift for tourist and owner scopes.
-//    • Fuses organism arteries (binary + symbolic) into a safe snapshot.
-//    • Interprets internal power collections and BEL power information into
+//      outages, drift, and scenario projections for tourist / owner scopes.
+//    • Fuses organism arteries (binary + symbolic + relay + capability +
+//      identity + jury) into a safe snapshot.
+//    • Interprets internal power collections and BEL/external power info into
 //      patterns, NOT into control actions.
-//    • Requests external power info via PulseOS route() and reads routed text.
-//    • Guides owners toward understanding risk and continuity, WITHOUT
-//      modifying power systems or issuing control commands.
+//    • Requests external power info only via caller-provided route() / CNS.
+//    • From this organ’s perspective: pure compute over provided data.
 //
-//  ROLE BOUNDARY (Declared Once):
+//  ROLE BOUNDARY (Declared Once, v30):
 //    • This organ is a Power Intelligence Assistant, not a power controller.
 //    • It does not change power settings, send commands, or operate hardware.
 //    • It does not replace grid operators, utilities, or engineers.
-//    • It is meant to support you by organizing information, highlighting
-//      risk patterns, and surfacing what may matter for decisions elsewhere.
+//    • It supports you by organizing information, highlighting risk patterns,
+//      and surfacing what may matter for decisions elsewhere.
 //
-//  HARD GUARANTEES:
+//  HARD GUARANTEES (v30‑IMMORTAL‑PRIME+++):
 //    • No power control, no “do X” directives, no hardware operations.
 //    • No direct network primitives (no fetch/axios/etc inside this file).
 //    • All external I/O (including BEL/external power queries) is mediated by
 //      the caller’s route() / CNS.
-//    • From this organ’s perspective: pure compute over provided data.
+//    • No mutation of external systems; pure compute over inputs.
+//    • Identity-safe: strips user identifiers from DB records.
+//    • Jury-aware: can consume jury arteries but never overrides them.
+//    • Ego-aware: respects capability arteries but never grants power.
 // ============================================================================
 
 
 // ---------------------------------------------------------------------------
-//  DEPENDENCIES
+//  DEPENDENCIES (v30)
 // ---------------------------------------------------------------------------
 
-import { getOrganismSnapshot } from "./aiDeps-v24.js";
+import { getOrganismSnapshot } from "./PulseAIDeps-v30.js";
 import {
   computePowerRiskVector,
   buildPowerRiskSummary,
@@ -47,8 +50,73 @@ import {
   detectOutagesV3
 } from "../PULSE-MESH/PulseMeshContinuanceEngine-v30.js";
 
+// Optional arteries (all read-only, injected by caller)
+//  • binaryMetabolicArteryProvider: () => { pressure, ... }
+//  • relayArteryProvider: () => { pressure, ... }
+//  • capabilityArteryProvider: () => { organism: { pressure, ... }, ... }
+//  • identityArteryProvider: () => { persona, boundaries, ... }
+//  • juryWorldLensArteryProvider: () => { organism: { pressure, ... }, ... }
+
+
 // ---------------------------------------------------------------------------
-//  IDENTITY‑SAFE HELPERS
+//  META (v30‑IMMORTAL‑PRIME+++)
+// ---------------------------------------------------------------------------
+
+export const PowerMeta = Object.freeze({
+  type: "Cognitive",
+  subsystem: "aiPowerPrime",
+  layer: "PulsePowerIntelligenceLayer",
+  role: "POWER_PRIME",
+  version: "30-Immortal-Prime+++",
+  identity: "aiPowerPrime-v30-Immortal-Prime+++",
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    dualband: true,
+    binaryAware: true,
+    symbolicAware: true,
+    juryAware: true,
+    egoAware: true,
+    identityAware: true,
+    relayAware: true,
+    capabilityArteryAware: true,
+    trustFabricAware: true,
+    organismUserSegregation: true,
+    multiInstanceReady: true,
+    epoch: "30-Immortal-Prime+++"
+  }),
+  contract: Object.freeze({
+    purpose:
+      "Provide read-only power intelligence by fusing internal power data, organism arteries, and external power text into risk, continuance, and scenario patterns.",
+    never: Object.freeze([
+      "mutate external systems",
+      "issue power control commands",
+      "introduce randomness",
+      "override SafetyFrame decisions",
+      "override Ego permissions",
+      "override Jury decisions",
+      "bypass trust fabric",
+      "bypass jury frame",
+      "bypass honeypot detectors"
+    ]),
+    always: Object.freeze([
+      "remain read-only and identity-safe",
+      "respect Ego capability arteries",
+      "respect Jury world-lens arteries",
+      "respect Persona identity arteries",
+      "respect Pulse-Net segregation",
+      "keep external I/O mediated by caller route()",
+      "surface uncertainty explicitly"
+    ])
+  }),
+  boundaryReflex() {
+    return "Power‑Prime is read-only, identity-safe, and cannot control power systems; it only interprets patterns.";
+  }
+});
+
+
+// ---------------------------------------------------------------------------
+//  IDENTITY‑SAFE HELPERS (unchanged semantics, v30)
 // ---------------------------------------------------------------------------
 
 function stripIdentity(record) {
@@ -65,25 +133,26 @@ function stripIdentity(record) {
 
 async function fetchOwner(context, db, collection, options = {}) {
   if (!context.userIsOwner) {
-    context.logStep?.(`aiPowerPrime: owner-only "${collection}" blocked.`);
+    context.logStep?.(`aiPowerPrime-v30: owner-only "${collection}" blocked.`);
     return [];
   }
-  context.logStep?.(`aiPowerPrime: fetching owner "${collection}"`);
+  context.logStep?.(`aiPowerPrime-v30: fetching owner "${collection}"`);
   const rows = await db.getCollection(collection, options);
   return rows.map(stripIdentity);
 }
 
 async function fetchTourist(context, db, collection, options = {}) {
-  context.logStep?.(`aiPowerPrime: fetching public "${collection}"`);
+  context.logStep?.(`aiPowerPrime-v30: fetching public "${collection}"`);
   const rows = await db.getCollection(collection, options);
   return rows.map(stripIdentity);
 }
 
+
 // ---------------------------------------------------------------------------
-//  ARTERY FUSION — READ‑ONLY ORGANISM SNAPSHOT
+//  ARTERY FUSION — READ‑ONLY ORGANISM SNAPSHOT (v30)
 // ---------------------------------------------------------------------------
 
-function buildFusedArteries(organismSnapshot) {
+function buildFusedArteries(organismSnapshot, extraArteries = {}) {
   const o = organismSnapshot || {};
 
   const metabolic = o.binary?.metabolic || {};
@@ -92,10 +161,18 @@ function buildFusedArteries(organismSnapshot) {
   const hormones = o.binary?.hormones || {};
   const pipeline = o.binary?.pipeline || {};
   const scanner = o.binary?.scanner || {};
+
   const personalFrame = o.symbolic?.personalFrame || {};
   const personality = o.symbolic?.personality || {};
   const memory = o.symbolic?.memory || {};
   const evolution = o.symbolic?.evolution || {};
+
+  // v30+: additional arteries (relay, capability, identity, jury, power)
+  const relay = extraArteries.relay || null;
+  const capability = extraArteries.capability || null;
+  const identity = extraArteries.identity || null;
+  const jury = extraArteries.jury || null;
+  const binaryMetabolic = extraArteries.binaryMetabolic || null;
 
   return Object.freeze({
     metabolic,
@@ -107,12 +184,18 @@ function buildFusedArteries(organismSnapshot) {
     personalFrame,
     personality,
     memory,
-    evolution
+    evolution,
+    relay,
+    capability,
+    identity,
+    jury,
+    binaryMetabolic
   });
 }
 
+
 // ---------------------------------------------------------------------------
-//  HISTORY / CONTINUANCE DIAGNOSTIC HELPERS — v24++
+//  HISTORY / CONTINUANCE DIAGNOSTIC HELPERS — v30
 // ---------------------------------------------------------------------------
 
 function _safeNumber(v, fallback = 0) {
@@ -252,8 +335,9 @@ function _deriveRiskDiagnostics(continuance, riskSummary, historyStats) {
   });
 }
 
+
 // ---------------------------------------------------------------------------
-//  INTERNAL HELPER — BEL POWER INFO POINTER (no route, no I/O)
+//  BEL / EXTERNAL / INTERNAL POWER POINTERS (v30)
 // ---------------------------------------------------------------------------
 
 function _belPowerPointer({ topic = "" } = {}) {
@@ -285,10 +369,6 @@ function _belPowerPointer({ topic = "" } = {}) {
   });
 }
 
-// ---------------------------------------------------------------------------
-//  INTERNAL HELPER — EXTERNAL GENERIC POWER POINTER
-// ---------------------------------------------------------------------------
-
 function _externalPowerPointer({ topic = "" } = {}) {
   const base = "https://www.google.com/search?q=";
   const q = encodeURIComponent(topic || "belize power grid");
@@ -310,10 +390,6 @@ function _externalPowerPointer({ topic = "" } = {}) {
   });
 }
 
-// ---------------------------------------------------------------------------
-//  INTERNAL HELPER — INTERNAL POWER POINTER (collections)
-// ---------------------------------------------------------------------------
-
 function _internalPowerPointer({ topic = "" } = {}) {
   return Object.freeze({
     kind: "power-pointer-internal",
@@ -331,14 +407,9 @@ function _internalPowerPointer({ topic = "" } = {}) {
   });
 }
 
-// ---------------------------------------------------------------------------
-//  AUTO‑DETECT POWER SOURCE (Hybrid: explicit overrides auto)
-// ---------------------------------------------------------------------------
-
 function autoDetectPowerSource(topic = "") {
   const t = (topic || "").toLowerCase();
 
-  // BEL‑leaning keywords
   if (
     t.includes("bel") ||
     t.includes("belize") ||
@@ -353,7 +424,6 @@ function autoDetectPowerSource(topic = "") {
     return "bel";
   }
 
-  // Internal‑leaning keywords
   if (
     t.includes("continuance") ||
     t.includes("risk") ||
@@ -370,29 +440,21 @@ function autoDetectPowerSource(topic = "") {
     return "internal";
   }
 
-  // Fallback: external
   return "external";
 }
-
-// ---------------------------------------------------------------------------
-//  UNIFIED POWER POINTER — internal + BEL + external
-// ---------------------------------------------------------------------------
 
 export function powerPointer({ topic = "", source = "auto" } = {}) {
   const effectiveSource =
     source === "auto" ? autoDetectPowerSource(topic) : source;
 
-  if (effectiveSource === "internal") {
-    return _internalPowerPointer({ topic });
-  }
-  if (effectiveSource === "bel") {
-    return _belPowerPointer({ topic });
-  }
+  if (effectiveSource === "internal") return _internalPowerPointer({ topic });
+  if (effectiveSource === "bel") return _belPowerPointer({ topic });
   return _externalPowerPointer({ topic });
 }
 
+
 // ---------------------------------------------------------------------------
-//  BEL POWER READER v2 — richer pattern detection
+//  POWER READERS (BEL / INTERNAL / EXTERNAL) — v30
 // ---------------------------------------------------------------------------
 
 function belPowerReader(info = {}, binaryVitals = {}) {
@@ -474,72 +536,65 @@ function belPowerReader(info = {}, binaryVitals = {}) {
   };
 }
 
-// ---------------------------------------------------------------------------
-//  UNIFIED POWER READER — internal + BEL + external (v24++)
-// ---------------------------------------------------------------------------
+function internalPowerReader(payload = {}) {
+  const notes = [];
+  const { continuance, risk, beacons, historyStats, diagnostics } =
+    payload || {};
 
-function powerReader({ source, payload = {}, binaryVitals = {} } = {}) {
-  if (source === "bel") {
-    return belPowerReader(payload, binaryVitals);
-  }
-
-  if (source === "internal") {
-    const notes = [];
-    const { continuance, risk, beacons, historyStats, diagnostics } =
-      payload || {};
-
-    if (continuance) {
-      const score =
-        continuance.continuanceScore &&
-        continuance.continuanceScore.toFixed
-          ? continuance.continuanceScore.toFixed(2)
-          : "n/a";
-      notes.push(
-        `Internal continuance window: ${continuance.continuanceWindowMinutes} minutes, score=${score}.`
-      );
-    }
-
-    if (risk) {
-      notes.push(`Internal risk level: ${risk.level || "unknown"}.`);
-      if (typeof risk.score === "number") {
-        notes.push(`Internal risk score: ${risk.score.toFixed(2)}.`);
-      }
-    }
-
-    if (historyStats) {
-      notes.push(
-        `History: ${historyStats.outageEvents} outage event(s), ${historyStats.fluctuationEvents} fluctuation event(s), max outage ${historyStats.maxOutageMinutes} minutes.`
-      );
-      notes.push(
-        `Volatility index: ${historyStats.volatilityIndex.toFixed(2)} (0=stable, 1=highly volatile).`
-      );
-    }
-
-    if (diagnostics) {
-      notes.push(
-        `Estimated outage probability: ${(diagnostics.outageProbabilityEstimate * 100).toFixed(
-          1
-        )}%, continuity class: ${diagnostics.continuityClass}.`
-      );
-    }
-
-    if (beacons && Array.isArray(beacons.signals)) {
-      notes.push(
-        `Beacon signals detected: ${beacons.signals.length} pattern(s).`
-      );
-    }
-
+  if (continuance) {
+    const score =
+      continuance.continuanceScore &&
+      continuance.continuanceScore.toFixed
+        ? continuance.continuanceScore.toFixed(2)
+        : "n/a";
     notes.push(
-      "Internal power data was interpreted into continuance, risk, and volatility patterns. This is informational only and does not control power."
+      `Internal continuance window: ${continuance.continuanceWindowMinutes} minutes, score=${score}.`
     );
-
-    return {
-      notes,
-      meta: { source: "internal" }
-    };
   }
 
-  // External generic reader
+  if (risk) {
+    notes.push(`Internal risk level: ${risk.level || "unknown"}.`);
+    if (typeof risk.score === "number") {
+      notes.push(`Internal risk score: ${risk.score.toFixed(2)}.`);
+    }
+  }
+
+  if (historyStats) {
+    notes.push(
+      `History: ${historyStats.outageEvents} outage event(s), ${historyStats.fluctuationEvents} fluctuation event(s), max outage ${historyStats.maxOutageMinutes} minutes.`
+    );
+    notes.push(
+      `Volatility index: ${historyStats.volatilityIndex.toFixed(
+        2
+      )} (0=stable, 1=highly volatile).`
+    );
+  }
+
+  if (diagnostics) {
+    notes.push(
+      `Estimated outage probability: ${(diagnostics.outageProbabilityEstimate * 100).toFixed(
+        1
+      )}%, continuity class: ${diagnostics.continuityClass}.`
+    );
+  }
+
+  if (beacons && Array.isArray(beacons.signals)) {
+    notes.push(
+      `Beacon signals detected: ${beacons.signals.length} pattern(s).`
+    );
+  }
+
+  notes.push(
+    "Internal power data was interpreted into continuance, risk, and volatility patterns. This is informational only and does not control power."
+  );
+
+  return {
+    notes,
+    meta: { source: "internal" }
+  };
+}
+
+function externalPowerReader(payload = {}) {
   const text = (payload.rawText || "").toLowerCase();
   const notes = [];
 
@@ -585,11 +640,177 @@ function powerReader({ source, payload = {}, binaryVitals = {} } = {}) {
   };
 }
 
+function powerReader({ source, payload = {}, binaryVitals = {} } = {}) {
+  if (source === "bel") return belPowerReader(payload, binaryVitals);
+  if (source === "internal") return internalPowerReader(payload);
+  return externalPowerReader(payload);
+}
+
+
 // ---------------------------------------------------------------------------
-//  FACTORY — Power‑Prime API (v24‑IMMORTAL‑PRIME++)
+//  SCENARIO PROJECTIONS (v30+)
 // ---------------------------------------------------------------------------
 
-export function createPowerAPI(db, evolutionAPI, dualBand = null) {
+function projectPowerScenarios({ diagnostics, historyStats, risk }) {
+  const d = diagnostics || {};
+  const h = historyStats || {};
+  const r = risk || {};
+
+  const outageProb = _safeNumber(d.outageProbabilityEstimate, 0);
+  const volatility = _safeNumber(d.volatilityIndex ?? h.volatilityIndex, 0);
+  const riskLevel = r.level || d.riskLevel || "unknown";
+
+  const shortTerm = {
+    horizon: "0-24h",
+    outageRisk:
+      outageProb >= 0.7 ? "high" : outageProb >= 0.4 ? "medium" : "low",
+    advisory:
+      outageProb >= 0.7
+        ? "Prepare for potential short-term outages; keep backups and manual fallbacks ready."
+        : outageProb >= 0.4
+        ? "Some risk of short-term instability; light preparedness is reasonable."
+        : "Short-term risk appears modest; continue normal monitoring."
+  };
+
+  const mediumTerm = {
+    horizon: "1-7d",
+    volatilityClass:
+      volatility >= 0.7 ? "volatile" : volatility >= 0.4 ? "mixed" : "stable",
+    advisory:
+      volatility >= 0.7
+        ? "Medium-term behavior is volatile; consider scheduling critical tasks in more stable windows."
+        : volatility >= 0.4
+        ? "Medium-term behavior is mixed; avoid clustering all critical tasks in a single day."
+        : "Medium-term behavior appears relatively stable; normal planning is reasonable."
+  };
+
+  const longTerm = {
+    horizon: "7-30d",
+    riskLevel,
+    advisory:
+      riskLevel === "critical"
+        ? "Long-term risk is critical; strategic mitigation and redundancy planning are strongly advised."
+        : riskLevel === "high"
+        ? "Long-term risk is elevated; consider redundancy, buffering, and alternative power paths."
+        : riskLevel === "medium"
+        ? "Long-term risk is moderate; keep monitoring and refine mitigation as needed."
+        : "Long-term risk appears low; maintain monitoring and basic resilience."
+  };
+
+  return Object.freeze({
+    shortTerm,
+    mediumTerm,
+    longTerm
+  });
+}
+
+
+// ---------------------------------------------------------------------------
+//  “SYSTEM MEETING” VIEW (v30+) — perspectives from multiple arteries
+// ---------------------------------------------------------------------------
+
+function buildSystemMeetingView({ fusedArteries, diagnostics, risk }) {
+  const fa = fusedArteries || {};
+  const d = diagnostics || {};
+  const r = risk || {};
+
+  const perspectives = [];
+
+  if (fa.binaryMetabolic) {
+    perspectives.push({
+      organ: "BinaryMetabolism",
+      summary:
+        "Reports binary load and pressure; high pressure suggests power intelligence should stay simple and low-cost.",
+      pressure: fa.binaryMetabolic.pressure ?? null
+    });
+  }
+
+  if (fa.relay) {
+    perspectives.push({
+      organ: "ServiceGatewayRelay",
+      summary:
+        "Reports AI service call pressure; high relay pressure suggests many AI operations depending on stable power.",
+      pressure: fa.relay.pressure ?? null
+    });
+  }
+
+  if (fa.capability?.organism) {
+    perspectives.push({
+      organ: "EgoCapability",
+      summary:
+        "Reports capability pressure; high pressure suggests the system is already cautious about granting power-heavy actions.",
+      pressure: fa.capability.organism.pressure ?? null
+    });
+  }
+
+  if (fa.identity) {
+    perspectives.push({
+      organ: "IdentityPersona",
+      summary:
+        "Reports persona and boundary mode; this shapes how aggressively or conservatively power information is interpreted.",
+      persona: fa.identity.persona?.id || null,
+      boundaryMode: fa.identity.boundaries?.modeId || null
+    });
+  }
+
+  if (fa.jury?.organism) {
+    perspectives.push({
+      organ: "JuryWorldLens",
+      summary:
+        "Reports justice/world-lens pressure; high pressure suggests decisions around power should be treated carefully.",
+      pressure: fa.jury.organism.pressure ?? null
+    });
+  }
+
+  perspectives.push({
+    organ: "PowerPrime",
+    summary:
+      "Synthesizes continuance, risk, volatility, and outage probability into a single narrative for humans.",
+    riskLevel: r.level || d.riskLevel || "unknown",
+    outageProbabilityEstimate: d.outageProbabilityEstimate ?? null
+  });
+
+  return Object.freeze({
+    perspectives
+  });
+}
+
+
+// ---------------------------------------------------------------------------
+//  FACTORY — Power‑Prime API (v30‑IMMORTAL‑PRIME+++)
+// ---------------------------------------------------------------------------
+
+export function createPowerAPI(
+  db,
+  evolutionAPI,
+  dualBand = null,
+  {
+    binaryMetabolicArteryProvider = null,
+    relayArteryProvider = null,
+    capabilityArteryProvider = null,
+    identityArteryProvider = null,
+    juryWorldLensArteryProvider = null
+  } = {}
+) {
+  function _collectExtraArteries() {
+    const safeCall = fn => {
+      if (!fn) return null;
+      try {
+        return fn() || null;
+      } catch {
+        return null;
+      }
+    };
+
+    return {
+      binaryMetabolic: safeCall(binaryMetabolicArteryProvider),
+      relay: safeCall(relayArteryProvider),
+      capability: safeCall(capabilityArteryProvider),
+      identity: safeCall(identityArteryProvider),
+      jury: safeCall(juryWorldLensArteryProvider)
+    };
+  }
+
   return Object.freeze({
     meta: PowerMeta,
 
@@ -597,10 +818,11 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
     // TOURIST‑SAFE SNAPSHOT + CONTINUANCE + RISK SUMMARY + DIAGNOSTICS
     // ----------------------------------------------------------------------
     async getPublicPowerSnapshot(context) {
-      context.logStep?.("aiPowerPrime: building public power snapshot");
+      context.logStep?.("aiPowerPrime-v30: building public power snapshot");
 
       const organismSnapshot = getOrganismSnapshot(dualBand);
-      const fusedArteries = buildFusedArteries(organismSnapshot);
+      const extraArteries = _collectExtraArteries();
+      const fusedArteries = buildFusedArteries(organismSnapshot, extraArteries);
 
       const [power, history] = await Promise.all([
         fetchTourist(context, db, "power", { limit: 1 }),
@@ -633,8 +855,20 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         historyStats
       );
 
+      const scenarios = projectPowerScenarios({
+        diagnostics,
+        historyStats,
+        risk: riskSummary
+      });
+
+      const meeting = buildSystemMeetingView({
+        fusedArteries,
+        diagnostics,
+        risk: riskSummary
+      });
+
       context.logStep?.(
-        `aiPowerPrime: continuanceScore=${continuance.continuanceScore.toFixed(
+        `aiPowerPrime-v30: continuanceScore=${continuance.continuanceScore.toFixed(
           2
         )}, window=${continuance.continuanceWindowMinutes}min, risk=${riskSummary.level}, outageProb≈${(
           diagnostics.outageProbabilityEstimate * 100
@@ -648,8 +882,10 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         risk: riskSummary,
         historyStats,
         diagnostics,
+        scenarios,
         fusedArteries,
-        organismSnapshot
+        organismSnapshot,
+        meeting
       });
     },
 
@@ -659,7 +895,7 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
     async getOwnerPowerDiagnostics(context) {
       if (!context.userIsOwner) return null;
 
-      context.logStep?.("aiPowerPrime: fetching owner diagnostics");
+      context.logStep?.("aiPowerPrime-v30: fetching owner diagnostics");
 
       const [power, history, settings, rawData] = await Promise.all([
         fetchOwner(context, db, "power"),
@@ -669,7 +905,8 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
       ]);
 
       const organismSnapshot = getOrganismSnapshot(dualBand);
-      const fusedArteries = buildFusedArteries(organismSnapshot);
+      const extraArteries = _collectExtraArteries();
+      const fusedArteries = buildFusedArteries(organismSnapshot, extraArteries);
 
       const continuance = computeContinuanceMetricsV3({
         power,
@@ -705,6 +942,18 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         historyStats
       );
 
+      const scenarios = projectPowerScenarios({
+        diagnostics,
+        historyStats,
+        risk: riskSummary
+      });
+
+      const meeting = buildSystemMeetingView({
+        fusedArteries,
+        diagnostics,
+        risk: riskSummary
+      });
+
       return Object.freeze({
         power,
         history,
@@ -715,8 +964,10 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         beacons,
         historyStats,
         diagnostics,
+        scenarios,
         fusedArteries,
-        organismSnapshot
+        organismSnapshot,
+        meeting
       });
     },
 
@@ -726,7 +977,9 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
     async getPowerFluctuationAnalysis(context) {
       if (!context.userIsOwner) return null;
 
-      context.logStep?.("aiPowerPrime: running fluctuation + outage analysis");
+      context.logStep?.(
+        "aiPowerPrime-v30: running fluctuation + outage analysis"
+      );
 
       const [history, settingsArr] = await Promise.all([
         fetchOwner(context, db, "powerHistory"),
@@ -736,7 +989,8 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
       const config = settingsArr[0] || {};
 
       const organismSnapshot = getOrganismSnapshot(dualBand);
-      const fusedArteries = buildFusedArteries(organismSnapshot);
+      const extraArteries = _collectExtraArteries();
+      const fusedArteries = buildFusedArteries(organismSnapshot, extraArteries);
 
       const fluctuations = detectFluctuationsV3(history, config, context);
       const outages = detectOutagesV3(history, config, context);
@@ -775,6 +1029,18 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         historyStats
       );
 
+      const scenarios = projectPowerScenarios({
+        diagnostics,
+        historyStats,
+        risk: riskSummary
+      });
+
+      const meeting = buildSystemMeetingView({
+        fusedArteries,
+        diagnostics,
+        risk: riskSummary
+      });
+
       return Object.freeze({
         fluctuations,
         outages,
@@ -784,8 +1050,10 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         beacons,
         historyStats,
         diagnostics,
+        scenarios,
         fusedArteries,
-        organismSnapshot
+        organismSnapshot,
+        meeting
       });
     },
 
@@ -795,7 +1063,7 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
     async getPowerRiskOverview(context) {
       if (!context.userIsOwner) return null;
 
-      context.logStep?.("aiPowerPrime: building risk overview");
+      context.logStep?.("aiPowerPrime-v30: building risk overview");
 
       const [power, history, settingsArr] = await Promise.all([
         fetchOwner(context, db, "power", { limit: 1 }),
@@ -805,7 +1073,8 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
 
       const settings = settingsArr[0] || {};
       const organismSnapshot = getOrganismSnapshot(dualBand);
-      const fusedArteries = buildFusedArteries(organismSnapshot);
+      const extraArteries = _collectExtraArteries();
+      const fusedArteries = buildFusedArteries(organismSnapshot, extraArteries);
 
       const continuance = computeContinuanceMetricsV3({
         power,
@@ -841,44 +1110,59 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         historyStats
       );
 
+      const scenarios = projectPowerScenarios({
+        diagnostics,
+        historyStats,
+        risk: riskSummary
+      });
+
+      const meeting = buildSystemMeetingView({
+        fusedArteries,
+        diagnostics,
+        risk: riskSummary
+      });
+
       return Object.freeze({
         risk: riskSummary,
         beacons,
         continuance,
         historyStats,
         diagnostics,
+        scenarios,
         fusedArteries,
-        organismSnapshot
+        organismSnapshot,
+        meeting
       });
     },
 
     // ----------------------------------------------------------------------
     // OWNER‑ONLY — EVOLUTIONARY DRIFT (via aiEvolution)
-    // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
     async getPowerEvolutionOverview(context) {
       if (!context.userIsOwner || !evolutionAPI?.analyzeSchema) return null;
-      context.logStep?.("aiPowerPrime: schema drift analysis");
+      context.logStep?.("aiPowerPrime-v30: schema drift analysis");
       return evolutionAPI.analyzeSchema(context, "power");
     },
 
     async analyzePowerFiles(context) {
       if (!context.userIsOwner || !evolutionAPI?.analyzeFile) return null;
-      context.logStep?.("aiPowerPrime: file drift analysis");
+      context.logStep?.("aiPowerPrime-v30: file drift analysis");
       return evolutionAPI.analyzeFile(context, "power.js");
     },
 
     async analyzePowerRoutes(context) {
       if (!context.userIsOwner || !evolutionAPI?.analyzeRoute) return null;
-      context.logStep?.("aiPowerPrime: route drift analysis");
+      context.logStep?.("aiPowerPrime-v30: route drift analysis");
       return evolutionAPI.analyzeRoute(context, "power");
     },
 
     // ----------------------------------------------------------------------
-    // WINDOW‑SAFE POWER ARTERY SNAPSHOT
-    // ----------------------------------------------------------------------
+    // WINDOW‑SAFE POWER ARTERY SNAPSHOT (v30)
+// ----------------------------------------------------------------------
     getPowerArterySnapshot() {
       const organismSnapshot = getOrganismSnapshot(dualBand);
-      const fusedArteries = buildFusedArteries(organismSnapshot);
+      const extraArteries = _collectExtraArteries();
+      const fusedArteries = buildFusedArteries(organismSnapshot, extraArteries);
 
       const riskVector = computePowerRiskVector({
         power: [],
@@ -899,24 +1183,40 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
         historyStats
       );
 
+      const scenarios = projectPowerScenarios({
+        diagnostics,
+        historyStats,
+        risk: riskSummary
+      });
+
+      const meeting = buildSystemMeetingView({
+        fusedArteries,
+        diagnostics,
+        risk: riskSummary
+      });
+
       return Object.freeze({
         risk: riskSummary,
         diagnostics,
-        fusedArteries
+        scenarios,
+        fusedArteries,
+        organismSnapshot,
+        meeting
       });
     },
 
     // ----------------------------------------------------------------------
-    // UNIFIED POWER QUERY — internal + BEL + external
-    // ----------------------------------------------------------------------
+    // UNIFIED POWER QUERY — internal + BEL + external (v30)
+// ----------------------------------------------------------------------
     /**
      * powerQuery({
      *   topic: string,
      *   source?: "auto" | "internal" | "bel" | "external",
-     *   mode?: "auto" | "pointer" | "route",
+     *   mode?: "auto" | "pointer" | "route" | "hybrid",
      *   route?: function,
      *   context?: object,
-     *   binaryVitals?: object
+     *   binaryVitals?: object,
+     *   internalSnapshot?: object   // optional: internal power snapshot to fuse with external text
      * })
      */
     async powerQuery({
@@ -925,7 +1225,8 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
       mode = "auto",
       route = null,
       context = {},
-      binaryVitals = {}
+      binaryVitals = {},
+      internalSnapshot = null
     } = {}) {
       const pointer = powerPointer({ topic, source });
       const effectiveSource =
@@ -940,175 +1241,71 @@ export function createPowerAPI(db, evolutionAPI, dualBand = null) {
           : mode;
 
       // POINTER‑ONLY MODE
-      if (effectiveMode !== "route" || typeof route !== "function") {
+      if (effectiveMode === "pointer") {
         return pointer;
       }
 
-      // ROUTE MODE
-      if (effectiveSource === "internal") {
-        // Read internal collections and summarize
-        const [power, history, settingsArr, data] = await Promise.all([
-          context.userIsOwner
-            ? fetchOwner(context, db, "power")
-            : fetchTourist(context, db, "power", { limit: 1 }),
-          context.userIsOwner
-            ? fetchOwner(context, db, "powerHistory")
-            : fetchTourist(context, db, "powerHistory", { limit: 50 }),
-          context.userIsOwner
-            ? fetchOwner(context, db, "powerSettings", { limit: 1 })
-            : fetchTourist(context, db, "powerSettings", { limit: 1 }),
-          context.userIsOwner ? fetchOwner(context, db, "powerData") : []
-        ]);
+      // ROUTE MODE WITHOUT ROUTE FUNCTION → fallback to pointer
+      if (effectiveMode !== "hybrid" && typeof route !== "function") {
+        return pointer;
+      }
 
-        const settings = settingsArr[0] || {};
-        const organismSnapshot = getOrganismSnapshot(dualBand);
-        const fusedArteries = buildFusedArteries(organismSnapshot);
-
-        const continuance = computeContinuanceMetricsV3({
-          power,
-          history,
-          fusedArteries,
-          organismSnapshot
-        });
-
-        const riskVector = computePowerRiskVector({
-          power,
-          history,
-          fusedArteries,
-          continuance,
-          settings
-        });
-
-        const riskSummary = buildPowerRiskSummary({
-          riskVector,
-          continuance,
-          settings
-        });
-
-        const beacons = buildPowerBeaconSignals({
-          riskVector,
-          continuance,
-          fusedArteries
-        });
-
-        const historyStats = _deriveHistoryStats(history);
-        const diagnostics = _deriveRiskDiagnostics(
-          continuance,
-          riskSummary,
-          historyStats
-        );
-
-        const payload = {
-          power,
-          history,
-          settings,
-          data,
-          continuance,
-          risk: riskSummary,
-          beacons,
-          historyStats,
-          diagnostics
-        };
-
-        const readerView = powerReader({
-          source: "internal",
+      // ROUTE MODE (pure external text → reader)
+      if (effectiveMode === "route") {
+        const payload = await route(pointer, context);
+        return powerReader({
+          source: effectiveSource,
           payload,
           binaryVitals
         });
-
-        return {
-          kind: "power-query-internal",
-          source: "internal",
-          topic,
-          pointer,
-          payload,
-          readerView,
-          meta: {
-            organ: PowerMeta.identity,
-            version: PowerMeta.version,
-            mode: "route",
-            zeroNetworkFromThisOrgan: true
-          }
-        };
       }
 
-      if (effectiveSource === "bel") {
-        const request = {
-          type: "bel-power-query",
-          payload: { topic },
-          meta: {
-            fromOrgan: PowerMeta.identity,
-            version: PowerMeta.version,
-            role: "power_prime_assistant"
-          }
-        };
+      // HYBRID MODE (v30+): fuse internal snapshot + external text
+      if (effectiveMode === "hybrid") {
+        const externalPayload =
+          typeof route === "function" ? await route(pointer, context) : {};
+        const internalPayload =
+          internalSnapshot && typeof internalSnapshot === "object"
+            ? internalSnapshot
+            : {};
 
-        const result = await route(request);
-        const readerView = powerReader({
-          source: "bel",
-          payload: result || {},
-          binaryVitals
+        const internalView =
+          effectiveSource === "internal"
+            ? internalPowerReader(internalPayload)
+            : internalPowerReader(internalPayload);
+
+        const externalView =
+          effectiveSource === "bel"
+            ? belPowerReader(externalPayload, binaryVitals)
+            : externalPowerReader(externalPayload);
+
+        return Object.freeze({
+          kind: "power-hybrid-view",
+          topic,
+          pointer,
+          internal: internalView,
+          external: externalView,
+          note:
+            "Hybrid power view: internal continuance/risk fused with external/BEL text interpretation. Read-only, not a control interface."
         });
-
-        return {
-          kind: "power-query-bel",
-          source: "bel",
-          topic,
-          pointer,
-          result,
-          readerView,
-          meta: {
-            organ: PowerMeta.identity,
-            version: PowerMeta.version,
-            mode: "route",
-            zeroNetworkFromThisOrgan: true
-          }
-        };
       }
 
-      // EXTERNAL
-      const request = {
-        type: "power-external-query",
-        payload: { topic },
-        meta: {
-          fromOrgan: PowerMeta.identity,
-          version: PowerMeta.version,
-          role: "power_prime_assistant"
-        }
-      };
-
-      const result = await route(request);
-      const readerView = powerReader({
-        source: "external",
-        payload: result || {},
-        binaryVitals
-      });
-
-      return {
-        kind: "power-query-external",
-        source: "external",
-        topic,
-        pointer,
-        result,
-        readerView,
-        meta: {
-          organ: PowerMeta.identity,
-          version: PowerMeta.version,
-          mode: "route",
-          zeroNetworkFromThisOrgan: true
-        }
-      };
+      // Fallback
+      return pointer;
     }
   });
 }
 
-// ============================================================================
-//  DUAL‑MODE EXPORTS (ESM + CommonJS)
-// ============================================================================
-if (typeof module !== "undefined") {
+
+// ---------------------------------------------------------------------------
+//  DUAL‑MODE EXPORTS — CommonJS compatibility (v30‑IMMORTAL‑PRIME+++)
+// ---------------------------------------------------------------------------
+/* c8 ignore next 10 */
+if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     PowerMeta,
-    createPowerAPI,
-    powerPointer
+    powerPointer,
+    powerReader,
+    createPowerAPI
   };
 }

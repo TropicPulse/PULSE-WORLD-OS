@@ -1,9 +1,48 @@
 // ============================================================================
-//  aiImmunity-v24.js — Pulse OS v24.0‑IMMORTAL++ Organ
+//  aiImmunity-v30.js — Pulse OS v30.0‑IMMORTAL‑ADVANTAGE Organ
 //  Binary Immune System • Quarantine Engine • Dualband Artery • Packet‑Aware
 //  PURE BINARY. ZERO NETWORK. ZERO RANDOMNESS IN LOGIC PATHS.
 // ============================================================================
 
+// ============================================================================
+//  IMMUNITY META — v30 IMMORTAL‑ADVANTAGE
+// ============================================================================
+export const ImmunityMeta = Object.freeze({
+  identity: "aiImmunity-v30-IMMORTAL-ADVANTAGE",
+  version: "30.0-IMMORTAL-ADVANTAGE",
+  role: "binary_immunity",
+  evo: Object.freeze({
+    deterministic: true,
+    driftProof: true,
+    egoFree: true,
+    arteryAware: true,
+    packetAware: true,
+    dualbandAware: true,
+    windowSafe: true,
+    zeroNetwork: true,
+    zeroRandomnessInLogicPaths: true,
+    epoch: "30-IMMORTAL-ADVANTAGE"
+  }),
+  contract: Object.freeze({
+    purpose:
+      "Provide a binary-first immune system for organs: quarantine, drift detection, and sanitation without randomness.",
+    never: Object.freeze([
+      "mutate external organs directly beyond quarantine topology rewiring",
+      "introduce randomness into immune logic paths",
+      "override higher-level safety or tone systems",
+      "perform network I/O",
+      "bypass evolution or registry constraints"
+    ]),
+    always: Object.freeze([
+      "stay binary-first",
+      "stay deterministic",
+      "stay drift-aware",
+      "stay topology-safe",
+      "update global immune registry snapshots",
+      "respect dualband metabolic pressure when provided"
+    ])
+  })
+});
 
 // ============================================================================
 //  GLOBAL IMMUNE REGISTRY — window‑safe, read‑only from outside
@@ -38,7 +77,7 @@ function emitImmunePacket(type, payload) {
 }
 
 // ============================================================================
-//  PREWARM — v24.0‑IMMORTAL++ (dualband‑aware, no randomness)
+//  PREWARM — v30.0‑IMMORTAL‑ADVANTAGE (dualband‑aware, no randomness)
 // ============================================================================
 export function prewarmAIBinaryImmunity(
   dualBand = null,
@@ -63,11 +102,21 @@ export function prewarmAIBinaryImmunity(
     throughput: 1,
     throughputBucket: "elite",
     pressure,
-    pressureBucket: pressure === 0 ? "none" : pressure >= 0.9 ? "overload" : pressure >= 0.7 ? "high" : pressure >= 0.4 ? "medium" : "low",
+    pressureBucket:
+      pressure === 0
+        ? "none"
+        : pressure >= 0.9
+        ? "overload"
+        : pressure >= 0.7
+        ? "high"
+        : pressure >= 0.4
+        ? "medium"
+        : "low",
     cost: 0,
     costBucket: "none",
     budget: 1,
-    budgetBucket: "elite"
+    budgetBucket: "elite",
+    load
   };
 
   const packet = emitImmunePacket("prewarm", {
@@ -94,7 +143,7 @@ export function prewarmAIBinaryImmunity(
 }
 
 // ============================================================================
-//  ORGAN IMPLEMENTATION — v24.0‑IMMORTAL++
+//  ORGAN IMPLEMENTATION — v30.0‑IMMORTAL‑ADVANTAGE
 // ============================================================================
 export class AIBinaryImmunity {
   constructor(config = {}) {
@@ -205,7 +254,7 @@ export class AIBinaryImmunity {
     if (v >= 0.9) return "overload";
     if (v >= 0.7) return "high";
     if (v >= 0.4) return "medium";
-    if (v > 0)   return "low";
+    if (v > 0) return "low";
     return "none";
   }
 
@@ -213,7 +262,7 @@ export class AIBinaryImmunity {
     if (v >= 0.8) return "heavy";
     if (v >= 0.5) return "moderate";
     if (v >= 0.2) return "light";
-    if (v > 0)    return "negligible";
+    if (v > 0) return "negligible";
     return "none";
   }
 
@@ -227,9 +276,9 @@ export class AIBinaryImmunity {
 
   _buildBinaryArtery(anomalySeverity, binaryLength) {
     const throughput = this._computeSanitationThroughput(anomalySeverity);
-    const pressure   = this._computeSanitationPressure(binaryLength, anomalySeverity);
-    const cost       = this._computeSanitationCost(pressure, throughput);
-    const budget     = this._computeSanitationBudget(throughput, cost);
+    const pressure = this._computeSanitationPressure(binaryLength, anomalySeverity);
+    const cost = this._computeSanitationCost(pressure, throughput);
+    const budget = this._computeSanitationBudget(throughput, cost);
 
     return {
       throughput,
@@ -292,7 +341,8 @@ export class AIBinaryImmunity {
 
     if (this.pipeline) this.pipeline.run(response.bits);
     if (this.reflex) this.reflex.run(response.bits);
-    if (this.logger) this.logger.logBinary(response.bits, { source: "immunity", anomaly, organId });
+    if (this.logger)
+      this.logger.logBinary(response.bits, { source: "immunity", anomaly, organId });
 
     this._trace("immune:emitted", { anomaly, organId });
 
@@ -413,7 +463,6 @@ if (typeof module !== "undefined") {
     createAIBinaryImmunity,
     ImmunityMeta,
     prewarmAIBinaryImmunity,
-    PulseRole,
     getGlobalImmuneState
   };
 }

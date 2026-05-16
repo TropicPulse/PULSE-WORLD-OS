@@ -1,4 +1,3 @@
-/* global log,warn,error */
 // ============================================================================
 // FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-UNIVERSE/X-PULSE-X/PulseWorldVault-v20.js
 // ORGAN: PulseWorldVault-v20 (Vault Organ)
@@ -111,13 +110,22 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-
+import {
+  VitalsLogger as logger,
+  log,
+  warn,
+  error,
+  comment,
+  makeTelemetryPacket as emitTelemetry,
+  PulseVersion,
+  PulseColors,
+  PulseIcons
+} from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 import { onRequest, onCall } from "firebase-functions/v2/https";
 import corsHandler from "./PulseWorldTransport-v20.js";
 import redeemSomePulsePoints from "./PulseWorldPointRedemption-v20.js";
 import { getEnvironmentState, getEnvironmentSummary,generateEnvironmentalInsights,generateFutureScenario,generateSmartEnvironmentalAdvice,applyEnvironmentalMultipliers } from "./PulseWorldEcoSystem-v20.js";
 import { sendPinEmail, sendAdminAlertEmail, sendAdminInfoEmail, hashPin } from "./PulseWorldEmailAlert-v20.js";
-import { PulseProofBridgeLogger as logger } from "../../PULSEVISION/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
 // ============================================================================
 // IMPORTS

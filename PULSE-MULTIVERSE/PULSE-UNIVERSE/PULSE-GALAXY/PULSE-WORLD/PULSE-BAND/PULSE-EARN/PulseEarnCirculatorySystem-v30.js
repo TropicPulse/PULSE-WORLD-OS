@@ -1,7 +1,7 @@
 // ============================================================================
-// FILE: PULSE-UNIVERSE/PULSE-EARN/PulseEarnCirculatorySystem-v24-Immortal-INTEL.js
-// LAYER: THE CIRCULATORY SYSTEM (v24-Immortal-INTEL, Deterministic Neural‑Circulatory)
-// ROLE: Earn Autonomic Routing + INTEL + Neural‑Circulatory Backbone
+// FILE: PULSE-UNIVERSE/PULSE-EARN/PulseEarnCirculatorySystem-v30-Immortal-INTEL.js
+// LAYER: THE CIRCULATORY SYSTEM (v30-Immortal-INTEL, Deterministic Neural‑Circulatory)
+// ROLE: Earn Autonomic Routing + INTEL + Neural‑Circulatory Backbone (v30 dual-band)
 // PATTERN: A‑B‑C‑B‑A (Neural‑Circulatory, Deterministic, Non‑Adaptive)
 // ============================================================================
 //
@@ -12,11 +12,25 @@
 //  • Overmind / Scheduler / Runtime aware (read‑only, metadata‑only).
 //  • Dual‑band (symbolic + binary) as metadata‑only (no non‑deterministic branching).
 //  • PURE COMPUTE: no async, no randomness, no timestamps, no IO, no learning.
-//  • Deterministic Neural‑Circulatory: neural surfaces, but zero adaptation.
-//
+//  • v30: chunk/cache/prewarm/earn‑aware routing surfaces + binary‑balance awareness.
 // ============================================================================
 
-// 1 — GENOME IDENTITY + SUBIMPORTS (MUST BE FIRST)
+// 1 — GENOME IDENTITY + META
+
+export const PulseEarnCirculatorySystemMeta = Object.freeze({
+  version: "v30-Immortal-INTEL",
+  role: "Earn Neural-Circulatory Backbone",
+  bandMode: "dual-band-symbolic-binary",
+  safetyContract: {
+    randomness: false,
+    timestampsInMath: false,
+    async: false,
+    network: false,
+    filesystem: false,
+    dom: false,
+    learning: false
+  }
+});
 
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
@@ -42,8 +56,40 @@ function normalizeBand(band) {
 }
 
 // ============================================================================
-// Healing Metadata — Circulatory Reflex Log (v24-Immortal-INTEL)
-// (Still deterministic; used only as read-only surfaces for diagnostics.)
+// Deterministic Hash Helper
+// ============================================================================
+
+function computeHash(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+  }
+  return `h${h}`;
+}
+
+function clamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
+}
+
+function normalizeCachePriority(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "low") return v;
+  return "normal";
+}
+
+function safeNum(v, d = 0) {
+  return typeof v === "number" && !isNaN(v) ? v : d;
+}
+
+function safeBool(v, d = false) {
+  return typeof v === "boolean" ? v : d;
+}
+
+// ============================================================================
+// Healing Metadata — Circulatory Reflex Log (v30-Immortal-INTEL)
 // ============================================================================
 
 const circulatoryHealing = {
@@ -80,7 +126,7 @@ const circulatoryHealing = {
   lastPulseIntelligence: null,
   lastPulseIntelligenceSignature: null,
 
-  // Neural surfaces (v24)
+  // Neural surfaces (v30)
   lastNeuralSurfaces: null,
   lastContinuanceSnapshot: null,
   lastRiskSnapshot: null,
@@ -89,17 +135,8 @@ const circulatoryHealing = {
   lastRuntimeContext: null
 };
 
-// ============================================================================
-// Deterministic Hash Helper
-// ============================================================================
-
-function computeHash(str) {
-  let h = 0;
-  const s = String(str || "");
-  for (let i = 0; i < s.length; i++) {
-    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
-  }
-  return `h${h}`;
+export function getPulseEarnCirculatoryHealingState() {
+  return { ...circulatoryHealing };
 }
 
 // ============================================================================
@@ -123,7 +160,7 @@ function buildRoutingCycleSignature(cycle, band) {
 }
 
 // ============================================================================
-// Loop / Wave / Advantage Fields (Routing-Level)
+// Loop / Wave / Advantage Fields (Routing-Level, v30)
 // ============================================================================
 
 function buildLoopField(jobs, band) {
@@ -142,51 +179,74 @@ function buildWaveField(jobs, band) {
   const count = Array.isArray(jobs) ? jobs.length : 0;
   const b = normalizeBand(band);
 
+  const wavelength = count || 1;
+  const amplitude = (count * 3) % 11;
+  const phase = (count * 5) % 16;
+
   return {
-    wavelength: count || 1,
-    amplitude: (count * 3) % 11,
-    phase: (count * 5) % 16,
+    wavelength,
+    amplitude,
+    phase,
     band: b,
     mode: b === CIRC_BANDS.BINARY ? "compression-wave" : "symbolic-wave"
   };
 }
 
-function buildAdvantageFieldForRouting(jobs, band) {
+function buildAdvantageFieldForRouting(jobs, band, context = {}) {
   const count = Array.isArray(jobs) ? jobs.length : 0;
   const b = normalizeBand(band);
 
+  const gh = context.globalHints || {};
+  const chunkHints = gh.chunkHints || {};
+  const cacheHints = gh.cacheHints || {};
+  const prewarmHints = gh.prewarmHints || {};
+
+  const cachePriority = normalizeCachePriority(cacheHints.priority);
+  const cacheWarmth = cacheHints.warmth || "cold";
+  const prewarmNeeded = !!prewarmHints.shouldPrewarm;
+
+  const binaryModeRatio = b === CIRC_BANDS.BINARY ? 1 : 0;
+  const symbolicModeRatio = b === CIRC_BANDS.SYMBOLIC ? 1 : 0;
+  const dualBandBalance = 1 - Math.abs(binaryModeRatio - symbolicModeRatio);
+
+  const chunkAggression = clamp01(chunkHints.chunkAggression || 0);
+
+  const advantageScore = clamp01(
+    (count > 0 ? 0.4 : 0) +
+    (cachePriority === "critical" ? 0.2 : cachePriority === "high" ? 0.15 : 0.1) +
+    (cacheWarmth === "hot" ? 0.15 : cacheWarmth === "warm" ? 0.1 : 0.05) +
+    (prewarmNeeded ? 0.1 : 0.02) +
+    (chunkAggression * 0.1) +
+    (dualBandBalance * 0.08)
+  );
+
+  const advantageTier =
+    advantageScore >= 0.9 ? 3 :
+    advantageScore >= 0.6 ? 2 :
+    advantageScore >= 0.3 ? 1 :
+    0;
+
   return {
-    advantageVersion: "R-24.0",
+    advantageVersion: "R-30.0",
     jobCount: count,
     band: b,
     symbolicPlanningBias: b === CIRC_BANDS.SYMBOLIC ? 1 : 0,
-    binaryCompressionBias: b === CIRC_BANDS.BINARY ? 1 : 0
+    binaryCompressionBias: b === CIRC_BANDS.BINARY ? 1 : 0,
+    cachePriority,
+    cacheWarmth,
+    prewarmNeeded,
+    chunkAggression,
+    binaryModeRatio,
+    symbolicModeRatio,
+    dualBandBalance,
+    advantageScore,
+    advantageTier
   };
 }
 
 // ============================================================================
-// Presence / Advantage / Hints / Compute Profile (v24 IMMORTAL-INTEL)
+// Presence / Advantage / Hints / Compute Profile (v30 IMMORTAL-INTEL)
 // ============================================================================
-
-function clamp01(x) {
-  if (x == null || Number.isNaN(x)) return 0;
-  return Math.max(0, Math.min(1, x));
-}
-
-function normalizeCachePriority(p) {
-  if (!p) return "normal";
-  const v = String(p).toLowerCase();
-  if (v === "critical" || v === "high" || v === "low") return v;
-  return "normal";
-}
-
-function safeNum(v, d = 0) {
-  return typeof v === "number" && !isNaN(v) ? v : d;
-}
-
-function safeBool(v, d = false) {
-  return typeof v === "boolean" ? v : d;
-}
 
 function buildPresenceField(context = {}) {
   const gh = context.globalHints || {};
@@ -207,7 +267,7 @@ function buildPresenceField(context = {}) {
   else if (pressure > 0) presenceTier = "soft";
 
   return Object.freeze({
-    presenceVersion: "v24-Immortal-INTEL",
+    presenceVersion: "v30-Immortal-INTEL",
     presenceTier,
 
     bandPresence: pf.bandPresence || gh.presenceContext?.bandPresence || "unknown",
@@ -226,7 +286,7 @@ function buildPresenceField(context = {}) {
     castleLoadLevel,
 
     presenceSignature: computeHash(
-      `PRESENCE_V24::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
+      `PRESENCE_V30::${presenceTier}::${meshPressureIndex}::${castleLoadLevel}`
     )
   });
 }
@@ -236,7 +296,7 @@ function buildAdvantagePresenceField(context = {}) {
   const adv = gh.advantageContext || {};
 
   return Object.freeze({
-    advantageVersion: "C-24.0",
+    advantageVersion: "C-30.0",
     advantageScore: adv.score ?? 0,
     advantageBand: adv.band ?? "neutral",
     advantageTier: adv.tier ?? 0
@@ -286,10 +346,12 @@ function buildComputeProfile({ band, context = {}, capabilityModel = {} }) {
   const minerPreferred = minerScore > 0;
   const offlinePreferred = offlineScore > 0;
 
+  const chunkAggression = clamp01(hintsField.chunkHints.chunkAggression ?? 0);
+
   return Object.freeze({
     routeBand: b,
     fallbackBandLevel: hintsField.fallbackBandLevel,
-    chunkAggression: hintsField.chunkHints.chunkAggression ?? 0,
+    chunkAggression,
     cachePriority,
     prewarmNeeded,
     binaryPreferred: b === CIRC_BANDS.BINARY,
@@ -309,11 +371,18 @@ function buildComputeProfile({ band, context = {}, capabilityModel = {} }) {
 }
 
 // ============================================================================
-// ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe, routing-level, v24)
+// ⭐ Pulse Intelligence (logic-only, IMMORTAL-safe, routing-level, v30)
 // ============================================================================
 
-function computePulseIntelligence({ advantageField, presenceField, computeProfile, band, continuanceSnapshot, riskSnapshot }) {
-  const advantageScore = advantageField.advantageScore || 0;
+function computePulseIntelligence({
+  advantageField,
+  presenceField,
+  computeProfile,
+  band,
+  continuanceSnapshot,
+  riskSnapshot
+}) {
+  const advantageScore = clamp01(advantageField.advantageScore || 0);
   const advantageTier = advantageField.advantageTier || 0;
 
   const presenceTier = presenceField.presenceTier || "idle";
@@ -339,17 +408,18 @@ function computePulseIntelligence({ advantageField, presenceField, computeProfil
   const continuanceWeight = 1 - clamp01(contScore);
   const riskWeight = clamp01(riskScore);
 
-  const solvednessScore = Math.max(
-    0,
-    Math.min(
-      advantageScore * 10 * 0.35 +
-      presenceWeight * 0.2 +
-      factoring * 0.15 +
-      performanceRatio * 0.15 +
-      continuanceWeight * 0.1 +
-      riskWeight * 0.05,
-      1
-    )
+  const dualBandBalance = typeof advantageField.dualBandBalance === "number"
+    ? clamp01(advantageField.dualBandBalance)
+    : 0;
+
+  const solvednessScore = clamp01(
+    advantageScore * 0.35 +
+    presenceWeight * 0.18 +
+    factoring * 0.12 +
+    performanceRatio * 0.15 +
+    continuanceWeight * 0.10 +
+    riskWeight * 0.05 +
+    dualBandBalance * 0.05
   );
 
   const computeTier =
@@ -359,14 +429,10 @@ function computePulseIntelligence({ advantageField, presenceField, computeProfil
     solvednessScore >= 0.2 ? "lowPriority"  :
     "avoidCompute";
 
-  const readinessScore = Math.max(
-    0,
-    Math.min(
-      solvednessScore * 0.6 +
-      (bandIsBinary ? 0.15 : 0) +
-      (advantageTier >= 2 ? 0.25 : advantageTier === 1 ? 0.1 : 0),
-      1
-    )
+  const readinessScore = clamp01(
+    solvednessScore * 0.6 +
+    (bandIsBinary ? 0.15 : 0) +
+    (advantageTier >= 2 ? 0.20 : advantageTier === 1 ? 0.08 : 0)
   );
 
   return {
@@ -378,7 +444,8 @@ function computePulseIntelligence({ advantageField, presenceField, computeProfil
     advantageTier,
     performanceRatio,
     continuanceScore: contScore,
-    riskScore
+    riskScore,
+    dualBandBalance
   };
 }
 
@@ -386,7 +453,12 @@ function computePulseIntelligence({ advantageField, presenceField, computeProfil
 // ⭐ Neural Surfaces (Overmind / Scheduler / Runtime aware, deterministic)
 // ============================================================================
 
-function buildNeuralSurfaces({ overmindContext = {}, schedulerContext = {}, runtimeContext = {}, pulseIntelligence }) {
+function buildNeuralSurfaces({
+  overmindContext = {},
+  schedulerContext = {},
+  runtimeContext = {},
+  pulseIntelligence
+}) {
   const overmindState = overmindContext.state || null;
   const overmindBand = overmindContext.band || null;
 
@@ -509,7 +581,7 @@ function scoreJobForCapability(job, capabilityModel = {}) {
 }
 
 // ============================================================================
-// INTERNAL: Deterministic Band-Aware Job Score (v24 + capabilityModel + INTEL)
+// INTERNAL: Deterministic Band-Aware Job Score (v30 + capabilityModel + INTEL)
 // ============================================================================
 
 function scoreJobWithBand(job, capabilityModel, band, context = {}) {
@@ -537,6 +609,9 @@ function scoreJobWithBand(job, capabilityModel, band, context = {}) {
   const minerBias = minerScore > 0 ? 1.03 : 1.0;
   const offlineBias = offlineScore > 0 ? 1.02 : 1.0;
 
+  const chunkAggression = clamp01(hintsField.chunkHints.chunkAggression || 0);
+  const chunkBias = 1 + chunkAggression * 0.05;
+
   return baseCapability
     * (0.5 + rep)
     * bandBias
@@ -545,14 +620,20 @@ function scoreJobWithBand(job, capabilityModel, band, context = {}) {
     * performanceRatio
     * gpuBias
     * minerBias
-    * offlineBias;
+    * offlineBias
+    * chunkBias;
 }
 
 // ============================================================================
-// 3. selectBestJob — Deterministic Autonomic Prioritization (v24 IMMORTAL-INTEL)
+// 3. selectBestJob — Deterministic Autonomic Prioritization (v30 IMMORTAL-INTEL)
 // ============================================================================
 
-export function selectBestJob(jobs, band = CIRC_BANDS.SYMBOLIC, context = {}, capabilityModel = {}) {
+export function selectBestJob(
+  jobs,
+  band = CIRC_BANDS.SYMBOLIC,
+  context = {},
+  capabilityModel = {}
+) {
   try {
     const normalizedBand = normalizeBand(band);
 
@@ -584,7 +665,7 @@ export function selectBestJob(jobs, band = CIRC_BANDS.SYMBOLIC, context = {}, ca
 }
 
 // ============================================================================
-// 4. getNextJob — Full Neural‑Circulatory Routing Cycle (v24 IMMORTAL-INTEL)
+// 4. getNextJob — Full Neural‑Circulatory Routing Cycle (v30 IMMORTAL-INTEL)
 // ============================================================================
 // capabilityModel is REQUIRED for strict purity: no internal device assumptions.
 
@@ -621,7 +702,7 @@ export function getNextJob(
     if (healthy.length === 0) {
       const loopField = buildLoopField([], normalizedBand);
       const waveField = buildWaveField([], normalizedBand);
-      const advantageField = buildAdvantageFieldForRouting([], normalizedBand);
+      const advantageField = buildAdvantageFieldForRouting([], normalizedBand, context);
 
       const pulseIntelligence = computePulseIntelligence({
         advantageField: {
@@ -669,7 +750,7 @@ export function getNextJob(
     if (jobs.length === 0) {
       const loopField = buildLoopField([], normalizedBand);
       const waveField = buildWaveField([], normalizedBand);
-      const advantageField = buildAdvantageFieldForRouting([], normalizedBand);
+      const advantageField = buildAdvantageFieldForRouting([], normalizedBand, context);
 
       const pulseIntelligence = computePulseIntelligence({
         advantageField: {
@@ -722,7 +803,7 @@ export function getNextJob(
 
     const loopField = buildLoopField(weightedJobs, normalizedBand);
     const waveField = buildWaveField(weightedJobs, normalizedBand);
-    const advantageField = buildAdvantageFieldForRouting(weightedJobs, normalizedBand);
+    const advantageField = buildAdvantageFieldForRouting(weightedJobs, normalizedBand, context);
 
     const pulseIntelligence = computePulseIntelligence({
       advantageField: {
@@ -776,7 +857,7 @@ export function getNextJob(
 
     const loopField = buildLoopField([], normalizedBand);
     const waveField = buildWaveField([], normalizedBand);
-    const advantageField = buildAdvantageFieldForRouting([], normalizedBand);
+    const advantageField = buildAdvantageFieldForRouting([], normalizedBand, context);
 
     const pulseIntelligence = computePulseIntelligence({
       advantageField: {
@@ -837,26 +918,18 @@ export function getRoutingSurfaces() {
     waveField: circulatoryHealing.lastWaveField,
     advantageField: circulatoryHealing.lastAdvantageField,
     pulseIntelligence: circulatoryHealing.lastPulseIntelligence,
+    pulseIntelligenceSignature: circulatoryHealing.lastPulseIntelligenceSignature,
     neuralSurfaces: circulatoryHealing.lastNeuralSurfaces,
-    routingSignatures: {
-      healthSignature: circulatoryHealing.lastHealthSignature,
-      jobListSignature: circulatoryHealing.lastJobListSignature,
-      selectionSignature: circulatoryHealing.lastSelectionSignature,
-      routingCycleSignature: circulatoryHealing.lastRoutingCycleSignature,
-      pulseIntelligenceSignature: circulatoryHealing.lastPulseIntelligenceSignature
-    }
+    lastRoutingCycleSignature: circulatoryHealing.lastRoutingCycleSignature
   });
 }
 
-// ============================================================================
-// DEFAULT EXPORT
-// ============================================================================
-
 export default {
-  PulseEarnCirculatorySystemMeta,
+  meta: PulseEarnCirculatorySystemMeta,
   discoverHealthyMarketplaces,
   fetchJobsFromMarketplaces,
   selectBestJob,
   getNextJob,
-  getRoutingSurfaces
+  getRoutingSurfaces,
+  getPulseEarnCirculatoryHealingState
 };
