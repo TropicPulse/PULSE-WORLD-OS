@@ -42,7 +42,7 @@ import * as aiHeartbeat from "../PULSE-AI/PulseAIHeartbeat-v24.js";
 import {
   pulseEarnFromHeartbeat,
   getPulseEarnHeartHealingState
-} from "../PULSE-EARN/PulseEarnHeartbeat-v24.js";
+} from "../PULSE-EARN/PulseEarnHeartbeat-v30.js";
 
 
 // ============================================================================

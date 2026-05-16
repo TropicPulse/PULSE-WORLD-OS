@@ -1,10 +1,15 @@
 import globals from "globals";
 
 export default [
+
+  // ============================================================
+  // 1. GLOBAL RULESET — applies to ALL JS in the organism
+  // ============================================================
   {
     files: ["**/*.js", "**/*.cjs", "**/*.mjs"],
 
     ignores: [
+      // OS‑level compiled organism
       "PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/X-PULSE-X/PULSE-WORLD-OS.js"
     ],
 
@@ -18,6 +23,7 @@ export default [
     },
 
     rules: {
+
       // ============================================================
       // CRITICAL — REAL BUGS
       // ============================================================
@@ -27,13 +33,14 @@ export default [
       "preserve-caught-error": "error",
 
       // ============================================================
-      // PULSE-OS NAMING DIALECT
+      // PULSE‑WORLD NAMING DIALECT
       // ============================================================
       "camelcase": [
         "warn",
         {
           allow: [
             "^Pulse",
+            "^PULSE",
             "^OS",
             "^u[A-Z]",
             ".*_.*",
@@ -57,35 +64,15 @@ export default [
         }
       ],
 
-      // // ============================================================
-      // // IMMUTABLE PULSE EVOLUTION
-      // // ============================================================
-      // "no-param-reassign": [
-      //   "error",
-      //   {
-      //     props: true,
-      //     ignorePropertyModificationsFor: [
-      //       "Pulse",
-      //       "OS",
-      //       "req",
-      //       "res",
-      //       "input",
-      //       "intent",
-      //       "target",
-      //       "name"
-      //     ]
-      //   }
-      // ],
-
       // ============================================================
-      // DETERMINISTIC TIME
+      // DETERMINISTIC TIME (except immune/proxy overrides)
       // ============================================================
       "no-restricted-properties": [
         "warn",
         {
           object: "Date",
           property: "now",
-          message: "Use admin.firestore.Timestamp.now() for deterministic time."
+          message: "Use deterministic time — PulseWorld forbids Date.now() outside immune/proxy layers."
         }
       ],
 
@@ -96,12 +83,12 @@ export default [
         "error",
         {
           name: "Math.random",
-          message: "Use generateToken() — randomness is restricted in Pulse‑OS."
+          message: "Use generateToken() — randomness restricted in Pulse‑World."
         }
       ],
 
       // ============================================================
-      // NO DIRECT CONSOLE
+      // NO DIRECT CONSOLE (except diagnostics)
       // ============================================================
       "no-console": [
         "warn",
@@ -131,29 +118,109 @@ export default [
       "no-extra-semi": "warn",
     },
   },
-// ============================================================
-  // IMMUNE ORGANS OVERRIDE — allow Date.now(), Math.random(), timers
+
+  // ============================================================
+  // 2. IMMUNE / WBC / HEALER / MEMBRANE — randomness + time allowed
   // ============================================================
   {
     files: [
-      "**/PulseProxy*.js",
-      "**/PulseProxyBinary*.js",
-      "**/PulseOSLongTermMemory*.js",
-      "**/WBC*.js",
-      "**/*Healer*.js",
+      "**/*WBC*.js",
       "**/*Immune*.js",
+      "**/*Healer*.js",
       "**/*Membrane*.js",
-      "**/PULSE-WORLD*.js",      
-      "**/PULSE-UNIVERSE*.js",
-      "**/*ProxySpine*.js",
-      "**/*Vault*.js",
-      "**/*Wallet*.js",
-      "**/*Point*.js",
+      "**/PulseOSLongTermMemory*.js",
       "**/*ProxyBlood*.js"
     ],
     rules: {
       "no-restricted-properties": "off",
       "no-restricted-globals": "off"
     }
+  },
+
+  // ============================================================
+  // 3. PROXY LAYER — allowed to mutate, use time, use randomness
+  // ============================================================
+  {
+    files: [
+      "**/PulseProxy*.js",
+      "**/PulseProxyBinary*.js",
+      "**/*ProxySpine*.js",
+      "**/*Vault*.js",
+      "**/*Wallet*.js",
+      "**/*Point*.js"
+    ],
+    rules: {
+      "no-restricted-properties": "off",
+      "no-restricted-globals": "off",
+      "no-param-reassign": "off"
+    }
+  },
+
+  // ============================================================
+  // 4. MULTIVERSE / UNIVERSE / GALAXY / WORLD — strict deterministic
+  // ============================================================
+  {
+    files: [
+      "PULSE-MULTIVERSE/**/*.js",
+      "PULSE-UNIVERSE/**/*.js",
+      "PULSE-GALAXY/**/*.js",
+      "PULSE-WORLD/**/*.js"
+    ],
+    rules: {
+      "no-restricted-properties": "warn",
+      "no-restricted-globals": "error",
+      "no-param-reassign": [
+        "warn",
+        {
+          props: true,
+          ignorePropertyModificationsFor: ["Pulse", "OS", "intent", "target"]
+        }
+      ]
+    }
+  },
+
+  // ============================================================
+  // 5. PULSE‑BAND — DualBand lanes allowed to mutate
+  // ============================================================
+  {
+    files: [
+      "PULSE-WORLD/PULSE-BAND/**/*.js"
+    ],
+    rules: {
+      "no-param-reassign": "off",
+      "no-restricted-properties": "warn",
+      "no-restricted-globals": "warn"
+    }
+  },
+
+  // ============================================================
+  // 6. X‑PULSE‑X — organism constructor, full override
+  // ============================================================
+  {
+    files: [
+      "PULSE-WORLD/PULSE-BAND/X-PULSE-X/**/*.js"
+    ],
+    rules: {
+      "no-restricted-properties": "off",
+      "no-restricted-globals": "off",
+      "no-param-reassign": "off",
+      "no-console": "off"
+    }
+  },
+
+  // ============================================================
+  // 7. PULSEVISION (frontend) — relaxed rules
+  // ============================================================
+  {
+    files: [
+      "PULSE-WORLD/PULSEVISION/**/*.js",
+      "PULSE-WORLD/PULSEVISION/**/*.jsx"
+    ],
+    rules: {
+      "no-restricted-properties": "off",
+      "no-restricted-globals": "off",
+      "no-console": "off"
+    }
   }
+
 ];

@@ -1,21 +1,12 @@
 // ============================================================================
-//  PulseEarnReflex-v24.0-Immortal-ADV-SUPERIOR.js
-//  Side-Attached Earn Reflex (v24 Immortal-ADV-SUPERIOR + Advantage‑M24 + Chunk/Prewarm + 24++ Overlays)
+//  PulseEarnReflex-v30.0-Immortal-ADV-PLUSPLUS.js
+//  Side-Attached Earn Reflex (v30 Immortal-ADV-PLUSPLUS + Advantage‑M30 +
+//  Chunk/Prewarm/Factoring + 30++ Overlays)
 //  Pure deterministic reflex builder (zero routing, zero sending, zero compute)
-//  Binary-first A-B-A + DualHash + Presence/Advantage/Chunk surfaces (metadata-only) + 24++ Reflex Profiles
+//  Binary-first A-B-A + DualHash + Presence/Advantage/Chunk surfaces
+//  + v30 ReflexComputeProfile / ReflexPressureProfile / TriHeart30 / PulseIntelligence
 // ============================================================================
 
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
-// ============================================================================
-// INTERNAL STATE
-// ============================================================================
 const reflexInstances = new Map();
 let reflexCycle = 0;
 
@@ -28,7 +19,8 @@ const reflexHealing = {
   lastReason: null,
 
   lastBand: "symbolic",
-  lastBandSignature: null,
+  lastBandSignatureIntel: null,
+  lastBandSignatureClassic: null,
 
   lastBinaryField: null,
   lastWaveField: null,
@@ -37,19 +29,22 @@ const reflexHealing = {
   lastAdvantageField: null,
   lastChunkPrewarmPlan: null,
 
-  lastReflexSignature: null,
+  lastReflexSignatureIntel: null,
+  lastReflexSignatureClassic: null,
   lastDualHashField: null,
   lastHashIntellectSignature: null,
 
-  // 24++ overlays
-  lastReflexComputeProfile: null,
-  lastReflexPressureProfile: null,
-  lastReflexTriHeartField: null
+  // v30++ overlays
+  lastReflexComputeProfileV30: null,
+  lastReflexPressureProfileV30: null,
+  lastReflexTriHeartFieldV30: null,
+  lastReflexPulseIntelligenceV30: null
 };
 
 // ============================================================================
 // HELPERS
 // ============================================================================
+
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
@@ -77,9 +72,7 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash
@@ -89,6 +82,11 @@ function buildDualHashSignature(label, intelPayload, classicString) {
 function normalizeBand(b) {
   const x = String(b || "symbolic").toLowerCase();
   return x === "binary" ? "binary" : "symbolic";
+}
+
+function clamp01(x) {
+  if (x == null || Number.isNaN(x)) return 0;
+  return Math.max(0, Math.min(1, x));
 }
 
 function getPulseId(p) {
@@ -114,8 +112,9 @@ function getReflexId(event, pulse) {
 }
 
 // ============================================================================
-// A-B-A BINARY + WAVE (v24 Immortal-ADV-SUPERIOR)
+// A-B-A BINARY + WAVE (v30 Immortal-ADV-PLUSPLUS)
 // ============================================================================
+
 function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
   const band = normalizeBand(
     event.band ||
@@ -133,9 +132,27 @@ function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
 
   const surface = pulseLen + organLen + reasonLen + gpuScore + bandwidth + cycleIndex;
 
+  const intelPayload = {
+    kind: "reflexBandBinaryWave",
+    version: "v30.0",
+    pulseLen,
+    organLen,
+    reasonLen,
+    gpuScore,
+    bandwidth,
+    cycleIndex,
+    surface,
+    band
+  };
+
+  const classicString = `RFX30_BANDWAVE::${band}::${surface}`;
+  const dual = buildDualHashSignature("REFLEX30_BANDWAVE", intelPayload, classicString);
+
   const binaryField = {
-    binaryReflexSignature: computeHash(`BREFLEX24::${reflexId}::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_RFX24::${surface}`),
+    binaryReflexSignatureIntel: dual.intel,
+    binaryReflexSignatureClassic: dual.classic,
+    binarySurfaceSignatureIntel: dual.intel,
+    binarySurfaceSignatureClassic: dual.classic,
     binarySurface: {
       pulseLen,
       organLen,
@@ -150,7 +167,22 @@ function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
     shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1)))
   };
 
+  const waveIntelPayload = {
+    kind: "reflexWaveSurface",
+    version: "v30.0",
+    organLen,
+    gpuScore,
+    bandwidth,
+    cycleIndex,
+    surface
+  };
+
+  const waveClassicString = `RFX30_WAVE::${organLen}::${cycleIndex}`;
+  const waveDual = buildDualHashSignature("REFLEX30_WAVE", waveIntelPayload, waveClassicString);
+
   const waveField = {
+    waveReflexSignatureIntel: waveDual.intel,
+    waveReflexSignatureClassic: waveDual.classic,
     amplitude: organLen + gpuScore + bandwidth,
     wavelength: cycleIndex || 1,
     phase: (organLen + reasonLen + cycleIndex) % 16,
@@ -158,19 +190,25 @@ function buildReflexBandBinaryWave(event, pulse, reflexId, cycleIndex, device) {
     mode: band === "binary" ? "compression-wave" : "symbolic-wave"
   };
 
-  const bandSignature = computeHash(`BAND::REFLEX24::${band}::${cycleIndex}`);
+  const bandSigDual = buildDualHashSignature(
+    "REFLEX30_BAND",
+    { band, cycleIndex },
+    `REFLEX30_BAND::${band}::${cycleIndex}`
+  );
 
   reflexHealing.lastBand = band;
-  reflexHealing.lastBandSignature = bandSignature;
+  reflexHealing.lastBandSignatureIntel = bandSigDual.intel;
+  reflexHealing.lastBandSignatureClassic = bandSigDual.classic;
   reflexHealing.lastBinaryField = binaryField;
   reflexHealing.lastWaveField = waveField;
 
-  return { band, bandSignature, binaryField, waveField };
+  return { band, bandSignatureIntel: bandSigDual.intel, bandSignatureClassic: bandSigDual.classic, binaryField, waveField };
 }
 
 // ============================================================================
-// PRESENCE FIELD (v24 Immortal-ADV-SUPERIOR)
+// PRESENCE FIELD (v30 Immortal-ADV-PLUSPLUS)
 // ============================================================================
+
 function buildPresenceField(event, pulse, device, cycleIndex) {
   const organLen = String(getOrgan(event)).length;
   const reasonLen = String(getReason(event)).length;
@@ -185,13 +223,25 @@ function buildPresenceField(event, pulse, device, cycleIndex) {
 
   const presenceBand = normalizeBand(device?.presenceBand || device?.band || "symbolic");
 
-  const presenceSignatureBase =
-    `RFX_PRESENCE_V24::${presenceTier}::${organLen}::${reasonLen}::${pulseLen}::${cycleIndex}::${presenceBand}`;
-  const presenceHash = computeHash(presenceSignatureBase);
-  const presenceIntellect = computeHashIntelligence(presenceSignatureBase);
+  const intelPayload = {
+    kind: "reflexPresence",
+    version: "v30.0-Immortal-ADV-PLUSPLUS",
+    presenceTier,
+    organLen,
+    reasonLen,
+    pulseLen,
+    stability,
+    cycleIndex,
+    presenceBand
+  };
+
+  const classicString =
+    `RFX30_PRESENCE::${presenceTier}::${organLen}::${reasonLen}::${pulseLen}::${cycleIndex}::${presenceBand}`;
+
+  const dual = buildDualHashSignature("REFLEX30_PRESENCE", intelPayload, classicString);
 
   const presenceField = {
-    presenceVersion: "v24.0-Immortal-ADV-SUPERIOR",
+    presenceVersion: "v30.0-Immortal-ADV-PLUSPLUS",
     presenceTier,
     presenceBand,
     organLen,
@@ -199,8 +249,8 @@ function buildPresenceField(event, pulse, device, cycleIndex) {
     pulseLen,
     stability,
     cycleIndex,
-    presenceSignature: presenceHash,
-    presenceIntellectSignature: presenceIntellect
+    presenceSignatureIntel: dual.intel,
+    presenceSignatureClassic: dual.classic
   };
 
   reflexHealing.lastPresenceField = presenceField;
@@ -208,8 +258,9 @@ function buildPresenceField(event, pulse, device, cycleIndex) {
 }
 
 // ============================================================================
-// ADVANTAGE‑M24 FIELD (structural-only, richer surface)
+// ADVANTAGE‑M30 FIELD (structural-only, richer surface)
 // ============================================================================
+
 function buildAdvantageField(event, pulse, device, bandPack, presenceField) {
   const gpuScore = device?.gpuScore || 0;
   const bandwidth = device?.bandwidthMbps || 0;
@@ -230,8 +281,14 @@ function buildAdvantageField(event, pulse, device, bandPack, presenceField) {
     (chunkBudgetKB + cacheLines + prewarmSlots) * 0.000001 +
     (presenceTier === "presence_high" ? 0.01 : 0);
 
-  const advantageField = {
-    advantageVersion: "M-24.0-REFLEX",
+  let advantageTier = 0;
+  if (advantageScore >= 0.05) advantageTier = 3;
+  else if (advantageScore >= 0.02) advantageTier = 2;
+  else if (advantageScore > 0) advantageTier = 1;
+
+  const intelPayload = {
+    kind: "reflexAdvantage",
+    version: "M-30.0-REFLEX",
     band: bandPack.band,
     presenceBand: presenceField.presenceBand,
     gpuScore,
@@ -242,7 +299,31 @@ function buildAdvantageField(event, pulse, device, bandPack, presenceField) {
     cacheLines,
     prewarmSlots,
     presenceTier,
-    advantageScore
+    advantageScore,
+    advantageTier
+  };
+
+  const classicString =
+    `RFX30_ADVANTAGE::${presenceTier}::${advantageTier}`;
+
+  const dual = buildDualHashSignature("REFLEX30_ADVANTAGE", intelPayload, classicString);
+
+  const advantageField = {
+    advantageVersion: "M-30.0-REFLEX",
+    band: bandPack.band,
+    presenceBand: presenceField.presenceBand,
+    gpuScore,
+    bandwidth,
+    binaryDensity: density,
+    waveAmplitude: amplitude,
+    chunkBudgetKB,
+    cacheLines,
+    prewarmSlots,
+    presenceTier,
+    advantageScore,
+    advantageTier,
+    advantageSignatureIntel: dual.intel,
+    advantageSignatureClassic: dual.classic
   };
 
   reflexHealing.lastAdvantageField = advantageField;
@@ -250,8 +331,9 @@ function buildAdvantageField(event, pulse, device, bandPack, presenceField) {
 }
 
 // ============================================================================
-// CHUNK / CACHE / PREWARM PLAN (v24-AdvantageM)
+// CHUNK / CACHE / PREWARM PLAN (v30-AdvantageM)
 // ============================================================================
+
 function buildChunkPrewarmPlan(event, pulse, device, presenceField, advantageField) {
   let priorityLabel = "normal";
   if (presenceField.presenceTier === "presence_high") priorityLabel = "high";
@@ -268,8 +350,22 @@ function buildChunkPrewarmPlan(event, pulse, device, presenceField, advantageFie
     (device?.chunkField?.cacheLines ?? 0) * 2 +
     (device?.chunkField?.prewarmSlots ?? 0) * 3;
 
+  const intelPayload = {
+    kind: "reflexChunkPlan",
+    version: "v30.0-AdvantageM-Reflex",
+    priorityLabel,
+    bandPresence: presenceField.presenceTier,
+    planSurface,
+    advantageTier: advantageField.advantageTier
+  };
+
+  const classicString =
+    `RFX30_CHUNKPLAN::${presenceField.presenceTier}::${priorityLabel}::${planSurface}`;
+
+  const dual = buildDualHashSignature("REFLEX30_CHUNKPLAN", intelPayload, classicString);
+
   const chunkPrewarmPlan = {
-    planVersion: "v24.0-AdvantageM-Reflex",
+    planVersion: "v30.0-AdvantageM-Reflex",
     priorityLabel,
     bandPresence: presenceField.presenceTier,
     planSurface,
@@ -288,7 +384,9 @@ function buildChunkPrewarmPlan(event, pulse, device, presenceField, advantageFie
       reflexRouter: presenceField.presenceTier !== "presence_idle",
       nervousSystem: presenceField.presenceTier === "presence_high",
       muscleSystem: presenceField.presenceTier === "presence_high"
-    }
+    },
+    chunkPlanSignatureIntel: dual.intel,
+    chunkPlanSignatureClassic: dual.classic
   };
 
   reflexHealing.lastChunkPrewarmPlan = chunkPrewarmPlan;
@@ -296,9 +394,21 @@ function buildChunkPrewarmPlan(event, pulse, device, presenceField, advantageFie
 }
 
 // ============================================================================
-// 24++ REFLEX PROFILES (Compute / Pressure / Tri‑Heart)
+// v30++ REFLEX COMPUTE / PRESSURE / TRI‑HEART / PULSE INTELLIGENCE
 // ============================================================================
-function buildReflexComputeProfile(reflexId, bandPack, presenceField, advantageField) {
+
+function deriveReflexFactoringSignal({ presenceField, advantageField }) {
+  const mag =
+    (presenceField.organLen || 0) +
+    (presenceField.reasonLen || 0) +
+    (presenceField.pulseLen || 0);
+
+  const adv = advantageField.advantageScore || 0;
+  const scaled = clamp01((mag + adv * 1000) / 300);
+  return scaled >= 0.6 ? 1 : 0;
+}
+
+function buildReflexComputeProfileV30(reflexId, bandPack, presenceField, advantageField) {
   const density = bandPack.binaryField.density;
   const amplitude = bandPack.waveField.amplitude;
 
@@ -308,22 +418,26 @@ function buildReflexComputeProfile(reflexId, bandPack, presenceField, advantageF
   else if (magnitude >= 400) computeTier = "reflex_tier_high";
   else if (magnitude >= 150) computeTier = "reflex_tier_mid";
 
+  const factoringSignal = deriveReflexFactoringSignal({ presenceField, advantageField });
+
   const profile = {
-    profileVersion: "REFLEX-COMPUTE-24++",
+    profileVersion: "REFLEX-COMPUTE-30++",
     reflexId,
     band: bandPack.band,
     binaryDensity: density,
     waveAmplitude: amplitude,
     presenceTier: presenceField.presenceTier,
     advantageScore: advantageField.advantageScore,
-    computeTier
+    advantageTier: advantageField.advantageTier,
+    computeTier,
+    factoringSignal
   };
 
-  reflexHealing.lastReflexComputeProfile = profile;
+  reflexHealing.lastReflexComputeProfileV30 = profile;
   return profile;
 }
 
-function buildReflexPressureProfile(presenceField, advantageField) {
+function buildReflexPressureProfileV30(presenceField, advantageField) {
   const magnitude =
     (presenceField.organLen || 0) +
     (presenceField.reasonLen || 0) +
@@ -337,45 +451,115 @@ function buildReflexPressureProfile(presenceField, advantageField) {
   else if (magnitude > 0) pressureTier = "reflex_pressure_soft";
 
   const profile = {
-    profileVersion: "REFLEX-PRESSURE-24++",
+    profileVersion: "REFLEX-PRESSURE-30++",
     pressureTier,
     presenceTier: presenceField.presenceTier,
     organLen: presenceField.organLen,
     reasonLen: presenceField.reasonLen,
     pulseLen: presenceField.pulseLen,
-    advantageScore: advantageField.advantageScore
+    advantageScore: advantageField.advantageScore,
+    advantageTier: advantageField.advantageTier
   };
 
-  reflexHealing.lastReflexPressureProfile = profile;
+  reflexHealing.lastReflexPressureProfileV30 = profile;
   return profile;
 }
 
-function buildTriHeartField(presenceField, advantageField) {
+function buildTriHeartFieldV30(presenceField, advantageField, computeProfileV30) {
   const tri = {
-    triHeartVersion: "REFLEX-TRI-24++",
+    triHeartVersion: "REFLEX-TRI-30++",
     liveness: {
       alive: true,
       presenceTier: presenceField.presenceTier
     },
     advantage: {
-      advantageTier: advantageField.advantageScore > 0 ? 1 : 0,
+      advantageTier: advantageField.advantageTier,
       advantageScore: advantageField.advantageScore
     },
     speed: {
-      contractionSpeedTier: presenceField.presenceTier
+      contractionSpeedTier: computeProfileV30.computeTier
     },
     presence: {
       presenceTier: presenceField.presenceTier
     }
   };
 
-  reflexHealing.lastReflexTriHeartField = tri;
+  reflexHealing.lastReflexTriHeartFieldV30 = tri;
   return tri;
 }
 
+function computeReflexPulseIntelligenceV30({
+  presenceField,
+  advantageField,
+  computeProfileV30,
+  band
+}) {
+  const advantageScore = advantageField.advantageScore || 0;
+  const advantageTier = advantageField.advantageTier || 0;
+
+  const presenceTier = presenceField.presenceTier || "presence_idle";
+  const presenceWeight =
+    presenceTier === "presence_high"
+      ? 1.0
+      : presenceTier === "presence_mid"
+      ? 0.7
+      : presenceTier === "presence_low"
+      ? 0.4
+      : 0.2;
+
+  const factoring = computeProfileV30.factoringSignal ? 1 : 0;
+  const bandIsBinary = band === "binary" ? 1 : 0;
+
+  const solvednessScore = Math.max(
+    0,
+    Math.min(
+      advantageScore * 10 * 0.4 +
+        presenceWeight * 0.3 +
+        factoring * 0.2 +
+        bandIsBinary * 0.1,
+      1
+    )
+  );
+
+  const computeTier =
+    solvednessScore >= 0.9
+      ? "nearSolution"
+      : solvednessScore >= 0.7
+      ? "highValue"
+      : solvednessScore >= 0.4
+      ? "normal"
+      : solvednessScore >= 0.2
+      ? "lowPriority"
+      : "avoidCompute";
+
+  const readinessScore = Math.max(
+    0,
+    Math.min(
+      solvednessScore * 0.6 +
+        (bandIsBinary ? 0.15 : 0) +
+        (advantageTier >= 2 ? 0.25 : advantageTier === 1 ? 0.1 : 0),
+      1
+    )
+  );
+
+  const intel = {
+    reflexPulseIntelligenceVersion: "REFLEX-PI-30++",
+    solvednessScore,
+    factoringSignal: computeProfileV30.factoringSignal ? "high" : "low",
+    computeTier,
+    readinessScore,
+    band,
+    advantageTier
+  };
+
+  reflexHealing.lastReflexPulseIntelligenceV30 = intel;
+  return intel;
+}
+
 // ============================================================================
-// REFLEX ORGANISM BUILDER (v24)
+// REFLEX ORGANISM BUILDER (v30)
 // ============================================================================
+
 function buildReflexEarn(event, pulse, instanceContext) {
   const pulseId = getPulseId(pulse);
   const organ = getOrgan(event);
@@ -388,8 +572,8 @@ function buildReflexEarn(event, pulse, instanceContext) {
   return {
     EarnRole: {
       kind: "EarnReflex",
-      version: "24.0-Immortal-ADV-SUPERIOR",
-      identity: "EarnReflex-v24.0-Immortal-ADV-SUPERIOR"
+      version: "30.0-Immortal-ADV-PLUSPLUS",
+      identity: "EarnReflex-v30.0-Immortal-ADV-PLUSPLUS"
     },
 
     jobId: pulseId,
@@ -416,7 +600,7 @@ function buildReflexEarn(event, pulse, instanceContext) {
 
     meta: {
       reflex: true,
-      origin: "PulseEarnReflex-v24.0-Immortal-ADV-SUPERIOR",
+      origin: "PulseEarnReflex-v30.0-Immortal-ADV-PLUSPLUS",
       sourceOrgan: organ,
       sourceReason: reason,
       sourcePulseId: pulseId,
@@ -429,42 +613,46 @@ function buildReflexEarn(event, pulse, instanceContext) {
 }
 
 // ============================================================================
-// REFLEX SIGNATURE + DUALHASH FIELD (v24)
+// REFLEX SIGNATURE + DUALHASH FIELD (v30)
 // ============================================================================
+
 function buildReflexSignatures(reflexId, presenceField, bandPack, advantageField) {
   const intelPayload = {
     reflexId,
     presenceTier: presenceField.presenceTier,
     band: bandPack.band,
-    advantageScore: advantageField.advantageScore
+    advantageScore: advantageField.advantageScore,
+    advantageTier: advantageField.advantageTier
   };
 
   const classicString =
-    `REFLEX24::${reflexId}::${presenceField.presenceTier}::${bandPack.band}`;
+    `REFLEX30::${reflexId}::${presenceField.presenceTier}::${bandPack.band}`;
 
-  const dual = buildDualHashSignature("REFLEX24", intelPayload, classicString);
+  const dual = buildDualHashSignature("REFLEX30", intelPayload, classicString);
 
-  const reflexSignature = dual.classic;
+  const reflexSignatureClassic = dual.classic;
   const hashIntellectSignature = dual.intel;
 
   const dualHashField = {
-    label: "REFLEX24",
+    label: "REFLEX30",
     intelPayload,
     classicString,
-    reflexSignature,
+    reflexSignatureClassic,
     hashIntellectSignature
   };
 
-  reflexHealing.lastReflexSignature = reflexSignature;
+  reflexHealing.lastReflexSignatureClassic = reflexSignatureClassic;
+  reflexHealing.lastReflexSignatureIntel = hashIntellectSignature;
   reflexHealing.lastDualHashField = dualHashField;
   reflexHealing.lastHashIntellectSignature = hashIntellectSignature;
 
-  return { reflexSignature, dualHashField, hashIntellectSignature };
+  return { reflexSignatureClassic, dualHashField, hashIntellectSignature };
 }
 
 // ============================================================================
-// PUBLIC API — FULL v24 Immortal-ADV-SUPERIOR REFLEX
+// PUBLIC API — FULL v30 Immortal-ADV-PLUSPLUS REFLEX
 // ============================================================================
+
 export const PulseEarnReflex = {
 
   fromGovernorEvent(event, pulse, instanceContext, deviceProfile = {}) {
@@ -525,25 +713,33 @@ export const PulseEarnReflex = {
       advantageField
     );
 
-    const { reflexSignature, dualHashField, hashIntellectSignature } =
-      buildReflexSignatures(reflexId, presenceField, bandPack, advantageField);
-
-    const reflexComputeProfile = buildReflexComputeProfile(
+    const reflexComputeProfileV30 = buildReflexComputeProfileV30(
       reflexId,
       bandPack,
       presenceField,
       advantageField
     );
 
-    const reflexPressureProfile = buildReflexPressureProfile(
+    const reflexPressureProfileV30 = buildReflexPressureProfileV30(
       presenceField,
       advantageField
     );
 
-    const reflexTriHeartField = buildTriHeartField(
+    const reflexTriHeartFieldV30 = buildTriHeartFieldV30(
       presenceField,
-      advantageField
+      advantageField,
+      reflexComputeProfileV30
     );
+
+    const reflexPulseIntelligenceV30 = computeReflexPulseIntelligenceV30({
+      presenceField,
+      advantageField,
+      computeProfileV30: reflexComputeProfileV30,
+      band: bandPack.band
+    });
+
+    const { reflexSignatureClassic, dualHashField, hashIntellectSignature } =
+      buildReflexSignatures(reflexId, presenceField, bandPack, advantageField);
 
     const diagnostics = {
       reflexId,
@@ -556,7 +752,8 @@ export const PulseEarnReflex = {
       lastSeenCycle: state.lastSeenCycle,
 
       band: bandPack.band,
-      bandSignature: bandPack.bandSignature,
+      bandSignatureIntel: bandPack.bandSignatureIntel,
+      bandSignatureClassic: bandPack.bandSignatureClassic,
       binaryField: bandPack.binaryField,
       waveField: bandPack.waveField,
 
@@ -565,12 +762,13 @@ export const PulseEarnReflex = {
       chunkPrewarmPlan,
 
       dualHashField,
-      reflexSignature,
+      reflexSignatureClassic,
       hashIntellectSignature,
 
-      reflexComputeProfile,
-      reflexPressureProfile,
-      reflexTriHeartField
+      reflexComputeProfileV30,
+      reflexPressureProfileV30,
+      reflexTriHeartFieldV30,
+      reflexPulseIntelligenceV30
     };
 
     return {
@@ -579,19 +777,21 @@ export const PulseEarnReflex = {
       state,
       instanceContext,
       diagnostics,
-      reflexSignature,
+      reflexSignature: reflexSignatureClassic,
       hashIntellectSignature,
       dualHashField,
       band: bandPack.band,
-      bandSignature: bandPack.bandSignature,
+      bandSignatureIntel: bandPack.bandSignatureIntel,
+      bandSignatureClassic: bandPack.bandSignatureClassic,
       binaryField: bandPack.binaryField,
       waveField: bandPack.waveField,
       presenceField,
       advantageField,
       chunkPrewarmPlan,
-      reflexComputeProfile,
-      reflexPressureProfile,
-      reflexTriHeartField,
+      reflexComputeProfileV30,
+      reflexPressureProfileV30,
+      reflexTriHeartFieldV30,
+      reflexPulseIntelligenceV30,
       earnReflex
     };
   },
