@@ -1,21 +1,21 @@
 // ============================================================================
-// FILE: /organs/gpu/PulseGPUGuardianCortex.js
-// [pulse:gpu] PULSE_GPU_GUARDIAN_CORTEX v24-Immortal++  // blue-gold
-// GPU Permission Cortex • Deterministic Policy Engine • Zero Imports
+// FILE: /organs/gpu/PulseGPUGuardianCortex-v30.js
+// [pulse:gpu] PULSE_GPU_GUARDIAN_CORTEX v30-Immortal-Omega++  // blue-gold-aurora
+// GPU Permission Cortex • Deterministic Policy Engine • WarmPath+Genetic+Chunk-Aware
 // ============================================================================
 //
-// IDENTITY — THE GPU GUARDIAN CORTEX (v24-Immortal++):
+// IDENTITY — THE GPU GUARDIAN CORTEX (v30-Immortal-Omega++):
 //  ----------------------------------------------------------
 //  • The decision-making cortex of the GPU subsystem.
-//  • Determines when GPU actions may auto-apply vs require confirmation.
-//  • Pure logic: deterministic, stateless, zero-entropy, zero randomness.
-//  • Reads advisor severity + user preferences + plan type + GPU context.
-//  • Produces a final decision object (mode + reason + plan).
-//  • PulseSend‑v14‑Immortal‑ready: decisions can be routed by the compute router.
-//  • Binary-aware, symbolic-aware, dispatch-aware, memory-aware.
-//  • Computer-intelligence-aware: can align with Earn/computation modes (metadata only).
+//  • Determines when GPU / WarmPath / Chunk / Genetic actions may auto-apply vs require confirmation.
+//  • Pure logic: deterministic, stateless core, zero-entropy, zero randomness.
+//  • Reads advisor severity + user preferences + plan type + GPU context + Earn + WarmPath + Genetic hints.
+//  • Produces a final decision object (mode + reason + plan + earnOverride + warmPathOverride).
+//  • PulseSend‑v30‑Immortal‑ready: decisions can be routed by the compute router.
+//  • Binary-aware, symbolic-aware, dispatch-aware, memory-aware, chunk-aware, warm-path-aware.
+//  • Computer-intelligence-aware, GeneticMemory-aware, Earn-governor-aware (metadata only).
 //
-// SAFETY CONTRACT (v24-Immortal++):
+// SAFETY CONTRACT (v30-Immortal-Omega++):
 //  • No imports (DI only).
 //  • No async.
 //  • No randomness.
@@ -33,6 +33,7 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
+
 // ============================================================================
 //  Utility: build decision — Guardian lineage + nervous-system metadata
 // ============================================================================
@@ -45,26 +46,41 @@ function buildDecision({
   earnProfile,
   earnOverride,
   presence,
-  gameActive
+  gameActive,
+  warmPathContext,
+  warmPathOverride,
+  geneticContext
 }) {
   return {
     mode,
     reason,
     plan: plan || null,
+
+    // GPU / Earn / Presence context
     gpuContext: gpuContext || null,
     earnProfile: earnProfile || null,
-    // earnOverride is a *hint* to Earn governor:
-    //   { mode: "pause" | "throttle" | "allow", maxUtilizationPercent? }
-    earnOverride: earnOverride || null,
     presence: presence || null,
     gameActive: !!gameActive,
+
+    // Earn governor hint:
+    //   { mode: "pause" | "throttle" | "allow", maxUtilizationPercent? }
+    earnOverride: earnOverride || null,
+
+    // Warm-path / cache / chunking context + override hints
+    warmPathContext: warmPathContext || null,
+    //   { mode: "boost" | "guard" | "freeze" | "none", cacheTier?, prewarmBudgetCap? }
+    warmPathOverride: warmPathOverride || null,
+
+    // Genetic memory / lineage context (metadata only)
+    geneticContext: geneticContext || null,
+
     meta: {
       layer: "PulseGPUGuardianCortex",
-      version: "24-Immortal++",
-      target: "full-gpu+binary+spine+earn",
+      version: "30-Immortal-Omega++",
+      target: "full-gpu+binary+spine+earn+warm-path+genetic+chunk",
 
       // Evolutionary metadata (no logic impact)
-      lineage: "guardian-core-v24",
+      lineage: "guardian-core-v30",
       multiInstanceReady: true,
       deterministicPolicy: true,
       parallelSafe: true,
@@ -75,18 +91,19 @@ function buildDecision({
 
       // Nervous-system hints (purely descriptive)
       neuralRole: "policy-cortex",
-      subsystem: "gpu-healing+earn-governor",
+      subsystem: "gpu-healing+earn-governor+warm-path+genetic",
       instanceBehavior: "predictable",
       decisionSurface:
-        "severity × preference × plan × gpuContext × earnProfile × presence × gameActive",
+        "severity × preference × plan × gpuContext × earnProfile × presence × gameActive × warmPath × genetic",
 
       // Unified advantage + PulseSend identity
       unifiedAdvantageField: true,
+      pulseSend30Ready: true,
       pulseSend24Ready: true,
       pulseSend16Ready: true,
       pulseSend14Ready: true,
 
-      // v24-Immortal++ awareness
+      // Awareness flags (metadata only)
       presenceAware: true,
       dnaAware: true,
       versionAware: true,
@@ -97,6 +114,9 @@ function buildDecision({
       gpuDispatchAware: true,
       gpuMemoryAware: true,
       gpuAdvantageAware: true,
+      gpuChunkerAware: true,
+      gpuWarmPathAware: true,
+      gpuGeneticMemoryAware: true,
 
       // Computer-intelligence / Earn awareness (metadata only)
       gpuComputerIntelligence: true,
@@ -108,10 +128,10 @@ function buildDecision({
       gameAware: true,
 
       // PulseSend / Earn contracts (conceptual only)
-      routingContract: "PulseSend-v24-Immortal++",
-      gpuOrganContract: "PulseGPU-v24-Immortal++",
-      binaryGpuOrganContract: "PulseBinaryGPU-v24-Immortal++",
-      earnCompatibility: "Earn-v24-GPU",
+      routingContract: "PulseSend-v30-Immortal++",
+      gpuOrganContract: "PulseGPU-v30-Immortal++",
+      binaryGpuOrganContract: "PulseBinaryGPU-v30-Immortal++",
+      earnCompatibility: "Earn-v30-GPU",
 
       // Legacy compatibility
       legacyRoutingContract: "PulseSend-v14-Immortal",
@@ -147,7 +167,7 @@ function getHighestSeverity(adviceList = []) {
 }
 
 // ============================================================================
-//  Earn override helper — GPU Earn Policy Hints (v24-Immortal++)
+//  Earn override helper — GPU Earn Policy Hints (v30-Immortal-Omega++)
 // ============================================================================
 
 function computeEarnOverride({
@@ -167,12 +187,21 @@ function computeEarnOverride({
   const allowPause = !!prefs.allowGuardianPauseEarnOnSevereRegression;
   const allowThrottle = !!prefs.allowGuardianThrottleEarnOnRegression;
   const allowGamePause = !!prefs.allowGuardianPauseEarnWhenGameActive;
+  const allowGameThrottle = !!prefs.allowGuardianThrottleEarnWhenGameActive;
 
   // Game-active guard: strongest rule first.
   if (gameActive && allowGamePause) {
     return {
       mode: "pause",
       reason: "game_active_guardian_policy"
+    };
+  }
+
+  if (gameActive && allowGameThrottle) {
+    return {
+      mode: "throttle",
+      maxUtilizationPercent: Math.min(currentMax, 8),
+      reason: "game_active_guardian_throttle"
     };
   }
 
@@ -205,30 +234,109 @@ function computeEarnOverride({
 }
 
 // ============================================================================
-//  PulseGPUGuardianCortex v24-Immortal++ — GPU Permission Cortex
+//  Warm-path override helper — GPU Warm Path / Cache Policy (v30)
 // ============================================================================
+
+function computeWarmPathOverride({
+  severity,
+  prefs,
+  warmPathContext,
+  gameActive
+}) {
+  const cacheTier = warmPathContext?.cacheTier || "none";
+  const fanoutProfile = warmPathContext?.fanoutProfile || "balanced";
+
+  const allowBoost = !!prefs.allowGuardianBoostWarmPathOnTrustedLowRisk;
+  const allowGuard = !!prefs.allowGuardianGuardWarmPathOnRegression;
+  const allowFreezeOnCritical = !!prefs.allowGuardianFreezeWarmPathOnCritical;
+  const allowGameGuard = !!prefs.allowGuardianGuardWarmPathWhenGameActive;
+
+  // If no warm-path context, no override.
+  if (cacheTier === "none") {
+    return null;
+  }
+
+  // Game-active guard: avoid over-aggressive warm-path while game is latency-critical.
+  if (gameActive && allowGameGuard) {
+    return {
+      mode: "guard",
+      reason: "game_active_warm_path_guard",
+      cacheTierCap: cacheTier,
+      fanoutProfileCap: fanoutProfile === "aggressive" ? "balanced" : fanoutProfile
+    };
+  }
+
+  // Critical regressions: optionally freeze warm-path to avoid amplifying instability.
+  if ((severity === "critical" || severity === "high") && allowFreezeOnCritical) {
+    return {
+      mode: "freeze",
+      reason: "critical_regression_warm_path_freeze",
+      cacheTierCap: "light",
+      fanoutProfileCap: "conservative"
+    };
+  }
+
+  // Medium/high regressions: guard warm-path if allowed.
+  if ((severity === "medium" || severity === "high") && allowGuard) {
+    return {
+      mode: "guard",
+      reason: "regression_warm_path_guard",
+      cacheTierCap: cacheTier === "strong" ? "medium" : cacheTier,
+      fanoutProfileCap: fanoutProfile === "aggressive" ? "balanced" : fanoutProfile
+    };
+  }
+
+  // Low severity + trusted prefs: optional boost.
+  if (severity === "low" && allowBoost) {
+    return {
+      mode: "boost",
+      reason: "low_severity_warm_path_boost",
+      cacheTierFloor: cacheTier,
+      fanoutProfileFloor: fanoutProfile
+    };
+  }
+
+  return null;
+}
+
+// ============================================================================
+//  PulseGPUGuardianCortex v30-Immortal-Omega++ — GPU Permission Cortex
+// ============================================================================
+
 class PulseGPUGuardianCortex {
   constructor(userPreferences, instanceId) {
     this.userPreferences = userPreferences || {};
-    this.instanceId = instanceId || "guardian-instance";
+    this.instanceId = instanceId || "guardian-instance-v30";
   }
 
   // ----------------------------------------------------
   // Main entry point:
   //   decide(plan, context) → decision
+  //
+  //   plan.action may include:
+  //     • "restore"        — regression healer
+  //     • "apply-optimal"  — optimal settings
+  //     • "upgrade-tier"   — tier ascent
+  //     • "warm-path-tune" — warm-path / cache tuning
+  //     • "noop"           — no-op
+  //
   //   context may include:
   //     • adviceList
   //     • userPreferences
   //     • gpuContext (binary/symbolic/dispatch/memory hints)
-  //     • earnProfile (from PulseGPUEarnProfile-v24)
+  //     • earnProfile (from PulseGPUEarnProfile-v24/v30)
   //     • presence ("active" | "idle" | "background" | ...)
   //     • gameActive (boolean)
-  // ----------------------------------------------------
+  //     • warmPathContext (from PulseGPUWarmPathCache)
+//     • geneticContext (from PulseGPUGeneticMemory)
+// ----------------------------------------------------
   decide(plan, context = {}) {
     const gpuContext = context.gpuContext || null;
     const earnProfile = context.earnProfile || null;
     const presence = context.presence || null;
     const gameActive = !!context.gameActive;
+    const warmPathContext = context.warmPathContext || null;
+    const geneticContext = context.geneticContext || null;
 
     if (!plan || typeof plan !== "object") {
       return buildDecision({
@@ -238,7 +346,10 @@ class PulseGPUGuardianCortex {
         gpuContext,
         earnProfile,
         presence,
-        gameActive
+        gameActive,
+        warmPathContext,
+        warmPathOverride: null,
+        geneticContext
       });
     }
 
@@ -263,7 +374,10 @@ class PulseGPUGuardianCortex {
           gpuContext,
           earnProfile,
           presence,
-          gameActive
+          gameActive,
+          warmPathContext,
+          warmPathOverride: null,
+          geneticContext
         });
       }
 
@@ -274,7 +388,10 @@ class PulseGPUGuardianCortex {
         gpuContext,
         earnProfile,
         presence,
-        gameActive
+        gameActive,
+        warmPathContext,
+        warmPathOverride: null,
+        geneticContext
       });
     }
 
@@ -289,7 +406,9 @@ class PulseGPUGuardianCortex {
         gpuContext,
         earnProfile,
         presence,
-        gameActive
+        gameActive,
+        warmPathContext,
+        geneticContext
       );
     }
 
@@ -301,7 +420,9 @@ class PulseGPUGuardianCortex {
         gpuContext,
         earnProfile,
         presence,
-        gameActive
+        gameActive,
+        warmPathContext,
+        geneticContext
       );
     }
 
@@ -313,7 +434,23 @@ class PulseGPUGuardianCortex {
         gpuContext,
         earnProfile,
         presence,
-        gameActive
+        gameActive,
+        warmPathContext,
+        geneticContext
+      );
+    }
+
+    if (plan.action === "warm-path-tune") {
+      return this.decideForWarmPathTune(
+        plan,
+        severity,
+        mergedPrefs,
+        gpuContext,
+        earnProfile,
+        presence,
+        gameActive,
+        warmPathContext,
+        geneticContext
       );
     }
 
@@ -325,7 +462,10 @@ class PulseGPUGuardianCortex {
         gpuContext,
         earnProfile,
         presence,
-        gameActive
+        gameActive,
+        warmPathContext,
+        warmPathOverride: null,
+        geneticContext
       });
     }
 
@@ -337,12 +477,15 @@ class PulseGPUGuardianCortex {
       gpuContext,
       earnProfile,
       presence,
-      gameActive
+      gameActive,
+      warmPathContext,
+      warmPathOverride: null,
+      geneticContext
     });
   }
 
   // ----------------------------------------------------
-  // Restore plan policy — Regression Healer (v24-Immortal++)
+  // Restore plan policy — Regression Healer (v30-Immortal-Omega++)
   // ----------------------------------------------------
   decideForRestore(
     plan,
@@ -351,18 +494,20 @@ class PulseGPUGuardianCortex {
     gpuContext,
     earnProfile,
     presence,
-    gameActive
+    gameActive,
+    warmPathContext,
+    geneticContext
   ) {
     const allowLow = !!prefs.allowAutoFixLowRegressions;
     const allowMedium = !!prefs.allowAutoFixMediumRegressions;
     const allowHigh = !!prefs.allowAutoFixHighRegressions;
     const allowCritical = !!prefs.allowAutoFixCriticalRegressions;
 
-    // v24-Immortal++: binary regressions get extra caution
+    // v30: binary regressions get extra caution, especially under high/critical.
     const binaryPenalty =
       gpuContext?.binaryModeObserved && severity !== "low";
 
-    function decision(auto, reason, earnOverride) {
+    function decision(auto, reason, earnOverride, warmPathOverride) {
       return buildDecision({
         mode: auto ? "auto-apply" : "require-confirmation",
         reason,
@@ -371,7 +516,10 @@ class PulseGPUGuardianCortex {
         earnProfile,
         earnOverride,
         presence,
-        gameActive
+        gameActive,
+        warmPathContext,
+        warmPathOverride,
+        geneticContext
       });
     }
 
@@ -407,11 +555,18 @@ class PulseGPUGuardianCortex {
       gameActive
     });
 
-    return decision(auto, reason, earnOverride);
+    const warmPathOverride = computeWarmPathOverride({
+      severity,
+      prefs,
+      warmPathContext,
+      gameActive
+    });
+
+    return decision(auto, reason, earnOverride, warmPathOverride);
   }
 
   // ----------------------------------------------------
-  // Apply-optimal plan policy — Optimization Reflex (v24-Immortal++)
+  // Apply-optimal plan policy — Optimization Reflex (v30-Immortal-Omega++)
   // ----------------------------------------------------
   decideForApplyOptimal(
     plan,
@@ -420,7 +575,9 @@ class PulseGPUGuardianCortex {
     gpuContext,
     earnProfile,
     presence,
-    gameActive
+    gameActive,
+    warmPathContext,
+    geneticContext
   ) {
     const allowAuto = !!prefs.allowAutoApplyOptimalSettings;
 
@@ -438,6 +595,13 @@ class PulseGPUGuardianCortex {
       }
     }
 
+    const warmPathOverride = computeWarmPathOverride({
+      severity,
+      prefs,
+      warmPathContext,
+      gameActive
+    });
+
     return buildDecision({
       mode: allowAuto ? "auto-apply" : "require-confirmation",
       reason: allowAuto
@@ -448,12 +612,15 @@ class PulseGPUGuardianCortex {
       earnProfile,
       earnOverride,
       presence,
-      gameActive
+      gameActive,
+      warmPathContext,
+      warmPathOverride,
+      geneticContext
     });
   }
 
   // ----------------------------------------------------
-  // Tier upgrade plan policy — Tier Ascent Logic (v24-Immortal++)
+  // Tier upgrade plan policy — Tier Ascent Logic (v30-Immortal-Omega++)
   // ----------------------------------------------------
   decideForTierUpgrade(
     plan,
@@ -462,7 +629,9 @@ class PulseGPUGuardianCortex {
     gpuContext,
     earnProfile,
     presence,
-    gameActive
+    gameActive,
+    warmPathContext,
+    geneticContext
   ) {
     const allowAutoTier = !!prefs.allowAutoTierChanges;
 
@@ -477,6 +646,13 @@ class PulseGPUGuardianCortex {
       };
     }
 
+    const warmPathOverride = computeWarmPathOverride({
+      severity,
+      prefs,
+      warmPathContext,
+      gameActive
+    });
+
     return buildDecision({
       mode: allowAutoTier ? "auto-apply" : "require-confirmation",
       reason: allowAutoTier
@@ -487,7 +663,50 @@ class PulseGPUGuardianCortex {
       earnProfile,
       earnOverride,
       presence,
+      gameActive,
+      warmPathContext,
+      warmPathOverride,
+      geneticContext
+    });
+  }
+
+  // ----------------------------------------------------
+  // Warm-path tuning plan policy — Warm Path Tuner (v30-Immortal-Omega++)
+  // ----------------------------------------------------
+  decideForWarmPathTune(
+    plan,
+    severity,
+    prefs,
+    gpuContext,
+    earnProfile,
+    presence,
+    gameActive,
+    warmPathContext,
+    geneticContext
+  ) {
+    const allowAutoWarmPath = !!prefs.allowAutoWarmPathTuning;
+
+    const warmPathOverride = computeWarmPathOverride({
+      severity,
+      prefs,
+      warmPathContext,
       gameActive
+    });
+
+    return buildDecision({
+      mode: allowAutoWarmPath ? "auto-apply" : "require-confirmation",
+      reason: allowAutoWarmPath
+        ? "Auto-apply enabled for warm-path tuning."
+        : "Warm-path tuning available; confirmation required.",
+      plan,
+      gpuContext,
+      earnProfile,
+      earnOverride: null,
+      presence,
+      gameActive,
+      warmPathContext,
+      warmPathOverride,
+      geneticContext
     });
   }
 }

@@ -17,7 +17,7 @@
   <meta name="pulse-trust-boundary" content="v30-IMMORTAL++++">
 
   <!-- Runtime hints -->
-  <meta name="pulse-runtime-hints" content="dualBand,presenceAware,advantageAware,triHeartAware,sessionAware,chunkAware,idleAware,diagnosticsAware,telemetryAware,cosmosAware,binaryAware">
+  <meta name="pulse-runtime-hints" content="dualBand,presenceAware,advantageAware,triHeartAware,sessionAware,chunkAware,idleAware,diagnosticsAware,telemetryAware,cosmosAware,binaryAware,gpuAware,earnAware">
   <meta name="pulse-prewarm-cache" content="enabled">
   <meta name="pulse-prewarm-chunks" content="foundation,cortex,expression,motion">
   <meta name="pulse-prewarm-band" content="dual">
@@ -34,370 +34,458 @@
   <div id="pulse-engine-block"></div>
 
   <script type="module">
-/* ============================================================================
-   AI_EXPERIENCE_META — PulseEngineBlock-v30-IMMORTAL++++
-   ============================================================================ */
-const AI_EXPERIENCE_META = {
-  identity: "PulseEngineBlock",
-  version: "v30-IMMORTAL++++",
-  layer: "engine_block",
-  role: "motion_engine_bootstrap",
-  evo: {
-    unifiedMotion: true,
-    laneAgnostic: true,
-    driftProof: true,
-    zeroCompute: true,
-    zeroMutation: true,
-    pureBootstrap: true,
-    presenceAware: true,
-    advantageAware: true,
-    triHeartAware: true,
-    prewarmAware: true,
-    idleAware: true,
-    chunkAware: true,
-    telemetryAware: true,
-    diagnosticsAware: true,
-    runtimeHintsAware: true,
-    cosmosAware: true,
-    binaryAware: true
-  }
-};
-
-const ENGINE_BLOCK_ROLE = Object.freeze({
-  identity: "PulseEngineBlock-v30",
-  schemaVersion: "v3",
-  layer: "engine_block",
-  stable: true
-});
-
-import * as PulseWindow from "../../PULSEVISION/_CREATION_BARRIER/PULSE-WORLD-PORTAL.js";
-import { PulseIcons } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryIcons-v20.js";
-import { createPulseEvolutionaryCode } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryCode.js";
-import { createPulseEvolutionaryMemory } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryMemory.js";
-import { createPulseEvolutionaryBrain } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryBrain.js";
-import { createPulseEvolutionaryImpulse } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryImpulse.js";
-import { createPulseEvolutionaryRouter } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryRouter.js";
-import { createPulseEvolutionaryBinary } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryBinary.js";
-
-import { createPulseCompass } from "./PulseCompass-v24-Immortal-Evo+++.js";
-import { createPulseDB } from "./PulseDB-v24-Immortal-Evo+++.js";
-import { createPulseCompassReporter } from "./PulseCompassReporter-v24-Immortal-Evo+++.js";
-
-const CNS = {
-  emitImpulse(source, impulse) {
-    console.log("[CNS] Impulse:", source, impulse);
-  }
-};
-
-const EvolutionCache = {
-  lineage: null
-};
-
-const Evolution = {
-  getPageLineage() {
-    if (EvolutionCache.lineage) return EvolutionCache.lineage;
-    const model = {
-      lineage: "PulseEngineBlock-v30",
-      stable: true,
-      page: typeof window !== "undefined" ? window.location.pathname : "unknown",
-      role: ENGINE_BLOCK_ROLE.identity,
-      layer: ENGINE_BLOCK_ROLE.layer
+    // =========================================================================
+    // ENGINE BLOCK META (IMMORTAL v30++++)
+    // =========================================================================
+    const AI_EXPERIENCE_META = {
+      identity: "PulseEngineBlock",
+      version: "v30-IMMORTAL++++",
+      layer: "engine_block",
+      role: "motion_engine_bootstrap",
+      evo: {
+        unifiedMotion: true,
+        laneAgnostic: true,
+        driftProof: true,
+        zeroCompute: true,
+        zeroMutation: true,
+        pureBootstrap: true,
+        presenceAware: true,
+        advantageAware: true,
+        triHeartAware: true,
+        prewarmAware: true,
+        idleAware: true,
+        chunkAware: true,
+        telemetryAware: true,
+        diagnosticsAware: true,
+        runtimeHintsAware: true,
+        cosmosAware: true,
+        binaryAware: true,
+        gpuAware: true,
+        earnAware: true
+      }
     };
-    EvolutionCache.lineage = model;
-    return model;
-  },
-  recordPageLineage(model) {
-    console.log("[Evolution] Lineage recorded:", model);
-  }
-};
 
-const safePathname =
-  typeof window !== "undefined" && window.location && window.location.pathname
-    ? window.location.pathname
-    : "PulseEngineBlock";
+    const ENGINE_BLOCK_ROLE = Object.freeze({
+      identity: "PulseEngineBlock-v30",
+      schemaVersion: "v3",
+      layer: "engine_block",
+      stable: true
+    });
 
-const MemoryOrgan = createPulseEvolutionaryMemory({
-  routeId: safePathname
-});
+    // =========================================================================
+    // IMPORTS — EVOLUTIONARY ORGANS + MOTION STACK v30++++
+    // =========================================================================
+    import * as PulseWindow from "../../PULSEVISION/_CREATION_BARRIER/PULSE-WORLD-PORTAL.js";
+    import { PulseIcons } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryIcons-v20.js";
+    import { createPulseEvolutionaryCode } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryCode.js";
+    import { createPulseEvolutionaryMemory } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryMemory.js";
+    import { createPulseEvolutionaryBrain } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryBrain.js";
+    import { createPulseEvolutionaryImpulse } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryImpulse.js";
+    import { createPulseEvolutionaryRouter } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryRouter.js";
+    import { createPulseEvolutionaryBinary } from "../../PULSEVISION/__COMPONENTS_EVOLUTION/PulseEvolutionaryBinary.js";
 
-const CodeOrgan = createPulseEvolutionaryCode({
-  Evolution,
-  LongTermMemory: MemoryOrgan,
-  CNS
-});
+    // v30 IMMORTAL motion stack (Compass + DB + Reporter)
+    import { createPulseCompass } from "./PulseCompass-v30-Immortal-Evo++++.js";
+    import { createPulseDB } from "./PulseDB-v30-Immortal++++.js";
+    import { createPulseCompassReporter } from "./PulseCompassReporter-v30-Immortal++++.js";
 
-const BrainOrgan = createPulseEvolutionaryBrain({
-  Evolution,
-  LongTermMemory: MemoryOrgan,
-  CNS,
-  createCode: () => CodeOrgan,
-  createMemory: () => MemoryOrgan
-});
+    // =========================================================================
+    // CNS / EVOLUTION META
+    // =========================================================================
+    const CNS = {
+      emitImpulse(source, impulse) {
+        console.log("[CNS] Impulse:", source, impulse);
+      }
+    };
 
-const RouterOrgan = createPulseEvolutionaryRouter({
-  CNS,
-  Evolution,
-  CodeOrgan,
-  BrainOrgan
-});
+    const EvolutionCache = {
+      lineage: null
+    };
 
-const ImpulseOrgan = createPulseEvolutionaryImpulse({
-  CNS,
-  Evolution,
-  RouteOrgan: RouterOrgan
-});
+    const Evolution = {
+      getPageLineage() {
+        if (EvolutionCache.lineage) return EvolutionCache.lineage;
+        const model = {
+          lineage: "PulseEngineBlock-v30",
+          stable: true,
+          page: typeof window !== "undefined" ? window.location.pathname : "unknown",
+          role: ENGINE_BLOCK_ROLE.identity,
+          layer: ENGINE_BLOCK_ROLE.layer
+        };
+        EvolutionCache.lineage = model;
+        return model;
+      },
+      recordPageLineage(model) {
+        console.log("[Evolution] Lineage recorded:", model);
+      }
+    };
 
-const BinaryOrgan = createPulseEvolutionaryBinary({
-  Evolution,
-  RouteOrgan: RouterOrgan,
-  MemoryOrgan
-});
+    // =========================================================================
+    // CONTEXTS (cosmos / presence / advantage / session)
+    // =========================================================================
+    const safePathname =
+      typeof window !== "undefined" && window.location && window.location.pathname
+        ? window.location.pathname
+        : "PulseEngineBlock";
 
-/* ============================================================================
-   MOTION + DB + REPORTER (v30-style wiring on v24 components)
-   ============================================================================ */
-const Motion = createPulseCompass({
-  MemoryOrgan,
-  trace: false,
-  sessionId: null
-});
+    const cosmosContext =
+      (typeof window !== "undefined" && window.PULSE_COSMOS) ||
+      {
+        universeId: "u:default",
+        timelineId: "t:main",
+        branchId: "b:root",
+        shardId: "s:primary"
+      };
 
-let MotionReporter = null;
-try {
-  const PulseDB = createPulseDB({
-    MemoryOrgan,
-    trace: false,
-    sessionId: null
-  });
+    const presenceContext =
+      (typeof window !== "undefined" && window.PULSE_PRESENCE) ||
+      {
+        band: "pulseband",
+        deviceId: null,
+        hydraNodeId: null,
+        route: safePathname
+      };
 
-  MotionReporter = createPulseCompassReporter({
-    Compass: Motion,
-    PulseDB,
-    sessionId: null,
-    trace: false
-  });
-} catch {
-  MotionReporter = null;
-}
+    const advantageContext =
+      (typeof window !== "undefined" && window.PULSE_ADVANTAGE) ||
+      {
+        advantageScore: 1.0,
+        cascadeLevel: 0,
+        timeSavedMs: 0
+      };
 
-/* ============================================================================
-   PREWARM CHUNKS
-   ============================================================================ */
-async function prewarmChunk(label, tasks = []) {
-  if (!tasks.length) return;
-  try {
-    await Promise.allSettled(
-      tasks.map((fn) => (typeof fn === "function" ? fn() : Promise.resolve()))
-    );
-    console.log(`[PREWARM] Chunk '${label}' complete.`);
-  } catch (err) {
-    console.warn(`[PREWARM] Chunk '${label}' failed:`, err);
-  }
-}
+    const sessionId =
+      (typeof window !== "undefined" && window.PULSE_SESSION_ID) ||
+      null;
 
-async function prewarmEngineBlock() {
-  console.log("[PREWARM] PulseEngineBlock IMMORTAL++++ prewarm starting…");
+    // =========================================================================
+    // ORGANS — MEMORY / CODE / BRAIN / ROUTER / IMPULSE / BINARY
+    // =========================================================================
+    const MemoryOrgan = createPulseEvolutionaryMemory({
+      routeId: safePathname,
+      cosmosContext,
+      presenceContext
+    });
 
-  await prewarmChunk("foundation", [
-    () => MemoryOrgan.prewarm?.(),
-    () => BinaryOrgan.prewarm?.()
-  ]);
+    const CodeOrgan = createPulseEvolutionaryCode({
+      Evolution,
+      LongTermMemory: MemoryOrgan,
+      CNS
+    });
 
-  await prewarmChunk("cortex", [
-    () => BrainOrgan.prewarm?.(),
-    () => RouterOrgan.prewarm?.()
-  ]);
+    const BrainOrgan = createPulseEvolutionaryBrain({
+      Evolution,
+      LongTermMemory: MemoryOrgan,
+      CNS,
+      createCode: () => CodeOrgan,
+      createMemory: () => MemoryOrgan
+    });
 
-  await prewarmChunk("expression", [
-    () => ImpulseOrgan.prewarm?.(),
-    () => CodeOrgan.prewarm?.()
-  ]);
+    const RouterOrgan = createPulseEvolutionaryRouter({
+      CNS,
+      Evolution,
+      CodeOrgan,
+      BrainOrgan
+    });
 
-  await prewarmChunk("motion", [
-    () => Motion.prewarm?.()
-  ]);
+    const ImpulseOrgan = createPulseEvolutionaryImpulse({
+      CNS,
+      Evolution,
+      RouteOrgan: RouterOrgan
+    });
 
-  console.log("[PREWARM] PulseEngineBlock IMMORTAL++++ membrane fully prewarmed.");
-}
+    const BinaryOrgan = createPulseEvolutionaryBinary({
+      Evolution,
+      RouteOrgan: RouterOrgan,
+      MemoryOrgan
+    });
 
-/* ============================================================================
-   10. BACKGROUND MOTION TICK — IDLE / VISIBILITY AWARE
-   ============================================================================ */
-let motionTickTimer = null;
-let motionTickIdleHandle = null;
-let motionTickIntervalMs = 4000;
+    // =========================================================================
+    // MOTION ORCHESTRATOR — PulseCompass-v30 (backed by v30 MotionEngine workers)
+    // =========================================================================
+    const Motion = createPulseCompass({
+      MemoryOrgan,
+      trace: false,
+      sessionId,
+      cosmosContext,
+      presenceContext,
+      advantageContext
+    });
 
-async function runMotionTickOnce() {
-  const res = Motion.tick?.();
-  if (res?.metrics) {
-    console.log("[ENGINEBLOCK-TICK]", res.metrics);
-    if (MotionReporter && typeof MotionReporter.recordTick === "function") {
-      await MotionReporter.recordTick(res);
+    // =========================================================================
+    // TELEMETRY — PulseDB-v30 + CompassReporter-v30
+    // =========================================================================
+    let MotionReporter = null;
+    try {
+      const PulseDB = createPulseDB({
+        MemoryOrgan,
+        trace: false,
+        sessionId,
+        cosmosContext,
+        presenceContext,
+        advantageContext
+      });
+
+      MotionReporter = createPulseCompassReporter({
+        Compass: Motion,
+        PulseDB,
+        sessionId,
+        trace: false,
+        cosmosContext,
+        presenceContext,
+        advantageContext
+      });
+    } catch (err) {
+      console.warn("[PulseEngineBlock-v30] MotionReporter wiring failed:", err);
+      MotionReporter = null;
     }
-  }
-}
 
-function scheduleMotionTickIdle() {
-  if (typeof window === "undefined") return;
-
-  const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 50));
-
-  motionTickIdleHandle = idle(() => {
-    if (document.visibilityState === "visible") {
-      runMotionTickOnce();
+    // =========================================================================
+    // PREWARM HELPERS (chunked, lane-agnostic, GPU/Earn-ready)
+    // =========================================================================
+    async function prewarmChunk(label, tasks = []) {
+      if (!tasks.length) return;
+      try {
+        await Promise.allSettled(
+          tasks.map((fn) => (typeof fn === "function" ? fn() : Promise.resolve()))
+        );
+        console.log(`[PREWARM] Chunk '${label}' complete.`);
+      } catch (err) {
+        console.warn(`[PREWARM] Chunk '${label}' failed:`, err);
+      }
     }
-  });
-}
 
-function startMotionTickLoop() {
-  if (typeof window === "undefined") return;
-  if (motionTickTimer) return;
+    async function prewarmEngineBlock() {
+      console.log("[PREWARM] PulseEngineBlock IMMORTAL++++ prewarm starting…");
 
-  motionTickTimer = window.setInterval(() => {
-    if (document.visibilityState !== "visible") return;
-    scheduleMotionTickIdle();
-  }, motionTickIntervalMs);
-}
+      await prewarmChunk("foundation", [
+        () => MemoryOrgan.prewarm?.(),
+        () => BinaryOrgan.prewarm?.()
+      ]);
 
-function stopMotionTickLoop() {
-  if (typeof window === "undefined") return;
-  if (motionTickTimer) {
-    window.clearInterval(motionTickTimer);
-    motionTickTimer = null;
-  }
-}
+      await prewarmChunk("cortex", [
+        () => BrainOrgan.prewarm?.(),
+        () => RouterOrgan.prewarm?.()
+      ]);
 
-/* ============================================================================
-   11. TRUST CACHE + BOUNDARY HELPERS
-   ============================================================================ */
-const TrustCache = {
-  value: null,
-  timestamp: null
-};
+      await prewarmChunk("expression", [
+        () => ImpulseOrgan.prewarm?.(),
+        () => CodeOrgan.prewarm?.()
+      ]);
 
-async function resolveTrust() {
-  if (TrustCache.value !== null) return TrustCache.value;
+      await prewarmChunk("motion", [
+        () => Motion.prewarm?.()
+      ]);
 
-  const trust =
-    typeof PulseSkinReflex !== "undefined" &&
-    typeof PulseSkinReflex.checkTrust === "function"
-      ? await PulseSkinReflex.checkTrust()
-      : true;
-
-  TrustCache.value = !!trust;
-  TrustCache.timestamp = Date.now();
-  return TrustCache.value;
-}
-
-/* ============================================================================
-   12. BOOT SEQUENCE — TRUSTED / UNTRUSTED
-   ============================================================================ */
-function buildOutsideAPI() {
-  return Object.freeze({
-    evolve: (payload) =>
-      CodeOrgan.evolve({ type: "portal:update", payload }),
-    submit: Motion.submit,
-    tick: Motion.tick,
-    prewarm: Motion.prewarm,
-    memory: MemoryOrgan,
-    brain: BrainOrgan,
-    router: RouterOrgan,
-    binary: BinaryOrgan,
-    impulse: ImpulseOrgan,
-    icons: PulseIcons,
-    role: ENGINE_BLOCK_ROLE,
-    meta: AI_EXPERIENCE_META
-  });
-}
-
-function buildInsideAPI() {
-  return Object.freeze({
-    evolve: (payload) =>
-      CodeOrgan.evolve({ type: "page:update", payload }),
-    route: (route, opts) => RouterOrgan.go(route, opts),
-    submit: Motion.submit,
-    tick: Motion.tick,
-    prewarm: Motion.prewarm,
-    evoTick: () => runMotionTickOnce(),
-    startMotionLoop: () => startMotionTickLoop(),
-    stopMotionLoop: () => stopMotionTickLoop(),
-    memory: MemoryOrgan,
-    brain: BrainOrgan,
-    router: RouterOrgan,
-    binary: BinaryOrgan,
-    impulse: ImpulseOrgan,
-    icons: PulseIcons,
-    role: ENGINE_BLOCK_ROLE,
-    meta: AI_EXPERIENCE_META,
-    getEvolutionLineage: () => Evolution.getPageLineage()
-  });
-}
-
-(function attachVisibilityHooks() {
-  if (typeof document === "undefined") return;
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      startMotionTickLoop();
-    } else {
-      stopMotionTickLoop();
+      console.log("[PREWARM] PulseEngineBlock IMMORTAL++++ membrane fully prewarmed.");
     }
-  });
-})();
 
-/* ============================================================================
-   13. MAIN BOOTSTRAP
-   ============================================================================ */
-(async () => {
-  console.log("[BOOT] PulseEngineBlock-v30 starting…", ENGINE_BLOCK_ROLE);
+    // =========================================================================
+    // MOTION TICK LOOP (idle-aware, visibility-aware)
+    // =========================================================================
+    let motionTickTimer = null;
+    let motionTickIdleHandle = null;
+    let motionTickIntervalMs = 4000;
 
-  await prewarmEngineBlock();
+    async function runMotionTickOnce() {
+      const res = Motion.tick?.();
+      if (res?.metrics) {
+        console.log("[ENGINEBLOCK-TICK]", res.metrics);
+        if (MotionReporter && typeof MotionReporter.recordTick === "function") {
+          await MotionReporter.recordTick(res);
+        }
+      }
+    }
 
-  const trust = await resolveTrust();
+    function scheduleMotionTickIdle() {
+      if (typeof window === "undefined") return;
+      const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 50));
+      motionTickIdleHandle = idle(() => {
+        if (document.visibilityState === "visible") {
+          runMotionTickOnce();
+        }
+      });
+    }
 
-  if (!trust) {
-    console.log("[BOOT] Untrusted session → OUTSIDE intent…");
+    function startMotionTickLoop() {
+      if (typeof window === "undefined") return;
+      if (motionTickTimer) return;
+      motionTickTimer = window.setInterval(() => {
+        if (document.visibilityState !== "visible") return;
+        scheduleMotionTickIdle();
+      }, motionTickIntervalMs);
+    }
 
-    await BrainOrgan.freshEvolve?.({
-      type: "portal:outside",
-      payload: {
-        mode: "outside",
-        title: "Portal Boundary",
-        message: "Please authenticate to continue."
+    function stopMotionTickLoop() {
+      if (typeof window === "undefined") return;
+      if (motionTickTimer) {
+        window.clearInterval(motionTickTimer);
+        motionTickTimer = null;
+      }
+    }
+
+    // =========================================================================
+    // TRUST RESOLUTION (portal boundary)
+    // =========================================================================
+    const TrustCache = {
+      value: null,
+      timestamp: null
+    };
+
+    async function resolveTrust() {
+      if (TrustCache.value !== null) return TrustCache.value;
+      const trust =
+        typeof PulseSkinReflex !== "undefined" &&
+        typeof PulseSkinReflex.checkTrust === "function"
+          ? await PulseSkinReflex.checkTrust()
+          : true;
+      TrustCache.value = !!trust;
+      TrustCache.timestamp = Date.now();
+      return TrustCache.value;
+    }
+
+    // =========================================================================
+    // PUBLIC APIS (OUTSIDE / INSIDE)
+    // =========================================================================
+    function buildOutsideAPI() {
+      return Object.freeze({
+        evolve: (payload) =>
+          CodeOrgan.evolve({ type: "portal:update", payload }),
+        submit: Motion.submit,
+        tick: Motion.tick,
+        prewarm: Motion.prewarm,
+        memory: MemoryOrgan,
+        brain: BrainOrgan,
+        router: RouterOrgan,
+        binary: BinaryOrgan,
+        impulse: ImpulseOrgan,
+        icons: PulseIcons,
+        role: ENGINE_BLOCK_ROLE,
+        meta: AI_EXPERIENCE_META
+      });
+    }
+
+    function buildInsideAPI() {
+      return Object.freeze({
+        evolve: (payload) =>
+          CodeOrgan.evolve({ type: "page:update", payload }),
+        route: (route, opts) => RouterOrgan.go(route, opts),
+        submit: Motion.submit,
+        tick: Motion.tick,
+        prewarm: Motion.prewarm,
+        evoTick: () => runMotionTickOnce(),
+        startMotionLoop: () => startMotionTickLoop(),
+        stopMotionLoop: () => stopMotionTickLoop(),
+        memory: MemoryOrgan,
+        brain: BrainOrgan,
+        router: RouterOrgan,
+        binary: BinaryOrgan,
+        impulse: ImpulseOrgan,
+        icons: PulseIcons,
+        role: ENGINE_BLOCK_ROLE,
+        meta: AI_EXPERIENCE_META,
+        getEvolutionLineage: () => Evolution.getPageLineage()
+      });
+    }
+
+    // =========================================================================
+    // VISIBILITY HOOKS
+    // =========================================================================
+    (function attachVisibilityHooks() {
+      if (typeof document === "undefined") return;
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          startMotionTickLoop();
+        } else {
+          stopMotionTickLoop();
+        }
+      });
+    })();
+
+    // =========================================================================
+    // ENGINE BLOCK EXPORT SURFACE (for direct GPU/Earn worker access)
+    // =========================================================================
+    const EngineBlock = Object.freeze({
+      meta: AI_EXPERIENCE_META,
+      role: ENGINE_BLOCK_ROLE,
+      cosmosContext,
+      presenceContext,
+      advantageContext,
+      sessionId,
+      organs: {
+        MemoryOrgan,
+        CodeOrgan,
+        BrainOrgan,
+        RouterOrgan,
+        ImpulseOrgan,
+        BinaryOrgan
+      },
+      motion: {
+        Compass: Motion,
+        Reporter: MotionReporter,
+        startLoop: startMotionTickLoop,
+        stopLoop: stopMotionTickLoop,
+        tickOnce: runMotionTickOnce
+      },
+      async prewarm() {
+        return prewarmEngineBlock();
       }
     });
 
     if (typeof window !== "undefined") {
-      window.PulseEngineBlock = buildOutsideAPI();
+      window.PULSE_ENGINE_BLOCK_V30 = EngineBlock;
+      window.PULSE_ENGINE_META = AI_EXPERIENCE_META;
     }
 
-    console.log("[BOOT] PulseEngineBlock ready in OUTSIDE mode.");
-    return;
-  }
+    // =========================================================================
+    // BOOTSTRAP
+    // =========================================================================
+    (async () => {
+      console.log("[BOOT] PulseEngineBlock-v30 starting…", ENGINE_BLOCK_ROLE);
 
-  console.log("[BOOT] Trusted session → INSIDE intent…");
+      await prewarmEngineBlock();
 
-  const restored = await BrainOrgan.restore?.();
-  if (!restored?.ok) {
-    await BrainOrgan.freshEvolve?.({
-      type: "page:inside",
-      payload: {
-        mode: "inside",
-        title: "PulseEngineBlock",
-        content: "Trusted session restored."
+      const trust = await resolveTrust();
+      if (!trust) {
+        console.log("[BOOT] Untrusted session → OUTSIDE intent…");
+        await BrainOrgan.freshEvolve?.({
+          type: "portal:outside",
+          payload: {
+            mode: "outside",
+            title: "Portal Boundary",
+            message: "Please authenticate to continue."
+          }
+        });
+
+        if (typeof window !== "undefined") {
+          window.PulseEngineBlock = buildOutsideAPI();
+        }
+
+        console.log("[BOOT] PulseEngineBlock ready in OUTSIDE mode.");
+        return;
       }
-    });
-  }
 
-  if (typeof window !== "undefined") {
-    window.PulseEngineBlock = buildInsideAPI();
-  }
+      console.log("[BOOT] Trusted session → INSIDE intent…");
+      const restored = await BrainOrgan.restore?.();
+      if (!restored?.ok) {
+        await BrainOrgan.freshEvolve?.({
+          type: "page:inside",
+          payload: {
+            mode: "inside",
+            title: "PulseEngineBlock",
+            content: "Trusted session restored."
+          }
+        });
+      }
 
-  startMotionTickLoop();
+      if (typeof window !== "undefined") {
+        window.PulseEngineBlock = buildInsideAPI();
+      }
 
-  Evolution.recordPageLineage(Evolution.getPageLineage());
-
-  console.log("[BOOT] PulseEngineBlock-v30 ready in INSIDE mode.");
-})();
+      startMotionTickLoop();
+      Evolution.recordPageLineage(Evolution.getPageLineage());
+      console.log("[BOOT] PulseEngineBlock-v30 ready in INSIDE mode.");
+    })();
   </script>
 </body>
 </html>

@@ -18,9 +18,9 @@ import {
   SCORE_CONSTANTS,
   SEVERITY_THRESHOLDS
 } from "./PulseGPUCommandments-v24.js";
-import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
+import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v30.js";
 import { PulseGPUSurvivalInstincts } from "./PulseGPUSurvivalInstincts-v24.js";
-import { PulseGPUEngine } from "./PulseGPUAstralMuscleSystem-v24.js";
+import { PulseGPUEngine } from "./PulseGPUAstralMuscleSystem-v30.js";
 import { computePulseGPUEarnProfile } from "./PulseGPUEarnProfile-v24.js";
 
 // ============================================================================

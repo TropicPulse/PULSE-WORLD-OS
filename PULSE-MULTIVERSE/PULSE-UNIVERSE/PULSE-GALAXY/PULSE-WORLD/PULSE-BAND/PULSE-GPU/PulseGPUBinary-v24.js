@@ -23,14 +23,14 @@ import * as PulseGPUDrive              from "./PulseGPUDrive-v24.js";
 import * as PulseGPUDriveCenter        from "./PulseGPUDriveCenter-v24.js";
 import * as PulseGPUDriveEngine        from "./PulseGPUDriveCenter-v24.js";      // alias
 import * as PulseGPUSpine              from "./PulseGPUSpine-v24.js";
-import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory-v24.js";
+import * as PulseGPUGeneticMemory      from "./PulseGPUGeneticMemory-v30.js";
 
-import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem-v24.js";
+import * as PulseGPUAstralMuscleSystem from "./PulseGPUAstralMuscleSystem-v30.js";
 
-import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex-v24.js";
+import * as PulseGPUGuardianCortex     from "./PulseGPUGuardianCortex-v30.js";
 import * as PulseGPULymphNodes         from "./PulseGPULymphNodes-v30.js";
 
-import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem-v24.js";
+import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem-v30.js";
 import * as PulseGPUNervousSystem       from "./PulseGPUNervousSystem-v24.js";
 
 import * as PulseGPUCognitiveLayer      from "./PulseGPUCognitiveLayer-v24.js";

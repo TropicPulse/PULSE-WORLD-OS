@@ -1,18 +1,11 @@
 // ============================================================================
-// ForwardMotion-v30-Immortal-ProcessWorker+++
-//  • Thin directional wrapper around PulseMotionEngine-v30
-//  • Still ZERO compute logic in this file (no shifters, no arteries mutated)
-//  • Lane-specific intent: expansion, prediction, forward motion, earn, gpu-cache
-//  • Engine is a compressed orchestrator over the full Pulse-World v30 substrate:
-//      - SnapshotPhysics v30
-//      - DeltaEngine v30
-//      - DeploymentPhysics v30
-//      - RegioningPhysics v30 + RegionMeshRouting v30
-//      - LineageEngine v30
-//      - MultiOrganismSupport v30
-//      - ExecutionPhysics v30
-//      - CoreMemory + Shadow DB + fetch + presence/advantage/cosmos
-//  • This wrapper is your “universal forward process worker” entrypoint.
+// ForwardMotion-v30-Immortal-ProcessWorker+++ (v30++)
+//  • Universal forward process worker over PulseMotionEngine-v30
+//  • Lane: "forward" → expansion, prediction, earn, gpu-cache, prefill
+//  • Band: "dual" (symbolic + binary)
+//  • Integrated PulseGPUProcessWorker-v30 (GPU + Earn normalization)
+//  • Zero compute logic here: all heavy lifting lives in PulseMotionEngine-v30
+//  • v30++: richer GPU/Earn helpers, snapshots, diagnostics, warm-path hints
 // ============================================================================
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
@@ -25,8 +18,6 @@
 
 // ============================================================================
 // GLOBAL HANDLE (membrane-safe, environment-agnostic)
-//  • Works in browser, worker, node, or any JS host
-//  • Never throws if globals are missing
 // ============================================================================
 
 const G =
@@ -40,10 +31,7 @@ const g = G;
 
 
 // ============================================================================
-// UNIVERSAL TIMESTAMP (Shadow or Admin)
-//  • Prefer Shadow/host Timestamp if present
-//  • Fallback to firebaseAdmin Timestamp if available
-//  • Otherwise null (engine must handle gracefully)
+// UNIVERSAL TIMESTAMP
 // ============================================================================
 
 const Timestamp =
@@ -55,8 +43,7 @@ const Timestamp =
 
 
 // ============================================================================
-// UNIVERSAL ADMIN (Shadow or Admin)
-//  • Shadow/admin handle for Firestore or other admin APIs
+// UNIVERSAL ADMIN
 // ============================================================================
 
 const admin =
@@ -66,10 +53,7 @@ const admin =
 
 
 // ============================================================================
-// UNIVERSAL DB (Shadow DB ALWAYS wins)
-//  • db is the primary substrate for persistent state
-//  • Shadow DB (G.db) is preferred
-//  • Fallback to admin.firestore() if available
+// UNIVERSAL DB (Shadow DB wins)
 // ============================================================================
 
 const db =
@@ -80,8 +64,6 @@ const db =
 
 // ============================================================================
 // UNIVERSAL LOGGING
-//  • dblog / dberror are soft-bound logging surfaces
-//  • Engine can use them for diagnostics, but wrapper stays zero-logic
 // ============================================================================
 
 const dblog =
@@ -95,9 +77,6 @@ const dberror =
 
 // ============================================================================
 // UNIVERSAL FETCH
-//  • fetchFn is the network surface
-//  • Shadow fetch alias (G.fetchfn) wins
-//  • Fallback to global fetch if present
 // ============================================================================
 
 const fetchFn =
@@ -108,9 +87,6 @@ const fetchFn =
 
 // ============================================================================
 // SAFE CONTEXTS (zero-mutation, world-aware)
-//  • presenceContext: who/what is “here”
-//  • advantageContext: advantage surfaces, scoring, hints
-//  • cosmosContext: multiverse placement (universe/timeline/branch/shard)
 // ============================================================================
 
 const presenceContext =
@@ -136,20 +112,78 @@ const cosmosContext =
 
 // ============================================================================
 // ENGINE IMPORT (v30 IMMORTAL MOTION ENGINE)
-//  • This is the compressed orchestrator over the Pulse-World v30 stack
-//  • All heavy logic lives inside this engine, not in this wrapper
 // ============================================================================
 
 import { createPulseMotionEngine } from "./PulseEngineMotionEngine-v30.js";
 
 
 // ============================================================================
+// GPU PROCESS WORKER IMPORT (v30++) — GPU + Earn lanes helper
+// ============================================================================
+
+import { PulseGPUProcessWorker } from "./PulseGPUProcessWorker-v30.js";
+
+
+// ============================================================================
+// ROLE META (FORWARD PROCESS WORKER v30++)
+// ============================================================================
+
+export const FORWARD_MOTION_ROLE_V30 = Object.freeze({
+  lane: "forward",
+  motionType: "expansion",
+  band: "dual",
+  description: [
+    "Expands patterns, predicts next states, generates prefillChunks,",
+    "executes earn/gpu-cache jobs, and orchestrates the v30 Pulse-World substrate.",
+    "Forward lane is the primary motion heart for GPU+Earn prefill and cache."
+  ].join(" "),
+  engineMethod: "tickForward",
+  safety: "ForwardMotion wrapper must never modify engine internals"
+});
+
+
+// ============================================================================
+// PROCESS WORKER INSTANCE (FORWARD-FACE, GPU+EARN AWARE)
+// ============================================================================
+
+let gpuProcessWorker = null;
+
+function createGpuProcessWorkerSafe() {
+  try {
+    if (typeof PulseGPUProcessWorker === "function") {
+      return new PulseGPUProcessWorker({
+        lane: "forward",
+        band: "dual",
+        role: "gpu+earn-process-worker-forward",
+        presenceContext,
+        advantageContext,
+        cosmosContext
+      });
+    }
+    if (
+      PulseGPUProcessWorker &&
+      typeof PulseGPUProcessWorker.create === "function"
+    ) {
+      return PulseGPUProcessWorker.create({
+        lane: "forward",
+        band: "dual",
+        role: "gpu+earn-process-worker-forward",
+        presenceContext,
+        advantageContext,
+        cosmosContext
+      });
+    }
+  } catch (err) {
+    dberror("PulseGPUProcessWorker-v30 (forward) creation failed:", err);
+  }
+  return null;
+}
+
+gpuProcessWorker = createGpuProcessWorkerSafe();
+
+
+// ============================================================================
 // ENGINE INSTANCE (FORWARD FACE) — ZERO-COMPUTE WRAPPER
-//  • lane: "forward"  → expansion, prediction, prefill, earn, gpu-cache
-//  • mode: "expansion"
-//  • band: "dual"     → can see both symbolic + binary bands
-//  • triHeartId: identifies this motion-heart in the tri-heart topology
-//  • Capability flags: grant engine access to all v30 physics modules
 // ============================================================================
 
 let engine = null;
@@ -193,83 +227,261 @@ try {
     allowArteryMutation: false
   });
 } catch (err) {
-  // ForwardMotion must never throw during wiring; engine may remain null.
   dberror("ForwardMotion-v30 engine wiring failed:", err);
   engine = null;
 }
 
-/*
-FORWARD_MOTION_ROLE_V30 = {
-  lane: "forward",
-  motionType: "expansion",
-  description: [
-    "Expands patterns, predicts next states, generates prefillChunks,",
-    "executes earn/gpu-cache jobs, and orchestrates the v30 Pulse-World substrate."
-  ].join(" "),
-  engineMethod: "tickForward",
-  safety: "ForwardMotion wrapper must never modify engine internals"
+
+// ============================================================================
+// INTERNAL HELPERS — TYPE GUARDS / NORMALIZATION
+// ============================================================================
+
+function isObject(x) {
+  return x !== null && typeof x === "object";
 }
-*/
+
+function cloneShallow(obj) {
+  if (!isObject(obj)) return obj;
+  return { ...obj };
+}
+
+function normalizeJobBase(job) {
+  if (!isObject(job)) return {};
+  const lane = job.lane || "forward";
+  const priority = job.priority || "normal";
+  const cosmos = job.cosmosContext || cosmosContext;
+
+  return {
+    ...job,
+    lane,
+    priority,
+    cosmosContext: {
+      universeId: cosmos.universeId || cosmosContext.universeId,
+      timelineId: cosmos.timelineId || cosmosContext.timelineId,
+      branchId: cosmos.branchId || cosmosContext.branchId,
+      shardId: cosmos.shardId || cosmosContext.shardId
+    }
+  };
+}
 
 
 // ============================================================================
-// PUBLIC API — FORWARD MOTION (PURE INTERFACE, ZERO LOGIC)
-//  • submit(job): enqueue a MotionJob into the forward lane
-//  • tick(): advance the engine one forward tick (process queued jobs)
-//  • prewarm(): allow engine to hydrate caches, CoreMemory, DB handles, etc.
-//  • All routing/compute/orchestration happens inside PulseMotionEngine-v30.
+// INTERNAL: GPU/EARN PROCESS WORKER ROUTING (FORWARD LANE)
+//  • If job is GPU/EARN-related, let PulseGPUProcessWorker normalize it.
+//  • Always fail-open: if worker is missing or rejects, original job passes.
+// ============================================================================
+
+function routeJobThroughProcessWorker(job) {
+  if (!isObject(job)) return job;
+  if (!gpuProcessWorker) return job;
+
+  const baseJob = normalizeJobBase(job);
+
+  try {
+    const type = baseJob.type || baseJob.kind || "";
+    const lane = baseJob.lane || "forward";
+
+    // GPU-centric jobs
+    if (
+      type === "GPU_CACHE" ||
+      type === "GPU_COMPUTE" ||
+      type === "BINARY_COMPUTE"
+    ) {
+      if (typeof gpuProcessWorker.prepareGpuJob === "function") {
+        const prepared = gpuProcessWorker.prepareGpuJob(baseJob, { lane });
+        return prepared || baseJob;
+      }
+    }
+
+    // Earn-centric jobs
+    if (
+      type === "EARN_TASK" ||
+      type === "EARN_SETTLEMENT" ||
+      type === "EARN_RECONCILE" ||
+      type === "EARN_PREFILL"
+    ) {
+      if (typeof gpuProcessWorker.prepareEarnJob === "function") {
+        const prepared = gpuProcessWorker.prepareEarnJob(baseJob, { lane });
+        return prepared || baseJob;
+      }
+    }
+
+    // Forward-lane generic normalization
+    if (typeof gpuProcessWorker.prepareForwardJob === "function") {
+      const prepared = gpuProcessWorker.prepareForwardJob(baseJob, { lane });
+      return prepared || baseJob;
+    }
+
+    // Fallback generic job hook
+    if (typeof gpuProcessWorker.prepareJob === "function") {
+      const prepared = gpuProcessWorker.prepareJob(baseJob, { lane });
+      return prepared || baseJob;
+    }
+  } catch (err) {
+    dberror("routeJobThroughProcessWorker (forward) error:", err);
+  }
+
+  return baseJob;
+}
+
+
+// ============================================================================
+// INTERNAL: JOB BUILDERS (GPU / EARN / SNAPSHOT / GENERIC)
+// ============================================================================
+
+function buildGpuJob(payload = {}, hints = {}) {
+  return {
+    jobId: payload.jobId || `gpu-job-${Date.now()}`,
+    type: payload.type || "GPU_CACHE",
+    lane: "forward",
+    priority: payload.priority || "normal",
+    binaryPayload: payload.binaryPayload || null,
+    payload: payload.payload || {},
+    cosmosContext: payload.cosmosContext || cosmosContext,
+    organismId: payload.organismId || null,
+    instanceId: payload.instanceId || null,
+    hints: {
+      useGpuCache: true,
+      useSnapshotPhysics: !!hints.useSnapshotPhysics,
+      useDeltaEngine: !!hints.useDeltaEngine,
+      useDeploymentPhysics: !!hints.useDeploymentPhysics,
+      useRegioning: !!hints.useRegioning,
+      useLineage: !!hints.useLineage,
+      useMultiOrganism: !!hints.useMultiOrganism,
+      useExecution: !!hints.useExecution,
+      earnLane: !!hints.earnLane
+    }
+  };
+}
+
+function buildEarnJob(payload = {}, hints = {}) {
+  return {
+    jobId: payload.jobId || `earn-job-${Date.now()}`,
+    type: payload.type || "EARN_TASK",
+    lane: "forward",
+    priority: payload.priority || "normal",
+    payload: payload.payload || {},
+    cosmosContext: payload.cosmosContext || cosmosContext,
+    organismId: payload.organismId || null,
+    instanceId: payload.instanceId || null,
+    hints: {
+      earnLane: true,
+      useSnapshotPhysics: !!hints.useSnapshotPhysics,
+      useDeltaEngine: !!hints.useDeltaEngine,
+      useDeploymentPhysics: !!hints.useDeploymentPhysics,
+      useRegioning: !!hints.useRegioning,
+      useLineage: !!hints.useLineage,
+      useMultiOrganism: !!hints.useMultiOrganism,
+      useExecution: !!hints.useExecution,
+      useGpuCache: !!hints.useGpuCache
+    }
+  };
+}
+
+function buildSnapshotJob(payload = {}, hints = {}) {
+  return {
+    jobId: payload.jobId || `snapshot-job-${Date.now()}`,
+    type: payload.type || "STATE_SNAPSHOT",
+    lane: "forward",
+    priority: payload.priority || "low",
+    payload: payload.payload || {},
+    cosmosContext: payload.cosmosContext || cosmosContext,
+    organismId: payload.organismId || null,
+    instanceId: payload.instanceId || null,
+    hints: {
+      useSnapshotPhysics: true,
+      useDeltaEngine: !!hints.useDeltaEngine,
+      useRegioning: !!hints.useRegioning,
+      useLineage: !!hints.useLineage,
+      useMultiOrganism: !!hints.useMultiOrganism,
+      useExecution: !!hints.useExecution,
+      useGpuCache: !!hints.useGpuCache,
+      earnLane: !!hints.earnLane
+    }
+  };
+}
+
+function buildGenericJob(payload = {}, hints = {}) {
+  return {
+    jobId: payload.jobId || `job-${Date.now()}`,
+    type: payload.type || "GENERIC",
+    lane: payload.lane || "forward",
+    priority: payload.priority || "normal",
+    payload: payload.payload || {},
+    binaryPayload: payload.binaryPayload || null,
+    cosmosContext: payload.cosmosContext || cosmosContext,
+    organismId: payload.organismId || null,
+    instanceId: payload.instanceId || null,
+    hints: {
+      ...cloneShallow(hints)
+    }
+  };
+}
+
+
+// ============================================================================
+// PUBLIC API — FORWARD MOTION (CORE)
 // ============================================================================
 
 /**
  * submit
  * ------
  * Enqueue a job into the forward motion engine.
- *
- * Expected job shape (conceptual):
- *   {
- *     jobId: string,
- *     type: "EARN_TASK" | "BINARY_COMPUTE" | "STATE_SNAPSHOT" | ...,
- *     lane?: "forward" | "backward" | "auto",
- *     priority?: "low" | "normal" | "high",
- *     binaryPayload?: ArrayBuffer | Uint8Array,
- *     payload?: any,
- *     cosmosContext?: { universeId?, timelineId?, branchId?, shardId? },
- *     organismId?: string | null,
- *     instanceId?: string | null,
- *     hints?: {
- *       useSnapshotPhysics?: boolean,
- *       useDeltaEngine?: boolean,
- *       useDeploymentPhysics?: boolean,
- *       useRegioning?: boolean,
- *       useLineage?: boolean,
- *       useMultiOrganism?: boolean,
- *       useExecution?: boolean,
- *       useGpuCache?: boolean,
- *       earnLane?: boolean
- *     }
- *   }
- *
- * This wrapper does not inspect or modify the job; it just forwards it.
+ * 1) Normalize via PulseGPUProcessWorker-v30 (GPU/Earn aware).
+ * 2) Forward to engine.submitForwardJob().
  */
 export function submit(job) {
   if (!engine || typeof engine.submitForwardJob !== "function") {
     return { ok: false, reason: "ENGINE_UNAVAILABLE" };
   }
-  return engine.submitForwardJob(job);
+  const processedJob = routeJobThroughProcessWorker(job);
+  return engine.submitForwardJob(processedJob);
+}
+
+/**
+ * submitGpu
+ * ---------
+ * Convenience: build a GPU-style job and submit via forward lane.
+ */
+export function submitGpu(payload = {}, hints = {}) {
+  const job = buildGpuJob(payload, hints);
+  return submit(job);
+}
+
+/**
+ * submitEarn
+ * ----------
+ * Convenience: build an Earn-style job and submit via forward lane.
+ */
+export function submitEarn(payload = {}, hints = {}) {
+  const job = buildEarnJob(payload, hints);
+  return submit(job);
+}
+
+/**
+ * submitSnapshot
+ * --------------
+ * Convenience: build a snapshot job and submit via forward lane.
+ */
+export function submitSnapshot(payload = {}, hints = {}) {
+  const job = buildSnapshotJob(payload, hints);
+  return submit(job);
+}
+
+/**
+ * submitGeneric
+ * -------------
+ * Convenience: build a generic job and submit via forward lane.
+ */
+export function submitGeneric(payload = {}, hints = {}) {
+  const job = buildGenericJob(payload, hints);
+  return submit(job);
 }
 
 /**
  * tick
  * ----
  * Advance the forward motion engine by one tick.
- *
- * Inside the engine, a tick might:
- *   - drain a queue of MotionJobs
- *   - call Snapshot/Delta/Deployment/Regioning/Lineage/MultiOrg/Execution physics
- *   - write results to DB/CoreMemory/GPU cache
- *   - emit Earn artifacts or advantage metrics
- *
- * This wrapper only calls engine.tickForward() and returns its result.
  */
 export function tick() {
   if (!engine || typeof engine.tickForward !== "function") {
@@ -286,8 +498,6 @@ export function tick() {
  *   - CoreMemory namespaces
  *   - region graphs / stability maps
  *   - caches for Earn / GPU cache lanes
- *
- * Wrapper simply forwards the call.
  */
 export function prewarm() {
   if (!engine || typeof engine.prewarm !== "function") {
@@ -298,10 +508,52 @@ export function prewarm() {
 
 
 // ============================================================================
+// SNAPSHOT / DIAGNOSTICS SURFACE (READ-ONLY)
+// ============================================================================
+
+/**
+ * snapshot
+ * --------
+ * Ask the engine for a forward-lane snapshot if available.
+ * (Fail-open: returns null if engine has no snapshot API.)
+ */
+export function snapshot() {
+  try {
+    if (!engine) return null;
+    if (typeof engine.snapshotForward === "function") {
+      return engine.snapshotForward();
+    }
+    if (typeof engine.snapshot === "function") {
+      return engine.snapshot();
+    }
+  } catch (err) {
+    dberror("ForwardMotion-v30 snapshot error:", err);
+  }
+  return null;
+}
+
+/**
+ * diagnostics
+ * -----------
+ * Lightweight meta surface for observability.
+ */
+export function diagnostics() {
+  return {
+    role: FORWARD_MOTION_ROLE_V30,
+    engineAvailable: !!engine,
+    processWorkerAvailable: !!gpuProcessWorker,
+    cosmosContext: {
+      universeId: cosmosContext.universeId,
+      timelineId: cosmosContext.timelineId,
+      branchId: cosmosContext.branchId,
+      shardId: cosmosContext.shardId
+    }
+  };
+}
+
+
+// ============================================================================
 // ARTERY EXPOSURE (READ-ONLY, FORWARD LANE VIEW)
-//  • artery: engine.artery.forward if present
-//  • Intended for UI/diagnostics/observability only
-//  • Never mutate artery from outside the engine
 // ============================================================================
 
 export const artery =
@@ -312,8 +564,14 @@ export const artery =
 
 // ============================================================================
 // FACTORY EXPORT (for meta/diagnostics)
-//  • PulseForward is the engine factory itself
-//  • Useful if you want to spin custom motion engines elsewhere
 // ============================================================================
 
 export const PulseForward = createPulseMotionEngine;
+
+
+// ============================================================================
+// PROCESS WORKER EXPOSURE (READ-ONLY)
+// ============================================================================
+
+export const processWorker =
+  gpuProcessWorker || null;

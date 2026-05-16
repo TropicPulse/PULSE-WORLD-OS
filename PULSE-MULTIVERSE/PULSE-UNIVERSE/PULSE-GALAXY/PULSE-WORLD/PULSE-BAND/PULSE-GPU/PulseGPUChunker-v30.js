@@ -1,7 +1,8 @@
 // ============================================================================
-//  PulseGPUChunker v24.0-IMMORTAL++
+//  PulseGPUChunker v30.0-IMMORTAL-INTEL-OMEGA
 //  32-LANE GPU CHUNKER — BINARY + SYMBOLIC + GPU-ORGANISM GRADE
-//  GPU Chunk Organ for PulseGPU v24+ (steps, traces, pressure, warm-path, CI)
+//  GPU Chunk Organ for PulseGPU v24+/v30+ (steps, traces, pressure, warm-path, CI)
+//  v30++: Binary-Index Surfaces + Dual-Hash INTEL + Session Surfaces
 // ============================================================================
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
@@ -10,6 +11,35 @@
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+
+
+// ============================================================================
+//  META — v30 IMMORTAL-INTEL-OMEGA
+// ============================================================================
+
+export const PulseGPUChunkerMeta = Object.freeze({
+  id: "PulseGPUChunker-v30-IMMORTAL-INTEL-OMEGA",
+  version: "30.0-IMMORTAL-INTEL-OMEGA",
+  lanes: 32,
+  epoch: "PulseGPU-Organism",
+  role: "GPU-Chunker",
+  intel: {
+    binaryIndexSurface: true,
+    sessionSurface: true,
+    dualHashIntel: true,
+    gpuModeAware: true,
+    gpuTierAware: true,
+    gpuStreamAware: true,
+    chunkProfileAware: true
+  },
+  safety: {
+    deterministic: true,
+    noNetwork: true,
+    noFilesystem: true,
+    noGPUCalls: true,
+    noRandomness: true
+  }
+});
 
 // ============================================================================
 //  INTERNAL HELPERS
@@ -58,6 +88,28 @@ function _hashString(str) {
   return `h${h}`;
 }
 
+// INTEL hash — structure-aware, deterministic
+function _hashIntel(payload) {
+  const base = JSON.stringify(payload || "");
+  let h = 0;
+  for (let i = 0; i < base.length; i++) {
+    const c = base.charCodeAt(i);
+    h = (h * 131 + c * (i + 7)) % 1000000007;
+  }
+  return `HINTEL_${h}`;
+}
+
+function _buildDualHash(label, intelPayload, classicString) {
+  const intelBase = {
+    label,
+    intel: intelPayload || {},
+    classic: classicString || ""
+  };
+  const intel = _hashIntel(intelBase);
+  const classic = _hashString(`${label}::${classicString || ""}`);
+  return { intel, classic };
+}
+
 // Build a deterministic GPU session id for a payload + gpu context + profile
 function _buildGPUSessionId({
   gpuContextHash,
@@ -78,8 +130,52 @@ function _buildGPUSessionId({
   return _hashString(seed);
 }
 
+// v30++: binary index surface per chunk
+function _buildBinaryIndexSurface({
+  sessionId,
+  index,
+  total,
+  lane,
+  band,
+  type,
+  size
+}) {
+  const classic = `BINIDX::${sessionId || "NO_SESSION"}::i:${index}::t:${total}::lane:${lane}::band:${band}::type:${type}::size:${size}`;
+  const intelPayload = {
+    sessionId: sessionId || null,
+    index,
+    total,
+    lane,
+    band,
+    type,
+    size
+  };
+  return _buildDualHash("PULSE_GPU_CHUNK_BINARY_INDEX_V30", intelPayload, classic);
+}
+
+// v30++: session surface (per chunk stream)
+function _buildSessionSurface({
+  sessionId,
+  payloadHash,
+  gpuMode,
+  gpuStream,
+  gpuTier,
+  chunkProfile
+}) {
+  const classic = `SESSION::${sessionId || "NO_SESSION"}::ph:${payloadHash || "NO_PAYLOAD"}::mode:${gpuMode}::stream:${gpuStream}::tier:${gpuTier}::profile:${chunkProfile}`;
+  const intelPayload = {
+    sessionId: sessionId || null,
+    payloadHash: payloadHash || null,
+    gpuMode,
+    gpuStream,
+    gpuTier,
+    chunkProfile
+  };
+  return _buildDualHash("PULSE_GPU_CHUNK_SESSION_V30", intelPayload, classic);
+}
+
 // ============================================================================
-//  CLASS — 32-LANE GPU CHUNKER (v24 IMMORTAL++)
+//  CLASS — 32-LANE GPU CHUNKER (v30 IMMORTAL-INTEL-OMEGA)
 // ============================================================================
 
 export class PulseGPUChunker {
@@ -143,50 +239,81 @@ export class PulseGPUChunker {
   }
 
   // --------------------------------------------------------------------------
-  //  PREWARM PATTERN (label-based, GPU-aware)
-  // --------------------------------------------------------------------------
+  //  PREWARM PATTERN (label-based, GPU-aware, v30 intel surfaces)
+// --------------------------------------------------------------------------
   prewarmPattern(label, pattern = {}) {
     if (!label) return;
+    const ts = _now();
+    const basePattern = {
+      defaultChunkSize:
+        pattern.defaultChunkSize || this.config.defaultChunkSize,
+      maxChunkSize: pattern.maxChunkSize || this.config.maxChunkSize,
+      lanes: pattern.lanes || this.config.lanes,
+      band: pattern.band || "dual", // binary | symbolic | dual
+      profile: pattern.profile || this.config.defaultProfile,
+      gpuMode: pattern.gpuMode || "mixed", // binary | symbolic | dual
+      gpuStream: pattern.gpuStream || "continuous",
+      gpuTier: pattern.gpuTier || "default",
+      chunkProfile:
+        pattern.chunkProfile || pattern.profile || this.config.defaultProfile
+    };
+
+    const intelSig = _buildDualHash(
+      "PULSE_GPU_CHUNK_PATTERN_V30",
+      {
+        label,
+        ts,
+        pattern: basePattern
+      },
+      `PATTERN::${label}::profile:${basePattern.profile}::band:${basePattern.band}::mode:${basePattern.gpuMode}::stream:${basePattern.gpuStream}::tier:${basePattern.gpuTier}`
+    );
+
     const stored = Object.freeze({
       label,
-      ts: _now(),
-      pattern: {
-        defaultChunkSize:
-          pattern.defaultChunkSize || this.config.defaultChunkSize,
-        maxChunkSize: pattern.maxChunkSize || this.config.maxChunkSize,
-        lanes: pattern.lanes || this.config.lanes,
-        band: pattern.band || "dual", // binary | symbolic | dual
-        profile: pattern.profile || this.config.defaultProfile,
-        gpuMode: pattern.gpuMode || "mixed", // binary | symbolic | dual
-        gpuStream: pattern.gpuStream || "continuous",
-        gpuTier: pattern.gpuTier || "default",
-        chunkProfile:
-          pattern.chunkProfile || pattern.profile || this.config.defaultProfile
-      }
+      ts,
+      pattern: basePattern,
+      intelSignature: intelSig.intel,
+      classicSignature: intelSig.classic
     });
+
     this.patterns.set(label, stored);
     return stored;
   }
 
   // --------------------------------------------------------------------------
-  //  PREWARM PROFILE (GPU profiles)
+  //  PREWARM PROFILE (GPU profiles, v30 intel surfaces)
 // --------------------------------------------------------------------------
   prewarmProfile(profileId, profile = {}) {
     if (!profileId) return;
+    const ts = _now();
+    const baseConfig = {
+      defaultChunkSize:
+        profile.defaultChunkSize || this.config.defaultChunkSize,
+      maxChunkSize: profile.maxChunkSize || this.config.maxChunkSize,
+      lanes: profile.lanes || this.config.lanes,
+      band: profile.band || "dual",
+      gpuMode: profile.gpuMode || "mixed",
+      gpuStream: profile.gpuStream || "continuous",
+      gpuTier: profile.gpuTier || "default",
+      chunkProfile: profile.chunkProfile || profileId
+    };
+
+    const intelSig = _buildDualHash(
+      "PULSE_GPU_CHUNK_PROFILE_V30",
+      {
+        profileId,
+        ts,
+        config: baseConfig
+      },
+      `PROFILE::${profileId}::band:${baseConfig.band}::mode:${baseConfig.gpuMode}::stream:${baseConfig.gpuStream}::tier:${baseConfig.gpuTier}`
+    );
+
     const stored = Object.freeze({
       profileId,
-      ts: _now(),
-      config: {
-        defaultChunkSize:
-          profile.defaultChunkSize || this.config.defaultChunkSize,
-        maxChunkSize: profile.maxChunkSize || this.config.maxChunkSize,
-        lanes: profile.lanes || this.config.lanes,
-        band: profile.band || "dual",
-        gpuMode: profile.gpuMode || "mixed",
-        gpuStream: profile.gpuStream || "continuous",
-        gpuTier: profile.gpuTier || "default",
-        chunkProfile: profile.chunkProfile || profileId
-      }
+      ts,
+      config: baseConfig,
+      intelSignature: intelSig.intel,
+      classicSignature: intelSig.classic
     });
     this.profiles.set(profileId, stored);
 
@@ -301,7 +428,7 @@ export class PulseGPUChunker {
   }
 
   // --------------------------------------------------------------------------
-  //  BINARY CHUNKING (GPU-safe)
+  //  BINARY CHUNKING (GPU-safe, v30 binary index surfaces)
 //  - options: { band, label, profile, gpuMode, gpuStream, gpuTier, chunkProfile, gpuContextHash }
 // --------------------------------------------------------------------------
   chunkBinary(buffer, options = {}) {
@@ -329,6 +456,15 @@ export class PulseGPUChunker {
       payloadHash
     });
 
+    const sessionSurface = _buildSessionSurface({
+      sessionId,
+      payloadHash,
+      gpuMode: profile.gpuMode,
+      gpuStream: profile.gpuStream,
+      gpuTier: profile.gpuTier,
+      chunkProfile: profile.chunkProfile
+    });
+
     const chunks = [];
     const laneCounter = { value: 0 };
 
@@ -337,6 +473,19 @@ export class PulseGPUChunker {
       const end = Math.min(offset + chunkSize, totalLength);
       const slice = bytes.subarray(offset, end);
 
+      const index = chunks.length;
+      const size = slice.length;
+
+      const binIndexSurface = _buildBinaryIndexSurface({
+        sessionId,
+        index,
+        total: null, // filled after loop
+        lane,
+        band: profile.band,
+        type: "binary",
+        size
+      });
+
       const chunk = Object.freeze({
         meta: {
           chunkerId: this.config.id,
@@ -344,18 +493,23 @@ export class PulseGPUChunker {
           band: profile.band,
           type: "binary",
           lane,
-          index: chunks.length,
+          index,
           total: null,
           label: profile.label,
           profile: profile.profileId,
-          size: slice.length,
+          size,
           gpuMode: profile.gpuMode,
           gpuStream: profile.gpuStream,
           gpuTier: profile.gpuTier,
           chunkProfile: profile.chunkProfile,
           sessionId,
           payloadHash,
-          gpuContextHash: options.gpuContextHash || null
+          gpuContextHash: options.gpuContextHash || null,
+          // v30++ intel surfaces
+          binaryIndexClassic: binIndexSurface.classic,
+          binaryIndexIntel: binIndexSurface.intel,
+          sessionClassic: sessionSurface.classic,
+          sessionIntel: sessionSurface.intel
         },
         payload: slice
       });
@@ -370,12 +524,25 @@ export class PulseGPUChunker {
       this._bumpProfileStats(profile.profileId, slice.length, ts);
     }
 
+    const totalChunks = chunks.length;
     for (const c of chunks) {
-      c.meta.total = chunks.length;
+      c.meta.total = totalChunks;
+      // rebuild binary index classic/intel with total included
+      const updatedSurface = _buildBinaryIndexSurface({
+        sessionId: c.meta.sessionId,
+        index: c.meta.index,
+        total: totalChunks,
+        lane: c.meta.lane,
+        band: c.meta.band,
+        type: c.meta.type,
+        size: c.meta.size
+      });
+      c.meta.binaryIndexClassic = updatedSurface.classic;
+      c.meta.binaryIndexIntel = updatedSurface.intel;
     }
 
     if (this.config.trace) {
-      console.log("[PulseGPUChunker v24] chunkBinary", {
+      console.log("[PulseGPUChunker v30] chunkBinary", {
         label: profile.label,
         profile: profile.profileId,
         band: profile.band,
@@ -456,7 +623,7 @@ export class PulseGPUChunker {
     );
 
     if (this.config.trace) {
-      console.log("[PulseGPUChunker v24] chunkJSON", {
+      console.log("[PulseGPUChunker v30] chunkJSON", {
         label: profile.label,
         profile: profile.profileId,
         band: profile.band,
@@ -557,6 +724,27 @@ export class PulseGPUChunker {
         payloadHash
       });
 
+      const sessionSurface = _buildSessionSurface({
+        sessionId,
+        payloadHash,
+        gpuMode: profile.gpuMode,
+        gpuStream: profile.gpuStream,
+        gpuTier: profile.gpuTier,
+        chunkProfile: profile.chunkProfile
+      });
+
+      const size = bytes.length;
+
+      const binIndexSurface = _buildBinaryIndexSurface({
+        sessionId,
+        index,
+        total: totalPlaceholder,
+        lane,
+        band: profile.band,
+        type: "text_lines",
+        size
+      });
+
       const chunk = Object.freeze({
         meta: {
           chunkerId: chunker.config.id,
@@ -568,14 +756,18 @@ export class PulseGPUChunker {
           total: totalPlaceholder,
           label: profile.label,
           profile: profile.profileId,
-          size: bytes.length,
+          size,
           gpuMode: profile.gpuMode,
           gpuStream: profile.gpuStream,
           gpuTier: profile.gpuTier,
           chunkProfile: profile.chunkProfile,
           sessionId,
           payloadHash,
-          gpuContextHash: options.gpuContextHash || null
+          gpuContextHash: options.gpuContextHash || null,
+          binaryIndexClassic: binIndexSurface.classic,
+          binaryIndexIntel: binIndexSurface.intel,
+          sessionClassic: sessionSurface.classic,
+          sessionIntel: sessionSurface.intel
         },
         payload: bytes
       });
@@ -607,12 +799,24 @@ export class PulseGPUChunker {
       flushChunk(self, lane, chunks.length, null);
     }
 
+    const totalChunks = chunks.length;
     for (const c of chunks) {
-      c.meta.total = chunks.length;
+      c.meta.total = totalChunks;
+      const updatedSurface = _buildBinaryIndexSurface({
+        sessionId: c.meta.sessionId,
+        index: c.meta.index,
+        total: totalChunks,
+        lane: c.meta.lane,
+        band: c.meta.band,
+        type: c.meta.type,
+        size: c.meta.size
+      });
+      c.meta.binaryIndexClassic = updatedSurface.classic;
+      c.meta.binaryIndexIntel = updatedSurface.intel;
     }
 
     if (this.config.trace) {
-      console.log("[PulseGPUChunker v24] chunkLines", {
+      console.log("[PulseGPUChunker v30] chunkLines", {
         label: profile.label,
         profile: profile.profileId,
         band: profile.band,
@@ -724,7 +928,7 @@ export class PulseGPUChunker {
 export function createPulseGPUChunker(config = {}) {
   const core = new PulseGPUChunker(config);
 
-  // Canonical GPU profiles
+  // Canonical GPU profiles (v30 keeps v24 semantics, adds intel surfaces)
   core.prewarmProfile("gpu-default", {
     gpuMode: "mixed",
     gpuStream: "continuous",
@@ -829,11 +1033,11 @@ export function createPulseGPUChunker(config = {}) {
 }
 
 // ============================================================================
-//  DEFAULT SINGLETON (GPU-DEFAULT PROFILE)
+//  DEFAULT SINGLETON (GPU-DEFAULT PROFILE, v30)
 // ============================================================================
 
 export const pulseGPUChunker = createPulseGPUChunker({
-  id: "PulseGPUChunker-Default-v24",
+  id: "PulseGPUChunker-Default-v30-IMMORTAL-INTEL-OMEGA",
   defaultChunkSize: 4096,
   maxChunkSize: 65536,
   trace: false,

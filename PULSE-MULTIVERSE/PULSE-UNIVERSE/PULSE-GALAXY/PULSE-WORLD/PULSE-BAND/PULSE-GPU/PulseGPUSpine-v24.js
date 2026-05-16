@@ -39,18 +39,18 @@ import { PulseGPUInsightsEngine } from "./PulseGPUWIsdomCortex-v24.js";
 import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem-v24.js";
 import { PulseGPUPerformanceAdvisor } from "./PulseGPUDriveCenter-v24.js";
 import { PulseGPUSettingsRestorer } from "./PulseGPUCognitiveLayer-v24.js";
-import { PulseGPUGuardianCortex } from "./PulseGPUGuardianCortex-v24.js";
+import { PulseGPUGuardianCortex } from "./PulseGPUGuardianCortex-v30.js";
 import { PulseGPUHealer } from "./PulseGPULymphNodes-v30.js";
 import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence-v24.js";
-import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
+import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v30.js";
 import { DEFAULT_USER_PREFERENCES } from "./PulseGPUCommandments-v24.js";
 import { PulseEarnSignalFactoring } from "../PULSE-EARN/PulseEarnSignalFactoring-v24.js";
 
 // Extra v24++ integration organs (conceptual, pure metadata)
 import { PulseEarnBridge } from "../PULSE-EARN/PulseEarn-v24.js";
 import { PulseGPUChunkPlanner } from "./PulseGPUChunkPlanner-v24.js";
-import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache-v24.js";
-import { createPulseGPUImmortal } from "./PulseGPU-v24.js";
+import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache-v30.js";
+import { createPulseGPUImmortal } from "./PulseGPU-v30.js";
 import { createPulseBinaryGPUImmortal } from "./PulseGPUBinary-v24.js";
 
 

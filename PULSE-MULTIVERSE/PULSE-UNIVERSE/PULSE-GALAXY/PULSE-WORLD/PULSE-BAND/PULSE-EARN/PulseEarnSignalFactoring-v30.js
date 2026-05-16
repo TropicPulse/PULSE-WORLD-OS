@@ -1,22 +1,22 @@
 // ============================================================================
-// FILE: PulseEarnSignalFactoring-v24-IMMORTAL-INTEL++.js
-// [pulse:earn] SIGNAL FACTORING LAYER — v24‑IMMORTAL‑INTEL++‑DUALHASH‑BASESHAPE
+// FILE: PulseEarnSignalFactoring-v30-IMMORTAL-INTEL-OMEGA.js
+// [pulse:earn] SIGNAL FACTORING LAYER — v30++ IMMORTAL‑INTEL‑OMEGA‑DUALHASH‑METABOLIC
 // ----------------------------------------------------------------------------
 // ROLE:
-//   • Earn‑level 1/0 factoring engine (metadata‑only, INTEL‑aware, base‑shape aware).
-//   • Mirrors Mesh signal factoring (pressure, depth, stride, /2 pattern) at Earn page layer.
-//   • Shapes EVERY Earn page with factoring pressure from jobs, mesh, device, cache, hints.
-//   • Emits dual INTEL + classic signatures for factoring + base‑shape state.
-//   • Exposes band/binary/wave + advantage + chunk/prewarm + baseFormulaKey surfaces.
-//   • Fully compatible with PulseSignalFactoringGuide (Mesh + Earn atlas).
+//   • Earn‑level factoring engine (1/0 + multi‑tier), INTEL‑aware, base‑shape + organism‑shape aware.
+//   • Mirrors Mesh + Reflex + Send + Page factoring at full organism metabolism layer.
+//   • Shapes EVERY Earn page with factoring pressure from jobs, mesh, device, cache, hints, liquidity.
+//   • Emits dual INTEL + classic signatures for factoring, base‑shape, organism‑shape, and metabolic state.
+//   • Exposes band/binary/wave + advantage + chunk/prewarm + baseFormulaKey + organismFormulaKey surfaces.
+//   • Fully compatible with PulseSignalFactoringGuide‑v30, Mesh/Earn/Reflex/Send atlas.
 // ----------------------------------------------------------------------------
-// SAFETY CONTRACT (IMMORTAL v24‑INTEL):
+// SAFETY CONTRACT (IMMORTAL v30‑INTEL‑OMEGA):
 //   • No payload mutation beyond page.meta / page.flags.
 //   • No routing influence (metadata only; routers MAY read but not obey).
 //   • No randomness, no timestamps, no async, no network, no filesystem.
 //   • Zero side‑effects outside page.meta / page.flags.
 //   • Deterministic‑field: identical input → identical output.
-//   • Drift‑proof across versions, multi‑instance safe.
+//   • Drift‑proof across versions, multi‑instance safe, multi‑organism safe.
 // ============================================================================
 
 //
@@ -29,14 +29,14 @@
 
 
 // ============================================================================
-// HASH HELPERS — v24‑IMMORTAL‑INTEL (dual‑hash)
+// HASH HELPERS — v30‑IMMORTAL‑INTEL‑OMEGA (dual‑hash)
 // ============================================================================
 
 function computeHash(str) {
   let h = 0;
   const s = String(str || "");
   for (let i = 0; i < s.length; i++) {
-    h = (h + s.charCodeAt(i) * (i + 1)) % 100000;
+    h = (h + s.charCodeAt(i) * (i + 1)) % 1000000007;
   }
   return `h${h}`;
 }
@@ -46,9 +46,9 @@ function computeHashIntelligence(payload) {
   let h = 0;
   for (let i = 0; i < base.length; i++) {
     const c = base.charCodeAt(i);
-    h = (h * 131 + c * (i + 7)) % 1000000007;
+    h = (h * 131 + c * (i + 11)) % 4294967291;
   }
-  return `HINTEL_${h}`;
+  return `HINTEL30_${h}`;
 }
 
 function buildDualHashSignature(label, intelPayload, classicString) {
@@ -85,46 +85,58 @@ function normalizeBand(band) {
   return x === "binary" ? "binary" : "symbolic";
 }
 
+function normalizeCachePriorityLabel(p) {
+  if (!p) return "normal";
+  const v = String(p).toLowerCase();
+  if (v === "critical" || v === "high" || v === "medium" || v === "low") return v;
+  return "normal";
+}
+
 // ============================================================================
-// BAND / BINARY / WAVE SURFACE — EARN PAGE
+// BAND / BINARY / WAVE SURFACE — EARN PAGE v30++
 // ============================================================================
 
-function buildPageBandBinaryWave(page, cycleIndex, deviceProfile = {}) {
+function buildPageBandBinaryWave_v30(page, cycleIndex, deviceProfile = {}, organismContext = {}) {
   const band = normalizeBand(
     page?.meta?.band ||
       page?.band ||
       deviceProfile?.band ||
       deviceProfile?.presenceBand ||
+      organismContext?.band ||
       "symbolic"
   );
 
   const idLen        = String(page?.id || page?.key || "NO_PAGE_ID").length;
   const jobCount     = safeNumber(Array.isArray(page?.jobs) ? page.jobs.length : 0);
-  const meshPressure = safeNumber(page?.presenceField?.meshPressureIndex || 0);
+  const meshPressure = safeNumber(page?.presenceField?.meshPressureIndex || organismContext?.meshPressureIndex || 0);
   const gpuScore     = safeNumber(deviceProfile?.gpuScore || 0);
+  const cpuScore     = safeNumber(deviceProfile?.cpuScore || 0);
+  const liquidityIdx = safeNumber(organismContext?.liquidityIndex || 0);
 
-  const surface = idLen + jobCount + meshPressure + gpuScore + cycleIndex;
+  const surface = idLen + jobCount + meshPressure + gpuScore + cpuScore + liquidityIdx + cycleIndex;
 
   const binarySurface = {
     idLen,
     jobCount,
     meshPressure,
     gpuScore,
+    cpuScore,
+    liquidityIdx,
     cycle: cycleIndex,
     surface
   };
 
   const binaryField = {
-    binaryPageSignature: computeHash(`BPAGE::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_EARN_PAGE::${surface}`),
+    binaryPageSignature: computeHash(`BPAGE30::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_EARN_PAGE30::${surface}`),
     binarySurface,
     parity: surface % 2 === 0 ? 0 : 1,
-    density: jobCount + meshPressure + gpuScore,
+    density: jobCount + meshPressure + gpuScore + cpuScore + liquidityIdx,
     shiftDepth: Math.max(0, Math.floor(Math.log2(surface || 1))),
     dualSignature: buildDualHashSignature(
-      "EARN_PAGE_BINARY_v24",
+      "EARN_PAGE_BINARY_v30",
       binarySurface,
-      `surface=${surface}`
+      `surface=${surface}::jobs=${jobCount}::liq=${liquidityIdx}`
     )
   };
 
@@ -133,41 +145,46 @@ function buildPageBandBinaryWave(page, cycleIndex, deviceProfile = {}) {
     jobCount,
     meshPressure,
     gpuScore,
+    cpuScore,
+    liquidityIdx,
     cycle: cycleIndex
   };
 
   const waveField = {
-    amplitude: jobCount + meshPressure + gpuScore,
+    amplitude: jobCount + meshPressure + gpuScore + cpuScore + liquidityIdx,
     wavelength: cycleIndex || 1,
-    phase: (idLen + jobCount + cycleIndex) % 16,
+    phase: (idLen + jobCount + meshPressure + cycleIndex) % 32,
     band,
     mode: band === "binary" ? "compression-wave" : "symbolic-wave",
     dualSignature: buildDualHashSignature(
-      "EARN_PAGE_WAVE_v24",
+      "EARN_PAGE_WAVE_v30",
       waveSurface,
-      `band=${band}::cycle=${cycleIndex}`
+      `band=${band}::cycle=${cycleIndex}::liq=${liquidityIdx}`
     )
   };
 
   const bandSignature = buildDualHashSignature(
-    "EARN_PAGE_BAND_v24",
-    { band, cycleIndex },
-    `${band}::${cycleIndex}`
+    "EARN_PAGE_BAND_v30",
+    { band, cycleIndex, liquidityIdx },
+    `${band}::${cycleIndex}::liq=${liquidityIdx}`
   );
 
   return { band, bandSignature, binaryField, waveField };
 }
 
 // ============================================================================
-// ADVANTAGE FIELD — EARN PAGE (v24-IMMORTAL-INTEL++)
+// ADVANTAGE FIELD — EARN PAGE v30++ (5‑tier, metabolic)
 // ============================================================================
 
-function buildPageAdvantageField(page, deviceProfile, bandPack, factoringProfile, bandSnapshot = null) {
+function buildPageAdvantageField_v30(page, deviceProfile, bandPack, factoringProfile, bandSnapshot = {}, organismContext = {}) {
   const gpuScore      = safeNumber(deviceProfile?.gpuScore || 0);
   const bandwidth     = safeNumber(deviceProfile?.bandwidthMbps || 0);
   const chunkBudgetKB = safeNumber(deviceProfile?.chunkField?.chunkBudgetKB || 0);
   const cacheLines    = safeNumber(deviceProfile?.chunkField?.cacheLines || 0);
   const prewarmSlots  = safeNumber(deviceProfile?.chunkField?.prewarmSlots || 0);
+  const cpuScore      = safeNumber(deviceProfile?.cpuScore || 0);
+  const thermalHead   = safeNumber(deviceProfile?.thermalHeadroom || 0);
+  const deviceTier    = deviceProfile?.tier || "unknown";
 
   const density   = bandPack.binaryField.density;
   const amplitude = bandPack.waveField.amplitude;
@@ -177,7 +194,11 @@ function buildPageAdvantageField(page, deviceProfile, bandPack, factoringProfile
 
   const bandMode      = bandSnapshot?.mode || "normal";
   const bandLevel     = bandSnapshot?.bandLevel || null;
-  const fallbackLevel = bandSnapshot?.fallbackLevel || 0;
+  const fallbackLevel = safeNumber(bandSnapshot?.fallbackLevel || factoringProfile.fallbackBandLevel || 0);
+
+  const liquidityIdx  = safeNumber(organismContext?.liquidityIndex || 0);
+  const immuneLoad    = safeNumber(organismContext?.immuneLoadIndex || 0);
+  const metabolicLoad = safeNumber(organismContext?.metabolicLoadIndex || 0);
 
   const rawAdvantageScore =
     gpuScore * 0.0007 +
@@ -185,15 +206,21 @@ function buildPageAdvantageField(page, deviceProfile, bandPack, factoringProfile
     density * 0.000015 +
     amplitude * 0.000015 +
     (chunkBudgetKB + cacheLines + prewarmSlots) * 0.0000015 +
-    (presenceTier === "presence_high" ? 0.015 : 0) +
-    (advantageTierBase >= 2 ? 0.0075 : 0);
+    cpuScore * 0.00025 +
+    thermalHead * 0.0001 +
+    liquidityIdx * 0.0003 +
+    (presenceTier === "presence_high" ? 0.02 : presenceTier === "presence_mid" ? 0.01 : 0) +
+    (advantageTierBase >= 2 ? 0.01 : 0) -
+    immuneLoad * 0.0002 -
+    metabolicLoad * 0.0002;
 
   const advantageScore = clamp01(rawAdvantageScore);
 
   const advantageTier =
-    advantageScore >= 0.92 ? 3 :
-    advantageScore >= 0.65 ? 2 :
-    advantageScore >= 0.30 ? 1 :
+    advantageScore >= 0.97 ? 4 :
+    advantageScore >= 0.80 ? 3 :
+    advantageScore >= 0.55 ? 2 :
+    advantageScore >= 0.25 ? 1 :
     0;
 
   const bandRisk =
@@ -209,6 +236,9 @@ function buildPageAdvantageField(page, deviceProfile, bandPack, factoringProfile
     chunkBudgetKB,
     cacheLines,
     prewarmSlots,
+    cpuScore,
+    thermalHead,
+    deviceTier,
     presenceTier,
     advantageTierBase,
     advantageTier,
@@ -217,17 +247,27 @@ function buildPageAdvantageField(page, deviceProfile, bandPack, factoringProfile
     bandLevel,
     fallbackLevel,
     bandRisk,
-    band: bandPack.band
+    band: bandPack.band,
+    liquidityIdx,
+    immuneLoad,
+    metabolicLoad
   };
 
   const advantageSignature = buildDualHashSignature(
-    "EARN_PAGE_ADVANTAGE_v24",
+    "EARN_PAGE_ADVANTAGE_v30",
     advantageIntelPayload,
-    `band=${bandPack.band}::score=${advantageScore.toFixed(6)}::tier=${advantageTier}`
+    [
+      `band=${bandPack.band}`,
+      `score=${advantageScore.toFixed(6)}`,
+      `tier=${advantageTier}`,
+      `liq=${liquidityIdx}`,
+      `immune=${immuneLoad}`,
+      `met=${metabolicLoad}`
+    ].join("::")
   );
 
   return {
-    advantageVersion: "M-24.0-EARN-PAGE",
+    advantageVersion: "M-30.0-EARN-PAGE-OMEGA",
     band: bandPack.band,
 
     gpuScore,
@@ -237,6 +277,9 @@ function buildPageAdvantageField(page, deviceProfile, bandPack, factoringProfile
     chunkBudgetKB,
     cacheLines,
     prewarmSlots,
+    cpuScore,
+    thermalHead,
+    deviceTier,
 
     presenceTier,
     advantageTierBase,
@@ -248,60 +291,83 @@ function buildPageAdvantageField(page, deviceProfile, bandPack, factoringProfile
     fallbackLevel,
     bandRisk,
 
+    liquidityIndex: liquidityIdx,
+    immuneLoadIndex: immuneLoad,
+    metabolicLoadIndex: metabolicLoad,
+
     advantageSignatureIntel: advantageSignature.intel,
     advantageSignatureClassic: advantageSignature.classic
   };
 }
 
 // ============================================================================
-// CHUNK / PREWARM PLAN — EARN PAGE (v24-IMMORTAL-INTEL++)
+// CHUNK / PREWARM PLAN — EARN PAGE v30++ (metabolic + lymphatic + immune + liquidity)
 // ============================================================================
 
-function buildPageChunkPrewarmPlan(page, factoringProfile, bandPack, advantageField) {
+function buildPageChunkPrewarmPlan_v30(page, factoringProfile, bandPack, advantageField, organismContext = {}) {
   let priorityLabel = "normal";
   if (factoringProfile.presenceTier === "presence_high") priorityLabel = "high";
   else if (factoringProfile.presenceTier === "presence_mid") priorityLabel = "medium";
   else if (factoringProfile.presenceTier === "presence_low") priorityLabel = "low";
 
-  if (advantageField.advantageScore >= 0.55) {
+  if (advantageField.advantageScore >= 0.75) {
+    priorityLabel = "ultra";
+  } else if (advantageField.advantageScore >= 0.55 && priorityLabel !== "ultra") {
     priorityLabel = "high";
-  } else if (advantageField.advantageScore >= 0.25 && priorityLabel === "normal") {
+  } else if (advantageField.advantageScore >= 0.30 && priorityLabel === "normal") {
     priorityLabel = "medium";
   }
 
   const jobCount = factoringProfile.jobCount;
+  const meshPressureIndex = factoringProfile.meshPressureIndex || 0;
+  const cachePriorityLabel = normalizeCachePriorityLabel(factoringProfile.cachePriorityLabel || "normal");
+
+  const liquidityIdx  = safeNumber(organismContext?.liquidityIndex || 0);
+  const immuneLoad    = safeNumber(organismContext?.immuneLoadIndex || 0);
+  const metabolicLoad = safeNumber(organismContext?.metabolicLoadIndex || 0);
+
   const planSurface =
     jobCount +
-    (factoringProfile.meshPressureIndex || 0) * 2 +
-    (safeNumber(factoringProfile.cachePriority, 0) || 0) * 3;
+    meshPressureIndex * 2 +
+    (cachePriorityLabel === "critical" ? 9 : cachePriorityLabel === "high" ? 6 : cachePriorityLabel === "medium" ? 3 : 1) * 3 +
+    liquidityIdx * 2 +
+    immuneLoad +
+    metabolicLoad;
 
   let gpuBatchStyle = "none";
-  if (jobCount >= 64) gpuBatchStyle = "warp_aligned";
-  else if (jobCount >= 16) gpuBatchStyle = "micro_batch";
+  if (jobCount >= 128) gpuBatchStyle = "warp_aligned";
+  else if (jobCount >= 48) gpuBatchStyle = "micro_batch";
+  else if (jobCount >= 16) gpuBatchStyle = "mini_batch";
 
   let cacheTier = "cold";
-  if (factoringProfile.cachePriority === "high" || advantageField.advantageScore >= 0.6) {
+  if (cachePriorityLabel === "critical" || advantageField.advantageScore >= 0.8) {
+    cacheTier = "ultra_hot";
+  } else if (cachePriorityLabel === "high" || advantageField.advantageScore >= 0.6) {
     cacheTier = "hot";
-  } else if (factoringProfile.cachePriority === "normal" && advantageField.advantageScore >= 0.3) {
+  } else if (cachePriorityLabel === "medium" || advantageField.advantageScore >= 0.35) {
     cacheTier = "warm";
   }
 
   const planScore = clamp01(
-    (jobCount / 96) * 0.4 +
-    (factoringProfile.meshPressureIndex / 256) * 0.3 +
-    advantageField.advantageScore * 0.3
+    (jobCount / 160) * 0.35 +
+    (meshPressureIndex / 256) * 0.25 +
+    advantageField.advantageScore * 0.25 +
+    (liquidityIdx / 100) * 0.10 -
+    (immuneLoad / 100) * 0.05 -
+    (metabolicLoad / 100) * 0.05
   );
 
   const planTier =
-    planScore >= 0.9 ? "plan_critical" :
-    planScore >= 0.6 ? "plan_high" :
-    planScore >= 0.3 ? "plan_normal" :
+    planScore >= 0.95 ? "plan_critical" :
+    planScore >= 0.75 ? "plan_ultra" :
+    planScore >= 0.50 ? "plan_high" :
+    planScore >= 0.25 ? "plan_normal" :
     "plan_low";
 
   const planIntelPayload = {
     jobCount,
-    meshPressureIndex: factoringProfile.meshPressureIndex || 0,
-    cachePriority: factoringProfile.cachePriority,
+    meshPressureIndex,
+    cachePriorityLabel,
     band: bandPack.band,
     priorityLabel,
     gpuBatchStyle,
@@ -310,17 +376,28 @@ function buildPageChunkPrewarmPlan(page, factoringProfile, bandPack, advantageFi
     planScore,
     planTier,
     advantageScore: advantageField.advantageScore,
-    advantageTier: advantageField.advantageTier
+    advantageTier: advantageField.advantageTier,
+    liquidityIdx,
+    immuneLoad,
+    metabolicLoad
   };
 
   const planSignature = buildDualHashSignature(
-    "EARN_PAGE_CHUNK_PREWARM_PLAN_v24",
+    "EARN_PAGE_CHUNK_PREWARM_PLAN_v30",
     planIntelPayload,
-    `band=${bandPack.band}::priority=${priorityLabel}::tier=${planTier}::score=${planScore.toFixed(6)}`
+    [
+      `band=${bandPack.band}`,
+      `priority=${priorityLabel}`,
+      `tier=${planTier}`,
+      `score=${planScore.toFixed(6)}`,
+      `liq=${liquidityIdx}`,
+      `immune=${immuneLoad}`,
+      `met=${metabolicLoad}`
+    ].join("::")
   );
 
   return {
-    planVersion: "v24-IMMORTAL-INTEL-EARN-PAGE",
+    planVersion: "v30-IMMORTAL-INTEL-EARN-PAGE-OMEGA",
     priorityLabel,
     bandPresence: factoringProfile.presenceTier,
     band: bandPack.band,
@@ -332,16 +409,25 @@ function buildPageChunkPrewarmPlan(page, factoringProfile, bandPack, advantageFi
     chunks: {
       pageEnvelope: true,
       jobList: true,
-      presenceAdvantageEnvelope: true
+      presenceAdvantageEnvelope: true,
+      metabolicBlueprint: true,
+      lymphaticHandshake: liquidityIdx > 0 || planTier !== "plan_low",
+      immuneScan: immuneLoad > 0 || planTier === "plan_critical",
+      liquidityEnvelope: liquidityIdx > 0
     },
     cache: {
       pageDiagnostics: true,
-      factoringProfile: true
+      factoringProfile: true,
+      metabolicCache: planTier !== "plan_low",
+      liquidityCache: liquidityIdx > 0,
+      immuneCache: immuneLoad > 0
     },
     prewarm: {
-      circulatorySystem: factoringProfile.prewarmNeeded,
-      lymphNodes: factoringProfile.prewarmNeeded,
-      metabolism: factoringProfile.prewarmNeeded && jobCount > 0
+      circulatorySystem: factoringProfile.prewarmNeeded || planTier !== "plan_low",
+      lymphNodes: factoringProfile.prewarmNeeded || liquidityIdx > 0,
+      metabolism: factoringProfile.prewarmNeeded && jobCount > 0,
+      immuneSystem: immuneLoad > 0 || planTier === "plan_critical",
+      liquidityChannels: liquidityIdx > 0
     },
     planSignatureIntel: planSignature.intel,
     planSignatureClassic: planSignature.classic
@@ -349,61 +435,83 @@ function buildPageChunkPrewarmPlan(page, factoringProfile, bandPack, advantageFi
 }
 
 // ============================================================================
-// FACTORING PROFILE — 1/2 then 2/2 pattern (v24)
+// FACTORING PROFILE — v30++ (multi‑source, organism‑aware)
 // ============================================================================
 
-function buildEarnFactoringProfile(page, deviceProfile, cycleIndex) {
+function buildEarnFactoringProfile_v30(page, deviceProfile, cycleIndex, organismContext = {}) {
   const jobs = Array.isArray(page?.jobs) ? page.jobs : [];
   const jobCount = jobs.length;
 
   const meshPressureIndex = safeNumber(
-    page?.presenceField?.meshPressureIndex || 0
+    page?.presenceField?.meshPressureIndex ||
+    organismContext?.meshPressureIndex ||
+    0
   );
-  const cachePriority = safeNumber(page?.meta?.cachePriority || 0);
+
+  const cachePriorityLabel = normalizeCachePriorityLabel(
+    page?.flags?.cachePriority ||
+    page?.meta?.cachePriorityLabel ||
+    organismContext?.cachePriorityLabel ||
+    "normal"
+  );
+
   const presenceBand =
     page?.presenceField?.presenceBand ||
     page?.meta?.band ||
     deviceProfile?.presenceBand ||
+    organismContext?.band ||
     "symbolic";
 
   let presenceTier = "presence_low";
-  const presenceScore = meshPressureIndex + jobCount * 0.1;
-  if (presenceScore >= 8) presenceTier = "presence_high";
-  else if (presenceScore >= 3) presenceTier = "presence_mid";
+  const presenceScore = meshPressureIndex * 0.6 + jobCount * 0.15;
+  if (presenceScore >= 18) presenceTier = "presence_ultra";
+  else if (presenceScore >= 10) presenceTier = "presence_high";
+  else if (presenceScore >= 4) presenceTier = "presence_mid";
 
   const gpuScore  = safeNumber(deviceProfile?.gpuScore || 0);
   const bandwidth = safeNumber(deviceProfile?.bandwidthMbps || 0);
+  const cpuScore  = safeNumber(deviceProfile?.cpuScore || 0);
+
   let advantageTier = 0;
-  const advantageRaw = gpuScore * 0.001 + bandwidth * 0.01;
-  if (advantageRaw >= 10) advantageTier = 3;
+  const advantageRaw = gpuScore * 0.001 + bandwidth * 0.01 + cpuScore * 0.001;
+  if (advantageRaw >= 18) advantageTier = 4;
+  else if (advantageRaw >= 10) advantageTier = 3;
   else if (advantageRaw >= 4) advantageTier = 2;
   else if (advantageRaw >= 1) advantageTier = 1;
 
+  const liquidityIdx  = safeNumber(organismContext?.liquidityIndex || 0);
+  const immuneLoad    = safeNumber(organismContext?.immuneLoadIndex || 0);
+  const metabolicLoad = safeNumber(organismContext?.metabolicLoadIndex || 0);
+
   const basePressure =
     jobCount * 0.05 +
-    meshPressureIndex * 0.1 +
-    cachePriority * 0.05 +
-    advantageTier * 0.02;
+    meshPressureIndex * 0.08 +
+    (cachePriorityLabel === "critical" ? 0.12 : cachePriorityLabel === "high" ? 0.08 : cachePriorityLabel === "medium" ? 0.04 : 0.01) +
+    advantageTier * 0.03 +
+    liquidityIdx * 0.01 +
+    immuneLoad * 0.005 +
+    metabolicLoad * 0.005;
+
   const pressure = clamp01(basePressure);
 
   const depth = Math.max(
     1,
-    Math.floor(1 + Math.log2(1 + cycleIndex + pressure * 8))
+    Math.floor(1 + Math.log2(1 + cycleIndex + pressure * 16))
   );
 
-  const phaseBoundary = 4;
+  const phaseBoundary = 6;
   const inSecondPhase = cycleIndex >= phaseBoundary || pressure >= 0.7;
   const stride = inSecondPhase ? 2 : 1;
 
-  const signal        = pressure > 0.15 && jobCount > 0 ? 1 : 0;
-  const prewarmNeeded = pressure > 0.25 && jobCount > 0;
+  const signal        = pressure > 0.12 && jobCount > 0 ? 1 : 0;
+  const prewarmNeeded = pressure > 0.22 && jobCount > 0;
 
   const profile = {
-    version: "v24-IMMORTAL-INTEL-EARN-PAGE",
+    version: "v30-IMMORTAL-INTEL-EARN-PAGE-OMEGA",
     cycleIndex,
     jobCount,
     meshPressureIndex,
-    cachePriority,
+    cachePriorityLabel,
     presenceBand,
     presenceTier,
     advantageTier,
@@ -411,7 +519,10 @@ function buildEarnFactoringProfile(page, deviceProfile, cycleIndex) {
     depth,
     stride,
     signal,
-    prewarmNeeded
+    prewarmNeeded,
+    liquidityIndex: liquidityIdx,
+    immuneLoadIndex: immuneLoad,
+    metabolicLoadIndex: metabolicLoad
   };
 
   const classicString =
@@ -419,10 +530,13 @@ function buildEarnFactoringProfile(page, deviceProfile, cycleIndex) {
     `::JOBS:${jobCount}` +
     `::PRES:${meshPressureIndex}` +
     `::ADV:${advantageTier}` +
-    `::P:${pressure.toFixed(4)}`;
+    `::P:${pressure.toFixed(4)}` +
+    `::LIQ:${liquidityIdx}` +
+    `::IMM:${immuneLoad}` +
+    `::MET:${metabolicLoad}`;
 
   const profileSig = buildDualHashSignature(
-    "EARN_PAGE_FACTORS_PROFILE_v24",
+    "EARN_PAGE_FACTORS_PROFILE_v30",
     profile,
     classicString
   );
@@ -435,10 +549,10 @@ function buildEarnFactoringProfile(page, deviceProfile, cycleIndex) {
 }
 
 // ============================================================================
-// BASE SHAPE / BASE FORMULA SURFACE — EARN PAGE (v24-IMMORTAL-INTEL++)
+// BASE SHAPE / BASE FORMULA SURFACE — EARN PAGE v30++
 // ============================================================================
 
-function buildEarnBaseShapeSurface(page, factoringProfile, bandPack, advantageField) {
+function buildEarnBaseShapeSurface_v30(page, factoringProfile, bandPack, advantageField) {
   const jobs = Array.isArray(page?.jobs) ? page.jobs : [];
   const jobKinds = jobs.map(j => String(j.kind || j.type || "job")).sort();
   const jobKindHistogram = jobKinds.reduce((acc, k) => {
@@ -447,7 +561,7 @@ function buildEarnBaseShapeSurface(page, factoringProfile, bandPack, advantageFi
   }, {});
 
   const shapePayload = {
-    version: "v24-IMMORTAL-INTEL-EARN-PAGE-BASESHAPE",
+    version: "v30-IMMORTAL-INTEL-EARN-PAGE-BASESHAPE-OMEGA",
     jobCount: factoringProfile.jobCount,
     jobKinds: jobKindHistogram,
     presenceTier: factoringProfile.presenceTier,
@@ -462,11 +576,14 @@ function buildEarnBaseShapeSurface(page, factoringProfile, bandPack, advantageFi
     advantageScore: advantageField.advantageScore,
     advantageTierFinal: advantageField.advantageTier,
     bandMode: advantageField.bandMode,
-    bandRisk: advantageField.bandRisk
+    bandRisk: advantageField.bandRisk,
+    liquidityIndex: factoringProfile.liquidityIndex,
+    immuneLoadIndex: factoringProfile.immuneLoadIndex,
+    metabolicLoadIndex: factoringProfile.metabolicLoadIndex
   };
 
   const classicShapeString = [
-    "EARN_BASE_SHAPE_v24",
+    "EARN_BASE_SHAPE_v30",
     shapePayload.version,
     factoringProfile.jobCount,
     factoringProfile.presenceTier,
@@ -479,11 +596,14 @@ function buildEarnBaseShapeSurface(page, factoringProfile, bandPack, advantageFi
     bandPack.binaryField.density,
     bandPack.waveField.amplitude.toFixed(4),
     advantageField.advantageScore.toFixed(6),
+    factoringProfile.liquidityIndex,
+    factoringProfile.immuneLoadIndex,
+    factoringProfile.metabolicLoadIndex,
     JSON.stringify(jobKindHistogram)
   ].join("::");
 
   const shapeSig = buildDualHashSignature(
-    "EARN_PAGE_BASE_SHAPE_v24",
+    "EARN_PAGE_BASE_SHAPE_v30",
     shapePayload,
     classicShapeString
   );
@@ -500,14 +620,76 @@ function buildEarnBaseShapeSurface(page, factoringProfile, bandPack, advantageFi
 }
 
 // ============================================================================
-// IMMORTAL META TEMPLATE — v24‑IMMORTAL‑INTEL (Earn Page)
+// ORGANISM SHAPE / ORGANISM FORMULA SURFACE — v30++
 // ============================================================================
 
-function buildEarnSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile) {
+function buildEarnOrganismShapeSurface_v30(page, factoringProfile, bandPack, advantageField, chunkPrewarmPlan) {
+  const organismPayload = {
+    version: "v30-IMMORTAL-INTEL-EARN-ORGANISM-OMEGA",
+    band: bandPack.band,
+    presenceTier: factoringProfile.presenceTier,
+    advantageTier: factoringProfile.advantageTier,
+    advantageScore: advantageField.advantageScore,
+    planTier: chunkPrewarmPlan.planTier,
+    planScore: chunkPrewarmPlan.planScore,
+    liquidityIndex: factoringProfile.liquidityIndex,
+    immuneLoadIndex: factoringProfile.immuneLoadIndex,
+    metabolicLoadIndex: factoringProfile.metabolicLoadIndex,
+    jobCount: factoringProfile.jobCount,
+    meshPressureIndex: factoringProfile.meshPressureIndex,
+    cachePriorityLabel: factoringProfile.cachePriorityLabel,
+    depth: factoringProfile.depth,
+    stride: factoringProfile.stride,
+    binaryDensity: bandPack.binaryField.density,
+    waveAmplitude: bandPack.waveField.amplitude
+  };
+
+  const classicOrganismString = [
+    "EARN_ORGANISM_SHAPE_v30",
+    organismPayload.version,
+    organismPayload.band,
+    organismPayload.presenceTier,
+    organismPayload.advantageTier,
+    organismPayload.planTier,
+    organismPayload.planScore.toFixed(6),
+    organismPayload.liquidityIndex,
+    organismPayload.immuneLoadIndex,
+    organismPayload.metabolicLoadIndex,
+    organismPayload.jobCount,
+    organismPayload.meshPressureIndex,
+    organismPayload.cachePriorityLabel,
+    organismPayload.depth,
+    organismPayload.stride,
+    organismPayload.binaryDensity,
+    organismPayload.waveAmplitude.toFixed(4)
+  ].join("::");
+
+  const organismSig = buildDualHashSignature(
+    "EARN_PAGE_ORGANISM_SHAPE_v30",
+    organismPayload,
+    classicOrganismString
+  );
+
+  const organismFormulaKey = organismSig.intel;
+
+  return {
+    organismShapeVersion: organismPayload.version,
+    organismShapeIntelSignature: organismSig.intel,
+    organismShapeClassicSignature: organismSig.classic,
+    organismFormulaKey,
+    organismPayload
+  };
+}
+
+// ============================================================================
+// IMMORTAL META TEMPLATE — v30‑IMMORTAL‑INTEL‑OMEGA (Earn Page)
+// ============================================================================
+
+function buildEarnSignalFactoringMeta_v30(existingMeta, cycleIndex, factoringProfile, bandPack, advantageField) {
   const base = existingMeta || {};
   const intelPayload = {
     kind: "earnPageSignalFactoring",
-    version: "v24-IMMORTAL-INTEL",
+    version: "v30-IMMORTAL-INTEL-OMEGA",
     cycleIndex,
     pressure: factoringProfile.pressure,
     signal: factoringProfile.signal,
@@ -517,20 +699,30 @@ function buildEarnSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
     advantageTier: factoringProfile.advantageTier,
     jobCount: factoringProfile.jobCount,
     meshPressureIndex: factoringProfile.meshPressureIndex,
-    cachePriority: factoringProfile.cachePriority,
+    cachePriorityLabel: factoringProfile.cachePriorityLabel,
     prewarmNeeded: factoringProfile.prewarmNeeded,
-    presenceBand: factoringProfile.presenceBand
+    presenceBand: factoringProfile.presenceBand,
+    liquidityIndex: factoringProfile.liquidityIndex,
+    immuneLoadIndex: factoringProfile.immuneLoadIndex,
+    metabolicLoadIndex: factoringProfile.metabolicLoadIndex,
+    band: bandPack.band,
+    binaryDensity: bandPack.binaryField.density,
+    waveAmplitude: bandPack.waveField.amplitude,
+    advantageScore: advantageField.advantageScore
   };
 
   const classicString =
-    `EARN_FACTORS_v24::CYCLE:${cycleIndex}` +
+    `EARN_FACTORS_v30::CYCLE:${cycleIndex}` +
     `::SIG:${factoringProfile.signal}` +
     `::DEPTH:${factoringProfile.depth}` +
     `::STRIDE:${factoringProfile.stride}` +
-    `::JOBS:${factoringProfile.jobCount}`;
+    `::JOBS:${factoringProfile.jobCount}` +
+    `::LIQ:${factoringProfile.liquidityIndex}` +
+    `::IMM:${factoringProfile.immuneLoadIndex}` +
+    `::MET:${factoringProfile.metabolicLoadIndex}`;
 
   const sig = buildDualHashSignature(
-    "EARN_PAGE_SIGNAL_FACTORS_v24",
+    "EARN_PAGE_SIGNAL_FACTORS_v30",
     intelPayload,
     classicString
   );
@@ -540,7 +732,7 @@ function buildEarnSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
     earnSignalFactoring: {
       layer: "PulseEarnSignalFactoring",
       role: "EARN_PAGE_SIGNAL_FACTORS",
-      version: "v24-IMMORTAL-INTEL",
+      version: "v30-IMMORTAL-INTEL-OMEGA",
       target: "earn-page",
       selfRepairable: true,
       evo: {
@@ -554,11 +746,15 @@ function buildEarnSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
         meshPressureAware: true,
         cachePriorityAware: true,
         prewarmAware: true,
+        liquidityAware: true,
+        immuneLoadAware: true,
+        metabolicLoadAware: true,
 
         unifiedAdvantageField: true,
         deterministicField: true,
         driftProof: true,
         multiInstanceReady: true,
+        multiOrganismReady: true,
 
         signalFactoringAware: true,
         bandAware: true,
@@ -569,6 +765,8 @@ function buildEarnSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
 
         baseShapeAware: true,
         baseFormulaKeyAware: true,
+        organismShapeAware: true,
+        organismFormulaKeyAware: true,
         patternMatchSurface: true
       },
       signatures: {
@@ -584,16 +782,16 @@ function buildEarnSignalFactoringMeta(existingMeta, cycleIndex, factoringProfile
 // GLOBAL CYCLE COUNTER (earn‑page‑local, deterministic)
 // ============================================================================
 
-let earnFactoringCycle = 0;
+let earnFactoringCycle_v30 = 0;
 
 // ============================================================================
-// CORE API — applyEarnSignalFactoring (v24‑IMMORTAL‑INTEL++)
+// CORE API — applyEarnSignalFactoring_v30 (IMMORTAL‑INTEL‑OMEGA)
 // ============================================================================
 
-export function applyEarnSignalFactoring(page, context = {}) {
+export function applyEarnSignalFactoring_v30(page, context = {}) {
   if (!page) return page;
 
-  earnFactoringCycle++;
+  earnFactoringCycle_v30++;
 
   page.meta = page.meta || {};
   page.flags = page.flags || {};
@@ -602,6 +800,8 @@ export function applyEarnSignalFactoring(page, context = {}) {
   const presenceField   = context.presenceField   || page.presenceField   || {};
   const advantageFieldC = context.advantageField  || page.advantageField  || {};
   const hintsField      = context.hintsField      || page.hintsField      || {};
+  const organismContext = context.organismContext || {};
+
   const jobs            = Array.isArray(page.jobs) ? page.jobs : [];
   const jobCount        = safeNumber(context.jobCountOverride ?? jobs.length, 0);
 
@@ -610,29 +810,45 @@ export function applyEarnSignalFactoring(page, context = {}) {
   const advantageTier   = safeNumber(advantageFieldC.advantageTier, 0);
   const fallbackBandLvl = safeNumber(hintsField.fallbackBandLevel, 0);
 
-  const cachePriority   = context.cachePriority || page.flags.cachePriority || "normal";
+  const cachePriorityLabel = normalizeCachePriorityLabel(
+    context.cachePriorityLabel ||
+    page.flags.cachePriorityLabel ||
+    page.meta.cachePriorityLabel ||
+    "normal"
+  );
+
   const prewarmNeeded   = !!(context.prewarmNeeded || page.flags.prewarmNeeded);
   const presenceBand    = context.band || page.band || "symbolic";
 
-  // 1) Factoring pressure
+  const liquidityIdx  = safeNumber(organismContext.liquidityIndex || 0);
+  const immuneLoad    = safeNumber(organismContext.immuneLoadIndex || 0);
+  const metabolicLoad = safeNumber(organismContext.metabolicLoadIndex || 0);
+
+  // 1) Factoring pressure (v30++ multi‑source)
   const meshPressureNorm = clamp01(meshPressureIdx / 200);
-  const jobLoadNorm      = clamp01(jobCount / 100);
-  const advantageNorm    = clamp01(advantageTier / 3);
-  const fallbackBandNorm = clamp01(fallbackBandLvl / 3);
+  const jobLoadNorm      = clamp01(jobCount / 160);
+  const advantageNorm    = clamp01(advantageTier / 4);
+  const fallbackBandNorm = clamp01(fallbackBandLvl / 4);
+  const liquidityNorm    = clamp01(liquidityIdx / 100);
+  const immuneNorm       = clamp01(immuneLoad / 100);
+  const metabolicNorm    = clamp01(metabolicLoad / 100);
 
   const factoringPressure =
-    meshPressureNorm   * 0.30 +
-    jobLoadNorm        * 0.30 +
-    advantageNorm      * 0.20 +
-    fallbackBandNorm   * 0.20;
+    meshPressureNorm   * 0.25 +
+    jobLoadNorm        * 0.25 +
+    advantageNorm      * 0.15 +
+    fallbackBandNorm   * 0.10 +
+    liquidityNorm      * 0.10 +
+    immuneNorm         * 0.075 +
+    metabolicNorm      * 0.075;
 
   const clampedPressure = clamp01(factoringPressure);
   page.flags.earn_factoring_pressure = clampedPressure;
 
   // 2) Signal
   const highPressure   = clampedPressure >= 0.6;
-  const lowPressure    = clampedPressure <= 0.2;
-  const criticalCache  = cachePriority === "critical";
+  const lowPressure    = clampedPressure <= 0.18;
+  const criticalCache  = cachePriorityLabel === "critical";
 
   let signal;
   if (criticalCache || prewarmNeeded) {
@@ -651,7 +867,7 @@ export function applyEarnSignalFactoring(page, context = {}) {
   const previousDepth = page.flags.earn_factoringDepth ?? 0;
   const depth =
     signal === 1
-      ? Math.min(previousDepth + 1, 8)
+      ? Math.min(previousDepth + 1, 12)
       : 0;
 
   page.flags.earn_factoringDepth = depth;
@@ -665,16 +881,16 @@ export function applyEarnSignalFactoring(page, context = {}) {
   // 5) Intent
   page.flags.earn_factoring_intent =
     signal === 1
-      ? "prefer_factored_page"
+      ? "prefer_factored_page_v30"
       : "normal";
 
   // 6) Factoring profile (runtime, with dual signature)
   const factoringProfile = {
-    version: "v24-IMMORTAL-INTEL-EARN-PAGE",
-    cycleIndex: earnFactoringCycle,
+    version: "v30-IMMORTAL-INTEL-EARN-PAGE-OMEGA",
+    cycleIndex: earnFactoringCycle_v30,
     jobCount,
     meshPressureIndex: meshPressureIdx,
-    cachePriority,
+    cachePriorityLabel,
     presenceBand,
     presenceTier,
     advantageTier,
@@ -683,19 +899,25 @@ export function applyEarnSignalFactoring(page, context = {}) {
     stride,
     signal,
     prewarmNeeded,
-    fallbackBandLevel: fallbackBandLvl
+    fallbackBandLevel: fallbackBandLvl,
+    liquidityIndex: liquidityIdx,
+    immuneLoadIndex: immuneLoad,
+    metabolicLoadIndex: metabolicLoad
   };
 
   const factoringProfileWithSig = (() => {
     const classicString =
-      `CYCLE:${earnFactoringCycle}` +
+      `CYCLE:${earnFactoringCycle_v30}` +
       `::JOBS:${jobCount}` +
       `::PRES:${meshPressureIdx}` +
       `::ADV:${advantageTier}` +
-      `::P:${clampedPressure.toFixed(4)}`;
+      `::P:${clampedPressure.toFixed(4)}` +
+      `::LIQ:${liquidityIdx}` +
+      `::IMM:${immuneLoad}` +
+      `::MET:${metabolicLoad}`;
 
     const sig = buildDualHashSignature(
-      "EARN_PAGE_FACTORS_PROFILE_RUNTIME_v24",
+      "EARN_PAGE_FACTORS_PROFILE_RUNTIME_v30",
       factoringProfile,
       classicString
     );
@@ -712,10 +934,11 @@ export function applyEarnSignalFactoring(page, context = {}) {
   };
 
   // 7) Band/Binary/Wave + Advantage + Chunk/Prewarm
-  const bandPack = buildPageBandBinaryWave(
+  const bandPack = buildPageBandBinaryWave_v30(
     page,
-    earnFactoringCycle,
-    deviceProfile
+    earnFactoringCycle_v30,
+    deviceProfile,
+    organismContext
   );
 
   const bandSnapshot = {
@@ -724,53 +947,71 @@ export function applyEarnSignalFactoring(page, context = {}) {
     fallbackLevel: fallbackBandLvl
   };
 
-  const pageAdvantageField = buildPageAdvantageField(
+  const pageAdvantageField = buildPageAdvantageField_v30(
     page,
     deviceProfile,
     bandPack,
     factoringProfileWithSig,
-    bandSnapshot
+    bandSnapshot,
+    organismContext
   );
 
-  const pageChunkPrewarmPlan = buildPageChunkPrewarmPlan(
+  const pageChunkPrewarmPlan = buildPageChunkPrewarmPlan_v30(
     page,
     factoringProfileWithSig,
     bandPack,
-    pageAdvantageField
+    pageAdvantageField,
+    organismContext
   );
 
   // 8) Base shape / base formula
-  const baseShapeSurface = buildEarnBaseShapeSurface(
+  const baseShapeSurface = buildEarnBaseShapeSurface_v30(
     page,
     factoringProfileWithSig,
     bandPack,
     pageAdvantageField
   );
 
-  // 9) IMMORTAL meta block
-  page.meta = buildEarnSignalFactoringMeta(
+  // 9) Organism shape / organism formula
+  const organismShapeSurface = buildEarnOrganismShapeSurface_v30(
+    page,
+    factoringProfileWithSig,
+    bandPack,
+    pageAdvantageField,
+    pageChunkPrewarmPlan
+  );
+
+  // 10) IMMORTAL meta block
+  page.meta = buildEarnSignalFactoringMeta_v30(
     page.meta,
-    earnFactoringCycle,
+    earnFactoringCycle_v30,
     {
       ...factoringProfileWithSig,
       band: bandPack.band,
       binaryDensity: bandPack.binaryField.density,
       waveAmplitude: bandPack.waveField.amplitude,
       advantageScore: pageAdvantageField.advantageScore
-    }
+    },
+    bandPack,
+    pageAdvantageField
   );
 
-  page.meta.earnSignalFactoring.bandBinaryWave    = bandPack;
-  page.meta.earnSignalFactoring.advantageField    = pageAdvantageField;
-  page.meta.earnSignalFactoring.chunkPrewarmPlan  = pageChunkPrewarmPlan;
-  page.meta.earnSignalFactoring.baseShapeSurface  = baseShapeSurface;
+  page.meta.earnSignalFactoring.bandBinaryWave       = bandPack;
+  page.meta.earnSignalFactoring.advantageField       = pageAdvantageField;
+  page.meta.earnSignalFactoring.chunkPrewarmPlan     = pageChunkPrewarmPlan;
+  page.meta.earnSignalFactoring.baseShapeSurface     = baseShapeSurface;
+  page.meta.earnSignalFactoring.organismShapeSurface = organismShapeSurface;
 
-  page.meta.earnSignalFactoring.baseFormulaKey    = baseShapeSurface.baseFormulaKey;
-  page.meta.earnSignalFactoring.baseShapeVersion  = baseShapeSurface.baseShapeVersion;
+  page.meta.earnSignalFactoring.baseFormulaKey       = baseShapeSurface.baseFormulaKey;
+  page.meta.earnSignalFactoring.baseShapeVersion     = baseShapeSurface.baseShapeVersion;
+
+  page.meta.earnSignalFactoring.organismFormulaKey   = organismShapeSurface.organismFormulaKey;
+  page.meta.earnSignalFactoring.organismShapeVersion = organismShapeSurface.organismShapeVersion;
 
   page.flags.earnSignalFactoring = true;
+  page.flags.earnSignalFactoring_v30 = true;
 
   return page;
 }
 
-export default applyEarnSignalFactoring;
+export default applyEarnSignalFactoring_v30;

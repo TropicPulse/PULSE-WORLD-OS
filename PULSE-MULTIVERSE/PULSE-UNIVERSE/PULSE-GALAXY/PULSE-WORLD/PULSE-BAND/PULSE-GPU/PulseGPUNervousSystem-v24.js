@@ -12,9 +12,9 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-import PulseGPU from "./PulseGPU-v24.js";
+import PulseGPU from "./PulseGPU-v30.js";
 import PulseBinaryGPU from "./PulseGPUBinary-v24.js";
-import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
+import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v30.js";
 import { PulseGPUHealer } from "./PulseGPULymphNodes-v30.js";
 
 

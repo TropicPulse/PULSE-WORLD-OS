@@ -1,17 +1,22 @@
 // ============================================================================
-// PulseMotionEngine-v30-Immortal+++ — Unified Motion Engine (Forward + Backward)
+// PulseMotionEngine-v30-Immortal++++ — Unified Motion Engine (Forward + Backward)
 //  • One engine, multi-lane motion (forward + backward)
 //  • Dual-band aware (symbolic/binary), ShifterPulse-first
 //  • Drift-proof via normalized job/intents (multi-instance safe)
 //  • Deterministic tick sequencing (engine-local shared tick space)
 //  • Presence/advantage/cosmos-aware, artery metrics, prewarm-aware, tri-heart aware
 //  • v30++: physics organs (regioning, lineage, snapshots, multi-org, execution)
+//  • v30++++: Earn + GPU-cache + GPU ProcessWorker integrated (dual-GPU aware)
 //  • Designed as the “compressed process worker” for Earn, GPU cache, routing, etc.
+//  • ZERO heavy compute here — pure orchestration + metadata surfaces
 // ============================================================================
 
 import { createShifterPulse as ShifterPulse } from "../PULSE-SHIFTER/PulseShifterBinaryEvolutionaryPulse-v30.js";
+import { PulseGPUProcessWorker } from "../PULSE-ENGINE/PulseEngineGPUProcessWorker-v30.js";
 
-// Lane-local queue/result keys (symbolic only; actual storage via MemoryOrgan)
+// ---------------------------------------------------------------------------
+// Engine-local memory keys
+// ---------------------------------------------------------------------------
 const FORWARD_JOB_QUEUE_KEY  = "motion-v30:forward:jobs";
 const FORWARD_RESULT_KEY     = "motion-v30:forward:results";
 const FORWARD_METRICS_KEY    = "motion-v30:forward:metrics";
@@ -20,6 +25,10 @@ const BACKWARD_JOB_QUEUE_KEY = "motion-v30:backward:jobs";
 const BACKWARD_RESULT_KEY    = "motion-v30:backward:results";
 const BACKWARD_METRICS_KEY   = "motion-v30:backward:metrics";
 
+const GPU_LAST_DISPATCH_KEY  = "motion-v30:gpu:lastDispatch";
+const GPU_LAST_HINT_KEY      = "motion-v30:gpu:lastHint";
+
+// ---------------------------------------------------------------------------
 function safe(fn, ...args) {
   try {
     if (typeof fn === "function") return fn(...args);
@@ -30,7 +39,7 @@ function safe(fn, ...args) {
 }
 
 // ---------------------------------------------------------------------------
-// Artery factory — per-engine, per-lane metrics (symbolic only)
+// Artery — per-lane live metrics surface
 // ---------------------------------------------------------------------------
 function createArtery(laneTag) {
   const artery = {
@@ -91,7 +100,7 @@ function createArtery(laneTag) {
 }
 
 // ---------------------------------------------------------------------------
-// ShifterPulse adapter — band-aware wrapper
+// Shifter adapter — dual-band encode/decode/chunk/dechunk
 // ---------------------------------------------------------------------------
 function createShifterAdapter({ lane, instanceId }) {
   const shifter =
@@ -162,7 +171,7 @@ function createShifterAdapter({ lane, instanceId }) {
 }
 
 // ---------------------------------------------------------------------------
-// Normalization / multi-instance drift-proofing
+// Job normalization — drift-proof, cosmos-aware, dual-band
 // ---------------------------------------------------------------------------
 function normalizeJob(job, { instanceId, lane, tickId, cosmosContext }) {
   const laneTag = lane === "backward" ? "backward" : "forward";
@@ -214,6 +223,9 @@ function normalizeJob(job, { instanceId, lane, tickId, cosmosContext }) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Metrics normalization
+// ---------------------------------------------------------------------------
 function normalizeMetrics(base, extra = {}, { lane, arterySnapshot }) {
   return {
     lane,
@@ -231,25 +243,27 @@ function normalizeMetrics(base, extra = {}, { lane, arterySnapshot }) {
     jobType: base.jobType || null,
     intent: base.intent || null,
     advantageScore: extra.advantageScore ?? 0,
-    artery: arterySnapshot
+    artery: arterySnapshot,
+    gpuHint: extra.gpuHint || null
   };
 }
 
 // ---------------------------------------------------------------------------
-// Meta (symbolic only)
+// Engine meta
 // ---------------------------------------------------------------------------
 export const PulseMotionEngineMeta = Object.freeze({
-  engineId: "PulseMotionEngine-v30-Immortal+++",
-  version: "v30",
+  engineId: "PulseMotionEngine-v30-Immortal++++",
+  version: "v30++",
   lanes: ["forward", "backward"],
   bands: ["symbolic", "binary"],
-  dualBand: true
+  dualBand: true,
+  gpuProcessWorker: true,
+  dualGpu: true
 });
 
-// ============================================================================
-// Factory — Pulse Motion Engine v30-Immortal+++
-// ============================================================================
-
+// ---------------------------------------------------------------------------
+// Engine factory
+// ---------------------------------------------------------------------------
 export function createPulseMotionEngine({
   // Organs / substrates
   MemoryOrgan,
@@ -286,7 +300,13 @@ export function createPulseMotionEngine({
   allowExecutionPhysics = false,
   allowCoreMemory = false,
   allowEarnLane = false,
-  allowGpuCacheLane = false
+  allowGpuCacheLane = false,
+
+  // GPU / ProcessWorker integration (v30++++)
+  enableGpuProcessWorker = true,
+  gpuProcessWorker = PulseGPUProcessWorker || null,
+  gpuMode = "dual",                 // "single" | "dual"
+  gpuIds = ["gpu-0", "gpu-1"]
 } = {}) {
   if (!MemoryOrgan) {
     throw new Error("[PulseMotionEngine-v30] MemoryOrgan is required.");
@@ -302,9 +322,9 @@ export function createPulseMotionEngine({
   const ForwardArtery = createArtery("forward");
   const BackwardArtery = createArtery("backward");
 
-  // ------------------------------------------------------------------------
-  // Job intake — per lane
-  // ------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // Job queues
+  // -------------------------------------------------------------------------
   function readJobQueue(lane) {
     const key = lane === "backward" ? BACKWARD_JOB_QUEUE_KEY : FORWARD_JOB_QUEUE_KEY;
     const raw = safe(MemoryOrgan.read, key);
@@ -357,9 +377,6 @@ export function createPulseMotionEngine({
     submitJob("backward", job);
   }
 
-  // ------------------------------------------------------------------------
-  // Self-generated jobs when idle
-  // ------------------------------------------------------------------------
   function createSelfJob(lane) {
     const laneTag = lane === "backward" ? "backward" : "forward";
     const typeSelf =
@@ -387,9 +404,9 @@ export function createPulseMotionEngine({
     return selfJob;
   }
 
-  // ------------------------------------------------------------------------
-  // Shared presence/advantage/cosmos fields
-  // ------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // Context builders
+  // -------------------------------------------------------------------------
   function buildPresenceField() {
     return {
       band: presenceContext.band || "pulseband",
@@ -418,14 +435,59 @@ export function createPulseMotionEngine({
     };
   }
 
-  // ------------------------------------------------------------------------
-  // Physics orchestration helpers (symbolic only, compressed)
-//  These are intentionally minimal; you can expand them as needed.
-// ------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // GPU ProcessWorker integration (metadata-only, dual-GPU aware)
+// -------------------------------------------------------------------------
+  function routeToGpuProcessWorker(job, lane, baseMeta) {
+    if (!enableGpuProcessWorker || !gpuProcessWorker) return null;
+
+    const gpuJob = {
+      lane,
+      jobId: baseMeta.jobId,
+      jobType: baseMeta.jobType,
+      band: baseMeta.band,
+      dnaTag: baseMeta.dnaTag,
+      cosmos: baseMeta.cosmos,
+      triHeartId: baseMeta.triHeartId,
+      intent: baseMeta.intent,
+      advantageScore: baseMeta.advantageField?.advantageScore ?? 0,
+      presence: baseMeta.presenceField,
+      gpuMode,
+      gpuIds,
+      payload: job.payload || {},
+      meta: {
+        engineId: PulseMotionEngineMeta.engineId,
+        instanceId,
+        tickId: baseMeta.tickId
+      }
+    };
+
+    const res =
+      safe(gpuProcessWorker.submit, gpuJob) ||
+      safe(gpuProcessWorker.plan, gpuJob) ||
+      null;
+
+    const hint = res && typeof res === "object" ? res : null;
+
+    safe(MemoryOrgan.write, GPU_LAST_DISPATCH_KEY, gpuJob);
+    safe(MemoryOrgan.write, GPU_LAST_HINT_KEY, hint);
+
+    if (trace) {
+      console.log("[PulseMotionEngine-v30] GPU ProcessWorker routed:", {
+        lane,
+        gpuMode,
+        gpuIds,
+        hint
+      });
+    }
+
+    return hint;
+  }
+
+  // -------------------------------------------------------------------------
+  // Physics / Earn / GPU routing (lightweight, metadata-only)
+// -------------------------------------------------------------------------
   function maybeRunEarnOrCompute(job, lane, baseMeta) {
-    // Example: route by job.type / job.intent into physics organs
-    // This is where you plug in Regioning/Lineage/Snapshot/MultiOrg/Execution.
-    // For now, we just compute a simple advantage hint.
     let advantageScore = 0.5;
 
     if (allowEarnLane && job.type === "EARN_TASK") {
@@ -436,12 +498,23 @@ export function createPulseMotionEngine({
       advantageScore = 0.7;
     }
 
-    return { advantageScore };
+    let gpuHint = null;
+    if (allowGpuCacheLane || job.type === "GPU_CACHE" || job.type === "BINARY_COMPUTE") {
+      gpuHint = routeToGpuProcessWorker(job, lane, baseMeta);
+      if (gpuHint && typeof gpuHint.advantageBoost === "number") {
+        advantageScore = Math.max(
+          0,
+          Math.min(1, advantageScore + gpuHint.advantageBoost)
+        );
+      }
+    }
+
+    return { advantageScore, gpuHint };
   }
 
-  // ------------------------------------------------------------------------
-  // Core forward compute (expand, predict, factor, pattern-find)
-// ------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // Forward compute lane
+  // -------------------------------------------------------------------------
   function computeForward(job) {
     const tickId = engineTickId;
 
@@ -516,7 +589,8 @@ export function createPulseMotionEngine({
       {
         durationMs: 0,
         patternsCount: patterns.length,
-        advantageScore: physicsAdv.advantageScore
+        advantageScore: physicsAdv.advantageScore,
+        gpuHint: physicsAdv.gpuHint
       },
       { lane: "forward", arterySnapshot }
     );
@@ -535,9 +609,9 @@ export function createPulseMotionEngine({
     };
   }
 
-  // ------------------------------------------------------------------------
-  // Core backward compute (stabilize, normalize, compress, pattern-reduce)
-// ------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // Backward compute lane
+  // -------------------------------------------------------------------------
   function computeBackward(job) {
     const tickId = engineTickId;
 
@@ -608,7 +682,8 @@ export function createPulseMotionEngine({
       {
         durationMs: 0,
         patternsCount: patterns.length,
-        advantageScore: physicsAdv.advantageScore
+        advantageScore: physicsAdv.advantageScore,
+        gpuHint: physicsAdv.gpuHint
       },
       { lane: "backward", arterySnapshot }
     );
@@ -627,9 +702,9 @@ export function createPulseMotionEngine({
     };
   }
 
-  // ------------------------------------------------------------------------
-  // Binary/regular encode + chunk + write results via ShifterPulse
-  // ------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // Result write-out (dual-band, GPU-aware metadata)
+// -------------------------------------------------------------------------
   function writeResult(lane, result) {
     const band = result.metrics.band || "symbolic";
 
@@ -653,7 +728,8 @@ export function createPulseMotionEngine({
         jobType: result.metrics.jobType,
         intent: result.metrics.intent,
         advantageScore: result.metrics.advantageScore,
-        artery: result.metrics.artery
+        artery: result.metrics.artery,
+        gpuHint: result.metrics.gpuHint || null
       }
     };
 
@@ -673,9 +749,9 @@ export function createPulseMotionEngine({
     }
   }
 
-  // ------------------------------------------------------------------------
-  // Optional: feed Brain with lane-specific hints
-  // ------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // BrainOrgan feedback (forward/backward hints)
+// -------------------------------------------------------------------------
   function feedBrain(lane, result) {
     if (!BrainOrgan || typeof BrainOrgan.evolve !== "function") return;
 
@@ -693,7 +769,8 @@ export function createPulseMotionEngine({
       triHeartId: result.metrics.triHeartId,
       jobType: result.metrics.jobType,
       intent: result.metrics.intent,
-      advantageScore: result.metrics.advantageScore
+      advantageScore: result.metrics.advantageScore,
+      gpuHint: result.metrics.gpuHint || null
     };
 
     if (lane === "forward") {
@@ -715,9 +792,9 @@ export function createPulseMotionEngine({
     }
   }
 
-  // ------------------------------------------------------------------------
-  // tickForward() — one forward evolution step
-  // ------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // Ticks
+  // -------------------------------------------------------------------------
   function tickForward() {
     if (!enginePrewarmed) {
       prewarm();
@@ -748,9 +825,6 @@ export function createPulseMotionEngine({
     return { ok: true, metrics: result.metrics };
   }
 
-  // ------------------------------------------------------------------------
-  // tickBackward() — one backward evolution step
-  // ------------------------------------------------------------------------
   function tickBackward() {
     if (!enginePrewarmed) {
       prewarm();
@@ -782,7 +856,7 @@ export function createPulseMotionEngine({
   }
 
   // ------------------------------------------------------------------------
-  // tickBoth() — optional helper: forward + backward in one shared tick window
+  // tickBoth() — forward + backward in one shared tick window
   // ------------------------------------------------------------------------
   function tickBoth() {
     const forward = tickForward();
@@ -838,10 +912,18 @@ export function createPulseMotionEngine({
         forward: ForwardArtery.snapshot(),
         backward: BackwardArtery.snapshot()
       },
-      cosmos: cosmosContext
+      cosmos: cosmosContext,
+      gpu: {
+        enabled: enableGpuProcessWorker && !!gpuProcessWorker,
+        mode: gpuMode,
+        gpuIds
+      }
     });
   }
 
+  // ------------------------------------------------------------------------
+  // Public engine API
+  // ------------------------------------------------------------------------
   return Object.freeze({
     meta: PulseMotionEngineMeta,
     tickForward,

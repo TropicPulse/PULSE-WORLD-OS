@@ -46,7 +46,7 @@ import { PulseGPUBrainExport } from "./PulseGPUBrain-v24.js";
 import { PulseGPUCognitiveIntelligence } from "./PulseGPUCognitiveIntelligence-v24.js";
 import { buildPulseGPUEarnProfile } from "./PulseGPUEarnProfile-v24.js";
 import { PulseGPUChunkPlanner } from "./PulseGPUChunkPlanner-v24.js";
-import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache-v24.js";
+import { PulseGPUWarmPathCache } from "./PulseGPUWarmPathCache-v30.js";
 
 const PULSE_GPU_RUNTIME_VERSION = "24.0-Immortal++";
 

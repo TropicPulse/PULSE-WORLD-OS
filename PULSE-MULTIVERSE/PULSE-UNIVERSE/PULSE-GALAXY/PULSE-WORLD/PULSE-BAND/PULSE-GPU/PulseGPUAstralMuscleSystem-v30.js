@@ -1,32 +1,12 @@
-
 // ============================================================================
-//  PULSE GPU ENGINE v24-Immortal++ — THE ASTRAL MUSCLE SYSTEM
+//  PULSE GPU ENGINE v30-Immortal+++ — THE ASTRAL MUSCLE SYSTEM (DUAL-LANE)
 //  WebGPU Execution Layer • Frame Conductor • GPU Motor Cortex
 //  Dual-Mode (Symbolic + Binary) • Dispatch-Aware • Memory-Aware • Presence-Aware
 //  Prewarm • Chunk/Cache-Aware • Snapshot-Ready • RAW ENGINE EVIDENCE
 //  GPU-CHUNKER-AWARE • WARM-PATH-AWARE • SESSION-TRACE-AWARE
-//  “MUSCLE OF THE ORGANISM. PRESENCE IN MOTION.”
+//  PROCESS-WORKER-AWARE (PulseGPUProcessWorker-v30)
+//  “MUSCLE OF THE ORGANISM. PRESENCE IN MOTION. TWO LUNGS, ONE BREATH.”
 // ============================================================================
-//
-//  Same organ shape as v16:
-//    • Same import shape (PulseGPURuntime only, plus local helpers).
-//    • Same class layout: PulseGPUMemory, PulseRenderPassBuilder,
-//      PulsePipelineBuilder, PulseDrawExecutor, PulseGPUEngine.
-//    • Same export surface.
-//
-//  Upgrades (v24-Immortal++):
-//    • Version bumped to v24-Immortal++.
-//    • Evo/meta upgraded (prewarm, chunk/cache, snapshot, evidence).
-//    • GPU chunker-aware: can emit chunked engine evidence.
-//    • Warm-path-aware + session-trace-aware hooks via metadata.
-// ============================================================================
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 import {
   VitalsLogger as logger,
@@ -39,23 +19,57 @@ import {
   PulseColors,
   PulseIcons
 } from "../___MONITOR/PULSE-PROOF-LOGGER.js";
-import { PulseGPURuntime } from "./PulseGPUDrive-v24.js";
-import { pulseGPUChunker } from "./PulseGPUChunker-v24.js";
 
+import { PulseGPURuntime } from "./PulseGPUDrive-v24.js";
+import { pulseGPUChunker } from "./PulseGPUChunker-v30.js";
+
+// Genetic memory + warm-path (metadata-only, no GPU calls)
+import {
+  PulseGPUGeneticMemory
+} from "./PulseGPUGeneticMemory-v30.js";
+
+import {
+  PulseGPUWarmPathCache
+} from "./PulseGPUWarmPathCache-v30.js";
+
+// Process worker (real helper, not hypothetical)
+import {
+  PulseGPUProcessWorker
+} from "../PULSE-ENGINE/PulseEngineGPUProcessWorker-v30.js";
 
 // ============================================================================
-//  GPU MEMORY / DISPATCH HISTORY (v24 — chunk-aware, snapshot/evidence-ready)
+//  META BLOCK — v30-Immortal+++
+// ============================================================================
+export const PULSE_GPU_ENGINE_META = Object.freeze({
+  identity: "PulseGPUAstralMuscleSystem",
+  version: "30.0-Immortal+++",
+  evo: {
+    lineage: "astral-muscle-v30",
+    dualLane: true,
+    warmPathAware: true,
+    chunkerAware: true,
+    geneticMemoryAware: true,
+    processWorkerAware: true,
+    sessionTraceAware: true,
+    evidenceSurface: "gpu-engine-evidence-v30"
+  }
+});
+
+// ============================================================================
+//  GPU MEMORY / DISPATCH HISTORY (v30 — chunk-aware, snapshot/evidence-ready)
 //  • RAW ENGINE EVIDENCE: what was actually dispatched.
 //  • Optional GPU chunker integration for structural evidence chunks.
+//  • Optional genetic memory mirror (metadata-only).
 // ============================================================================
 class PulseGPUMemory {
   constructor({
-    maxHistory = 512,
+    maxHistory = 1024,
     dnaTag = "default-dna",
     instanceId = "",
     chunker = null,
     warmPathId = "gpu-engine",
-    sessionId = null
+    sessionId = null,
+    geneticMemory = null
   } = {}) {
     this.maxHistory = maxHistory;
     this.history = [];
@@ -69,6 +83,7 @@ class PulseGPUMemory {
       sessionId
     };
     this.chunker = chunker || null;
+    this.geneticMemory = geneticMemory || null;
   }
 
   recordDispatch(dispatch) {
@@ -93,7 +108,8 @@ class PulseGPUMemory {
       dnaTag: dispatch.dnaTag || null,
       version: dispatch.version || null,
       instanceId: exec.instanceId || null,
-      warmPathId: meta.warmPathId || this.meta.warmPathId || "gpu-engine"
+      warmPathId: meta.warmPathId || this.meta.warmPathId || "gpu-engine",
+      pressureSnapshot: meta.pressureSnapshot || null
     };
 
     this.history.push(entry);
@@ -135,6 +151,50 @@ class PulseGPUMemory {
     bucket.lastWarmPathId = entry.warmPathId;
 
     this.byPattern[key] = bucket;
+
+    // Optional genetic memory mirror (metadata-only)
+    if (this.geneticMemory && typeof this.geneticMemory.recordObservation === "function") {
+      try {
+        this.geneticMemory.recordObservation({
+          gameProfile: { gameId: "pulse-world-gpu", buildVersion: entry.version || "" },
+          hardwareProfile: { gpuModel: "webgpu", deviceClass: "browser", platform: "web" },
+          tierProfile: { tierId: "default", tierLabel: "gpu-engine", earnTier: "" },
+          executionContext: {
+            binaryMode: entry.binaryMode ? "binary" : "symbolic",
+            pipelineId: exec.pipelineId || "",
+            sceneType: exec.sceneType || "",
+            workloadClass: exec.workloadClass || "",
+            resolution: exec.resolution || "",
+            refreshRate: exec.refreshRate || 0,
+            dispatchSignature: entry.dispatchSignature || "",
+            shapeSignature: entry.shapeSignature || "",
+            qualityPreset: "",
+            rayTracing: false
+          },
+          metrics: {
+            avgFPS: 0,
+            minFPS: 0,
+            stutters: 0,
+            crashFlag: false
+          },
+          traceSummary: {
+            totalDurationMs: 0,
+            pressureSnapshot: entry.pressureSnapshot || null,
+            binaryStepCount: entry.binaryMode ? 1 : 0,
+            symbolicStepCount: entry.binaryMode ? 0 : 1
+          },
+          advantageSnapshot: {
+            scoreDelta: entry.advantageScore || 0,
+            stabilityDelta: 0,
+            earnPotential: 0
+          },
+          computerIntelligence: null,
+          earnSnapshot: null
+        });
+      } catch {
+        // non-fatal
+      }
+    }
   }
 
   bestProfileForPattern(pattern) {
@@ -180,7 +240,7 @@ class PulseGPUMemory {
     if (!this.chunker) return null;
 
     const payload = this.snapshot();
-    const profileId = options.profile || "gpu-engine-evidence";
+    const profileId = options.profile || "gpu-engine-evidence-v30";
     const worldBand = options.worldBand || "backend";
 
     const chunks = this.chunker.chunkJSON(payload, {
@@ -206,9 +266,8 @@ class PulseGPUMemory {
   }
 }
 
-
 // ============================================================================
-//  RENDER PASS BUILDER (v24 — deterministic, meta-upgraded)
+//  RENDER PASS BUILDER (v30 — deterministic, meta-upgraded)
 // ============================================================================
 class PulseRenderPassBuilder {
   constructor(device, context, format = "bgra8unorm") {
@@ -235,9 +294,8 @@ class PulseRenderPassBuilder {
   }
 }
 
-
 // ============================================================================
-//  PIPELINE BUILDER (v24 — cache-friendly, snapshot-aware, warm-path-aware)
+//  PIPELINE BUILDER (v30 — cache-friendly, snapshot-aware, warm-path-aware)
 // ============================================================================
 class PulsePipelineBuilder {
   constructor(device, colorFormat = "bgra8unorm") {
@@ -287,9 +345,8 @@ class PulsePipelineBuilder {
   }
 }
 
-
 // ============================================================================
-//  DRAW EXECUTOR (v24 — same logic, upgraded meta)
+//  DRAW EXECUTOR (v30 — same logic, upgraded meta, dual-lane aware)
 // ============================================================================
 class PulseDrawExecutor {
   constructor(device, passBuilder) {
@@ -318,21 +375,23 @@ class PulseDrawExecutor {
   }
 }
 
-
 // ============================================================================
-//  MAIN ENGINE (WebGPU Backend) — Astral Muscle (v24-Immortal++)
-//  Dual-Mode Aware • Dispatch-Aware • Memory-Aware • Presence-Aware
-//  Prewarm + Chunk/Cache + Snapshot + RAW ENGINE EVIDENCE
+//  MAIN ENGINE (WebGPU Backend) — Astral Muscle v30-Immortal+++
+//  Dual-Lane: primary + auxiliary “second GPU” lane (logical)
+//  ProcessWorker-aware • WarmPath-aware • GeneticMemory-aware
 // ============================================================================
 class PulseGPUEngine {
   constructor({
     gpuSpine = null,
     binaryGpuSpine = null,
     dnaTag = "default-dna",
-    version = "24.0-Immortal++",
+    version = "30.0-Immortal+++",
     instanceId = "",
     chunkCache = null,
-    chunker = pulseGPUChunker
+    chunker = pulseGPUChunker,
+    processWorker = null,
+    geneticMemory = null,
+    warmPathConfig = {}
   } = {}) {
     this.runtime = new PulseGPURuntime();
 
@@ -344,6 +403,13 @@ class PulseGPUEngine {
     this.passBuilder = null;
     this.drawExecutor = null;
 
+    // “Second GPU” lane: same device, separate logical lane metadata
+    this.auxLane = {
+      enabled: true,
+      label: "aux-gpu-lane",
+      mode: "background"
+    };
+
     this.ready = false;
 
     this.evo = { ...PULSE_GPU_ENGINE_META.evo };
@@ -354,12 +420,16 @@ class PulseGPUEngine {
       instanceId
     };
 
+    this.geneticMemory =
+      geneticMemory || new PulseGPUGeneticMemory();
+
     this.gpuMemory = new PulseGPUMemory({
       dnaTag,
       instanceId,
       chunker,
       warmPathId: "gpu-engine-main",
-      sessionId: null
+      sessionId: null,
+      geneticMemory: this.geneticMemory
     });
 
     this.gpuSpine = gpuSpine;
@@ -367,9 +437,19 @@ class PulseGPUEngine {
     this.chunkCache = chunkCache;
     this.chunker = chunker;
 
+    this.processWorker =
+      processWorker ||
+      new PulseGPUProcessWorker({
+        id: `gpu-engine-worker-${instanceId || "default"}`,
+        role: "astral-muscle",
+        band: "gpu"
+      });
+
+    this.warmPathConfig = warmPathConfig || {};
+
     log(
       "gpu",
-      "[PulseGPUEngine v24-Immortal++] Constructed — awaiting init().",
+      "[PulseGPUEngine v30-Immortal+++] Constructed — awaiting init().",
       "color:#03A9F4; font-weight:bold;"
     );
   }
@@ -410,18 +490,41 @@ class PulseGPUEngine {
 
     log(
       "gpu",
-      "PulseGPUEngine v24-Immortal++ ready — WebGPU backend active (Astral Muscle)."
+      "PulseGPUEngine v30-Immortal+++ ready — WebGPU backend active (Astral Muscle, dual-lane)."
     );
+
+    // Kick a process-worker warmup task (metadata-only)
+    this._enqueueWorkerTask("engine-init", {
+      meta: this.meta,
+      warmPathConfig: this.warmPathConfig
+    });
   }
 
   // -------------------------------------------------------------------------
-  //  PREWARM — pipelines / caches / chunk-aware warmup
+  //  PREWARM — pipelines / caches / chunk-aware warmup + warm-path hints
   // -------------------------------------------------------------------------
-  prewarm({ patterns = [], frames = 1 } = {}) {
+  prewarm({ patterns = [], frames = 1, page = "gpu", chunkProfile = "gpu" } = {}) {
     if (!this.device || !this.context) return;
 
     const uniquePatterns = Array.from(new Set(patterns || []));
     const count = Math.max(1, frames | 0);
+
+    // Warm-path hints (v30++): compute budget + fanout
+    const warmHints = PulseGPUWarmPathCache.compute({
+      page,
+      chunkProfile,
+      gpuCapable: true,
+      trust: this.warmPathConfig.trust || "trusted",
+      risk: this.warmPathConfig.risk || "low",
+      pulseStream: this.warmPathConfig.pulseStream || "continuous",
+      fastLane: this.warmPathConfig.fastLane || "enabled"
+    });
+
+    this._enqueueWorkerTask("prewarm-plan", {
+      patterns: uniquePatterns,
+      frames: count,
+      warmHints
+    });
 
     for (let i = 0; i < uniquePatterns.length; i++) {
       const pattern = uniquePatterns[i] || "gpu-default";
@@ -435,7 +538,8 @@ class PulseGPUEngine {
           if (typeof this.runtime.prewarmDraw === "function") {
             this.runtime.prewarmDraw(passEncoder, {
               pattern,
-              chunkCache: this.chunkCache
+              chunkCache: this.chunkCache,
+              warmHints
             });
           }
 
@@ -448,7 +552,11 @@ class PulseGPUEngine {
       }
     }
 
-    log("gpu", "Prewarm complete", { patterns: uniquePatterns, frames: count });
+    log("gpu", "Prewarm complete (v30++)", {
+      patterns: uniquePatterns,
+      frames: count,
+      warmHints
+    });
   }
 
   // -------------------------------------------------------------------------
@@ -473,7 +581,7 @@ class PulseGPUEngine {
   }
 
   // -------------------------------------------------------------------------
-  //  DISPATCH SOURCE — same contract as v16 (runtime-first)
+  //  DISPATCH SOURCE — same contract as v24 (runtime-first), dual-lane aware
   // -------------------------------------------------------------------------
   getDispatches() {
     const fromRuntime =
@@ -508,14 +616,18 @@ class PulseGPUEngine {
         earnFrame.dnaTag || this.meta.dnaTag,
         earnFrame.version || this.meta.version
       );
-      return dispatch ? [dispatch] : [];
+
+      // Process worker can post-process dispatch metadata (no GPU calls)
+      const processed = this._processDispatchWithWorker(dispatch, earnFrame);
+      return processed ? [processed] : [dispatch];
     }
 
     return [];
   }
 
   // -------------------------------------------------------------------------
-  //  FRAME RENDER — RAW ENGINE EXECUTION + EVIDENCE RECORDING
+  //  FRAME RENDER — RAW ENGINE EXECUTION + EVIDENCE RECORDING (dual-lane)
+//   primary lane: foreground; aux lane: background / second-GPU-style
   // -------------------------------------------------------------------------
   renderFrame() {
     if (!this.ready) return;
@@ -551,6 +663,7 @@ class PulseGPUEngine {
         this.drawExecutor.drawMesh(encoder, pipeline, meshBuffers);
       });
     } else {
+      // Aux lane: if no explicit dispatches, still keep “second GPU” breathing
       meshes.forEach((meshBuffers, i) => {
         const pipeline = pipelines[i % pipelines.length];
         this.drawExecutor.drawMesh(encoder, pipeline, meshBuffers);
@@ -559,6 +672,12 @@ class PulseGPUEngine {
 
     const commandBuffer = encoder.finish();
     this.device.queue.submit([commandBuffer]);
+
+    // Process worker gets a tick with engine evidence (no GPU calls)
+    this._enqueueWorkerTask("frame-tick", {
+      engineSnapshot: this.snapshotEngineSurface(),
+      auxLane: this.auxLane
+    });
   }
 
   // -------------------------------------------------------------------------
@@ -575,7 +694,8 @@ class PulseGPUEngine {
       meta: {
         identity: "PulseGPUAstralMuscleSystem",
         version: this.meta.version,
-        instanceId: this.meta.instanceId
+        instanceId: this.meta.instanceId,
+        dualLane: this.auxLane
       },
       engine: {
         ready: this.ready,
@@ -598,14 +718,48 @@ class PulseGPUEngine {
     return {
       meta: this.meta,
       evo: this.evo,
-      gpuMemory: this.gpuMemory.diagnostics()
+      gpuMemory: this.gpuMemory.diagnostics(),
+      auxLane: this.auxLane
     };
+  }
+
+  // -------------------------------------------------------------------------
+  //  INTERNAL — Process worker integration
+  // -------------------------------------------------------------------------
+  _enqueueWorkerTask(kind, payload) {
+    try {
+      if (!this.processWorker || typeof this.processWorker.enqueue !== "function") {
+        return;
+      }
+      this.processWorker.enqueue({
+        kind,
+        ts: Date.now(),
+        engineId: this.meta.identity,
+        version: this.meta.version,
+        payload
+      });
+    } catch {
+      // non-fatal
+    }
+  }
+
+  _processDispatchWithWorker(dispatch, earnFrame) {
+    try {
+      if (!this.processWorker || typeof this.processWorker.transformDispatch !== "function") {
+        return null;
+      }
+      return this.processWorker.transformDispatch(dispatch, {
+        earnFrame,
+        engineMeta: this.meta
+      });
+    } catch {
+      return null;
+    }
   }
 }
 
-
 // ============================================================================
-//  EXPORTS — Astral Muscle System v24-Immortal++
+//  EXPORTS — Astral Muscle System v30-Immortal+++
 // ============================================================================
 export {
   PulseGPUMemory,

@@ -30,7 +30,7 @@
 // v24: imports so SurvivalInstincts is wired into the v24 organism
 import { PulseGPUSessionTracer } from "./PulseGPUNervousSystem-v24.js";
 import { PulseGPUHealer } from "./PulseGPULymphNodes-v30.js";
-import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v24.js";
+import { PulseGPUGeneticMemory } from "./PulseGPUGeneticMemory-v30.js";
 import { SCORE_CONSTANTS } from "./PulseGPUCommandments-v24.js";
 // optional Earn field integration (conceptual, v24-compatible)
 import { evolveEarn, createEarn } from "../PULSE-EARN/PulseEarn-v24.js";

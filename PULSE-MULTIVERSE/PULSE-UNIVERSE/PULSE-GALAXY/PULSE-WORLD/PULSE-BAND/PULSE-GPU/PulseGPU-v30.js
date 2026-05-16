@@ -1,9 +1,9 @@
-
 // ============================================================================
-//  PulseGPU-v24-IMMORTAL++ — UNIFIED GPU ORGAN (FULL v24++ UPGRADE)
+//  PulseGPU-v30-IMMORTAL+++ — UNIFIED DUAL-GPU ORGAN (FULL v30+++ UPGRADE)
 //  Deterministic GPU Dispatch Organ • Pattern + Lineage + Shape + Presence
-//  Dual-Mode: Binary + Symbolic • Multi-Instance • Advantage + Chunker Aware
-//  “PLAN ONCE. REUSE FOREVER. NEVER DRIFT.”
+//  Dual-Mode: Binary + Symbolic • Multi-Instance • Advantage + Chunker + Worker Aware
+//  Dual-GPU Topology: primaryGPU + workerGPU (process worker lane)
+//  “PLAN ONCE. REUSE FOREVER. NEVER DRIFT. NEVER LAG.”
 //  • Metadata-only, zero GPU calls, zero side effects
 // ============================================================================
 //
@@ -12,43 +12,41 @@
 //  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+//  ╚╝       ╚═════╝ ╚══════╝╚══════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
-// ---------------------------------------------------------------------------
-//  IMPORTS — v24 IMMORTAL++
-// ---------------------------------------------------------------------------
+// ============================================================================
+//  IMPORTS — v30+++ GPU ORGAN STACK
+// ============================================================================
 
-import * as PulseGPUBrain                from "./PulseGPUBrain-v24.js";
-import * as PulseGPUDrive                from "./PulseGPUDrive-v24.js";
-import * as PulseGPUDriveCenter          from "./PulseGPUDriveCenter-v24.js";
-import * as PulseGPUDriveEngine          from "./PulseGPUDriveCenter-v24.js"; // alias
-import * as PulseGPUSpine                from "./PulseGPUSpine-v24.js";
-import * as PulseGPUGeneticMemory        from "./PulseGPUGeneticMemory-v24.js";
+import * as PulseGPUBrain                 from "./PulseGPUBrain-v30.js";
+import * as PulseGPUDrive                 from "./PulseGPUDrive-v30.js";
+import * as PulseGPUDriveCenter           from "./PulseGPUDriveCenter-v30.js";
+import * as PulseGPUDriveEngine           from "./PulseGPUDriveCenter-v30.js"; // alias
+import * as PulseGPUSpine                 from "./PulseGPUSpine-v30.js";
+import * as PulseGPUGeneticMemoryModule   from "./PulseGPUGeneticMemory-v30.js";
+import * as PulseGPUWarmPathCacheModule   from "./PulseGPUWarmPathCache-v30.js";
 
-import * as PulseGPUAstralMuscleSystem   from "./PulseGPUAstralMuscleSystem-v24.js";
+import * as PulseGPUAstralMuscleSystem    from "./PulseGPUAstralMuscleSystem-v30.js";
+import * as PulseGPUGuardianCortexModule  from "./PulseGPUGuardianCortex-v30.js";
+import * as PulseGPULymphNodes            from "./PulseGPULymphNodes-v30.js";
 
-import * as PulseGPUGuardianCortex       from "./PulseGPUGuardianCortex-v24.js";
-import * as PulseGPULymphNodes           from "./PulseGPULymphNodes-v30.js";
+import * as PulseGPUAstralNervousSystem   from "./PulseGPUAstralNervousSystem-v30.js";
+import * as PulseGPUNervousSystem         from "./PulseGPUNervousSystem-v30.js";
 
-import * as PulseGPUAstralNervousSystem  from "./PulseGPUAstralNervousSystem-v24.js";
-import * as PulseGPUNervousSystem        from "./PulseGPUNervousSystem-v24.js";
+import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence-v30.js";
+import * as PulseGPUCognitiveLayer        from "./PulseGPUCognitiveLayer-v30.js";
+import * as PulseGPUWisdomCortex          from "./PulseGPUWisdomCortex-v30.js";
 
-import * as PulseGPUCognitiveIntelligence from "./PulseGPUCognitiveIntelligence-v24.js";
-import * as PulseGPUCognitiveLayer        from "./PulseGPUCognitiveLayer-v24.js"; // cognitive layer / restorer v24++
-import * as PulseGPUWisdomCortex         from "./PulseGPUWIsdomCortex-v24.js";
-
-import * as PulseGPUSurvivalInstincts    from "./PulseGPUSurvivalInstincts-v24.js";
-
-import * as PulseGPUSynapses             from "./PulseGPUSynapses-v24.js";
-
-import * as PulseGPUCommandments         from "./PulseGPUCommandments-v24.js";
+import * as PulseGPUSurvivalInstincts     from "./PulseGPUSurvivalInstincts-v30.js";
+import * as PulseGPUSynapses              from "./PulseGPUSynapses-v30.js";
+import * as PulseGPUCommandments          from "./PulseGPUCommandments-v30.js";
 
 import {
   AI_EXPERIENCE_META_PulseGPUChunkPlanner,
   ORGAN_META_PulseGPUChunkPlanner,
   ORGAN_CONTRACT_PulseGPUChunkPlanner,
   PulseGPUChunkPlanner
-} from "./PulseGPUChunkPlanner-v24.js";
+} from "./PulseGPUChunkPlanner-v30.js";
 
 import {
   PulseNetBoot,
@@ -56,15 +54,42 @@ import {
   PulseProofBridge
 } from "../../PULSEVISION/____BACKEND/PULSE-WORLD-BRIDGE.js";
 
-// --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
-import PulseCoreMemory                   from "../PULSE-CORE/PulseCoreMemory-v24.js";
-import PulseCoreAIMemoryAdapter          from "../PULSE-CORE/PulseCoreAIMemoryAdapter-v20.js";
-import PulseCoreGPUMemoryAdapter         from "../PULSE-CORE/PulseCoreGpuMemoryAdapter-v20.js";
-import PulseCoreProxyMemoryAdapter       from "../PULSE-CORE/PulseCoreProxyMemoryAdapter-v20.js";
-import PulseCoreEarnMemoryAdapter        from "../PULSE-CORE/PulseCoreEarnMemoryAdapter-v20.js";
-import PulseBinaryCoreOverlay            from "../PULSE-CORE/PulseCoreBinaryOverlay-v20.js";
+// GPU chunker + warm-path-aware
+import { pulseGPUChunker } from "./PulseGPUChunker-v30.js";
 
-// CoreMemory bridge: structural, deterministic, keyed by memory surfaces.
+// Genetic memory + warm-path cache
+const { PulseGPUGeneticMemory } = PulseGPUGeneticMemoryModule;
+const { PulseGPUWarmPathCache } = PulseGPUWarmPathCacheModule;
+
+// Guardian Cortex
+const { PulseGPUGuardianCortex } = PulseGPUGuardianCortexModule;
+
+// Astral Muscle (engine)
+const {
+  PulseGPUMemory,
+  PulseRenderPassBuilder,
+  PulsePipelineBuilder,
+  PulseDrawExecutor,
+  PulseGPUEngine
+} = PulseGPUAstralMuscleSystem;
+
+// Process worker helper (real, not hypothetical)
+import { PulseGPUProcessWorker } from "../PULSE-ENGINE/PulseEngineGPUProcessWorker-v30.js";
+
+// Motion engine (process worker / motion spine)
+import { createPulseMotionEngine as PulseMotionEngine } from "../PULSE-ENGINE/PulseEngineProcess-v30.js";
+
+// --- PULSE-CORE MEMORY SPINE (FULL SPINE) ----------------------------------
+import PulseCoreMemory                    from "../PULSE-CORE/PulseCoreMemory-v30.js";
+import PulseCoreAIMemoryAdapter           from "../PULSE-CORE/PulseCoreAIMemoryAdapter-v30.js";
+import PulseCoreGPUMemoryAdapter          from "../PULSE-CORE/PulseCoreGpuMemoryAdapter-v30.js";
+import PulseCoreProxyMemoryAdapter        from "../PULSE-CORE/PulseCoreProxyMemoryAdapter-v30.js";
+import PulseCoreEarnMemoryAdapter         from "../PULSE-CORE/PulseCoreEarnMemoryAdapter-v30.js";
+import PulseBinaryCoreOverlay             from "../PULSE-CORE/PulseCoreBinaryOverlay-v30.js";
+
+// ============================================================================
+//  CORE MEMORY BRIDGE
+// ============================================================================
 export const CoreMemory = Object.freeze({
   raw: () => PulseCoreMemory,
   all: () => PulseCoreAIMemoryAdapter,
@@ -75,7 +100,37 @@ export const CoreMemory = Object.freeze({
 });
 
 // ============================================================================
-//  INTERNAL HELPERS
+//  GPU ROLE / META BLOCK (v30+++)
+// ============================================================================
+export const GPURole = Object.freeze({
+  identity: "PulseGPU-Organ-v30-Immortal+++",
+  version: "30.0-IMMORTAL+++",
+  dualGpu: true,
+  description:
+    "Unified dual-GPU organ (primary + worker) — deterministic dispatch, lineage, warm-path, genetic memory, process-worker aware."
+});
+
+export const GPUMetaBlock = Object.freeze({
+  identity: GPURole.identity,
+  version: GPURole.version,
+  dualGpu: true,
+  bands: ["symbolic", "binary"],
+  gpuMode: "mixed",
+  warmPathAware: true,
+  geneticMemoryAware: true,
+  guardianCortexAware: true,
+  astralMuscleAware: true,
+  processWorkerAware: true,
+  motionEngineAware: true,
+  chunkerAware: true,
+  earnAware: true,
+  multiInstanceReady: true,
+  deterministic: true,
+  zeroEntropy: true
+});
+
+// ============================================================================
+//  UTILS — LINEAGE / SIGNATURES / ADVANTAGE (v30+++)
 // ============================================================================
 
 function buildLineage(parentLineage, pattern) {
@@ -291,7 +346,7 @@ function computeAdvantageScore({ pattern, modeBias, modeKind, pressureSnapshot }
 }
 
 // ============================================================================
-//  v24 DISPATCH FACTORY (IMMORTAL++)
+//  DISPATCH BUILDERS — v30+++
 // ============================================================================
 
 export function createGPUDispatch({
@@ -304,8 +359,9 @@ export function createGPUDispatch({
   pressureSnapshot = null,
   executionContext = {},
   dnaTag = "default-dna",
-  version = "24.0-IMMORTAL++",
-  chunkContext = null
+  version = GPURole.version,
+  chunkContext = null,
+  gpuLane = "primary" // "primary" | "worker"
 }) {
   const resolvedModeKind   = resolveModeKind(modeKind);
   const lineage            = buildLineage(parentLineage, pattern);
@@ -342,7 +398,8 @@ export function createGPUDispatch({
     instanceId: executionContext.instanceId || "",
     multiInstance: multiInstanceHint,
     dispatchSignature,
-    shapeSignature
+    shapeSignature,
+    gpuLane
   };
 
   return {
@@ -356,6 +413,7 @@ export function createGPUDispatch({
     lineage,
     dnaTag,
     version,
+    gpuLane,
     executionContext: execCtx,
     chunkContext: chunkContext || null,
     meta: {
@@ -370,17 +428,14 @@ export function createGPUDispatch({
   };
 }
 
-// ============================================================================
-//  v24 EVOLUTION ENGINE (IMMORTAL++)
-// ============================================================================
-
 export function evolveGPUDispatch(dispatch, context = {}) {
   const {
     mode: nextMode,
     modeKind: nextModeKind,
     pressureSnapshot,
     executionContext,
-    chunkContext
+    chunkContext,
+    gpuLane
   } = context;
 
   const modeLabel        = nextMode || dispatch.mode || "normal";
@@ -418,6 +473,8 @@ export function evolveGPUDispatch(dispatch, context = {}) {
   });
 
   const prevExec = dispatch.executionContext || {};
+  const lane = gpuLane || prevExec.gpuLane || "primary";
+
   const execCtx = {
     binaryMode: resolvedModeKind === "binary" ? "binary" : "non-binary",
     pipelineId: executionContext?.pipelineId || prevExec.pipelineId || "",
@@ -428,7 +485,8 @@ export function evolveGPUDispatch(dispatch, context = {}) {
     instanceId: executionContext?.instanceId || prevExec.instanceId || "",
     multiInstance: multiInstanceHint,
     dispatchSignature,
-    shapeSignature
+    shapeSignature,
+    gpuLane: lane
   };
 
   return {
@@ -441,7 +499,8 @@ export function evolveGPUDispatch(dispatch, context = {}) {
     modeKind: resolvedModeKind,
     lineage: nextLineage,
     dnaTag: dispatch.dnaTag || "default-dna",
-    version: dispatch.version || "24.0-IMMORTAL++",
+    version: dispatch.version || GPURole.version,
+    gpuLane: lane,
     executionContext: execCtx,
     chunkContext: chunkContext || dispatch.chunkContext || null,
     meta: {
@@ -457,30 +516,56 @@ export function evolveGPUDispatch(dispatch, context = {}) {
 }
 
 // ============================================================================
-//  IMMORTAL SURFACE — SNAPSHOT + INTELLIGENT COMPUTE HINT (CHUNKER-AWARE)
+//  PULSE GPU IMMORTAL — DUAL-GPU ORGAN CONTROLLER (v30+++)
 // ============================================================================
 
-export class PulseGPUImmortal {
+class PulseGPUImmortal {
   constructor(config = {}) {
     this.config = {
       id: GPURole.identity,
       ...config
     };
 
-    this.pressure    = config.pressure || null;   // mesh/aura/earn pressure provider
-    this.gpuCore     = config.gpuCore || null;    // PulseGPUCore-v24
-    this.chunkCache  = config.chunkCache || null; // GPU chunk cache / engine
-    this.chunkPlanner = config.chunkPlanner || PulseGPUChunkPlanner;
+    this.pressure      = config.pressure || null;   // mesh/aura/earn pressure provider
+    this.gpuCore       = config.gpuCore || null;    // PulseGPUCore / engine view
+    this.chunkCache    = config.chunkCache || null; // GPU chunk cache / engine
+    this.chunkPlanner  = config.chunkPlanner || PulseGPUChunkPlanner;
+
+    // Dual GPU lanes
+    this.primaryEngine = config.primaryEngine || null; // PulseGPUEngine (primary)
+    this.workerEngine  = config.workerEngine || null;  // PulseGPUEngine (worker lane)
+
+    // Genetic memory + warm-path
+    this.geneticMemory = config.geneticMemory || new PulseGPUGeneticMemory();
+    this.warmPathCache = config.warmPathCache || PulseGPUWarmPathCache;
+
+    // Guardian cortex
+    this.guardian = config.guardian || new PulseGPUGuardianCortex(config.guardianPrefs || {}, "gpu-guardian-v30");
+
+    // Process worker + motion engine
+    this.processWorker = config.processWorker || new PulseGPUProcessWorker({
+      id: `${this.config.id}::process-worker`,
+      mode: "gpu",
+      gpuLane: "worker"
+    });
+
+    this.motionEngine = config.motionEngine || new PulseMotionEngine({
+      id: `${this.config.id}::motion-engine`,
+      gpuProcessWorker: this.processWorker
+    });
 
     this.logger = config.logger || console;
   }
 
-  // Pure structural plan description (no execution)
+  // -------------------------------------------------------------------------
+  //  Pure structural plan description (no execution) — primary vs worker lane
+  // -------------------------------------------------------------------------
   describeGpuPlan(pattern, options = {}, env = {}) {
     const parentLineage      = options.parentLineage || [];
     const modeKind           = resolveModeKind(options.modeKind || env.modeKind || "symbolic");
     const mode               = options.mode || env.mode || "normal";
     const multiInstanceHint  = options.multiInstanceHint || env.multiInstanceHint || false;
+    const gpuLane            = options.gpuLane || env.gpuLane || "primary";
 
     const pressureSnapshot =
       options.pressureSnapshot ||
@@ -510,11 +595,41 @@ export class PulseGPUImmortal {
       pressureSnapshot: pressureSnapshot || {}
     });
 
+    // Warm-path + genetic memory hints
+    const warmHints = this._computeWarmPathHints(pattern, {
+      chunkProfile: options.chunkProfile || "gpu",
+      gpuCapable: options.gpuCapable !== false,
+      trust: options.trust || "trusted",
+      risk: options.risk || "low",
+      pulseStream: options.pulseStream || "continuous",
+      fastLane: options.fastLane || "enabled",
+      page: options.page || "gpu-organ"
+    });
+
+    const geneticPattern = this.geneticMemory.getPatternForContext({
+      gameProfile: options.gameProfile || {},
+      hardwareProfile: options.hardwareProfile || {},
+      tierProfile: options.tierProfile || {},
+      executionContext: {
+        binaryMode: modeKind === "binary" ? "binary" : "auto",
+        pipelineId: options.pipelineId || "",
+        sceneType: options.sceneType || "",
+        workloadClass: options.workloadClass || "",
+        resolution: options.resolution || "",
+        refreshRate: options.refreshRate || 0,
+        dispatchSignature,
+        shapeSignature,
+        qualityPreset: options.qualityPreset || "",
+        rayTracing: !!options.rayTracing
+      }
+    });
+
     const plan = {
       ts: Date.now(),
       meta: {
         id: this.config.id,
-        version: GPURole.version
+        version: GPURole.version,
+        gpuLane
       },
       pattern,
       lineage,
@@ -526,14 +641,18 @@ export class PulseGPUImmortal {
       dispatchSignature,
       profile,
       advantageScore,
-      pressureSnapshot
+      pressureSnapshot,
+      warmPathHints: warmHints,
+      geneticPattern
     };
 
-    this._log("gpu:plan-v24-immortal++", { plan });
+    this._log("gpu:plan-v30-immortal+++", { plan });
     return plan;
   }
 
-  // Surface snapshot for world / trust (chunker-aware)
+  // -------------------------------------------------------------------------
+  //  Surface snapshot for world / trust (chunker + dual-engine aware)
+// -------------------------------------------------------------------------
   snapshotGpuSurface() {
     const gpuView =
       this._safeCall(this.gpuCore, "buildGpuView") ||
@@ -543,32 +662,49 @@ export class PulseGPUImmortal {
     const pressureSnapshot = this._safeCall(this.pressure, "snapshot") || null;
     const chunkCacheSnapshot = this._snapshotChunkCache();
 
+    const primarySnapshot =
+      this.primaryEngine && typeof this.primaryEngine.snapshotEngineSurface === "function"
+        ? this.primaryEngine.snapshotEngineSurface()
+        : null;
+
+    const workerSnapshot =
+      this.workerEngine && typeof this.workerEngine.snapshotEngineSurface === "function"
+        ? this.workerEngine.snapshotEngineSurface()
+        : null;
+
     const snapshot = {
       ts: Date.now(),
       meta: {
         id: this.config.id,
-        version: GPURole.version
+        version: GPURole.version,
+        dualGpu: true
       },
       gpuView,
       pressureSnapshot,
-      chunkCache: chunkCacheSnapshot
+      chunkCache: chunkCacheSnapshot,
+      engines: {
+        primary: primarySnapshot,
+        worker: workerSnapshot
+      }
     };
 
-    this._log("gpu:snapshot-surface-v24-immortal++", { snapshot });
+    this._log("gpu:snapshot-surface-v30-immortal+++", { snapshot });
     return snapshot;
   }
 
-  // Intelligent compute hint — advisory only, no execution, chunker-aware
+  // -------------------------------------------------------------------------
+  //  Intelligent compute hint — advisory only, chunker + worker aware
+  // -------------------------------------------------------------------------
   intelligentComputeHint(dispatch, chunkContext = null) {
     if (!dispatch || !dispatch.meta) {
       return {
         level: "none",
         reason: "no-dispatch",
         suggestions: [],
-        chunkPlan: null
+        chunkPlan: null,
+        workerPlan: null
       };
     }
-
     const { profile, modeBias, advantageScore, pressureSnapshot } = dispatch.meta;
     const suggestions = [];
 
@@ -589,7 +725,7 @@ export class PulseGPUImmortal {
       suggestions.push("pattern-may-benefit-from-fuse-or-batch-variant");
     }
 
-    // Chunker-aware: if chunkContext indicates misalignment, suggest rechunk
+    // Chunker-aware
     let chunkPlan = null;
     if (chunkContext && this.chunkPlanner && typeof this.chunkPlanner.plan === "function") {
       const plannerInput = {
@@ -602,15 +738,32 @@ export class PulseGPUImmortal {
         risk: chunkContext.risk || "low",
         gateMode: chunkContext.gateMode || "fast"
       };
-
       chunkPlan = this.chunkPlanner.plan(plannerInput);
-
       if (chunkPlan && chunkPlan.strategy === "fallback") {
         suggestions.push("gpu-chunk-planner-recommended-fallback-layout");
       } else if (chunkPlan && chunkPlan.strategy === "aggressive_gpu") {
         suggestions.push("gpu-chunk-planner-recommends-aggressive-gpu-layout");
       } else if (chunkPlan && chunkPlan.strategy === "safe_minimal") {
         suggestions.push("gpu-chunk-planner-recommends-safe-minimal-layout");
+      }
+    }
+
+    // Worker-aware: decide if this dispatch should be offloaded to worker GPU lane
+    let workerPlan = null;
+    if (this.processWorker && typeof this.processWorker.plan === "function") {
+      workerPlan = this.processWorker.plan({
+        jobId: dispatch.jobId,
+        pattern: dispatch.pattern,
+        modeKind: dispatch.modeKind,
+        advantageScore,
+        pressureSnapshot,
+        gpuLane: dispatch.gpuLane || "primary"
+      });
+
+      if (workerPlan && workerPlan.route === "worker") {
+        suggestions.push("route-dispatch-to-worker-gpu-lane");
+      } else if (workerPlan && workerPlan.route === "primary") {
+        suggestions.push("keep-dispatch-on-primary-gpu-lane");
       }
     }
 
@@ -630,29 +783,47 @@ export class PulseGPUImmortal {
       modeBias,
       advantageScore,
       suggestions,
-      chunkPlan
+      chunkPlan,
+      workerPlan
     };
-
-    this._log("gpu:intelligent-hint-v24-immortal++", { hint });
+    this._log("gpu:intelligent-hint-v30-immortal+++", { hint });
     return hint;
   }
 
-  // v24++: prewarm / chunk preheat hook (chunker-aware)
+  // -------------------------------------------------------------------------
+  //  Prewarm / chunk preheat hook (chunker + warm-path aware)
+// -------------------------------------------------------------------------
   prewarmChunks(hints = {}) {
     if (!this.chunkCache || typeof this.chunkCache.prewarm !== "function") {
       return null;
     }
 
+    const warmHints = this._computeWarmPathHints("gpu-prewarm", {
+      chunkProfile: hints.chunkProfile || "gpu",
+      gpuCapable: hints.gpuCapable !== false,
+      trust: hints.trust || "trusted",
+      risk: hints.risk || "low",
+      pulseStream: hints.pulseStream || "continuous",
+      fastLane: hints.fastLane || "enabled",
+      page: hints.page || "gpu-organ"
+    });
+
     const payload = {
       ts: Date.now(),
-      hints
+      hints: {
+        ...hints,
+        warmPathHints: warmHints
+      }
     };
 
     const result = this.chunkCache.prewarm(payload);
-    this._log("gpu:prewarm-chunks-v24-immortal++", { payload, result });
+    this._log("gpu:prewarm-chunks-v30-immortal+++", { payload, result });
     return result;
   }
 
+  // -------------------------------------------------------------------------
+  //  Diagnostics
+  // -------------------------------------------------------------------------
   diagnostics() {
     const diag = {
       GPURole,
@@ -661,10 +832,34 @@ export class PulseGPUImmortal {
         AI_EXPERIENCE_META_PulseGPUChunkPlanner,
         ORGAN_META_PulseGPUChunkPlanner,
         ORGAN_CONTRACT_PulseGPUChunkPlanner
-      }
+      },
+      dualGpu: true
     };
-    this._log("gpu:diagnostics-v24-immortal++", { diag });
+    this._log("gpu:diagnostics-v30-immortal+++", { diag });
     return diag;
+  }
+
+  // -------------------------------------------------------------------------
+  //  Internal helpers
+  // -------------------------------------------------------------------------
+  _computeWarmPathHints(pattern, input) {
+    try {
+      if (!this.warmPathCache || typeof this.warmPathCache.compute !== "function") {
+        return null;
+      }
+      const base = {
+        ...input,
+        page: input.page || "gpu-organ",
+        chunkProfile: input.chunkProfile || "gpu"
+      };
+      const hints = this.warmPathCache.compute(base);
+      return {
+        ...hints,
+        pattern
+      };
+    } catch {
+      return null;
+    }
   }
 
   _snapshotChunkCache() {
@@ -701,12 +896,10 @@ export class PulseGPUImmortal {
 }
 
 // ============================================================================
-//  PUBLIC ORGAN — PulseGPU (v24-IMMORTAL++, dual-mode, chunker-aware)
+//  PUBLIC SURFACE — PulseGPU (v30+++)
 // ============================================================================
-
 export const PulseGPU = {
 
-  GPURole,
   GPUMetaBlock,
 
   plan(
@@ -716,14 +909,14 @@ export const PulseGPU = {
     pressureSnapshot = null,
     executionContext = {},
     dnaTag = "default-dna",
-    version = "24.0-IMMORTAL++",
-    chunkContext = null
+    version = GPURole.version,
+    chunkContext = null,
+    gpuLane = "primary"
   ) {
     const jobId   = earn.jobId;
     const pattern = earn.pattern || "gpu-default";
     const payload = earn.payload || {};
     const lineage = earn.lineage || [];
-
     return createGPUDispatch({
       jobId,
       pattern,
@@ -735,7 +928,8 @@ export const PulseGPU = {
       executionContext,
       dnaTag,
       version,
-      chunkContext
+      chunkContext,
+      gpuLane
     });
   },
 
@@ -752,9 +946,8 @@ export const PulseGPU = {
 };
 
 // ============================================================================
-//  FACTORY FOR IMMORTAL SURFACE
+//  FACTORY — createPulseGPUImmortal (v30+++)
 // ============================================================================
-
 export function createPulseGPUImmortal(config = {}) {
   const core = new PulseGPUImmortal(config);
 
@@ -770,5 +963,8 @@ export function createPulseGPUImmortal(config = {}) {
   });
 }
 
+// ============================================================================
+//  DEFAULT EXPORT — Bridge
+// ============================================================================
 const PulseGPUBridge = PulseProofBridge;
 export default PulseGPUBridge;

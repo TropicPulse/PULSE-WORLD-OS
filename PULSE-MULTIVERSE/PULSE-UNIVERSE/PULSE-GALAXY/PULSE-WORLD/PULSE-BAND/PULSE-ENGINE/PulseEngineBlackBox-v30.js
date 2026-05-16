@@ -1,7 +1,8 @@
 // ============================================================================
-// PulseCompassReporter-v30-Immortal++++ — IMMORTAL Motion Telemetry Organ
-//  • Records motion activity into PulseDB-v30
-//  • Lane switches, ticks, metrics, artery snapshots, envelopes
+// PulseCompassReporter-v30-Immortal++++ — IMMORTAL Motion & GPU Telemetry Organ
+//  • Records motion + GPU worker activity into PulseDB-v30
+//  • Lane switches, ticks, metrics, artery snapshots, envelopes, health
+//  • GPU hints, GPU ticks, GPU layouts (gpuIds, gpuMode)
 //  • Cosmos-aware, band-aware, advantage-aware, artery-aware
 //  • Append-only, drift-proof, zero compute, zero mutation
 //  • Session-aware, evidence-aware, diagnostics-aware, dual-band
@@ -12,11 +13,11 @@
 //  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+//  ╚╝       ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 export function createPulseCompassReporter({
-  Compass,
-  PulseDB,
+  Compass,              // PulseCompass-v30++++ instance
+  PulseDB,              // PulseDB-v30++++ instance
   sessionId = null,
   trace = false,
   cosmosContext = {
@@ -31,9 +32,18 @@ export function createPulseCompassReporter({
   if (!Compass) throw new Error("[PulseCompassReporter-v30] Compass required.");
   if (!PulseDB) throw new Error("[PulseCompassReporter-v30] PulseDB required.");
 
-  const COLLECTION = "pulse:v30:Motion_Engine_Logs";
+  // Core motion logs (shared with Compass)
+  const MOTION_COLLECTION = "pulse:v30:Motion_Engine_Logs";
 
-  PulseDB.ensureCollection(COLLECTION);
+  // GPU worker logs
+  const GPU_COLLECTION = "pulse:v30:GPU_Worker_Logs";
+
+  // Engine snapshots (MotionEngine snapshot(), Compass state, health)
+  const SNAPSHOT_COLLECTION = "pulse:v30:Motion_Engine_Snapshots";
+
+  PulseDB.ensureCollection(MOTION_COLLECTION);
+  PulseDB.ensureCollection(GPU_COLLECTION);
+  PulseDB.ensureCollection(SNAPSHOT_COLLECTION);
 
   // -------------------------------------------------------------------------
   // INTERNAL: envelope builder (pure, deterministic, v30 schema)
@@ -52,7 +62,7 @@ export function createPulseCompassReporter({
   }
 
   // -------------------------------------------------------------------------
-  // Record a tick (metrics + artery + band + dnaTag + advantage + cosmos)
+  // MOTION: Record a tick (metrics + artery + band + dnaTag + advantage + cosmos)
   // -------------------------------------------------------------------------
   async function recordTick(result) {
     if (!result?.metrics) return;
@@ -72,10 +82,13 @@ export function createPulseCompassReporter({
       jobType: m.jobType || null,
       intent: m.intent || null,
       cosmos: m.cosmos || cosmosContext,
+      triHeartId: m.triHeartId || null,
+      presenceField: m.presenceField || null,
+      advantageField: m.advantageField || null,
       envelope: result.envelope || null
     });
 
-    await PulseDB.append(COLLECTION, entry);
+    await PulseDB.append(MOTION_COLLECTION, entry);
 
     if (trace && typeof console !== "undefined") {
       console.log("[Reporter-v30] Tick recorded:", entry);
@@ -83,7 +96,7 @@ export function createPulseCompassReporter({
   }
 
   // -------------------------------------------------------------------------
-  // Record lane switch
+  // MOTION: Record lane switch
   // -------------------------------------------------------------------------
   async function recordLaneSwitch(lane) {
     const entry = buildEnvelope({
@@ -91,7 +104,7 @@ export function createPulseCompassReporter({
       lane
     });
 
-    await PulseDB.append(COLLECTION, entry);
+    await PulseDB.append(MOTION_COLLECTION, entry);
 
     if (trace && typeof console !== "undefined") {
       console.log("[Reporter-v30] Lane switch recorded:", entry);
@@ -99,7 +112,7 @@ export function createPulseCompassReporter({
   }
 
   // -------------------------------------------------------------------------
-  // Record artery snapshot (optional, lane-local)
+  // MOTION: Record artery snapshot (optional, lane-local)
   // -------------------------------------------------------------------------
   async function recordArterySnapshot(artery) {
     const entry = buildEnvelope({
@@ -108,7 +121,7 @@ export function createPulseCompassReporter({
       artery
     });
 
-    await PulseDB.append(COLLECTION, entry);
+    await PulseDB.append(MOTION_COLLECTION, entry);
 
     if (trace && typeof console !== "undefined") {
       console.log("[Reporter-v30] Artery snapshot recorded:", entry);
@@ -116,7 +129,7 @@ export function createPulseCompassReporter({
   }
 
   // -------------------------------------------------------------------------
-  // Record full envelope from Compass or Engine
+  // MOTION: Record full envelope from Compass or Engine
   // -------------------------------------------------------------------------
   async function recordEnvelope(envelope) {
     const entry = buildEnvelope({
@@ -125,7 +138,7 @@ export function createPulseCompassReporter({
       envelope
     });
 
-    await PulseDB.append(COLLECTION, entry);
+    await PulseDB.append(MOTION_COLLECTION, entry);
 
     if (trace && typeof console !== "undefined") {
       console.log("[Reporter-v30] Envelope recorded:", entry);
@@ -133,29 +146,114 @@ export function createPulseCompassReporter({
   }
 
   // -------------------------------------------------------------------------
+  // GPU: Record GPU worker hint (from PulseGPUProcessWorker.submit/plan)
+  // -------------------------------------------------------------------------
+  async function recordGPUHint({ job, hint }) {
+    if (!hint) return;
+
+    const entry = buildEnvelope({
+      type: "gpu_hint",
+      lane: job?.lane || null,
+      jobId: job?.jobId || job?.id || null,
+      jobType: job?.jobType || job?.type || null,
+      band: job?.band || "symbolic",
+      intent: job?.intent || null,
+      dnaTag: job?.dnaTag || null,
+      cosmos: job?.cosmos || cosmosContext,
+      gpu: hint.gpu || null,
+      advantageScore: hint.advantageScore ?? null,
+      advantageBoost: hint.advantageBoost ?? null,
+      suggestions: hint.suggestions || []
+    });
+
+    await PulseDB.append(GPU_COLLECTION, entry);
+
+    if (trace && typeof console !== "undefined") {
+      console.log("[Reporter-v30] GPU hint recorded:", entry);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // GPU: Record GPU worker tick (engineBlock.tick())
+  // -------------------------------------------------------------------------
+  async function recordGPUTick(tickResult) {
+    if (!tickResult) return;
+
+    const entry = buildEnvelope({
+      type: "gpu_tick",
+      ticks: tickResult.ticks ?? null,
+      gpuMode: tickResult.gpuMode || null,
+      gpuIds: tickResult.gpuIds || null
+    });
+
+    await PulseDB.append(GPU_COLLECTION, entry);
+
+    if (trace && typeof console !== "undefined") {
+      console.log("[Reporter-v30] GPU tick recorded:", entry);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // SNAPSHOTS: MotionEngine snapshot + Compass state + health scores
+  // -------------------------------------------------------------------------
+  async function recordEngineSnapshot({ engineSnapshot, healthScores, compassState }) {
+    const entry = buildEnvelope({
+      type: "engine_snapshot",
+      engineSnapshot: engineSnapshot || null,
+      healthScores: healthScores || null,
+      compassState: compassState || null
+    });
+
+    await PulseDB.append(SNAPSHOT_COLLECTION, entry);
+
+    if (trace && typeof console !== "undefined") {
+      console.log("[Reporter-v30] Engine snapshot recorded:", entry);
+    }
+  }
+
+  // Convenience: pull from Compass directly (if methods exist)
+  async function recordFullStateSnapshot({ engineSnapshot } = {}) {
+    const healthScores =
+      typeof Compass.getHealthScores === "function"
+        ? Compass.getHealthScores()
+        : null;
+
+    const compassState =
+      typeof Compass.getCompassState === "function"
+        ? Compass.getCompassState()
+        : null;
+
+    await recordEngineSnapshot({
+      engineSnapshot: engineSnapshot || null,
+      healthScores,
+      compassState
+    });
+  }
+
+  // -------------------------------------------------------------------------
   // Analytics helpers (pure, zero compute beyond filtering)
   // -------------------------------------------------------------------------
-  async function getAll() {
-    return await PulseDB.read(COLLECTION);
+  async function getAllMotionLogs() {
+    return await PulseDB.read(MOTION_COLLECTION);
   }
 
   async function getTicks() {
-    const all = await getAll();
+    const all = await getAllMotionLogs();
     return all.filter((e) => e.type === "tick");
   }
 
   async function getLaneSwitches() {
-    const all = await getAll();
+    const all = await getAllMotionLogs();
     return all.filter((e) => e.type === "lane_switch");
   }
 
   async function getArterySnapshots() {
-    const all = await getAll();
+    const all = await getAllMotionLogs();
     return all.filter((e) => e.type === "artery_snapshot");
   }
 
   async function getEnvelopes() {
-    const all = await getAll();
+    const all = await getAllMotionLogs();
     return all.filter((e) => e.type === "envelope");
   }
 
@@ -185,20 +283,59 @@ export function createPulseCompassReporter({
     return stats;
   }
 
+  // GPU analytics
+  async function getAllGPULogs() {
+    return await PulseDB.read(GPU_COLLECTION);
+  }
+
+  async function getGPUHints() {
+    const all = await getAllGPULogs();
+    return all.filter((e) => e.type === "gpu_hint");
+  }
+
+  async function getGPUTicks() {
+    const all = await getAllGPULogs();
+    return all.filter((e) => e.type === "gpu_tick");
+  }
+
+  // Snapshot analytics
+  async function getAllSnapshots() {
+    return await PulseDB.read(SNAPSHOT_COLLECTION);
+  }
+
+  async function getEngineSnapshots() {
+    const all = await getAllSnapshots();
+    return all.filter((e) => e.type === "engine_snapshot");
+  }
+
   // -------------------------------------------------------------------------
   // Public API
   // -------------------------------------------------------------------------
   return Object.freeze({
+    // Motion
     recordTick,
     recordLaneSwitch,
     recordArterySnapshot,
     recordEnvelope,
 
-    getAll,
+    getAllMotionLogs,
     getTicks,
     getLaneSwitches,
     getArterySnapshots,
     getEnvelopes,
-    getLaneStats
+    getLaneStats,
+
+    // GPU worker
+    recordGPUHint,
+    recordGPUTick,
+    getAllGPULogs,
+    getGPUHints,
+    getGPUTicks,
+
+    // Snapshots
+    recordEngineSnapshot,
+    recordFullStateSnapshot,
+    getAllSnapshots,
+    getEngineSnapshots
   });
 }

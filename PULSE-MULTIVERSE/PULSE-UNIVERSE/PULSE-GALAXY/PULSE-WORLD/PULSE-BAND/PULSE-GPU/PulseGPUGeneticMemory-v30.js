@@ -1,32 +1,9 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUGeneticMemory-v24.js
-// PULSE GPU GENETIC MEMORY v24‑IMMORTAL++ — THE DNA ARCHIVE
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUGeneticMemory-v30.js
+// PULSE GPU GENETIC MEMORY v30‑IMMORTAL-INTEL-GPU — THE DNA ARCHIVE 30++
 // Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
-// CoreMemory‑v24‑Integrated • ComputerIntelligence‑Aware • Earn‑v24‑GPU‑Ready
-// ============================================================================
-//
-// IDENTITY — THE DNA ARCHIVE (v24‑IMMORTAL++):
-//  --------------------------------------------------------
-//  • Long-term genetic memory of the GPU organism.
-//  • Stores lineage, execution signatures, binary-mode outcomes, and patterns.
-//  • Stores dispatch signatures, shape signatures, pressure correlations.
-//  • Tracks advantage vectors + CI fields for Drive / Wisdom / Cognitive layers.
-//  • No prediction — only pattern recognition over what actually happened.
-//  • Designed for Advisor, Healer, Orchestrator, Insights, UI, Engine, Earn.
-//  • Advantage-cascade aware: systemic gains improve pattern density.
-//  • PulseSend-v24-ready • Earn-v24-GPU-ready • Dual-band + CI aware.
-//
-// SAFETY CONTRACT (v24‑IMMORTAL++):
-//  ---------------------------------------------
-//  • No randomness
-//  • No timestamps
-//  • No GPU calls
-//  • No DOM
-//  • No Node APIs
-//  • No network or filesystem access
-//  • Fail-open: malformed inputs → ignored, never crash
-//  • Self-repair-ready: entries include OS metadata
-//  • Deterministic: same inputs → same genetic memory
+// CoreMemory‑v30‑Integrated • ComputerIntelligence‑Aware • Earn‑v30‑GPU‑Ready
+// Binary-Indexed • WarmPath‑Correlated • Chunker‑Aware • Pressure‑Aware
 // ============================================================================
 //
 //  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
@@ -34,10 +11,36 @@
 //  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
 //  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+//  ╚╝       ╚═════╝ ╚══════╝╚══════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
+//
+// SAFETY CONTRACT (v30‑IMMORTAL-INTEL-GPU):
+//  ----------------------------------------
+//  • No randomness
+//  • No timestamps
+//  • No GPU calls
+//  • No DOM / Node / network / filesystem
+//  • Fail-open: malformed inputs → ignored, never crash
+//  • Deterministic: same inputs → same genetic memory
+//  • CoreMemory mirror only via pure API (no side effects beyond mirror)
+// ============================================================================
 
 import { PulseCoreMemory } from "../PULSE-CORE/PulseCoreMemory-v24.js";
 
+// ---------------------------------------------------------------------------
+// GENETIC MEMORY CONTEXT (v30)
+// ---------------------------------------------------------------------------
+const GENETIC_MEMORY_CONTEXT = Object.freeze({
+  organ: "PulseGPU.GeneticMemory",
+  version: "30.0-Immortal-Intel-GPU",
+  role: "DNAArchive",
+  driftProof: true,
+  dualBandAware: true,
+  binaryIndexed: true,
+  warmPathAware: true,
+  chunkerAware: true,
+  earnAware: true,
+  ciAware: true
+});
 
 // ============================================================================
 // Utility: stable JSON stringify for hashing
@@ -73,8 +76,12 @@ function clamp(v, min, max) {
   return v < min ? min : v > max ? max : v;
 }
 
+function safeNumber(n, fallback = 0) {
+  return typeof n === "number" && !Number.isNaN(n) ? n : fallback;
+}
+
 // ============================================================================
-// Signature builders — v24 IMMORTAL++
+// Signature builders — v30 IMMORTAL-INTEL-GPU
 // ============================================================================
 function buildGameKey(gameProfile = {}) {
   const {
@@ -113,7 +120,9 @@ function buildTierKey(tierProfile = {}) {
   return stableStringify({
     tierId: tierProfile?.tierId || "default",
     tierLabel: tierProfile?.tierLabel || "",
-    earnTier: tierProfile?.earnTier || ""
+    earnTier: tierProfile?.earnTier || "",
+    gpuTier: tierProfile?.gpuTier || "",
+    warmPathTier: tierProfile?.warmPathTier || ""
   });
 }
 
@@ -132,7 +141,14 @@ function buildExecutionContextKey(executionContext = {}) {
     // v24: optional Earn + presence hints
     presence = "",
     earnBand = "",
-    earnTierHint = ""
+    earnTierHint = "",
+    // v30: GPU + warm-path + chunker hints
+    gpuStream = "",
+    gpuChunkProfile = "",
+    warmPathIndex = "",
+    gpuSessionId = "",
+    chunkerId = "",
+    lanes = 0
   } = executionContext;
 
   return stableStringify({
@@ -148,7 +164,13 @@ function buildExecutionContextKey(executionContext = {}) {
     rayTracing,
     presence,
     earnBand,
-    earnTierHint
+    earnTierHint,
+    gpuStream,
+    gpuChunkProfile,
+    warmPathIndex,
+    gpuSessionId,
+    chunkerId,
+    lanes
   });
 }
 
@@ -163,12 +185,8 @@ function buildGeneticKey({ gameProfile, hardwareProfile, tierProfile, executionC
 }
 
 // ============================================================================
-// Pattern aggregation — v24 IMMORTAL++
+// Pattern aggregation — v30 IMMORTAL-INTEL-GPU
 // ============================================================================
-function safeNumber(n, fallback = 0) {
-  return typeof n === "number" && !Number.isNaN(n) ? n : fallback;
-}
-
 function aggregatePatternStats(existing, sample) {
   const next = existing
     ? { ...existing }
@@ -205,6 +223,20 @@ function aggregatePatternStats(existing, sample) {
           performancePressure: 0,
           stabilitySignal: 0,
           confidence: 0
+        },
+
+        // v30: GPU + warm-path + chunker correlation
+        gpuWarmPathCorrelation: {
+          warmPathHitRatio: 0,
+          warmPathMissRatio: 0,
+          avgPrewarmBudget: 0,
+          avgCacheTierNumeric: 0
+        },
+        gpuChunkPattern: {
+          avgChunkSizeBytes: 0,
+          avgChunksPerSession: 0,
+          avgBinaryChunksPerSession: 0,
+          avgSymbolicChunksPerSession: 0
         }
       };
 
@@ -348,19 +380,98 @@ function aggregatePatternStats(existing, sample) {
     };
   }
 
+  // v30: GPU warm-path + cache correlation
+  if (sample.warmPathSnapshot && typeof sample.warmPathSnapshot === "object") {
+    const wp = sample.warmPathSnapshot;
+    const prev = next.gpuWarmPathCorrelation || {
+      warmPathHitRatio: 0,
+      warmPathMissRatio: 0,
+      avgPrewarmBudget: 0,
+      avgCacheTierNumeric: 0
+    };
+
+    const hitRatio = clamp(safeNumber(wp.warmPathHitRatio, 0), 0, 1);
+    const missRatio = clamp(safeNumber(wp.warmPathMissRatio, 0), 0, 1);
+    const prewarmBudget = clamp(safeNumber(wp.prewarmBudget, 0), 0, 100);
+
+    const cacheTierNumeric = (() => {
+      const t = wp.cacheTier || "none";
+      if (t === "strong") return 3;
+      if (t === "medium") return 2;
+      if (t === "light") return 1;
+      return 0;
+    })();
+
+    next.gpuWarmPathCorrelation = {
+      warmPathHitRatio:
+        (prev.warmPathHitRatio * count + hitRatio) / newCount,
+      warmPathMissRatio:
+        (prev.warmPathMissRatio * count + missRatio) / newCount,
+      avgPrewarmBudget:
+        (prev.avgPrewarmBudget * count + prewarmBudget) / newCount,
+      avgCacheTierNumeric:
+        (prev.avgCacheTierNumeric * count + cacheTierNumeric) / newCount
+    };
+  }
+
+  // v30: GPU chunk pattern aggregation
+  if (sample.chunkPatternSnapshot && typeof sample.chunkPatternSnapshot === "object") {
+    const cp = sample.chunkPatternSnapshot;
+    const prev = next.gpuChunkPattern || {
+      avgChunkSizeBytes: 0,
+      avgChunksPerSession: 0,
+      avgBinaryChunksPerSession: 0,
+      avgSymbolicChunksPerSession: 0
+    };
+
+    const avgChunkSizeBytes = clamp(
+      safeNumber(cp.avgChunkSizeBytes, 0),
+      0,
+      1024 * 1024
+    );
+    const chunksPerSession = clamp(
+      safeNumber(cp.chunksPerSession, 0),
+      0,
+      100000
+    );
+    const binaryChunksPerSession = clamp(
+      safeNumber(cp.binaryChunksPerSession, 0),
+      0,
+      100000
+    );
+    const symbolicChunksPerSession = clamp(
+      safeNumber(cp.symbolicChunksPerSession, 0),
+      0,
+      100000
+    );
+
+    next.gpuChunkPattern = {
+      avgChunkSizeBytes:
+        (prev.avgChunkSizeBytes * count + avgChunkSizeBytes) / newCount,
+      avgChunksPerSession:
+        (prev.avgChunksPerSession * count + chunksPerSession) / newCount,
+      avgBinaryChunksPerSession:
+        (prev.avgBinaryChunksPerSession * count + binaryChunksPerSession) /
+        newCount,
+      avgSymbolicChunksPerSession:
+        (prev.avgSymbolicChunksPerSession * count + symbolicChunksPerSession) /
+        newCount
+    };
+  }
+
   next.sampleCount = newCount;
   return next;
 }
 
 // ============================================================================
-// Genetic Memory Store — v24 IMMORTAL++ + CoreMemory v24 Integration
+// Genetic Memory Store — v30 IMMORTAL-INTEL-GPU + CoreMemory Integration
 // ============================================================================
 class PulseGPUGeneticMemoryStore {
   constructor() {
     this.entries = new Map();
     this.meta = { ...GENETIC_MEMORY_CONTEXT };
-    this.coreMemory = new PulseCoreMemory("PulseGPU.GeneticMemory.v24");
-    this.namespace = "PulseGPU.GeneticMemory.v24";
+    this.coreMemory = new PulseCoreMemory("PulseGPU.GeneticMemory.v30");
+    this.namespace = "PulseGPU.GeneticMemory.v30";
   }
 
   clear() {
@@ -379,8 +490,11 @@ class PulseGPUGeneticMemoryStore {
     traceSummary,
     advantageSnapshot,
     computerIntelligence,
-    // v24: optional Earn snapshot (from PulseGPUEarnProfile-v24)
-    earnSnapshot
+    // v24: optional Earn snapshot (from PulseGPUEarnProfile)
+    earnSnapshot,
+    // v30: warm-path + chunker snapshots
+    warmPathSnapshot,
+    chunkPatternSnapshot
   }) {
     const key = buildGeneticKey({
       gameProfile,
@@ -402,7 +516,9 @@ class PulseGPUGeneticMemoryStore {
       symbolicStepCount: traceSummary?.symbolicStepCount ?? 0,
       advantageSnapshot: advantageSnapshot || null,
       computerIntelligence: computerIntelligence || null,
-      earnSnapshot: earnSnapshot || null
+      earnSnapshot: earnSnapshot || null,
+      warmPathSnapshot: warmPathSnapshot || null,
+      chunkPatternSnapshot: chunkPatternSnapshot || null
     };
 
     const updatedStats = aggregatePatternStats(
@@ -457,19 +573,39 @@ class PulseGPUGeneticMemoryStore {
     return null;
   }
 
-  queryPatterns({ gameId, gpuModel, binaryMode, tierId, earnTier } = {}) {
+  queryPatterns({
+    gameId,
+    gpuModel,
+    binaryMode,
+    tierId,
+    earnTier,
+    cacheTierMinNumeric,
+    binaryModeMinRatio
+  } = {}) {
     const results = [];
     for (const entry of this.entries.values()) {
       const gp = entry.gameProfile || {};
       const hp = entry.hardwareProfile || {};
       const ctx = entry.executionContext || {};
       const tp = entry.tierProfile || {};
+      const ps = entry.patternStats || {};
+      const wp = ps.gpuWarmPathCorrelation || {};
+      const bm = ps.binaryModeRatio ?? 0;
 
       if (gameId && gp.gameId !== gameId) continue;
       if (gpuModel && hp.gpuModel !== gpuModel) continue;
       if (binaryMode && ctx.binaryMode !== binaryMode) continue;
       if (tierId && tp.tierId !== tierId) continue;
       if (earnTier && tp.earnTier !== earnTier) continue;
+
+      if (typeof cacheTierMinNumeric === "number") {
+        const cacheTierNumeric = wp.avgCacheTierNumeric ?? 0;
+        if (cacheTierNumeric < cacheTierMinNumeric) continue;
+      }
+
+      if (typeof binaryModeMinRatio === "number") {
+        if (bm < binaryModeMinRatio) continue;
+      }
 
       results.push(entry);
     }
@@ -501,6 +637,8 @@ class PulseGPUGeneticMemoryStore {
       const av = ps.advantageVector || {};
       const ci = ps.computerIntelligence || {};
       const es = ps.earnStats || {};
+      const wp = ps.gpuWarmPathCorrelation || {};
+      const cp = ps.gpuChunkPattern || {};
 
       const safeEntry = {
         key: entry.key,
@@ -539,6 +677,18 @@ class PulseGPUGeneticMemoryStore {
             performancePressure: ci.performancePressure || 0,
             stabilitySignal: ci.stabilitySignal || 0,
             confidence: clamp(ci.confidence || 0, 0, 1)
+          },
+          gpuWarmPathCorrelation: {
+            warmPathHitRatio: wp.warmPathHitRatio || 0,
+            warmPathMissRatio: wp.warmPathMissRatio || 0,
+            avgPrewarmBudget: wp.avgPrewarmBudget || 0,
+            avgCacheTierNumeric: wp.avgCacheTierNumeric || 0
+          },
+          gpuChunkPattern: {
+            avgChunkSizeBytes: cp.avgChunkSizeBytes || 0,
+            avgChunksPerSession: cp.avgChunksPerSession || 0,
+            avgBinaryChunksPerSession: cp.avgBinaryChunksPerSession || 0,
+            avgSymbolicChunksPerSession: cp.avgSymbolicChunksPerSession || 0
           }
         },
         meta: { ...GENETIC_MEMORY_CONTEXT }
@@ -554,7 +704,7 @@ class PulseGPUGeneticMemoryStore {
 }
 
 // ============================================================================
-// Public API — Genetic Memory Surface (v24 IMMORTAL++)
+// Public API — Genetic Memory Surface (v30 IMMORTAL-INTEL-GPU)
 // ============================================================================
 class PulseGPUGeneticMemory {
   constructor() {
@@ -593,5 +743,6 @@ class PulseGPUGeneticMemory {
 export {
   PulseGPUGeneticMemory,
   PulseGPUGeneticMemoryStore,
-  buildGeneticKey
+  buildGeneticKey,
+  GENETIC_MEMORY_CONTEXT
 };

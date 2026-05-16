@@ -1,23 +1,12 @@
 // ============================================================================
-// PulseCompass-v30-Immortal-Evo++++ — Motion Orchestrator & Telemetry Core
-//  • Dynamic lane selection (forward/backward/…)
-//  • Last-lane memory + health/advantage-aware auto-fallback
+// PulseCompass-v30-Immortal-Evo++++-ProcessWorker+++
+//  • Motion Orchestrator & Telemetry Core (Forward + Backward + GPU/Earn worker)
+//  • Dynamic lane selection (forward/backward/auto) with last-lane memory
+//  • Health/advantage-aware auto-fallback + overload protection
 //  • Full motion telemetry → Motion_Engine_Logs (via PulseDB-v30)
-//  • Prewarms all dependent lanes + DB
-//  • Zero compute logic — pure routing + reporting
+//  • Prewarms DB, motion lanes, and GPU/Earn process worker
 //  • Cosmos-aware, presence/advantage-aware, dual-band, artery-aware
-//  • Future lanes can be added without touching MotionEngine core
-// ============================================================================
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
-// ============================================================================
-// GLOBAL HANDLE (membrane-safe)
+//  • Zero compute logic — pure routing + reporting + worker handoff
 // ============================================================================
 
 const G =
@@ -28,35 +17,22 @@ const G =
   {};
 const g = G;
 
-// ============================================================================
-// UNIVERSAL TIMESTAMP (Shadow or Admin)
-// ============================================================================
-
 const Timestamp =
-  (G.firebaseAdmin && G.firebaseAdmin.firestore && G.firebaseAdmin.firestore.Timestamp) ||
+  (G.firebaseAdmin &&
+    G.firebaseAdmin.firestore &&
+    G.firebaseAdmin.firestore.Timestamp) ||
   (G.Timestamp && G.Timestamp) ||
   null;
-
-// ============================================================================
-// UNIVERSAL ADMIN (Shadow or Admin)
-// ============================================================================
 
 const admin =
   (G.firebaseAdmin && G.firebaseAdmin) ||
   (G.admin && G.admin) ||
   null;
 
-// ============================================================================
-// UNIVERSAL DB (Shadow DB ALWAYS wins)
-// ============================================================================
 const db =
-  (G.db && G.db) ||                 // Shadow DB (v25++)
-  (admin && admin.firestore && admin.firestore()) || // Admin fallback
+  (G.db && G.db) ||
+  (admin && admin.firestore && admin.firestore()) ||
   null;
-
-// ============================================================================
-// UNIVERSAL LOGGING
-// ============================================================================
 
 const dblog =
   (G.log && G.log) ||
@@ -67,27 +43,47 @@ const dberror =
   console.error;
 
 const fetchFn =
-  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||   // Shadow fetch alias
-  (G.fetch && typeof G.fetch === "function" && G.fetch) ||         // Global broadcasted Shadow.fetch
+  (G.fetchfn && typeof G.fetchfn === "function" && G.fetchfn) ||
+  (G.fetch && typeof G.fetch === "function" && G.fetch) ||
   null;
 
-// ============================================================================
-// Lane wrappers (v30-capable faces around MotionEngine)
-//   NOTE: these are your Forward/Backward motion pages that call createPulseMotionEngine
-// ============================================================================
-import * as Forward from "./PulseEngineForwardMotion-v24.js";
-import * as Backward from "./PulseEngineBackwardMotion-v24.js";
+const presenceContext =
+  (typeof window !== "undefined" && window.PULSE_PRESENCE) ||
+  g.PULSE_PRESENCE ||
+  {};
 
-// DB adapter (v30)
-import { createPulseDB } from "./PulseEngineWorkFlow-v30.js";
+const advantageContext =
+  (typeof window !== "undefined" && window.PULSE_ADVANTAGE) ||
+  g.PULSE_ADVANTAGE ||
+  {};
+
+const cosmosContextDefault =
+  (typeof window !== "undefined" && window.PULSE_COSMOS) ||
+  g.PULSE_COSMOS ||
+  {
+    universeId: "u:default",
+    timelineId: "t:main",
+    branchId: "b:root",
+    shardId: "s:primary"
+  };
+
+// Motion lanes (v30 wrappers)
+import * as Forward from "./PulseEngineForwardMotion-v30.js";
+import * as Backward from "./PulseEngineBackwardMotion-v30.js";
+
+// DB substrate (v30++)
+import { createPulseDB } from "./PulseDB-v30-Immortal++++.js";
+
+// GPU/Earn process worker (v30)
+import { PulseGPUProcessWorker } from "./PulseGPUProcessWorker-v30.js";
 
 // ============================================================================
 // Memory keys (v30 namespace)
 // ============================================================================
-const LAST_LANE_KEY    = "pulse:v30:lastMotionLane";
-const MOTION_LOGS_KEY  = "pulse:v30:Motion_Engine_Logs";
-const HEALTH_KEY       = "pulse:v30:Motion_Engine_Health";
-const COMPASS_STATE_KEY = "pulse:v30:Motion_Compass_State";
+const LAST_LANE_KEY      = "pulse:v30:lastMotionLane";
+const MOTION_LOGS_KEY    = "pulse:v30:Motion_Engine_Logs";
+const HEALTH_KEY         = "pulse:v30:Motion_Engine_Health";
+const COMPASS_STATE_KEY  = "pulse:v30:Motion_Compass_State";
 
 // Default lane if none stored
 const DEFAULT_LANE = "forward";
@@ -101,40 +97,63 @@ const LANES = {
 // Health thresholds (v30 tuned)
 const HEALTH_CONFIG = {
   minTicksForHealth: 8,
-  maxErrorRate: 0.25,        // reserved for future error tracking
-  maxOverloadPressure: 0.9,  // artery.pressure threshold
-  minAdvantageScore: 0.1     // if advantage collapses, lane is considered weak
+  maxErrorRate: 0.25,
+  maxOverloadPressure: 0.9,
+  minAdvantageScore: 0.1
 };
 
-// ---------------------------------------------------------------------------
-// Orchestrator Factory — v30 IMMORTAL
-// ---------------------------------------------------------------------------
+// ============================================================================
+// Factory — PulseCompass v30++
+// ============================================================================
 export function createPulseCompass({
   MemoryOrgan,
   trace = false,
   sessionId = null,
-  cosmosContext = {
-    universeId: "u:default",
-    timelineId: "t:main",
-    branchId: "b:root",
-    shardId: "s:primary"
-  },
-  presenceContext = {},
-  advantageContext = {}
+  cosmosContext = cosmosContextDefault,
+  presenceContext: presenceCtxOverride = presenceContext,
+  advantageContext: advantageCtxOverride = advantageContext,
+  gpuProcessWorker = null   // optional external worker; default created if null
 } = {}) {
   if (!MemoryOrgan) {
     throw new Error("[PulseCompass-v30] MemoryOrgan is required.");
   }
 
-  const PulseDB = createPulseDB({ MemoryOrgan, trace, sessionId });
+  const presenceCtx = presenceCtxOverride || presenceContext;
+  const advantageCtx = advantageCtxOverride || advantageContext;
+
+  // DB substrate
+  const PulseDB = createPulseDB({
+    MemoryOrgan,
+    trace,
+    sessionId,
+    cosmosContext,
+    presenceContext: presenceCtx,
+    advantageContext: advantageCtx
+  });
 
   // Ensure collections exist
   PulseDB.ensureCollection(MOTION_LOGS_KEY);
   PulseDB.ensureCollection(HEALTH_KEY);
 
-  // ------------------------------
+  // GPU/Earn process worker (compressed process worker)
+  const worker =
+    gpuProcessWorker ||
+    new PulseGPUProcessWorker({
+      db,
+      Timestamp,
+      fetchFn,
+      presenceContext: presenceCtx,
+      advantageContext: advantageCtx,
+      cosmosContext,
+      lane: "dual",
+      instanceId: "gpu-process-worker-v30",
+      allowEarnLane: true,
+      allowGpuLane: true
+    });
+
+  // -------------------------------------------------------------------------
   // Lane memory helpers
-  // ------------------------------
+  // -------------------------------------------------------------------------
   function readLastLane() {
     const lane = MemoryOrgan.read?.(LAST_LANE_KEY);
     if (LANES[lane]) return lane;
@@ -145,9 +164,9 @@ export function createPulseCompass({
     MemoryOrgan.write?.(LAST_LANE_KEY, lane);
   }
 
-  // ------------------------------
+  // -------------------------------------------------------------------------
   // Compass state helpers
-  // ------------------------------
+  // -------------------------------------------------------------------------
   function readCompassState() {
     const state = MemoryOrgan.read?.(COMPASS_STATE_KEY);
     if (!state || typeof state !== "object") {
@@ -155,6 +174,8 @@ export function createPulseCompass({
         lastLane: DEFAULT_LANE,
         lastTickAt: null,
         lastAdvantage: 0,
+        lastPressure: 0,
+        lastJobType: null,
         cosmos: cosmosContext
       };
     }
@@ -171,38 +192,38 @@ export function createPulseCompass({
     return next;
   }
 
-  // ------------------------------
+  // -------------------------------------------------------------------------
   // Logging helpers
-  // ------------------------------
-  function appendLog(entry) {
+  // -------------------------------------------------------------------------
+  async function appendLog(entry) {
     const envelope = {
       ...entry,
       sessionId: sessionId || null,
       cosmos: cosmosContext,
-      presenceContext,
-      advantageContext,
+      presenceContext: presenceCtx,
+      advantageContext: advantageCtx,
       schemaVersion: "v30",
       version: "30.0-Immortal-Evo++++"
     };
-    PulseDB.append(MOTION_LOGS_KEY, envelope);
+    await PulseDB.append(MOTION_LOGS_KEY, envelope);
     if (trace && typeof console !== "undefined") {
       console.log("[PulseCompass-v30] Log appended:", envelope);
     }
   }
 
-  function readLogs() {
+  async function readLogs() {
     return PulseDB.read(MOTION_LOGS_KEY);
   }
 
-  // ------------------------------
+  // -------------------------------------------------------------------------
   // Health helpers
-  // ------------------------------
-  function readHealth() {
-    const health = PulseDB.read(HEALTH_KEY);
+  // -------------------------------------------------------------------------
+  async function readHealth() {
+    const health = await PulseDB.read(HEALTH_KEY);
     return Array.isArray(health) ? health : [];
   }
 
-  function writeHealthSnapshot(snapshot) {
+  async function writeHealthSnapshot(snapshot) {
     const envelope = {
       timestamp: Date.now(),
       sessionId: sessionId || null,
@@ -211,14 +232,14 @@ export function createPulseCompass({
       schemaVersion: "v30",
       version: "30.0-Immortal-Evo++++"
     };
-    PulseDB.append(HEALTH_KEY, envelope);
+    await PulseDB.append(HEALTH_KEY, envelope);
     if (trace && typeof console !== "undefined") {
       console.log("[PulseCompass-v30] Health snapshot recorded:", envelope);
     }
   }
 
-  function computeLaneStats() {
-    const logs = readLogs().filter((e) => e.type === "tick");
+  async function computeLaneStats() {
+    const logs = (await readLogs()).filter((e) => e.type === "tick");
     const stats = {};
 
     for (const log of logs) {
@@ -240,262 +261,276 @@ export function createPulseCompass({
       stats[lane].ticks += 1;
       stats[lane].patterns += log.patterns || 0;
       stats[lane].lastTickId = log.tickId;
-
-      if (log.artery) {
-        stats[lane].lastPressure = log.artery.pressure ?? null;
-        stats[lane].lastLoad = log.artery.load ?? null;
-      }
-      if (log.band) stats[lane].lastBand = log.band;
-      if (log.dnaTag) stats[lane].lastDnaTag = log.dnaTag;
-      if (typeof log.advantageScore === "number") {
-        stats[lane].lastAdvantageScore = log.advantageScore;
-      }
-      if (log.jobType) stats[lane].lastJobType = log.jobType;
-      if (log.intent) stats[lane].lastIntent = log.intent;
+      stats[lane].lastPressure = log.pressure || null;
+      stats[lane].lastLoad = log.load || null;
+      stats[lane].lastBand = log.band || null;
+      stats[lane].lastDnaTag = log.dnaTag || null;
+      stats[lane].lastAdvantageScore = log.advantageScore ?? null;
+      stats[lane].lastJobType = log.jobType || null;
+      stats[lane].lastIntent = log.intent || null;
     }
 
     return stats;
   }
 
-  function computeHealthScores() {
-    const stats = computeLaneStats();
-    const scores = {};
+  async function computeHealth() {
+    const stats = await computeLaneStats();
+    const health = {
+      ts: Date.now(),
+      lanes: {},
+      config: HEALTH_CONFIG
+    };
 
     for (const lane of Object.keys(LANES)) {
       const s = stats[lane] || {
         ticks: 0,
-        lastPressure: 0,
-        lastLoad: 0,
-        lastAdvantageScore: 0
+        patterns: 0,
+        lastTickId: null,
+        lastPressure: null,
+        lastLoad: null,
+        lastBand: null,
+        lastDnaTag: null,
+        lastAdvantageScore: null,
+        lastJobType: null,
+        lastIntent: null
       };
-      let score = 1.0;
 
-      // Not enough ticks → lower confidence
-      if (s.ticks < HEALTH_CONFIG.minTicksForHealth) {
-        score *= 0.8;
-      }
+      const ticks = s.ticks;
+      const advantage = s.lastAdvantageScore ?? 0;
+      const pressure = s.lastPressure?.gpuLoadPressure ?? 0;
 
-      // Overload pressure → penalize
-      if (typeof s.lastPressure === "number" &&
-          s.lastPressure > HEALTH_CONFIG.maxOverloadPressure) {
-        score *= 0.5;
-      }
+      const healthy =
+        ticks >= HEALTH_CONFIG.minTicksForHealth &&
+        advantage >= HEALTH_CONFIG.minAdvantageScore &&
+        pressure <= HEALTH_CONFIG.maxOverloadPressure;
 
-      // Saturated load → penalize
-      if (typeof s.lastLoad === "number" && s.lastLoad > 0.9) {
-        score *= 0.7;
-      }
-
-      // Advantage collapsed → penalize
-      if (typeof s.lastAdvantageScore === "number" &&
-          s.lastAdvantageScore < HEALTH_CONFIG.minAdvantageScore) {
-        score *= 0.6;
-      }
-
-      scores[lane] = {
-        lane,
-        score,
-        ticks: s.ticks,
+      health.lanes[lane] = {
+        ticks,
+        patterns: s.patterns,
+        lastTickId: s.lastTickId,
         lastPressure: s.lastPressure,
         lastLoad: s.lastLoad,
-        lastBand: s.lastBand || null,
-        lastDnaTag: s.lastDnaTag || null,
-        lastAdvantageScore: s.lastAdvantageScore ?? null,
-        lastJobType: s.lastJobType || null,
-        lastIntent: s.lastIntent || null
+        lastBand: s.lastBand,
+        lastDnaTag: s.lastDnaTag,
+        lastAdvantageScore: s.lastAdvantageScore,
+        lastJobType: s.lastJobType,
+        lastIntent: s.lastIntent,
+        healthy
       };
     }
 
-    writeHealthSnapshot(scores);
-    return scores;
-  }
-
-  function pickBestHealthyLane() {
-    const scores = computeHealthScores();
-    let bestLane = DEFAULT_LANE;
-    let bestScore = -1;
-
-    for (const lane of Object.keys(scores)) {
-      const s = scores[lane];
-      if (s.score > bestScore) {
-        bestScore = s.score;
-        bestLane = lane;
-      }
-    }
-
-    if (trace && typeof console !== "undefined") {
-      console.log("[PulseCompass-v30] Best healthy lane:", bestLane, scores);
-    }
-    return bestLane;
-  }
-
-  // ------------------------------
-  // Determine active lane
-  // ------------------------------
-  let activeLane = readLastLane();
-  let Lane = LANES[activeLane];
-
-  if (!Lane) {
-    activeLane = DEFAULT_LANE;
-    Lane = LANES[activeLane];
-  }
-
-  if (trace && typeof console !== "undefined") {
-    console.log("[PulseCompass-v30] Initial active lane:", activeLane);
+    await writeHealthSnapshot(health);
+    return health;
   }
 
   // -------------------------------------------------------------------------
-  // Prewarm EVERYTHING this orchestrator depends on
+  // Lane selection (dynamic, health-aware, last-lane-aware)
+//  • job.hints.lane can force lane; otherwise auto
   // -------------------------------------------------------------------------
-  async function prewarm() {
+  function chooseLane(job, healthSnapshot, compassState) {
+    const hints = job?.hints || {};
+    const forcedLane = hints.lane;
+    if (forcedLane && LANES[forcedLane]) {
+      return forcedLane;
+    }
+
+    const lastLane = compassState.lastLane || DEFAULT_LANE;
+    const health = healthSnapshot?.lanes || {};
+    const forwardHealthy = health.forward?.healthy !== false;
+    const backwardHealthy = health.backward?.healthy !== false;
+
+    const jobType = job?.type || "";
+    const intent = job?.intent || "";
+
+    if (jobType === "GPU_CACHE" || jobType === "BINARY_COMPUTE") {
+      if (forwardHealthy) return "forward";
+    }
+
+    if (jobType === "EARN_TASK" && intent === "settlement") {
+      if (backwardHealthy) return "backward";
+    }
+
+    if (forwardHealthy && !backwardHealthy) return "forward";
+    if (!forwardHealthy && backwardHealthy) return "backward";
+
+    return lastLane;
+  }
+
+  // -------------------------------------------------------------------------
+  // Worker integration (GPU/Earn)
+//  • Pre-process job → worker.hintJob / worker.routeJob
+//  • Worker can attach gpuHints / earnHints / chunkHints
+  // -------------------------------------------------------------------------
+  function enrichJobViaWorker(job) {
+    if (!worker || typeof worker.hintJob !== "function") return job;
+
     try {
-      PulseDB.ensureCollection(MOTION_LOGS_KEY);
-      PulseDB.ensureCollection(HEALTH_KEY);
-
-      if (typeof Forward.prewarm === "function") await Forward.prewarm();
-      if (typeof Backward.prewarm === "function") await Backward.prewarm();
-
-      appendLog({
-        type: "prewarm",
-        timestamp: Date.now(),
-        lanes: Object.keys(LANES)
+      const hinted = worker.hintJob(job, {
+        cosmosContext,
+        presenceContext: presenceCtx,
+        advantageContext: advantageCtx
       });
-
-      writeCompassState({
-        lastLane: activeLane,
-        lastTickAt: Date.now()
-      });
-
-      if (trace && typeof console !== "undefined") {
-        console.log("[PulseCompass-v30] Prewarm complete.");
-      }
-      return true;
+      return hinted || job;
     } catch (err) {
-      if (typeof console !== "undefined") {
-        console.warn("[PulseCompass-v30] Prewarm failed:", err);
+      if (trace) {
+        console.error("[PulseCompass-v30] worker.hintJob failed:", err);
       }
-      return false;
+      return job;
     }
   }
 
   // -------------------------------------------------------------------------
-  // Routing wrappers
+  // Public API — submit / tick / prewarm / snapshot / diagnostics
   // -------------------------------------------------------------------------
-  function submit(job) {
-    // Compass is lane-agnostic: it just forwards to current lane
-    Lane.submit(job);
-    writeLastLane(activeLane);
+  async function submit(job = {}) {
+    const compassState = readCompassState();
+    const healthSnapshot = await computeHealth();
 
-    appendLog({
-      type: "submit",
-      timestamp: Date.now(),
-      lane: activeLane,
-      jobType: job?.type || null,
-      intent: job?.intent || job?.payload?.intent || null
-    });
-  }
+    const enrichedJob = enrichJobViaWorker(job);
+    const lane = chooseLane(enrichedJob, healthSnapshot, compassState);
+    const laneModule = LANES[lane];
 
-  function tick() {
-    const res = Lane.tick();
-    writeLastLane(activeLane);
-
-    if (res?.metrics) {
-      appendLog({
-        type: "tick",
-        timestamp: Date.now(),
-        lane: activeLane,
-        tickId: res.metrics.tickId,
-        jobId: res.metrics.jobId,
-        patterns: res.metrics.patternsCount,
-        band: res.metrics.band,
-        dnaTag: res.metrics.dnaTag,
-        artery: res.metrics.artery,
-        advantageScore: res.metrics.advantageScore ?? null,
-        jobType: res.metrics.jobType || null,
-        intent: res.metrics.intent || null,
-        cosmos: res.metrics.cosmos || cosmosContext
-      });
-
-      writeCompassState({
-        lastLane: activeLane,
-        lastTickAt: Date.now(),
-        lastAdvantage: res.metrics.advantageScore ?? 0
-      });
+    if (!laneModule || typeof laneModule.submit !== "function") {
+      return { ok: false, reason: "LANE_UNAVAILABLE", lane };
     }
 
-    // Health-aware lane switching
-    const scores = computeHealthScores();
-    const current = scores[activeLane];
+    const result = laneModule.submit(enrichedJob);
 
-    if (current &&
-        current.lastPressure != null &&
-        current.lastPressure > HEALTH_CONFIG.maxOverloadPressure) {
-      const best = pickBestHealthyLane();
-      if (best !== activeLane) {
-        switchLane(best);
-      }
-    }
-
-    return res;
-  }
-
-  // -------------------------------------------------------------------------
-  // Lane switching API
-  // -------------------------------------------------------------------------
-  function switchLane(lane) {
-    if (!LANES[lane]) {
-      if (typeof console !== "undefined") {
-        console.warn("[PulseCompass-v30] Unknown lane:", lane);
-      }
-      return false;
-    }
-
-    activeLane = lane;
-    Lane = LANES[lane];
     writeLastLane(lane);
-
-    appendLog({
-      type: "lane_switch",
-      timestamp: Date.now(),
-      lane
+    writeCompassState({
+      lastLane: lane,
+      lastTickAt: Date.now(),
+      lastJobType: enrichedJob.type || null
     });
+
+    await appendLog({
+      type: "submit",
+      lane,
+      jobType: enrichedJob.type || null,
+      intent: enrichedJob.intent || null,
+      result,
+      tickId: null,
+      pressure: enrichedJob.pressureSnapshot || null,
+      band: enrichedJob.band || "dual",
+      dnaTag: enrichedJob.dnaTag || null,
+      advantageScore: enrichedJob.advantageScore ?? null
+    });
+
+    return { ok: true, lane, result };
+  }
+
+  async function tick() {
+    const compassState = readCompassState();
+    const healthSnapshot = await computeHealth();
+    const lane = readLastLane();
+    const laneModule = LANES[lane];
+
+    if (!laneModule || typeof laneModule.tick !== "function") {
+      return { ok: false, reason: "LANE_UNAVAILABLE", lane };
+    }
+
+    const result = laneModule.tick();
+    const tickId = `${lane}:${Date.now()}`;
 
     writeCompassState({
       lastLane: lane,
       lastTickAt: Date.now()
     });
 
-    if (trace && typeof console !== "undefined") {
-      console.log("[PulseCompass-v30] Switched to lane:", lane);
-    }
-    return true;
+    await appendLog({
+      type: "tick",
+      lane,
+      tickId,
+      patterns: result?.patternsProcessed || 0,
+      pressure: result?.pressureSnapshot || null,
+      load: result?.loadSnapshot || null,
+      band: result?.band || "dual",
+      dnaTag: result?.dnaTag || null,
+      advantageScore: result?.advantageScore ?? null,
+      jobType: result?.lastJobType || null,
+      intent: result?.lastIntent || null
+    });
+
+    return { ok: true, lane, result };
   }
 
-  // -------------------------------------------------------------------------
-  // Public API
-  // -------------------------------------------------------------------------
+  async function prewarm() {
+    try {
+      await PulseDB.append(MOTION_LOGS_KEY, {
+        type: "prewarm",
+        ts: Date.now(),
+        sessionId,
+        cosmos: cosmosContext
+      });
+    } catch (err) {
+      if (trace) console.error("[PulseCompass-v30] DB prewarm append failed:", err);
+    }
+
+    for (const lane of Object.keys(LANES)) {
+      const mod = LANES[lane];
+      if (mod && typeof mod.prewarm === "function") {
+        try {
+          mod.prewarm();
+        } catch (err) {
+          if (trace) console.error("[PulseCompass-v30] Lane prewarm failed:", lane, err);
+        }
+      }
+    }
+
+    if (worker && typeof worker.prewarm === "function") {
+      try {
+        worker.prewarm();
+      } catch (err) {
+        if (trace) console.error("[PulseCompass-v30] Worker prewarm failed:", err);
+      }
+    }
+
+    return { ok: true };
+  }
+
+  async function snapshot() {
+    const healthSnapshot = await computeHealth();
+    const dbSnapshot = PulseDB.snapshot?.() || null;
+    const compassState = readCompassState();
+
+    return {
+      ts: Date.now(),
+      meta: {
+        identity: "PulseCompass-v30-Immortal-Evo++++-ProcessWorker+++",
+        version: "30.0-Immortal-Evo++++",
+        sessionId
+      },
+      cosmosContext,
+      presenceContext: presenceCtx,
+      advantageContext: advantageCtx,
+      compassState,
+      health: healthSnapshot,
+      db: dbSnapshot
+    };
+  }
+
+  async function diagnostics() {
+    const healthSnapshot = await computeHealth();
+    const logs = await readLogs();
+    const metrics = PulseDB.getMetrics();
+
+    return {
+      ts: Date.now(),
+      health: healthSnapshot,
+      logsCount: logs.length,
+      dbMetrics: metrics,
+      lastCompassState: readCompassState()
+    };
+  }
+
   return Object.freeze({
     submit,
     tick,
     prewarm,
-    switchLane,
-    get activeLane() {
-      return activeLane;
-    },
-    get logs() {
-      return readLogs();
-    },
-    getHealthSnapshots() {
-      return readHealth();
-    },
-    getLaneStats() {
-      return computeLaneStats();
-    },
-    getHealthScores() {
-      return computeHealthScores();
-    },
-    getCompassState() {
-      return readCompassState();
-    }
+    snapshot,
+    diagnostics,
+    lanes: LANES,
+    worker,
+    db: PulseDB
   });
 }

@@ -31,7 +31,7 @@ import { PulseGPUUXBridge } from "./PulseGPUCognitiveIntelligence-v24.js";
 import { PulseGPUPerformanceAdvisor } from "./PulseGPUDriveCenter-v24.js";
 import {
   PulseGPUGuardianCortex as PulseGPUAutoOptimize
-} from "./PulseGPUGuardianCortex-v24.js";
+} from "./PulseGPUGuardianCortex-v30.js";
 
 // v30 healer context (can be extended with binary/indexedDB metadata)
 const GPU_HEALER_CONTEXT = {

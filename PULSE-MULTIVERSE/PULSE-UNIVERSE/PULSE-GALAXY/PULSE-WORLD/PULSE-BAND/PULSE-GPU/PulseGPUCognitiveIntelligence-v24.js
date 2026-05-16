@@ -27,11 +27,11 @@ import {
 } from "../___MONITOR/PULSE-PROOF-LOGGER.js";
 import * as PulseGPUBrain                from "./PulseGPUBrain-v24.js";
 import * as PulseGPUWisdomCortex        from "./PulseGPUWIsdomCortex-v24.js";
-import * as PulseGPUAstralMuscleSystem  from "./PulseGPUAstralMuscleSystem-v24.js";
-import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem-v24.js";
+import * as PulseGPUAstralMuscleSystem  from "./PulseGPUAstralMuscleSystem-v30.js";
+import * as PulseGPUAstralNervousSystem from "./PulseGPUAstralNervousSystem-v30.js";
 import * as PulseGPUSpine               from "./PulseGPUSpine-v24.js";
-import * as PulseGPUGeneticMemory       from "./PulseGPUGeneticMemory-v24.js";
-import * as PulseGPUGuardianCortex      from "./PulseGPUGuardianCortex-v24.js";
+import * as PulseGPUGeneticMemory       from "./PulseGPUGeneticMemory-v30.js";
+import * as PulseGPUGuardianCortex      from "./PulseGPUGuardianCortex-v30.js";
 import * as PulseGPULymphNodes          from "./PulseGPULymphNodes-v30.js";
 import * as PulseGPUSurvivalInstincts   from "./PulseGPUSurvivalInstincts-v24.js";
 import * as PulseGPUChunkPlannerModule  from "./PulseGPUChunkPlanner-v24.js"; // awareness only

@@ -1,23 +1,16 @@
 // ============================================================================
-//  PulseEarnSendSystem-v24-IMMORTAL-INTEL.js
-//  Earn → Pulse → Send Conductor (v24++ IMMORTAL-INTEL)
-//  Deterministic, Governed Single-Pass, DualBand + DualHash + Presence/Advantage/Chunk
+//  PulseEarnSendSystem-v30-LYMPH-NODES.js
+//  Earn → Pulse → Send Conductor (v30 LYMPH-NODES + IMMORTAL-INTEL)
+//  Deterministic, Governed Single-Pass, DualBand + DualHash +
+//  Presence/Advantage/Chunk + LymphNodes/Immune/Liquidity surfaces
 // ============================================================================
 
-//
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
-
-// Legacy bridge imports (v24 Earn core)
+// Legacy bridge imports (v24 Earn core – unchanged)
 import { createEarn, evolveEarn } from "./PulseEarn-v24.js";
 import { PulseEarnContinuancePulse } from "./PulseEarnContinuancePulse-v24.js";
 
 // ---------------------------------------------------------------------------
-// Deterministic Hash Helpers — v24-IMMORTAL-INTEL
+// Deterministic Hash Helpers — v30 IMMORTAL-INTEL
 // ---------------------------------------------------------------------------
 function computeHash(str) {
   let h = 0;
@@ -46,9 +39,7 @@ function buildDualHashSignature(label, intelPayload, classicString) {
     classic: classicString || ""
   };
   const intelHash = computeHashIntelligence(intelBase);
-  const classicHash = computeHash(
-    `${label}::${classicString || ""}`
-  );
+  const classicHash = computeHash(`${label}::${classicString || ""}`);
   return {
     intel: intelHash,
     classic: classicHash
@@ -87,9 +78,10 @@ function deriveFactoringSignalFromContext({
 }
 
 // ---------------------------------------------------------------------------
-// Healing Metadata — Send Conductor Activity Log (v24-IMMORTAL-INTEL)
+// Healing Metadata — Send Conductor Activity Log (v30-LYMPH-NODES)
 // ---------------------------------------------------------------------------
 const sendHealing = {
+  version: "v30-LYMPH-NODES-IMMORTAL-INTEL",
   cycleCount: 0,
   lastImpulseId: null,
   lastEarnPattern: null,
@@ -121,15 +113,20 @@ const sendHealing = {
   lastMetaSignatureClassic: null,
   lastMetaSignatureIntel: null,
 
+  // v30+ lymph / immune / liquidity overlays
+  lastLymphNodesField: null,
+  lastImmuneField: null,
+  lastLiquidityField: null,
+
   lastError: null
 };
 
-export function getPulseEarnSendSystemHealingState() {
+export function getPulseEarnSendSystemHealingState_v30() {
   return { ...sendHealing };
 }
 
 // ---------------------------------------------------------------------------
-// Legacy / Envelope Helpers
+// Legacy / Envelope Helpers (unchanged behavior)
 // ---------------------------------------------------------------------------
 function isEarnReentryImpulse(impulse) {
   if (!impulse || !impulse.payload) return false;
@@ -177,7 +174,7 @@ function tryEarnV11(impulse) {
     const evolved =
       typeof evolveEarn === "function"
         ? evolveEarn(baseEarn, {
-            source: "PulseEarnSendSystem-v24-IMMORTAL-INTEL",
+            source: "PulseEarnSendSystem-v30-LYMPH-NODES",
             intent: impulse.intent,
             lineage: impulse.payload?.parentLineage || null
           })
@@ -223,7 +220,7 @@ function wrapEarnForPulse(earn) {
 }
 
 // ---------------------------------------------------------------------------
-// Band / Binary / Wave Surfaces — v24-IMMORTAL-INTEL
+// Band / Binary / Wave Surfaces — v30 (same math, new version tag)
 // ---------------------------------------------------------------------------
 function buildEarnSendBandBinaryWave(earn, fallbackUsed, cycleIndex, deviceProfile) {
   const band = normalizeBand(
@@ -247,7 +244,7 @@ function buildEarnSendBandBinaryWave(earn, fallbackUsed, cycleIndex, deviceProfi
 
   const intelPayload = {
     kind: "earnSendBand",
-    version: "v24-IMMORTAL-INTEL",
+    version: "v30-LYMPH-NODES",
     cycleIndex,
     band,
     patternLen,
@@ -265,11 +262,11 @@ function buildEarnSendBandBinaryWave(earn, fallbackUsed, cycleIndex, deviceProfi
     `::GPU:${gpuScore}` +
     `::CYCLE:${cycleIndex}`;
 
-  const sig = buildDualHashSignature("EARN_SEND_BAND", intelPayload, classicString);
+  const sig = buildDualHashSignature("EARN_SEND_BAND_V30", intelPayload, classicString);
 
   const binaryField = {
-    binaryEarnSendSignature: computeHash(`BESEND::${surface}`),
-    binarySurfaceSignature: computeHash(`BSURF_ESEND::${surface}`),
+    binaryEarnSendSignature: computeHash(`BESEND_V30::${surface}`),
+    binarySurfaceSignature: computeHash(`BSURF_ESEND_V30::${surface}`),
     binarySurface: {
       patternLen,
       lineageDepth,
@@ -301,7 +298,7 @@ function buildEarnSendBandBinaryWave(earn, fallbackUsed, cycleIndex, deviceProfi
 }
 
 // ---------------------------------------------------------------------------
-// Presence Field — v24-IMMORTAL-INTEL-SEND
+// Presence Field — v30 (same structure, new version tag)
 // ---------------------------------------------------------------------------
 function buildPresenceField(earn, deviceProfile, fallbackUsed, cycleIndex) {
   const patternLen = String(earn.pattern || "").length;
@@ -321,7 +318,7 @@ function buildPresenceField(earn, deviceProfile, fallbackUsed, cycleIndex) {
     "presence_idle";
 
   const presenceField = {
-    presenceVersion: "v24-IMMORTAL-INTEL-SEND",
+    presenceVersion: "v30-LYMPH-NODES-SEND",
     presenceTier,
     band,
     patternLen,
@@ -332,7 +329,7 @@ function buildPresenceField(earn, deviceProfile, fallbackUsed, cycleIndex) {
 
   const intelPayload = {
     kind: "earnSendPresence",
-    version: "v24-IMMORTAL-INTEL",
+    version: "v30-LYMPH-NODES",
     cycleIndex,
     presenceTier,
     band,
@@ -349,7 +346,7 @@ function buildPresenceField(earn, deviceProfile, fallbackUsed, cycleIndex) {
     `::FB:${fallbackUsed ? 1 : 0}` +
     `::CYCLE:${cycleIndex}`;
 
-  const sig = buildDualHashSignature("EARN_SEND_PRESENCE", intelPayload, classicString);
+  const sig = buildDualHashSignature("EARN_SEND_PRESENCE_V30", intelPayload, classicString);
 
   sendHealing.lastPresenceField = presenceField;
   sendHealing.lastPresenceSignatureClassic = sig.classic;
@@ -359,7 +356,7 @@ function buildPresenceField(earn, deviceProfile, fallbackUsed, cycleIndex) {
 }
 
 // ---------------------------------------------------------------------------
-// Advantage‑M Field — v24-IMMORTAL-INTEL-SEND
+// Advantage‑M Field — v30 (same math, new version tag)
 // ---------------------------------------------------------------------------
 function buildAdvantageField({
   earn,
@@ -426,7 +423,7 @@ function buildAdvantageField({
     earnPatternLen * 0.00001;
 
   const advantageField = {
-    advantageVersion: "M-24.0-Immortal-CHUNK-SEND",
+    advantageVersion: "M-30.0-Immortal-CHUNK-SEND-LYMPH",
     band,
     advantageScore,
     presenceTier,
@@ -453,7 +450,7 @@ function buildAdvantageField({
 
   const intelPayload = {
     kind: "earnSendAdvantage",
-    version: "v24-IMMORTAL-INTEL",
+    version: "v30-LYMPH-NODES",
     cycleIndex,
     advantageScore,
     presenceTier,
@@ -482,7 +479,7 @@ function buildAdvantageField({
     `::PAT:${earnPatternLen}` +
     `::FB:${earnFallbackPenalty}`;
 
-  const sig = buildDualHashSignature("EARN_SEND_ADVANTAGE", intelPayload, classicString);
+  const sig = buildDualHashSignature("EARN_SEND_ADVANTAGE_V30", intelPayload, classicString);
 
   sendHealing.lastAdvantageField = advantageField;
   sendHealing.lastAdvantageSignatureClassic = sig.classic;
@@ -493,7 +490,7 @@ function buildAdvantageField({
 }
 
 // ---------------------------------------------------------------------------
-// Chunk / Cache / Prewarm Plan — v24-IMMORTAL-INTEL-SEND
+// Chunk / Cache / Prewarm Plan — v30 + LymphNodes
 // ---------------------------------------------------------------------------
 function buildChunkPrewarmPlan({
   earn,
@@ -540,8 +537,30 @@ function buildChunkPrewarmPlan({
       ? 1
       : 0;
 
+  // v30+ lymphatic overlays
+  const lymphNodeTier =
+    presenceField.presenceTier === "presence_high" || factoringIntensity >= 2
+      ? "lymph_overdrive"
+      : presenceField.presenceTier === "presence_mid"
+      ? "lymph_active"
+      : presenceField.presenceTier === "presence_low"
+      ? "lymph_soft"
+      : "lymph_idle";
+
+  const immuneScanRequired =
+    presenceField.presenceTier === "presence_high" ||
+    factoringIntensity >= 2 ||
+    earnLineageDepth >= 5;
+
+  const liquidityTier =
+    serverPressure >= 80
+      ? "liquidity_conserve"
+      : serverPressure >= 40
+      ? "liquidity_balance"
+      : "liquidity_open";
+
   const plan = {
-    planVersion: "v24.0-AdvantageM-Immortal-CHUNK-SEND",
+    planVersion: "v30.0-AdvantageM-Immortal-CHUNK-SEND-LYMPH",
     priorityLabel,
     presenceTier: presenceField.presenceTier,
     factoringSignal,
@@ -549,30 +568,42 @@ function buildChunkPrewarmPlan({
     deviceTier,
     deviceKind,
     deviceBoost,
+
+    // v24 core chunks + v30 lymph overlays
     chunks: {
       jobEnvelope: true,
       metabolismBlueprint: true,
       marketplaceHandshake: true,
       lineageChunk: earnLineageDepth > 4,
       devicePerfChunk: deviceBoost !== "low",
-      serverRecommendedChunk: !!serverRecommendedChunk
+      serverRecommendedChunk: !!serverRecommendedChunk,
+      lymphNodeMap: lymphNodeTier !== "lymph_idle",
+      immuneDiagnosticsChunk: immuneScanRequired
     },
+
     cache: {
       deviceProfile: true,
       survivalDiagnostics: true,
-      performanceCache: deviceBoost === "ultra" || deviceBoost === "high"
+      performanceCache: deviceBoost === "ultra" || deviceBoost === "high",
+      lymphHistoryCache: lymphNodeTier !== "lymph_idle"
     },
+
     prewarm: {
       metabolismOrgan: presenceField.presenceTier !== "presence_idle",
       lymphaticHandshake:
         presenceField.presenceTier !== "presence_idle" &&
         deviceBoost !== "low",
-      immuneSystemScan:
-        presenceField.presenceTier === "presence_high" ||
-        factoringIntensity >= 2,
+      immuneSystemScan: immuneScanRequired,
       lineagePrewarm: earnLineageDepth >= 5,
       serverRecommendedPrewarm: !!serverRecommendedPrewarm
     },
+
+    lymphNodes: {
+      lymphNodeTier,
+      immuneScanRequired,
+      liquidityTier
+    },
+
     meta: {
       cycleIndex,
       devicePerf,
@@ -584,7 +615,7 @@ function buildChunkPrewarmPlan({
 
   const intelPayload = {
     kind: "earnSendChunkPrewarm",
-    version: "v24-IMMORTAL-INTEL",
+    version: "v30-LYMPH-NODES",
     cycleIndex,
     priorityLabel,
     presenceTier: presenceField.presenceTier,
@@ -596,11 +627,13 @@ function buildChunkPrewarmPlan({
     devicePerf,
     factoringIntensity,
     serverPressure,
-    earnPatternLen
+    earnPatternLen,
+    lymphNodeTier,
+    liquidityTier
   };
 
   const classicString =
-    `PLAN:${priorityLabel}` +
+    `PLAN_V30:${priorityLabel}` +
     `::PRES:${presenceField.presenceTier}` +
     `::FACT:${factoringSignal}` +
     `::LIN:${earnLineageDepth}` +
@@ -610,19 +643,32 @@ function buildChunkPrewarmPlan({
     `::DPERF:${devicePerf}` +
     `::SP:${serverPressure}` +
     `::PAT:${earnPatternLen}` +
+    `::LYMPH:${lymphNodeTier}` +
+    `::LIQ:${liquidityTier}` +
     `::CYCLE:${cycleIndex}`;
 
-  const sig = buildDualHashSignature("EARN_SEND_CHUNK_PREWARM", intelPayload, classicString);
+  const sig = buildDualHashSignature("EARN_SEND_CHUNK_PREWARM_V30", intelPayload, classicString);
 
   sendHealing.lastChunkPrewarmPlan = plan;
   sendHealing.lastChunkPrewarmSignatureClassic = sig.classic;
   sendHealing.lastChunkPrewarmSignatureIntel = sig.intel;
 
+  // store lymph/immune/liquidity overlays
+  sendHealing.lastLymphNodesField = plan.lymphNodes;
+  sendHealing.lastImmuneField = {
+    immuneScanRequired,
+    immuneSystemScan: plan.prewarm.immuneSystemScan
+  };
+  sendHealing.lastLiquidityField = {
+    liquidityTier,
+    serverPressure
+  };
+
   return { chunkPrewarmPlan: plan, chunkPrewarmSignatureClassic: sig.classic, chunkPrewarmSignatureIntel: sig.intel };
 }
 
 // ---------------------------------------------------------------------------
-// Send Conductor Meta — v24-IMMORTAL-INTEL
+// Send Conductor Meta — v30-LYMPH-NODES
 // ---------------------------------------------------------------------------
 function buildSendConductorMeta({
   cycleIndex,
@@ -635,7 +681,7 @@ function buildSendConductorMeta({
 }) {
   const intelPayload = {
     kind: "earnSendConductor",
-    version: "v24-IMMORTAL-INTEL",
+    version: "v30-LYMPH-NODES",
     cycleIndex,
     pattern: earn.pattern || "NO_PATTERN",
     lineageDepth: earn.lineage?.length || 0,
@@ -643,11 +689,13 @@ function buildSendConductorMeta({
     factoringSignal,
     presenceTier: presenceField.presenceTier,
     advantageScore: advantageField.advantageScore,
-    chunkPriority: chunkPrewarmPlan.priorityLabel
+    chunkPriority: chunkPrewarmPlan.priorityLabel,
+    lymphNodeTier: chunkPrewarmPlan.lymphNodes?.lymphNodeTier || "lymph_idle",
+    liquidityTier: chunkPrewarmPlan.lymphNodes?.liquidityTier || "liquidity_open"
   };
 
   const classicString =
-    `SEND_COND` +
+    `SEND_COND_V30` +
     `::PAT:${earn.pattern || "NO_PATTERN"}` +
     `::LIN:${earn.lineage?.length || 0}` +
     `::BAND:${bandPack.band}` +
@@ -655,17 +703,19 @@ function buildSendConductorMeta({
     `::PRES:${presenceField.presenceTier}` +
     `::ADV:${advantageField.advantageScore.toFixed(6)}` +
     `::CHUNK:${chunkPrewarmPlan.priorityLabel}` +
+    `::LYMPH:${chunkPrewarmPlan.lymphNodes?.lymphNodeTier || "lymph_idle"}` +
+    `::LIQ:${chunkPrewarmPlan.lymphNodes?.liquidityTier || "liquidity_open"}` +
     `::CYCLE:${cycleIndex}`;
 
-  const sig = buildDualHashSignature("EARN_SEND_CONDUCTOR_META", intelPayload, classicString);
+  const sig = buildDualHashSignature("EARN_SEND_CONDUCTOR_META_V30", intelPayload, classicString);
 
   sendHealing.lastMetaSignatureClassic = sig.classic;
   sendHealing.lastMetaSignatureIntel = sig.intel;
 
   return {
     layer: "PulseEarnSendSystem",
-    role: "EARN_SEND_CONDUCTOR_META",
-    version: "v24-IMMORTAL-INTEL",
+    role: "EARN_SEND_CONDUCTOR_META_V30_LYMPH",
+    version: "v30-LYMPH-NODES",
     signatures: {
       metaSignatureIntel: sig.intel,
       metaSignatureClassic: sig.classic,
@@ -686,22 +736,24 @@ function buildSendConductorMeta({
       factoringSignal,
       presenceTier: presenceField.presenceTier,
       advantageScore: advantageField.advantageScore,
-      chunkPriority: chunkPrewarmPlan.priorityLabel
+      chunkPriority: chunkPrewarmPlan.priorityLabel,
+      lymphNodeTier: chunkPrewarmPlan.lymphNodes?.lymphNodeTier || "lymph_idle",
+      liquidityTier: chunkPrewarmPlan.lymphNodes?.liquidityTier || "liquidity_open"
     }
   };
 }
 
 // ---------------------------------------------------------------------------
-// PUBLIC API — createPulseEarnSendSystem (v24-IMMORTAL-INTEL)
+// PUBLIC API — createPulseEarnSendSystem (v30-LYMPH-NODES)
 // ---------------------------------------------------------------------------
-export function createPulseEarnSendSystem({
+export function createPulseEarnSendSystem_v30({
   sendSystem,
   sdn = null,
   log = console.log,
   deviceProfile = null
 }) {
   if (!sendSystem || typeof sendSystem.send !== "function") {
-    throw new Error("[PulseEarnSendSystem-v24-IMMORTAL-INTEL] sendSystem.send(impulse) required.");
+    throw new Error("[PulseEarnSendSystem-v30-LYMPH-NODES] sendSystem.send(impulse) required.");
   }
 
   function emitSDN(event, payload) {
@@ -709,7 +761,7 @@ export function createPulseEarnSendSystem({
     try {
       sdn.emitImpulse(event, payload);
     } catch (err) {
-      log && log("[PulseEarnSendSystem-v24-IMMORTAL-INTEL] SDN emit failed (non‑fatal)", {
+      log && log("[PulseEarnSendSystem-v30-LYMPH-NODES] SDN emit failed (non‑fatal)", {
         event,
         err
       });
@@ -736,7 +788,7 @@ export function createPulseEarnSendSystem({
         prewarmNeeded
       });
 
-      emitSDN("earnSend:begin", {
+      emitSDN("earnSend:begin_v30", {
         tickId: impulse?.tickId,
         intent: impulse?.intent,
         cycleIndex,
@@ -760,7 +812,7 @@ export function createPulseEarnSendSystem({
           factoringSignal
         };
         sendHealing.lastError = "earn_reentry_blocked";
-        emitSDN("earnSend:blocked", blocked);
+        emitSDN("earnSend:blocked_v30", blocked);
         return blocked;
       }
 
@@ -772,7 +824,7 @@ export function createPulseEarnSendSystem({
 
       if (v11.ok) {
         earn = v11.earn;
-        emitSDN("earnSend:earn-v11", {
+        emitSDN("earnSend:earn-v11_v30", {
           tickId: impulse.tickId,
           pattern: earn.pattern,
           lineageDepth: earn.lineage.length
@@ -780,7 +832,7 @@ export function createPulseEarnSendSystem({
       } else {
         earn = buildEarnV1Continuance(impulse);
         usedFallback = true;
-        emitSDN("earnSend:earn-v1-fallback", {
+        emitSDN("earnSend:earn-v1-fallback_v30", {
           tickId: impulse.tickId,
           error: String(v11.error),
           pattern: earn.pattern
@@ -794,7 +846,7 @@ export function createPulseEarnSendSystem({
       // Wrap Earn organism for Pulse
       const pulseCompatibleEarn = wrapEarnForPulse(earn);
 
-      emitSDN("earnSend:wrapped", {
+      emitSDN("earnSend:wrapped_v30", {
         tickId: impulse.tickId,
         earnIdentity: earn.EarnRole.identity,
         pulseCompatibleEarn
@@ -852,7 +904,7 @@ export function createPulseEarnSendSystem({
         cycleIndex
       });
 
-      // Chunk/Prewarm
+      // Chunk/Prewarm + LymphNodes
       const { chunkPrewarmPlan } = buildChunkPrewarmPlan({
         earn,
         deviceProfile: deviceProfile || {},
@@ -869,7 +921,7 @@ export function createPulseEarnSendSystem({
       // Send signature (dualhash)
       const sendIntelPayload = {
         kind: "earnSend",
-        version: "v24-IMMORTAL-INTEL",
+        version: "v30-LYMPH-NODES",
         cycleIndex,
         pattern: earn.pattern || "NO_PATTERN",
         lineageDepth: earn.lineage?.length || 0,
@@ -887,7 +939,7 @@ export function createPulseEarnSendSystem({
         `::CYCLE:${cycleIndex}`;
 
       const sendSig = buildDualHashSignature(
-        "EARN_SEND_CONDUCTOR",
+        "EARN_SEND_CONDUCTOR_V30",
         sendIntelPayload,
         sendClassicString
       );
@@ -895,7 +947,7 @@ export function createPulseEarnSendSystem({
       sendHealing.lastSendSignatureClassic = sendSig.classic;
       sendHealing.lastSendSignatureIntel = sendSig.intel;
 
-      // Meta block
+      // Meta block (now includes lymph/liquidity)
       const sendConductorMeta = buildSendConductorMeta({
         cycleIndex,
         earn,
@@ -933,9 +985,13 @@ export function createPulseEarnSendSystem({
           chunkPrewarmPlan,
           factoringSignal: factoringMerged,
 
+          lymphNodesField: sendHealing.lastLymphNodesField,
+          immuneField: sendHealing.lastImmuneField,
+          liquidityField: sendHealing.lastLiquidityField,
+
           sendConductorMeta
         };
-        emitSDN("earnSend:error", failure);
+        emitSDN("earnSend:error_v30", failure);
         return failure;
       }
 
@@ -960,10 +1016,14 @@ export function createPulseEarnSendSystem({
         chunkPrewarmPlan,
         factoringSignal: factoringMerged,
 
+        lymphNodesField: sendHealing.lastLymphNodesField,
+        immuneField: sendHealing.lastImmuneField,
+        liquidityField: sendHealing.lastLiquidityField,
+
         sendConductorMeta
       };
 
-      emitSDN("earnSend:complete", out);
+      emitSDN("earnSend:complete_v30", out);
       return out;
     }
   };
