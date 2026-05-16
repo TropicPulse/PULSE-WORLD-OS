@@ -5,10 +5,10 @@
 // ============================================================================
 import { PulseTouchWarmup } from "./PULSE-TOUCH-WARMUP.js";
 import { PulseTouchPredictor } from "./PULSE-TOUCH-PREDICTOR.js";
-import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR-v27++.js";
-import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE-v27++.js";
+import { detectPulseTouch } from "./PULSE-TOUCH-DETECTOR.js";
+import { pulseTouchAdvantageCortex } from "./PULSE-TOUCH-ADVANTAGE.js";
 import { PulseChunker } from "./PULSE-TOUCH-CHUNKS.js";
-import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS-v27++.js";
+import { PulseTouchAnalytics } from "./PULSE-TOUCH-ANALYTICS.js";
 import { pulseTouchSecurity } from "./PULSE-TOUCH-SECURITY.js";
 import { PulsePresenceOracle } from "./PULSE-TOUCH-PRESENCE-ORACLE.js";
 import { PulseTouchStorage } from "./PULSE-TOUCH-STORAGE.js";

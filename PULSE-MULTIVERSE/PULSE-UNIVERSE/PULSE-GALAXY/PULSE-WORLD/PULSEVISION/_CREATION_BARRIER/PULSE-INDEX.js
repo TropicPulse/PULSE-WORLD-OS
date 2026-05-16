@@ -178,7 +178,7 @@ if (!window.__PULSE_DOM_V30__) {
     // -----------------------------------------------------------
     // World-ready phase
     // -----------------------------------------------------------
-    ;[100, 200, 500].forEach((delay) => {
+    [100, 200, 500].forEach((delay) => {
       setTimeout(() => {
         try {
           if (window.PulsePort?.Global?.signal) {

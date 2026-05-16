@@ -249,7 +249,7 @@ export async function PulseWorldCompile(options = {}) {
     format: mode,
     metafile: true,
     splitting: options.splitting ?? true,
-    chunkNames: options.chunkNames ?? "chunks/[name]-[hash]",
+    chunkNames: options.chunkNames ?? "DNA/[name]-[hash]",
     loader: {
       ".js": "jsx",
       ".jsx": "jsx",

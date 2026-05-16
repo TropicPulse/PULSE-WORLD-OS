@@ -1656,6 +1656,7 @@ function applyGateDecision(gateDecision, skin) {
       G.PulseChunks.prewarm?.([
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-WARMUP.js`,
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-SECURITY.js`,
+        `${prefix}_CREATION_BARRIER/PULSE-TOUCH-STORAGE.js`,
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-GATE.js`,
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-PREDICTOR.js`,
         `${prefix}_CREATION_BARRIER/PULSE-TOUCH-ANALYTICS.js`,
