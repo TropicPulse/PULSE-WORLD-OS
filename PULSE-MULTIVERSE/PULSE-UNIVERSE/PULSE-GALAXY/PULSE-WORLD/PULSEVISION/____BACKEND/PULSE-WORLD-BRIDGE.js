@@ -26,7 +26,7 @@ import { PulsePageScanner } from "../__COMPONENTS_EVOLUTION/PulseUIPageScanner-v
 import { createPulseRouteMemory as PulseUIRouteMemory } from "../__COMPONENTS_EVOLUTION/PulseUIRouteMemory-v24.js";
 
 // NEW: Finality / Signal Port (IMMORTAL FINALITY LAYER)
-import { PulseSignalPort, PulsePort } from "../../PULSE-MULTIVERSE/PULSEWORLD/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
+import { PulseSignalPort, PulsePort } from "../../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
 
 // const Import = PulsePort("ORGANISM");
 // const Export = PulsePort("CHECKBAND");

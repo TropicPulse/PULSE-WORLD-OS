@@ -55,7 +55,7 @@ import { PulseMeshMeta } from "../PULSE-MESH/PulseMesh-v30.js";
 import { BinaryMeshMeta } from "../PULSE-MESH/PulseMeshBinary-v30.js";
 import { createBinaryPulse } from "../PULSE-TECH/PULSE-TECH-BINARY-WAVE.js";
 // Touch / presence
-import { getPulseTouchContext } from "../../PULSE-MULTIVERSE/PULSEWORLD/PULSE-WORLD-TOUCH.js";
+import { getPulseTouchContext } from "../../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-WORLD-TOUCH.js";
 
 // Runtime / scheduler / overmind
 import { getPulseRuntimeContext } from "../X-PULSE-X/PulseWorldRuntime-v20.js";

@@ -19,6 +19,9 @@
  *  - Temporal timeline of first contact + ongoing presence (v17)
  *  - Prewarm hints emitted over time (v17)
  *  - Adaptive cadence (v20)
+ * - v30 next addon will be touch relay integration.. and making our prgoram... when running with them... detect the route they took to get to our host.. through the relays.. and route them
+ * throuhgh better relays next request through our satellite signals and mesh? essentially fixing the intnernet relay route too with everything else? even warming the relay point used for
+ * every hop into our server.
  *
  *  v24 IMMORTAL++:
  *  ---------------

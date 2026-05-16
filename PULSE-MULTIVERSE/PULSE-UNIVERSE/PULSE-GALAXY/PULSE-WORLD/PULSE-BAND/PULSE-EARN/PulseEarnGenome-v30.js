@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/PULSE-EARN/
 //       PulseEarnGenome-v30-Immortal-INTEL-PLUSPLUS.js
 // LAYER: THE GENOME CORE (v30-Immortal-INTEL-PLUSPLUS)
 // (Immutable DNA Sequence + Cross‑Organism Law + v30 Presence/Advantage/Compute Surfaces + Proof Bridge)

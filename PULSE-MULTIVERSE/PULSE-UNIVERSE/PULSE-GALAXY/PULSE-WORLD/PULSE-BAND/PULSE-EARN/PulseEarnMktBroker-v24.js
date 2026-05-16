@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktBroker-v24-IMMORTAL-INTEL-PLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/PULSE-EARN/PulseEarnMktBroker-v24-IMMORTAL-INTEL-PLUS.js
 // LAYER: THE RUNPOD BROKER (v24‑IMMORTAL‑INTEL‑DUALHASH)
 // ============================================================================
 //

@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUEventEmitter-v30-IMMORTAL-INTEL-OMEGA.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-GPU/PulseGPUEventEmitter-v30-IMMORTAL-INTEL-OMEGA.js
 //  PULSE GPU EVENT EMITTER v30-IMMORTAL-INTEL-OMEGA — THE SYNAPSE LAYER 30++
 //  Deterministic, Fail‑Open, Zero‑Side‑Effects Signal Relay • CoreMemory‑Aware
 //  Dual-Band • Prewarm-Aware • Cache-Aware • NervousSystem-Linked • CI-Aware

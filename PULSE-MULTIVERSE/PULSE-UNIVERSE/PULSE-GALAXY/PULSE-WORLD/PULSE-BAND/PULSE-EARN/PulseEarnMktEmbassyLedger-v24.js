@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktEmbassyLedger-v24-IMMORTAL-INTEL++.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/PULSE-EARN/PulseEarnMktEmbassyLedger-v24-IMMORTAL-INTEL++.js
 // LAYER: THE EMBASSY LEDGER (v24‑IMMORTAL‑INTEL++)
 // Marketplace Registry + Identity Verifier + Diplomatic Roster
 // + Presence/Advantage/Chunk/Prewarm + DualHash Intel Signatures + GPU/Band Profile

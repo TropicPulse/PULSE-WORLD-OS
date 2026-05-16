@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /PulseOS/PULSE-MULTIVERSE/PULSEWORLD/PulseUIFlow-v24-Immortal-Evo++++.js
+// FILE: /PulseOS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseUIFlow-v24-Immortal-Evo++++.js
 // PULSE OS — v24‑IMMORTAL‑EVO++++
 // “UI FLOW ENGINE / INTENT GLUE / HUMAN‑VISIBLE ORGANISM MAP / EVIDENCE-AWARE”
 // Offline‑First • LocalStorage+CoreMemory Mirrored • Replay‑Aware

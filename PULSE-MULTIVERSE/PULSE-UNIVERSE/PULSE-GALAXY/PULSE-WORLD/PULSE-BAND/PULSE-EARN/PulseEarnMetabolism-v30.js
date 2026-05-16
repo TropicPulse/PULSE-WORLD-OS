@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMetabolism-v30-IMMORTAL-INTEL-PLUSPLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/PULSE-EARN/PulseEarnMetabolism-v30-IMMORTAL-INTEL-PLUSPLUS.js
 // LAYER: THE METABOLIC CELL-ENGINE SUPERPIPELINE (v30-IMMORTAL-INTEL-PLUSPLUS)
 // ============================================================================
 

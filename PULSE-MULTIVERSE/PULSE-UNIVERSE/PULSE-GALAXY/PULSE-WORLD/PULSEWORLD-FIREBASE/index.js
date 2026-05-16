@@ -111,7 +111,7 @@ import { admin, db } from "../PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseWorldGe
 import { getStripe as Stripe } from "../PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseWorldBank-v20.js";
 import { getTwilioClient as twilio } from "../PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PulseWorldSMSAlert-v20.js";
 import { PulseProofBridgeLogger as logger, BridgeLog as log } from "../PULSEVISION/____BACKEND/PULSE-WORLD-BRIDGE.js";
-import { runUserScoring } from "../PULSE-MULTIVERSE/PULSEWORLD/PULSE-PROXY/PulseProxyHypothalamus-v20.js";
+import { runUserScoring } from "../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-PROXY/PulseProxyHypothalamus-v20.js";
 
 
 

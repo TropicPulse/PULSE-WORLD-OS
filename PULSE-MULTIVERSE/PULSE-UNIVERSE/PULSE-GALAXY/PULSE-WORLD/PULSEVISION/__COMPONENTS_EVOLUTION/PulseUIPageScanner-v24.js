@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-MULTIVERSE/PULSEWORLD/PulsePageScanner-v24.js
+FILE: /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulsePageScanner-v24.js
 LAYER: A2 DRIFT INTELLIGENCE • v24-IMMORTAL++
 ===============================================================================
 

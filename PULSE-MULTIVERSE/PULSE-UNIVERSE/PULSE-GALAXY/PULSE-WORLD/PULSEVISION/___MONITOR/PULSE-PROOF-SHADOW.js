@@ -9,7 +9,7 @@
      - NOT used for: auth verification, privileged writes, admin tasks
 
    PLACEMENT:
-     /PULSE-MULTIVERSE/PULSEWORLD/PULSE-WORLD-FRONTEND/PulseWorldFirebaseShadow-v25.js
+     /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-WORLD-FRONTEND/PulseWorldFirebaseShadow-v25.js
 
    NOTES:
      - This is the SHADOW organ (frontend mirror of backend FirebaseGenome)

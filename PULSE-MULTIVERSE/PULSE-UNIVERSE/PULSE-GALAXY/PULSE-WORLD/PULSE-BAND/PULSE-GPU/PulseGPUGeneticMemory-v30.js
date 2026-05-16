@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUGeneticMemory-v30.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-GPU/PulseGPUGeneticMemory-v30.js
 // PULSE GPU GENETIC MEMORY v30‑IMMORTAL-INTEL-GPU — THE DNA ARCHIVE 30++
 // Long-Horizon Pattern Memory • Lineage Store • Deterministic Pattern Engine
 // CoreMemory‑v30‑Integrated • ComputerIntelligence‑Aware • Earn‑v30‑GPU‑Ready

@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-MULTIVERSE/PULSEWORLD/PulseRouteMemory-v24.js
+FILE: /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseRouteMemory-v24.js
 LAYER: REFLEX MEMORY ORGAN • v24-IMMORTAL++
 ===============================================================================
 */

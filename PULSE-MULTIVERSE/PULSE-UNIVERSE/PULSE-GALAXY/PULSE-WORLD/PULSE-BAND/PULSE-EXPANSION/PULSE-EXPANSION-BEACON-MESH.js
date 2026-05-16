@@ -124,7 +124,7 @@ import createBinaryMesh, {
 } from "../PULSE-MESH/PulseMeshBinary-v30.js";
 
 // Touch / presence
-import { getPulseTouchContext } from "../../PULSE-MULTIVERSE/PULSEWORLD/PULSE-WORLD-TOUCH.js";
+import { getPulseTouchContext } from "../../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-WORLD-TOUCH.js";
 
 // Runtime (hot instances / regions / presence / modes / pages)
 import { getPulseRuntimeContext } from "../X-PULSE-X/PulseWorldRuntime-v20.js";

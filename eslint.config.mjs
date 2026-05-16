@@ -10,8 +10,7 @@ export default [
 
     ignores: [
       // OS‑level compiled organism
-      "PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/X-PULSE-X/PULSE-WORLD-OS.js"
-    ],
+      "PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/X-PULSE-X/PULSE-WORLD-OS.js"],
 
     languageOptions: {
       ecmaVersion: "latest",

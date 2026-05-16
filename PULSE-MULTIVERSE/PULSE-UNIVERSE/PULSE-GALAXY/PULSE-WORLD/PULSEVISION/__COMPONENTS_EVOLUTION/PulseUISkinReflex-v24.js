@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-MULTIVERSE/PULSEWORLD/PulseUISkinReflex-v24.js
+FILE: /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseUISkinReflex-v24.js
 LAYER: A1 SURFACE REFLEX + A3 ERROR SPINE (v24 IMMORTAL++)
 ===============================================================================
 */

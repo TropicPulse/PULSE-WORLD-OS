@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUSurvivalInstincts-v24.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-GPU/PulseGPUSurvivalInstincts-v24.js
 // PULSE GPU SURVIVAL INSTINCTS v24-Immortal-Evo-Core — THE EVOLUTION CORE
 // Adaptive Identity Layer • Genetic Memory • Best‑Self Preservation Engine
 // Prewarm‑Aware • Chunk‑Aware • Cache‑Aware • Presence‑Aware • Earn‑Field‑Aware

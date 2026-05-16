@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktForager-v24-IMMORTAL-INTEL++.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/PULSE-EARN/PulseEarnMktForager-v24-IMMORTAL-INTEL++.js
 // LAYER: THE FORAGER — Salad Marketplace Receptor
 //        v24 IMMORTAL++ + INTEL + DualHash + Presence + Advantage-C + Chunk
 //        + A-B-A Binary/Wave Surfaces + GPU-Aware Normalization

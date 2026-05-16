@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-DESIGN/fileClassifier-v17-IMMORTAL.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/PULSE-DESIGN/fileClassifier-v17-IMMORTAL.js
 // LAYER: THE ANATOMIST (Structural Classifier + Identity Mapper + Evolutionary Morphology)
 // ============================================================================
 

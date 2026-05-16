@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-MULTIVERSE/PULSEWORLD/PulseUIErrors-v24-Immortal-Evo+++.js
+FILE: /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseUIErrors-v24-Immortal-Evo+++.js
 UNIVERSAL ERROR SPINE — v24-Immortal-Evo+++
 Membrane-Safe • Drift-Safe • Organism-Wide Error Unifier
 Offline-First • CoreMemory-Mirrored • Evidence-Aware • Portal/Overmind-Aware

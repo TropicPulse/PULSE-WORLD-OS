@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-MULTIVERSE/PULSEWORLD/PulseRegioningDeltaEngine-v30.js
+FILE: /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseRegioningDeltaEngine-v30.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC DELTA ENGINE — v30-IMMORTAL++
 DESC: Multiverse-aware, region-aware, band-aware, binary-friendly delta engine
       with CoreMemory hotmaps and cosmos/band envelopes.

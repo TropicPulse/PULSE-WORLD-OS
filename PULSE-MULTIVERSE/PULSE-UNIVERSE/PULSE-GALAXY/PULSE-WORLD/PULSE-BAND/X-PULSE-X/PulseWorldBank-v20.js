@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PulseWorldBank-v20.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseWorldBank-v20.js
 // ORGAN: PulseWorldBank-v20 (Stripe Organ)
 // LAYER: PULSE-WORLD / FINANCIAL-CORE / IMMORTAL-V20
 // ============================================================================

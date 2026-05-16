@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: /OS/PULSE-MULTIVERSE/PULSEWORLD/PulseBinaryFramework-v16-Immortal-GPU+-CI-Delta.js
+// FILE: /OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseBinaryFramework-v16-Immortal-GPU+-CI-Delta.js
 // PULSE OS — v16‑IMMORTAL‑GPU+‑CI‑DELTA
 // PAGE EVO ORGAN — SURFACE MEMBRANE + VISUAL CORTEX (DUAL-BAND + PRESENCE)
 // ============================================================================

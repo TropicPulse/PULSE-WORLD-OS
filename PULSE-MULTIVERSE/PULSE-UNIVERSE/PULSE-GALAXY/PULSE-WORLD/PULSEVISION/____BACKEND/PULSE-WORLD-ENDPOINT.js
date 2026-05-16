@@ -9,7 +9,7 @@
 // ============================================================================
 
 import { PulseProofSignal } from "../../PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PULSE-WORLD-SIGNAL.js";
-import { PulseSignalPort } from "../../PULSE-MULTIVERSE/PULSEWORLD/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
+import { PulseSignalPort } from "../../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
 
 // ----------------------------------------------------------------------------
 // SIGNAL INTEGRATION

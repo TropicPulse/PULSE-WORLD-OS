@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnMktCourier-v24-IMMORTAL-INTEL++.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/PULSE-EARN/PulseEarnMktCourier-v24-IMMORTAL-INTEL++.js
 // LAYER: THE COURIER (v24 IMMORTAL++ + INTEL + DualHash + Presence + Advantage + Chunk)
 // Spheron GPU‑aware A‑B‑A courier
 // ============================================================================

@@ -1,6 +1,6 @@
 
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-UNIVERSE/X-PULSE-X/PulseWorldEcoSystem-v20.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-UNIVERSE/X-PULSE-X/PulseWorldEcoSystem-v20.js
 // ORGAN: PulseWorldEcoSystem-v20 (Environment Engine Organ)
 // LAYER: PULSE-WORLD / ENVIRONMENT-ENGINE / ISLAND-STATE / IMMORTAL-V20
 // ============================================================================

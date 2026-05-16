@@ -63,7 +63,7 @@ const fetchFn =
   null;
 
 import { safeRoute as route, PulseProofBridgeLogger as logger } from "../../PULSEVISION/____BACKEND/PULSE-WORLD-BRIDGE.js";
-import { PulseLineage } from "../../PULSE-MULTIVERSE/PULSEWORLD/PULSE-PROXY/PulseProxyBBB-v20.js";
+import { PulseLineage } from "../../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-PROXY/PulseProxyBBB-v20.js";
 
 
 

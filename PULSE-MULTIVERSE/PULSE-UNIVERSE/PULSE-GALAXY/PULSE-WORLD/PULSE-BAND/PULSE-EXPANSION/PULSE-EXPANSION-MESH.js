@@ -73,7 +73,7 @@ import { getPulseUserContext, createPulseWorldCore } from "./PULSE-EXPANSION-USE
 import { getBeaconEngineContext } from "./PULSE-EXPANSION-BEACON-ENGINE.js";
 import { getConsoleContext } from "./PULSE-EXPANSION-BEACON-CONSOLE.js";
 
-import { getPulseTouchContext } from "../../PULSE-MULTIVERSE/PULSEWORLD/PULSE-WORLD-TOUCH.js";
+import { getPulseTouchContext } from "../../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-WORLD-TOUCH.js";
 
 import { getPulseRuntimeContext } from "../X-PULSE-X/PulseWorldRuntime-v20.js";
 import { getPulseSchedulerContext } from "../X-PULSE-X/PulseWorldScheduler-v20.js";

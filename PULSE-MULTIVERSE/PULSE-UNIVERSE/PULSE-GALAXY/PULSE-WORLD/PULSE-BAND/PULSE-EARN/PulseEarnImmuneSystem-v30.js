@@ -1,5 +1,5 @@
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-EARN/PulseEarnImmuneSystem-v30-Immortal-INTEL-PLUSPLUS.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-BAND/PULSE-EARN/PulseEarnImmuneSystem-v30-Immortal-INTEL-PLUSPLUS.js
 // LAYER: THE IMMUNE SYSTEM (v30-Immortal-INTEL+++ + Dual-Band + Binary-First + Wave + Presence + INTEL + LANES)
 // (Subsystem Doctor + Drift Diagnostician + Deterministic Repair Engine + Presence/INTEL Telemetry + Lane Routing)
 // ============================================================================

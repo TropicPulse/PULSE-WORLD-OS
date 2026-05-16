@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-MULTIVERSE/PULSEWORLD/PulseWorldImmuneSystem-v20.js
+FILE: /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseWorldImmuneSystem-v20.js
 LAYER: WORLD IMMUNE SYSTEM ORGAN — DRIFT & DAMAGE DETECTOR — v20
 ===============================================================================
 ===============================================================================

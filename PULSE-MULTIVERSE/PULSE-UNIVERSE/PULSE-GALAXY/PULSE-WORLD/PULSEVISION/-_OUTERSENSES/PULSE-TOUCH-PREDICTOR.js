@@ -4,7 +4,7 @@
 //  ORGAN: PulseTouchPredictor (v27++ IMMORTAL)
 //  ROLE: Temporal + Structural + Module Health Prediction / FastLane Pre‑Sense
 // ============================================================================
-import { PulseSignalPort } from "../../PULSE-MULTIVERSE/PULSEWORLD/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
+import { PulseSignalPort } from "../../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
 
 export const AI_EXPERIENCE_META_PulseTouchPredictor = {
   id: "pulsetouch.predictor",

@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-MULTIVERSE/PULSEWORLD/PulseUIRuntime-v24-Immortal-Evo+++.js
+FILE: /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseUIRuntime-v24-Immortal-Evo+++.js
 PULSE OS — v24-IMMORTAL-EVO+++
 UI RUNTIME — DOM APPLICATOR FOR BLUEPRINTS / EVIDENCE-AWARE / FLOW-AWARE
 Offline-First • LocalStorage+CoreMemory Mirrored • Replay-Aware

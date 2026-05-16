@@ -74,7 +74,7 @@ import PulseBeaconMesh, {
 } from "./PULSE-EXPANSION-BEACON-MESH.js";
 
 // Touch / presence
-import { getPulseTouchContext } from "../../PULSE-MULTIVERSE/PULSEWORLD/PULSE-WORLD-TOUCH.js";
+import { getPulseTouchContext } from "../../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-WORLD-TOUCH.js";
 
 // Runtime / scheduler / overmind
 import { getPulseRuntimeContext } from "../X-PULSE-X/PulseWorldRuntime-v20.js";

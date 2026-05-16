@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-MULTIVERSE/PULSEWORLD/PulseRegionMeshRouting-v30-ImmortalPlus.js
+FILE: /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseRegionMeshRouting-v30-ImmortalPlus.js
 LAYER: PULSE-WORLD SUBSTRATE — SYMBOLIC REGION MESH ROUTING v30-IMMORTAL++
 DESC: Multiverse-aware, binary-signatured, advantage-scored region routing +
       placement engine with CoreMemory hot surfaces + integrity envelopes.

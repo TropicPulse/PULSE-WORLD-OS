@@ -1,6 +1,6 @@
 /*
 ===============================================================================
-FILE: /PULSE-MULTIVERSE/PULSEWORLD/PulseRegioningDeploymentPhysics-v30.js
+FILE: /PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PulseRegioningDeploymentPhysics-v30.js
 LAYER: PULSE-WORLD SUBSTRATE — REGIONING DEPLOYMENT PHYSICS v30 IMMORTAL++
 DESC: Multiverse-aware, region-aware, advantage-aware regioning physics with
       binary integrity, drift vectors, hot-lane metrics, and dualband CoreMemory.

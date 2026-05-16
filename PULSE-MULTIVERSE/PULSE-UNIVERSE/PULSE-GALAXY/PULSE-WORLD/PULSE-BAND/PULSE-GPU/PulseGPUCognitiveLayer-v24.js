@@ -1,6 +1,6 @@
 
 // ============================================================================
-// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSEWORLD/PULSE-GPU/PulseGPUSettingsRestorer-v24.js
+// FILE: PULSE-WORLD-OS/PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-GPU/PulseGPUSettingsRestorer-v24.js
 // PULSE GPU SETTINGS RESTORER v24-Immortal++
 // “COGNITIVE RECOGNITION LAYER / RESTORATION PLANNER / CHUNK-AWARE”
 // ============================================================================
