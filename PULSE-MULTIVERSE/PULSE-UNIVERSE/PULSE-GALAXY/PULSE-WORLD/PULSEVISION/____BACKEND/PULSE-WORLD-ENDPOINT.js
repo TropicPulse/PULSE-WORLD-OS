@@ -8,8 +8,8 @@
 //  • v30: bandFamily / dnaTag / meshTag aware, Finality via PulseSignalPort
 // ============================================================================
 
-import { PulseProofSignal } from "../../PULSE-MULTIVERSE/PULSEWORLD/X-PULSE-X/PULSE-WORLD-SIGNAL.js";
-import { PulseSignalPort } from "../../PULSE-MULTIVERSE/PULSE-UNIVERSE/PULSE-GALAXY/PULSE-WORLD/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
+import { PulseProofSignal } from "../../PULSE-BAND/X-PULSE-X/PULSE-WORLD-SIGNAL.js";
+import { PulseSignalPort } from "../../PULSE-BAND/PULSE-FINALITY/PULSE-FINALITY-PORT.js";
 
 // ----------------------------------------------------------------------------
 // SIGNAL INTEGRATION
