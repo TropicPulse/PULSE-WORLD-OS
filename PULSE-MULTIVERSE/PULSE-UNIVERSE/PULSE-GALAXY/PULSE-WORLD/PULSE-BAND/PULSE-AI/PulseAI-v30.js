@@ -6,16 +6,16 @@
 // ============================================================================
 
 import { AIBinaryAgent } from "./PulseAIBinaryAgent-v30.js";
-import { AIMemory } from "./PulseAIMemory-v24.js";
+import { AIMemory } from "./PulseAIMemory-v30.js";
 
 import { AIAnatomy as AIBinaryAnatomy } from "./PulseAIAnatomy-v30.js";
 import { AIBinaryGenome } from "./PulseAIGenome-v30.js";
-import { AIBinaryVitals } from "./PulseAIVitals-v24.js";
-import { AIBinaryMetabolism } from "./PulseAIMetabolism-v24.js";
+import { AIBinaryVitals } from "./PulseAIVitals-v30.js";
+import { AIBinaryMetabolism } from "./PulseAIMetabolism-v30.js";
 import { AIBinaryHormones } from "./PulseAIHormones-v30.js";
 import { AIBinarySentience } from "./PulseAISentience-v30.js";
 import { AIBinaryConsciousness } from "./PulseAIConsciousness-v30.js";
-import { AIBinaryImmunity } from "./PulseAIImmunity-v24.js";
+import { AIBinaryImmunity } from "./PulseAIImmunity-v30.js";
 import { AIBinaryPipeline } from "./PulseAIPipeline-v30.js";
 import { AIBinaryReflex } from "./PulseAIReflex-v30.js";
 import { AIBinaryScheduler } from "./PulseAIScheduler-v30.js";
@@ -25,11 +25,11 @@ import { AIBinaryEvolution } from "./PulseAIBinaryEvolution-v30.js";
 import { createPulseAIChunker } from "./PulseAIChunker-v30.js";
 
 // Mesh / organism subsystems (v24–v30 IMMORTAL++)
-import { createBinaryMeshEnvironment } from "./BinaryMesh-v24-IMMORTAL++.js";
-import { createPulseMeshImmuneSystem } from "./organs/immune/PulseMeshImmuneSystem-v24-IMMORTAL++.js";
-import { createPulseMeshWiring } from "./organs/wiring/EvolutionaryWiring-v24-IMMORTAL++.js";
-import { PulseMeshCognition, applyPulseMeshCognition, getCognitionSnapshot} from "./PulseMeshCognition-v24-IMMORTAL++.js";
-import { createPulseHalo } from "./PulseHalo-v24-IMMORTAL++.js";
+import { createBinaryMeshEnvironment } from "../PULSE-MESH/PulseMeshBinary-v30.js";
+import { createPulseMeshImmuneSystem } from "../PULSE-MESH/PulseMeshImmuneSystem-v30.js";
+import { createPulseMeshWiring } from "../PULSE-MESH/PulseMeshEvolutionaryWiring-v30.js";
+import { PulseMeshCognition, applyPulseMeshCognition, getCognitionSnapshot} from "../PULSE-MESH/PulseMeshCognition-v30.js";
+import { createPulseHalo } from "../PULSE-MESH/PulseMeshAwareness-v30.js";
 
 // ============================================================================
 //  GLOBAL ORGANISM ARTERY REGISTRY (READ-ONLY, METRICS-ONLY)

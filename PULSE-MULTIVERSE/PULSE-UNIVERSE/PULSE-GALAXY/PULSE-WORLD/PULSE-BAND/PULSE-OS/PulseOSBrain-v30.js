@@ -29,7 +29,7 @@
 
 import { PulseIQMap } from "../../PULSE-WORLD-MAPIQ.js";
 import { PulseOrganismMap } from "../../PULSE-WORLD-MAPORGANISM.js";
-import { PulseOSEvolution } from "./PulseOSEvolution-v30-Immortal-CoreMemory.js";
+import { PulseOSEvolution } from "./PulseOSBrainEvolution-v30.js";
 
 import checkBand from "../X-PULSE-X/PULSE-WORLD-BAND.js";
 import checkIdentity from "../X-PULSE-X/PulseWorldIdentity-v20.js";

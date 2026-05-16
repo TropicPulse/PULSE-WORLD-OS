@@ -15,12 +15,6 @@
 //  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
 //  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 //
-//  ██████╗ ██╗   ██╗██╗     ███████╗███████╗██╗    ██╗ ██████╗ ██████╗ ██╗     ██████╗
-//  ██╔══██ ██║   ██║██║     ██╔════╝██╔════╝██║    ██║██╔═══██╗██╔══██╗██║     ██╔══██╗
-//  ██████  ██║   ██║██║     ███████╗█████╗  ██║ █╗ ██║██║   ██║██████╔╝██║     ██║  ██║
-//  ██╔══   ██║   ██║██║     ╚════██║██╔══╝  ██║███╗██║██║   ██║██╔══██╗██║     ██║  ██║
-//  ██      ╚██████╔╝███████╗███████║███████╗╚███╔███╔╝╚██████╔╝██║  ██║███████╗██████╔╝
-//  ╚╝       ╚═════╝ ╚══════╝╚═════╝ ╚══════╝ ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═════╝
 
 // ---------------------------------------------------------------------------
 // IMPORTS — v20 IMMORTAL / INTEL surfaces
@@ -36,7 +30,7 @@ import { createPulseBinaryShifterEvolutionaryPulse } from "../PULSE-SHIFTER/Puls
 import { createLegacyPulse as createPulseV1Legacy } from "../PULSE-SEND/PulseSendLegacyPulse-v24.js";
 
 // v3 Continuance Pulse surface (earn/continuance)
-import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse-v24.js";
+import { PulseEarnContinuancePulse as createPulseV3Continuance } from "../PULSE-EARN/PulseEarnContinuancePulse-v30.js";
 
 // v2 Evolution Engine (earn-side v2)
 import { createPulseV2 as createPulseV2Earn } from "../PULSE-SEND/PulseSendV2EvolutionEngine-v24.js";

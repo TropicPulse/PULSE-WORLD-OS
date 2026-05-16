@@ -32,7 +32,7 @@
 
 import { withModuleInitGuard, withOrganGuard } from "./PulseOSGovernor-v30.js";
 import * as PulseOSBrain from "./PulseOSBrain-v30.js";
-import * as PulseOSEvolution from "./PulseOSEvolution-v30-Immortal-CoreMemory.js";
+import * as PulseOSEvolution from "./PulseOSBrainEvolution-v30.js";
 import * as PulseSpinalCord from "./PulseOSSpinalCord-v30.js";
 
 // Presence / Mesh presence (symbolic/OS side)
